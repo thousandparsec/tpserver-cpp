@@ -8,6 +8,7 @@
 // must try to fix this
 
 #include "order.h"
+#include "vector3d.h"
 
 class Frame;
 class Game;
@@ -28,22 +29,18 @@ class IGObject {
 	unsigned int getType();
 	unsigned long long getSize();
 	char *getName();
-	long long getPositionX();
-	long long getPositionY();
-	long long getPositionZ();
-	long long getVelocityX();
-	long long getVelocityY();
-	long long getVelocityZ();
+	Vector3d getPosition();
+	Vector3d getVelocity();
 	
-	 std::set < unsigned int >getContainedObjects();
+	std::set<unsigned int> getContainedObjects();
 
 	bool setID(unsigned int newid);
 	void autoSetID();
 	void setType(unsigned int newtype);
 	void setSize(unsigned long long newsize);
 	void setName(char *newname);
-	void setPosition3(long long x, long long y, long long z);
-	void setVelocity3(long long x, long long y, long long z);
+	void setPosition(const Vector3d & npos);
+	void setVelocity(const Vector3d & nvel);
 	
 	void removeFromParent();
 
@@ -78,13 +75,9 @@ class IGObject {
 	unsigned int type;
 	unsigned long long size;
 	char *name;
-	long long posx;
-	long long posy;
-	long long posz;
-	long long velx;
-	long long vely;
-	long long velz;
-
+	Vector3d pos;
+	Vector3d vel;
+	
 	unsigned int parentid;
 
 

@@ -6,6 +6,7 @@
 
 class Player;
 class IGObject;
+class Vector3d;
 
 class Game {
 
@@ -24,8 +25,8 @@ class Game {
 	IGObject *getObject(unsigned int id);
 	void addObject(IGObject* obj);
 
-	std::list <unsigned int> getObjectsByPos(long long x, long long y, long long z, unsigned long long r);
-	std::list <unsigned int> getContainerByPos(long long x, long long y, long long z);
+	std::list<unsigned int> getObjectsByPos(const Vector3d & pos, unsigned long long r);
+	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -36,19 +37,19 @@ class Game {
 
 
       private:
-	 Game();
-	 Game(Game & rhs);
+	Game();
+	Game(Game & rhs);
 	~Game();
 	Game operator=(Game & rhs);
-
+	
 	static Game *myInstance;
-
+	
 	int turnTime;
 	int turnIncrement;
-
-	 std::list < Player * >players;
-
-	 std::map < unsigned int, IGObject * >objects;
+	
+	std::list<Player *> players;
+	
+	std::map<unsigned int, IGObject *> objects;
 	IGObject *universe;
 
 };

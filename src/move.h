@@ -2,16 +2,15 @@
 #define MOVE_H
 
 #include "order.h"
+#include "vector3d.h"
 
 class Move:public Order {
       public:
 	Move();
 	virtual ~ Move();
 
-	long long getX();
-	long long getY();
-	long long getZ();
-	void setDest(long long x1, long long y1, long long z1);
+	Vector3d getDest() const;
+	void setDest(const Vector3d & ndest);
 
 	void createFrame(Frame * f, int objID, int pos);
 	bool inputFrame(Frame * f);
@@ -21,9 +20,8 @@ class Move:public Order {
 	static void describeOrder(int orderType, Frame * f);
 
       private:
-	long long x;
-	long long y;
-	long long z;
+	Vector3d dest;
+
 
 };
 

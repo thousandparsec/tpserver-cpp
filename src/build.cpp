@@ -3,6 +3,7 @@
 #include "object.h"
 #include "game.h"
 #include "logging.h"
+#include "vector3d.h"
 
 #include "ownedobject.h"
 
@@ -94,8 +95,8 @@ bool Build::doOrder(IGObject *ob)
     fleet->setType(4);
     fleet->setName("A Fleet");
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
-    fleet->setPosition3(ob->getPositionX(), ob->getPositionY(),ob->getPositionZ());
-    fleet->setVelocity3(0LL, 0ll, 0ll);
+    fleet->setPosition(ob->getPosition());
+    fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     fleet->addAction(-1, ownerid, odT_Move); // let ship move
     fleet->addAction(-1, ownerid, odT_Nop); // let ship stop
     

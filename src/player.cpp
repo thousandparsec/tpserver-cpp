@@ -6,6 +6,7 @@
 #include "game.h"
 #include "object.h"
 #include "order.h"
+#include "vector3d.h"
 
 #include "player.h"
 
@@ -174,15 +175,13 @@ void Player::processGetObjectByPos(Frame * frame)
   Logger::getLogger()->debug("doing get object by pos frame");
   Frame *of = curConnection->createFrame(frame);
   if (frame->getDataLength() >= 36) {
-    long long x, y, z;
+    Vector3d pos;
     unsigned long long r;
 
-    x = frame->unpackInt64();
-    y = frame->unpackInt64();
-    z = frame->unpackInt64();
+    pos.unpack(frame);
     r = frame->unpackInt64();
 
-    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(x, y, z, r);
+    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(pos, r);
 
     of->setType(ft02_Sequence);
     of->packInt(oblist.size());

@@ -17,26 +17,15 @@ Move::~Move()
 
 }
 
-long long Move::getX()
+Vector3d Move::getDest() const
 {
-	return x;
+	return dest;
 }
 
-long long Move::getY()
-{
-	return y;
-}
 
-long long Move::getZ()
+void Move::setDest(const Vector3d & ndest)
 {
-	return z;
-}
-
-void Move::setDest(long long x1, long long y1, long long z1)
-{
-	x = x1;
-	y = y1;
-	z = z1;
+  dest = ndest;
 }
 
 void Move::createFrame(Frame * f, int objID, int pos)
@@ -44,9 +33,8 @@ void Move::createFrame(Frame * f, int objID, int pos)
 	Order::createFrame(f, objID, pos);
 	f->packInt(1); // number of turns
 	f->packInt(0); // size of resource list
-	f->packInt64(x);
-	f->packInt64(y);
-	f->packInt64(z);
+	dest.pack(f);
+	
 }
 
 bool Move::inputFrame(Frame * f)
@@ -54,21 +42,19 @@ bool Move::inputFrame(Frame * f)
   f->unpackInt(); // number of turns
   f->unpackInt(); // size of resource list, should be zero
   // TODO: fix in case size of list is not zero
-	x = f->unpackInt64();
-	y = f->unpackInt64();
-	z = f->unpackInt64();
-
-	return true;
+  dest.unpack(f);
+  
+  return true;
 }
 
 bool Move::doOrder(IGObject * ob){
-  ob->setVelocity3(x - ob->getPositionX(), y - ob->getPositionY(), z - ob->getPositionZ());
-  ob->setPosition3(x, y, z);
+  ob->setVelocity(Vector3d(dest.getX() - ob->getPosition().getX(), dest.getY() - ob->getPosition().getY(), dest.getZ() - ob->getPosition().getZ()));
+  ob->setPosition(dest);
 
   ob->removeFromParent();
 
   // re-containerise if necessary
-  std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(x, y, z);
+  std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(dest);
 
   Logger::getLogger()->debug("There are %d possible container objects", oblist.size());
   

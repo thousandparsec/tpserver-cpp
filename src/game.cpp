@@ -10,6 +10,7 @@
 #include "fleet.h"
 #include "frame.h"
 #include "net.h"
+#include "vector3d.h"
 
 #include "game.h"
 
@@ -42,8 +43,8 @@ void Game::createTutorial()
 	universe->setSize(100000000000ll);
 	universe->setType(0);
 	universe->setName("The Universe");
-	universe->setPosition3(0ll, 0ll, 0ll);
-	universe->setVelocity3(0ll, 0ll, 0ll);
+	universe->setPosition(Vector3d(0ll, 0ll, 0ll));
+	universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
 
 	//add contained objects
 	IGObject *mw_galaxy = new IGObject();
@@ -51,8 +52,8 @@ void Game::createTutorial()
 	mw_galaxy->setSize(10000000000ll);
 	mw_galaxy->setType(1);
 	mw_galaxy->setName("Milky Way Galaxy");
-	mw_galaxy->setPosition3(0ll, -6000ll, 0ll);
-	mw_galaxy->setVelocity3(0ll, 1000ll, 0ll);
+	mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
+	mw_galaxy->setVelocity(Vector3d(0ll, 1000ll, 0ll));
 	
 	universe->addContainedObject(mw_galaxy->getID());
 	// star system 1
@@ -61,8 +62,8 @@ void Game::createTutorial()
 	sol->setSize(1400000ll);
 	sol->setType(2);
 	sol->setName("Sol/Terra System");
-	sol->setPosition3(3000000000ll, 2000000000ll, 0ll);
-	sol->setVelocity3(-1500000ll, 1500000ll, 0ll);
+	sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+	sol->setVelocity(Vector3d(-1500000ll, 1500000ll, 0ll));
 	
 	mw_galaxy->addContainedObject(sol->getID());
 	// star system 2
@@ -71,8 +72,8 @@ void Game::createTutorial()
 	ac->setSize(800000ll);
 	ac->setType(2);
 	ac->setName("Alpha Centauri System");
-	ac->setPosition3(-1500000000ll, 1500000000ll, 0ll);
-	ac->setVelocity3(-1000000ll, -1000000ll, 0ll);
+	ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
+	ac->setVelocity(Vector3d(-1000000ll, -1000000ll, 0ll));
 	
 	mw_galaxy->addContainedObject(ac->getID());
 	// star system 3
@@ -81,8 +82,8 @@ void Game::createTutorial()
 	sirius->setSize(2000000ll);
 	sirius->setType(2);
 	sirius->setName("Sirius System");
-	sirius->setPosition3(-250000000ll, -4000000000ll, 0ll);
-	sirius->setVelocity3(2300000ll, 0ll, 0ll);
+	sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
+	sirius->setVelocity(Vector3d(2300000ll, 0ll, 0ll));
 	
 	mw_galaxy->addContainedObject(sirius->getID());
 
@@ -148,10 +149,10 @@ Player *Game::findPlayer(char *name, char *pass)
 		star->setSize(2000000ll);
 		star->setType(2);
 		star->setName("Unknown Star System");
-		star->setPosition3((long long)(((rand() % 1000) - 500) * 10000000),
-				   (long long)(((rand() % 1000) - 500) * 10000000),
-				   (long long)(((rand() % 1000) - 500) * 10000000));
-		star->setVelocity3(0ll, 0ll, 0ll);
+		star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
+					    (long long)(((rand() % 1000) - 500) * 10000000),
+					    (long long)(((rand() % 1000) - 500) * 10000000)));
+		star->setVelocity(Vector3d(0ll, 0ll, 0ll));
 		
 		getObject(1)->addContainedObject(star->getID());
 
@@ -161,10 +162,10 @@ Player *Game::findPlayer(char *name, char *pass)
 		planet->setType(3);
 		planet->setName("A planet");
 		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
-		planet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
-				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
-				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
-		planet->setVelocity3(0LL, 0ll, 0ll);
+		planet->setPosition(Vector3d(star->getPosition().getX() + (long long)((rand() % 10000) - 5000),
+					     star->getPosition().getY() + (long long)((rand() % 10000) - 5000),
+					     star->getPosition().getZ() + (long long)((rand() % 10000) - 5000)));
+		planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 		planet->addAction(-1, rtn->getID(), odT_Build);
 		
 		star->addContainedObject(planet->getID());
@@ -175,11 +176,11 @@ Player *Game::findPlayer(char *name, char *pass)
 		fleet->setType(4);
 		fleet->setName("A fleet");
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
-		fleet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
-				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
-				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
+		fleet->setPosition(Vector3d(star->getPosition().getX() + (long long)((rand() % 10000) - 5000),
+					    star->getPosition().getY() + (long long)((rand() % 10000) - 5000),
+					    star->getPosition().getZ() + (long long)((rand() % 10000) - 5000)));
 		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
-		fleet->setVelocity3(0LL, 0ll, 0ll);
+		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 	
 		fleet->addAction(-1, rtn->getID(), odT_Move);
 		fleet->addAction(-1, rtn->getID(), odT_Nop);
@@ -207,18 +208,15 @@ void Game::addObject(IGObject* obj)
   objects[obj->getID()] = obj;
 }
 
-std::list <unsigned int> Game::getObjectsByPos(long long x, long long y, long long z, unsigned long long r)
+std::list <unsigned int> Game::getObjectsByPos(const Vector3d & pos, unsigned long long r)
 {
   std::list <unsigned int> oblist;
 
   std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin();
 
   for( ; itcurr != objects.end(); ++itcurr) {
-    long long dx = itcurr->second->getPositionX() - x;
-    long long dy = itcurr->second->getPositionY() - y;
-    long long dz = itcurr->second->getPositionZ() - z;
     unsigned long long br = itcurr->second->getSize() / 2;
-    long long diff = (unsigned long long)(dx * dx) + (unsigned long long)(dy * dy) + (unsigned long long)(dz * dz) - r * r - br * br;
+    long long diff = itcurr->second->getPosition().getDistanceSq(pos) - r * r - br * br;
     if(diff <= 0)
       oblist.push_back(itcurr->first);
 
@@ -227,16 +225,14 @@ std::list <unsigned int> Game::getObjectsByPos(long long x, long long y, long lo
   return oblist;
 }
 
-std::list <unsigned int> Game::getContainerByPos(long long x, long long y, long long z){
+std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
   std::list<unsigned int> oblist;
 
   for(std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr){
-    long long dx = itcurr->second->getPositionX() - x;
-    long long dy = itcurr->second->getPositionY() - y;
-    long long dz = itcurr->second->getPositionZ() - z;
+    
     unsigned long long br = itcurr->second->getSize() / 2;
 
-    long long diff = (unsigned long long)(dx * dx) + (unsigned long long)(dy * dy) + (unsigned long long)(dz * dz) - br * br;
+    long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
     if(diff <= 0)
       oblist.push_back(itcurr->first);
   }

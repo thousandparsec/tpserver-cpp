@@ -44,12 +44,8 @@ IGObject::IGObject(IGObject & rhs)
 	id = rhs.id;
 	type = rhs.type;
 	size = rhs.size;
-	posx = rhs.posx;
-	posy = rhs.posy;
-	posz = rhs.posz;
-	velx = rhs.velx;
-	vely = rhs.vely;
-	velz = rhs.velz;
+	pos = rhs.pos;
+	vel = rhs.vel;
 
 	parentid = rhs.parentid;
 
@@ -100,39 +96,18 @@ char *IGObject::getName()
 	return rtn;
 }
 
-long long IGObject::getPositionX()
+Vector3d IGObject::getPosition()
 {
-	return posx;
+	return pos;
 }
 
-long long IGObject::getPositionY()
+Vector3d IGObject::getVelocity()
 {
-	return posy;
-}
-
-long long IGObject::getPositionZ()
-{
-	return posz;
-}
-
-long long IGObject::getVelocityX()
-{
-	return velx;
-}
-
-long long IGObject::getVelocityY()
-{
-	return vely;
-}
-
-long long IGObject::getVelocityZ()
-{
-	return velz;
+	return vel;
 }
 
 
-
-std::set < unsigned int >IGObject::getContainedObjects()
+std::set<unsigned int> IGObject::getContainedObjects()
 {
 	return children;
 }
@@ -195,18 +170,14 @@ void IGObject::setName(char *newname)
 	strncpy(name, newname, len);
 }
 
-void IGObject::setPosition3(long long x, long long y, long long z)
+void IGObject::setPosition(const Vector3d & npos)
 {
-	posx = x;
-	posy = y;
-	posz = z;
+	pos = npos;
 }
 
-void IGObject::setVelocity3(long long x, long long y, long long z)
+void IGObject::setVelocity(const Vector3d & nvel)
 {
-	velx = x;
-	vely = y;
-	velz = z;
+	vel = nvel;
 }
 
 void IGObject::removeFromParent()
@@ -322,7 +293,7 @@ bool IGObject::removeAction(int currpid, int newpid, OrderType ot)
 	return false;
 }
 
-std::set < OrderType > IGObject::getActions(int currpid, int newpid)
+std::set<OrderType> IGObject::getActions(int currpid, int newpid)
 {
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
 	if (ordit != actions.end()) {
@@ -342,13 +313,9 @@ void IGObject::createFrame(Frame * frame, int playerid)
   frame->packInt(type);
   frame->packString(name);
   frame->packInt64(size);
-  frame->packInt64(posx);
-  frame->packInt64(posy);
-  frame->packInt64(posz);
-  frame->packInt64(velx);
-  frame->packInt64(vely);
-  frame->packInt64(velz);
-  
+  pos.pack(frame);
+  vel.pack(frame);
+ 
   frame->packInt(children.size());
   //frame->packInt(0); //HACK hack
   //for loop for children objects
