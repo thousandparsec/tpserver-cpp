@@ -143,7 +143,7 @@ void Connection::login(){
 	okframe->setType(ft_OK);
 	okframe->packString("Welcome");
 	sendFrame(okframe);
-      
+	player->setConnection(this);
 	status = 3;
       }else{
 	Logger::getLogger()->debug("bad username or password");
