@@ -336,9 +336,7 @@ std::set < OrderType > IGObject::getActions(int currpid, int newpid)
 
 void IGObject::createFrame(Frame * frame, int playerid)
 {
-  if(frame->getVersion() == fv0_1)
-    frame->setType(ft_Object);
-  else
+  
     frame->setType(ft02_Object);
   frame->packInt(id);
   frame->packInt(type);

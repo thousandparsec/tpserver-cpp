@@ -32,11 +32,8 @@ Frame::Frame()
 
 Frame::Frame(FrameVersion v)
 {
-  if(v == fv0_2)
-	type = ft02_Invalid;
-  else
-    type = ft_Invalid;
-
+  type = ft02_Invalid;
+  
   length = 0;
   data = NULL;
   unpackptr = 0;
@@ -54,9 +51,7 @@ Frame::Frame(Frame &rhs)
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
 	} else {
-	  if(version == fv0_1)
-		type = ft_Invalid;
-	     else
+	  
 	       type = ft02_Invalid;
 		length = 0;
 	}
@@ -79,9 +74,7 @@ Frame Frame::operator=(Frame & rhs)
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
 	} else {
-	  if(version == fv0_1)
-		type = ft_Invalid;
-	     else
+
 	       type = ft02_Invalid;
 		length = 0;
 	}
@@ -162,11 +155,9 @@ int Frame::getLength()
 
 int Frame::getHeaderLength()
 {
-	if (version == fv0_1)
-		return 12;
-	else if (version == fv0_2)
-		return 16;
-	return 0;
+	
+  return 16;
+	
 }
 
 int Frame::getDataLength()
@@ -199,13 +190,13 @@ int Frame::setHeader(char *newhead)
 		version = (FrameVersion)nversion;
 		temp += 2;
 		
-		if (version >= fv0_2) {
+		
 		  // pick up sequence number for versions greater than 02
 		  int nseq;
 		  memcpy(&nseq, temp, 4);
 		  sequence = ntohl(nseq);
 		  temp += 4;
-		}
+		
 		
 		int ntype;
 		memcpy(&ntype, temp, 4);
@@ -220,20 +211,11 @@ int Frame::setHeader(char *newhead)
 		len = -1;
 	}
 
-	if (version == fv0_1) {
-		// Version 1 had to be word aligned
-		if (len % 4 != 0)
-			len = -1;
-			
-		if (type <= ft_Invalid || type >= ft_Max) {
-			type = ft_Invalid;
-			len = -1;
-		}
-	} else if (version == fv0_2) {
-		if (type <= ft02_Invalid || type >= ft02_Max) {
-			type = ft02_Invalid;
-			len = -1;
-		}
+
+	if (type <= ft02_Invalid || type >= ft02_Max) {
+	  type = ft02_Invalid;
+	  len = -1;
+		
 	}
 
 	return len;
@@ -241,12 +223,9 @@ int Frame::setHeader(char *newhead)
 
 bool Frame::setType(FrameType nt)
 {
-	if (version == fv0_1)
-		if (nt < ft_Invalid || nt > ft_Max)
-			return false;
-	else if (version == fv0_2)
-		if (nt < ft02_Invalid || nt > ft02_Max)
-			return false;
+
+  if (nt < ft02_Invalid || nt > ft02_Max)
+    return false;
 	
 	type = nt;
 	return true;
@@ -274,16 +253,8 @@ bool Frame::packString(char *str)
 {
 	int slen = strlen(str) + 1;
 
-	// Version 0.1 needed to be correctly aligned
-	int padlen = 0;
-	if (version == fv0_1) {
-		padlen = 4 - slen % 4;
-		if (padlen == 4)
-			padlen = 0;
-	}
-
 	int netlen = htonl(slen);
-	char *temp = (char *) realloc(data, length + 4 + slen + padlen);
+	char *temp = (char *) realloc(data, length + 4 + slen);
 	
 	if (temp != NULL) {
 		data = temp;
@@ -297,20 +268,15 @@ bool Frame::packString(char *str)
 		memcpy(temp, str, slen);
 		temp += slen;
 		
-		// Pad the string
-		memset(temp, '\0', padlen);
-
-		length += 4 + slen + padlen;
+		
+		length += 4 + slen;
 	} else {
 		return false;
 	}
 	return true;
 }
 
-/*bool packString(std::string str){
-  return packString(str.c_str());
-  }
-*/
+
 
 bool Frame::packInt(int val)
 {
@@ -379,15 +345,8 @@ char *Frame::unpackString()
 	if (len > 0 && length >= unpackptr + len) {
 		rtnstr = new char[len];
 		memcpy(rtnstr, data + unpackptr, len);
-
-		int pad = 0;
-		if (version == fv0_1) {
-			pad = 4 - len % 4;
-			if (pad == 4)
-				pad = 0;
-		}
 		
-		unpackptr += len + pad;
+		unpackptr += len;
 	} else {
 		Logger::getLogger()->debug("len < 0 or length < upackptr + len");
 	}
@@ -403,25 +362,11 @@ long long Frame::unpackInt64()
 	return ntohq(nval);
 }
 
-/*
-long long Frame::unpackInt64(){
-  long long rtn;
-  int nval, nvalh, nvall;
-  memcpy(&nval, data + unpackptr, 4);
-  unpackptr += 4;
-  nvalh = ntohl(nval);
-  memcpy(&nval, data + unpackptr, 4);
-  nvall = ntohl(nval);
-  memcpy(&rtn, &nvall, 4);
-  memcpy(&rtn + 4, &nvalh, 4);
-  return rtn;
-}*/
+
 
 void Frame::createFailFrame(FrameErrorCode code, char *reason)
 {
-  if (version == fv0_1) 
-    setType(ft_Fail);
-  else
+  
     setType(ft02_Fail);
 
   if (data != NULL) {

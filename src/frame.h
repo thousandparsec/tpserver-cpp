@@ -32,23 +32,7 @@ typedef enum {
   	ft02_Message_Post = 20,
 	ft02_Max,
 
-// Old Frame Codes
-	ft_Invalid = -1,
-	ft_Connect = 0,
-	ft_OK = 1,
-	ft_Login = 2,
-	ft_Fail = 3,
-	ft_Get_Object = 4,
-	ft_Object = 5,
-	ft_Get_Order = 6,
-	ft_Order = 7,
-	ft_Add_Order = 8,
-	ft_Remove_Order = 9,
-	ft_Describe_Order = 10,
-	ft_Order_Description = 11,
-	ft_Get_Outcome = 12,
-	ft_Outcome = 13,
-	ft_Max
+
 } FrameType;
 
 typedef enum {

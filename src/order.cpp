@@ -24,9 +24,7 @@ OrderType Order::getType()
 
 void Order::createFrame(Frame * f, int objID, int pos)
 {
-  if(f->getVersion() == fv0_1)
-	f->setType(ft_Order);
-  else
+
     f->setType(ft02_Order);
 	f->packInt(objID);
 	f->packInt(type);
@@ -38,19 +36,11 @@ void Order::inputFrame(Frame * f)
 {
 }
 
-void Order::createOutcome(Frame * f, int objID, int pos)
-{
-	f->setType(ft_Outcome);
-	f->packInt(objID);
-	f->packInt(pos);
-}
 
 void Order::describeOrder(int ordertype, Frame * f)
 {
 	if (ordertype > odT_Invalid && ordertype < odT_Max) {
-	  if(f->getVersion() == fv0_1)
-		f->setType(ft_Order_Description);
-	  else
+
 	    f->setType(ft02_OrderDesc);
 		switch (ordertype) {
 		case odT_Nop:

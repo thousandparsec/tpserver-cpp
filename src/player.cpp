@@ -91,32 +91,7 @@ int Player::getID()
 void Player::processIGFrame(Frame * frame)
 {
   Logger::getLogger()->debug("IG Frame processor");
-  if(frame->getVersion() == fv0_1){
-	switch (frame->getType()) {
-	case ft_Get_Object:
-		processGetObject(frame);
-		break;
-	case ft_Get_Order:
-	  processGetOrder(frame);
-		break;
-	case ft_Add_Order:
-		processAddOrder(frame);
-		break;
-	case ft_Remove_Order:
-		processRemoveOrder(frame);
-		break;
-	case ft_Describe_Order:
-		processDescribeOrder(frame);
-		break;
-	case ft_Get_Outcome:
-		processGetOutcome(frame);
-		break;
-		//more
-	default:
-		Logger::getLogger()->warning("Player: Discarded frame, not processed");
-		break;
-	}
-  }else{
+  
 	switch (frame->getType()) {
 	case ft02_Object_GetById:
 		processGetObjectById(frame);
@@ -142,23 +117,12 @@ void Player::processIGFrame(Frame * frame)
 		break;
 	}
 
-  }
+  
 
 	delete frame;
 }
 
-void Player::processGetObject(Frame * frame)
-{
-	Logger::getLogger()->debug("doing get object frame");
-	Frame *obframe = curConnection->createFrame(frame);
-	if (frame->getDataLength() >= 4) {
-		unsigned int objectID = frame->unpackInt();
-		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
-	} else {
-	  obframe->createFailFrame(fec_FrameError, "Invalid frame");
-	}
-	curConnection->sendFrame(obframe);
-}
+
 
 void Player::processGetObjectById(Frame * frame)
 {
@@ -232,23 +196,50 @@ void Player::processGetObjectByPos(Frame * frame)
   }
 }
 
+
+
 void Player::processGetOrder(Frame * frame)
 {
-	Logger::getLogger()->debug("doing get order frame");
-	Frame *of = curConnection->createFrame(frame);
-	if (frame->getDataLength() >= 8) {
-		unsigned int objectID = frame->unpackInt();
-		int ordpos = frame->unpackInt();
-		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
-		if (ord != NULL) {
-			ord->createFrame(of, objectID, ordpos);
-		} else {
-			of->createFailFrame(fec_TempUnavailable, "Could not get Order");
-		}
-	} else {
-		of->createFailFrame(fec_FrameError, "Invalid frame");
-	}
-	curConnection->sendFrame(of);
+  Logger::getLogger()->debug("Doing get order frame");
+  
+  if(frame->getDataLength() < 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  int objectID = frame->unpackInt();
+  int num_orders = frame->unpackInt();
+
+  if(frame->getDataLength() != 8 + 4 * num_orders){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(num_orders > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(num_orders);
+    curConnection->sendFrame(seq);
+  }
+
+  for(int i = 0; i < num_orders; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int ordpos = frame->unpackInt();
+    Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
+    if (ord != NULL) {
+      ord->createFrame(of, objectID, ordpos);
+    } else {
+      of->createFailFrame(fec_TempUnavailable, "Could not get Order");
+    }
+        
+    curConnection->sendFrame(of);
+  }
+  
+
 }
 
 
@@ -262,9 +253,7 @@ void Player::processAddOrder(Frame * frame)
 		int pos = frame->unpackInt();
 		ord->inputFrame(frame);
 		if (Game::getGame()->getObject(objectID)->addOrder(ord, pos, pid)) {
-		  if(of->getVersion() == fv0_1)
-		    of->setType(ft_OK);
-		  else
+		  
 		    of->setType(ft02_OK);
 			of->packString("Order Added");
 		} else {
@@ -276,27 +265,51 @@ void Player::processAddOrder(Frame * frame)
 	curConnection->sendFrame(of);
 }
 
+
 void Player::processRemoveOrder(Frame * frame)
 {
-	Logger::getLogger()->debug("doing remove order frame");
-	Frame *of = curConnection->createFrame(frame);
-	if (frame->getDataLength() >= 8) {
-		unsigned int objectID = frame->unpackInt();
-		int ordpos = frame->unpackInt();
-		if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
-		  if(of->getVersion() == fv0_1)
-			of->setType(ft_OK);
-		  else
-		    of->setType(ft02_OK);
-			of->packString("Order removed");
-		} else {
-			of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
-		}
-	} else {
-		of->createFailFrame(fec_FrameError, "Invalid frame");
-	}
-	curConnection->sendFrame(of);
+  Logger::getLogger()->debug("doing remove order frame");
+
+  if(frame->getDataLength() < 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  int objectID = frame->unpackInt();
+  int num_orders = frame->unpackInt();
+
+  if(frame->getDataLength() != 8 + 4 * num_orders){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(num_orders > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(num_orders);
+    curConnection->sendFrame(seq);
+  }
+
+  for(int i = 0; i < num_orders; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int ordpos = frame->unpackInt();
+    if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
+      of->setType(ft02_OK);
+      of->packString("Order removed");
+    } else {
+      of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
+    }
+
+    curConnection->sendFrame(of);
+    
+  }
+
 }
+
 
 void Player::processDescribeOrder(Frame * frame)
 {
@@ -307,22 +320,3 @@ void Player::processDescribeOrder(Frame * frame)
 	curConnection->sendFrame(of);
 }
 
-void Player::processGetOutcome(Frame * frame)
-{
-	Logger::getLogger()->debug("doing get outcome");
-	Frame *of = curConnection->createFrame(frame);
-	if (frame->getDataLength() >= 8) {
-		unsigned int objectID = frame->unpackInt();
-		int ordpos = frame->unpackInt();
-		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
-		if (ord != NULL) {
-			ord->createOutcome(of, objectID, ordpos);
-		} else {
-			of->createFailFrame(fec_TempUnavailable, "Could not get Outcome");
-		}
-	} else {
-		of->createFailFrame(fec_FrameError, "Invalid frame");
-	}
-	curConnection->sendFrame(of);
-
-}

@@ -146,21 +146,16 @@ void Connection::verCheck()
 
 	if (len == 4 && memcmp(buff, "TP01", 4) == 0) {
 	  // check the rest of the packet
-	  delete[] buff;
-	  buff = new char[8];
-	  len = read(sockfd, buff, 8);
-	  if(len == 6 && memcmp(buff, "\0\0\0\0\0\0\0\0", 8) == 0) {
-		status = 2;
-		Logger::getLogger()->info("Client has correct version of protocol");
-		version = fv0_1;
-		Frame *okframe = createFrame();
-		okframe->setType(ft_OK);
-		okframe->packString("Protocol check ok, continue");
-		sendFrame(okframe);
-
-		delete[] buff;
-		return;
+	  Logger::getLogger()->warning("Client did not show correct version of protocol");
+	  // send "I don't understand" message
+	  if (len != 0) {
+	    send(sockfd, "You are not running the right version of TP, please upgrade\n", 60, 0);
+	    
 	  }
+	  close();
+	  
+	  delete[]buff;
+	  return;
 	} else if (len == 4 && memcmp(buff, "TP02", 4) == 0) {
 	  // check the rest of the packet
 	  delete[] buff;
@@ -229,7 +224,7 @@ void Connection::login()
 			player = Game::getGame()->findPlayer(username, password);
 			if (player != NULL) {
 				Frame *okframe = createFrame(recvframe);
-				okframe->setType(okframe->getVersion() == fv0_1 ? ft_OK : ft02_OK);
+				okframe->setType(ft02_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
 				Logger::getLogger()->debug("Login OK!");

@@ -28,18 +28,18 @@ void Nop::createFrame(Frame * f, int objID, int pos)
 {
 	Order::createFrame(f, objID, pos);
 	f->packInt(waitTime);
+	f->packInt(0);
+	f->packInt(waitTime);
 }
 
 void Nop::inputFrame(Frame * f)
 {
+  f->unpackInt();
+  f->unpackInt();
 	waitTime = f->unpackInt();
 }
 
-void Nop::createOutcome(Frame * f, int objID, int pos)
-{
-	Order::createOutcome(f, objID, pos);
-	f->packInt(waitTime);
-}
+
 
 void Nop::describeOrder(int orderType, Frame * f)
 {

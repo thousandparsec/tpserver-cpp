@@ -39,6 +39,8 @@ void Move::setDest(long long x1, long long y1, long long z1)
 void Move::createFrame(Frame * f, int objID, int pos)
 {
 	Order::createFrame(f, objID, pos);
+	f->packInt(1);
+	f->packInt(0);
 	f->packInt64(x);
 	f->packInt64(y);
 	f->packInt64(z);
@@ -46,16 +48,14 @@ void Move::createFrame(Frame * f, int objID, int pos)
 
 void Move::inputFrame(Frame * f)
 {
+  f->unpackInt();
+  f->unpackInt();
 	x = f->unpackInt64();
 	y = f->unpackInt64();
 	z = f->unpackInt64();
 }
 
-void Move::createOutcome(Frame * f, int objID, int pos)
-{
-	Order::createOutcome(f, objID, pos);
-	f->packInt(1);
-}
+
 
 void Move::describeOrder(int orderType, Frame * f)
 {

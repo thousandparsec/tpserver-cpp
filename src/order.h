@@ -14,7 +14,8 @@ typedef enum {
 	opT_Time = 1,
 	opT_Object_ID = 2,
 	opT_Player_ID = 3,
-	opT_Design_ID = 4,
+	opT_Relative_Coord = 4,
+	opT_Range = 5,
 
 	opT_Max
 } OrderParamType;
@@ -30,7 +31,7 @@ class Order {
 	virtual void createFrame(Frame * f, int objID, int pos);
 	virtual void inputFrame(Frame * f);
 
-	virtual void createOutcome(Frame * f, int objID, int pos);
+
 
 	static void describeOrder(int ordertype, Frame * f);
 	static Order *createOrder(OrderType ordertype);
