@@ -1,0 +1,25 @@
+.TH TPSERV 1 "2004-09-30" "Lee Begg" "Thousand Parsec Server"
+.SH NAME 
+tpserv \- Thousand Parsec Server in C++
+.SH SYNOPSIS
+.B tpserv
+.SH DESCRIPTION
+.B tpserv
+is the C++ implementation of the Thousand Parsec Server.  It listens for TP clients on tcp port 6923,
+both IPv4 and IPv6 (if available).
+.SH "CONSOLE COMMANDS"
+The server's console supports several admin functions.
+.IP h
+Prints the help for the console.
+.IP q
+Closes and quits the server.
+.IP t
+Start the end of turn sequence.
+.IP T
+Prints the number of seconds to the end of turn.
+.IP n
+Stops the network and closes all connections.
+.IP N
+Starts the network and allows connections.
+.SH AUTHOR
+Lee Begg <lee at thousandparsec dot net>
