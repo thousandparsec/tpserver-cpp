@@ -45,9 +45,6 @@ void Player::setPass(char* newpass){
 }
 
 void Player::setConnection(Connection* newcon){
-  if(curConnection != NULL){
-    curConnection->close();
-  }
   curConnection = newcon;
 }
 
