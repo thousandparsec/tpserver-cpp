@@ -1,3 +1,12 @@
+01/10/04 - Lee
+Version 0.0.8 released.
+More refactoring.  New ObjectDataManager and OrderManager classes
+Split fleet, merge fleet and colonise orders started (only split
+fleet is working currently).
+Also added man page. Removed compiler warnings too.
+Changed name! tpserv -> tpserver-cpp
+
+
 08/08/04 - Lee
 Version 0.0.7 released.
 Fixed up lots of things for Debian (auto* stuff, etc)

@@ -1,9 +1,9 @@
-AC_INIT([tpserv],[0.0.7],[lee@thousandparsec.net],[tpserv])
+AC_INIT([tpserver-cpp],[0.0.8],[lee@thousandparsec.net])
 AC_CONFIG_SRCDIR(src/main.cpp)
 
 AC_CANONICAL_TARGET([])
 
-AM_INIT_AUTOMAKE(tpserv, 0.0.7)
+AM_INIT_AUTOMAKE(tpserver-cpp, 0.0.8)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE

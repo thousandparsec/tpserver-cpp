@@ -1,5 +1,5 @@
 SUBDIRS = src
 
-man_MANS = tpserv.1
+man_MANS = tpserver-cpp.1
 
 EXTRA_DIST = $(man_MANS)
