@@ -29,7 +29,7 @@ class Player {
 	void processGetOrder(Frame * frame);
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
-	void processDescribeOrder(Frame * frame)
+	void processDescribeOrder(Frame * frame);
 
 	Connection *curConnection;
 	char *name;
