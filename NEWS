@@ -1,2 +1,6 @@
-31/01/03
-Version 0.0.0 commited, 0.0.1 release tomorrow (hopefully)
+01/02/03 - Lee
+Version 0.0.1 released.
+Server can:
+ - accept connections and allow anyone to login
+ - start and stop network from console, without stopping the server
+This release of the server is at Milestone Alpha.
