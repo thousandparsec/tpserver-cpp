@@ -26,6 +26,9 @@ class Player {
 	static int nextpid;
 
 	void processGetObject(Frame * frame);
+	void processGetOrder(Frame * frame);
+	void processAddOrder(Frame * frame);
+	void processRemoveOrder(Frame * frame);
 
 	Connection *curConnection;
 	char *name;

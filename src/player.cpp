@@ -5,6 +5,7 @@
 #include "logging.h"
 #include "game.h"
 #include "object.h"
+#include "order.h"
 
 #include "player.h"
 
@@ -93,7 +94,16 @@ void Player::processIGFrame(Frame * frame)
 	case ft_Get_Object:
 		processGetObject(frame);
 		break;
-		//case ft_Get_Order:
+	case ft_Get_Order:
+		processGetOrder(frame);
+		break;
+	case ft_Add_Order:
+		processAddOrder(frame);
+		break;
+	case ft_Remove_Order:
+		processRemoveOrder(frame);
+		break;
+		//more
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
 		break;
@@ -104,11 +114,70 @@ void Player::processIGFrame(Frame * frame)
 
 void Player::processGetObject(Frame * frame)
 {
-	Logger::getLogger()->debug("doing get frame");
+	Logger::getLogger()->debug("doing get object frame");
 	if (frame->getLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
 		Frame *obframe = new Frame();
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 		curConnection->sendFrame(obframe);
 	}
+}
+
+void Player::processGetOrder(Frame * frame)
+{
+	Logger::getLogger()->debug("doing get order frame");
+	Frame *of = new Frame();
+	if (frame->getLength() >= 8) {
+		unsigned int objectID = frame->unpackInt();
+		int ordpos = frame->unpackInt();
+		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
+		if (ord != NULL) {
+			ord->createFrame(of, objectID, ordpos);
+		} else {
+			of->createFailFrame(9, "Could not get Order");
+		}
+	} else {
+		of->createFailFrame(4, "Invalid frame");
+	}
+	curConnection->sendFrame(of);
+}
+
+void Player::processAddOrder(Frame * frame)
+{
+	Logger::getLogger()->debug("doing add order frame");
+	Frame *of = new Frame();
+	if (frame->getLength() >= 8) {
+		Order *ord = new Order();
+		unsigned int objectID = frame->unpackInt();
+		ord->setType((OrderType) frame->unpackInt());
+		int pos = frame->unpackInt();
+		if (Game::getGame()->getObject(objectID)->addOrder(ord, pos, pid)) {
+			of->setType(ft_OK);
+			of->packString("Order Added");
+		} else {
+			of->createFailFrame(19, "Could not add order");
+		}
+	} else {
+		of->createFailFrame(4, "Invalid frame");
+	}
+	curConnection->sendFrame(of);
+}
+
+void Player::processRemoveOrder(Frame * frame)
+{
+	Logger::getLogger()->debug("doing remove order frame");
+	Frame *of = new Frame();
+	if (frame->getLength() >= 8) {
+		unsigned int objectID = frame->unpackInt();
+		int ordpos = frame->unpackInt();
+		if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
+			of->setType(ft_OK);
+			of->packString("Order removed");
+		} else {
+			of->createFailFrame(13, "Could not remove Order");
+		}
+	} else {
+		of->createFailFrame(4, "Invalid frame");
+	}
+	curConnection->sendFrame(of);
 }
