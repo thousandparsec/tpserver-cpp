@@ -1,10 +1,21 @@
+18/04/03 - Lee
+Version 0.0.3 released.
+Server can:
+ - send orders requested by clients
+ - send order descriptions requested by clients
+ - console can set what players can set what order on what object. 
+   Press "o" then enter, then the player id, the object id and the 
+   order type number, then enter
+ - objects can be given orders and have them removed.
+ - objects define on a pre player basis which order they will take
+
 02/03/03 - Lee
 Version 0.0.2 released.
 Server can:
  - send objects requested by clients
  - create the tutorial universe with one galaxy with 3 star systems
- - load universe from file, press l then enter on the console then input the 
-   file name
+ - load universe from file, press l then enter on the console then 
+   input the file name
 
 01/02/03 - Lee
 Version 0.0.1 released.
