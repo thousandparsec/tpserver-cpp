@@ -200,7 +200,6 @@ void Player::processGetObjectByPos(Frame * frame)
 }
 
 
-
 void Player::processGetOrder(Frame * frame)
 {
   Logger::getLogger()->debug("Doing get order frame");
@@ -251,23 +250,36 @@ void Player::processAddOrder(Frame * frame)
 	Logger::getLogger()->debug("doing add order frame");
 	Frame *of = curConnection->createFrame(frame);
 	if (frame->getDataLength() >= 8) {
+
+		// See if we have a valid object number
 		unsigned int objectID = frame->unpackInt();
-		Order *ord = Order::createOrder((OrderType) frame->unpackInt());
-		int pos = frame->unpackInt();
-		ord->inputFrame(frame);
-		if (Game::getGame()->getObject(objectID)->addOrder(ord, pos, pid)) {
-		  
-		    of->setType(ft02_OK);
-			of->packString("Order Added");
+		IGObject *o = Game::getGame()->getObject(objectID);
+		if (o == NULL) {
+			of->createFailFrame(fec_NonExistant, "No such object");
+			
 		} else {
-			of->createFailFrame(fec_TempUnavailable, "Could not add order");
+			// See if we have a valid order
+			Order *ord = Order::createOrder((OrderType) frame->unpackInt());
+			if (ord == NULL) {
+				of->createFailFrame(fec_NonExistant, "No such order type");
+			} else {
+
+				// Finally, try and add the order
+				int pos = frame->unpackInt();
+				ord->inputFrame(frame);
+				if (o->addOrder(ord, pos, pid)) {
+				    of->setType(ft02_OK);
+					of->packString("Order Added");
+				} else {
+					of->createFailFrame(fec_TempUnavailable, "Could not add order");
+				}
+			}
 		}
 	} else {
 		of->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(of);
 }
-
 
 void Player::processRemoveOrder(Frame * frame)
 {
