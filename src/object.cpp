@@ -167,7 +167,7 @@ void IGObject::updatePosition(){
   vel = futurepos - pos;
 
   // recontainerise if necessary
-  if(pos != futurepos && Game::getGame()->getObject(parentid)->getContainerType() == 1){
+  if(pos != futurepos && Game::getGame()->getObject(parentid)->getContainerType() >= 1){
     removeFromParent();
     
     std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(futurepos);

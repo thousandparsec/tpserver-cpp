@@ -12,6 +12,8 @@ class Move : public Order{
 	Vector3d getDest() const;
 	void setDest(const Vector3d & ndest);
 
+	int getETA(IGObject* ob) const;
+
 	void createFrame(Frame * f, int objID, int pos);
 	bool inputFrame(Frame * f);
 

@@ -30,10 +30,21 @@ void Move::setDest(const Vector3d & ndest)
   dest = ndest;
 }
 
+int Move::getETA(IGObject *ob) const{
+  unsigned long long distance = dest.getDistance(ob->getPosition());
+  unsigned long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  
+  return (int)(distance / max_speed) + 1;
+}
+
 void Move::createFrame(Frame * f, int objID, int pos)
 {
 	Order::createFrame(f, objID, pos);
-	f->packInt(1); // number of turns
+
+	unsigned long long distance = dest.getDistance(Game::getGame()->getObject(objID)->getPosition());
+	unsigned long max_speed = ((Fleet*)(Game::getGame()->getObject(objID)->getObjectData()))->maxSpeed();
+	
+	f->packInt((int)(distance / max_speed) + 1); // number of turns
 	f->packInt(0); // size of resource list
 	dest.pack(f);
 	
@@ -50,25 +61,22 @@ bool Move::inputFrame(Frame * f)
 }
 
 bool Move::doOrder(IGObject * ob){
-  //ob->setVelocity(dest - ob->getPosition());
-  ob->setFuturePosition(dest);
+  long long distance = dest.getDistance(ob->getPosition());
+  long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
 
-  //ob->removeFromParent();
-
-  // re-containerise if necessary
-  // std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(dest);
-
-//   Logger::getLogger()->debug("There are %d possible container objects", oblist.size());
+  if(distance < max_speed){
   
-//   for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
-//     Logger::getLogger()->debug("Container object %d", *itcurr);
-//     if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-//       Game::getGame()->getObject(*itcurr)->addContainedObject(ob->getID());
-//       break;
-//     }
-//   }
+    ob->setFuturePosition(dest);
+    return true;
 
-  return true;
+  }else{
+    
+    Vector3d velo = (dest - ob->getPosition()).makeLength(max_speed);
+
+    ob->setFuturePosition(ob->getPosition() + velo);
+
+    return false;
+  }
 }
 
 void Move::describeOrder(Frame * f) const

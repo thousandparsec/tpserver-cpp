@@ -28,6 +28,16 @@ int Fleet::numShips(int type){
   return ships[type];
 }
 
+long long Fleet::maxSpeed(){
+  if(ships[2] > 0){
+    return 10000000;
+  }else if(ships[1] > 0){
+    return 20000000;
+  }else{
+    return 40000000;
+  }
+}
+
 void Fleet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);

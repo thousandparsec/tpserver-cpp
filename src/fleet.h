@@ -14,6 +14,8 @@ class Fleet:public OwnedObject {
 	bool removeShips(int type, int number);
 	int numShips(int type);
 
+	long long maxSpeed();
+
 	void packExtraData(Frame * frame);
 
 	void doOnceATurn(IGObject * obj);
