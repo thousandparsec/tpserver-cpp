@@ -41,7 +41,7 @@ void Order::describeOrder(int ordertype, Frame * f)
 		case odT_Nop:
 			f->packString("No Operation");
 			f->packString("Object does nothing for a given number of turns");
-			f->packInt(1);
+			f->packInt64(1);
 			f->packString("Time Delay");
 			f->packInt(opT_Time);
 			f->packString("The number of turns to wait");
@@ -49,7 +49,7 @@ void Order::describeOrder(int ordertype, Frame * f)
 		case odT_Move:
 			f->packString("Move");
 			f->packString("Move to a given position absolute in space");
-			f->packInt(1);
+			f->packInt64(1);
 			f->packString("Position");
 			f->packInt(opT_Space_Coord);
 			f->packString("The position in space to move to");

@@ -265,7 +265,7 @@ int IGObject::getNumOrders(int playerid)
 bool IGObject::addAction(int currpid, int newpid, OrderType ot)
 {
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
-	if (ordit != actions.end()) {
+	if (ordit != actions.end() || currpid == -1) {
 		actions[newpid].insert(ot);
 		return true;
 	}
@@ -275,7 +275,7 @@ bool IGObject::addAction(int currpid, int newpid, OrderType ot)
 bool IGObject::removeAction(int currpid, int newpid, OrderType ot)
 {
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
-	if (ordit != actions.end()) {
+	if (ordit != actions.end() || currpid == -1) {
 		actions[newpid].erase(ot);
 		if (actions[newpid].empty()) {
 			actions.erase(newpid);
