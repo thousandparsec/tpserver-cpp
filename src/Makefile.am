@@ -4,9 +4,9 @@ tpserv_SOURCES = main.cpp connection.cpp console.cpp \
 		settings.cpp connection.h console.h \
 		frame.h game.h logging.h net.h settings.h \
 		player.cpp player.h object.cpp object.h \
-		order.cpp order.h objectdata.h universe.h \
-		universe.cpp ownedobject.h ownedobject.cpp \
-		emptyobject.h emptyobject.cpp planet.h \
-		planet.cpp fleet.h fleet.cpp nop.h nop.cpp \
-		move.h move.cpp build.h build.cpp vector3d.h \
-		vector3d.cpp
+		order.cpp order.h objectdata.h objectdata.cpp \
+		universe.h universe.cpp ownedobject.h \
+		ownedobject.cpp emptyobject.h emptyobject.cpp \
+		planet.h planet.cpp fleet.h fleet.cpp nop.h \
+		nop.cpp move.h move.cpp build.h build.cpp \
+		vector3d.h vector3d.cpp

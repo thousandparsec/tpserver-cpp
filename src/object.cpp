@@ -204,20 +204,18 @@ bool IGObject::removeContainedObject(unsigned int removeObjectID)
 
 bool IGObject::addOrder(Order * ord, int pos, int playerid)
 {
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
-	if (ordit != actions.end()) {
-		if ((*ordit).second.find(ord->getType()) != (*ordit).second.end()) {
-			if (pos == -1) {
-				orders.push_back(ord);
-			} else {
-				std::list < Order * >::iterator inspos = orders.begin();
-				advance(inspos, pos);
-				orders.insert(inspos, ord);
-			}
-			return true;
-		}
-	}
-	return false;
+  if (myObjectData->checkAllowedOrder(ord->getType(), playerid)) {
+    if (pos == -1) {
+      orders.push_back(ord);
+    } else {
+      std::list < Order * >::iterator inspos = orders.begin();
+      advance(inspos, pos);
+      orders.insert(inspos, ord);
+    }
+    return true;
+  }
+	
+  return false;
 }
 
 bool IGObject::removeOrder(int pos, int playerid)
@@ -225,38 +223,35 @@ bool IGObject::removeOrder(int pos, int playerid)
         if (pos >= orders.size()) {
                 return false;
         }
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
-	if (ordit != actions.end()) {
-		std::list < Order * >::iterator delpos = orders.begin();
-		assert (pos < orders.size());
-		advance(delpos, pos);
-		delete(*delpos);
-		orders.erase(delpos);
-		return true;
+
+	std::list < Order * >::iterator delpos = orders.begin();
+	assert (pos < orders.size());
+	advance(delpos, pos);
+	if(myObjectData->checkAllowedOrder((*delpos)->getType(), playerid)){
+	  delete(*delpos);
+	  orders.erase(delpos);
+	  return true;
 	}
 	return false;
 }
 
 Order *IGObject::getOrder(int pos, int playerid)
 {
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
-	if (ordit != actions.end()) {
-		std::list < Order * >::iterator showpos = orders.begin();
-		advance(showpos, pos);
-		if (showpos != orders.end()) {
-			return (*showpos);
-		}
-	}
-	return NULL;
+
+  std::list < Order * >::iterator showpos = orders.begin();
+  advance(showpos, pos);
+  if (showpos != orders.end() && myObjectData->checkAllowedOrder((*showpos)->getType(), playerid)) {
+    return (*showpos);
+  }
+  return NULL;
 }
 
 int IGObject::getNumOrders(int playerid)
 {
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
-	if (ordit != actions.end()) {
-		return orders.size();
-	}
-	return 0;
+  if((!orders.empty()) && myObjectData->checkAllowedOrder(orders.front()->getType(), playerid)){
+    return orders.size();
+  }
+  return 0;
 }
 
 Order * IGObject::getFirstOrder(){
@@ -308,7 +303,7 @@ std::set<OrderType> IGObject::getActions(int currpid, int newpid)
 void IGObject::createFrame(Frame * frame, int playerid)
 {
   
-    frame->setType(ft02_Object);
+  frame->setType(ft02_Object);
   frame->packInt(id);
   frame->packInt(type);
   frame->packString(name);
@@ -317,14 +312,13 @@ void IGObject::createFrame(Frame * frame, int playerid)
   vel.pack(frame);
  
   frame->packInt(children.size());
-  //frame->packInt(0); //HACK hack
   //for loop for children objects
   std::set < unsigned int >::iterator itcurr, itend;
   itend = children.end();
   for (itcurr = children.begin(); itcurr != itend; itcurr++) {
     frame->packInt(*itcurr);
   }
-  std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
+  /*std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
   if (ord != actions.end()) {
     frame->packInt(((*ord).second).size());
     std::set < OrderType >::iterator itacurr, itaend;
@@ -335,7 +329,11 @@ void IGObject::createFrame(Frame * frame, int playerid)
   } else {
     frame->packInt(0);
   }
+  */
+  myObjectData->packAllowedOrders(frame, playerid);
+  // think about the next one...
   frame->packInt(orders.size());
+
   if(myObjectData != NULL){
     myObjectData->packExtraData(frame);
   }

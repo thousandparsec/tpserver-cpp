@@ -14,6 +14,10 @@ class ObjectData {
 
 	virtual void doOnceATurn(IGObject * obj) = 0;
 
+	virtual void packAllowedOrders(Frame * frame, int playerid);
+	
+	virtual bool checkAllowedOrder(int ot, int playerid);
+
       protected:
 
 

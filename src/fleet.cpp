@@ -1,5 +1,6 @@
 
 #include "frame.h"
+#include "order.h"
 
 #include "fleet.h"
 
@@ -42,4 +43,18 @@ void Fleet::packExtraData(Frame * frame)
 void Fleet::doOnceATurn(IGObject * obj)
 {
 
+}
+
+void Fleet::packAllowedOrders(Frame * frame, int playerid){
+  if(playerid == getOwner()){
+    frame->packInt(2);
+    frame->packInt(odT_Move);
+    frame->packInt(odT_Nop);
+  }else{
+    frame->packInt(0);
+  }
+}
+
+bool Fleet::checkAllowedOrder(int ot, int playerid){
+  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop));
 }

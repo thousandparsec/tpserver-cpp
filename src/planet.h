@@ -11,6 +11,10 @@ class Planet:public OwnedObject {
 
 	void doOnceATurn(IGObject * obj);
 
+	void packAllowedOrders(Frame * frame, int playerid);
+
+	bool checkAllowedOrder(int ot, int playerid);
+
       private:
 
 

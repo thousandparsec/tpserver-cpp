@@ -41,12 +41,12 @@ bool Nop::inputFrame(Frame * f)
   f->unpackInt(); // resource list (read only, ignore client value)
 	waitTime = f->unpackInt();
 	
-	return (waitTime > 0);
+	return (waitTime >= 0);
 }
 
 bool Nop::doOrder(IGObject * ob){
   waitTime--;
-  return waitTime == 0;
+  return waitTime <= 0;
 }
 
 void Nop::describeOrder(int orderType, Frame * f)
