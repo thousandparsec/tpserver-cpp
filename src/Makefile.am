@@ -13,4 +13,6 @@ tpserver_cpp_SOURCES = main.cpp connection.cpp console.cpp \
 		message.h message.cpp colonise.h colonise.cpp \
 		splitfleet.h splitfleet.cpp mergefleet.h \
 		mergefleet.cpp ordermanager.h ordermanager.cpp \
-		objectdatamanager.h objectdatamanager.cpp
+		objectdatamanager.h objectdatamanager.cpp \
+		combatstrategy.h combatstrategy.cpp rspcombat.h \
+		rspcombat.cpp
