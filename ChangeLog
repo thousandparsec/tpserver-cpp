@@ -1,44 +1,108 @@
-10 Oct 04 Lee Begg
- - Released 0.0.9 (minisec pre-release)
+27 Jan 05 - Lee
+	* Version 0.1.0
+	* This release is for Minisec.
+	* Improved universe generation (as each player connects)
+	* Sends some frames to clients being silly (ie, not asking for anything)
+	* Tells future protocol versions that they are too new.
+	* Swapped NEWS and ChangeLog files (I had them round the wrong way)
+	* Few small fixes for general memory leaks.
+	* Added GPL headers to all source files.
+	* Improved messages sent on order completion.
+	* Seed the PRNG now  :-)
+	
 
-01 Oct 04 Lee Begg
- - Released 0.0.8
+10 Oct 04 - Lee
+	* Version 0.0.9 released.
+	* Minisec capable.
+	* Merge fleet and colonise working.  Combat working.
+	* Fixed bugs in recontainerisation and movement.
+	* Fixed order of padding and extra data in object frames.
+	* Next version will be minisec release 0.1.0, only little fixes, no
+	  big changes.
 
-08 Aug 04 Lee Begg
- - Released 0.0.7
+01 Oct 04 - Lee
+	* Version 0.0.8 released.
+	* More refactoring.  New ObjectDataManager and OrderManager classes
+	* Split fleet, merge fleet and colonise orders started (only split
+	* fleet is working currently).
+	* Also added man page. Removed compiler warnings too.
+	* Changed name! tpserv -> tpserver-cpp
 
-01 Aug 04 Lee Begg
- - Released 0.0.6 (Milestone Foxtrot)
 
-29 Jul 04 Lee Begg
- - Released 0.0.6rc1 (Milestone Foxtrot)
+08 Aug 04 - Lee
+	* Version 0.0.7 released.
+	* Fixed up lots of things for Debian (auto* stuff, etc)
+	* Added support of Message boards.
+	* Second lot of refactoring.
 
-27 Jun 04 Lee Begg
- - Released 0.0.5 (Milestone Echo)
+01 Aug 04 - Lee
+	* Version 0.0.6 released.
+	* Build order support corrected.  Parsecstone Foxtrot.
+	* Some of the refactoring I am doing for uni project is in this 
+	  release.
 
-02 May 04 Lee Begg
- - Released 0.0.5rc1 (Milestone Echo)
+29 Jul 04 - Lee
+	* Version 0.0.6rc1 released.
+	* Build order support, not tested.
+	* Some initial work towards MiniSec.
 
-18 Apr 04 Lee Begg
- - Released 0.0.4 (Milestone Delta)
+27 May 04 - Lee
+	* Version 0.0.5 released.
+	* Fixed recontainisation bug.
+	* Other fixes for py-clients.
 
-17 Jan 04 Lee Begg
- - Released 0.0.4rc2 (Milestone Delta)
+02 May 04 - Lee
+	* Version 0.0.5rc1 released.
+	* Server can:
+	*  - do End Of Turn every 10 minutes
+	*  - delete orders when they are done
+	*  - process orders as needed
+	* TP01 support has been removed.  TP02 support is complete up to 
+	  echo level.
 
-07 May 03 Lee Begg
- - Released 0.0.4rc1 (Milestone Delta)
+18 Apr 04 - Lee
+	* Version 0.0.4 released.
+	* Fixed TP02 support, ParsecStone Delta supported.
+	* Includes IPv6 support.
 
-18 Apr 03 Lee Begg
- - Relased 0.0.3 (Milestone Charlie) 
+17 Jan 04 - Lee
+	* Version 0.0.4rc2 released.
+	* No feature changes to the server, but have changed to using TP02
+	* protocol with full backward compatiblity with TP01
 
-02 Mar 03 Lee Begg
- - Released 0.0.2 (Milestone Bravo)
+07 Jun 03 - Lee
+	* Version 0.0.4rc1 released.
+	* Server can:
+	*  - remember orders correctly
+	*  - create Move and Nop orders
+	*  - create Planet and Fleet Objects
+	*  - return outcomes when requested
+	* The server also creates a Star system, Planet and a Fleet object 
+	  for each new player.  The fleet can be given orders by the 
+	  player.
 
-01 Feb 03  Lee Begg
- - Released 0.0.1 (Milestone Alpha)
+18 May 03 - Lee
+	* Version 0.0.3 released.
+	* Server can:
+	*  - send orders requested by clients
+	*  - send order descriptions requested by clients
+	*  - console can set what players can set what order on what object. 
+	     Press "o" then enter, then the player id, the object id and the 
+	     order type number, then enter
+	*  - objects can be given orders and have them removed.
+	*  - objects define on a pre player basis which order they will take
 
-Jan 03  Lee Begg
- - Initial coding
- - much of the primary server functions started
- - network, connection, frame, console and logger started
- - settings and game planning in progress
+02 Mar 03 - Lee
+	* Version 0.0.2 released.
+	* Server can:
+	*  - send objects requested by clients
+	*  - create the tutorial universe with one galaxy with 3 star systems
+	*  - load universe from file, press l then enter on the console then 
+	     input the file name
+
+01 Feb 03 - Lee
+	* Version 0.0.1 released.
+	* Server can:
+	*  - accept connections and allow anyone to login
+	*  - start and stop network from console, without stopping the server
+	* This release of the server is at Milestone Alpha.
