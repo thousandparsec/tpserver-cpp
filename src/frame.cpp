@@ -2,6 +2,10 @@
 #include <netinet/in.h>
 #include <string>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "logging.h"
 
 #include "frame.h"
@@ -12,7 +16,11 @@
 #endif
 
 #ifndef htonq
+#ifndef WORDS_BIGENDIAN
 # define htonq(i)	( ((long long)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
+#else
+#define htonq(i)        i
+#endif 
 # define ntohq		htonq
 #endif
 
