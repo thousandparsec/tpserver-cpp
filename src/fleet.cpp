@@ -42,6 +42,39 @@ long long Fleet::maxSpeed(){
   }
 }
 
+int Fleet::firepower(bool draw){
+  int fp = 0;
+  if(draw){
+    fp += ships[2];
+  }else{
+    fp += ships[2] * 3;
+    fp += ships[1] * 2;
+  }
+  return fp;
+}
+
+bool Fleet::hit(int firepower){
+  damage += firepower;
+  bool change = true;
+  while(change){
+    change = false;
+    if(ships[2] > 0 && damage >= 6){
+      ships[2]--;
+      damage -= 6;
+      change = true;
+    }else if(ships[1] > 0 && damage >= 4){
+      ships[1]--;
+      damage -= 4;
+      change = true;
+    }else if(ships[0] > 0 && damage > 2){
+      ships[0]--;
+      damage -= 2;
+      change = true;
+    }
+  }
+  return (ships[2] == 0 && ships[1] == 0 && ships[0] == 0);
+}
+
 void Fleet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);

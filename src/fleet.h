@@ -15,6 +15,8 @@ class Fleet:public OwnedObject {
 	int numShips(int type);
 
 	long long maxSpeed();
+	int firepower(bool draw);
+	bool hit(int firepower);
 
 	void packExtraData(Frame * frame);
 
