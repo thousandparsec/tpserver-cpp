@@ -8,6 +8,7 @@ class Game{
 
   void createRandomUniverse();
   void createRealUniverse();
+  void createTutorial();
   //void loadGame(char* file);
   //void setSaveFile(char *file);
   void save();

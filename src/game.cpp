@@ -21,6 +21,10 @@ void Game::createRealUniverse(){
   Logger::getLogger()->info("Creating real universe"); 
 }
 
+void Game::createTutorial(){
+  Logger::getLogger()->info("Creating tutorial"); 
+}
+
 void Game::save(){
   Logger::getLogger()->info("Game saved"); 
 }
