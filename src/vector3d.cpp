@@ -63,7 +63,7 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
 
 Vector3d Vector3d::makeLength(long long length) const{
   Vector3d rtn;
-  long long len = (unsigned long long)(x * x) + (unsigned long long)(y * y) + (unsigned long long)(z * z);
+  long long len = sqrt((unsigned long long)(x * x) + (unsigned long long)(y * y) + (unsigned long long)(z * z));
   rtn.x = x * length / len;
   rtn.y = y * length / len;
   rtn.z = z * length / len;
