@@ -488,6 +488,7 @@ void Player::processPostMessage(Frame * frame){
 
   if(currboard != NULL){
     Message* msg = new Message();
+    frame->unpackInt(); //list header, is hopefully 1
     msg->setType(frame->unpackInt());
     msg->setSubject(std::string(frame->unpackString()));
     msg->setBody(std::string(frame->unpackString()));
