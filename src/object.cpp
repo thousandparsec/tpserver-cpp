@@ -337,45 +337,53 @@ std::set < OrderType > IGObject::getActions(int currpid, int newpid)
 void IGObject::createFrame(Frame * frame, int playerid)
 {
   if(frame->getVersion() == fv0_1)
-	frame->setType(ft_Object);
+    frame->setType(ft_Object);
   else
     frame->setType(ft02_Object);
-	frame->packInt(id);
-	frame->packInt(type);
-	frame->packString(name);
-	frame->packInt64(size);
-	frame->packInt64(posx);
-	frame->packInt64(posy);
-	frame->packInt64(posz);
-	frame->packInt64(velx);
-	frame->packInt64(vely);
-	frame->packInt64(velz);
-	frame->packInt64(accx);
-	frame->packInt64(accy);
-	frame->packInt64(accz);
-	frame->packInt(children.size());
-	//frame->packInt(0); //HACK hack
-	//for loop for children objects
-	std::set < unsigned int >::iterator itcurr, itend;
-	itend = children.end();
-	for (itcurr = children.begin(); itcurr != itend; itcurr++) {
-		frame->packInt(*itcurr);
-	}
-	std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
-	if (ord != actions.end()) {
-		frame->packInt(((*ord).second).size());
-		std::set < OrderType >::iterator itacurr, itaend;
-		itaend = ((*ord).second).end();
-		for (itacurr = ((*ord).second).begin(); itacurr != itaend; itacurr++) {
-			frame->packInt(*itacurr);
-		}
-	} else {
-		frame->packInt(0);
-	}
-	frame->packInt(orders.size());
-	if(myObjectData != NULL){
-	  myObjectData->packExtraData(frame);
-	}
+  frame->packInt(id);
+  frame->packInt(type);
+  frame->packString(name);
+  frame->packInt64(size);
+  frame->packInt64(posx);
+  frame->packInt64(posy);
+  frame->packInt64(posz);
+  frame->packInt64(velx);
+  frame->packInt64(vely);
+  frame->packInt64(velz);
+  if(frame->getVersion() == fv0_1){
+    frame->packInt64(accx);
+    frame->packInt64(accy);
+    frame->packInt64(accz);
+  }
+  frame->packInt(children.size());
+  //frame->packInt(0); //HACK hack
+  //for loop for children objects
+  std::set < unsigned int >::iterator itcurr, itend;
+  itend = children.end();
+  for (itcurr = children.begin(); itcurr != itend; itcurr++) {
+    frame->packInt(*itcurr);
+  }
+  std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
+  if (ord != actions.end()) {
+    frame->packInt(((*ord).second).size());
+    std::set < OrderType >::iterator itacurr, itaend;
+    itaend = ((*ord).second).end();
+    for (itacurr = ((*ord).second).begin(); itacurr != itaend; itacurr++) {
+      frame->packInt(*itacurr);
+    }
+  } else {
+    frame->packInt(0);
+  }
+  frame->packInt(orders.size());
+  if(myObjectData != NULL){
+    myObjectData->packExtraData(frame);
+  }
+  if(frame->getVersion() > fv0_1){
+    frame->packInt(0);
+    frame->packInt(0);
+    frame->packInt(0);
+    frame->packInt(0);
+  }
 }
 
 ObjectData* IGObject::getObjectData(){
