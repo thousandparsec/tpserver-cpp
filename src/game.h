@@ -23,6 +23,8 @@ class Game {
 
 	IGObject *getObject(unsigned int id);
 
+	std::list <unsigned int> getObjectsByPos(long long x, long long y, long long z, unsigned long long r);
+
 	void doEndOfTurn();
 
 	void saveAndClose();

@@ -237,6 +237,26 @@ IGObject *Game::getObject(unsigned int id)
 	//may need more work
 }
 
+std::list <unsigned int> Game::getObjectsByPos(long long x, long long y, long long z, unsigned long long r)
+{
+  std::list <unsigned int> oblist;
+
+  std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin();
+
+  for( ; itcurr != objects.end(); ++itcurr) {
+    long long dx = itcurr->second->getPositionX() - x;
+    long long dy = itcurr->second->getPositionY() - y;
+    long long dz = itcurr->second->getPositionZ() - z;
+    unsigned long long br = itcurr->second->getSize() / 2;
+    long long diff = (unsigned long long)(dx * dx) + (unsigned long long)(dy * dy) + (unsigned long long)(dz * dz) - r * r - br * br;
+    if(diff <= 0)
+      oblist.push_back(itcurr->first);
+
+  }
+  
+  return oblist;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");

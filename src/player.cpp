@@ -120,6 +120,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Object_Get:
 		processGetObject(frame);
 		break;
+	case ft02_Object_GetByPos:
+	  processGetObjectByPos(frame);
+	  break;
 	case ft02_Order_Get:
 		processGetOrder(frame);
 		break;
@@ -146,12 +149,47 @@ void Player::processIGFrame(Frame * frame)
 void Player::processGetObject(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get object frame");
+	Frame *obframe = curConnection->createFrame(frame);
 	if (frame->getLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
-		Frame *obframe = curConnection->createFrame(frame);
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
-		curConnection->sendFrame(obframe);
+	} else {
+	  obframe->createFailFrame(4, "Invalid frame");
 	}
+	curConnection->sendFrame(obframe);
+}
+
+
+void Player::processGetObjectByPos(Frame * frame)
+{
+  Logger::getLogger()->debug("doing get object by pos frame");
+  Frame *of = curConnection->createFrame(frame);
+  if (frame->getLength() >= 36) {
+    long long x, y, z;
+    unsigned long long r;
+
+    x = frame->unpackInt64();
+    y = frame->unpackInt64();
+    z = frame->unpackInt64();
+    r = frame->unpackInt64();
+
+    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(x, y, z, r);
+
+    of->setType(ft02_Object_ListSeqHeader);
+    of->packInt(oblist.size());
+    curConnection->sendFrame(of);
+
+    std::list<unsigned int>::iterator obCurr = oblist.begin();
+    for( ; obCurr != oblist.end(); ++obCurr) {
+      of = curConnection->createFrame(frame);
+      Game::getGame()->getObject(*obCurr)->createFrame(of, pid);
+      curConnection->sendFrame(of);
+    }
+
+  } else {
+    of->createFailFrame(4, "Invalid frame");
+    curConnection->sendFrame(of);
+  }
 }
 
 void Player::processGetOrder(Frame * frame)
@@ -172,6 +210,7 @@ void Player::processGetOrder(Frame * frame)
 	}
 	curConnection->sendFrame(of);
 }
+
 
 void Player::processAddOrder(Frame * frame)
 {
