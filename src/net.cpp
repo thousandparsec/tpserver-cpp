@@ -40,7 +40,7 @@ Network *Network::getNetwork()
 
 void Network::addFD(int fd)
 {
-	Logger::getLogger()->debug("Adding a file descriptor");
+  Logger::getLogger()->debug("Adding a file descriptor %d", fd);
 	FD_SET(fd, &master_set);
 	if (max_fd < fd) {
 		max_fd = fd;
@@ -49,7 +49,7 @@ void Network::addFD(int fd)
 
 void Network::removeFD(int fd)
 {
-	Logger::getLogger()->debug("Removing a file descriptor");
+  Logger::getLogger()->debug("Removing a file descriptor %d", fd);
 	FD_CLR(fd, &master_set);
 	if (max_fd == fd) {
 		Logger::getLogger()->debug("Changing max_fd");
@@ -196,8 +196,34 @@ void Network::masterLoop()
 
 			if (FD_ISSET(serverFD, &cur_set)) {
 				Logger::getLogger()->info("Accepting new connection");
+
+#ifdef HAVE_IPV6
+				struct sockaddr_storage clientaddr;
+				socklen_t addrlen = sizeof(clientaddr);
+				Connection *temp = new Connection(accept(serverFD, 
+									 (struct sockaddr *)&clientaddr, 
+									 &addrlen));
+				connections[temp->getFD()] = temp;
+				char clienthost[NI_MAXHOST];
+				char clientname[NI_MAXHOST];
+				getnameinfo((struct sockaddr *)&clientaddr, addrlen,
+					    clienthost, sizeof(clienthost),
+					    NULL, 0,
+					    NI_NUMERICHOST);
+				getnameinfo((struct sockaddr *)&clientaddr, addrlen,
+					    clientname, sizeof(clientname),
+					    NULL, 0,
+					    0);
+
+				Logger::getLogger()->info("Connection accepted from %s [%s], connection id %d", 
+							  clientname, clienthost, temp->getFD());
+
+#else
+
 				Connection *temp = new Connection(accept(serverFD, NULL, 0));
 				connections[temp->getFD()] = temp;
+
+#endif
 			}
 
 			std::map < int, Connection * >::iterator itcurr;
@@ -206,6 +232,7 @@ void Network::masterLoop()
 					(*itcurr).second->process();
 				}
 				if ((*itcurr).second->getStatus() == 0) {
+				  Logger::getLogger()->info("Closed connection %d", (*itcurr).second->getFD());
 					delete(*itcurr).second;
 					std::map < int, Connection * >::iterator temp;
 					temp = itcurr;

@@ -8,6 +8,8 @@ class Settings {
       public:
 	static Settings *getSettings();
 
+	bool readArgs(int argc, char** argv);
+
 	/*
 	   void set(int item, int value);
 	   void set(int item, std::string value);
@@ -24,6 +26,8 @@ class Settings {
 	~Settings();
 	 Settings(Settings & rhs);
 	Settings operator=(Settings & rhs);
+
+	void setDefaultValues();
 
 	// settings storage
 

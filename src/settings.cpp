@@ -8,8 +8,14 @@ Settings *Settings::getSettings()
 {
 	if (myInstance == NULL) {
 		myInstance = new Settings();
+		myInstance->setDefaultValues();
 	}
 	return myInstance;
+}
+
+bool Settings::readArgs(int arg, char** argv){
+
+  return true;
 }
 
 /*
@@ -54,4 +60,8 @@ Settings::Settings(Settings & rhs)
 
 Settings Settings::operator=(Settings & rhs)
 {
+}
+
+void Settings::setDefaultValues(){
+
 }

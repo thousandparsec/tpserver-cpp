@@ -9,7 +9,7 @@
 void parseOptions(int argc, char **argv)
 {
 	Settings *mySettings = Settings::getSettings();
-
+	mySettings->readArgs(argc, argv);
 }
 
 
