@@ -36,6 +36,11 @@ Player* Game::findPlayer(char* name, char* pass){
   //look for current/known players
   Player* rtn = NULL;
 
+  // hack HACK!!
+  if(strcmp("guest", name) == 0 && strcmp("guest", pass) == 0)
+    return rtn;
+  // end of hack HACK!!
+
   std::list<Player*>::iterator itcurr, itend;
 
   itend = players.end();
