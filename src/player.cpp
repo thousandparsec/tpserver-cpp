@@ -85,8 +85,10 @@ void Player::processIGFrame(Frame* frame){
 
 void Player::processGetObject(Frame* frame){
   Logger::getLogger()->debug("doing get frame");
-  unsigned int objectID = frame->unpackInt();
-  Frame* obframe = new Frame();
-  Game::getGame()->getObject(objectID)->createFrame(obframe);
-  curConnection->sendFrame(obframe);
+  if(frame->getLength() >= 4){
+    unsigned int objectID = frame->unpackInt();
+    Frame* obframe = new Frame();
+    Game::getGame()->getObject(objectID)->createFrame(obframe);
+    curConnection->sendFrame(obframe);
+  }
 }
