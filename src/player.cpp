@@ -341,10 +341,21 @@ void Player::processRemoveOrder(Frame * frame)
 void Player::processDescribeOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing describe order frame");
-	Frame *of = curConnection->createFrame(frame);
-	int ordertype = frame->unpackInt();
-	Order::describeOrder(ordertype, of);
-	curConnection->sendFrame(of);
+
+	int numdesc = frame->unpackInt();
+	if(numdesc > 1){
+	  Frame *seq = curConnection->createFrame(frame);
+	  seq->setType(ft02_Sequence);
+	  seq->packInt(numdesc);
+	  curConnection->sendFrame(seq);
+	}
+	
+	for(int i = 0; i < numdesc; i++){
+	  Frame *of = curConnection->createFrame(frame);
+	  int ordertype = frame->unpackInt();
+	  Order::describeOrder(ordertype, of);
+	  curConnection->sendFrame(of);
+	}
 }
 
 void Player::processGetTime(Frame * frame){
