@@ -61,8 +61,10 @@ bool Move::inputFrame(Frame * f)
 }
 
 bool Move::doOrder(IGObject * ob){
-  long long distance = dest.getDistance(ob->getPosition());
-  long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  unsigned long long distance = dest.getDistance(ob->getPosition());
+  unsigned long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+
+  Logger::getLogger()->debug("Moving %lld at %lld speed", distance, max_speed);
 
   if(distance < max_speed){
   
@@ -72,6 +74,8 @@ bool Move::doOrder(IGObject * ob){
   }else{
     
     Vector3d velo = (dest - ob->getPosition()).makeLength(max_speed);
+
+    Logger::getLogger()->debug("velo [%lld, %lld, %lld]", velo.getX(), velo.getY(), velo.getZ());
 
     ob->setFuturePosition(ob->getPosition() + velo);
 

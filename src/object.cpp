@@ -174,10 +174,13 @@ void IGObject::updatePosition(){
     for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
       Logger::getLogger()->debug("Container object %d", *itcurr);
       //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-      if(*itcurr != id && Game::getGame()->getObject(*itcurr)->size > size){
+      if(*itcurr != id && Game::getGame()->getObject(*itcurr)->size >= size){
 	Game::getGame()->getObject(*itcurr)->addContainedObject(id);
 	break;
       }
+    }
+    if(parentid == 0){
+      Game::getGame()->getObject(0)->addContainedObject(id);
     }
   }
   pos = futurepos;
