@@ -11,6 +11,7 @@
 #include "frame.h"
 #include "net.h"
 #include "vector3d.h"
+#include "ordermanager.h"
 
 #include "game.h"
 
@@ -237,6 +238,10 @@ std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
   return oblist;
 }
 
+OrderManager* Game::getOrderManager() const{
+  return ordermanager;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
@@ -291,7 +296,7 @@ void Game::saveAndClose()
 
 Game::Game()
 {
-
+  ordermanager = new OrderManager();
 }
 
 Game::Game(Game & rhs)
@@ -301,7 +306,7 @@ Game::Game(Game & rhs)
 
 Game::~Game()
 {
-
+  delete ordermanager;
 }
 
 Game Game::operator=(Game & rhs)

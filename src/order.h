@@ -1,6 +1,7 @@
 #ifndef ORDER_H
 #define ORDER_H
 
+// inbuilt orders only
 typedef enum {
 	odT_Invalid = -1,
 	odT_Nop = 0,
@@ -33,18 +34,19 @@ class Order {
 
       public:
 
-	OrderType getType();
+	int getType() const;
+	void setType(int ntype);
 
 	virtual void createFrame(Frame * f, int objID, int pos);
 	virtual bool inputFrame(Frame * f);
 
 	virtual bool doOrder(IGObject * ob) = 0;
 
-	static void describeOrder(int ordertype, Frame * f);
-	static Order *createOrder(OrderType ordertype);
+	virtual void describeOrder(Frame * f) const;
+	virtual Order *clone() const = 0;
 
       protected:
-	 OrderType type;
+	 int type;
 
 
 };

@@ -7,6 +7,7 @@
 class Player;
 class IGObject;
 class Vector3d;
+class OrderManager;
 
 class Game {
 
@@ -27,6 +28,8 @@ class Game {
 
 	std::list<unsigned int> getObjectsByPos(const Vector3d & pos, unsigned long long r);
 	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
+
+	OrderManager* getOrderManager() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -51,6 +54,8 @@ class Game {
 	
 	std::map<unsigned int, IGObject *> objects;
 	IGObject *universe;
+
+	OrderManager * ordermanager;
 
 };
 

@@ -49,15 +49,18 @@ bool Nop::doOrder(IGObject * ob){
   return waitTime <= 0;
 }
 
-void Nop::describeOrder(int orderType, Frame * f)
+void Nop::describeOrder(Frame * f) const
 {
-	if (orderType == odT_Nop) {
-		f->packInt(odT_Nop);
-		f->packString("No Operation");
-		f->packString("Object does nothing for a given number of turns");
-		f->packInt(1);
-		f->packString("wait");
-		f->packInt(opT_Time);
-		f->packString("The number of turns to wait");
-	}
+  Order::describeOrder(f);
+  f->packString("No Operation");
+  f->packString("Object does nothing for a given number of turns");
+  f->packInt(1);
+  f->packString("wait");
+  f->packInt(opT_Time);
+  f->packString("The number of turns to wait");
+
+}
+
+Order* Nop::clone() const{
+  return new Nop();
 }

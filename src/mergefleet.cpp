@@ -41,9 +41,9 @@ bool MergeFleet::inputFrame(Frame * f){
 
 bool MergeFleet::doOrder(IGObject * ob){
   
-  Fleet myfleet = (Fleet*)(ob->getObjectData());
+  Fleet *myfleet = (Fleet*)(ob->getObjectData());
   if(fleetid != 0){
-    Fleet tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
+    Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
 
     if(tfleet->getOwner() == myfleet->getOwner()){
       tfleet->addShips(0, myfleet->numShips(0));
@@ -58,14 +58,17 @@ bool MergeFleet::doOrder(IGObject * ob){
   return true;
 }
 
-void MergeFleet::describeOrder(int orderType, Frame * f){
-  if (orderType == odT_Fleet_Merge) {
-    f->packInt(odT_Fleet_Merge);
-    f->packString("MergeFleet");
-    f->packString("Merge this fleet into another one");
-    f->packInt(1);
-    f->packString("fleet");
-    f->packInt(opT_Object_ID);
-    f->packString("The fleet to be merged into");
-  }
+void MergeFleet::describeOrder(Frame * f) const{
+  Order::describeOrder(f);
+  f->packString("MergeFleet");
+  f->packString("Merge this fleet into another one");
+  f->packInt(1);
+  f->packString("fleet");
+  f->packInt(opT_Object_ID);
+  f->packString("The fleet to be merged into");
+
+}
+
+Order* MergeFleet::clone() const{
+  return new MergeFleet();
 }

@@ -69,15 +69,18 @@ bool Move::doOrder(IGObject * ob){
   return true;
 }
 
-void Move::describeOrder(int orderType, Frame * f)
+void Move::describeOrder(Frame * f) const
 {
-	if (orderType == odT_Move) {
-		f->packInt(odT_Move);
-		f->packString("Move");
-		f->packString("Move to a given position absolute in space");
-		f->packInt(1);
-		f->packString("pos");
-		f->packInt(opT_Space_Coord_Abs);
-		f->packString("The position in space to move to");
-	}
+  Order::describeOrder(f);
+  f->packString("Move");
+  f->packString("Move to a given position absolute in space");
+  f->packInt(1);
+  f->packString("pos");
+  f->packInt(opT_Space_Coord_Abs);
+  f->packString("The position in space to move to");
+
+}
+
+Order* Move::clone() const{
+  return new Move();
 }

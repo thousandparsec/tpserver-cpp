@@ -4,10 +4,10 @@
 #include "order.h"
 #include "vector3d.h"
 
-class Move:public Order {
+class Move : public Order{
       public:
 	Move();
-	virtual ~ Move();
+	virtual ~Move();
 
 	Vector3d getDest() const;
 	void setDest(const Vector3d & ndest);
@@ -17,7 +17,8 @@ class Move:public Order {
 
 	bool doOrder(IGObject * ob);
 
-	static void describeOrder(int orderType, Frame * f);
+	void describeOrder(Frame * f) const;
+	Order* clone() const;
 
       private:
 	Vector3d dest;

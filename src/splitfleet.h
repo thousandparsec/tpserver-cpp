@@ -14,7 +14,8 @@ class SplitFleet : public Order{
   
   bool doOrder(IGObject * ob);
   
-  static void describeOrder(int orderType, Frame * f);
+  void describeOrder(Frame * f) const;
+  Order* clone() const;
   
  private:
   std::map<int, int> ships;

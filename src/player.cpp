@@ -9,6 +9,7 @@
 #include "vector3d.h"
 #include "board.h"
 #include "message.h"
+#include "ordermanager.h"
 
 #include "player.h"
 
@@ -304,7 +305,7 @@ void Player::processAddOrder(Frame * frame)
 			int pos = frame->unpackInt();
 
 			// See if we have a valid order
-			Order *ord = Order::createOrder((OrderType) frame->unpackInt());
+			Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
 			if (ord == NULL) {
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
@@ -384,7 +385,7 @@ void Player::processDescribeOrder(Frame * frame)
 	for(int i = 0; i < numdesc; i++){
 	  Frame *of = curConnection->createFrame(frame);
 	  int ordertype = frame->unpackInt();
-	  Order::describeOrder(ordertype, of);
+	  Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
 	  curConnection->sendFrame(of);
 	}
 }

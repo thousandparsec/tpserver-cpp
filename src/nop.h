@@ -7,7 +7,7 @@
 class Nop:public Order {
       public:
 	Nop();
-	virtual ~ Nop();
+	virtual ~Nop();
 
 	int getTime();
 	void setTime(int time);
@@ -17,7 +17,8 @@ class Nop:public Order {
 
 	bool doOrder(IGObject * ob);
 
-	static void describeOrder(int orderType, Frame * f);
+	void describeOrder(Frame * f) const;
+	Order* clone() const;
 
       private:
 	int waitTime;

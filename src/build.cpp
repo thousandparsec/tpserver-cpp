@@ -113,15 +113,19 @@ bool Build::doOrder(IGObject *ob)
   return false;
 }
 
-void Build::describeOrder(int orderType, Frame *f)
+void Build::describeOrder(Frame *f) const
 {
-  if(orderType == odT_Build){
-    f->packInt(odT_Build);
-    f->packString("BuildFleet");
-    f->packString("Build something");
-    f->packInt(1); // num params
-    f->packString("ships");
-    f->packInt(6);
-    f->packString("The type of ship to build");
-  }
+  Order::describeOrder(f);
+  f->packString("BuildFleet");
+  f->packString("Build something");
+  f->packInt(1); // num params
+  f->packString("ships");
+  f->packInt(6);
+  f->packString("The type of ship to build");
+
+}
+
+Order* Build::clone() const{
+  return new Build();
+  // should probably copy the type field of Order
 }

@@ -47,14 +47,17 @@ bool Colonise::doOrder(IGObject * ob){
 }
 
 
-void Colonise::describeOrder(int orderType, Frame * f){
-  if (orderType == odT_Colonise) {
-    f->packInt(odT_Colonise);
-    f->packString("Colonise");
-    f->packString("Attempt to colonise a planet");
-    f->packInt(1);
-    f->packString("planet");
-    f->packInt(opT_Object_ID);
-    f->packString("The target planet to be colonised");
-  }
+void Colonise::describeOrder(Frame * f) const{
+  Order::describeOrder(f);
+  f->packString("Colonise");
+  f->packString("Attempt to colonise a planet");
+  f->packInt(1);
+  f->packString("planet");
+  f->packInt(opT_Object_ID);
+  f->packString("The target planet to be colonised");
+  
+}
+
+Order* Colonise::clone() const{
+  return new Colonise();
 }

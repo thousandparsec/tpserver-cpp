@@ -105,14 +105,17 @@ bool SplitFleet::doOrder(IGObject * ob){
   return true;
 }
 
-void SplitFleet::describeOrder(int orderType, Frame * f){
-  if (orderType == odT_Fleet_Split) {
-    f->packInt(odT_Fleet_Split);
-    f->packString("SplitFleet");
-    f->packString("Split the fleet into two");
-    f->packInt(1);
-    f->packString("ships");
-    f->packInt(opT_List);
-    f->packString("The ships to be transferred");
-  }
+void SplitFleet::describeOrder(Frame * f) const{
+  Order::describeOrder(f);
+  f->packString("SplitFleet");
+  f->packString("Split the fleet into two");
+  f->packInt(1);
+  f->packString("ships");
+  f->packInt(opT_List);
+  f->packString("The ships to be transferred");
+
+}
+
+Order* SplitFleet::clone() const{
+  return new SplitFleet();
 }
