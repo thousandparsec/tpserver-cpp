@@ -1,6 +1,10 @@
 
 #include "frame.h"
 #include "order.h"
+#include "game.h"
+#include "planet.h"
+#include "object.h"
+#include "objectdatamanager.h"
 
 #include "fleet.h"
 
@@ -56,7 +60,10 @@ void Fleet::packExtraData(Frame * frame)
 
 void Fleet::doOnceATurn(IGObject * obj)
 {
-
+  IGObject * pob = Game::getGame()->getObject(obj->getParent());
+  if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
+    damage = 0;
+  }
 }
 
 void Fleet::packAllowedOrders(Frame * frame, int playerid){
