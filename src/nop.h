@@ -7,7 +7,7 @@
 class Nop:public Order {
       public:
 	Nop();
-	~Nop();
+	virtual ~ Nop();
 
 	int getTime();
 	void setTime(int time);

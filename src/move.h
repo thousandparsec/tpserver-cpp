@@ -6,7 +6,7 @@
 class Move:public Order {
       public:
 	Move();
-	~Move();
+	virtual ~ Move();
 
 	long long getX();
 	long long getY();

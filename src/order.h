@@ -27,7 +27,7 @@ class Order {
 
 	OrderType getType();
 
-	void createFrame(Frame * f, int objID, int pos);
+	virtual void createFrame(Frame * f, int objID, int pos);
 	void inputFrame(Frame * f);
 
 	void createOutcome(Frame * f, int objID, int pos);
