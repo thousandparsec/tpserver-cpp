@@ -1,6 +1,6 @@
 /*  Frame class, the network packets for the TP procotol
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,15 +44,15 @@
 # define ntohq		htonq
 #endif
 
-// Default to creating version 2 frames
+// Default to creating version 3 frames
 Frame::Frame()
 {
-	Frame::Frame(fv0_2);
+	Frame::Frame(fv0_3);
 }
 
 Frame::Frame(FrameVersion v)
 {
-  type = ft02_Invalid;
+  type = ft_Invalid;
   
   length = 0;
   data = NULL;
@@ -72,7 +72,7 @@ Frame::Frame(const Frame &rhs)
 		memcpy(data, rhs.data, length);
 	} else {
 	  
-	       type = ft02_Invalid;
+	       type = ft_Invalid;
 		length = 0;
 	}
 	unpackptr = 0;
@@ -95,7 +95,7 @@ Frame Frame::operator=(const Frame & rhs)
 		memcpy(data, rhs.data, length);
 	} else {
 
-	       type = ft02_Invalid;
+	       type = ft_Invalid;
 		length = 0;
 	}
 	unpackptr = 0;
@@ -232,8 +232,8 @@ int Frame::setHeader(char *newhead)
 	}
 
 
-	if (type <= ft02_Invalid || type >= ft02_Max) {
-	  type = ft02_Invalid;
+	if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max)) {
+	  type = ft_Invalid;
 	  len = -1;
 		
 	}
@@ -244,7 +244,7 @@ int Frame::setHeader(char *newhead)
 bool Frame::setType(FrameType nt)
 {
 
-  if (nt < ft02_Invalid || nt > ft02_Max)
+  if (nt < ft_Invalid || (version == fv0_2 && nt > ft02_Max) || (version == fv0_3 && nt > ft03_Max))
     return false;
 	
 	type = nt;
