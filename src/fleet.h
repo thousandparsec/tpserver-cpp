@@ -8,6 +8,7 @@
 class Fleet:public OwnedObject {
       public:
 	Fleet();
+	virtual ~Fleet();
 
 	void addShips(int type, int number);
 	bool removeShips(int type, int number);

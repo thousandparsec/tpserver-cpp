@@ -8,6 +8,9 @@ Fleet::Fleet():OwnedObject()
   damage = 0;
 }
 
+Fleet::~Fleet(){
+}
+
 void Fleet::addShips(int type, int number){
   ships[type] += number;
 }
