@@ -9,18 +9,22 @@
 #include "fleet.h"
 #include "ownedobject.h"
 #include "player.h"
+#include "move.h"
 
 #include "colonise.h"
 
 Colonise::Colonise(){
   type = odT_Colonise;
+  moveorder = new Move();
 }
 
-Colonise::~Colonise(){}
+Colonise::~Colonise(){
+  delete moveorder;
+}
 
 void Colonise::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
-  f->packInt(1); // number of turns
+  f->packInt(moveorder->getETA(Game::getGame()->getObject(objID))); // number of turns
   f->packInt(0); // size of resource list
   f->packInt(planetid);
   
@@ -38,6 +42,7 @@ bool Colonise::inputFrame(Frame * f){
     Logger::getLogger()->debug("Player trying to colonise something that is not a planet");
     return false;
   }
+  moveorder->setDest(target->getPosition());
   
   return true;
 }
@@ -45,31 +50,36 @@ bool Colonise::inputFrame(Frame * f){
 bool Colonise::doOrder(IGObject * ob){
   //if not close, move
 
-  Message * msg = new Message();
+  if(moveorder->doOrder(ob)){
 
-  Fleet *fleet = (Fleet*)ob->getObjectData();
-  if(fleet->numShips(1) >= 1){
-
-    ((OwnedObject*)(Game::getGame()->getObject(planetid)->getObjectData()))->setOwner(fleet->getOwner());
+    Message * msg = new Message();
     
-    fleet->removeShips(1, 1);
-    if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
-      Game::getGame()->scheduleRemoveObject(ob->getID());
+    Fleet *fleet = (Fleet*)ob->getObjectData();
+    if(fleet->numShips(1) >= 1){
+      
+      ((OwnedObject*)(Game::getGame()->getObject(planetid)->getObjectData()))->setOwner(fleet->getOwner());
+      
+      fleet->removeShips(1, 1);
+      if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
+	Game::getGame()->scheduleRemoveObject(ob->getID());
+      }
+      
+      msg->setSubject("Colonised planet");
+      msg->setBody("You have colonised a planet!");
+      msg->setType(0);
+      
+    }else{
+      msg->setSubject("Colonisation failed");
+      msg->setBody("Your fleet did not have a frigate to colonise the planet");
+      msg->setType(0);
     }
     
-    msg->setSubject("Colonised planet");
-    msg->setBody("You have colonised a planet!");
-    msg->setType(0);
+    Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);
 
+    return true;
   }else{
-    msg->setSubject("Colonisation failed");
-    msg->setBody("Your fleet did not have a frigate to colonise the planet");
-    msg->setType(0);
+    return false;
   }
-
-  Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);
-
-  return true;
 }
 
 

@@ -3,6 +3,8 @@
 
 #include "order.h"
 
+class Move;
+
 class Colonise : public Order {
  public:
   Colonise();
@@ -18,6 +20,7 @@ class Colonise : public Order {
 
  private:
   int planetid;
+  Move* moveorder;
 
 
 };
