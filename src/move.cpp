@@ -48,7 +48,7 @@ bool Move::inputFrame(Frame * f)
 }
 
 bool Move::doOrder(IGObject * ob){
-  ob->setVelocity(Vector3d(dest.getX() - ob->getPosition().getX(), dest.getY() - ob->getPosition().getY(), dest.getZ() - ob->getPosition().getZ()));
+  ob->setVelocity(dest - ob->getPosition());
   ob->setPosition(dest);
 
   ob->removeFromParent();

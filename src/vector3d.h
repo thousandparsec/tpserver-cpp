@@ -11,6 +11,8 @@ class Vector3d{
   Vector3d(long long x, long long y, long long z);
 
   Vector3d operator=(const Vector3d & rhs);
+  Vector3d operator+(const Vector3d & rhs) const;
+  Vector3d operator-(const Vector3d & rhs) const;
 
   long long getX() const;
   long long getY() const;

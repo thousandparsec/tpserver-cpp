@@ -29,6 +29,22 @@ Vector3d Vector3d::operator=(const Vector3d & rhs){
   return *this;
 }
 
+Vector3d Vector3d::operator+(const Vector3d & rhs) const{
+  Vector3d rtn;
+  rtn.x = x + rhs.x;
+  rtn.y = y + rhs.y;
+  rtn.z = z + rhs.z;
+  return rtn;
+}
+
+Vector3d Vector3d::operator-(const Vector3d & rhs) const{
+  Vector3d rtn;
+  rtn.x = x - rhs.x;
+  rtn.y = y - rhs.y;
+  rtn.z = z - rhs.z;
+  return rtn;
+}
+
 long long Vector3d::getX() const{
   return x;
 }

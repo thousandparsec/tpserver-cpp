@@ -162,9 +162,9 @@ Player *Game::findPlayer(char *name, char *pass)
 		planet->setType(3);
 		planet->setName("A planet");
 		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
-		planet->setPosition(Vector3d(star->getPosition().getX() + (long long)((rand() % 10000) - 5000),
-					     star->getPosition().getY() + (long long)((rand() % 10000) - 5000),
-					     star->getPosition().getZ() + (long long)((rand() % 10000) - 5000)));
+		planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
+								   (long long)((rand() % 10000) - 5000),
+								   (long long)((rand() % 10000) - 5000)));
 		planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 		planet->addAction(-1, rtn->getID(), odT_Build);
 		
@@ -176,9 +176,9 @@ Player *Game::findPlayer(char *name, char *pass)
 		fleet->setType(4);
 		fleet->setName("A fleet");
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
-		fleet->setPosition(Vector3d(star->getPosition().getX() + (long long)((rand() % 10000) - 5000),
-					    star->getPosition().getY() + (long long)((rand() % 10000) - 5000),
-					    star->getPosition().getZ() + (long long)((rand() % 10000) - 5000)));
+		fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
+								  (long long)((rand() % 10000) - 5000),
+								  (long long)((rand() % 10000) - 5000)));
 		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
 		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 	
