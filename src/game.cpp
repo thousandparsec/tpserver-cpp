@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 
 #include "logging.h"
 #include "player.h"
