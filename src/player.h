@@ -4,6 +4,7 @@
 class Connection;
 class Frame;
 class Board;
+class Message;
 
 class Player {
       public:
@@ -15,7 +16,7 @@ class Player {
 	void setConnection(Connection * newcon);
 	void setID(int newid);
 
-	Board* getBoard();
+	void postToBoard(Message* msg);
 
 	char *getName();
 	char *getPass();

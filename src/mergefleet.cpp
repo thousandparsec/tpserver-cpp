@@ -49,8 +49,8 @@ bool MergeFleet::doOrder(IGObject * ob){
       tfleet->addShips(0, myfleet->numShips(0));
       tfleet->addShips(1, myfleet->numShips(1));
       tfleet->addShips(2, myfleet->numShips(2));
-      //ob->removeFromParent();
-      //Game::getGame()->removeObject(ob);
+      
+      Game::getGame()->scheduleRemoveObject(ob->getID());
       
     }
   }

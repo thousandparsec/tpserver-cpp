@@ -77,8 +77,8 @@ void Player::setID(int newid)
 	pid = newid;
 }
 
-Board* Player::getBoard(){
-  return board;
+void Player::postToBoard(Message* msg){
+  board->addMessage(msg, -1);
 }
 
 char *Player::getName()

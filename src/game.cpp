@@ -120,15 +120,14 @@ Player *Game::findPlayer(char *name, char *pass)
 		return rtn;
 	// end of hack HACK!!
 
-	std::list < Player * >::iterator itcurr, itend;
+	std::map<unsigned int, Player*>::iterator itcurr;
 
-	itend = players.end();
-	for (itcurr = players.begin(); itcurr != itend; itcurr++) {
-		char *itname = (*itcurr)->getName();
+	for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+		char *itname = (*itcurr).second->getName();
 		if (strncmp(name, itname, strlen(name) + 1) == 0) {
-			char *itpass = (*itcurr)->getPass();
+			char *itpass = (*itcurr).second->getPass();
 			if (strncmp(pass, itpass, strlen(pass) + 1) == 0) {
-				rtn = (*itcurr);
+				rtn = (*itcurr).second;
 			}
 			delete itpass;
 		}
@@ -143,7 +142,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		rtn = new Player();
 		rtn->setName(name);
 		rtn->setPass(pass);
-		players.push_back(rtn);
+		players[rtn->getID()] = (rtn);
 
 		// HACK
 		// adds a star system, planet and fleet, owned by the player
@@ -189,6 +188,15 @@ Player *Game::findPlayer(char *name, char *pass)
 	return rtn;
 }
 
+Player* Game::getPlayer(unsigned int id){
+  Player* rtn = NULL;
+  std::map<unsigned int, Player*>::iterator pl = players.find(id);
+  if(pl != players.end()){
+    rtn = (*pl).second;
+  }
+  return rtn;
+}
+
 IGObject *Game::getObject(unsigned int id)
 {
 	if (id == 0) {
@@ -206,6 +214,10 @@ IGObject *Game::getObject(unsigned int id)
 void Game::addObject(IGObject* obj)
 {
   objects[obj->getID()] = obj;
+}
+
+void Game::scheduleRemoveObject(unsigned int id){
+  scheduleRemove.insert(id);
 }
 
 std::list <unsigned int> Game::getObjectsByPos(const Vector3d & pos, unsigned long long r)
@@ -269,6 +281,14 @@ void Game::doEndOfTurn()
 	    }
 	  }
 	}
+
+	std::set<unsigned int>::iterator itrm;
+	for(itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
+	  objects[*itrm]->removeFromParent();
+	  delete objects[*itrm];
+	  objects.erase(*itrm);
+	}
+	scheduleRemove.clear();
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;

@@ -3,6 +3,7 @@
 
 #include <list>
 #include <map>
+#include <set>
 
 class Player;
 class IGObject;
@@ -23,9 +24,11 @@ class Game {
 	void save();
 
 	Player *findPlayer(char *name, char *pass);
+	Player* getPlayer(unsigned int id);
 
 	IGObject *getObject(unsigned int id);
 	void addObject(IGObject* obj);
+	void scheduleRemoveObject(unsigned int id);
 
 	std::list<unsigned int> getObjectsByPos(const Vector3d & pos, unsigned long long r);
 	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
@@ -52,10 +55,12 @@ class Game {
 	int turnTime;
 	int turnIncrement;
 	
-	std::list<Player *> players;
+	std::map<unsigned int, Player *> players;
 	
 	std::map<unsigned int, IGObject *> objects;
 	IGObject *universe;
+
+	std::set<unsigned int> scheduleRemove;
 
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
