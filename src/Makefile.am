@@ -7,4 +7,5 @@ tpserv_SOURCES = main.cpp connection.cpp console.cpp \
 		order.cpp order.h objectdata.h universe.h \
 		universe.cpp ownedobject.h ownedobject.cpp \
 		emptyobject.h emptyobject.cpp planet.h \
-		planet.cpp fleet.h fleet.cpp
+		planet.cpp fleet.h fleet.cpp nop.h nop.cpp \
+		move.h move.cpp

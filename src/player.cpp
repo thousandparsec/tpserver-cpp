@@ -150,10 +150,10 @@ void Player::processAddOrder(Frame * frame)
 	Logger::getLogger()->debug("doing add order frame");
 	Frame *of = new Frame();
 	if (frame->getLength() >= 8) {
-		Order *ord = new Order();
 		unsigned int objectID = frame->unpackInt();
-		ord->setType((OrderType) frame->unpackInt());
+		Order *ord = Order::createOrder((OrderType) frame->unpackInt());
 		int pos = frame->unpackInt();
+		ord->inputFrame(frame);
 		if (Game::getGame()->getObject(objectID)->addOrder(ord, pos, pid)) {
 			of->setType(ft_OK);
 			of->packString("Order Added");

@@ -24,22 +24,17 @@ class Frame;
 class Order {
 
       public:
-	Order();
-	~Order();
 
 	OrderType getType();
 
-	void setType(OrderType ot);
-
 	void createFrame(Frame * f, int objID, int pos);
+	void inputFrame(Frame * f);
 
 	static void describeOrder(int ordertype, Frame * f);
+	static Order *createOrder(OrderType ordertype);
 
-      private:
-	 Order(Order & rhs);
-	Order operator=(Order & rhs);
-
-	OrderType type;
+      protected:
+	 OrderType type;
 
 
 };
