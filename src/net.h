@@ -2,7 +2,7 @@
 #define NET_H
 /*  Network Abstraction class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,9 @@ class Network {
 
       public:
 	static Network *getNetwork();
+
+	// Feature frames
+	void createFeaturesFrame(Frame * frame);
 
 	//stuff
 

@@ -1,7 +1,7 @@
 /*  Network and listen socket abstraction for tpserver-cpp with ipv4 and
  *   ipv6 support
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "settings.h"
 #include "connection.h"
 #include "game.h"
+#include "frame.h"
 
 #include "net.h"
 
@@ -58,6 +59,16 @@ Network *Network::getNetwork()
 		myInstance = new Network();
 	}
 	return myInstance;
+}
+
+void Network::createFeaturesFrame(Frame* frame){
+  if(frame->getVersion() >= fv0_3){
+    frame->setType(ft03_Features);
+    frame->packInt(0); //no optional features at this time.
+  }else{
+    Logger::getLogger()->warning("Tryed to create a Features frame for protocol version less than 3");
+    frame->createFailFrame(fec_FrameError, "Unknown request for features (not in current protocol)");
+  }
 }
 
 void Network::addFD(int fd)
