@@ -299,6 +299,16 @@ int IGObject::getNumOrders(int playerid)
 	return 0;
 }
 
+Order * IGObject::getFirstOrder(){
+  if(orders.empty())
+    return NULL;
+  return orders.front();
+}
+
+void IGObject::removeFirstOrder(){
+  orders.pop_front();
+}
+
 bool IGObject::addAction(int currpid, int newpid, OrderType ot)
 {
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);

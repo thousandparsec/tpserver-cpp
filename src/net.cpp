@@ -13,6 +13,7 @@
 #include "logging.h"
 #include "settings.h"
 #include "connection.h"
+#include "game.h"
 
 #include "net.h"
 
@@ -161,6 +162,23 @@ void Network::stop()
 	}
 }
 
+void Network::sendToAll(Frame * frame){
+  std::map < int, Connection * >::iterator itcurr;
+  char* data = frame->getData();
+  for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
+    Connection * currConn = itcurr->second;
+    if(currConn->getStatus() == 3){
+      Frame * currFrame = currConn->createFrame(NULL);
+      currFrame->setType(frame->getType());
+      currFrame->setData(data, frame->getDataLength());
+      
+      currConn->sendFrame(currFrame);
+
+    }
+  }
+  free(data);
+  delete frame;
+}
 
 void Network::masterLoop()
 {
@@ -197,6 +215,9 @@ void Network::masterLoop()
 				}
 			}
 
+		}
+		if(Game::getGame()->secondsToEOT() <= 0){
+		  Game::getGame()->doEndOfTurn();
 		}
 
 

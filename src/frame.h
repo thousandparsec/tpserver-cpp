@@ -24,6 +24,8 @@ typedef enum {
   	ft02_Order = 11,
   	ft02_Order_Insert = 12,
   	ft02_Order_Remove = 13,
+	ft02_Time_Remaining_Get = 14,
+	ft02_Time_Remaining = 15,
 	//only for future reference
   	ft02_Board_Get = 16,
   	ft02_Board = 17,

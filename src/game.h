@@ -27,6 +27,8 @@ class Game {
 
 	void doEndOfTurn();
 
+	int secondsToEOT();
+
 	void saveAndClose();
 
 
@@ -37,6 +39,9 @@ class Game {
 	Game operator=(Game & rhs);
 
 	static Game *myInstance;
+
+	int turnTime;
+	int turnIncrement;
 
 	 std::list < Player * >players;
 

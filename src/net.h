@@ -6,6 +6,7 @@
 #include <sys/select.h>
 
 class Connection;
+class Frame;
 
 class Network {
 
@@ -20,6 +21,8 @@ class Network {
 	void start();
 
 	void stop();
+
+	void sendToAll(Frame * frame);
 
 	// don't you even think about calling these functions
 

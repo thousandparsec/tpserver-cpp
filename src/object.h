@@ -56,6 +56,9 @@ class IGObject {
 	Order *getOrder(int pos, int playerid);
 	int getNumOrders(int playerid);
 
+	Order * getFirstOrder();
+	void removeFirstOrder();
+
 	bool addAction(int currpid, int newpid, OrderType ot);
 	bool removeAction(int currpid, int newpid, OrderType ot);
 	 std::set < OrderType > getActions(int currpid, int newpid);

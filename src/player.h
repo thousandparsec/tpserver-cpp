@@ -29,12 +29,11 @@ class Player {
 	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
 	void processGetOrder(Frame * frame);
-	void processGetOrderV2(Frame * frame);
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
-	void processRemoveOrderV2(Frame * frame);
 	void processDescribeOrder(Frame * frame);
-	void processGetOutcome(Frame * frame);
+	void processGetTime(Frame * frame);
+	
 
 	Connection *curConnection;
 	char *name;

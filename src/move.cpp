@@ -1,6 +1,7 @@
 
 #include "order.h"
 #include "frame.h"
+#include "object.h"
 
 #include "move.h"
 
@@ -55,7 +56,11 @@ void Move::inputFrame(Frame * f)
 	z = f->unpackInt64();
 }
 
-
+bool Move::doOrder(IGObject * ob){
+  ob->setVelocity3(x - ob->getPositionX(), y - ob->getPositionY(), z - ob->getPositionZ());
+  ob->setPosition3(x, y, z);
+  return true;
+}
 
 void Move::describeOrder(int orderType, Frame * f)
 {

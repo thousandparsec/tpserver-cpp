@@ -111,6 +111,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_OrderDesc_Get:
 		processDescribeOrder(frame);
 		break;
+	case ft02_Time_Remaining_Get:
+	  processGetTime(frame);
+	  break;
 		//more
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
@@ -320,3 +323,10 @@ void Player::processDescribeOrder(Frame * frame)
 	curConnection->sendFrame(of);
 }
 
+void Player::processGetTime(Frame * frame){
+  Logger::getLogger()->debug("doing Get Time frame");
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft02_Time_Remaining);
+  of->packInt(Game::getGame()->secondsToEOT());
+  curConnection->sendFrame(of);
+}

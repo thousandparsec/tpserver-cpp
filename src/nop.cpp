@@ -1,6 +1,7 @@
 
 #include "order.h"
 #include "frame.h"
+#include "object.h"
 
 #include "nop.h"
 
@@ -39,7 +40,10 @@ void Nop::inputFrame(Frame * f)
 	waitTime = f->unpackInt();
 }
 
-
+bool Nop::doOrder(IGObject * ob){
+  waitTime--;
+  return waitTime == 0;
+}
 
 void Nop::describeOrder(int orderType, Frame * f)
 {

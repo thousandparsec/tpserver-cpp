@@ -1,11 +1,14 @@
 #include <iostream>
 #include <stdlib.h>
+#include <ctime>
 
 #include "logging.h"
 #include "player.h"
 #include "object.h"
 #include "objectdata.h"
 #include "ownedobject.h"
+#include "frame.h"
+#include "net.h"
 
 #include "game.h"
 
@@ -81,6 +84,9 @@ void Game::createTutorial()
 	sirius->setVelocity3(2300000ll, 0ll, 0ll);
 	sirius->setAcceleration3(0ll, -120000ll, 0ll);
 	mw_galaxy->addContainedObject(sirius->getID());
+
+	turnIncrement = 600;
+	turnTime = time(NULL) + 600;
 
 }
 
@@ -260,6 +266,39 @@ std::list <unsigned int> Game::getObjectsByPos(long long x, long long y, long lo
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
+
+	// send frame to all connections that the end of turn has started
+	Frame * frame = new Frame(fv0_2);
+	frame->setType(ft02_Time_Remaining);
+	frame->packInt(0);
+	Network::getNetwork()->sendToAll(frame);
+
+	// DO END OF TURN STUFF HERE
+	std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin();
+	for( ; itcurr != objects.end(); ++itcurr) {
+	  IGObject * ob = itcurr->second;
+	  Order * currOrder = ob->getFirstOrder();
+	  if(currOrder != NULL){
+	    if(currOrder->doOrder(ob)){
+	      ob->removeFirstOrder();
+	    }
+	  }
+	}
+
+	// increment the time to the next turn
+	turnTime += turnIncrement;
+
+	// send frame to all connections that the end of turn has finished
+	frame = new Frame(fv0_2);
+	frame->setType(ft02_Time_Remaining);
+	frame->packInt(secondsToEOT());
+	Network::getNetwork()->sendToAll(frame);
+
+	Logger::getLogger()->info("End Of Turn finished");
+}
+
+int Game::secondsToEOT(){
+  return turnTime - time(NULL);
 }
 
 void Game::saveAndClose()

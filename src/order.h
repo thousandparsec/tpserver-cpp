@@ -22,6 +22,7 @@ typedef enum {
 } OrderParamType;
 
 class Frame;
+class IGObject;
 
 class Order {
 
@@ -32,7 +33,7 @@ class Order {
 	virtual void createFrame(Frame * f, int objID, int pos);
 	virtual void inputFrame(Frame * f);
 
-
+	virtual bool doOrder(IGObject * ob) = 0;
 
 	static void describeOrder(int ordertype, Frame * f);
 	static Order *createOrder(OrderType ordertype);
