@@ -13,17 +13,20 @@
 
 Connection::Connection(){
   status = 0;
+  player = NULL;
 }
 
 Connection::Connection(Connection &rhs){
   sockfd = rhs.sockfd;
   status = rhs.status;
+  player = rhs.player;
 }
 
 Connection::Connection(int fd){
   sockfd = fd;
   status = 1;
   Network::getNetwork()->addFD(fd);
+  player = NULL;
 }
 
 Connection::~Connection(){
@@ -35,6 +38,8 @@ Connection::~Connection(){
 Connection Connection::operator=(Connection &rhs){
   sockfd = rhs.sockfd;
   status = rhs.status;
+  player = rhs.player;
+  return *this;
 }
 
 int Connection::getFD(){
