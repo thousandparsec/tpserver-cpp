@@ -176,7 +176,7 @@ void Connection::verCheck()
 		// Read in the length of the packet and ignore
 		char *cbuff = new char[lenNum];
 		len = read(sockfd, cbuff, lenNum);
-		//Logger::getLogger()->info(cbuff);
+		Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
 		delete[] cbuff;
 		
 	    if (memcmp(buff + 4, "\0\0\0\03", 4) == 0) {
