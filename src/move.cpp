@@ -47,13 +47,15 @@ void Move::createFrame(Frame * f, int objID, int pos)
 	f->packInt64(z);
 }
 
-void Move::inputFrame(Frame * f)
+bool Move::inputFrame(Frame * f)
 {
   f->unpackInt(); // number of turns
   f->unpackInt(); // size of resource list
 	x = f->unpackInt64();
 	y = f->unpackInt64();
 	z = f->unpackInt64();
+
+	return true;
 }
 
 bool Move::doOrder(IGObject * ob){

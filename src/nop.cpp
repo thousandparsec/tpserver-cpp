@@ -33,11 +33,13 @@ void Nop::createFrame(Frame * f, int objID, int pos)
 	f->packInt(waitTime);
 }
 
-void Nop::inputFrame(Frame * f)
+bool Nop::inputFrame(Frame * f)
 {
   f->unpackInt();
   f->unpackInt();
 	waitTime = f->unpackInt();
+	
+	return (waitTime > 0);
 }
 
 bool Nop::doOrder(IGObject * ob){

@@ -14,7 +14,7 @@ class Move:public Order {
 	void setDest(long long x1, long long y1, long long z1);
 
 	void createFrame(Frame * f, int objID, int pos);
-	void inputFrame(Frame * f);
+	bool inputFrame(Frame * f);
 
 	bool doOrder(IGObject * ob);
 

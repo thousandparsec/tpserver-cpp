@@ -13,7 +13,7 @@ class Nop:public Order {
 	void setTime(int time);
 
 	void createFrame(Frame * f, int objID, int pos);
-	void inputFrame(Frame * f);
+	bool inputFrame(Frame * f);
 
 	bool doOrder(IGObject * ob);
 

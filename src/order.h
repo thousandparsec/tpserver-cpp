@@ -31,7 +31,7 @@ class Order {
 	OrderType getType();
 
 	virtual void createFrame(Frame * f, int objID, int pos);
-	virtual void inputFrame(Frame * f);
+	virtual bool inputFrame(Frame * f);
 
 	virtual bool doOrder(IGObject * ob) = 0;
 

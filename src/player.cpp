@@ -279,8 +279,8 @@ void Player::processAddOrder(Frame * frame)
 			if (ord == NULL) {
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
-				ord->inputFrame(frame);
-				if (o->addOrder(ord, pos, pid)) {
+				
+				if (ord->inputFrame(frame) && o->addOrder(ord, pos, pid)) {
 				    of->setType(ft02_OK);
 					of->packString("Order Added");
 				} else {

@@ -32,8 +32,9 @@ void Order::createFrame(Frame * f, int objID, int pos)
 
 }
 
-void Order::inputFrame(Frame * f)
+bool Order::inputFrame(Frame * f)
 {
+  return true;
 }
 
 
