@@ -31,6 +31,7 @@ class IGObject {
 	char *getName();
 	Vector3d getPosition();
 	Vector3d getVelocity();
+	unsigned int getParent();
 	
 	std::set<unsigned int> getContainedObjects();
 

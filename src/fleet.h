@@ -12,6 +12,7 @@ class Fleet:public OwnedObject {
 
 	void addShips(int type, int number);
 	bool removeShips(int type, int number);
+	int numShips(int type);
 
 	void packExtraData(Frame * frame);
 

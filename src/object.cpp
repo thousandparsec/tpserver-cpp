@@ -121,6 +121,10 @@ bool IGObject::setID(unsigned int newid)
 	return true;
 }
 
+unsigned int IGObject::getParent(){
+  return parentid;
+}
+
 void IGObject::autoSetID()
 {
 	id = nextAutoID++;

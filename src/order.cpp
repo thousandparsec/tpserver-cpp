@@ -5,6 +5,9 @@
 #include "nop.h"
 #include "move.h"
 #include "build.h"
+#include "colonise.h"
+#include "splitfleet.h"
+#include "mergefleet.h"
 
 #include "order.h"
 
@@ -47,17 +50,26 @@ void Order::describeOrder(int ordertype, Frame * f)
 	    f->setType(ft02_OrderDesc);
 		switch (ordertype) {
 		case odT_Nop:
-			Nop::describeOrder(ordertype, f);
-			break;
+		  Nop::describeOrder(ordertype, f);
+		  break;
 		case odT_Move:
-			Move::describeOrder(ordertype, f);
-			break;
+		  Move::describeOrder(ordertype, f);
+		  break;
 		case odT_Build:
 		  Build::describeOrder(ordertype, f);
 		  break;
+		case odT_Colonise:
+		  Colonise::describeOrder(ordertype, f);
+		  break;
+		case odT_Fleet_Split:
+		  SplitFleet::describeOrder(ordertype, f);
+		  break;
+		case odT_Fleet_Merge:
+		  MergeFleet::describeOrder(ordertype, f);
+		  break;
 		default:
-			f->createFailFrame(fec_NonExistant, "Order not implemented yet");
-			break;
+		  f->createFailFrame(fec_NonExistant, "Order not implemented yet");
+		  break;
 		}
 	} else {
 		f->createFailFrame(fec_NonExistant, "No such order");
@@ -70,13 +82,22 @@ Order *Order::createOrder(OrderType ordertype)
 	if (ordertype > odT_Invalid && ordertype < odT_Max) {
 		switch (ordertype) {
 		case odT_Nop:
-			rtv = new Nop();
-			break;
+		  rtv = new Nop();
+		  break;
 		case odT_Move:
-			rtv = new Move();
-			break;
+		  rtv = new Move();
+		  break;
 		case odT_Build:
 		  rtv = new Build();
+		  break;
+		case odT_Colonise:
+		  rtv = new Colonise();
+		  break;
+		case odT_Fleet_Split:
+		  rtv = new SplitFleet();
+		  break;
+		case odT_Fleet_Merge:
+		  rtv = new MergeFleet();
 		  break;
 		}
 	}

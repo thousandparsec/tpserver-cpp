@@ -10,4 +10,6 @@ tpserv_SOURCES = main.cpp connection.cpp console.cpp \
 		planet.h planet.cpp fleet.h fleet.cpp nop.h \
 		nop.cpp move.h move.cpp build.h build.cpp \
 		vector3d.h vector3d.cpp board.h board.cpp \
-		message.h message.cpp
+		message.h message.cpp colonise.h colonise.cpp \
+		splitfleet.h splitfleet.cpp mergefleet.h \
+		mergefleet.cpp

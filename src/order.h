@@ -6,6 +6,9 @@ typedef enum {
 	odT_Nop = 0,
 	odT_Move = 1,
 	odT_Build = 2,
+	odT_Colonise = 3,
+	odT_Fleet_Split = 4,
+	odT_Fleet_Merge = 5,
 	odT_Max
 } OrderType;
 

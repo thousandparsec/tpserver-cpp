@@ -24,16 +24,20 @@ bool Fleet::removeShips(int type, int number){
   return false;
 }
 
+int Fleet::numShips(int type){
+  return ships[type];
+}
+
 void Fleet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);
 	
 	frame->packInt(ships.size());
 	for(std::map<int, int>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
-	  if(itcurr->second > 0){
+	  //if(itcurr->second > 0){
 	    frame->packInt(itcurr->first);
 	    frame->packInt(itcurr->second);
-	  }
+	    //}
 	}
 	
 	frame->packInt(damage);
@@ -47,14 +51,22 @@ void Fleet::doOnceATurn(IGObject * obj)
 
 void Fleet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
-    frame->packInt(2);
+    if(ships.find(1) != ships.end()){
+      frame->packInt(5);
+      frame->packInt(odT_Colonise);
+    }else{
+      frame->packInt(4);
+    }
     frame->packInt(odT_Move);
     frame->packInt(odT_Nop);
+    frame->packInt(odT_Fleet_Split);
+    frame->packInt(odT_Fleet_Merge);
+    
   }else{
     frame->packInt(0);
   }
 }
 
 bool Fleet::checkAllowedOrder(int ot, int playerid){
-  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop));
+  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (ships.find(1) != ships.end() && ot == odT_Colonise)));
 }
