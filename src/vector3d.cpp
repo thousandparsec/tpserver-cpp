@@ -63,7 +63,7 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
 
 Vector3d Vector3d::makeLength(long long length) const{
   Vector3d rtn;
-  long long len = sqrt((unsigned long long)(x * x) + (unsigned long long)(y * y) + (unsigned long long)(z * z));
+  unsigned long long len = (unsigned long long)sqrt(((double)x * (double)x) + ((double)y * (double)y) + ((double)z * (double)z));
   rtn.x = x * length / len;
   rtn.y = y * length / len;
   rtn.z = z * length / len;
@@ -88,15 +88,15 @@ void Vector3d::setAll(long long newx, long long newy, long long newz){
   z = newz;
 }
 
-long long Vector3d::getDistance(const Vector3d & origin) const{
-  return (long long)sqrt(getDistanceSq(origin));
+unsigned long long Vector3d::getDistance(const Vector3d & origin) const{
+  return (unsigned long long)sqrt(getDistanceSq(origin));
 }
 
-long long Vector3d::getDistanceSq(const Vector3d & origin) const{
-  long long dx = x - origin.x;
-  long long dy = y - origin.y;
-  long long dz = z - origin.z;
-  return (unsigned long long)(dx * dx) + (unsigned long long)(dy * dy) + (unsigned long long)(dz * dz);
+double Vector3d::getDistanceSq(const Vector3d & origin) const{
+  double dx = (double)x - (double)origin.x;
+  double dy = (double)y - (double)origin.y;
+  double dz = (double)z - (double)origin.z;
+  return ((dx * dx) + (dy * dy) + (dz * dz));
 }
 
 void Vector3d::pack(Frame * frame) const{

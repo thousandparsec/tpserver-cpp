@@ -56,7 +56,7 @@ void Game::createTutorial()
 	mw_galaxy->setType(obT_Galaxy);
 	mw_galaxy->setName("Milky Way Galaxy");
 	mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
-	mw_galaxy->setVelocity(Vector3d(0ll, 1000ll, 0ll));
+	mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
 	
 	universe->addContainedObject(mw_galaxy->getID());
 	// star system 1
@@ -66,7 +66,7 @@ void Game::createTutorial()
 	sol->setType(obT_Star_System);
 	sol->setName("Sol/Terra System");
 	sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
-	sol->setVelocity(Vector3d(-1500000ll, 1500000ll, 0ll));
+	sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
 	
 	mw_galaxy->addContainedObject(sol->getID());
 	// star system 2
@@ -76,7 +76,7 @@ void Game::createTutorial()
 	ac->setType(obT_Star_System);
 	ac->setName("Alpha Centauri System");
 	ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
-	ac->setVelocity(Vector3d(-1000000ll, -1000000ll, 0ll));
+	ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
 	
 	mw_galaxy->addContainedObject(ac->getID());
 	// star system 3
@@ -86,9 +86,51 @@ void Game::createTutorial()
 	sirius->setType(obT_Star_System);
 	sirius->setName("Sirius System");
 	sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
-	sirius->setVelocity(Vector3d(2300000ll, 0ll, 0ll));
+	sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
 	
 	mw_galaxy->addContainedObject(sirius->getID());
+
+	// now for some planets
+
+	IGObject *earth = new IGObject();
+	objects[earth->getID()] = earth;
+	earth->setSize(2);
+	earth->setType(obT_Planet);
+	earth->setName("Earth/Terra");
+	earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+	sol->addContainedObject(earth->getID());
+
+	IGObject *venus = new IGObject();
+	objects[venus->getID()] = venus;
+	venus->setSize(2);
+	venus->setType(obT_Planet);
+	venus->setName("Venus");
+	venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
+	sol->addContainedObject(venus->getID());
+
+	IGObject *mars = new IGObject();
+	objects[mars->getID()] = mars;
+	mars->setSize(1);
+	mars->setType(obT_Planet);
+	mars->setName("Mars");
+	mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
+	sol->addContainedObject(mars->getID());
+
+	IGObject *acprime = new IGObject();
+	objects[acprime->getID()] = acprime;
+	acprime->setSize(2);
+	acprime->setType(obT_Planet);
+	acprime->setName("Alpha Centauri Prime");
+	acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
+	ac->addContainedObject(acprime->getID());
+
+	IGObject *s1 = new IGObject();
+	objects[s1->getID()] = s1;
+	s1->setSize(2);
+	s1->setType(obT_Planet);
+	s1->setName("Sirius 1");
+	s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
+	sirius->addContainedObject(s1->getID());
 
 	turnIncrement = 600;
 	turnTime = time(NULL) + 600;
@@ -228,8 +270,8 @@ std::list <unsigned int> Game::getObjectsByPos(const Vector3d & pos, unsigned lo
 
   for( ; itcurr != objects.end(); ++itcurr) {
     unsigned long long br = itcurr->second->getSize() / 2;
-    long long diff = itcurr->second->getPosition().getDistanceSq(pos) - r * r - br * br;
-    if(diff <= 0)
+    unsigned long long diff = itcurr->second->getPosition().getDistance(pos); /*- r - br;*/
+    if(diff <=  r + br)
       oblist.push_back(itcurr->first);
 
   }
@@ -245,7 +287,7 @@ std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
       unsigned long long br = itcurr->second->getSize() / 2 + itcurr->second->getSize() % 2;
       
       //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-      if(itcurr->second->getPosition().getDistanceSq(pos) <= br * br)
+      if((unsigned long long)(itcurr->second->getPosition().getDistance(pos)) <= br)
 	oblist.push_front(itcurr->first);
     }
   }

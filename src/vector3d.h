@@ -24,8 +24,8 @@ class Vector3d{
 
   void setAll(long long newx, long long newy, long long newz);
 
-  long long getDistance(const Vector3d & origin) const;
-  long long getDistanceSq(const Vector3d & origin) const;
+  unsigned long long getDistance(const Vector3d & origin) const;
+  double getDistanceSq(const Vector3d & origin) const;
 
   void pack(Frame * frame) const;
   void unpack(Frame * frame);
