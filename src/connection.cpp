@@ -359,6 +359,15 @@ void Connection::inGameFrame()
 		  Frame *features = createFrame(frame);
 		  Network::getNetwork()->createFeaturesFrame(features);
 		  sendFrame(features);
+		}else if(version >= fv0_3 && frame->getType() == ft03_Ping){
+		  Logger::getLogger()->debug("Processing Ping frame");
+		  // check for the time of the last frame, ignore this if
+		  //  less than 60 seconds ago.
+		  //TODO last frame check
+		  Frame *pong = createFrame(frame);
+		  pong->setType(ft02_OK);
+		  pong->packString("Keep alive ok, hope you're still there");
+		  sendFrame(pong);
 		}else{
 		  // should pass frame to player to do something with
 		  Logger::getLogger()->debug("inGameFrame");

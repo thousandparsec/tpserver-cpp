@@ -64,7 +64,9 @@ Network *Network::getNetwork()
 void Network::createFeaturesFrame(Frame* frame){
   if(frame->getVersion() >= fv0_3){
     frame->setType(ft03_Features);
-    frame->packInt(0); //no optional features at this time.
+    frame->packInt(1); //one optional features at this time.
+    frame->packInt(5); // Keep Alive (ping frames)
+                       //  TODO make consts or enums
   }else{
     Logger::getLogger()->warning("Tryed to create a Features frame for protocol version less than 3");
     frame->createFailFrame(fec_FrameError, "Unknown request for features (not in current protocol)");
