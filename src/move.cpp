@@ -3,6 +3,7 @@
 #include "frame.h"
 #include "object.h"
 #include "game.h"
+#include "logging.h"
 
 #include "move.h"
 
@@ -67,8 +68,11 @@ bool Move::doOrder(IGObject * ob){
 
   // re-containerise if necessary
   std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(x, y, z);
+
+  Logger::getLogger()->debug("There are %d possible container objects", oblist.size());
   
-  for(std::list<unsigned int>::reverse_iterator itcurr = oblist.rend(); itcurr != oblist.rbegin(); --itcurr){
+  for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+    Logger::getLogger()->debug("Container object %d", *itcurr);
     if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
       Game::getGame()->getObject(*itcurr)->addContainedObject(ob->getID());
       break;
