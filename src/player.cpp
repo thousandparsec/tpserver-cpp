@@ -440,39 +440,26 @@ void Player::processProbeOrder(Frame * frame){
     curConnection->sendFrame(of);
   }
 
-  int numtypes = frame->unpackInt();
-  if(numtypes > 1){
-    Frame *seq = curConnection->createFrame(frame);
-    seq->setType(ft02_Sequence);
-    seq->packInt(numtypes);
-    curConnection->sendFrame(seq);
-  }
+  int pos = frame->unpackInt();
   
-  if(numtypes == 0){
-    Frame *of = curConnection->createFrame(frame);
-    Logger::getLogger()->debug("asked for no orders to probe, silly client...");
-    of->createFailFrame(fec_NonExistant, "You didn't ask for any order to probe, try again");
-    curConnection->sendFrame(of);
+  Frame *of = curConnection->createFrame(frame);
+  // See if we have a valid order
+  Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
+  if (ord == NULL) {
+    of->createFailFrame(fec_NonExistant, "No such order type");
+  }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), pid)){
+    
+    ord->inputFrame(frame);
+    ord->createFrame(of, obid, pos);
+    
+  }else{
+    
+    Logger::getLogger()->debug("The order to be probed is not allowed on this object");
+    of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
+    
   }
-
-  for(int i = 0; i < numtypes; i++){
-    Frame *of = curConnection->createFrame(frame);
-    // See if we have a valid order
-    Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
-    if (ord == NULL) {
-      of->createFailFrame(fec_NonExistant, "No such order type");
-    }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), pid)){
-      
-      ord->createFrame(of, obid, -1);
-
-    }else{
-
-      Logger::getLogger()->debug("The order to be probed is not allowed on this object");
-      of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
-
-    }
-    curConnection->sendFrame(of);
-  }
+  curConnection->sendFrame(of);
+  
   
 }
 
