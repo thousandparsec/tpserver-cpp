@@ -1,6 +1,6 @@
 /*  Connection object, supports ipv4 and ipv6
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,18 +89,18 @@ void Connection::process()
 	Logger::getLogger()->debug("About to Process");
 	switch (status) {
 	case 1:
-		//check if user is really a TP protocol ver1 client
-		Logger::getLogger()->debug("Stage1");
+		//check if user is really a TP protocol verNN client
+		Logger::getLogger()->debug("Stage1 : pre-connect");
 		verCheck();
 		break;
 	case 2:
 		//authorise the user
-		Logger::getLogger()->debug("Stage2");
+		Logger::getLogger()->debug("Stage2 : connected");
 		login();
 		break;
 	case 3:
 		//process as normal
-		Logger::getLogger()->debug("Stage3");
+		Logger::getLogger()->debug("Stage3 : logged in");
 		inGameFrame();
 		break;
 	case 0:
@@ -129,6 +129,13 @@ void Connection::close()
 
 void Connection::sendFrame(Frame * frame)
 {
+  if(version != frame->getVersion()){
+    Logger::getLogger()->warning("Version mis-match, packet %d, connection %d", frame->getVersion(), version);
+    
+  }
+  if(version == fv0_2 && frame->getType() >= ft02_Max){
+    Logger::getLogger()->error("Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
+  }else{
 	char *packet = frame->getPacket();
 	if (packet != NULL) {
 		int len = frame->getLength();
@@ -138,6 +145,7 @@ void Connection::sendFrame(Frame * frame)
 		Logger::getLogger()->warning("Could not get packet from frame to send");
 	}
 	delete frame;
+  }
 }
 
 Frame* Connection::createFrame(Frame* oldframe)
@@ -173,11 +181,11 @@ void Connection::verCheck()
 	    Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
 	    send(sockfd, "You are not running the right version of TP, please upgrade\n", 60, 0);
 	    close();
-	  }else if(ver > 2){
+	  }else if(ver > 3){
 	    Logger::getLogger()->warning("Client has higher version (%d), telling it so", ver);
-	    Frame *f = new Frame(fv0_2);
+	    Frame *f = new Frame(fv0_3);
 	    f->setSequence(0);
-	    f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support version 2 sorry.");
+	    f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 	    sendFrame(f);
 	    //stay connected just in case they try again with a lower version
 	    // have to empty the receive queue though.
@@ -198,22 +206,59 @@ void Connection::verCheck()
 	      memcpy(&nseqNum, buff, 4);
 	      seqNum = ntohl(nseqNum);
 	      
+	      // Type of packet
+	      //since tp03 allows Get Feature frames before a connect frame, the first
+	      // frame could be a get feature.
+	      int typeNum = 0, ntypeNum;
+	      memcpy(&ntypeNum, buff + 4, 4);
+	      typeNum = ntohl(ntypeNum);
+
 	      // Length of packet
 	      int lenNum = 0, nlenNum;
 	      memcpy(&nlenNum, buff + 8, 4);
 	      lenNum = ntohl(nlenNum);
 	      
+	      if(ver == 3 && typeNum == ft03_Features_Get){
+		version = fv0_3;
+		if(lenNum != 0){
+		  // ver 3 frame error, Get Features have no data.
+		  Logger::getLogger()->warning("Invalid Get Features request");
+
+		  // remove the data from the socket
+		  char *cbuff = new char[lenNum];
+		  len = read(sockfd, cbuff, lenNum);
+		  delete[] cbuff;
+
+		  Frame* fe = createFrame(NULL);
+		  fe->setSequence(seqNum);
+		  fe->createFailFrame(fec_FrameError, "GetFeatures frame should have no data");
+		  sendFrame(fe);
+		}else{
+		  Logger::getLogger()->debug("Get Features request");
+		  Frame* features = createFrame(NULL);
+		  features->setSequence(seqNum);
+
+		  Network::getNetwork()->createFeaturesFrame(features);
+
+		  sendFrame(features);
+		}
+		
+		delete[] buff;
+		return;
+	      }
 	      // Read in the length of the packet and ignore
 	      char *cbuff = new char[lenNum];
 	      len = read(sockfd, cbuff, lenNum);
-	      Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
-	      delete[] cbuff;
-	      
-	      if (memcmp(buff + 4, "\0\0\0\03", 4) == 0) {
-		Logger::getLogger()->info("Client has version 2 of protocol");
+
+	      if(typeNum == 3){
+		
+		Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
+		
+		version = (FrameVersion)ver;
+
+		Logger::getLogger()->info("Client has version %d of protocol", version);
 		
 		status = 2;
-		version = fv0_2;
 		
 		Frame *okframe = createFrame(NULL);
 		// since we don't create a frame object, we have to set the sequence number seperately
@@ -222,7 +267,14 @@ void Connection::verCheck()
 		
 		okframe->packString("Protocol check ok, continue!");
 		sendFrame(okframe);
+	      }else{
+		Logger::getLogger()->warning("First frame wasn't Connect or GetFeatures, was %d", typeNum);
+		Frame* fe = createFrame(NULL);
+		fe->setSequence(seqNum);
+		fe->createFailFrame(fec_ProtocolError, "First frame wasn't Connect (or GetFeatures in tp03), please try again");
+		sendFrame(fe);
 	      }
+	      delete[] cbuff;
 	    }
 	  }
 	  delete[] buff;
@@ -248,6 +300,7 @@ void Connection::login()
 {
 	Frame *recvframe = createFrame();
 	if (readFrame(recvframe)) {
+	  if(recvframe->getType() == ft02_Login){
 		char *username = recvframe->unpackString();
 		char *password = recvframe->unpackString();
 		if (username != NULL && password != NULL) {
@@ -258,7 +311,7 @@ void Connection::login()
 				okframe->setType(ft02_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
-				Logger::getLogger()->debug("Login OK!");
+				Logger::getLogger()->info("Login OK!");
 				player->setConnection(this);
 				status = 3;
 			} else {
@@ -279,20 +332,38 @@ void Connection::login()
 		if (password != NULL)
 			delete[] password;
 
+	
+	  }else if(version >= fv0_3 && recvframe->getType() == ft03_Features_Get){
+	    Logger::getLogger()->debug("Processing Get Features frame");
+	    Frame *features = createFrame(recvframe);
+	    Network::getNetwork()->createFeaturesFrame(features);
+	    sendFrame(features);
+	  }else{
+	    Logger::getLogger()->warning("In connected state but did not receive login or get features");
+	    Frame *failframe = createFrame(recvframe);
+	    failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login or get features");
+	    sendFrame(failframe);
+	  }
 	}
-
 	delete recvframe;
-
+	  
 }
 
 void Connection::inGameFrame()
 {
 	Frame *frame = createFrame();
 	if (readFrame(frame)) {
-		Logger::getLogger()->debug("inGameFrame");
-		//todo
-		// should pass frame to player to do something with
-		player->processIGFrame(frame);
+		
+		if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
+		  Logger::getLogger()->debug("Processing Get Features frame");
+		  Frame *features = createFrame(frame);
+		  Network::getNetwork()->createFeaturesFrame(features);
+		  sendFrame(features);
+		}else{
+		  // should pass frame to player to do something with
+		  Logger::getLogger()->debug("inGameFrame");
+		  player->processIGFrame(frame);
+		}
 	} else {
 		Logger::getLogger()->debug("noFrame :(");
 		// client closed
@@ -324,6 +395,11 @@ bool Connection::readFrame(Frame * recvframe)
 			
 			recvframe->setData(data, dlen);
 			delete[] data;
+
+			//sanity check
+			if(version != recvframe->getVersion()){
+			  Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
+			}
 
 			rtn = true;
 		} else {
