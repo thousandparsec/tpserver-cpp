@@ -28,12 +28,15 @@ Frame::Frame(FrameVersion v)
 	length = 0;
 	data = NULL;
 	unpackptr = 0;
+	version = v;
 }
 
 Frame::Frame(Frame &rhs)
 {
 	type = rhs.type;
 	length = rhs.length;
+	version = rhs.version;
+	sequence = rhs.sequence;
 	
 	data = (char *) malloc(length);
 	if (data != NULL) {
@@ -55,6 +58,8 @@ Frame Frame::operator=(Frame & rhs)
 {
 	type = rhs.type;
 	length = rhs.length;
+	version = rhs.version;
+	sequence = rhs.sequence;
 	data = (char *) malloc(length);
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
@@ -63,6 +68,7 @@ Frame Frame::operator=(Frame & rhs)
 		length = 0;
 	}
 	unpackptr = 0;
+	return *this;
 }
 
 char *Frame::getPacket()
@@ -79,7 +85,7 @@ char *Frame::getPacket()
 
 	if (packet != NULL) {
 		// Header
-		memcpy(temp, "TP", 4);
+		memcpy(temp, "TP", 2);
 		temp += 2;
 
 		// Put in the version number
@@ -118,6 +124,17 @@ FrameType Frame::getType()
 	return type;
 }
 
+int Frame::getSequence()
+{
+  return sequence;
+}
+
+bool Frame::setSequence(int s) 
+{
+  sequence = s;
+  return true;
+}
+
 FrameVersion Frame::getVersion()
 {
 	return version;
@@ -152,7 +169,15 @@ int Frame::setHeader(char *newhead)
 		int nversion = atoi(ver);
 		version = (FrameVersion)nversion;
 		temp += 2;
-	
+		
+		if (version >= fv0_2) {
+		  // pick up sequence number for versions greater than 02
+		  int nseq;
+		  memcpy(&nseq, temp, 4);
+		  sequence = ntohl(nseq);
+		  temp += 4;
+		}
+		
 		int ntype;
 		memcpy(&ntype, temp, 4);
 		type = (FrameType) ntohl(ntype);
@@ -364,13 +389,18 @@ long long Frame::unpackInt64(){
 
 void Frame::createFailFrame(int code, char *reason)
 {
-	setType(ft_Fail);
-	if (data != NULL) {
-		free(data);
-		length = 0;
-		data = NULL;
-		unpackptr = 0;
-	}
-	packInt(code);
-	packString(reason);
+  if (version == fv0_1) 
+    setType(ft_Fail);
+  else
+    setType(ft02_Fail);
+
+  if (data != NULL) {
+    free(data);
+    length = 0;
+    data = NULL;
+    unpackptr = 0;
+  }
+  packInt(code);
+  packString(reason);
+  
 }
