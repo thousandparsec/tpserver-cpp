@@ -1,27 +1,40 @@
 #include <string.h>
 #include <netinet/in.h>
-//#include <stdlib.h>
 #include <string>
 
 #include "logging.h"
 
 #include "frame.h"
 
-#define htonq(i)	( ((long long)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
-#define ntohq		htonq
+#ifdef htonll
+# define htonq		htonll
+# define ntohq		ntohll
+#endif
 
+#ifndef htonq
+# define htonq(i)	( ((long long)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
+# define ntohq		htonq
+#endif
+
+// Default to creating version 2 frames
 Frame::Frame()
 {
-	type = ft_Invalid;
+	Frame::Frame(fv0_2);
+}
+
+Frame::Frame(FrameVersion v)
+{
+	type = ft02_Invalid;
 	length = 0;
 	data = NULL;
 	unpackptr = 0;
 }
 
-Frame::Frame(Frame & rhs)
+Frame::Frame(Frame &rhs)
 {
 	type = rhs.type;
 	length = rhs.length;
+	
 	data = (char *) malloc(length);
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
@@ -54,19 +67,49 @@ Frame Frame::operator=(Frame & rhs)
 
 char *Frame::getPacket()
 {
-	char *packet = new char[length + 12];
-	char *temp = packet;
+	char *packet;
+	char *temp;
+
+	// Allocate the correct amount of memory
+	if (version == fv0_1)
+		packet = new char[length + 12];
+	 else if (version == fv0_2)
+		packet = new char[length + 16];
+	temp = packet;
+
 	if (packet != NULL) {
-		memcpy(temp, "TP01", 4);
-		temp += 4;
+		// Header
+		memcpy(temp, "TP", 4);
+		temp += 2;
+
+		// Put in the version number
+		for (int i = 100; i > 1; i = i / 10) {
+			int digit = (version - (version / i * i)) / (i/10);
+			char v = '0' + digit;
+			
+			memcpy(temp, &v, 1);
+			temp += 1;
+		}
+		
+		// Sequence number is only present in version 2 and above
+		if (version > 1) {
+			int nseq = htonl(sequence);
+			memcpy(temp, &nseq, 4);
+			temp += 4;
+		}
+		
 		int ntype = htonl(type);
-		int nlen = htonl(length);
 		memcpy(temp, &ntype, 4);
 		temp += 4;
+		
+		int nlen = htonl(length);
 		memcpy(temp, &nlen, 4);
 		temp += 4;
+		
+		// Body
 		memcpy(temp, data, length);
 	}
+	
 	return packet;
 }
 
@@ -91,23 +134,47 @@ char *Frame::getData()
 
 int Frame::setHeader(char *newhead)
 {
+	char* temp = newhead;
+
 	unpackptr = 0;
 	int len;
-	if (memcmp(newhead, "TP01", 4) == 0) {
+	
+	if (memcmp(temp, "TP", 2) == 0) {
+		temp += 2;
+
+		char ver[] = {'\0','\0','\0'};
+		memcmp(ver, temp, 2);
+		int nversion = atoi(ver);
+		version = (FrameVersion)nversion;
+		temp += 2;
+	
 		int ntype;
-		int nlen;
-		memcpy(&ntype, newhead + 4, 4);
+		memcpy(&ntype, temp, 4);
 		type = (FrameType) ntohl(ntype);
-		memcpy(&nlen, newhead + 8, 4);
+		temp += 4;
+
+		int nlen;
+		memcpy(&nlen, temp, 4);
 		len = ntohl(nlen);
+		temp += 4;
 	} else {
 		len = -1;
 	}
-	if (len % 4 != 0)
-		len = -1;
-	if (type <= ft_Invalid || type >= ft_Max) {
-		type = ft_Invalid;
-		len = -1;
+
+	if (version == fv0_1) {
+		// Version 1 had to be word aligned
+		if (len % 4 != 0)
+			len = -1;
+			
+		if (type <= ft_Invalid || type >= ft_Max) {
+			type = ft_Invalid;
+			len = -1;
+		}
+	} else if (version == fv0_2) {
+		if (type <= ft02_Invalid || type >= ft02_Max) {
+			type = ft02_Invalid;
+			len = -1;
+		}
 	}
 
 	return len;
@@ -115,12 +182,15 @@ int Frame::setHeader(char *newhead)
 
 bool Frame::setType(FrameType nt)
 {
-	if (nt > ft_Invalid && nt < ft_Max) {
-		type = nt;
-		return true;
-	} else {
-		return false;
-	}
+	if (version == fv0_1)
+		if (nt < ft_Invalid || nt > ft_Max)
+			return false;
+	else if (version == fv0_2)
+		if (nt < ft02_Invalid || nt > ft02_Max)
+			return false;
+	
+	type = nt;
+	return true;
 }
 
 bool Frame::setData(char *newdata, int dlen)
@@ -144,22 +214,34 @@ bool Frame::setData(char *newdata, int dlen)
 bool Frame::packString(char *str)
 {
 	int len = strlen(str) + 1;
-	int padlen = 4 - len % 4;
-	if (padlen == 4)
-		padlen = 0;
+
+	// Version 0.1 needed to be correctly aligned
+	int padlen = 0;
+	if (version == fv0_1) {
+		padlen = 4 - len % 4;
+		if (padlen == 4)
+			padlen = 0;
+	}
+
 	int netlen = htonl(len);
 	char *temp = (char *) realloc(data, length + 4 + len + padlen);
+	
 	if (temp != NULL) {
 		data = temp;
 		temp += length;
+		
+		// Length
 		memcpy(temp, &netlen, 4);
-		length += 4;
 		temp += 4;
+		
+		// Actual string
 		memcpy(temp, str, len);
-		length += len;
 		temp += len;
+		
+		// Pad the string
 		memset(temp, '\0', padlen);
-		length += padlen;
+
+		length += 4 + len + padlen;
 	} else {
 		return false;
 	}
@@ -175,11 +257,14 @@ bool Frame::packInt(int val)
 {
 	int netval = htonl(val);
 	char *temp = (char *) realloc(data, length + 4);
+	
 	if (temp != NULL) {
 		data = temp;
 		temp += length;
+		
 		memcpy(temp, &netval, 4);
 		length += 4;
+		
 	} else {
 		return false;
 	}
@@ -190,11 +275,14 @@ bool Frame::packInt64(long long val)
 {
 	long long netval = htonq(val);
 	char *temp = (char *) realloc(data, length + 8);
+	
 	if (temp != NULL) {
 		data = temp;
 		temp += length;
+		
 		memcpy(temp, &netval, 8);
 		length += 8;
+		
 	} else {
 		return false;
 	}
@@ -208,11 +296,11 @@ int Frame::getUnpackOffset()
 
 bool Frame::setUnpackOffset(int newoffset)
 {
-	if (newoffset < length - 4 && newoffset >= 0) {
+	if (newoffset < length - 4 && newoffset >= 0)
 		unpackptr = newoffset;
-	} else {
+	else
 		return false;
-	}
+	
 	return true;
 }
 
@@ -231,9 +319,14 @@ char *Frame::unpackString()
 	if (len > 0 && length >= unpackptr + len) {
 		rtnstr = new char[len];
 		memcpy(rtnstr, data + unpackptr, len);
-		int pad = 4 - len % 4;
-		if (pad == 4)
-			pad = 0;
+
+		int pad = 0;
+		if (version == fv0_1) {
+			pad = 4 - len % 4;
+			if (pad == 4)
+				pad = 0;
+		}
+		
 		unpackptr += len + pad;
 	} else {
 		Logger::getLogger()->debug("len < 0 or length < upackptr + len");

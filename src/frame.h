@@ -2,6 +2,35 @@
 #define FRAME_H
 
 typedef enum {
+	fv0_1 = 1,
+	fv0_2 = 2,
+	fv_Max,
+} FrameVersion;
+
+typedef enum {
+// New Frame Codes
+	ft02_Invalid = -1,
+	ft02_OK = 0,
+  	ft02_Fail = 1,
+  	ft02_Connect = 2,
+  	ft02_Login = 3,
+  	ft02_Object_Get = 4,
+  	ft02_Object_GetByPos = 5,
+  	ft02_Object = 6,
+  	ft02_OrderDesc_Get = 7,
+  	ft02_OrderDesc = 8,
+  	ft02_Order_Get = 9,
+  	ft02_Order = 10,
+  	ft02_Order_Add = 11,
+  	ft02_Order_Remove = 12,
+  	ft02_Board_Get = 13,
+  	ft02_Board = 14,
+  	ft02_Message_Get = 15,
+  	ft02_Message = 16,
+  	ft02_Message_Post = 17,
+	ft02_Max,
+	
+// Old Frame Codes
 	ft_Invalid = -1,
 	ft_Connect = 0,
 	ft_OK = 1,
@@ -24,43 +53,53 @@ typedef enum {
 
 class Frame {
 
-      public:
-	Frame();
-	Frame(Frame & rhs);
-	~Frame();
+	public:
+		Frame();
+		Frame(FrameVersion v);
+		Frame(Frame &rhs);
 
-	Frame operator=(Frame & rhs);
+		~Frame();
 
-	char *getPacket();
-	FrameType getType();
-	int getLength();
-	char *getData();
+		Frame operator=(Frame &rhs);
 
-	int setHeader(char *newhead);
-	bool setType(FrameType nt);
-	bool setData(char *newdata, int dlen);
+		char *getPacket();
+		FrameType getType();
+		int getLength();
+		char *getData();
 
-	bool packString(char *str);
-	//bool packString(std::string str);
-	bool packInt(int val);
-	bool packInt64(long long val);
+		int setHeader(char *newhead);
+		bool setType(FrameType nt);
+		bool setData(char *newdata, int dlen);
 
-	// uses these functions with care
-	int getUnpackOffset();
-	bool setUnpackOffset(int newoffset);
+		bool packString(char *str);
+		//bool packString(std::string str);
+		bool packInt(int val);
+		bool packInt64(long long val);
 
-	int unpackInt();
-	char *unpackString();
-	long long unpackInt64();
+		// uses these functions with care
+		int getUnpackOffset();
+		bool setUnpackOffset(int newoffset);
 
-	void createFailFrame(int code, char *reason);
+		int unpackInt();
+		char *unpackString();
+		long long unpackInt64();
 
-      private:
-	 FrameType type;
-	int length;
-	char *data;
-	int unpackptr;
+		void createFailFrame(int code, char *reason);
 
+	private:
+		FrameVersion version;
+		FrameType type;
+	
+		// Which packet sequence does this refer to?
+		int sequence;
+		
+		// Frame length
+		int length;
+
+		// Actual data of the frame
+		char *data;
+
+		int unpackptr;
 };
 
 #endif
