@@ -22,7 +22,7 @@ typedef enum {
   	ft02_OrderDesc = 9,
   	ft02_Order_Get = 10,
   	ft02_Order = 11,
-  	ft02_Order_Add = 12,
+  	ft02_Order_Insert = 12,
   	ft02_Order_Remove = 13,
 	//only for future reference
   	ft02_Board_Get = 16,

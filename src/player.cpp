@@ -102,7 +102,7 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Order_Get:
 		processGetOrder(frame);
 		break;
-	case ft02_Order_Add:
+	case ft02_Order_Insert:
 		processAddOrder(frame);
 		break;
 	case ft02_Order_Remove:
