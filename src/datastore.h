@@ -30,7 +30,6 @@ class DataStore {
   DataStore();
   ~DataStore();
 
-  void getDataHeader(unsigned int dataid, Frame* frame, int pid);
   void getData(unsigned int dataid, Frame* frame, int pid);
   void removeData(unsigned int dataid, Frame* frame, int pid);
 

@@ -63,13 +63,14 @@ typedef enum {
 	ft03_Ping = 27,
 	ft03_Order_Probe = 28,
 	//Design category and component
-	ft03_Data_Header_Get = 35,
-	ft03_Data_Get = 36,
-	ft03_Data_Remove = 37,
-	ft03_Data_Header = 38,
-	ft03_Data = 39,
-	ft03_Player_Get = 40,
-	ft03_Player = 41,
+	ft03_Data_URL_Get = 35,
+	ft03_Data_URL = 36,
+	ft03_Player_Get = 37,
+	ft03_Player = 38,
+	ft03_Board_List_Get = 39,
+	ft03_Board_List = 40,
+	ft03_ResDesc_List_Get = 41,
+	ft03_ResDesc_List = 42,
 	ft03_Max,
 
 

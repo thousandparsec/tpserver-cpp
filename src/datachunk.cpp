@@ -1,4 +1,4 @@
-/*  Stores Binary data to be sent to the client.
+/*  Stores URL Binary data to be sent to the client.
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -26,22 +26,18 @@ unsigned int DataChunk::nextid = 1;
 
 DataChunk::DataChunk(){
   did = nextid++;
-  bdata = NULL;
 }
 
 DataChunk::DataChunk(const DataChunk &rhs){
   did = nextid++;
   pid = rhs.pid;
   turn = rhs.turn;
-  mimetype = rhs.mimetype;
-  length = rhs.length;
-  bdata = new char[length];
-  memcpy(bdata, rhs.bdata, length);
+  url = rhs.url;
+  
 }
 
 DataChunk::~DataChunk(){
-  if(bdata != NULL)
-    delete[] bdata;
+  
 }
 
 unsigned int DataChunk::getId() const{
@@ -60,26 +56,14 @@ void DataChunk::setTurnCreated(unsigned int cturn){
   turn = cturn;
 }
 
-void DataChunk::setMimeType(const std::string mtype){
-  mimetype = mtype;
+void DataChunk::setUrl(const std::string nurl){
+  url = nurl;
 }
 
-void DataChunk::setData(unsigned int len, char* data){
-  if(bdata != NULL)
-    delete[] bdata;
-  
-  length = len;
-  bdata = new char[len];
-  memcpy(bdata, data, len);
-}
-
-void DataChunk::packHeader(Frame* f) const{
+void DataChunk::pack(Frame* f) const{
   f->packInt(did);
   f->packInt(turn);
-  f->packString(mimetype.c_str());
-  f->packInt(length);
+  f->packString(url.c_str());
 }
 
-void DataChunk::packData(Frame* f) const{
-  f->packData(length, bdata);
-}
+

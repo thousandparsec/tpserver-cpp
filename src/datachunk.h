@@ -1,6 +1,6 @@
 #ifndef DATACHUNK_H
 #define DATACHUNK_H
-/* Binary Data Chunks object.
+/* URL Data Chunks object.
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -36,20 +36,17 @@ class DataChunk{
 
   void setOwner(unsigned int playerid);
   void setTurnCreated(unsigned int cturn);
-  void setMimeType(const std::string mtype);
-  void setData(unsigned int len, char* data); // data *is* copied.
+  void setUrl(const std::string nurl);
 
-  void packHeader(Frame* f) const;
-  void packData(Frame* f) const;
+  void pack(Frame* f) const;
 
  private:
   static unsigned int nextid;
   unsigned int did;
   unsigned int pid;
   unsigned int turn;
-  std::string mimetype;
-  unsigned int length;
-  char* bdata;
+  std::string url;
+  
 
 };
 

@@ -35,28 +35,6 @@ DataStore::~DataStore(){
   }
 }
 
-void DataStore::getDataHeader(unsigned int dataid, Frame* frame, int pid){
-  // find datachunk
-  std::map<unsigned int, DataChunk*>::iterator itcurr = store.find(dataid);
-  if(itcurr != store.end()){
-
-    DataChunk* chunk = itcurr->second;
-
-    // check owner
-    if(pid == (int)chunk->getOwner()){
-      
-      frame->setType(ft03_Data_Header);
-      chunk->packHeader(frame);
-      
-    }else{
-      Logger::getLogger()->warning("A player tried to get a DataChunk header that wasn't for them.");
-      frame->createFailFrame(fec_PermissionDenied, "It's not for you");
-    }
-  }else{
-    Logger::getLogger()->warning("A player tried to get a DataChunk header that doesn't exist");
-    frame->createFailFrame(fec_NonExistant, "Chunk does not exist");
-  }
-}
 
 void DataStore::getData(unsigned int dataid, Frame* frame, int pid){
   // find datachunk
@@ -68,9 +46,9 @@ void DataStore::getData(unsigned int dataid, Frame* frame, int pid){
     // check owner
     if(pid == (int)chunk->getOwner()){
       
-      frame->setType(ft03_Data);
-      chunk->packHeader(frame);
-      chunk->packData(frame);
+      frame->setType(ft03_Data_URL);
+      chunk->pack(frame);
+
       
     }else{
       Logger::getLogger()->warning("A player tried to get a DataChunk that wasn't for them.");
