@@ -24,6 +24,7 @@ class Game {
 	IGObject *getObject(unsigned int id);
 
 	std::list <unsigned int> getObjectsByPos(long long x, long long y, long long z, unsigned long long r);
+	std::list <unsigned int> getContainerByPos(long long x, long long y, long long z);
 
 	void doEndOfTurn();
 	void resetEOTTimer();

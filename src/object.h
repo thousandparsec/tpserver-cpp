@@ -45,6 +45,7 @@ class IGObject {
 	void setPosition3(long long x, long long y, long long z);
 	void setVelocity3(long long x, long long y, long long z);
 	
+	void removeFromParent();
 
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
@@ -83,6 +84,8 @@ class IGObject {
 	long long velx;
 	long long vely;
 	long long velz;
+
+	unsigned int parentid;
 
 
 	 std::set < unsigned int >children;

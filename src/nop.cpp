@@ -54,7 +54,7 @@ void Nop::describeOrder(int orderType, Frame * f)
 		f->packString("No Operation");
 		f->packString("Object does nothing for a given number of turns");
 		f->packInt(1);
-		f->packString("Time Delay");
+		f->packString("wait");
 		f->packInt(opT_Time);
 		f->packString("The number of turns to wait");
 	}

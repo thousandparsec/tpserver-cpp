@@ -2,6 +2,7 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "game.h"
 
 #include "move.h"
 
@@ -61,6 +62,19 @@ bool Move::inputFrame(Frame * f)
 bool Move::doOrder(IGObject * ob){
   ob->setVelocity3(x - ob->getPositionX(), y - ob->getPositionY(), z - ob->getPositionZ());
   ob->setPosition3(x, y, z);
+
+  ob->removeFromParent();
+
+  // re-containerise if necessary
+  std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(x, y, z);
+  
+  for(std::list<unsigned int>::reverse_iterator itcurr = oblist.rend(); itcurr != oblist.rbegin(); --itcurr){
+    if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+      Game::getGame()->getObject(*itcurr)->addContainedObject(ob->getID());
+      break;
+    }
+  }
+
   return true;
 }
 
@@ -71,7 +85,7 @@ void Move::describeOrder(int orderType, Frame * f)
 		f->packString("Move");
 		f->packString("Move to a given position absolute in space");
 		f->packInt(1);
-		f->packString("Position");
+		f->packString("pos");
 		f->packInt(opT_Space_Coord_Abs);
 		f->packString("The position in space to move to");
 	}

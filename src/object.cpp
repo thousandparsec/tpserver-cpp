@@ -20,6 +20,7 @@ unsigned int IGObject::nextAutoID = 0;
 IGObject::IGObject()
 {
 	id = nextAutoID++;
+	parentid = 0;
 	//check that new id is valid - TODO
 	name = NULL;
 	if (myGame == NULL) {
@@ -50,8 +51,10 @@ IGObject::IGObject(IGObject & rhs)
 	vely = rhs.vely;
 	velz = rhs.velz;
 
+	parentid = rhs.parentid;
+
 	children.clear();
-	children = rhs.children;
+	//children = rhs.children;
 }
 
 IGObject::~IGObject()
@@ -206,11 +209,17 @@ void IGObject::setVelocity3(long long x, long long y, long long z)
 	velz = z;
 }
 
-
+void IGObject::removeFromParent()
+{
+  Game::getGame()->getObject(parentid)->removeContainedObject(id);
+  parentid = 0;
+}
 
 bool IGObject::addContainedObject(unsigned int addObjectID)
 {
 	//check that the new object is *really* inside the object
+  
+        Game::getGame()->getObject(addObjectID)->parentid = id;
 
 	return children.insert(addObjectID).second;
 }
