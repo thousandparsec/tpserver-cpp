@@ -97,8 +97,8 @@ void Player::processIGFrame(Frame * frame)
 		processGetObjectById(frame);
 		break;
 	case ft02_Object_GetByPos:
-	  processGetObjectByPos(frame);
-	  break;
+		processGetObjectByPos(frame);
+		break;
 	case ft02_Order_Get:
 		processGetOrder(frame);
 		break;
@@ -112,15 +112,17 @@ void Player::processIGFrame(Frame * frame)
 		processDescribeOrder(frame);
 		break;
 	case ft02_Time_Remaining_Get:
-	  processGetTime(frame);
-	  break;
-		//more
+		processGetTime(frame);
+		break;
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
+
+		// Send a failed frame
+  		Frame *of = curConnection->createFrame(frame);
+		of->createFailFrame(fec_ProtocolError, "Did not understand that frame type.");
+		curConnection->sendFrame(of);
 		break;
 	}
-
-  
 
 	delete frame;
 }
