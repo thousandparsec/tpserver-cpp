@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string>
 
+#include "logging.h"
+
 #include "frame.h"
 
 Frame::Frame(){
@@ -189,13 +191,16 @@ int Frame::unpackInt(){
 char* Frame::unpackString(){
   int len = unpackInt();
   char* rtnstr = NULL;
-  if(len > 0 && length > unpackptr + len){
+  if(len > 0 && length >= unpackptr + len){
     rtnstr = new char[len];
-    memcpy(&rtnstr, data + unpackptr, len);
+    memcpy(rtnstr, data + unpackptr, len);
     int pad = 4 - len % 4;
     if(pad == 4)
       pad = 0;
     unpackptr += len + pad;
+  }else{
+    Logger::getLogger()->debug("len < 0 or length < upackptr + len");
   }
+  printf("unpackptr %d\n", unpackptr);
   return rtnstr;
 }

@@ -5,7 +5,7 @@ all: tpserv
 tpserv: main.o logging.o console.o game.o net.o settings.o connection.o frame.o
 	g++ -o tpserv main.o logging.o console.o game.o net.o settings.o connection.o frame.o -lpthread
 
-main.o logging.o console.o game.o net.o connection.o: logging.h
+main.o logging.o console.o game.o net.o connection.o frame.o: logging.h
 
 main.o console.o: console.h
 

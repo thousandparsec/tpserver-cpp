@@ -127,6 +127,7 @@ void Connection::login(){
   int len = read(sockfd, headerbuff, 12);
   if(len == 12){
     if((len = recvframe->setHeader(headerbuff)) != -1){
+      printf("%d\n", len);
       char* data = new char[len];
       int dlen = read(sockfd, data, len);
       if(len != dlen){
@@ -164,6 +165,11 @@ void Connection::login(){
     char* password = recvframe->unpackString();
     if(username != NULL && password != NULL){
       //authenicate
+      Frame* okframe = new Frame();
+      okframe->setType(ft_OK);
+      okframe->packString("Welcome");
+      sendFrame(okframe);
+      
       status = 3;
     }else{
       Logger::getLogger()->debug("username or password == NULL");
