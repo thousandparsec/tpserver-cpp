@@ -22,6 +22,8 @@ class Fleet:public OwnedObject {
 
 	bool checkAllowedOrder(int ot, int playerid);
 
+	int getContainerType();
+
 	ObjectData* clone();
 
       private:

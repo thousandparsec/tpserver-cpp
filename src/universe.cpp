@@ -18,6 +18,10 @@ void Universe::doOnceATurn(IGObject * obj)
 	++yearNum;
 }
 
+int Universe::getContainerType(){
+  return 1;
+}
+
 ObjectData* Universe::clone(){
   return new Universe();
 }

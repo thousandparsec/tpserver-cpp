@@ -104,11 +104,6 @@ Vector3d IGObject::getVelocity()
 }
 
 
-std::set<unsigned int> IGObject::getContainedObjects()
-{
-	return children;
-}
-
 bool IGObject::setID(unsigned int newid)
 {
 	//check to see if id is use
@@ -161,6 +156,31 @@ void IGObject::setName(char *newname)
 void IGObject::setPosition(const Vector3d & npos)
 {
 	pos = npos;
+	futurepos = npos;
+}
+
+void IGObject::setFuturePosition(const Vector3d & npos){
+  futurepos = npos;
+}
+
+void IGObject::updatePosition(){
+  vel = futurepos - pos;
+
+  // recontainerise if necessary
+  if(pos != futurepos && Game::getGame()->getObject(parentid)->getContainerType() == 1){
+    removeFromParent();
+    
+    std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(futurepos);
+    for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+      Logger::getLogger()->debug("Container object %d", *itcurr);
+      //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+      if(*itcurr != id && Game::getGame()->getObject(*itcurr)->size > size){
+	Game::getGame()->getObject(*itcurr)->addContainedObject(id);
+	break;
+      }
+    }
+  }
+  pos = futurepos;
 }
 
 void IGObject::setVelocity(const Vector3d & nvel)
@@ -174,13 +194,25 @@ void IGObject::removeFromParent()
   parentid = 0;
 }
 
+int IGObject::getContainerType(){
+  return myObjectData->getContainerType();
+}
+
+std::set<unsigned int> IGObject::getContainedObjects()
+{
+	return children;
+}
+
 bool IGObject::addContainedObject(unsigned int addObjectID)
 {
+  if(myObjectData->getContainerType() >= 1){
 	//check that the new object is *really* inside the object
   
         Game::getGame()->getObject(addObjectID)->parentid = id;
 
 	return children.insert(addObjectID).second;
+  }
+  return false;
 }
 
 bool IGObject::removeContainedObject(unsigned int removeObjectID)

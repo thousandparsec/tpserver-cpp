@@ -11,6 +11,8 @@ class Universe:public ObjectData {
 
 	void doOnceATurn(IGObject * obj);
 
+	int getContainerType();
+
 	ObjectData* clone();
 
 	void setYear(int year);

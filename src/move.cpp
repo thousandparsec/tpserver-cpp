@@ -4,6 +4,8 @@
 #include "object.h"
 #include "game.h"
 #include "logging.h"
+#include "player.h"
+#include "fleet.h"
 
 #include "move.h"
 
@@ -48,23 +50,23 @@ bool Move::inputFrame(Frame * f)
 }
 
 bool Move::doOrder(IGObject * ob){
-  ob->setVelocity(dest - ob->getPosition());
-  ob->setPosition(dest);
+  //ob->setVelocity(dest - ob->getPosition());
+  ob->setFuturePosition(dest);
 
-  ob->removeFromParent();
+  //ob->removeFromParent();
 
   // re-containerise if necessary
-  std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(dest);
+  // std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(dest);
 
-  Logger::getLogger()->debug("There are %d possible container objects", oblist.size());
+//   Logger::getLogger()->debug("There are %d possible container objects", oblist.size());
   
-  for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
-    Logger::getLogger()->debug("Container object %d", *itcurr);
-    if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-      Game::getGame()->getObject(*itcurr)->addContainedObject(ob->getID());
-      break;
-    }
-  }
+//   for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+//     Logger::getLogger()->debug("Container object %d", *itcurr);
+//     if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+//       Game::getGame()->getObject(*itcurr)->addContainedObject(ob->getID());
+//       break;
+//     }
+//   }
 
   return true;
 }

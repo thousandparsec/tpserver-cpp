@@ -32,8 +32,6 @@ class IGObject {
 	Vector3d getPosition();
 	Vector3d getVelocity();
 	unsigned int getParent();
-	
-	std::set<unsigned int> getContainedObjects();
 
 	bool setID(unsigned int newid);
 	void autoSetID();
@@ -41,10 +39,14 @@ class IGObject {
 	void setSize(unsigned long long newsize);
 	void setName(char *newname);
 	void setPosition(const Vector3d & npos);
+	void setFuturePosition(const Vector3d & npos);
+	void updatePosition();
 	void setVelocity(const Vector3d & nvel);
 	
 	void removeFromParent();
 
+	int getContainerType();
+	std::set<unsigned int> getContainedObjects();
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
 
@@ -74,6 +76,7 @@ class IGObject {
 	unsigned long long size;
 	char *name;
 	Vector3d pos;
+	Vector3d futurepos;
 	Vector3d vel;
 	
 	unsigned int parentid;

@@ -18,6 +18,8 @@ class ObjectData {
 	
 	virtual bool checkAllowedOrder(int ot, int playerid);
 
+	virtual int getContainerType() = 0;
+
 	virtual ObjectData* clone() = 0;
 
       protected:

@@ -71,6 +71,10 @@ bool Fleet::checkAllowedOrder(int ot, int playerid){
   return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (ships.find(1) != ships.end() && ot == odT_Colonise)));
 }
 
+int Fleet::getContainerType(){
+  return 0;
+}
+
 ObjectData* Fleet::clone(){
   return new Fleet();
 }

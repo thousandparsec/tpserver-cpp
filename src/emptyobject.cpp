@@ -15,3 +15,7 @@ void EmptyObject::doOnceATurn(IGObject * obj)
 ObjectData* EmptyObject::clone(){
   return new EmptyObject();
 }
+
+int EmptyObject::getContainerType(){
+  return 1;
+}

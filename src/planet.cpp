@@ -34,6 +34,10 @@ bool Planet::checkAllowedOrder(int ot, int playerid){
   return (playerid == getOwner() && (ot == odT_Build || ot == odT_Nop));
 }
 
+int Planet::getContainerType(){
+  return 2;
+}
+
 ObjectData* Planet::clone(){
   return new Planet();
 }
