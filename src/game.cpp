@@ -32,13 +32,36 @@ void Game::save(){
 
 Player* Game::findPlayer(char* name, char* pass){
   Logger::getLogger()->debug("finding player"); 
-  //if new, create new player
+  
+  //look for current/known players
+  Player* rtn = NULL;
 
-  Player * newplayer = new Player();
-  newplayer->setName(name);
-  newplayer->setPass(pass);
-  players.push_back(newplayer);
-  return newplayer;
+  std::list<Player*>::iterator itcurr, itend;
+
+  itend = players.end();
+  for(itcurr = players.begin(); itcurr != itend; itcurr++){
+    char* itname = (*itcurr)->getName();
+    if(strncmp(name, itname, strlen(name) + 1) == 0){
+      char* itpass = (*itcurr)->getPass();
+      if(strncmp(pass, itpass, strlen(pass) + 1) == 0){
+	rtn = (*itcurr);
+      }
+      delete itpass;
+    }
+    delete itname;
+    if(rtn != NULL)
+      break;
+  }
+
+  if(rtn == NULL){
+    //if new, create new player
+    
+    rtn = new Player();
+    rtn->setName(name);
+    rtn->setPass(pass);
+    players.push_back(rtn);
+  }
+  return rtn;
 }
 
 void Game::doEndOfTurn(){

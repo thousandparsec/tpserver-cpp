@@ -151,8 +151,13 @@ void Connection::login(){
       sendFrame(failframe);
       close();
     }
+    if(username != NULL)
+      delete username;
+    if(password != NULL)
+      delete password;
     
   }
+  
   delete recvframe;
   
 }
