@@ -224,6 +224,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		fleet->setVelocity3(0LL, 0ll, 0ll);
 	
 		fleet->addAction(-1, rtn->getID(), odT_Move);
+		fleet->addAction(-1, rtn->getID(), odT_Nop);
 		star->addContainedObject(fleet->getID());
 	}
 	return rtn;
@@ -274,8 +275,8 @@ void Game::doEndOfTurn()
 	Network::getNetwork()->sendToAll(frame);
 
 	// DO END OF TURN STUFF HERE
-	std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin();
-	for( ; itcurr != objects.end(); ++itcurr) {
+	std::map<unsigned int, IGObject *>::iterator itcurr;
+	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
 	  IGObject * ob = itcurr->second;
 	  Order * currOrder = ob->getFirstOrder();
 	  if(currOrder != NULL){
