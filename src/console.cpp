@@ -5,6 +5,7 @@
 #include "logging.h"
 #include "net.h"
 #include "game.h"
+#include "object.h"
 
 #include "console.h"
 
@@ -30,7 +31,7 @@ void Console::mainLoop()
 		if (key == 'q')
 			break;
 		if (key == 'h') {
-			printf("q to quit\nh for help\nt to end turn\nn to stop network\nN to start network\nl to type file to load\n");
+			printf("q to quit\nh for help\nt to end turn\nn to stop network\nN to start network\nl to type file to load\no to add ordertype, object player\n");
 		}
 		if (key == 't') {
 			Logger::getLogger()->info("End Of Turn started");
@@ -47,6 +48,19 @@ void Console::mainLoop()
 			num = scanf("%s", file);
 			if (num == 1) {
 				Game::getGame()->loadGame(file);
+			}
+		}
+		if (key == 'o') {
+			int player, object, order;
+			num = scanf("%d %d %d", &player, &object, &order);
+			if (num == 3) {
+				if (Game::getGame()->getObject(object)->addAction(-1, player, (OrderType) order)) {
+					Logger::getLogger()->info("Extra action enabled");
+				} else {
+					Logger::getLogger()->info("Extra action not added");
+				}
+			} else {
+				Logger::getLogger()->warning("Did not get the parameters");
 			}
 		}
 	}
