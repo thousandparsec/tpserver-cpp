@@ -17,6 +17,28 @@ AC_LANG_CPLUSPLUS
 AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread library))
 #check headers, functions, etc
 
+dnl Test for IPv6 socket addresses
+dnl "Borrowed" from skstream
+
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING([for IPv6 socket address])
+AC_TRY_COMPILE([#include <sys/types.h>
+                #include <sys/socket.h>
+                #include <netinet/in.h>],
+[
+    sockaddr_in6 sin6;
+    sin6.sin6_family = AF_INET6;
+],
+[
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_IPV6, 1, true if we have sockaddr_in6 and AF_INET6)
+],
+[
+   AC_MSG_RESULT(no)
+])
+AC_LANG_RESTORE
+
 
 AC_OUTPUT([
 Makefile
