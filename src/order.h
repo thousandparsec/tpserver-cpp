@@ -28,9 +28,9 @@ class Order {
 	OrderType getType();
 
 	virtual void createFrame(Frame * f, int objID, int pos);
-	void inputFrame(Frame * f);
+	virtual void inputFrame(Frame * f);
 
-	void createOutcome(Frame * f, int objID, int pos);
+	virtual void createOutcome(Frame * f, int objID, int pos);
 
 	static void describeOrder(int ordertype, Frame * f);
 	static Order *createOrder(OrderType ordertype);
