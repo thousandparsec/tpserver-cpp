@@ -1,4 +1,10 @@
 #include <iostream>
+#include <stdio.h>
+#include <stdarg.h>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "logging.h"
 
@@ -14,53 +20,66 @@ Logger *Logger::getLogger()
 
 void Logger::debug(char *msg, ...)
 {
-
-	doLogging(0, msg);
+  char* fmsg = new char[100];
+  va_list ap;
+  va_start(ap, msg);
+  int reallen = vsnprintf(fmsg, 100, msg, ap);
+  if(reallen > 100){
+    delete[] fmsg;
+    fmsg = new char[reallen + 1];
+    vsnprintf(fmsg, reallen, msg, ap);
+  }
+  va_end(ap);
+  doLogging(0, fmsg);
+  
 }
 
 void Logger::info(char *msg, ...)
 {
-
-	doLogging(1, msg);
+ char* fmsg = new char[100];
+  va_list ap;
+  va_start(ap, msg);
+  int reallen = vsnprintf(fmsg, 100, msg, ap);
+  if(reallen > 100){
+    delete[] fmsg;
+    fmsg = new char[reallen + 1];
+    vsnprintf(fmsg, reallen, msg, ap);
+  }
+  va_end(ap);
+  doLogging(1, fmsg);
 }
 
 void Logger::warning(char *msg, ...)
 {
-
-	doLogging(2, msg);
+  char* fmsg = new char[100];
+  va_list ap;
+  va_start(ap, msg);
+  int reallen = vsnprintf(fmsg, 100, msg, ap);
+  if(reallen > 100){
+    delete[] fmsg;
+    fmsg = new char[reallen + 1];
+    vsnprintf(fmsg, reallen, msg, ap);
+  }
+  va_end(ap);
+  doLogging(2, fmsg);
 }
 
 void Logger::error(char *msg, ...)
 {
-
-	doLogging(3, msg);
-	exit(1);
+  char* fmsg = new char[100];
+  va_list ap;
+  va_start(ap, msg);
+  int reallen = vsnprintf(fmsg, 100, msg, ap);
+  if(reallen > 100){
+    delete[] fmsg;
+    fmsg = new char[reallen + 1];
+    vsnprintf(fmsg, reallen, msg, ap);
+  }
+  va_end(ap);
+  doLogging(3, fmsg);
+  exit(1);
 }
 
-void Logger::debug(int i)
-{
-
-	doLogging(0, i);
-}
-
-void Logger::info(int i)
-{
-
-	doLogging(1, i);
-}
-
-void Logger::warning(int i)
-{
-
-	doLogging(2, i);
-}
-
-void Logger::error(int i)
-{
-
-	doLogging(3, i);
-	exit(1);
-}
 
 void Logger::flush()
 {
@@ -78,12 +97,24 @@ Logger::~Logger()
 
 }
 
-void Logger::doLogging(int level, int i)
-{
-	std::cout << level << " " << i << "\n";
-}
 
 void Logger::doLogging(int level, char *msg)
 {
-	std::cout << level << " " << msg << "\n";
+  switch(level){
+  case 0:
+    std::cout << "< Debug > ";
+    break;
+  case 1:
+    std::cout << "< Info  > ";
+    break;
+  case 2:
+    std::cout << "<Warning> ";
+    break;
+  case 3:
+    std::cout << "< Error > ";
+
+  default:
+    std::cout << "<   " << level << "  > ";
+  }
+  std::cout << msg << std::endl;
 }

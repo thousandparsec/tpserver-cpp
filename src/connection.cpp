@@ -280,8 +280,8 @@ bool Connection::readFrame(Frame * recvframe)
 	if (len == hlen) {
 		if ( (len = recvframe->setHeader(headerbuff)) != -1 ) {
 				
-			Logger::getLogger()->debug("Data Length:");
-			Logger::getLogger()->debug(len);
+		  Logger::getLogger()->debug("Data Length: %d", len);
+		  
 				
 			char *data = new char[len];
 			int dlen = read(sockfd, data, len);
