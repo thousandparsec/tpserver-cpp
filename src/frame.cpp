@@ -350,6 +350,20 @@ bool Frame::packInt8(char val){
   return true;
 }
 
+bool Frame::packData(unsigned int len, char* bdata){
+  char *temp = (char *) realloc(data, length + len);
+  
+  if (temp != NULL) {
+    data = temp;
+    temp += length;
+    memcpy(temp, bdata, len);
+    length += len;
+  }else{
+    return false;
+  }
+  return true;
+}
+
 int Frame::getUnpackOffset() const
 {
 	return unpackptr;
@@ -402,6 +416,14 @@ char Frame::unpackInt8(){
   char rval = data[unpackptr];
   unpackptr += 1;
   return rval;
+}
+
+void Frame::unpackData(unsigned int len, char* bdata){
+  Logger::getLogger()->warning("Using unpackData, might not be safe");
+  
+  memcpy(bdata, data + unpackptr, len);
+  unpackptr += len;
+
 }
 
 void Frame::createFailFrame(FrameErrorCode code, char *reason)

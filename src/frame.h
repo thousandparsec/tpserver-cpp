@@ -126,6 +126,7 @@ class Frame {
 		bool packInt(int val);
 		bool packInt64(long long val);
 		bool packInt8(char val);
+		bool packData(unsigned int len, char* bdata);
 
 		// uses these functions with care
 		int getUnpackOffset() const;
@@ -135,6 +136,7 @@ class Frame {
 		char *unpackString();
 		long long unpackInt64();
 		char unpackInt8();
+		void unpackData(unsigned int len, char* bdata);
 
 		void createFailFrame(FrameErrorCode code, char *reason);
 
