@@ -36,10 +36,11 @@ Frame::Frame(FrameVersion v)
 	type = ft02_Invalid;
   else
     type = ft_Invalid;
-	length = 0;
-	data = NULL;
-	unpackptr = 0;
-	version = v;
+
+  length = 0;
+  data = NULL;
+  unpackptr = 0;
+  version = v;
 }
 
 Frame::Frame(Frame &rhs)
@@ -94,10 +95,7 @@ char *Frame::getPacket()
 	char *temp;
 
 	// Allocate the correct amount of memory
-	if (version == fv0_1)
-		packet = new char[length + 12];
-	 else if (version == fv0_2)
-		packet = new char[length + 16];
+	packet = new char[getLength()];
 	temp = packet;
 
 	if (packet != NULL) {
@@ -159,6 +157,20 @@ FrameVersion Frame::getVersion()
 
 int Frame::getLength()
 {
+	return getHeaderLength()+getDataLength();
+}
+
+int Frame::getHeaderLength()
+{
+	if (version == fv0_1)
+		return 12;
+	else if (version == fv0_2)
+		return 16;
+	return 0;
+}
+
+int Frame::getDataLength()
+{
 	return length;
 }
 
@@ -182,7 +194,7 @@ int Frame::setHeader(char *newhead)
 		temp += 2;
 
 		char ver[] = {'\0','\0','\0'};
-		memcmp(ver, temp, 2);
+		memcpy(ver, temp, 2);
 		int nversion = atoi(ver);
 		version = (FrameVersion)nversion;
 		temp += 2;
@@ -260,18 +272,18 @@ bool Frame::setData(char *newdata, int dlen)
 
 bool Frame::packString(char *str)
 {
-	int len = strlen(str) + 1;
+	int slen = strlen(str) + 1;
 
 	// Version 0.1 needed to be correctly aligned
 	int padlen = 0;
 	if (version == fv0_1) {
-		padlen = 4 - len % 4;
+		padlen = 4 - slen % 4;
 		if (padlen == 4)
 			padlen = 0;
 	}
 
-	int netlen = htonl(len);
-	char *temp = (char *) realloc(data, length + 4 + len + padlen);
+	int netlen = htonl(slen);
+	char *temp = (char *) realloc(data, length + 4 + slen + padlen);
 	
 	if (temp != NULL) {
 		data = temp;
@@ -282,13 +294,13 @@ bool Frame::packString(char *str)
 		temp += 4;
 		
 		// Actual string
-		memcpy(temp, str, len);
-		temp += len;
+		memcpy(temp, str, slen);
+		temp += slen;
 		
 		// Pad the string
 		memset(temp, '\0', padlen);
 
-		length += 4 + len + padlen;
+		length += 4 + slen + padlen;
 	} else {
 		return false;
 	}
@@ -363,6 +375,7 @@ char *Frame::unpackString()
 {
 	int len = unpackInt();
 	char *rtnstr = NULL;
+	
 	if (len > 0 && length >= unpackptr + len) {
 		rtnstr = new char[len];
 		memcpy(rtnstr, data + unpackptr, len);

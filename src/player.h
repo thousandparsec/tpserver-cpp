@@ -25,7 +25,8 @@ class Player {
 
 	static int nextpid;
 
-	void processGetObject(Frame * frame);
+	void processGetObject(Frame * frame); // Version 1 Only
+	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
 	void processGetOrder(Frame * frame);
 	void processAddOrder(Frame * frame);

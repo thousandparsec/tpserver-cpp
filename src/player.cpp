@@ -90,6 +90,7 @@ int Player::getID()
 
 void Player::processIGFrame(Frame * frame)
 {
+  Logger::getLogger()->debug("IG Frame processor");
   if(frame->getVersion() == fv0_1){
 	switch (frame->getType()) {
 	case ft_Get_Object:
@@ -117,8 +118,8 @@ void Player::processIGFrame(Frame * frame)
 	}
   }else{
 	switch (frame->getType()) {
-	case ft02_Object_Get:
-		processGetObject(frame);
+	case ft02_Object_GetById:
+		processGetObjectById(frame);
 		break;
 	case ft02_Object_GetByPos:
 	  processGetObjectByPos(frame);
@@ -159,6 +160,39 @@ void Player::processGetObject(Frame * frame)
 	curConnection->sendFrame(obframe);
 }
 
+void Player::processGetObjectById(Frame * frame)
+{
+	Logger::getLogger()->debug("doing get object by id frame");
+
+	Frame *of = curConnection->createFrame(frame);
+	if (frame->getLength() >= 4) {
+		unsigned int len = frame->unpackInt();
+
+		// Check we have enough data
+		if (frame->getLength() >= 4 + 4*len) {
+			
+			// ListSeq Frame
+	    	of->setType(ft02_Sequence);
+    		of->packInt(len);
+	    	curConnection->sendFrame(of);
+
+			// Object frames
+    		for(int i=0 ; i < len; ++i) {
+				unsigned int objectID = frame->unpackInt();
+				
+				of = curConnection->createFrame(frame);
+				Game::getGame()->getObject(objectID)->createFrame(of, pid);
+      			curConnection->sendFrame(of);
+			}
+
+			return;
+		}
+	}
+
+	// Fall through incase of error
+	of->createFailFrame(4, "Invalid frame");
+	curConnection->sendFrame(of);
+}
 
 void Player::processGetObjectByPos(Frame * frame)
 {
@@ -175,7 +209,7 @@ void Player::processGetObjectByPos(Frame * frame)
 
     std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(x, y, z, r);
 
-    of->setType(ft02_Object_ListSeqHeader);
+    of->setType(ft02_Sequence);
     of->packInt(oblist.size());
     curConnection->sendFrame(of);
 

@@ -70,20 +70,23 @@ void Connection::process()
 	switch (status) {
 	case 1:
 		//check if user is really a TP protocol ver1 client
+		Logger::getLogger()->warning("Stage1");
 		verCheck();
 		break;
 	case 2:
 		//authorise the user
+		Logger::getLogger()->warning("Stage2");
 		login();
 		break;
 	case 3:
 		//process as normal
+		Logger::getLogger()->warning("Stage3");
 		inGameFrame();
 		break;
 	case 0:
 	default:
 		//do nothing
-		Logger::getLogger()->warning("Tryed to process connections that is closed or invalid");
+		Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
 		if (status != 0)
 			close();
 		status = 0;
@@ -108,9 +111,9 @@ void Connection::sendFrame(Frame * frame)
 {
 	char *packet = frame->getPacket();
 	if (packet != NULL) {
-		int len = frame->getLength() + 12;
+		int len = frame->getLength();
 		send(sockfd, packet, len, 0);
-		delete[]packet;
+		delete[] packet;
 	} else {
 		Logger::getLogger()->warning("Could not get packet from frame to send");
 	}
@@ -119,10 +122,12 @@ void Connection::sendFrame(Frame * frame)
 
 Frame* Connection::createFrame(Frame* oldframe)
 {
-  Frame* newframe = new Frame(version);
+  Frame* newframe;
   if(oldframe != NULL) {
+    newframe = new Frame(oldframe->getVersion());
     newframe->setSequence(oldframe->getSequence());
   } else {
+    newframe = new Frame(version);
     newframe->setSequence(0);
   }
   return newframe;
@@ -135,8 +140,10 @@ int Connection::getStatus()
 
 void Connection::verCheck()
 {
+	// FIXME: This is bad and should be fixed!
 	char *buff = new char[4];
 	int len = read(sockfd, buff, 4);
+
 	if (len == 4 && memcmp(buff, "TP01", 4) == 0) {
 	  // check the rest of the packet
 	  delete[] buff;
@@ -154,24 +161,41 @@ void Connection::verCheck()
 		delete[] buff;
 		return;
 	  }
-	} else if (len == 4 && memcmp(buff, "TPO2", 4) == 0) {
+	} else if (len == 4 && memcmp(buff, "TP02", 4) == 0) {
 	  // check the rest of the packet
 	  delete[] buff;
 	  buff = new char[12];
 	  len = read(sockfd, buff, 12);
-	  if (len == 12){
+	  
+	  if (len == 12) {
+		// Sequence number
 	    int seqNum = 0, nseqNum;
 	    memcpy(&nseqNum, buff, 4);
 	    seqNum = ntohl(nseqNum);
-	    if(memcmp(buff + 4, "\0\0\0\02\0\0\0\0", 8) == 0) {
-	      status = 2;
+
+		// Length of packet
+		int lenNum = 0, nlenNum;
+		memcpy(&nlenNum, buff + 8, 4);
+		lenNum = ntohl(nlenNum);
+		
+		// Read in the length of the packet and ignore
+		char *cbuff = new char[lenNum];
+		len = read(sockfd, cbuff, lenNum);
+	    Logger::getLogger()->info(cbuff);
+		delete[] cbuff;
+		
+	    if (memcmp(buff + 4, "\0\0\0\03", 4) == 0) {
 	      Logger::getLogger()->info("Client has version 2 of protocol");
+		  
+	      status = 2;
 	      version = fv0_2;
+		  
 	      Frame *okframe = createFrame(NULL);
 	      // since we don't create a frame object, we have to set the sequence number seperately
 	      okframe->setSequence(seqNum);
 	      okframe->setType(ft02_OK);
-	      okframe->packString("Protocol check ok, contunue");
+
+	      okframe->packString("Protocol check ok, continue!");
 	      sendFrame(okframe);
 
 	      delete[] buff;
@@ -205,9 +229,10 @@ void Connection::login()
 			player = Game::getGame()->findPlayer(username, password);
 			if (player != NULL) {
 				Frame *okframe = createFrame(recvframe);
-				okframe->setType(ft_OK);
+				okframe->setType(okframe->getVersion() == fv0_1 ? ft_OK : ft02_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
+				Logger::getLogger()->debug("Login OK!");
 				player->setConnection(this);
 				status = 3;
 			} else {
@@ -238,11 +263,12 @@ void Connection::inGameFrame()
 {
 	Frame *frame = createFrame();
 	if (readFrame(frame)) {
-		//Logger::getLogger()->warning("Discarded frame, not processed");
+		Logger::getLogger()->debug("inGameFrame");
 		//todo
 		// should pass frame to player to do something with
 		player->processIGFrame(frame);
 	} else {
+		Logger::getLogger()->debug("noFrame :(");
 		// client closed
 		delete frame;
 	}
@@ -251,18 +277,28 @@ void Connection::inGameFrame()
 bool Connection::readFrame(Frame * recvframe)
 {
 	bool rtn;
-	char *headerbuff = new char[12];
-	int len = read(sockfd, headerbuff, 12);
-	if (len == 12) {
-		if ((len = recvframe->setHeader(headerbuff)) != -1) {
+	
+	int hlen = recvframe->getHeaderLength();	
+	char *headerbuff = new char[hlen];
+	int len = read(sockfd, headerbuff, hlen);
+	
+	if (len == hlen) {
+		if ( (len = recvframe->setHeader(headerbuff)) != -1 ) {
+				
+			Logger::getLogger()->debug("Data Length:");
+			Logger::getLogger()->debug(len);
+				
 			char *data = new char[len];
 			int dlen = read(sockfd, data, len);
+			
 			if (len != dlen) {
 				//have to think about this.... what do we do?
 				Logger::getLogger()->debug("Read data not the length needed");
 			}
+			
 			recvframe->setData(data, dlen);
-			delete[]data;
+			delete[] data;
+
 			rtn = true;
 		} else {
 			Logger::getLogger()->debug("Incorrect header");
@@ -274,7 +310,7 @@ bool Connection::readFrame(Frame * recvframe)
 			rtn = false;
 		}
 	} else {
-		Logger::getLogger()->debug("Did not read 12 bytes");
+		Logger::getLogger()->debug("Did not read header");
 		if (len > 0) {
 			Frame *failframe = createFrame();
 			failframe->createFailFrame(0, "Protocol Error");	// TODO - should be a const or enum, protocol error
@@ -285,6 +321,6 @@ bool Connection::readFrame(Frame * recvframe)
 		close();
 		rtn = false;
 	}
-	delete[]headerbuff;
+	delete[] headerbuff;
 	return rtn;
 }

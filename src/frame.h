@@ -12,12 +12,12 @@ typedef enum {
 	ft02_Invalid = -1,
 	ft02_OK = 0,
   	ft02_Fail = 1,
-  	ft02_Connect = 2,
-  	ft02_Login = 3,
-  	ft02_Object_Get = 4,
-  	ft02_Object = 5,
+	ft02_Sequence = 2,
+  	ft02_Connect = 3,
+  	ft02_Login = 4,
+  	ft02_Object_GetById = 5,
 	ft02_Object_GetByPos = 6,
-	ft02_Object_ListSeqHeader = 7,
+  	ft02_Object = 7,
   	ft02_OrderDesc_Get = 8,
   	ft02_OrderDesc = 9,
   	ft02_Order_Get = 10,
@@ -66,7 +66,9 @@ class Frame {
 
 		int setHeader(char *newhead);
 		char *getPacket();
-		int getLength();
+		int getHeaderLength();		// The length of the header section
+		int getDataLength();		// The length of the data section
+		int getLength();			// The total length of the packet
 		
 		// Data
 		char *getData();

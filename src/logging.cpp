@@ -37,6 +37,31 @@ void Logger::error(char *msg, ...)
 	exit(1);
 }
 
+void Logger::debug(int i)
+{
+
+	doLogging(0, i);
+}
+
+void Logger::info(int i)
+{
+
+	doLogging(1, i);
+}
+
+void Logger::warning(int i)
+{
+
+	doLogging(2, i);
+}
+
+void Logger::error(int i)
+{
+
+	doLogging(3, i);
+	exit(1);
+}
+
 void Logger::flush()
 {
 	info("Logger stopped");
@@ -51,6 +76,11 @@ Logger::Logger()
 Logger::~Logger()
 {
 
+}
+
+void Logger::doLogging(int level, int i)
+{
+	std::cout << level << " " << i << "\n";
 }
 
 void Logger::doLogging(int level, char *msg)
