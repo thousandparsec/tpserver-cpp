@@ -103,6 +103,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft_Remove_Order:
 		processRemoveOrder(frame);
 		break;
+	case ft_Describe_Order:
+		processDescribeOrder(frame);
+		break;
 		//more
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
@@ -179,5 +182,14 @@ void Player::processRemoveOrder(Frame * frame)
 	} else {
 		of->createFailFrame(4, "Invalid frame");
 	}
+	curConnection->sendFrame(of);
+}
+
+void Player::processDescribeOrder(Frame * frame)
+{
+	Logger::getLogger()->debug("doing describe order frame");
+	Frame *of = new Frame();
+	int ordertype = frame->unpackInt();
+	Order::describeOrder(ordertype, of);
 	curConnection->sendFrame(of);
 }

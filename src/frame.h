@@ -13,6 +13,8 @@ typedef enum {
 	ft_Order = 7,
 	ft_Add_Order = 8,
 	ft_Remove_Order = 9,
+	ft_Describe_Order = 10,
+	ft_Order_Description = 11,
 	ft_Max
 } FrameType;
 
