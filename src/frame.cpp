@@ -8,6 +8,7 @@
 #include "frame.h"
 
 #define htonq(i)	( ((long long)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
+#define ntohq		htonq
 
 Frame::Frame(){
   type = ft_Invalid;
@@ -224,6 +225,14 @@ char* Frame::unpackString(){
 }
 
 long long Frame::unpackInt64(){
+  long long nval;
+  memcpy(&nval, data + unpackptr, 8);
+  unpackptr += 8;
+  return ntohq(nval);
+}
+
+/*
+long long Frame::unpackInt64(){
   long long rtn;
   int nval, nvalh, nvall;
   memcpy(&nval, data + unpackptr, 4);
@@ -234,7 +243,7 @@ long long Frame::unpackInt64(){
   memcpy(&rtn, &nvall, 4);
   memcpy(&rtn + 4, &nvalh, 4);
   return rtn;
-}
+}*/
 
 void Frame::createFailFrame(int code, char* reason){
   setType(ft_Fail);
