@@ -27,6 +27,9 @@ OrderManager::OrderManager(){
 
 OrderManager::~OrderManager(){
   // I should clear the prototypeStore
+  for(std::map<int, Order*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
+    delete itcurr->second;
+  }
 
 }
 
@@ -39,7 +42,7 @@ void OrderManager::describeOrder(int ordertype, Frame * f){
   if(prototype != NULL){
     prototype->describeOrder(f);
   }else{
-    f->createFailFrame(fec_PermUnavailable, "Order type does not exist");
+    f->createFailFrame(fec_NonExistant, "Order type does not exist");
   }
 }
 
@@ -52,5 +55,6 @@ Order* OrderManager::createOrder(int ot){
 }
 
 void OrderManager::addOrderType(Order* prototype){
+  prototype->setType(nextType);
   prototypeStore[nextType++] = prototype;
 }
