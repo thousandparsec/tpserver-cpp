@@ -148,7 +148,7 @@ bool Frame::packString(char *str)
 	if (padlen == 4)
 		padlen = 0;
 	int netlen = htonl(len);
-	char *temp = (char *) realloc(data, length + 4 + netlen + padlen);
+	char *temp = (char *) realloc(data, length + 4 + len + padlen);
 	if (temp != NULL) {
 		data = temp;
 		temp += length;
