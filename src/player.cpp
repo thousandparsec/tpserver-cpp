@@ -166,7 +166,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Message_Remove:
 	  processRemoveMessages(frame);
 	  break;
-
+	case ft03_Order_Probe:
+	  processProbeOrder(frame);
+	  break;
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
 
@@ -421,6 +423,14 @@ void Player::processDescribeOrder(Frame * frame)
 void Player::processProbeOrder(Frame * frame){
   Logger::getLogger()->debug("doing probe order frame");
   
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
   int obid = frame->unpackInt();
   IGObject* theobject = Game::getGame()->getObject(obid);
   if(theobject == NULL){
