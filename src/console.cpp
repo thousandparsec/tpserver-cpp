@@ -31,11 +31,21 @@ void Console::mainLoop()
 		if (key == 'q')
 			break;
 		if (key == 'h') {
-			printf("q to quit\nh for help\nt to end turn\nn to stop network\nN to start network\nl to type file to load\no to add ordertype, object player\n");
+		  std::cout << "q to quit" << std::endl;
+		  std::cout << "h for help" << std::endl;
+		  std::cout << "t to end turn" << std::endl;
+		  std::cout << "T to get seconds until end of turn" << std::endl;
+		  std::cout << "n to stop network" << std::endl;
+		  std::cout << "N to start network" << std::endl;
 		}
 		if (key == 't') {
-			Logger::getLogger()->info("End Of Turn started");
+			Logger::getLogger()->info("End Of Turn initiated from console");
+			Game::getGame()->doEndOfTurn();
+			Game::getGame()->resetEOTTimer();
 
+		}
+		if(key == 'T'){
+		  std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
 		}
 		if (key == 'n') {
 			Network::getNetwork()->stop();
@@ -43,6 +53,7 @@ void Console::mainLoop()
 		if (key == 'N') {
 			Network::getNetwork()->start();
 		}
+		/*
 		if (key == 'l') {
 			char *file = new char[100];
 			num = scanf("%s", file);
@@ -63,6 +74,7 @@ void Console::mainLoop()
 				Logger::getLogger()->warning("Did not get the parameters");
 			}
 		}
+		*/
 	}
 	Logger::getLogger()->info("Server starting shutdown");
 }

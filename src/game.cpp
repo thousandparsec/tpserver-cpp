@@ -90,6 +90,7 @@ void Game::createTutorial()
 
 }
 
+/*
 void Game::loadGame(char *file)
 {
 	FILE *infile = fopen(file, "r");
@@ -142,6 +143,7 @@ void Game::loadGame(char *file)
 	}
 
 }
+*/
 
 void Game::save()
 {
@@ -296,6 +298,10 @@ void Game::doEndOfTurn()
 	Network::getNetwork()->sendToAll(frame);
 
 	Logger::getLogger()->info("End Of Turn finished");
+}
+
+void Game::resetEOTTimer(){
+  turnTime = time(NULL) + turnIncrement;
 }
 
 int Game::secondsToEOT(){

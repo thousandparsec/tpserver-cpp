@@ -15,7 +15,7 @@ class Game {
 	void createRandomUniverse();
 	void createRealUniverse();
 	void createTutorial();
-	void loadGame(char *file);
+	//void loadGame(char *file);
 	//void setSaveFile(char *file);
 	void save();
 
@@ -26,6 +26,7 @@ class Game {
 	std::list <unsigned int> getObjectsByPos(long long x, long long y, long long z, unsigned long long r);
 
 	void doEndOfTurn();
+	void resetEOTTimer();
 
 	int secondsToEOT();
 
