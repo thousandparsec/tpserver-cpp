@@ -210,7 +210,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		objects[fleet->getID()] = fleet;
 		fleet->setSize(2);
 		fleet->setType(4);
-		fleet->setName("A planet");
+		fleet->setName("A fleet");
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
 		fleet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
