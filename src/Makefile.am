@@ -9,4 +9,5 @@ tpserv_SOURCES = main.cpp connection.cpp console.cpp \
 		ownedobject.cpp emptyobject.h emptyobject.cpp \
 		planet.h planet.cpp fleet.h fleet.cpp nop.h \
 		nop.cpp move.h move.cpp build.h build.cpp \
-		vector3d.h vector3d.cpp
+		vector3d.h vector3d.cpp board.h board.cpp \
+		message.h message.cpp

@@ -3,6 +3,7 @@
 
 class Connection;
 class Frame;
+class Board;
 
 class Player {
       public:
@@ -13,6 +14,8 @@ class Player {
 	void setPass(char *newpass);
 	void setConnection(Connection * newcon);
 	void setID(int newid);
+
+	Board* getBoard();
 
 	char *getName();
 	char *getPass();
@@ -33,12 +36,17 @@ class Player {
 	void processRemoveOrder(Frame * frame);
 	void processDescribeOrder(Frame * frame);
 	void processGetTime(Frame * frame);
+	void processGetBoards(Frame * frame);
+	void processGetMessages(Frame * frame);
+	void processPostMessage(Frame * frame);
+	void processRemoveMessages(Frame * frame);
 	
 
 	Connection *curConnection;
 	char *name;
 	char *passwd;
 	int pid;
+	Board * board;
 
 	 Player(Player & rhs);
 

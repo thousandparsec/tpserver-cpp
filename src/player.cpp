@@ -7,6 +7,8 @@
 #include "object.h"
 #include "order.h"
 #include "vector3d.h"
+#include "board.h"
+#include "message.h"
 
 #include "player.h"
 
@@ -18,6 +20,10 @@ Player::Player()
 	name = NULL;
 	passwd = NULL;
 	pid = nextpid++;
+	board = new Board();
+	board->setBoardID(0);
+	board->setName("Personal board");
+	board->setDescription("System board");
 }
 
 Player::~Player()
@@ -31,6 +37,7 @@ Player::~Player()
 	if (curConnection != NULL) {
 		curConnection->close();
 	}
+	delete board;
 }
 
 void Player::setName(char *newname)
@@ -61,6 +68,10 @@ void Player::setConnection(Connection * newcon)
 void Player::setID(int newid)
 {
 	pid = newid;
+}
+
+Board* Player::getBoard(){
+  return board;
 }
 
 char *Player::getName()
@@ -115,6 +126,19 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Time_Remaining_Get:
 		processGetTime(frame);
 		break;
+	case ft02_Board_Get:
+	  processGetBoards(frame);
+	  break;
+	case ft02_Message_Get:
+	  processGetMessages(frame);
+	  break;
+	case ft02_Message_Post:
+	  processPostMessage(frame);
+	  break;
+	case ft02_Message_Remove:
+	  processRemoveMessages(frame);
+	  break;
+
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
 
@@ -365,4 +389,148 @@ void Player::processGetTime(Frame * frame){
   of->setType(ft02_Time_Remaining);
   of->packInt(Game::getGame()->secondsToEOT());
   curConnection->sendFrame(of);
+}
+
+void Player::processGetBoards(Frame * frame){
+  Logger::getLogger()->debug("doing Get Boards frame");
+  
+  int numboards = frame->unpackInt();
+  if(numboards > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numboards);
+    curConnection->sendFrame(seq);
+  }
+  
+  for(int i = 0; i < numboards; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int boardnum = frame->unpackInt();
+    if(boardnum == 0){
+      board->packBoard(of);
+    }else{
+      //boards in the game object
+      of->createFailFrame(fec_PermUnavailable, "No non-player boards yet");
+    }
+    curConnection->sendFrame(of);
+  }
+}
+
+void Player::processGetMessages(Frame * frame){
+  Logger::getLogger()->debug("doing Get Messages frame");
+
+  int boardid = frame->unpackInt();
+  int nummsg = frame->unpackInt();
+
+  if(nummsg > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(nummsg);
+    curConnection->sendFrame(seq);
+  }
+
+  Board * currboard;
+  if(boardid == 0){
+    currboard = board;
+  }else{
+    //board in game object
+    currboard = NULL;
+  }
+
+  if(board != NULL){
+    for(int i = 0; i < nummsg; i++){
+      Frame *of = curConnection->createFrame(frame);
+      int msgnum = frame->unpackInt();
+
+      board->packMessage(of, msgnum);
+
+      curConnection->sendFrame(of);
+    
+    }
+
+  }else{
+     Frame *of = curConnection->createFrame(frame);
+     of->createFailFrame(fec_NonExistant, "Board does not exist");
+     curConnection->sendFrame(of);
+  }
+
+}
+
+void Player::processPostMessage(Frame * frame){
+  Logger::getLogger()->debug("doing Post Messages frame");
+
+  Frame *of = curConnection->createFrame(frame);
+
+  int boardid = frame->unpackInt();
+  int pos = frame->unpackInt();
+
+  Board * currboard;
+  if(boardid == 0){
+    currboard = board;
+  }else{
+    //board in game object
+    currboard = NULL;
+  }
+
+  if(currboard != NULL){
+    Message* msg = new Message();
+    msg->setType(frame->unpackInt());
+    msg->setSubject(std::string(frame->unpackString()));
+    msg->setBody(std::string(frame->unpackString()));
+
+    currboard->addMessage(msg, pos);
+
+    of->setType(ft02_OK);
+    of->packString("Message posted");
+    
+  }else{
+    of->createFailFrame(fec_NonExistant, "Board does not exist");
+  }
+
+  curConnection->sendFrame(of);
+  
+}
+
+void Player::processRemoveMessages(Frame * frame){
+  Logger::getLogger()->debug("doing Remove Messages frame");
+
+  int boardid = frame->unpackInt();
+  int nummsg = frame->unpackInt();
+
+  if(nummsg > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(nummsg);
+    curConnection->sendFrame(seq);
+  }
+
+  Board * currboard;
+  if(boardid == 0){
+    currboard = board;
+  }else{
+    //board in game object
+    currboard = NULL;
+  }
+
+  if(board != NULL){
+    for(int i = 0; i < nummsg; i++){
+      Frame *of = curConnection->createFrame(frame);
+      int msgnum = frame->unpackInt();
+
+      if(board->removeMessage(msgnum)){
+	of->setType(ft02_OK);
+	of->packString("Message removed");
+      }else{
+	of->createFailFrame(fec_NonExistant, "Message not removed, does exist");
+      }
+
+      curConnection->sendFrame(of);
+    
+    }
+
+  }else{
+     Frame *of = curConnection->createFrame(frame);
+     of->createFailFrame(fec_NonExistant, "Board does not exist");
+     curConnection->sendFrame(of);
+  }
+
 }

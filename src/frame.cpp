@@ -249,7 +249,7 @@ bool Frame::setData(char *newdata, int dlen)
 	return true;
 }
 
-bool Frame::packString(char *str)
+bool Frame::packString(const char *str)
 {
 	int slen = strlen(str) + 1;
 

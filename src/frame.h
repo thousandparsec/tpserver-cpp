@@ -26,13 +26,13 @@ typedef enum {
   	ft02_Order_Remove = 13,
 	ft02_Time_Remaining_Get = 14,
 	ft02_Time_Remaining = 15,
-	//only for future reference
   	ft02_Board_Get = 16,
   	ft02_Board = 17,
   	ft02_Message_Get = 18,
   	ft02_Message = 19,
   	ft02_Message_Post = 20,
 	ft02_Message_Remove = 21,
+	//only for future reference
 	ft02_ResDesc_Get = 22,
 	ft02_ResDesc = 23,
 	ft02_Max,
@@ -85,7 +85,7 @@ class Frame {
 		// Version
 		FrameVersion getVersion() const;
 		
-		bool packString(char *str);
+		bool packString(const char *str);
 		//bool packString(std::string str);
 		bool packInt(int val);
 		bool packInt64(long long val);
