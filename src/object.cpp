@@ -1,13 +1,17 @@
-#include "string.h"
+#include <string.h>
+#include <cassert>
 
 #include "frame.h"
 #include "logging.h"
 #include "game.h"
 #include "order.h"
+#include "objectdata.h"
+#include "emptyobject.h"
+#include "universe.h"
+#include "planet.h"
+#include "fleet.h"
 
 #include "object.h"
-
-#include <cassert>
 
 Game *IGObject::myGame = NULL;
 
@@ -21,6 +25,7 @@ IGObject::IGObject()
 	if (myGame == NULL) {
 		myGame = Game::getGame();
 	}
+	myObjectData = NULL;
 }
 
 IGObject::IGObject(IGObject & rhs)
@@ -56,6 +61,9 @@ IGObject::~IGObject()
 	children.clear();
 	if (name != NULL) {
 		delete[]name;
+	}
+	if(myObjectData != NULL){
+	  delete myObjectData;
 	}
 }
 
@@ -159,6 +167,29 @@ void IGObject::autoSetID()
 void IGObject::setType(unsigned int newtype)
 {
 	type = newtype;
+
+	if(myObjectData != NULL)
+	  delete myObjectData;
+
+	switch(type){
+	case 0:
+	  myObjectData = new Universe();
+	  break;
+	case 1:
+	case 2:
+	  myObjectData = new EmptyObject();
+	  break;
+	case 3:
+	  myObjectData = new Planet();
+	  break;
+	case 4:
+	  myObjectData = new Fleet();
+	  break;
+	default:
+	  Logger::getLogger()->warning("Object type not found");
+	  myObjectData = NULL;
+	  break;
+	}
 }
 
 void IGObject::setSize(unsigned long long newsize)
@@ -231,9 +262,9 @@ bool IGObject::addOrder(Order * ord, int pos, int playerid)
 
 bool IGObject::removeOrder(int pos, int playerid)
 {
-	if (pos >= orders.size()) {
-		return false;
-	}
+        if (pos >= orders.size()) {
+                return false;
+        }
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
 	if (ordit != actions.end()) {
 		std::list < Order * >::iterator delpos = orders.begin();
@@ -339,4 +370,11 @@ void IGObject::createFrame(Frame * frame, int playerid)
 		frame->packInt(0);
 	}
 	frame->packInt(orders.size());
+	if(myObjectData != NULL){
+	  myObjectData->packExtraData(frame);
+	}
+}
+
+ObjectData* IGObject::getObjectData(){
+  return myObjectData;
 }

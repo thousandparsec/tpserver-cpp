@@ -11,6 +11,7 @@
 
 class Frame;
 class Game;
+class ObjectData;
 //class Order;
 
 
@@ -62,6 +63,8 @@ class IGObject {
 
 	void createFrame(Frame * frame, int playerid);
 
+	ObjectData* getObjectData();
+
       protected:
 	static Game *myGame;
 
@@ -87,6 +90,8 @@ class IGObject {
 
 	 std::list < Order * >orders;
 	 std::map < int, std::set < OrderType > >actions;
+
+	 ObjectData *myObjectData;
 
 };
 

@@ -1,8 +1,11 @@
 #include <iostream>
+#include <stdlib.h>
 
 #include "logging.h"
 #include "player.h"
 #include "object.h"
+#include "objectdata.h"
+#include "ownedobject.h"
 
 #include "game.h"
 
@@ -175,6 +178,47 @@ Player *Game::findPlayer(char *name, char *pass)
 		rtn->setName(name);
 		rtn->setPass(pass);
 		players.push_back(rtn);
+
+		// HACK
+		// adds a star system, planet and fleet, owned by the player
+		IGObject *star = new IGObject();
+		objects[star->getID()] = star;
+		star->setSize(2000000ll);
+		star->setType(2);
+		star->setName("Unknown Star System");
+		star->setPosition3((long long)(((rand() % 1000) - 500) * 10000000),
+				   (long long)(((rand() % 1000) - 500) * 10000000),
+				   (long long)(((rand() % 1000) - 500) * 10000000));
+		star->setVelocity3(0ll, 0ll, 0ll);
+		star->setAcceleration3(0ll, 0ll, 0ll);
+		getObject(1)->addContainedObject(star->getID());
+
+		IGObject *planet = new IGObject();
+		objects[planet->getID()] = planet;
+		planet->setSize(2);
+		planet->setType(3);
+		planet->setName("A planet");
+		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
+		planet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
+				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
+				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
+		planet->setVelocity3(0LL, 0ll, 0ll);
+		planet->setAcceleration3(0ll, 0ll, 0ll);
+		star->addContainedObject(planet->getID());
+
+		IGObject *fleet = new IGObject();
+		objects[fleet->getID()] = fleet;
+		fleet->setSize(2);
+		fleet->setType(4);
+		fleet->setName("A planet");
+		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
+		fleet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
+				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
+				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
+		fleet->setVelocity3(0LL, 0ll, 0ll);
+		fleet->setAcceleration3(0ll, 0ll, 0ll);
+		fleet->addAction(-1, rtn->getID(), odT_Move);
+		star->addContainedObject(fleet->getID());
 	}
 	return rtn;
 }
