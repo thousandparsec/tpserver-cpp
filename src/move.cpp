@@ -65,7 +65,7 @@ void Move::describeOrder(int orderType, Frame * f)
 		f->packString("Move to a given position absolute in space");
 		f->packInt(1);
 		f->packString("Position");
-		f->packInt(opT_Space_Coord);
+		f->packInt(opT_Space_Coord_Abs);
 		f->packString("The position in space to move to");
 	}
 }

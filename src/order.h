@@ -10,11 +10,11 @@ typedef enum {
 
 typedef enum {
 	opT_Invalid = -1,
-	opT_Space_Coord = 0,
+	opT_Space_Coord_Abs = 0,
 	opT_Time = 1,
 	opT_Object_ID = 2,
 	opT_Player_ID = 3,
-	opT_Relative_Coord = 4,
+	opT_Space_Coord_Rel = 4,
 	opT_Range = 5,
 
 	opT_Max
