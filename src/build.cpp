@@ -4,6 +4,7 @@
 #include "game.h"
 #include "logging.h"
 #include "vector3d.h"
+#include "fleet.h"
 
 #include "ownedobject.h"
 
@@ -12,7 +13,6 @@
 Build::Build()
 {
   type = odT_Build;
-  fleettype = 0;
   turnstogo = 0;
 }
 
@@ -34,19 +34,21 @@ void Build::createFrame(Frame *f, int objID, int pos)
 
   f->packInt(0);
   f->packString("Scout");
-  f->packInt(1);
+  f->packInt(100);
 
   f->packInt(1);
   f->packString("Frigate");
-  f->packInt(1);
+  f->packInt(100);
 
   f->packInt(2);
   f->packString("Battleship");
-  f->packInt(1);
+  f->packInt(100);
 
-  f->packInt(1);
-  f->packInt(fleettype);
-  f->packInt(1);
+  f->packInt(fleettype.size());
+  for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+    f->packInt(itcurr->first);
+    f->packInt(itcurr->second);
+  }
 }
 
 bool Build::inputFrame(Frame *f)
@@ -56,21 +58,22 @@ bool Build::inputFrame(Frame *f)
   f->unpackInt(); // selectable list (should be zero) TODO
   
   for(int i = f->unpackInt(); i > 0; i--){
-
-    fleettype = f->unpackInt();
-    f->unpackInt(); // number to build
+    int type = f->unpackInt();
+    int number = f->unpackInt(); // number to build
     
-    switch(fleettype){
+    fleettype[type] = number;
+
+    switch(type){
     case 0:
-      turnstogo += 1;
+      turnstogo += 1 * number;
       break;
     case 1:
-      turnstogo += 2;
+      turnstogo += 2 * number;
       break;
     case 2:
-      turnstogo += 4;
+      turnstogo += 4 * number;
       break;
-  }
+    }
   }
   return true;
 }
@@ -101,6 +104,10 @@ bool Build::doOrder(IGObject *ob)
     fleet->addAction(-1, ownerid, odT_Nop); // let ship stop
     
     //set ship type
+    Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+      thefleet->addShips(itcurr->first, itcurr->second);
+    }
 
     return true;
   }
@@ -111,11 +118,11 @@ void Build::describeOrder(int orderType, Frame *f)
 {
   if(orderType == odT_Build){
     f->packInt(odT_Build);
-    f->packString("Build");
+    f->packString("BuildFleet");
     f->packString("Build something");
     f->packInt(1); // num params
-    f->packString("type");
-    f->packInt(7);
+    f->packString("ships");
+    f->packInt(6);
     f->packString("The type of ship to build");
   }
 }

@@ -1,6 +1,8 @@
 #ifndef BUILD_H
 #define BUILD_H
 
+#include <map>
+
 #include "order.h"
 
 class Build : public Order{
@@ -16,7 +18,7 @@ class Build : public Order{
   static void describeOrder(int orderType, Frame *f);
 
  private:
-  int fleettype;
+  std::map<int, int> fleettype;
   int turnstogo;
 };
 
