@@ -3,7 +3,7 @@ AC_INIT(src/game.cpp)
 AM_INIT_AUTOMAKE(tpserv, 0.0.1)
 AM_CONFIG_HEADER(config.h)
 
-CXXFLAGS=
+CXXFLAGS="-g -Wall"
 
 AC_PROG_CC
 AC_PROG_CXX
