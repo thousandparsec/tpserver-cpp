@@ -1,4 +1,4 @@
-
+#include <cassert>
 
 #include "settings.h"
 
@@ -60,6 +60,9 @@ Settings::Settings(Settings & rhs)
 
 Settings Settings::operator=(Settings & rhs)
 {
+  //please don't call me
+  assert(0);
+  return *this;
 }
 
 void Settings::setDefaultValues(){

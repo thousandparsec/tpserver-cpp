@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <cassert>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -288,4 +289,7 @@ Network::Network(Network & rhs)
 
 Network Network::operator=(Network & rhs)
 {
+  // please don't call me
+  assert(0);
+  return *this;
 }

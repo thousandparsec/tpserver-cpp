@@ -49,7 +49,7 @@ class IGObject {
 	bool removeContainedObject(unsigned int removeObjectID);
 
 	bool addOrder(Order * ord, int pos, int playerid);
-	bool removeOrder(int pos, int playerid);
+	bool removeOrder(unsigned int pos, int playerid);
 	Order *getOrder(int pos, int playerid);
 	int getNumOrders(int playerid);
 

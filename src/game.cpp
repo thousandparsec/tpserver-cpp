@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <ctime>
+#include <cassert>
 
 #include "logging.h"
 #include "player.h"
@@ -318,5 +319,7 @@ Game::~Game()
 
 Game Game::operator=(Game & rhs)
 {
-
+  //only here to stop people doing funny things...
+  assert(0);
+  return *this;
 }

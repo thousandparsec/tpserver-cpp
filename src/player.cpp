@@ -167,7 +167,7 @@ void Player::processGetObjectById(Frame * frame)
 
 	Frame *of = curConnection->createFrame(frame);
 	if (frame->getDataLength() >= 4) {
-		unsigned int len = frame->unpackInt();
+		int len = frame->unpackInt();
 
 		// Check we have enough data
 		if (frame->getDataLength() >= 4 + 4*len) {

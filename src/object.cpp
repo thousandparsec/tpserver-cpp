@@ -206,7 +206,7 @@ bool IGObject::addOrder(Order * ord, int pos, int playerid)
   return false;
 }
 
-bool IGObject::removeOrder(int pos, int playerid)
+bool IGObject::removeOrder(unsigned int pos, int playerid)
 {
         if (pos >= orders.size()) {
                 return false;

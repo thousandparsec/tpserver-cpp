@@ -40,7 +40,7 @@ void Board::addMessage(Message * msg, int pos){
   }
 }
 
-bool Board::removeMessage(int pos){
+bool Board::removeMessage(unsigned int pos){
   if(pos >= messages.size() || pos < 0){
     return false;
   }
@@ -59,7 +59,7 @@ void Board::packBoard(Frame * frame){
   frame->packInt(messages.size());
 }
 
-void Board::packMessage(Frame * frame, int msgnum){
+void Board::packMessage(Frame * frame, unsigned int msgnum){
   if(msgnum < messages.size()){
     frame->setType(ft02_Message);
     frame->packInt(boardid);

@@ -21,11 +21,11 @@ class Board{
   std::string getDescription();
   
   void addMessage(Message* msg, int pos);
-  bool removeMessage(int pos);
+  bool removeMessage(unsigned int pos);
 
 
   void packBoard(Frame * frame);
-  void packMessage(Frame * frame, int msgnum);
+  void packMessage(Frame * frame, unsigned int msgnum);
 
  private:
   std::list<Message*> messages;
