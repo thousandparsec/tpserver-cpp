@@ -3,7 +3,7 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <unistd.h>
-
+#include <stdio.h>
 
 #include "logging.h"
 #include "settings.h"
