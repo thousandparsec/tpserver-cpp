@@ -58,15 +58,15 @@ bool Fleet::hit(int firepower){
   bool change = true;
   while(change){
     change = false;
-    if(ships[2] > 0 && damage >= 6){
+    if(ships[2] > 0 && damage > 5 * ships[2]){
       ships[2]--;
       damage -= 6;
       change = true;
-    }else if(ships[1] > 0 && damage >= 4){
+    }else if(ships[1] > 0 && damage > 3 * ships[1]){
       ships[1]--;
       damage -= 4;
       change = true;
-    }else if(ships[0] > 0 && damage > 2){
+    }else if(ships[0] > 0 && damage > ships[0]){
       ships[0]--;
       damage -= 2;
       change = true;
