@@ -1,3 +1,8 @@
+17/01/04 - Lee
+Version 0.0.4rc2 released.
+No feature changes to the server, but have changed to using TP02
+protocol with full backward compatiblity with TP01
+
 07/05/03 - Lee
 Version 0.0.4rc1 released.
 Server can:
