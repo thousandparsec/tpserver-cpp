@@ -435,6 +435,14 @@ void Player::processGetMessages(Frame * frame){
     curConnection->sendFrame(seq);
   }
 
+  if(nummsg == 0){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "No messages to get");
+    curConnection->sendFrame(of);
+    
+    return;
+  }
+
   Board * currboard;
   if(boardid == 0){
     currboard = board;
