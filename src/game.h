@@ -2,7 +2,7 @@
 #define GAME_H
 /*  Game class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ class Vector3d;
 class OrderManager;
 class ObjectDataManager;
 class CombatStrategy;
+class DataStore;
 
 class Game {
 
@@ -57,6 +58,8 @@ class Game {
 	ObjectDataManager* getObjectDataManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
+
+	DataStore* getDataStore() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -87,6 +90,7 @@ class Game {
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;
+	DataStore * datastore;
 
 };
 
