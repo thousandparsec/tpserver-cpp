@@ -118,6 +118,11 @@ FrameType Frame::getType()
 	return type;
 }
 
+FrameVersion Frame::getVersion()
+{
+	return version;
+}
+
 int Frame::getLength()
 {
 	return length;

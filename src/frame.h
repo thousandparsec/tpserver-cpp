@@ -62,15 +62,25 @@ class Frame {
 
 		Frame operator=(Frame &rhs);
 
-		char *getPacket();
-		FrameType getType();
-		int getLength();
-		char *getData();
-
 		int setHeader(char *newhead);
-		bool setType(FrameType nt);
+		char *getPacket();
+		int getLength();
+		
+		// Data
+		char *getData();
 		bool setData(char *newdata, int dlen);
 
+		// Type
+		FrameType getType();
+		bool setType(FrameType nt);
+		
+		// Sequence
+		int getSequence();
+		bool setSequence(int s);
+		
+		// Version
+		FrameVersion getVersion();
+		
 		bool packString(char *str);
 		//bool packString(std::string str);
 		bool packInt(int val);
