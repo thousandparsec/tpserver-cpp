@@ -1,3 +1,11 @@
+02/03/03 - Lee
+Version 0.0.2 released.
+Server can:
+ - send objects requested by clients
+ - create the tutorial universe with one galaxy with 3 star systems
+ - load universe from file, press l then enter on the console then input the 
+   file name
+
 01/02/03 - Lee
 Version 0.0.1 released.
 Server can:

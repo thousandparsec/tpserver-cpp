@@ -1,8 +1,11 @@
+02 Mar 03 Lee Begg
+ - Released 0.0.2 (Milestone Bravo)
+
+01 Feb 03  Lee Begg
+ - Released 0.0.1 (Milestone Alpha)
+
 Jan 03  Lee Begg
  - Initial coding
  - much of the primary server functions started
  - network, connection, frame, console and logger started
  - settings and game planning in progress
-
-01 Feb 03  Lee Begg
- - Released 0.0.1 (Milestone Alpha)
