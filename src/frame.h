@@ -29,7 +29,7 @@ typedef enum {
   	ft02_Message = 16,
   	ft02_Message_Post = 17,
 	ft02_Max,
-	
+
 // Old Frame Codes
 	ft_Invalid = -1,
 	ft_Connect = 0,

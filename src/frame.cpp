@@ -24,7 +24,10 @@ Frame::Frame()
 
 Frame::Frame(FrameVersion v)
 {
+  if(v == fv0_2)
 	type = ft02_Invalid;
+  else
+    type = ft_Invalid;
 	length = 0;
 	data = NULL;
 	unpackptr = 0;
@@ -42,7 +45,10 @@ Frame::Frame(Frame &rhs)
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
 	} else {
+	  if(version == fv0_1)
 		type = ft_Invalid;
+	     else
+	       type = ft02_Invalid;
 		length = 0;
 	}
 	unpackptr = 0;
@@ -64,7 +70,10 @@ Frame Frame::operator=(Frame & rhs)
 	if (data != NULL) {
 		memcpy(data, rhs.data, length);
 	} else {
+	  if(version == fv0_1)
 		type = ft_Invalid;
+	     else
+	       type = ft02_Invalid;
 		length = 0;
 	}
 	unpackptr = 0;

@@ -4,6 +4,9 @@
 class Frame;
 class Player;
 
+// this header should be removed
+#include "frame.h"
+
 class Connection {
 
       public:
@@ -21,7 +24,11 @@ class Connection {
 	void close();
 	void sendFrame(Frame * frame);
 
+	Frame* createFrame();
+
 	int getStatus();
+
+	FrameVersion getProtocolVersion();
 
       private:
 
@@ -35,6 +42,8 @@ class Connection {
 	int sockfd;
 	Player *player;
 	int status;
+
+	FrameVersion version;
 
 };
 

@@ -112,6 +112,11 @@ void Connection::sendFrame(Frame * frame)
 	delete frame;
 }
 
+Frame* Connection::createFrame()
+{
+  return new Frame(version);
+}
+
 int Connection::getStatus()
 {
 	return status;
@@ -119,15 +124,41 @@ int Connection::getStatus()
 
 void Connection::verCheck()
 {
-	char *buff = new char[12];
-	int len = read(sockfd, buff, 12);
-	if (len == 12 && memcmp(buff, "TP01\0\0\0\0\0\0\0\0", 12) == 0) {
+	char *buff = new char[4];
+	int len = read(sockfd, buff, 4);
+	if (len == 4 && memcmp(buff, "TP01", 4) == 0) {
+	  // check the rest of the packet
+	  delete[] buff;
+	  buff = new char[8];
+	  len = read(sockfd, buff, 8);
+	  if(len == 6 && memcmp(buff, "\0\0\0\0\0\0\0\0", 8) == 0) {
 		status = 2;
 		Logger::getLogger()->info("Client has correct version of protocol");
-		Frame *okframe = new Frame();
+		version = fv0_1;
+		Frame *okframe = createFrame();
 		okframe->setType(ft_OK);
 		okframe->packString("Protocol check ok, continue");
 		sendFrame(okframe);
+	  } else {
+
+	  }
+	} else if (len == 4 && memcmp(buff, "TPO2", 4) == 0) {
+	  // check the rest of the packet
+	  delete[] buff;
+	  buff = new char[12];
+	  len = read(sockfd, buff, 12);
+	  if (len == 12){
+
+	    status = 2;
+	    Logger::getLogger()->info("Client has version 2 of protocol");
+	    version = fv0_2;
+	    Frame *okframe = createFrame();
+	    okframe->setType(ft02_OK);
+	    okframe->packString("Protocol check ok, contunue");
+	    sendFrame(okframe);
+	  } else {
+
+	  }
 	} else {
 		Logger::getLogger()->warning("Client did not show correct version of protocol");
 		// send "I don't understand" message
@@ -144,7 +175,7 @@ void Connection::verCheck()
 
 void Connection::login()
 {
-	Frame *recvframe = new Frame();
+	Frame *recvframe = createFrame();
 	if (readFrame(recvframe)) {
 		char *username = recvframe->unpackString();
 		char *password = recvframe->unpackString();
@@ -152,7 +183,7 @@ void Connection::login()
 			//authenicate
 			player = Game::getGame()->findPlayer(username, password);
 			if (player != NULL) {
-				Frame *okframe = new Frame();
+				Frame *okframe = createFrame();
 				okframe->setType(ft_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
@@ -160,13 +191,13 @@ void Connection::login()
 				status = 3;
 			} else {
 				Logger::getLogger()->debug("bad username or password");
-				Frame *failframe = new Frame();
+				Frame *failframe = createFrame();
 				failframe->createFailFrame(1, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
 				sendFrame(failframe);
 			}
 		} else {
 			Logger::getLogger()->debug("username or password == NULL");
-			Frame *failframe = new Frame();
+			Frame *failframe = createFrame();
 			failframe->createFailFrame(1, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
 			sendFrame(failframe);
 			close();
@@ -184,7 +215,7 @@ void Connection::login()
 
 void Connection::inGameFrame()
 {
-	Frame *frame = new Frame();
+	Frame *frame = createFrame();
 	if (readFrame(frame)) {
 		//Logger::getLogger()->warning("Discarded frame, not processed");
 		//todo
@@ -215,7 +246,7 @@ bool Connection::readFrame(Frame * recvframe)
 		} else {
 			Logger::getLogger()->debug("Incorrect header");
 			// protocol error
-			Frame *failframe = new Frame();
+			Frame *failframe = createFrame();
 			failframe->createFailFrame(0, "Protocol Error");	// TODO - should be a const or enum, protocol error
 			sendFrame(failframe);
 			close();
@@ -224,7 +255,7 @@ bool Connection::readFrame(Frame * recvframe)
 	} else {
 		Logger::getLogger()->debug("Did not read 12 bytes");
 		if (len > 0) {
-			Frame *failframe = new Frame();
+			Frame *failframe = createFrame();
 			failframe->createFailFrame(0, "Protocol Error");	// TODO - should be a const or enum, protocol error
 			sendFrame(failframe);
 		} else {

@@ -90,12 +90,13 @@ int Player::getID()
 
 void Player::processIGFrame(Frame * frame)
 {
+  if(frame->getVersion() == fv0_1){
 	switch (frame->getType()) {
 	case ft_Get_Object:
 		processGetObject(frame);
 		break;
 	case ft_Get_Order:
-		processGetOrder(frame);
+	  processGetOrder(frame);
 		break;
 	case ft_Add_Order:
 		processAddOrder(frame);
@@ -114,6 +115,30 @@ void Player::processIGFrame(Frame * frame)
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
 		break;
 	}
+  }else{
+	switch (frame->getType()) {
+	case ft02_Object_Get:
+		processGetObject(frame);
+		break;
+	case ft02_Order_Get:
+		processGetOrder(frame);
+		break;
+	case ft02_Order_Add:
+		processAddOrder(frame);
+		break;
+	case ft02_Order_Remove:
+		processRemoveOrder(frame);
+		break;
+	case ft02_OrderDesc_Get:
+		processDescribeOrder(frame);
+		break;
+		//more
+	default:
+		Logger::getLogger()->warning("Player: Discarded frame, not processed");
+		break;
+	}
+
+  }
 
 	delete frame;
 }
@@ -123,7 +148,7 @@ void Player::processGetObject(Frame * frame)
 	Logger::getLogger()->debug("doing get object frame");
 	if (frame->getLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
-		Frame *obframe = new Frame();
+		Frame *obframe = curConnection->createFrame();
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 		curConnection->sendFrame(obframe);
 	}
@@ -132,7 +157,7 @@ void Player::processGetObject(Frame * frame)
 void Player::processGetOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get order frame");
-	Frame *of = new Frame();
+	Frame *of = curConnection->createFrame();
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
@@ -151,14 +176,17 @@ void Player::processGetOrder(Frame * frame)
 void Player::processAddOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing add order frame");
-	Frame *of = new Frame();
+	Frame *of = curConnection->createFrame();
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		Order *ord = Order::createOrder((OrderType) frame->unpackInt());
 		int pos = frame->unpackInt();
 		ord->inputFrame(frame);
 		if (Game::getGame()->getObject(objectID)->addOrder(ord, pos, pid)) {
-			of->setType(ft_OK);
+		  if(of->getVersion() == fv0_1)
+		    of->setType(ft_OK);
+		  else
+		    of->setType(ft02_OK);
 			of->packString("Order Added");
 		} else {
 			of->createFailFrame(19, "Could not add order");
@@ -172,12 +200,15 @@ void Player::processAddOrder(Frame * frame)
 void Player::processRemoveOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing remove order frame");
-	Frame *of = new Frame();
+	Frame *of = curConnection->createFrame();
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
 		if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
+		  if(of->getVersion() == fv0_1)
 			of->setType(ft_OK);
+		  else
+		    of->setType(ft02_OK);
 			of->packString("Order removed");
 		} else {
 			of->createFailFrame(13, "Could not remove Order");
@@ -191,7 +222,7 @@ void Player::processRemoveOrder(Frame * frame)
 void Player::processDescribeOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing describe order frame");
-	Frame *of = new Frame();
+	Frame *of = curConnection->createFrame();
 	int ordertype = frame->unpackInt();
 	Order::describeOrder(ordertype, of);
 	curConnection->sendFrame(of);
@@ -200,7 +231,7 @@ void Player::processDescribeOrder(Frame * frame)
 void Player::processGetOutcome(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get outcome");
-	Frame *of = new Frame();
+	Frame *of = curConnection->createFrame();
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
