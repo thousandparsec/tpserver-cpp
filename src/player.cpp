@@ -212,8 +212,15 @@ void Player::processGetOrder(Frame * frame)
   }
 
   int objectID = frame->unpackInt();
+  IGObject *o = Game::getGame()->getObject(objectID);
+  if (o == NULL) {
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No such object");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int num_orders = frame->unpackInt();
-
   if(frame->getDataLength() != 8 + 4 * num_orders){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -221,23 +228,27 @@ void Player::processGetOrder(Frame * frame)
     return;
   }
 
-  if(num_orders > 1){
+  if(num_orders > 1) {
+  	Logger::getLogger()->debug("Got multiple orders, returning a sequence");
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
     seq->packInt(num_orders);
     curConnection->sendFrame(seq);
+  } else {
+  	Logger::getLogger()->debug("Got single orders, returning one object");
   }
 
   for(int i = 0; i < num_orders; i++){
     Frame *of = curConnection->createFrame(frame);
+
     int ordpos = frame->unpackInt();
-    Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
+    Order *ord = o->getOrder(ordpos, pid);
     if (ord != NULL) {
       ord->createFrame(of, objectID, ordpos);
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not get Order");
     }
-        
+    
     curConnection->sendFrame(of);
   }
   
