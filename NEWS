@@ -1,3 +1,12 @@
+10/10/04 - Lee
+Version 0.0.9 released.
+Minisec capable.
+Merge fleet and colonise working.  Combat working.
+Fixed bugs in recontainerisation and movement.
+Fixed order of padding and extra data in object frames.
+Next version will be minisec release 0.1.0, only little fixes, no
+big changes.
+
 01/10/04 - Lee
 Version 0.0.8 released.
 More refactoring.  New ObjectDataManager and OrderManager classes
