@@ -2,6 +2,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 
 #include "logging.h"
 #include "net.h"
@@ -145,8 +146,9 @@ void Connection::verCheck()
 		okframe->setType(ft_OK);
 		okframe->packString("Protocol check ok, continue");
 		sendFrame(okframe);
-	  } else {
 
+		delete[] buff;
+		return;
 	  }
 	} else if (len == 4 && memcmp(buff, "TPO2", 4) == 0) {
 	  // check the rest of the packet
@@ -154,30 +156,36 @@ void Connection::verCheck()
 	  buff = new char[12];
 	  len = read(sockfd, buff, 12);
 	  if (len == 12){
-	    int seqNum = 0;
+	    int seqNum = 0, nseqNum;
+	    memcpy(&nseqNum, buff, 4);
+	    seqNum = ntohl(nseqNum);
+	    if(memcmp(buff + 4, "\0\0\0\0\0\0\0\0", 8) == 0) {
+	      status = 2;
+	      Logger::getLogger()->info("Client has version 2 of protocol");
+	      version = fv0_2;
+	      Frame *okframe = createFrame(NULL);
+	      // since we don't create a frame object, we have to set the sequence number seperately
+	      okframe->setSequence(seqNum);
+	      okframe->setType(ft02_OK);
+	      okframe->packString("Protocol check ok, contunue");
+	      sendFrame(okframe);
 
-	    status = 2;
-	    Logger::getLogger()->info("Client has version 2 of protocol");
-	    version = fv0_2;
-	    Frame *okframe = createFrame(NULL);
-	    // since we don't create a frame object, we have to set the sequence number seperately
-	    okframe->setSequence(seqNum);
-	    okframe->setType(ft02_OK);
-	    okframe->packString("Protocol check ok, contunue");
-	    sendFrame(okframe);
-	  } else {
-
-	  }
-	} else {
-		Logger::getLogger()->warning("Client did not show correct version of protocol");
-		// send "I don't understand" message
-		if (len != 0) {
-			Frame *failframe = new Frame();
-			failframe->createFailFrame(0, "You are not running the correct protocol");	// TODO - should be a const or enum, protocol error
-			sendFrame(failframe);
-		}
-		close();
+	      delete[] buff;
+	      return;
+	    }
+	  } 
 	}
+	Logger::getLogger()->warning("Client did not show correct version of protocol");
+	// send "I don't understand" message
+	if (len != 0) {
+	  /*Frame *failframe = new Frame();
+	  failframe->createFailFrame(0, "You are not running the correct protocol");	// TODO - should be a const or enum, protocol error
+	  sendFrame(failframe);*/
+
+	  send(sockfd, "You are not running the correct protocol", 40, 0);
+
+	}
+	close();
 
 	delete[]buff;
 }
