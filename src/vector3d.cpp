@@ -45,12 +45,29 @@ Vector3d Vector3d::operator-(const Vector3d & rhs) const{
   return rtn;
 }
 
+Vector3d Vector3d::operator*(long long val) const{
+  Vector3d rtn;
+  rtn.x = x * val;
+  rtn.y = y * val;
+  rtn.z = z *val;
+  return rtn;
+}
+
 bool Vector3d::operator==(const Vector3d &rhs) const{
   return (x == rhs.x && y == rhs.y && z == rhs.z);
 }
 
 bool Vector3d::operator!=(const Vector3d &rhs) const{
   return !(operator==(rhs));
+}
+
+Vector3d Vector3d::normalise() const{
+  Vector3d rtn;
+  long long len = (unsigned long long)(x * x) + (unsigned long long)(y * y) + (unsigned long long)(z * z);
+  rtn.x = x / len;
+  rtn.y = y / len;
+  rtn.z = z / len;
+  return rtn;
 }
 
 long long Vector3d::getX() const{
