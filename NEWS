@@ -1,3 +1,12 @@
+02/05/04 - Lee
+Version 0.0.5rc1 released.
+Server can:
+ - do End Of Turn every 10 minutes
+ - delete orders when they are done
+ - process orders as needed
+TP01 support has been removed.  TP02 support is complete up to 
+echo level.
+
 18/4/04 - Lee
 Version 0.0.4 released.
 Fixed TP02 support, ParsecStone Delta supported.
