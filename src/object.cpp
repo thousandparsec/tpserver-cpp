@@ -309,15 +309,18 @@ void IGObject::createFrame(Frame * frame, int playerid)
   // think about the next one...
   frame->packInt(orders.size());
 
-  if(myObjectData != NULL){
-    myObjectData->packExtraData(frame);
-  }
+  
   if(frame->getVersion() > fv0_1){
     frame->packInt(0);
     frame->packInt(0);
     frame->packInt(0);
     frame->packInt(0);
   }
+
+  if(myObjectData != NULL){
+    myObjectData->packExtraData(frame);
+  }
+
 }
 
 ObjectData* IGObject::getObjectData(){
