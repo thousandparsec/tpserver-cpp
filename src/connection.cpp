@@ -161,64 +161,69 @@ int Connection::getStatus()
 void Connection::verCheck()
 {
 	// FIXME: This is bad and should be fixed!
-	char *buff = new char[4];
+	char *buff = new char[5];
 	int len = read(sockfd, buff, 4);
-
-	if (len == 4 && memcmp(buff, "TP01", 4) == 0) {
-	  // check the rest of the packet
-	  Logger::getLogger()->warning("Client did not show correct version of protocol");
-	  // send "I don't understand" message
-	  if (len != 0) {
+	buff[4] = '\0';
+	
+	if (len == 4 && memcmp(buff, "TP", 2) == 0){
+	  // assume we are talking TPprotocol
+	  
+	  int ver = atoi(buff+2);
+	  if(ver == 1){
+	    Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
 	    send(sockfd, "You are not running the right version of TP, please upgrade\n", 60, 0);
+	    close();
+	  }else if(ver > 2){
+	    Frame *f = new Frame(fv0_2);
+	    f->setSequence(0);
+	    f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support version 2 sorry.");
+	    sendFrame(f);
+	    //stay connected just in case they try again with a lower version
+	  }else{
 	    
-	  }
-	  close();
-	  
-	  delete[]buff;
-	  return;
-	} else if (len == 4 && memcmp(buff, "TP02", 4) == 0) {
-	  // check the rest of the packet
-	  delete[] buff;
-	  buff = new char[12];
-	  len = read(sockfd, buff, 12);
-	  
-	  if (len == 12) {
-		// Sequence number
-	    int seqNum = 0, nseqNum;
-	    memcpy(&nseqNum, buff, 4);
-	    seqNum = ntohl(nseqNum);
-
-		// Length of packet
-		int lenNum = 0, nlenNum;
-		memcpy(&nlenNum, buff + 8, 4);
-		lenNum = ntohl(nlenNum);
+	    // check the rest of the packet
+	    delete[] buff;
+	    buff = new char[12];
+	    len = read(sockfd, buff, 12);
+	    
+	    if (len == 12) {
+	      // Sequence number
+	      int seqNum = 0, nseqNum;
+	      memcpy(&nseqNum, buff, 4);
+	      seqNum = ntohl(nseqNum);
+	      
+	      // Length of packet
+	      int lenNum = 0, nlenNum;
+	      memcpy(&nlenNum, buff + 8, 4);
+	      lenNum = ntohl(nlenNum);
+	      
+	      // Read in the length of the packet and ignore
+	      char *cbuff = new char[lenNum];
+	      len = read(sockfd, cbuff, lenNum);
+	      Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
+	      delete[] cbuff;
+	      
+	      if (memcmp(buff + 4, "\0\0\0\03", 4) == 0) {
+		Logger::getLogger()->info("Client has version 2 of protocol");
 		
-		// Read in the length of the packet and ignore
-		char *cbuff = new char[lenNum];
-		len = read(sockfd, cbuff, lenNum);
-		Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
-		delete[] cbuff;
+		status = 2;
+		version = fv0_2;
 		
-	    if (memcmp(buff + 4, "\0\0\0\03", 4) == 0) {
-	      Logger::getLogger()->info("Client has version 2 of protocol");
-		  
-	      status = 2;
-	      version = fv0_2;
-		  
-	      Frame *okframe = createFrame(NULL);
-	      // since we don't create a frame object, we have to set the sequence number seperately
-	      okframe->setSequence(seqNum);
-	      okframe->setType(ft02_OK);
-
-	      okframe->packString("Protocol check ok, continue!");
-	      sendFrame(okframe);
-
-	      delete[] buff;
-	      return;
+		Frame *okframe = createFrame(NULL);
+		// since we don't create a frame object, we have to set the sequence number seperately
+		okframe->setSequence(seqNum);
+		okframe->setType(ft02_OK);
+		
+		okframe->packString("Protocol check ok, continue!");
+		sendFrame(okframe);
+	      }
 	    }
-	  } 
+	  }
+	  delete[] buff;
+	  return;
+	  
 	}
-	Logger::getLogger()->warning("Client did not show correct version of protocol");
+	Logger::getLogger()->warning("Client did not talk any variant of TPprotocol");
 	// send "I don't understand" message
 	if (len != 0) {
 	  /*Frame *failframe = new Frame();
