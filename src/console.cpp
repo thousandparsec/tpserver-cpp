@@ -4,6 +4,7 @@
 
 #include "logging.h"
 #include "net.h"
+#include "game.h"
 
 #include "console.h"
 
@@ -29,7 +30,7 @@ void Console::mainLoop()
 		if (key == 'q')
 			break;
 		if (key == 'h') {
-			printf("q to quit\nh for help\nt to end turn\nn to stop network\nN to start network\n");
+			printf("q to quit\nh for help\nt to end turn\nn to stop network\nN to start network\nl to type file to load\n");
 		}
 		if (key == 't') {
 			Logger::getLogger()->info("End Of Turn started");
@@ -40,6 +41,13 @@ void Console::mainLoop()
 		}
 		if (key == 'N') {
 			Network::getNetwork()->start();
+		}
+		if (key == 'l') {
+			char *file = new char[100];
+			num = scanf("%s", file);
+			if (num == 1) {
+				Game::getGame()->loadGame(file);
+			}
 		}
 	}
 	Logger::getLogger()->info("Server starting shutdown");
