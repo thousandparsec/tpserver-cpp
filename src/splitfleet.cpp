@@ -87,11 +87,11 @@ bool SplitFleet::doOrder(IGObject * ob){
     for(std::map<int, int>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
       of->addShips(scurr->first, scurr->second);
     }
-    delete nfleet;
+    Game::getGame()->scheduleRemoveObject(nfleet->getID());
     
   }else if(nf->numShips(0) == 0 && nf->numShips(1) == 0 && nf->numShips(2) == 0){
     Logger::getLogger()->debug("Split fleet doesn't have any ships, not creating new fleet");
-    delete nfleet;
+    Game::getGame()->scheduleRemoveObject(nfleet->getID());
     
   }else{
     // add fleet to game universe
