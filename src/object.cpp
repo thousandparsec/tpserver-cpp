@@ -218,7 +218,7 @@ bool IGObject::addOrder(Order * ord, int pos, int playerid)
 				orders.push_back(ord);
 			} else {
 				std::list < Order * >::iterator inspos = orders.begin();
-				advance(inspos, pos - 1);
+				advance(inspos, pos);
 				orders.insert(inspos, ord);
 			}
 			return true;
@@ -232,7 +232,7 @@ bool IGObject::removeOrder(int pos, int playerid)
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
 	if (ordit != actions.end()) {
 		std::list < Order * >::iterator delpos = orders.begin();
-		advance(delpos, pos - 1);
+		advance(delpos, pos);
 		delete(*delpos);
 		orders.erase(delpos);
 		return true;
@@ -245,7 +245,7 @@ Order *IGObject::getOrder(int pos, int playerid)
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
 	if (ordit != actions.end()) {
 		std::list < Order * >::iterator showpos = orders.begin();
-		advance(showpos, pos - 1);
+		advance(showpos, pos);
 		if (showpos != orders.end()) {
 			return (*showpos);
 		}
