@@ -93,54 +93,7 @@ void Game::createTutorial()
 /*
 void Game::loadGame(char *file)
 {
-	FILE *infile = fopen(file, "r");
-	if (infile != NULL) {
-		Logger::getLogger()->debug("File opened");
-		int n = 13;
-		while (n == 12 || n == 13) {
-			int id;
-			int type;
-			long long size;
-			char *name;
-			long long posx, posy, posz;
-			long long velx, vely, velz;
-			long long accx, accy, accz;
-			int pid;
-			name = new char[100];
-			n = fscanf(infile, "%d%d%Ld%Ld%Ld%Ld%Ld%Ld%Ld%Ld%Ld%Ld%d", &id, &type, &size, &posx, &posy, &posz, &velx, &vely, &velz, &accx, &accy, &accz, &pid);
-			if (n == 12 || n == 13) {
-				fgets(name, 100, infile);
-				int len = strlen(name);
-				char *nl = name;
-				nl += len - 1;
-				if (*nl == '\n') {
-					*nl = '\0';
-				}
-				IGObject *fileob = new IGObject();
-				fileob->setID(id);
-				fileob->setType(type);
-				fileob->setSize(size);
-				fileob->setName(name);
-				fileob->setPosition3(posx, posy, posz);
-				fileob->setVelocity3(velx, vely, velz);
-				
-				if (n == 13) {
-					IGObject *parent = getObject(pid);
-					parent->addContainedObject(fileob->getID());
-				}
-				objects[fileob->getID()] = fileob;
-				if (id == 0)
-					universe = fileob;
-				Logger::getLogger()->debug("Loaded an Object");
-			} else {
-				Logger::getLogger()->warning("Did not read whole line, discading and closing");
-			}
-			delete name;
-		}
-		fclose(infile);
-	} else {
-		Logger::getLogger()->warning("Could not open file");
-	}
+
 
 }
 */
