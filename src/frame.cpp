@@ -1,6 +1,6 @@
 #include <string.h>
 #include <netinet/in.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string>
 
 #include "logging.h"
@@ -151,9 +151,10 @@ bool Frame::packString(char* str){
   return true;
 }
 
-bool packString(std::string str){
+/*bool packString(std::string str){
   return packString(str.c_str());
-}
+  }
+*/
 
 bool Frame::packInt(int val){
   int netval = htonl(val);
@@ -179,6 +180,7 @@ bool Frame::setUnpackOffset(int newoffset){
   }else{
     return false;
   }
+  return true;
 }
 
 int Frame::unpackInt(){
@@ -201,6 +203,18 @@ char* Frame::unpackString(){
   }else{
     Logger::getLogger()->debug("len < 0 or length < upackptr + len");
   }
-  printf("unpackptr %d\n", unpackptr);
+  //printf("unpackptr %d\n", unpackptr);
   return rtnstr;
+}
+
+void Frame::createFailFrame(int code, char* reason){
+  setType(ft_Fail);
+  if(data != NULL){
+    free(data);
+    length = 0;
+    data = NULL;
+    unpackptr = 0;
+  }
+  packInt(code);
+  packString(reason);
 }

@@ -58,7 +58,7 @@ void Connection::process(){
     break;
   case 3:
     //process as normal
-    Logger::getLogger()->debug("Hit area that needs to be done"); //todo
+    inGameFrame();
     break;
   case 0:
   default:
@@ -110,9 +110,7 @@ void Connection::verCheck(){
     // send "I don't understand" message
     if(len != 0){
       Frame* failframe = new Frame();
-      failframe->setType(ft_Fail);
-      failframe->packInt(0); // TODO - should be a const or enum, protocol error
-      failframe->packString("You are not running the correct protocol");
+      failframe->createFailFrame(0, "You are not running the correct protocol");  // TODO - should be a const or enum, protocol error
       sendFrame(failframe);
     }
     close();
@@ -122,45 +120,8 @@ void Connection::verCheck(){
 }
 
 void Connection::login(){
-  char* headerbuff = new char[12];
   Frame* recvframe = new Frame();
-  int len = read(sockfd, headerbuff, 12);
-  if(len == 12){
-    if((len = recvframe->setHeader(headerbuff)) != -1){
-      printf("%d\n", len);
-      char* data = new char[len];
-      int dlen = read(sockfd, data, len);
-      if(len != dlen){
-	//have to think about this.... what do we do?
-	Logger::getLogger()->debug("Read data not the length needed");
-      }
-      recvframe->setData(data, dlen);
-      delete[] data;
-    }else{
-      Logger::getLogger()->debug("Incorrect header");
-      // protocol error
-      Frame* failframe = new Frame();
-      failframe->setType(ft_Fail);
-      failframe->packInt(0); // TODO - should be a const or enum, protocol error
-      failframe->packString("Protocol Error");
-      sendFrame(failframe);
-      close();
-    }
-  }else{
-    Logger::getLogger()->debug("Did not read 12 bytes");
-    if(len != 0){
-      Frame* failframe = new Frame();
-      failframe->setType(ft_Fail);
-      failframe->packInt(0); // TODO - should be a const or enum, protocol error
-      failframe->packString("Protocol Error");
-      sendFrame(failframe);
-    }
-    close();
-  }
-  delete headerbuff;
-  if(status == 0){
-    Logger::getLogger()->warning("Client protocol error in login");
-  }else{
+  if(readFrame(recvframe)){
     char* username = recvframe->unpackString();
     char* password = recvframe->unpackString();
     if(username != NULL && password != NULL){
@@ -174,9 +135,7 @@ void Connection::login(){
     }else{
       Logger::getLogger()->debug("username or password == NULL");
       Frame* failframe = new Frame();
-      failframe->setType(ft_Fail);
-      failframe->packInt(1); // TODO - should be a const or enum, Login error
-      failframe->packString("Login Error - no username or password");
+      failframe->createFailFrame(1, "Login Error - no username or password"); // TODO - should be a const or enum, Login error
       sendFrame(failframe);
       close();
     }
@@ -184,4 +143,52 @@ void Connection::login(){
   }
   delete recvframe;
   
+}
+
+void Connection::inGameFrame(){
+ Frame* frame = new Frame();
+ readFrame(frame);
+ //todo
+ // should pass frame to player to do something with
+ delete frame;
+}
+
+bool Connection::readFrame(Frame * recvframe){
+  bool rtn;
+  char* headerbuff = new char[12];
+  int len = read(sockfd, headerbuff, 12);
+  if(len == 12){
+    if((len = recvframe->setHeader(headerbuff)) != -1){
+      char* data = new char[len];
+      int dlen = read(sockfd, data, len);
+      if(len != dlen){
+	//have to think about this.... what do we do?
+	Logger::getLogger()->debug("Read data not the length needed");
+      }
+      recvframe->setData(data, dlen);
+      delete[] data;
+      rtn = true;
+    }else{
+      Logger::getLogger()->debug("Incorrect header");
+      // protocol error
+      Frame* failframe = new Frame();
+      failframe->createFailFrame(0, "Protocol Error");  // TODO - should be a const or enum, protocol error
+      sendFrame(failframe);
+      close();
+      rtn = false;
+    }
+  }else{
+    Logger::getLogger()->debug("Did not read 12 bytes");
+    if(len > 0){
+      Frame* failframe = new Frame();
+      failframe->createFailFrame(0, "Protocol Error");  // TODO - should be a const or enum, protocol error
+      sendFrame(failframe);
+    }else{
+      Logger::getLogger()->info("Client disconnected");
+    }
+    close();
+    rtn = false;
+  }
+  delete[] headerbuff;
+  return rtn;
 }

@@ -7,13 +7,13 @@ typedef enum {
   ft_OK = 1,
   ft_Login = 2,
   ft_Fail = 3,
-  //ft_Get_Object = 4,
-  //ft_Object = 5,
+  ft_Get_Object = 4,
+  ft_Object = 5,
   ft_Max
   
 } FrameType;
 
-//class string;
+//class std::string;
 
 class Frame{
 
@@ -34,15 +34,18 @@ class Frame{
   bool setData(char* newdata, int dlen);
 
   bool packString(char* str);
-  bool packString(std::string str);
+  //bool packString(std::string str);
   bool packInt(int val);
-  
+ 
+  // uses these functions with care
   int getUnpackOffset();
   bool setUnpackOffset(int newoffset);
   
   int unpackInt();
   char* unpackString();
-  
+
+  void createFailFrame(int code, char* reason);
+
  private:
   FrameType type;
   int length;

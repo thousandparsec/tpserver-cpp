@@ -27,6 +27,10 @@ class Connection{
   void verCheck();
   void login();
   
+  void inGameFrame();
+
+  bool readFrame(Frame * recvframe); 
+  
   int sockfd;
   // Player* player;
   int status;
