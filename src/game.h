@@ -10,6 +10,7 @@ class IGObject;
 class Vector3d;
 class OrderManager;
 class ObjectDataManager;
+class CombatStrategy;
 
 class Game {
 
@@ -35,6 +36,8 @@ class Game {
 
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
+	
+	CombatStrategy* getCombatStrategy() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -64,6 +67,7 @@ class Game {
 
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
+	CombatStrategy * combatstrategy;
 
 };
 

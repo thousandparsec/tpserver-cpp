@@ -14,6 +14,8 @@
 #include "vector3d.h"
 #include "ordermanager.h"
 #include "objectdatamanager.h"
+#include "combatstrategy.h"
+#include "rspcombat.h"
 
 #include "game.h"
 
@@ -303,6 +305,10 @@ ObjectDataManager* Game::getObjectDataManager() const{
   return objectdatamanager;
 }
 
+CombatStrategy* Game::getCombatStrategy() const{
+  return combatstrategy;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
@@ -381,6 +387,7 @@ Game::Game()
 {
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
+  combatstrategy = new RSPCombat();
 }
 
 Game::Game(Game & rhs)
@@ -392,6 +399,7 @@ Game::~Game()
 {
   delete ordermanager;
   delete objectdatamanager;
+  delete combatstrategy;
 }
 
 Game Game::operator=(Game & rhs)
