@@ -6,18 +6,23 @@
 #include "game.h"
 #include "logging.h"
 #include "fleet.h"
+#include "move.h"
 
 #include "mergefleet.h"
 
 MergeFleet::MergeFleet(){
   type = odT_Fleet_Merge;
+  moveorder = new Move();
 }
 
-MergeFleet::~MergeFleet(){}
+MergeFleet::~MergeFleet(){
+  delete moveorder;
+}
 
 void MergeFleet::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
-  f->packInt(1); // number of turns
+  moveorder->setDest(Game::getGame()->getObject(fleetid)->getPosition());
+  f->packInt(moveorder->getETA(Game::getGame()->getObject(objID))); // number of turns
   f->packInt(0); // size of resource list
   f->packInt(fleetid);
 }
@@ -34,28 +39,35 @@ bool MergeFleet::inputFrame(Frame * f){
     Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
     return false;
   }
+  moveorder->setDest(target->getPosition());
 
   return true;
 }
 
 
 bool MergeFleet::doOrder(IGObject * ob){
+  moveorder->setDest(Game::getGame()->getObject(fleetid)->getPosition());
   
-  Fleet *myfleet = (Fleet*)(ob->getObjectData());
-  if(fleetid != 0){
-    Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
+  if(moveorder->doOrder(ob)){
 
-    if(tfleet->getOwner() == myfleet->getOwner()){
-      tfleet->addShips(0, myfleet->numShips(0));
-      tfleet->addShips(1, myfleet->numShips(1));
-      tfleet->addShips(2, myfleet->numShips(2));
+    Fleet *myfleet = (Fleet*)(ob->getObjectData());
+    if(fleetid != 0){
+      Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
       
-      Game::getGame()->scheduleRemoveObject(ob->getID());
-      
+      if(tfleet->getOwner() == myfleet->getOwner()){
+	tfleet->addShips(0, myfleet->numShips(0));
+	tfleet->addShips(1, myfleet->numShips(1));
+	tfleet->addShips(2, myfleet->numShips(2));
+	
+	Game::getGame()->scheduleRemoveObject(ob->getID());
+	
+      }
     }
+    
+    return true;
+  }else{
+    return false;
   }
-
-  return true;
 }
 
 void MergeFleet::describeOrder(Frame * f) const{

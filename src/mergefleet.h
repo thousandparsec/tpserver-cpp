@@ -3,6 +3,8 @@
 
 #include "order.h"
 
+class Move;
+
 class MergeFleet : public Order{
  public:
   MergeFleet();
@@ -18,6 +20,7 @@ class MergeFleet : public Order{
 
  private:
   int fleetid;
+  Move * moveorder;
 
 };
 
