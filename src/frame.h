@@ -15,6 +15,8 @@ typedef enum {
 	ft_Remove_Order = 9,
 	ft_Describe_Order = 10,
 	ft_Order_Description = 11,
+	ft_Get_Outcome = 12,
+	ft_Outcome = 13,
 	ft_Max
 } FrameType;
 

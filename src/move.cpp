@@ -51,6 +51,12 @@ void Move::inputFrame(Frame * f)
 	z = f->unpackInt64();
 }
 
+void Move::createOutcome(Frame * f, int objID, int pos)
+{
+	Order::createOutcome(f, objID, pos);
+	f->packInt(1);
+}
+
 void Move::describeOrder(int orderType, Frame * f)
 {
 	if (orderType == odT_Move) {

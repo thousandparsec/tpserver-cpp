@@ -35,6 +35,13 @@ void Order::inputFrame(Frame * f)
 {
 }
 
+void Order::createOutcome(Frame * f, int objID, int pos)
+{
+	f->setType(ft_Outcome);
+	f->packInt(objID);
+	f->packInt(pos);
+}
+
 void Order::describeOrder(int ordertype, Frame * f)
 {
 	if (ordertype > odT_Invalid && ordertype < odT_Max) {

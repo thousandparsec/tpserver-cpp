@@ -15,6 +15,8 @@ class Nop:public Order {
 	void createFrame(Frame * f, int objID, int pos);
 	void inputFrame(Frame * f);
 
+	void createOutcome(Frame * f, int objID, int pos);
+
 	static void describeOrder(int orderType, Frame * f);
 
       private:

@@ -35,6 +35,12 @@ void Nop::inputFrame(Frame * f)
 	waitTime = f->unpackInt();
 }
 
+void Nop::createOutcome(Frame * f, int objID, int pos)
+{
+	Order::createOutcome(f, objID, pos);
+	f->packInt(waitTime);
+}
+
 void Nop::describeOrder(int orderType, Frame * f)
 {
 	if (orderType == odT_Nop) {

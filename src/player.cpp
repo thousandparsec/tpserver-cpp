@@ -106,6 +106,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft_Describe_Order:
 		processDescribeOrder(frame);
 		break;
+	case ft_Get_Outcome:
+		processGetOutcome(frame);
+		break;
 		//more
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
@@ -192,4 +195,24 @@ void Player::processDescribeOrder(Frame * frame)
 	int ordertype = frame->unpackInt();
 	Order::describeOrder(ordertype, of);
 	curConnection->sendFrame(of);
+}
+
+void Player::processGetOutcome(Frame * frame)
+{
+	Logger::getLogger()->debug("doing get outcome");
+	Frame *of = new Frame();
+	if (frame->getLength() >= 8) {
+		unsigned int objectID = frame->unpackInt();
+		int ordpos = frame->unpackInt();
+		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
+		if (ord != NULL) {
+			ord->createOutcome(of, objectID, ordpos);
+		} else {
+			of->createFailFrame(19, "Could not get Outcome");
+		}
+	} else {
+		of->createFailFrame(4, "Invalid frame");
+	}
+	curConnection->sendFrame(of);
+
 }
