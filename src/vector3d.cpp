@@ -61,12 +61,12 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
   return !(operator==(rhs));
 }
 
-Vector3d Vector3d::normalise() const{
+Vector3d Vector3d::makeLength(long long length) const{
   Vector3d rtn;
   long long len = (unsigned long long)(x * x) + (unsigned long long)(y * y) + (unsigned long long)(z * z);
-  rtn.x = x / len;
-  rtn.y = y / len;
-  rtn.z = z / len;
+  rtn.x = x * length / len;
+  rtn.y = y * length / len;
+  rtn.z = z * length / len;
   return rtn;
 }
 

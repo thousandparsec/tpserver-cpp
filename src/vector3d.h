@@ -16,7 +16,7 @@ class Vector3d{
   Vector3d operator*(long long val) const;
   bool operator==(const Vector3d &rhs) const;
   bool operator!=(const Vector3d &rhs) const;
-  Vector3d normalise() const;
+  Vector3d makeLength(long long length) const;
 
   long long getX() const;
   long long getY() const;
