@@ -148,7 +148,7 @@ void Player::processGetObject(Frame * frame)
 	Logger::getLogger()->debug("doing get object frame");
 	if (frame->getLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
-		Frame *obframe = curConnection->createFrame();
+		Frame *obframe = curConnection->createFrame(frame);
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 		curConnection->sendFrame(obframe);
 	}
@@ -157,7 +157,7 @@ void Player::processGetObject(Frame * frame)
 void Player::processGetOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get order frame");
-	Frame *of = curConnection->createFrame();
+	Frame *of = curConnection->createFrame(frame);
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
@@ -176,7 +176,7 @@ void Player::processGetOrder(Frame * frame)
 void Player::processAddOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing add order frame");
-	Frame *of = curConnection->createFrame();
+	Frame *of = curConnection->createFrame(frame);
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		Order *ord = Order::createOrder((OrderType) frame->unpackInt());
@@ -200,7 +200,7 @@ void Player::processAddOrder(Frame * frame)
 void Player::processRemoveOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing remove order frame");
-	Frame *of = curConnection->createFrame();
+	Frame *of = curConnection->createFrame(frame);
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
@@ -222,7 +222,7 @@ void Player::processRemoveOrder(Frame * frame)
 void Player::processDescribeOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing describe order frame");
-	Frame *of = curConnection->createFrame();
+	Frame *of = curConnection->createFrame(frame);
 	int ordertype = frame->unpackInt();
 	Order::describeOrder(ordertype, of);
 	curConnection->sendFrame(of);
@@ -231,7 +231,7 @@ void Player::processDescribeOrder(Frame * frame)
 void Player::processGetOutcome(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get outcome");
-	Frame *of = curConnection->createFrame();
+	Frame *of = curConnection->createFrame(frame);
 	if (frame->getLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();

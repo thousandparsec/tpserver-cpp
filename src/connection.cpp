@@ -112,9 +112,15 @@ void Connection::sendFrame(Frame * frame)
 	delete frame;
 }
 
-Frame* Connection::createFrame()
+Frame* Connection::createFrame(Frame* oldframe)
 {
-  return new Frame(version);
+  Frame* newframe = new Frame(version);
+  if(oldframe != NULL) {
+    newframe->setSequence(oldframe->getSequence());
+  } else {
+    newframe->setSequence(0);
+  }
+  return newframe;
 }
 
 int Connection::getStatus()
@@ -148,11 +154,14 @@ void Connection::verCheck()
 	  buff = new char[12];
 	  len = read(sockfd, buff, 12);
 	  if (len == 12){
+	    int seqNum = 0;
 
 	    status = 2;
 	    Logger::getLogger()->info("Client has version 2 of protocol");
 	    version = fv0_2;
-	    Frame *okframe = createFrame();
+	    Frame *okframe = createFrame(NULL);
+	    // since we don't create a frame object, we have to set the sequence number seperately
+	    okframe->setSequence(seqNum);
 	    okframe->setType(ft02_OK);
 	    okframe->packString("Protocol check ok, contunue");
 	    sendFrame(okframe);
@@ -183,7 +192,7 @@ void Connection::login()
 			//authenicate
 			player = Game::getGame()->findPlayer(username, password);
 			if (player != NULL) {
-				Frame *okframe = createFrame();
+				Frame *okframe = createFrame(recvframe);
 				okframe->setType(ft_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
@@ -191,13 +200,13 @@ void Connection::login()
 				status = 3;
 			} else {
 				Logger::getLogger()->debug("bad username or password");
-				Frame *failframe = createFrame();
+				Frame *failframe = createFrame(recvframe);
 				failframe->createFailFrame(1, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
 				sendFrame(failframe);
 			}
 		} else {
 			Logger::getLogger()->debug("username or password == NULL");
-			Frame *failframe = createFrame();
+			Frame *failframe = createFrame(recvframe);
 			failframe->createFailFrame(1, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
 			sendFrame(failframe);
 			close();

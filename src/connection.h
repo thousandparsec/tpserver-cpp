@@ -24,7 +24,7 @@ class Connection {
 	void close();
 	void sendFrame(Frame * frame);
 
-	Frame* createFrame();
+	Frame* createFrame(Frame* oldframe = NULL);
 
 	int getStatus();
 
