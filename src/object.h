@@ -34,9 +34,7 @@ class IGObject {
 	long long getVelocityX();
 	long long getVelocityY();
 	long long getVelocityZ();
-	long long getAccelerationX();
-	long long getAccelerationY();
-	long long getAccelerationZ();
+	
 	 std::set < unsigned int >getContainedObjects();
 
 	bool setID(unsigned int newid);
@@ -46,7 +44,7 @@ class IGObject {
 	void setName(char *newname);
 	void setPosition3(long long x, long long y, long long z);
 	void setVelocity3(long long x, long long y, long long z);
-	void setAcceleration3(long long x, long long y, long long z);
+	
 
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
@@ -85,9 +83,7 @@ class IGObject {
 	long long velx;
 	long long vely;
 	long long velz;
-	long long accx;
-	long long accy;
-	long long accz;
+
 
 	 std::set < unsigned int >children;
 

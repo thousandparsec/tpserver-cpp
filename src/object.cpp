@@ -49,9 +49,7 @@ IGObject::IGObject(IGObject & rhs)
 	velx = rhs.velx;
 	vely = rhs.vely;
 	velz = rhs.velz;
-	accx = rhs.accx;
-	accy = rhs.accy;
-	accz = rhs.accz;
+
 	children.clear();
 	children = rhs.children;
 }
@@ -129,20 +127,7 @@ long long IGObject::getVelocityZ()
 	return velz;
 }
 
-long long IGObject::getAccelerationX()
-{
-	return accx;
-}
 
-long long IGObject::getAccelerationY()
-{
-	return accy;
-}
-
-long long IGObject::getAccelerationZ()
-{
-	return accz;
-}
 
 std::set < unsigned int >IGObject::getContainedObjects()
 {
@@ -221,12 +206,7 @@ void IGObject::setVelocity3(long long x, long long y, long long z)
 	velz = z;
 }
 
-void IGObject::setAcceleration3(long long x, long long y, long long z)
-{
-	accx = x;
-	accy = y;
-	accz = z;
-}
+
 
 bool IGObject::addContainedObject(unsigned int addObjectID)
 {
@@ -359,11 +339,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
   frame->packInt64(velx);
   frame->packInt64(vely);
   frame->packInt64(velz);
-  if(frame->getVersion() == fv0_1){
-    frame->packInt64(accx);
-    frame->packInt64(accy);
-    frame->packInt64(accz);
-  }
+  
   frame->packInt(children.size());
   //frame->packInt(0); //HACK hack
   //for loop for children objects

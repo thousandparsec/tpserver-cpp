@@ -43,7 +43,7 @@ void Game::createTutorial()
 	universe->setName("The Universe");
 	universe->setPosition3(0ll, 0ll, 0ll);
 	universe->setVelocity3(0ll, 0ll, 0ll);
-	universe->setAcceleration3(0ll, 0ll, 0ll);
+
 	//add contained objects
 	IGObject *mw_galaxy = new IGObject();
 	objects[mw_galaxy->getID()] = mw_galaxy;
@@ -52,7 +52,7 @@ void Game::createTutorial()
 	mw_galaxy->setName("Milky Way Galaxy");
 	mw_galaxy->setPosition3(0ll, -6000ll, 0ll);
 	mw_galaxy->setVelocity3(0ll, 1000ll, 0ll);
-	mw_galaxy->setAcceleration3(0ll, 0ll, 0ll);
+	
 	universe->addContainedObject(mw_galaxy->getID());
 	// star system 1
 	IGObject *sol = new IGObject();
@@ -62,7 +62,7 @@ void Game::createTutorial()
 	sol->setName("Sol/Terra System");
 	sol->setPosition3(3000000000ll, 2000000000ll, 0ll);
 	sol->setVelocity3(-1500000ll, 1500000ll, 0ll);
-	sol->setAcceleration3(-70000ll, -60000ll, 0ll);
+	
 	mw_galaxy->addContainedObject(sol->getID());
 	// star system 2
 	IGObject *ac = new IGObject();
@@ -72,7 +72,7 @@ void Game::createTutorial()
 	ac->setName("Alpha Centauri System");
 	ac->setPosition3(-1500000000ll, 1500000000ll, 0ll);
 	ac->setVelocity3(-1000000ll, -1000000ll, 0ll);
-	ac->setAcceleration3(70000ll, -60000ll, 0ll);
+	
 	mw_galaxy->addContainedObject(ac->getID());
 	// star system 3
 	IGObject *sirius = new IGObject();
@@ -82,7 +82,7 @@ void Game::createTutorial()
 	sirius->setName("Sirius System");
 	sirius->setPosition3(-250000000ll, -4000000000ll, 0ll);
 	sirius->setVelocity3(2300000ll, 0ll, 0ll);
-	sirius->setAcceleration3(0ll, -120000ll, 0ll);
+	
 	mw_galaxy->addContainedObject(sirius->getID());
 
 	turnIncrement = 600;
@@ -122,7 +122,7 @@ void Game::loadGame(char *file)
 				fileob->setName(name);
 				fileob->setPosition3(posx, posy, posz);
 				fileob->setVelocity3(velx, vely, velz);
-				fileob->setAcceleration3(accx, accy, accz);
+				
 				if (n == 13) {
 					IGObject *parent = getObject(pid);
 					parent->addContainedObject(fileob->getID());
@@ -196,7 +196,7 @@ Player *Game::findPlayer(char *name, char *pass)
 				   (long long)(((rand() % 1000) - 500) * 10000000),
 				   (long long)(((rand() % 1000) - 500) * 10000000));
 		star->setVelocity3(0ll, 0ll, 0ll);
-		star->setAcceleration3(0ll, 0ll, 0ll);
+		
 		getObject(1)->addContainedObject(star->getID());
 
 		IGObject *planet = new IGObject();
@@ -209,7 +209,7 @@ Player *Game::findPlayer(char *name, char *pass)
 				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
 		planet->setVelocity3(0LL, 0ll, 0ll);
-		planet->setAcceleration3(0ll, 0ll, 0ll);
+		
 		star->addContainedObject(planet->getID());
 
 		IGObject *fleet = new IGObject();
@@ -222,7 +222,7 @@ Player *Game::findPlayer(char *name, char *pass)
 				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
 		fleet->setVelocity3(0LL, 0ll, 0ll);
-		fleet->setAcceleration3(0ll, 0ll, 0ll);
+	
 		fleet->addAction(-1, rtn->getID(), odT_Move);
 		star->addContainedObject(fleet->getID());
 	}
