@@ -379,9 +379,9 @@ char *Frame::unpackString()
 	char *rtnstr = NULL;
 	
 	if (len > 0 && length >= unpackptr + len) {
-		rtnstr = new char[len];
+		rtnstr = new char[len + 1];
 		memcpy(rtnstr, data + unpackptr, len);
-		
+		rtnstr[len] = '\0';
 		unpackptr += len;
 	} else {
 		Logger::getLogger()->debug("len < 0 or length < upackptr + len");
