@@ -155,7 +155,7 @@ void Player::processGetObject(Frame * frame)
 		unsigned int objectID = frame->unpackInt();
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 	} else {
-	  obframe->createFailFrame(4, "Invalid frame");
+	  obframe->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(obframe);
 }
@@ -178,19 +178,25 @@ void Player::processGetObjectById(Frame * frame)
 
 			// Object frames
     		for(int i=0 ; i < len; ++i) {
-				unsigned int objectID = frame->unpackInt();
-				
-				of = curConnection->createFrame(frame);
-				Game::getGame()->getObject(objectID)->createFrame(of, pid);
-      			curConnection->sendFrame(of);
-			}
-
-			return;
+		  unsigned int objectID = frame->unpackInt();
+		  
+		  of = curConnection->createFrame(frame);
+		  
+		  IGObject* o = Game::getGame()->getObject(objectID);
+		  if (o != NULL) {
+		    o->createFrame(of, pid);
+		  } else {
+		    of->createFailFrame(fec_NonExistant, "No such object");
+		  }
+		  curConnection->sendFrame(of);
+		}
+		
+		return;
 		}
 	}
 
 	// Fall through incase of error
-	of->createFailFrame(4, "Invalid frame");
+	of->createFailFrame(fec_FrameError, "Invalid frame");
 	curConnection->sendFrame(of);
 }
 
@@ -221,7 +227,7 @@ void Player::processGetObjectByPos(Frame * frame)
     }
 
   } else {
-    of->createFailFrame(4, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
   }
 }
@@ -237,10 +243,10 @@ void Player::processGetOrder(Frame * frame)
 		if (ord != NULL) {
 			ord->createFrame(of, objectID, ordpos);
 		} else {
-			of->createFailFrame(9, "Could not get Order");
+			of->createFailFrame(fec_TempUnavailable, "Could not get Order");
 		}
 	} else {
-		of->createFailFrame(4, "Invalid frame");
+		of->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(of);
 }
@@ -262,10 +268,10 @@ void Player::processAddOrder(Frame * frame)
 		    of->setType(ft02_OK);
 			of->packString("Order Added");
 		} else {
-			of->createFailFrame(19, "Could not add order");
+			of->createFailFrame(fec_TempUnavailable, "Could not add order");
 		}
 	} else {
-		of->createFailFrame(4, "Invalid frame");
+		of->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(of);
 }
@@ -284,10 +290,10 @@ void Player::processRemoveOrder(Frame * frame)
 		    of->setType(ft02_OK);
 			of->packString("Order removed");
 		} else {
-			of->createFailFrame(13, "Could not remove Order");
+			of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
 		}
 	} else {
-		of->createFailFrame(4, "Invalid frame");
+		of->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(of);
 }
@@ -312,10 +318,10 @@ void Player::processGetOutcome(Frame * frame)
 		if (ord != NULL) {
 			ord->createOutcome(of, objectID, ordpos);
 		} else {
-			of->createFailFrame(19, "Could not get Outcome");
+			of->createFailFrame(fec_TempUnavailable, "Could not get Outcome");
 		}
 	} else {
-		of->createFailFrame(4, "Invalid frame");
+		of->createFailFrame(fec_FrameError, "Invalid frame");
 	}
 	curConnection->sendFrame(of);
 

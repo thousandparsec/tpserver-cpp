@@ -238,13 +238,13 @@ void Connection::login()
 			} else {
 				Logger::getLogger()->debug("bad username or password");
 				Frame *failframe = createFrame(recvframe);
-				failframe->createFailFrame(1, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
+				failframe->createFailFrame(fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
 				sendFrame(failframe);
 			}
 		} else {
 			Logger::getLogger()->debug("username or password == NULL");
 			Frame *failframe = createFrame(recvframe);
-			failframe->createFailFrame(1, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
+			failframe->createFailFrame(fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
 			sendFrame(failframe);
 			close();
 		}
@@ -304,7 +304,7 @@ bool Connection::readFrame(Frame * recvframe)
 			Logger::getLogger()->debug("Incorrect header");
 			// protocol error
 			Frame *failframe = createFrame();
-			failframe->createFailFrame(0, "Protocol Error");	// TODO - should be a const or enum, protocol error
+			failframe->createFailFrame(fec_ProtocolError, "Protocol Error");	// TODO - should be a const or enum, protocol error
 			sendFrame(failframe);
 			close();
 			rtn = false;
@@ -313,7 +313,7 @@ bool Connection::readFrame(Frame * recvframe)
 		Logger::getLogger()->debug("Did not read header");
 		if (len > 0) {
 			Frame *failframe = createFrame();
-			failframe->createFailFrame(0, "Protocol Error");	// TODO - should be a const or enum, protocol error
+			failframe->createFailFrame(fec_ProtocolError, "Protocol Error");	// TODO - should be a const or enum, protocol error
 			sendFrame(failframe);
 		} else {
 			Logger::getLogger()->info("Client disconnected");

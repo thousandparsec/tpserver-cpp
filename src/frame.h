@@ -51,6 +51,17 @@ typedef enum {
 	ft_Max
 } FrameType;
 
+typedef enum {
+  fec_Invalid = -1,
+  fec_ProtocolError = 0,
+  fec_FrameError = 1,
+  fec_PermUnavailable = 2,
+  fec_TempUnavailable = 3,
+  fec_NonExistant = 4,
+  fec_Max
+} FrameErrorCode;
+
+
 //class std::string;
 
 class Frame {
@@ -98,7 +109,7 @@ class Frame {
 		char *unpackString();
 		long long unpackInt64();
 
-		void createFailFrame(int code, char *reason);
+		void createFailFrame(FrameErrorCode code, char *reason);
 
 	private:
 		FrameVersion version;

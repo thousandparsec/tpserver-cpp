@@ -417,7 +417,7 @@ long long Frame::unpackInt64(){
   return rtn;
 }*/
 
-void Frame::createFailFrame(int code, char *reason)
+void Frame::createFailFrame(FrameErrorCode code, char *reason)
 {
   if (version == fv0_1) 
     setType(ft_Fail);

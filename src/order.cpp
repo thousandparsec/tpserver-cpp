@@ -60,11 +60,11 @@ void Order::describeOrder(int ordertype, Frame * f)
 			Move::describeOrder(ordertype, f);
 			break;
 		default:
-			f->createFailFrame(16, "Order not implemented yet");
+			f->createFailFrame(fec_NonExistant, "Order not implemented yet");
 			break;
 		}
 	} else {
-		f->createFailFrame(15, "No such order");
+		f->createFailFrame(fec_NonExistant, "No such order");
 	}
 }
 
