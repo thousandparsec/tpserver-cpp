@@ -4,6 +4,7 @@
 #include <list>
 
 class Player;
+class IGObject;
 
 class Game{
 
@@ -19,6 +20,8 @@ class Game{
 
   Player* findPlayer(char* name, char* pass);
 
+  IGObject* getObject(unsigned int id);
+
   void doEndOfTurn();
 
   void saveAndClose();
@@ -33,6 +36,9 @@ class Game{
   static Game *myInstance;
 
   std::list<Player*> players;
+
+  std::list<IGObject*> objects;
+  IGObject* universe;
 
 };
 

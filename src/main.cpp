@@ -22,6 +22,8 @@ int main(int argc, char** argv){
   Console *myConsole = Console::getConsole();
 
   Game *myGame = Game::getGame();
+  //hack temp code
+  myGame->createTutorial();
   
   Network *myNetwork = Network::getNetwork();
   //temp code - should be removed when console is working fully

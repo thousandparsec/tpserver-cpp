@@ -20,6 +20,9 @@ class Player{
   void processIGFrame(Frame* frame);
 
  private:
+
+  void processGetObject(Frame* frame);
+
   Connection* curConnection;
   char* name;
   char* passwd;

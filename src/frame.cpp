@@ -170,6 +170,27 @@ bool Frame::packInt(int val){
   return true;
 }
 
+bool Frame::packInt64(long long val){
+  int netvalh, netvall;
+  int intval;
+  memcpy(&intval, &val, 4);
+  netvall = htonl(intval);
+  memcpy(&intval, &val + 4, 4);
+  netvalh = htonl(intval);
+  char* temp = (char*)realloc(data, length + 8);
+  if(temp != NULL){
+    data = temp;
+    temp += length;
+    memcpy(temp, &netvalh, 4);
+    temp += 4;
+    memcpy(temp, &netvall, 4);
+    length += 8;
+  }else{
+    return false;
+  }
+  return true;
+}
+
 int Frame::getUnpackOffset(){
   return unpackptr;
 }
@@ -205,6 +226,19 @@ char* Frame::unpackString(){
   }
   //printf("unpackptr %d\n", unpackptr);
   return rtnstr;
+}
+
+long long Frame::unpackInt64(){
+  long long rtn;
+  int nval, nvalh, nvall;
+  memcpy(&nval, data + unpackptr, 4);
+  unpackptr += 4;
+  nvalh = ntohl(nval);
+  memcpy(&nval, data + unpackptr, 4);
+  nvall = ntohl(nval);
+  memcpy(&rtn, &nvall, 4);
+  memcpy(&rtn + 4, &nvalh, 4);
+  return rtn;
 }
 
 void Frame::createFailFrame(int code, char* reason){

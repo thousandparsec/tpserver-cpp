@@ -3,6 +3,8 @@
 #include "connection.h"
 #include "frame.h"
 #include "logging.h"
+#include "game.h"
+#include "object.h"
 
 #include "player.h"
 
@@ -68,7 +70,23 @@ Connection* Player::getConnection(){
 }
 
 void Player::processIGFrame(Frame* frame){
-  Logger::getLogger()->warning("Player: Discarded frame, not processed");
+  switch(frame->getType()){
+  case ft_Get_Object:
+    processGetObject(frame);
+    break;
+    //case 
+  default:
+    Logger::getLogger()->warning("Player: Discarded frame, not processed");
+    break;
+  }
 
   delete frame;
+}
+
+void Player::processGetObject(Frame* frame){
+  Logger::getLogger()->debug("doing get frame");
+  unsigned int objectID = frame->unpackInt();
+  Frame* obframe = new Frame();
+  Game::getGame()->getObject(objectID)->createFrame(obframe);
+  curConnection->sendFrame(obframe);
 }

@@ -2,6 +2,7 @@
 
 #include "logging.h"
 #include "player.h"
+#include "object.h"
 
 #include "game.h"
 
@@ -19,11 +20,22 @@ void Game::createRandomUniverse(){
 }
 
 void Game::createRealUniverse(){
-  Logger::getLogger()->info("Creating real universe"); 
+  Logger::getLogger()->info("Creating real universe");
 }
 
 void Game::createTutorial(){
-  Logger::getLogger()->info("Creating tutorial"); 
+  Logger::getLogger()->info("Creating tutorial");
+  objects.clear();
+  universe = new IGObject();
+  objects.push_front(universe);
+  universe->setSize(100000000000ll);
+  universe->setType(0);
+  universe->setName("The Universe");
+  universe->setPosition3(0ll, 0ll, 0ll);
+  universe->setVelocity3(0ll, 0ll, 0ll);
+  universe->setAcceleration3(0ll, 0ll, 0ll);
+  //add contained objects
+  
 }
 
 void Game::save(){
@@ -69,11 +81,25 @@ Player* Game::findPlayer(char* name, char* pass){
   return rtn;
 }
 
+IGObject* Game::getObject(unsigned int id){
+  if(id == 0){
+    return universe;
+  }
+
+  return NULL;
+  //ie: needs work
+}
+
 void Game::doEndOfTurn(){
   Logger::getLogger()->info("End Of Turn started"); 
 }
 
 void Game::saveAndClose(){
+  save();
+  //remove and delete players
+  
+  //remove and delete objects
+  
   Logger::getLogger()->info("Game saved & closed"); 
 }
 

@@ -36,6 +36,7 @@ class Frame{
   bool packString(char* str);
   //bool packString(std::string str);
   bool packInt(int val);
+  bool packInt64(long long val);
  
   // uses these functions with care
   int getUnpackOffset();
@@ -43,6 +44,7 @@ class Frame{
   
   int unpackInt();
   char* unpackString();
+  long long unpackInt64();
 
   void createFailFrame(int code, char* reason);
 
