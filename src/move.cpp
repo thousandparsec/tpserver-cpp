@@ -39,8 +39,8 @@ void Move::setDest(long long x1, long long y1, long long z1)
 void Move::createFrame(Frame * f, int objID, int pos)
 {
 	Order::createFrame(f, objID, pos);
-	f->packInt(1);
-	f->packInt(0);
+	f->packInt(1); // number of turns
+	f->packInt(0); // size of resource list
 	f->packInt64(x);
 	f->packInt64(y);
 	f->packInt64(z);
@@ -48,8 +48,8 @@ void Move::createFrame(Frame * f, int objID, int pos)
 
 void Move::inputFrame(Frame * f)
 {
-  f->unpackInt();
-  f->unpackInt();
+  f->unpackInt(); // number of turns
+  f->unpackInt(); // size of resource list
 	x = f->unpackInt64();
 	y = f->unpackInt64();
 	z = f->unpackInt64();
