@@ -1,6 +1,7 @@
-AC_INIT(src/game.cpp)
+AC_INIT(tpserv, 0.0.6)
+AC_CONFIG_SRCDIR(src/game.cpp)
 
-AM_INIT_AUTOMAKE(tpserv, 0.0.6)
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
 CXXFLAGS="-g -Wall"
@@ -42,7 +43,9 @@ AC_TRY_COMPILE([#include <sys/types.h>
 AC_LANG_RESTORE
 
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
 ]) 
+
+AC_OUTPUT
