@@ -214,7 +214,12 @@ Player *Game::findPlayer(char *name, char *pass)
 		objects[star->getID()] = star;
 		star->setSize(2000000ll);
 		star->setType(obT_Star_System);
-		star->setName("Unknown Star System");
+		char* temp = new char[strlen(name) + 13];
+		strncpy(temp, name, strlen(name));
+		strncpy(temp + strlen(name), " Star System", 12);
+		temp[strlen(name) + 12] = '\0';
+		star->setName(temp);
+		delete[] temp;
 		star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
 					    (long long)(((rand() % 1000) - 500) * 10000000),
 					   /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
@@ -226,7 +231,12 @@ Player *Game::findPlayer(char *name, char *pass)
 		objects[planet->getID()] = planet;
 		planet->setSize(2);
 		planet->setType(obT_Planet);
-		planet->setName("A planet");
+		temp = new char[strlen(name) + 8];
+		strncpy(temp, name, strlen(name));
+		strncpy(temp + strlen(name), " Planet", 7);
+		temp[strlen(name) + 7] = '\0';
+		planet->setName(temp);
+		delete[] temp;
 		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
 		planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 								   (long long)((rand() % 10000) - 5000),
@@ -239,7 +249,12 @@ Player *Game::findPlayer(char *name, char *pass)
 		objects[fleet->getID()] = fleet;
 		fleet->setSize(2);
 		fleet->setType(obT_Fleet);
-		fleet->setName("A fleet");
+		temp = new char[strlen(name) + 13];
+		strncpy(temp, name, strlen(name));
+		strncpy(temp + strlen(name), " First Fleet", 12);
+		temp[strlen(name) + 12] = '\0';
+		fleet->setName(temp);
+		delete[] temp;
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
 		fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 								  (long long)((rand() % 10000) - 5000),
