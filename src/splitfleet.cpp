@@ -86,7 +86,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   Fleet* of = (Fleet*)(ob->getObjectData());
 
   Message * msg = new Message();
-  msg->setSubject("Colonised planet");
+  msg->setSubject("Split Fleet order complete");
   msg->setType(0);
   msg->setBody("Split fleet complete");
 
