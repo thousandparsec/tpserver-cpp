@@ -1,3 +1,8 @@
+18/4/04 - Lee
+Version 0.0.4 released.
+Fixed TP02 support, ParsecStone Delta supported.
+Includes IPv6 support.
+
 17/01/04 - Lee
 Version 0.0.4rc2 released.
 No feature changes to the server, but have changed to using TP02
