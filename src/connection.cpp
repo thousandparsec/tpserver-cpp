@@ -77,8 +77,10 @@ void Connection::process(){
 void Connection::close(){
   Logger::getLogger()->debug("Closing connection");
   Network::getNetwork()->removeFD(sockfd);
-  player->setConnection(NULL);
-  player = NULL;
+  if(player != NULL){
+    player->setConnection(NULL);
+    player = NULL;
+  }
   ::close(sockfd);
   status = 0;
 }
