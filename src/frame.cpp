@@ -174,9 +174,9 @@ bool Frame::packInt64(long long val){
   int netvalh, netvall;
   int intval;
   memcpy(&intval, &val, 4);
-  netvall = htonl(intval);
-  memcpy(&intval, &val + 4, 4);
   netvalh = htonl(intval);
+  memcpy(&intval, &val + 4, 4);
+  netvall = htonl(intval);
   char* temp = (char*)realloc(data, length + 8);
   if(temp != NULL){
     data = temp;
