@@ -70,17 +70,17 @@ void Connection::process()
 	switch (status) {
 	case 1:
 		//check if user is really a TP protocol ver1 client
-		Logger::getLogger()->warning("Stage1");
+		Logger::getLogger()->debug("Stage1");
 		verCheck();
 		break;
 	case 2:
 		//authorise the user
-		Logger::getLogger()->warning("Stage2");
+		Logger::getLogger()->debug("Stage2");
 		login();
 		break;
 	case 3:
 		//process as normal
-		Logger::getLogger()->warning("Stage3");
+		Logger::getLogger()->debug("Stage3");
 		inGameFrame();
 		break;
 	case 0:

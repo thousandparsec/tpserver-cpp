@@ -151,7 +151,7 @@ void Player::processGetObject(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get object frame");
 	Frame *obframe = curConnection->createFrame(frame);
-	if (frame->getLength() >= 4) {
+	if (frame->getDataLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
 		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 	} else {
@@ -165,11 +165,11 @@ void Player::processGetObjectById(Frame * frame)
 	Logger::getLogger()->debug("doing get object by id frame");
 
 	Frame *of = curConnection->createFrame(frame);
-	if (frame->getLength() >= 4) {
+	if (frame->getDataLength() >= 4) {
 		unsigned int len = frame->unpackInt();
 
 		// Check we have enough data
-		if (frame->getLength() >= 4 + 4*len) {
+		if (frame->getDataLength() >= 4 + 4*len) {
 			
 			// ListSeq Frame
 	    	of->setType(ft02_Sequence);
@@ -198,7 +198,7 @@ void Player::processGetObjectByPos(Frame * frame)
 {
   Logger::getLogger()->debug("doing get object by pos frame");
   Frame *of = curConnection->createFrame(frame);
-  if (frame->getLength() >= 36) {
+  if (frame->getDataLength() >= 36) {
     long long x, y, z;
     unsigned long long r;
 
@@ -230,7 +230,7 @@ void Player::processGetOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get order frame");
 	Frame *of = curConnection->createFrame(frame);
-	if (frame->getLength() >= 8) {
+	if (frame->getDataLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
 		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
@@ -250,7 +250,7 @@ void Player::processAddOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing add order frame");
 	Frame *of = curConnection->createFrame(frame);
-	if (frame->getLength() >= 8) {
+	if (frame->getDataLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		Order *ord = Order::createOrder((OrderType) frame->unpackInt());
 		int pos = frame->unpackInt();
@@ -274,7 +274,7 @@ void Player::processRemoveOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing remove order frame");
 	Frame *of = curConnection->createFrame(frame);
-	if (frame->getLength() >= 8) {
+	if (frame->getDataLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
 		if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
@@ -305,7 +305,7 @@ void Player::processGetOutcome(Frame * frame)
 {
 	Logger::getLogger()->debug("doing get outcome");
 	Frame *of = curConnection->createFrame(frame);
-	if (frame->getLength() >= 8) {
+	if (frame->getDataLength() >= 8) {
 		unsigned int objectID = frame->unpackInt();
 		int ordpos = frame->unpackInt();
 		Order *ord = Game::getGame()->getObject(objectID)->getOrder(ordpos, pid);
