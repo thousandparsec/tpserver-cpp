@@ -9,6 +9,9 @@ class Fleet:public OwnedObject {
       public:
 	Fleet();
 
+	void addShips(int type, int number);
+	bool removeShips(int type, int number);
+
 	void packExtraData(Frame * frame);
 
 	void doOnceATurn(IGObject * obj);

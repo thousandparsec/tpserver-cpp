@@ -17,7 +17,8 @@ typedef enum {
 	opT_Player_ID = 3,
 	opT_Space_Coord_Rel = 4,
 	opT_Range = 5,
-	opT_Resource_List = 6,
+	opT_List = 6,
+	opT_String = 7,
 
 	opT_Max
 } OrderParamType;

@@ -52,7 +52,8 @@ void Move::createFrame(Frame * f, int objID, int pos)
 bool Move::inputFrame(Frame * f)
 {
   f->unpackInt(); // number of turns
-  f->unpackInt(); // size of resource list
+  f->unpackInt(); // size of resource list, should be zero
+  // TODO: fix in case size of list is not zero
 	x = f->unpackInt64();
 	y = f->unpackInt64();
 	z = f->unpackInt64();

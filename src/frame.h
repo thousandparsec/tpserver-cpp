@@ -32,6 +32,9 @@ typedef enum {
   	ft02_Message_Get = 18,
   	ft02_Message = 19,
   	ft02_Message_Post = 20,
+	ft02_Message_Remove = 21,
+	ft02_ResDesc_Get = 22,
+	ft02_ResDesc = 23,
 	ft02_Max,
 
 

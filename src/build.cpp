@@ -28,27 +28,49 @@ void Build::createFrame(Frame *f, int objID, int pos)
   f->packInt(turnstogo);     
 
   f->packInt(0); // size of resource list
+
+  f->packInt(3);
+
+  f->packInt(0);
+  f->packString("Scout");
+  f->packInt(1);
+
+  f->packInt(1);
+  f->packString("Frigate");
+  f->packInt(1);
+
+  f->packInt(2);
+  f->packString("Battleship");
+  f->packInt(1);
+
+  f->packInt(1);
   f->packInt(fleettype);
+  f->packInt(1);
 }
 
 bool Build::inputFrame(Frame *f)
 {
   f->unpackInt(); // number of turns
-  f->unpackInt(); // size of resource list (should be zero)
-  fleettype = f->unpackInt();
+  f->unpackInt(); // size of resource list (should be zero) TODO
+  f->unpackInt(); // selectable list (should be zero) TODO
   
-  switch(fleettype){
-  case 0:
-    turnstogo = 1;
-    break;
-  case 1:
-    turnstogo = 2;
-    break;
-  case 2:
-    turnstogo = 4;
-    break;
+  for(int i = f->unpackInt(); i > 0; i--){
+
+    fleettype = f->unpackInt();
+    f->unpackInt(); // number to build
+    
+    switch(fleettype){
+    case 0:
+      turnstogo += 1;
+      break;
+    case 1:
+      turnstogo += 2;
+      break;
+    case 2:
+      turnstogo += 4;
+      break;
   }
-  
+  }
   return true;
 }
 
@@ -92,7 +114,7 @@ void Build::describeOrder(int orderType, Frame *f)
     f->packString("Build something");
     f->packInt(1); // num params
     f->packString("type");
-    f->packInt(99);
+    f->packInt(7);
     f->packString("The type of ship to build");
   }
 }

@@ -7,6 +7,7 @@
 #include "object.h"
 #include "objectdata.h"
 #include "ownedobject.h"
+#include "fleet.h"
 #include "frame.h"
 #include "net.h"
 
@@ -177,6 +178,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		fleet->setPosition3(star->getPositionX() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
+		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
 		fleet->setVelocity3(0LL, 0ll, 0ll);
 	
 		fleet->addAction(-1, rtn->getID(), odT_Move);

@@ -31,12 +31,14 @@ void Nop::createFrame(Frame * f, int objID, int pos)
 	f->packInt(waitTime);
 	f->packInt(0);
 	f->packInt(waitTime);
+	f->packInt(1000);
 }
 
 bool Nop::inputFrame(Frame * f)
 {
-  f->unpackInt();
-  f->unpackInt();
+  f->unpackInt(); // number of turns (read only, ignore client value)
+  // TODO fix below in case the client sends a list greated than zero
+  f->unpackInt(); // resource list (read only, ignore client value)
 	waitTime = f->unpackInt();
 	
 	return (waitTime > 0);
