@@ -27,8 +27,8 @@ void Order::createFrame(Frame * f, int objID, int pos)
 
     f->setType(ft02_Order);
 	f->packInt(objID);
-	f->packInt(type);
 	f->packInt(pos);
+	f->packInt(type);
 
 }
 

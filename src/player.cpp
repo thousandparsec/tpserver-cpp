@@ -269,14 +269,14 @@ void Player::processAddOrder(Frame * frame)
 			of->createFailFrame(fec_NonExistant, "No such object");
 			
 		} else {
+			// Order Slot
+			int pos = frame->unpackInt();
+
 			// See if we have a valid order
 			Order *ord = Order::createOrder((OrderType) frame->unpackInt());
 			if (ord == NULL) {
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
-
-				// Finally, try and add the order
-				int pos = frame->unpackInt();
 				ord->inputFrame(frame);
 				if (o->addOrder(ord, pos, pid)) {
 				    of->setType(ft02_OK);
