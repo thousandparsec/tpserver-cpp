@@ -171,12 +171,14 @@ void IGObject::setAcceleration3(long long x, long long y, long long z){
 bool IGObject::addContainedObject(IGObject* addObject){
   //check that the new object is *really* inside the object
 
+  
+  children.push_back(addObject);
   return true;
 }
 
 bool IGObject::removeContainedObject(IGObject* removeObject){
   // remove object
-
+  children.remove(removeObject);
   return true;
 }
 
@@ -195,9 +197,14 @@ void IGObject::createFrame(Frame* frame){
   frame->packInt64(accx);
   frame->packInt64(accy);
   frame->packInt64(accz);
-  //frame->packInt(children.size());
-  frame->packInt(0); //HACK hack
+  frame->packInt(children.size());
+  //frame->packInt(0); //HACK hack
   //for loop for children objects
+  std::list<IGObject*>::iterator itcurr, itend;
+  itend = children.end();
+  for(itcurr = children.begin(); itcurr != itend; itcurr++){
+    frame->packInt((*itcurr)->getID());
+  }
 
 
 }

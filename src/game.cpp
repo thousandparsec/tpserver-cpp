@@ -35,6 +35,15 @@ void Game::createTutorial(){
   universe->setVelocity3(10ll, -2ll, 0ll);
   universe->setAcceleration3(0ll, 0ll, 10ll);
   //add contained objects
+  IGObject *mw_galaxy = new IGObject();
+  objects.push_back(mw_galaxy);
+  mw_galaxy->setSize(1000000000ll);
+  mw_galaxy->setType(1);
+  mw_galaxy->setName("Milky Way Galaxy");
+  mw_galaxy->setPosition3(0ll, 0ll, 0ll);
+  mw_galaxy->setVelocity3(0ll, 1000ll, 500ll);
+  mw_galaxy->setAcceleration3(0ll, 0ll, 0ll);
+  universe->addContainedObject(mw_galaxy);
   
 }
 
