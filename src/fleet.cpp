@@ -101,7 +101,7 @@ void Fleet::doOnceATurn(IGObject * obj)
 
 void Fleet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
-    if(ships.find(1) != ships.end()){
+    if(ships[1] > 0){
       frame->packInt(5);
       frame->packInt(odT_Colonise);
     }else{
@@ -118,7 +118,7 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
 }
 
 bool Fleet::checkAllowedOrder(int ot, int playerid){
-  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (ships.find(1) != ships.end() && ot == odT_Colonise)));
+  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (ships[1] > 0 && ot == odT_Colonise)));
 }
 
 int Fleet::getContainerType(){
