@@ -94,8 +94,16 @@ IGObject* Game::getObject(unsigned int id){
   if(id == 0){
     return universe;
   }
-
-  return NULL;
+  IGObject* rtn = NULL;
+  std::list<IGObject*>::iterator itcurr, itend;
+  itend = objects.end();
+  for(itcurr = objects.begin(); itcurr != itend; itcurr++){
+    if((*itcurr)->getID() == id){
+      rtn = (*itcurr);
+      break;
+    }
+  }
+  return rtn;
   //ie: needs work
 }
 
