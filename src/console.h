@@ -2,23 +2,23 @@
 #define CONSOLE_H
 
 
-class Console{
-  
- public:
-  static Console* getConsole();
-  
-  void mainLoop();
+class Console {
 
-  void close();
-  
+      public:
+	static Console *getConsole();
 
- private:
-  Console(Console& rhs);
-  Console operator=(Console& rhs);
-  Console();
-  ~Console();
-  
-  static Console *myInstance;
+	void mainLoop();
+
+	void close();
+
+
+      private:
+	 Console(Console & rhs);
+	Console operator=(Console & rhs);
+	 Console();
+	~Console();
+
+	static Console *myInstance;
 
 };
 

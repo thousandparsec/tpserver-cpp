@@ -7,45 +7,45 @@
 
 class Connection;
 
-class Network{
+class Network {
 
- public:
-  static Network* getNetwork();
-  
-  //stuff
+      public:
+	static Network *getNetwork();
 
-  void addFD(int fd);
-  void removeFD(int fd);
+	//stuff
 
-  void start();
+	void addFD(int fd);
+	void removeFD(int fd);
 
-  void stop();
+	void start();
 
-  // don't you even think about calling these functions
+	void stop();
 
-  void masterLoop();
- 
+	// don't you even think about calling these functions
 
- private:
-  Network();
-  ~Network();
-  Network(Network &rhs);
-  Network operator=(Network &rhs);
+	void masterLoop();
 
-  static Network* myInstance;
 
-  int serverFD;
-  fd_set master_set;
-  int max_fd;
-  bool active;
+      private:
+	 Network();
+	~Network();
+	 Network(Network & rhs);
+	Network operator=(Network & rhs);
 
-  pthread_t master;
- 
+	static Network *myInstance;
 
-  bool halt;
+	int serverFD;
+	fd_set master_set;
+	int max_fd;
+	bool active;
 
-  std::list<Connection*> connections;
-  
+	pthread_t master;
+
+
+	bool halt;
+
+	 std::list < Connection * >connections;
+
 
 };
 

@@ -4,22 +4,22 @@
 
 #include <string>
 
-class Result{
+class Result {
 
- public:
-  Result();
-  Result(Result& rhs);
-  ~Result();
+      public:
+	Result();
+	Result(Result & rhs);
+	~Result();
 
-  Result operator=(Result& rhs);
+	Result operator=(Result & rhs);
 
-  String getDescription();
-  
-  void setDescription(String newdesc);
+	String getDescription();
 
- private:
-  String description;
-  
+	void setDescription(String newdesc);
+
+      private:
+	 String description;
+
 };
 
 #endif

@@ -4,37 +4,37 @@
 class Frame;
 class Player;
 
-class Connection{
+class Connection {
 
- public:
-  
-  Connection();
-  Connection(Connection &rhs);
-  Connection(int fd);
-  ~Connection();
-  Connection operator=(Connection &rhs);
+      public:
 
-  int getFD();
-  void setFD(int fd);
+	Connection();
+	Connection(Connection & rhs);
+	Connection(int fd);
+	~Connection();
+	Connection operator=(Connection & rhs);
 
-  void process();
-  void close();
-  void sendFrame(Frame* frame);
+	int getFD();
+	void setFD(int fd);
 
-  int getStatus();
+	void process();
+	void close();
+	void sendFrame(Frame * frame);
 
- private:
-  
-  void verCheck();
-  void login();
-  
-  void inGameFrame();
+	int getStatus();
 
-  bool readFrame(Frame * recvframe); 
-  
-  int sockfd;
-  Player* player;
-  int status;
+      private:
+
+	void verCheck();
+	void login();
+
+	void inGameFrame();
+
+	bool readFrame(Frame * recvframe);
+
+	int sockfd;
+	Player *player;
+	int status;
 
 };
 

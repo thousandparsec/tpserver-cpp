@@ -3,31 +3,31 @@
 
 #include <string>
 
-class Settings{
+class Settings {
 
- public:
-  static Settings* getSettings();
+      public:
+	static Settings *getSettings();
 
-  /*
-  void set(int item, int value);
-  void set(int item, std::string value);
-  void set(int item, bool value);
+	/*
+	   void set(int item, int value);
+	   void set(int item, std::string value);
+	   void set(int item, bool value);
 
-  int get(int item);
-  std::string get(int item);
-  bool get(int item);
-  */
+	   int get(int item);
+	   std::string get(int item);
+	   bool get(int item);
+	 */
 
 
- private:
-  Settings();
-  ~Settings();
-  Settings(Settings &rhs);
-  Settings operator=(Settings &rhs);
+      private:
+	 Settings();
+	~Settings();
+	 Settings(Settings & rhs);
+	Settings operator=(Settings & rhs);
 
-  // settings storage
+	// settings storage
 
-  static Settings* myInstance;
+	static Settings *myInstance;
 
 };
 

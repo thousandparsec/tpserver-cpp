@@ -2,13 +2,14 @@
 
 #include "settings.h"
 
-Settings* Settings::myInstance = NULL;
+Settings *Settings::myInstance = NULL;
 
-Settings* Settings::getSettings(){
-  if(myInstance == NULL){
-    myInstance = new Settings();
-  }
-  return myInstance;
+Settings *Settings::getSettings()
+{
+	if (myInstance == NULL) {
+		myInstance = new Settings();
+	}
+	return myInstance;
 }
 
 /*
@@ -37,14 +38,20 @@ bool Settings::get(int item){
 }
 */
 
-Settings::Settings(){
+Settings::Settings()
+{
 
 }
 
-Settings::~Settings(){
+Settings::~Settings()
+{
 
 }
 
-Settings::Settings(Settings &rhs){}
+Settings::Settings(Settings & rhs)
+{
+}
 
-Settings Settings::operator=(Settings &rhs){}
+Settings Settings::operator=(Settings & rhs)
+{
+}

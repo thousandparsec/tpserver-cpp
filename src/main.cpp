@@ -6,38 +6,40 @@
 #include "net.h"
 #include "settings.h"
 
-void parseOptions(int argc, char** argv){
-  Settings* mySettings = Settings::getSettings();
+void parseOptions(int argc, char **argv)
+{
+	Settings *mySettings = Settings::getSettings();
 
 }
 
 
-int main(int argc, char** argv){
-  Logger* myLogger = Logger::getLogger();
-  
-  parseOptions(argc, argv);
-  
-  myLogger->info("TP-server starting");
+int main(int argc, char **argv)
+{
+	Logger *myLogger = Logger::getLogger();
 
-  Console *myConsole = Console::getConsole();
+	parseOptions(argc, argv);
 
-  Game *myGame = Game::getGame();
-  //hack temp code
-  myGame->createTutorial();
-  
-  Network *myNetwork = Network::getNetwork();
-  //temp code - should be removed when console is working fully
-  myNetwork->start();
-  //temp code end
-  
-  myConsole->mainLoop();
-  
-  myNetwork->stop();
-  myGame->saveAndClose();
-  myConsole->close();
+	myLogger->info("TP-server starting");
 
-  myLogger->info("TP-server exiting");
-  myLogger->flush();
+	Console *myConsole = Console::getConsole();
 
-  return 0;
+	Game *myGame = Game::getGame();
+	//hack temp code
+	myGame->createTutorial();
+
+	Network *myNetwork = Network::getNetwork();
+	//temp code - should be removed when console is working fully
+	myNetwork->start();
+	//temp code end
+
+	myConsole->mainLoop();
+
+	myNetwork->stop();
+	myGame->saveAndClose();
+	myConsole->close();
+
+	myLogger->info("TP-server exiting");
+	myLogger->flush();
+
+	return 0;
 }

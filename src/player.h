@@ -4,33 +4,33 @@
 class Connection;
 class Frame;
 
-class Player{
- public:
-  Player();
-  ~Player();
-  
-  void setName(char* newname);
-  void setPass(char* newpass);
-  void setConnection(Connection* newcon);
-  
-  char* getName();
-  char* getPass();
-  Connection* getConnection();
+class Player {
+      public:
+	Player();
+	~Player();
 
-  void processIGFrame(Frame* frame);
+	void setName(char *newname);
+	void setPass(char *newpass);
+	void setConnection(Connection * newcon);
 
- private:
+	char *getName();
+	char *getPass();
+	Connection *getConnection();
 
-  void processGetObject(Frame* frame);
+	void processIGFrame(Frame * frame);
 
-  Connection* curConnection;
-  char* name;
-  char* passwd;
+      private:
 
-  Player(Player & rhs);
-  
-  Player operator=(Player & rhs);
-   
+	void processGetObject(Frame * frame);
+
+	Connection *curConnection;
+	char *name;
+	char *passwd;
+
+	 Player(Player & rhs);
+
+	Player operator=(Player & rhs);
+
 
 };
 
