@@ -40,7 +40,7 @@ Frame::Frame(FrameVersion v)
   version = v;
 }
 
-Frame::Frame(Frame &rhs)
+Frame::Frame(const Frame &rhs)
 {
 	type = rhs.type;
 	length = rhs.length;
@@ -64,7 +64,7 @@ Frame::~Frame()
 		free(data);
 }
 
-Frame Frame::operator=(Frame & rhs)
+Frame Frame::operator=(const Frame & rhs)
 {
 	type = rhs.type;
 	length = rhs.length;
@@ -82,7 +82,7 @@ Frame Frame::operator=(Frame & rhs)
 	return *this;
 }
 
-char *Frame::getPacket()
+char *Frame::getPacket() const
 {
 	char *packet;
 	char *temp;
@@ -127,12 +127,12 @@ char *Frame::getPacket()
 	return packet;
 }
 
-FrameType Frame::getType()
+FrameType Frame::getType() const
 {
 	return type;
 }
 
-int Frame::getSequence()
+int Frame::getSequence() const
 {
   return sequence;
 }
@@ -143,29 +143,29 @@ bool Frame::setSequence(int s)
   return true;
 }
 
-FrameVersion Frame::getVersion()
+FrameVersion Frame::getVersion() const
 {
 	return version;
 }
 
-int Frame::getLength()
+int Frame::getLength() const
 {
 	return getHeaderLength()+getDataLength();
 }
 
-int Frame::getHeaderLength()
+int Frame::getHeaderLength() const
 {
 	
   return 16;
 	
 }
 
-int Frame::getDataLength()
+int Frame::getDataLength() const
 {
 	return length;
 }
 
-char *Frame::getData()
+char *Frame::getData() const
 {
 	char *tortn = (char *) malloc(length);
 	if (tortn != NULL) {
@@ -314,7 +314,7 @@ bool Frame::packInt64(long long val)
 	return true;
 }
 
-int Frame::getUnpackOffset()
+int Frame::getUnpackOffset() const
 {
 	return unpackptr;
 }

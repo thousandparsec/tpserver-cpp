@@ -55,32 +55,32 @@ class Frame {
 	public:
 		Frame();
 		Frame(FrameVersion v);
-		Frame(Frame &rhs);
+		Frame(const Frame &rhs);
 
 		~Frame();
 
-		Frame operator=(Frame &rhs);
+		Frame operator=(const Frame &rhs);
 
 		int setHeader(char *newhead);
-		char *getPacket();
-		int getHeaderLength();		// The length of the header section
-		int getDataLength();		// The length of the data section
-		int getLength();			// The total length of the packet
+		char *getPacket() const;
+		int getHeaderLength() const;		// The length of the header section
+		int getDataLength() const;		// The length of the data section
+		int getLength() const;			// The total length of the packet
 		
 		// Data
-		char *getData();
+		char *getData() const;
 		bool setData(char *newdata, int dlen);
 
 		// Type
-		FrameType getType();
+		FrameType getType() const;
 		bool setType(FrameType nt);
 		
 		// Sequence
-		int getSequence();
+		int getSequence() const;
 		bool setSequence(int s);
 		
 		// Version
-		FrameVersion getVersion();
+		FrameVersion getVersion() const;
 		
 		bool packString(char *str);
 		//bool packString(std::string str);
@@ -88,7 +88,7 @@ class Frame {
 		bool packInt64(long long val);
 
 		// uses these functions with care
-		int getUnpackOffset();
+		int getUnpackOffset() const;
 		bool setUnpackOffset(int newoffset);
 
 		int unpackInt();
