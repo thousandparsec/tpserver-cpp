@@ -3,9 +3,16 @@
 
 #include <list>
 #include <set>
+#include <map>
+
+// must try to fix this
+
+#include "order.h"
 
 class Frame;
 class Game;
+//class Order;
+
 
 class IGObject {
 
@@ -43,7 +50,17 @@ class IGObject {
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
 
-	void createFrame(Frame * frame);
+	bool addOrder(Order * ord, int pos, int playerid);
+	bool removeOrder(int pos, int playerid);
+	Order *getOrder(int pos, int playerid);
+	int getNumOrders(int playerid);
+
+	bool addAction(int currpid, int newpid, OrderType ot);
+	bool removeAction(int currpid, int newpid, OrderType ot);
+	 std::set < OrderType > getActions(int currpid, int newpid);
+
+
+	void createFrame(Frame * frame, int playerid);
 
       protected:
 	static Game *myGame;
@@ -67,6 +84,9 @@ class IGObject {
 	long long accz;
 
 	 std::set < unsigned int >children;
+
+	 std::list < Order * >orders;
+	 std::map < int, std::set < OrderType > >actions;
 
 };
 

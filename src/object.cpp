@@ -3,6 +3,7 @@
 #include "frame.h"
 #include "logging.h"
 #include "game.h"
+#include "order.h"
 
 #include "object.h"
 
@@ -208,7 +209,95 @@ bool IGObject::removeContainedObject(unsigned int removeObjectID)
 	return children.erase(removeObjectID) == currsize - 1;
 }
 
-void IGObject::createFrame(Frame * frame)
+bool IGObject::addOrder(Order * ord, int pos, int playerid)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
+	if (ordit != actions.end()) {
+		if ((*ordit).second.find(ord->getType()) != (*ordit).second.end()) {
+			if (pos == -1) {
+				orders.push_back(ord);
+			} else {
+				std::list < Order * >::iterator inspos = orders.begin();
+				advance(inspos, pos - 1);
+				orders.insert(inspos, ord);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+bool IGObject::removeOrder(int pos, int playerid)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
+	if (ordit != actions.end()) {
+		std::list < Order * >::iterator delpos = orders.begin();
+		advance(delpos, pos - 1);
+		delete(*delpos);
+		orders.erase(delpos);
+		return true;
+	}
+	return false;
+}
+
+Order *IGObject::getOrder(int pos, int playerid)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
+	if (ordit != actions.end()) {
+		std::list < Order * >::iterator showpos = orders.begin();
+		advance(showpos, pos - 1);
+		if (showpos != orders.end()) {
+			return (*showpos);
+		}
+	}
+	return NULL;
+}
+
+int IGObject::getNumOrders(int playerid)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
+	if (ordit != actions.end()) {
+		return orders.size();
+	}
+	return 0;
+}
+
+bool IGObject::addAction(int currpid, int newpid, OrderType ot)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
+	if (ordit != actions.end()) {
+		actions[newpid].insert(ot);
+		return true;
+	}
+	return false;
+}
+
+bool IGObject::removeAction(int currpid, int newpid, OrderType ot)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
+	if (ordit != actions.end()) {
+		actions[newpid].erase(ot);
+		if (actions[newpid].empty()) {
+			actions.erase(newpid);
+		}
+		return true;
+	}
+	return false;
+}
+
+std::set < OrderType > IGObject::getActions(int currpid, int newpid)
+{
+	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
+	if (ordit != actions.end()) {
+		std::map < int, std::set < OrderType > >::iterator ordit2 = actions.find(newpid);
+		if (ordit2 != actions.end()) {
+			return (*ordit2).second;
+		}
+	}
+	return std::set < OrderType > ();
+}
+
+void IGObject::createFrame(Frame * frame, int playerid)
 {
 	frame->setType(ft_Object);
 	frame->packInt(id);
@@ -232,6 +321,16 @@ void IGObject::createFrame(Frame * frame)
 	for (itcurr = children.begin(); itcurr != itend; itcurr++) {
 		frame->packInt(*itcurr);
 	}
-
-
+	std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
+	if (ord != actions.end()) {
+		frame->packInt(((*ord).second).size());
+		std::set < OrderType >::iterator itacurr, itaend;
+		itaend = ((*ord).second).end();
+		for (itacurr = ((*ord).second).begin(); itacurr != itaend; itacurr++) {
+			frame->packInt(*itacurr);
+		}
+	} else {
+		frame->packInt(0);
+	}
+	frame->packInt(orders.size());
 }

@@ -8,11 +8,14 @@
 
 #include "player.h"
 
+int Player::nextpid = 1;
+
 Player::Player()
 {
 	curConnection = NULL;
 	name = NULL;
 	passwd = NULL;
+	pid = nextpid++;
 }
 
 Player::~Player()
@@ -53,6 +56,11 @@ void Player::setConnection(Connection * newcon)
 	curConnection = newcon;
 }
 
+void Player::setID(int newid)
+{
+	pid = newid;
+}
+
 char *Player::getName()
 {
 	int len = strlen(name) + 1;
@@ -72,6 +80,11 @@ char *Player::getPass()
 Connection *Player::getConnection()
 {
 	return curConnection;
+}
+
+int Player::getID()
+{
+	return pid;
 }
 
 void Player::processIGFrame(Frame * frame)
@@ -95,7 +108,7 @@ void Player::processGetObject(Frame * frame)
 	if (frame->getLength() >= 4) {
 		unsigned int objectID = frame->unpackInt();
 		Frame *obframe = new Frame();
-		Game::getGame()->getObject(objectID)->createFrame(obframe);
+		Game::getGame()->getObject(objectID)->createFrame(obframe, pid);
 		curConnection->sendFrame(obframe);
 	}
 }

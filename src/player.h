@@ -12,20 +12,25 @@ class Player {
 	void setName(char *newname);
 	void setPass(char *newpass);
 	void setConnection(Connection * newcon);
+	void setID(int newid);
 
 	char *getName();
 	char *getPass();
 	Connection *getConnection();
+	int getID();
 
 	void processIGFrame(Frame * frame);
 
       private:
+
+	static int nextpid;
 
 	void processGetObject(Frame * frame);
 
 	Connection *curConnection;
 	char *name;
 	char *passwd;
+	int pid;
 
 	 Player(Player & rhs);
 
