@@ -2,6 +2,7 @@
 #define CONNECTION_H
 
 class Frame;
+class Player;
 
 class Connection{
 
@@ -32,7 +33,7 @@ class Connection{
   bool readFrame(Frame * recvframe); 
   
   int sockfd;
-  // Player* player;
+  Player* player;
   int status;
 
 };

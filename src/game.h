@@ -1,6 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <list>
+
+class Player;
+
 class Game{
 
  public:
@@ -12,6 +16,8 @@ class Game{
   //void loadGame(char* file);
   //void setSaveFile(char *file);
   void save();
+
+  Player* findPlayer(char* name, char* pass);
 
   void doEndOfTurn();
 
@@ -25,6 +31,8 @@ class Game{
   Game operator=(Game &rhs);
 
   static Game *myInstance;
+
+  std::list<Player*> players;
 
 };
 

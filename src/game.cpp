@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "logging.h"
+#include "player.h"
 
 #include "game.h"
 
@@ -27,6 +28,17 @@ void Game::createTutorial(){
 
 void Game::save(){
   Logger::getLogger()->info("Game saved"); 
+}
+
+Player* Game::findPlayer(char* name, char* pass){
+  Logger::getLogger()->debug("finding player"); 
+  //if new, create new player
+
+  Player * newplayer = new Player();
+  newplayer->setName(name);
+  newplayer->setPass(pass);
+  players.push_back(newplayer);
+  return newplayer;
 }
 
 void Game::doEndOfTurn(){

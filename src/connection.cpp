@@ -6,6 +6,8 @@
 #include "logging.h"
 #include "net.h"
 #include "frame.h"
+#include "game.h"
+#include "player.h"
 
 #include "connection.h"
 
@@ -75,6 +77,8 @@ void Connection::process(){
 void Connection::close(){
   Logger::getLogger()->debug("Closing connection");
   Network::getNetwork()->removeFD(sockfd);
+  player->setConnection(NULL);
+  player = NULL;
   ::close(sockfd);
   status = 0;
 }
@@ -126,12 +130,20 @@ void Connection::login(){
     char* password = recvframe->unpackString();
     if(username != NULL && password != NULL){
       //authenicate
-      Frame* okframe = new Frame();
-      okframe->setType(ft_OK);
-      okframe->packString("Welcome");
-      sendFrame(okframe);
+      player = Game::getGame()->findPlayer(username, password);
+      if(player != NULL){
+	Frame* okframe = new Frame();
+	okframe->setType(ft_OK);
+	okframe->packString("Welcome");
+	sendFrame(okframe);
       
-      status = 3;
+	status = 3;
+      }else{
+	Logger::getLogger()->debug("bad username or password");
+	Frame* failframe = new Frame();
+	failframe->createFailFrame(1, "Login Error - bad username or password"); // TODO - should be a const or enum, Login error
+	sendFrame(failframe);
+      }
     }else{
       Logger::getLogger()->debug("username or password == NULL");
       Frame* failframe = new Frame();
@@ -147,10 +159,15 @@ void Connection::login(){
 
 void Connection::inGameFrame(){
  Frame* frame = new Frame();
- readFrame(frame);
- //todo
- // should pass frame to player to do something with
- delete frame;
+ if(readFrame(frame)){
+   //Logger::getLogger()->warning("Discarded frame, not processed");
+   //todo
+   // should pass frame to player to do something with
+   player->processIGFrame(frame);
+ }else{
+   // client closed
+   delete frame;
+ }
 }
 
 bool Connection::readFrame(Frame * recvframe){
