@@ -7,9 +7,10 @@
 #include "logging.h"
 #include "message.h"
 #include "fleet.h"
-#include "ownedobject.h"
+#include "planet.h"
 #include "player.h"
 #include "move.h"
+#include "combatstrategy.h"
 
 #include "colonise.h"
 
@@ -49,28 +50,47 @@ bool Colonise::inputFrame(Frame * f){
 
 bool Colonise::doOrder(IGObject * ob){
   //if not close, move
+  if(planetid == 0)
+    return true;
 
   if(moveorder->doOrder(ob)){
 
     Message * msg = new Message();
     
     Fleet *fleet = (Fleet*)ob->getObjectData();
-    if(fleet->numShips(1) >= 1){
+    Planet *planet = (Planet*)(Game::getGame()->getObject(planetid)->getObjectData());
+    
+    if(planet->getOwner() != fleet->getOwner()){
       
-      ((OwnedObject*)(Game::getGame()->getObject(planetid)->getObjectData()))->setOwner(fleet->getOwner());
+      if(planet->getOwner() != -1){
+	//combat
+	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
+	combat->setCombatants(ob, Game::getGame()->getObject(planetid));
+	combat->doCombat();
+      }
+	
+	
+      if(fleet->numShips(1) >= 1){
+	planet->setOwner(fleet->getOwner());
+	
+	fleet->removeShips(1, 1);
+	
+	msg->setSubject("Colonised planet");
+	msg->setBody("You have colonised a planet!");
+	msg->setType(0);
+      }else{
+	msg->setSubject("Colonisation failed");
+	msg->setBody("Your fleet did not have a frigate to colonise the planet");
+	msg->setType(0);
+      }
       
-      fleet->removeShips(1, 1);
       if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
 	Game::getGame()->scheduleRemoveObject(ob->getID());
       }
       
-      msg->setSubject("Colonised planet");
-      msg->setBody("You have colonised a planet!");
-      msg->setType(0);
-      
     }else{
       msg->setSubject("Colonisation failed");
-      msg->setBody("Your fleet did not have a frigate to colonise the planet");
+      msg->setBody("You already own the planet you tried to colonise");
       msg->setType(0);
     }
     
