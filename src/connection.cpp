@@ -174,6 +174,7 @@ void Connection::verCheck()
 	    send(sockfd, "You are not running the right version of TP, please upgrade\n", 60, 0);
 	    close();
 	  }else if(ver > 2){
+	    Logger::getLogger()->warning("Client has higher version (%d), telling it so", ver);
 	    Frame *f = new Frame(fv0_2);
 	    f->setSequence(0);
 	    f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support version 2 sorry.");
