@@ -265,40 +265,6 @@ void IGObject::removeFirstOrder(){
   orders.pop_front();
 }
 
-bool IGObject::addAction(int currpid, int newpid, OrderType ot)
-{
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
-	if (ordit != actions.end() || currpid == -1) {
-		actions[newpid].insert(ot);
-		return true;
-	}
-	return false;
-}
-
-bool IGObject::removeAction(int currpid, int newpid, OrderType ot)
-{
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
-	if (ordit != actions.end() || currpid == -1) {
-		actions[newpid].erase(ot);
-		if (actions[newpid].empty()) {
-			actions.erase(newpid);
-		}
-		return true;
-	}
-	return false;
-}
-
-std::set<OrderType> IGObject::getActions(int currpid, int newpid)
-{
-	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(currpid);
-	if (ordit != actions.end()) {
-		std::map < int, std::set < OrderType > >::iterator ordit2 = actions.find(newpid);
-		if (ordit2 != actions.end()) {
-			return (*ordit2).second;
-		}
-	}
-	return std::set < OrderType > ();
-}
 
 void IGObject::createFrame(Frame * frame, int playerid)
 {
@@ -318,18 +284,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
   for (itcurr = children.begin(); itcurr != itend; itcurr++) {
     frame->packInt(*itcurr);
   }
-  /*std::map < int, std::set < OrderType > >::iterator ord = actions.find(playerid);
-  if (ord != actions.end()) {
-    frame->packInt(((*ord).second).size());
-    std::set < OrderType >::iterator itacurr, itaend;
-    itaend = ((*ord).second).end();
-    for (itacurr = ((*ord).second).begin(); itacurr != itaend; itacurr++) {
-      frame->packInt(*itacurr);
-    }
-  } else {
-    frame->packInt(0);
-  }
-  */
+
   myObjectData->packAllowedOrders(frame, playerid);
   // think about the next one...
   frame->packInt(orders.size());

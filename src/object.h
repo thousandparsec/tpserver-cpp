@@ -55,9 +55,6 @@ class IGObject {
 	Order * getFirstOrder();
 	void removeFirstOrder();
 
-	bool addAction(int currpid, int newpid, OrderType ot);
-	bool removeAction(int currpid, int newpid, OrderType ot);
-	 std::set < OrderType > getActions(int currpid, int newpid);
 
 
 	void createFrame(Frame * frame, int playerid);
@@ -84,7 +81,6 @@ class IGObject {
 	 std::set < unsigned int >children;
 
 	 std::list < Order * >orders;
-	 std::map < int, std::set < OrderType > >actions;
 
 	 ObjectData *myObjectData;
 

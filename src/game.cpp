@@ -166,8 +166,7 @@ Player *Game::findPlayer(char *name, char *pass)
 								   (long long)((rand() % 10000) - 5000),
 								   (long long)((rand() % 10000) - 5000)));
 		planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-		planet->addAction(-1, rtn->getID(), odT_Build);
-		
+				
 		star->addContainedObject(planet->getID());
 
 		IGObject *fleet = new IGObject();
@@ -182,8 +181,6 @@ Player *Game::findPlayer(char *name, char *pass)
 		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
 		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 	
-		fleet->addAction(-1, rtn->getID(), odT_Move);
-		fleet->addAction(-1, rtn->getID(), odT_Nop);
 		star->addContainedObject(fleet->getID());
 	}
 	return rtn;

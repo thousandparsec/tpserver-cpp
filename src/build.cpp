@@ -100,8 +100,7 @@ bool Build::doOrder(IGObject *ob)
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
     fleet->setPosition(ob->getPosition());
     fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    fleet->addAction(-1, ownerid, odT_Move); // let ship move
-    fleet->addAction(-1, ownerid, odT_Nop); // let ship stop
+   
     
     //set ship type
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
