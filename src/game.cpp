@@ -430,6 +430,8 @@ Game::Game()
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
   combatstrategy = new RSPCombat();
+  //this is a good place to seed the PNRG
+  srand((getpid() + time(NULL)) % RAND_MAX);
 }
 
 Game::Game(Game & rhs)
