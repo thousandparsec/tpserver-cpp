@@ -1,3 +1,14 @@
+07/05/03 - Lee
+Version 0.0.4rc1 released.
+Server can:
+ - remember orders correctly
+ - create Move and Nop orders
+ - create Planet and Fleet Objects
+ - return outcomes when requested
+The server also creates a Star system, Planet and a Fleet object 
+for each new player.  The fleet can be given orders by the 
+player.
+
 18/04/03 - Lee
 Version 0.0.3 released.
 Server can:
