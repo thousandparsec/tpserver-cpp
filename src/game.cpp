@@ -164,6 +164,7 @@ Player *Game::findPlayer(char *name, char *pass)
 				     star->getPositionY() + (long long)((rand() % 10000) - 5000),
 				     star->getPositionZ() + (long long)((rand() % 10000) - 5000));
 		planet->setVelocity3(0LL, 0ll, 0ll);
+		planet->addAction(-1, rtn->getID(), odT_Build);
 		
 		star->addContainedObject(planet->getID());
 
@@ -197,6 +198,11 @@ IGObject *Game::getObject(unsigned int id)
 	}
 	return rtn;
 	//may need more work
+}
+
+void Game::addObject(IGObject* obj)
+{
+  objects[obj->getID()] = obj;
 }
 
 std::list <unsigned int> Game::getObjectsByPos(long long x, long long y, long long z, unsigned long long r)

@@ -5,6 +5,7 @@ typedef enum {
 	odT_Invalid = -1,
 	odT_Nop = 0,
 	odT_Move = 1,
+	odT_Build = 2,
 	odT_Max
 } OrderType;
 

@@ -1,8 +1,10 @@
 #include <stdlib.h>
 
 #include "frame.h"
+
 #include "nop.h"
 #include "move.h"
+#include "build.h"
 
 #include "order.h"
 
@@ -50,6 +52,9 @@ void Order::describeOrder(int ordertype, Frame * f)
 		case odT_Move:
 			Move::describeOrder(ordertype, f);
 			break;
+		case odT_Build:
+		  Build::describeOrder(ordertype, f);
+		  break;
 		default:
 			f->createFailFrame(fec_NonExistant, "Order not implemented yet");
 			break;
@@ -70,6 +75,9 @@ Order *Order::createOrder(OrderType ordertype)
 		case odT_Move:
 			rtv = new Move();
 			break;
+		case odT_Build:
+		  rtv = new Build();
+		  break;
 		}
 	}
 	return rtv;
