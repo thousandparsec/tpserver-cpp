@@ -30,6 +30,7 @@
 #include "board.h"
 #include "message.h"
 #include "ordermanager.h"
+#include "objectdata.h"
 
 #include "player.h"
 
@@ -415,6 +416,54 @@ void Player::processDescribeOrder(Frame * frame)
 	  Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
 	  curConnection->sendFrame(of);
 	}
+}
+
+void Player::processProbeOrder(Frame * frame){
+  Logger::getLogger()->debug("doing probe order frame");
+  
+  int obid = frame->unpackInt();
+  IGObject* theobject = Game::getGame()->getObject(obid);
+  if(theobject == NULL){
+    Logger::getLogger()->debug("The object the probed orders are for doesn't exist");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No such object");
+    curConnection->sendFrame(of);
+  }
+
+  int numtypes = frame->unpackInt();
+  if(numtypes > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numtypes);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numtypes == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no orders to probe, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any order to probe, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numtypes; i++){
+    Frame *of = curConnection->createFrame(frame);
+    // See if we have a valid order
+    Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
+    if (ord == NULL) {
+      of->createFailFrame(fec_NonExistant, "No such order type");
+    }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), pid)){
+      
+      ord->createFrame(of, obid, -1);
+
+    }else{
+
+      Logger::getLogger()->debug("The order to be probed is not allowed on this object");
+      of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
+
+    }
+    curConnection->sendFrame(of);
+  }
+  
 }
 
 void Player::processGetTime(Frame * frame){

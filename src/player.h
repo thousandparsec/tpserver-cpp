@@ -2,7 +2,7 @@
 #define PLAYER_H
 /*  Player class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,13 +48,13 @@ class Player {
 
 	static int nextpid;
 
-	void processGetObject(Frame * frame); // Version 1 Only
 	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
 	void processGetOrder(Frame * frame);
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
 	void processDescribeOrder(Frame * frame);
+	void processProbeOrder(Frame * frame);
 	void processGetTime(Frame * frame);
 	void processGetBoards(Frame * frame);
 	void processGetMessages(Frame * frame);
