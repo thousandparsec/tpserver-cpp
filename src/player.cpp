@@ -24,6 +24,12 @@ Player::Player()
 	board->setBoardID(0);
 	board->setName("Personal board");
 	board->setDescription("System board");
+
+	Message * msg = new Message();
+	msg->setType(0);
+	msg->setSubject("Welcome");
+	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on cpp-server.  Please report any problems and enjoy the game.");
+	board->addMessage(msg, -1);
 }
 
 Player::~Player()
