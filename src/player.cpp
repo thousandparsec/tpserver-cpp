@@ -29,7 +29,7 @@ Player::Player()
 	Message * msg = new Message();
 	msg->setType(0);
 	msg->setSubject("Welcome");
-	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on cpp-server.  Please report any problems and enjoy the game.");
+	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
 	board->addMessage(msg, -1);
 }
 
