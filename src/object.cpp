@@ -7,6 +7,8 @@
 
 #include "object.h"
 
+#include <cassert>
+
 Game *IGObject::myGame = NULL;
 
 unsigned int IGObject::nextAutoID = 0;
@@ -229,9 +231,13 @@ bool IGObject::addOrder(Order * ord, int pos, int playerid)
 
 bool IGObject::removeOrder(int pos, int playerid)
 {
+	if (pos >= orders.size()) {
+		return false;
+	}
 	std::map < int, std::set < OrderType > >::iterator ordit = actions.find(playerid);
 	if (ordit != actions.end()) {
 		std::list < Order * >::iterator delpos = orders.begin();
+		assert (pos < orders.size());
 		advance(delpos, pos);
 		delete(*delpos);
 		orders.erase(delpos);
