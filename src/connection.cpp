@@ -4,6 +4,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "logging.h"
 #include "net.h"
 #include "frame.h"
@@ -159,7 +163,7 @@ void Connection::verCheck()
 	    int seqNum = 0, nseqNum;
 	    memcpy(&nseqNum, buff, 4);
 	    seqNum = ntohl(nseqNum);
-	    if(memcmp(buff + 4, "\0\0\0\0\0\0\0\0", 8) == 0) {
+	    if(memcmp(buff + 4, "\0\0\0\02\0\0\0\0", 8) == 0) {
 	      status = 2;
 	      Logger::getLogger()->info("Client has version 2 of protocol");
 	      version = fv0_2;
@@ -182,7 +186,7 @@ void Connection::verCheck()
 	  failframe->createFailFrame(0, "You are not running the correct protocol");	// TODO - should be a const or enum, protocol error
 	  sendFrame(failframe);*/
 
-	  send(sockfd, "You are not running the correct protocol", 40, 0);
+	  send(sockfd, "You are not running the correct protocol\n", 41, 0);
 
 	}
 	close();
