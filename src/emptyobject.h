@@ -8,6 +8,8 @@ class EmptyObject:public ObjectData {
 	void packExtraData(Frame * frame);
 	void doOnceATurn(IGObject * obj);
 
+	ObjectData* clone();
+
 };
 
 #endif

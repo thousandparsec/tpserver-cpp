@@ -11,3 +11,7 @@ void EmptyObject::doOnceATurn(IGObject * obj)
 {
 
 }
+
+ObjectData* EmptyObject::clone(){
+  return new EmptyObject();
+}

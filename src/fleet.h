@@ -22,6 +22,8 @@ class Fleet:public OwnedObject {
 
 	bool checkAllowedOrder(int ot, int playerid);
 
+	ObjectData* clone();
+
       private:
 	std::map<int, int> ships;
 	int damage;

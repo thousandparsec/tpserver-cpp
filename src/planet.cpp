@@ -33,3 +33,8 @@ void Planet::packAllowedOrders(Frame * frame, int playerid){
 bool Planet::checkAllowedOrder(int ot, int playerid){
   return (playerid == getOwner() && (ot == odT_Build || ot == odT_Nop));
 }
+
+ObjectData* Planet::clone(){
+  return new Planet();
+}
+

@@ -6,10 +6,7 @@
 #include "game.h"
 #include "order.h"
 #include "objectdata.h"
-#include "emptyobject.h"
-#include "universe.h"
-#include "planet.h"
-#include "fleet.h"
+#include "objectdatamanager.h"
 
 #include "object.h"
 
@@ -138,24 +135,11 @@ void IGObject::setType(unsigned int newtype)
 	if(myObjectData != NULL)
 	  delete myObjectData;
 
-	switch(type){
-	case 0:
-	  myObjectData = new Universe();
-	  break;
-	case 1:
-	case 2:
-	  myObjectData = new EmptyObject();
-	  break;
-	case 3:
-	  myObjectData = new Planet();
-	  break;
-	case 4:
-	  myObjectData = new Fleet();
-	  break;
-	default:
+	myObjectData = Game::getGame()->getObjectDataManager()->createObjectData(type);
+	if(myObjectData == NULL){
 	  Logger::getLogger()->warning("Object type not found");
 	  myObjectData = NULL;
-	  break;
+	  
 	}
 }
 

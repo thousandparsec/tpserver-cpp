@@ -12,6 +12,7 @@
 #include "net.h"
 #include "vector3d.h"
 #include "ordermanager.h"
+#include "objectdatamanager.h"
 
 #include "game.h"
 
@@ -42,7 +43,7 @@ void Game::createTutorial()
 	universe = new IGObject();
 	objects[universe->getID()] = universe;
 	universe->setSize(100000000000ll);
-	universe->setType(0);
+	universe->setType(obT_Universe);
 	universe->setName("The Universe");
 	universe->setPosition(Vector3d(0ll, 0ll, 0ll));
 	universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
@@ -51,7 +52,7 @@ void Game::createTutorial()
 	IGObject *mw_galaxy = new IGObject();
 	objects[mw_galaxy->getID()] = mw_galaxy;
 	mw_galaxy->setSize(10000000000ll);
-	mw_galaxy->setType(1);
+	mw_galaxy->setType(obT_Galaxy);
 	mw_galaxy->setName("Milky Way Galaxy");
 	mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
 	mw_galaxy->setVelocity(Vector3d(0ll, 1000ll, 0ll));
@@ -61,7 +62,7 @@ void Game::createTutorial()
 	IGObject *sol = new IGObject();
 	objects[sol->getID()] = sol;
 	sol->setSize(1400000ll);
-	sol->setType(2);
+	sol->setType(obT_Star_System);
 	sol->setName("Sol/Terra System");
 	sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
 	sol->setVelocity(Vector3d(-1500000ll, 1500000ll, 0ll));
@@ -71,7 +72,7 @@ void Game::createTutorial()
 	IGObject *ac = new IGObject();
 	objects[ac->getID()] = ac;
 	ac->setSize(800000ll);
-	ac->setType(2);
+	ac->setType(obT_Star_System);
 	ac->setName("Alpha Centauri System");
 	ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
 	ac->setVelocity(Vector3d(-1000000ll, -1000000ll, 0ll));
@@ -81,7 +82,7 @@ void Game::createTutorial()
 	IGObject *sirius = new IGObject();
 	objects[sirius->getID()] = sirius;
 	sirius->setSize(2000000ll);
-	sirius->setType(2);
+	sirius->setType(obT_Star_System);
 	sirius->setName("Sirius System");
 	sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
 	sirius->setVelocity(Vector3d(2300000ll, 0ll, 0ll));
@@ -148,7 +149,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		IGObject *star = new IGObject();
 		objects[star->getID()] = star;
 		star->setSize(2000000ll);
-		star->setType(2);
+		star->setType(obT_Star_System);
 		star->setName("Unknown Star System");
 		star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
 					    (long long)(((rand() % 1000) - 500) * 10000000),
@@ -160,7 +161,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		IGObject *planet = new IGObject();
 		objects[planet->getID()] = planet;
 		planet->setSize(2);
-		planet->setType(3);
+		planet->setType(obT_Planet);
 		planet->setName("A planet");
 		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
 		planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
@@ -173,7 +174,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		IGObject *fleet = new IGObject();
 		objects[fleet->getID()] = fleet;
 		fleet->setSize(2);
-		fleet->setType(4);
+		fleet->setType(obT_Fleet);
 		fleet->setName("A fleet");
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
 		fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
@@ -242,6 +243,10 @@ OrderManager* Game::getOrderManager() const{
   return ordermanager;
 }
 
+ObjectDataManager* Game::getObjectDataManager() const{
+  return objectdatamanager;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
@@ -297,6 +302,7 @@ void Game::saveAndClose()
 Game::Game()
 {
   ordermanager = new OrderManager();
+  objectdatamanager = new ObjectDataManager();
 }
 
 Game::Game(Game & rhs)
@@ -307,6 +313,7 @@ Game::Game(Game & rhs)
 Game::~Game()
 {
   delete ordermanager;
+  delete objectdatamanager;
 }
 
 Game Game::operator=(Game & rhs)

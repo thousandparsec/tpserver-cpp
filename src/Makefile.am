@@ -12,4 +12,5 @@ tpserv_SOURCES = main.cpp connection.cpp console.cpp \
 		vector3d.h vector3d.cpp board.h board.cpp \
 		message.h message.cpp colonise.h colonise.cpp \
 		splitfleet.h splitfleet.cpp mergefleet.h \
-		mergefleet.cpp ordermanager.h ordermanager.cpp
+		mergefleet.cpp ordermanager.h ordermanager.cpp \
+		objectdatamanager.h objectdatamanager.cpp

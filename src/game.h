@@ -8,6 +8,7 @@ class Player;
 class IGObject;
 class Vector3d;
 class OrderManager;
+class ObjectDataManager;
 
 class Game {
 
@@ -30,6 +31,7 @@ class Game {
 	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
 
 	OrderManager* getOrderManager() const;
+	ObjectDataManager* getObjectDataManager() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -56,6 +58,7 @@ class Game {
 	IGObject *universe;
 
 	OrderManager * ordermanager;
+	ObjectDataManager * objectdatamanager;
 
 };
 

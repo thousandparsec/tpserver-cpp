@@ -15,6 +15,8 @@ class Planet:public OwnedObject {
 
 	bool checkAllowedOrder(int ot, int playerid);
 
+	ObjectData* clone();
+
       private:
 
 

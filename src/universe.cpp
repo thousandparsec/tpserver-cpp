@@ -18,6 +18,10 @@ void Universe::doOnceATurn(IGObject * obj)
 	++yearNum;
 }
 
+ObjectData* Universe::clone(){
+  return new Universe();
+}
+
 void Universe::setYear(int year)
 {
 	yearNum = year;
