@@ -345,6 +345,48 @@ void Game::doEndOfTurn()
 	  ob->updatePosition();
 	  
 	}
+
+	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+	  IGObject * ob = itcurr->second;
+	  //ob->updatePosition();
+	  std::set<unsigned int> cont = ob->getContainedObjects();
+	  for(std::set<unsigned int>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
+	    if(objects[(*ita)]->getType() == obT_Fleet || (objects[(*ita)]->getType() == obT_Planet && ((OwnedObject*)(objects[(*ita)])->getObjectData())->getOwner() != -1)){
+	      for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
+		if((*ita != *itb) && (objects[(*itb)]->getType() == obT_Fleet || (objects[(*itb)]->getType() == obT_Planet && ((OwnedObject*)(objects[(*itb)])->getObjectData())->getOwner() != -1))){
+		  if(((OwnedObject*)(objects[(*ita)]->getObjectData()))->getOwner() != ((OwnedObject*)(objects[(*itb)]->getObjectData()))->getOwner()){
+		    unsigned long long diff = objects[(*ita)]->getPosition().getDistance(objects[(*itb)]->getPosition());
+		    if(diff <= objects[(*ita)]->getSize() / 2 + objects[(*itb)]->getSize() / 2){
+		      combatstrategy->setCombatants(objects[(*ita)], objects[(*itb)]);
+		      combatstrategy->doCombat();
+		      if(!combatstrategy->isAliveCombatant1()){
+			if(objects[(*ita)]->getType() == obT_Planet){
+			  ((OwnedObject*)(objects[(*ita)]->getObjectData()))->setOwner(-1);
+			}else{
+			  scheduleRemove.insert(*ita);
+			}
+		      }
+		      if(!combatstrategy->isAliveCombatant2()){
+			if(objects[(*itb)]->getType() == obT_Planet){
+			  ((OwnedObject*)(objects[(*itb)]->getObjectData()))->setOwner(-1);
+			}else{
+			  scheduleRemove.insert(*itb);
+			}
+		      }
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+
+	for(itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
+	  objects[*itrm]->removeFromParent();
+	  delete objects[*itrm];
+	  objects.erase(*itrm);
+	}
+	scheduleRemove.clear();
 	
 	// to once a turn (right at the end)
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
