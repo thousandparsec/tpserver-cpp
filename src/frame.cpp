@@ -334,6 +334,22 @@ bool Frame::packInt64(long long val)
 	return true;
 }
 
+bool Frame::packInt8(char val){
+  char *temp = (char *) realloc(data, length + 1);
+  
+  if (temp != NULL) {
+    data = temp;
+
+    data[length] = val;
+
+    length += 1;
+    
+  } else {
+    return false;
+  }
+  return true;
+}
+
 int Frame::getUnpackOffset() const
 {
 	return unpackptr;
@@ -382,7 +398,11 @@ long long Frame::unpackInt64()
 	return ntohq(nval);
 }
 
-
+char Frame::unpackInt8(){
+  char rval = data[unpackptr];
+  unpackptr += 1;
+  return rval;
+}
 
 void Frame::createFailFrame(FrameErrorCode code, char *reason)
 {

@@ -23,11 +23,13 @@
 typedef enum {
 	fv0_1 = 1,
 	fv0_2 = 2,
+	fv0_3 = 3,
 	fv_Max,
 } FrameVersion;
 
 typedef enum {
 // New Frame Codes
+	ft_Invalid = -1,
 	ft02_Invalid = -1,
 	ft02_OK = 0,
   	ft02_Fail = 1,
@@ -51,10 +53,24 @@ typedef enum {
   	ft02_Message = 19,
   	ft02_Message_Post = 20,
 	ft02_Message_Remove = 21,
-	//only for future reference
 	ft02_ResDesc_Get = 22,
 	ft02_ResDesc = 23,
-	ft02_Max,
+	ft02_Max = 24,
+	//Version 3 additions follow
+	ft03_Redirect = 24,
+	ft03_Features_Get = 25,
+	ft03_Features = 26,
+	ft03_Ping = 27,
+	ft03_Order_Probe = 28,
+	//Design category and component
+	ft03_Data_Header_Get = 35,
+	ft03_Data_Get = 36,
+	ft03_Data_Remove = 37,
+	ft03_Data_Header = 38,
+	ft03_Data = 39,
+	ft03_Player_Get = 40,
+	ft03_Player = 41,
+	ft03_Max,
 
 
 } FrameType;
@@ -66,6 +82,7 @@ typedef enum {
   fec_PermUnavailable = 2,
   fec_TempUnavailable = 3,
   fec_NonExistant = 4,
+  fec_PermissionDenied = 5,
   fec_Max
 } FrameErrorCode;
 
@@ -108,6 +125,7 @@ class Frame {
 		//bool packString(std::string str);
 		bool packInt(int val);
 		bool packInt64(long long val);
+		bool packInt8(char val);
 
 		// uses these functions with care
 		int getUnpackOffset() const;
@@ -116,6 +134,7 @@ class Frame {
 		int unpackInt();
 		char *unpackString();
 		long long unpackInt64();
+		char unpackInt8();
 
 		void createFailFrame(FrameErrorCode code, char *reason);
 
