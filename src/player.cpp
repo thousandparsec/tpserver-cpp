@@ -312,7 +312,8 @@ void Player::processRemoveOrder(Frame * frame)
   for(int i = 0; i < num_orders; i++){
     Frame *of = curConnection->createFrame(frame);
     int ordpos = frame->unpackInt();
-    if (Game::getGame()->getObject(objectID)->removeOrder(ordpos, pid)) {
+    IGObject * obj = Game::getGame()->getObject(objectID);
+    if (obj != NULL && obj->removeOrder(ordpos, pid)) {
       of->setType(ft02_OK);
       of->packString("Order removed");
     } else {
