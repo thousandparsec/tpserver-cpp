@@ -48,12 +48,12 @@ void Network::removeFD(int fd)
 	if (max_fd == fd) {
 		Logger::getLogger()->debug("Changing max_fd");
 		max_fd = serverFD;
-		std::list < Connection * >::iterator itcurr, itend;
+		std::map < int, Connection * >::iterator itcurr, itend;
 		itend = connections.end();
 		for (itcurr = connections.begin(); itcurr != itend; itcurr++) {
-			if (FD_ISSET((*itcurr)->getFD(), &master_set)) {
-				if (max_fd < (*itcurr)->getFD())
-					max_fd = (*itcurr)->getFD();
+			if (FD_ISSET((*itcurr).first, &master_set)) {
+				if (max_fd < (*itcurr).first)
+					max_fd = (*itcurr).first;
 			}
 		}
 
@@ -134,18 +134,21 @@ void Network::masterLoop()
 			if (FD_ISSET(serverFD, &cur_set)) {
 				Logger::getLogger()->info("Accepting new connection");
 				Connection *temp = new Connection(accept(serverFD, NULL, 0));
-				connections.push_back(temp);
+				connections[temp->getFD()] = temp;
 			}
 
-			std::list < Connection * >::iterator itcurr;
+			std::map < int, Connection * >::iterator itcurr;
 			for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-				if (FD_ISSET((*itcurr)->getFD(), &cur_set)) {
-					(*itcurr)->process();
+				if (FD_ISSET((*itcurr).first, &cur_set)) {
+					(*itcurr).second->process();
 				}
-				if ((*itcurr)->getStatus() == 0) {
-					delete(*itcurr);
-					itcurr = connections.erase(itcurr);
-					--itcurr;
+				if ((*itcurr).second->getStatus() == 0) {
+					delete(*itcurr).second;
+					std::map < int, Connection * >::iterator temp;
+					temp = itcurr;
+					--temp;
+					connections.erase(itcurr);
+					itcurr = temp;
 				}
 			}
 
@@ -155,9 +158,9 @@ void Network::masterLoop()
 	}
 
 	while (!connections.empty()) {
-		connections.front()->close();
-		delete connections.front();
-		connections.pop_front();
+		(*connections.begin()).second->close();
+		delete(*connections.begin()).second;
+		connections.erase(connections.begin());
 	}
 
 

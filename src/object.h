@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 #include <list>
+#include <set>
 
 class Frame;
 class Game;
@@ -28,7 +29,7 @@ class IGObject {
 	long long getAccelerationX();
 	long long getAccelerationY();
 	long long getAccelerationZ();
-	 std::list < IGObject * >getContainedObjects();
+	 std::set < unsigned int >getContainedObjects();
 
 	bool setID(unsigned int newid);
 	void autoSetID();
@@ -39,8 +40,8 @@ class IGObject {
 	void setVelocity3(long long x, long long y, long long z);
 	void setAcceleration3(long long x, long long y, long long z);
 
-	bool addContainedObject(IGObject * addObject);
-	bool removeContainedObject(IGObject * removeObject);
+	bool addContainedObject(unsigned int addObjectID);
+	bool removeContainedObject(unsigned int removeObjectID);
 
 	void createFrame(Frame * frame);
 
@@ -65,7 +66,7 @@ class IGObject {
 	long long accy;
 	long long accz;
 
-	 std::list < IGObject * >children;
+	 std::set < unsigned int >children;
 
 };
 

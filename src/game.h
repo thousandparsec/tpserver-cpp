@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <list>
+#include <map>
 
 class Player;
 class IGObject;
@@ -37,7 +38,7 @@ class Game {
 
 	 std::list < Player * >players;
 
-	 std::list < IGObject * >objects;
+	 std::map < unsigned int, IGObject * >objects;
 	IGObject *universe;
 
 };

@@ -80,7 +80,7 @@ void Player::processIGFrame(Frame * frame)
 	case ft_Get_Object:
 		processGetObject(frame);
 		break;
-		//case 
+		//case ft_Get_Order:
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
 		break;

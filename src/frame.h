@@ -9,6 +9,10 @@ typedef enum {
 	ft_Fail = 3,
 	ft_Get_Object = 4,
 	ft_Object = 5,
+	ft_Get_Order = 6,
+	ft_Order = 7,
+	ft_Add_Order = 8,
+	ft_Remove_Order = 9,
 	ft_Max
 } FrameType;
 

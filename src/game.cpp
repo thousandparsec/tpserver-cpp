@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdio.h>
 
 #include "logging.h"
 #include "player.h"
@@ -32,7 +31,7 @@ void Game::createTutorial()
 	Logger::getLogger()->info("Creating tutorial");
 	objects.clear();
 	universe = new IGObject();
-	objects.push_front(universe);
+	objects[universe->getID()] = universe;
 	universe->setSize(100000000000ll);
 	universe->setType(0);
 	universe->setName("The Universe");
@@ -41,44 +40,44 @@ void Game::createTutorial()
 	universe->setAcceleration3(0ll, 0ll, 0ll);
 	//add contained objects
 	IGObject *mw_galaxy = new IGObject();
-	objects.push_back(mw_galaxy);
+	objects[mw_galaxy->getID()] = mw_galaxy;
 	mw_galaxy->setSize(10000000000ll);
 	mw_galaxy->setType(1);
 	mw_galaxy->setName("Milky Way Galaxy");
 	mw_galaxy->setPosition3(0ll, -6000ll, 0ll);
 	mw_galaxy->setVelocity3(0ll, 1000ll, 0ll);
 	mw_galaxy->setAcceleration3(0ll, 0ll, 0ll);
-	universe->addContainedObject(mw_galaxy);
+	universe->addContainedObject(mw_galaxy->getID());
 	// star system 1
 	IGObject *sol = new IGObject();
-	objects.push_back(sol);
+	objects[sol->getID()] = sol;
 	sol->setSize(1400000ll);
 	sol->setType(2);
 	sol->setName("Sol/Terra System");
 	sol->setPosition3(3000000000ll, 2000000000ll, 0ll);
 	sol->setVelocity3(-1500000ll, 1500000ll, 0ll);
 	sol->setAcceleration3(-70000ll, -60000ll, 0ll);
-	mw_galaxy->addContainedObject(sol);
+	mw_galaxy->addContainedObject(sol->getID());
 	// star system 2
 	IGObject *ac = new IGObject();
-	objects.push_back(ac);
+	objects[ac->getID()] = ac;
 	ac->setSize(800000ll);
 	ac->setType(2);
 	ac->setName("Alpha Centauri System");
 	ac->setPosition3(-1500000000ll, 1500000000ll, 0ll);
 	ac->setVelocity3(-1000000ll, -1000000ll, 0ll);
 	ac->setAcceleration3(70000ll, -60000ll, 0ll);
-	mw_galaxy->addContainedObject(ac);
+	mw_galaxy->addContainedObject(ac->getID());
 	// star system 3
 	IGObject *sirius = new IGObject();
-	objects.push_back(sirius);
+	objects[sirius->getID()] = sirius;
 	sirius->setSize(2000000ll);
 	sirius->setType(2);
 	sirius->setName("Sirius System");
 	sirius->setPosition3(-250000000ll, -4000000000ll, 0ll);
 	sirius->setVelocity3(2300000ll, 0ll, 0ll);
 	sirius->setAcceleration3(0ll, -120000ll, 0ll);
-	mw_galaxy->addContainedObject(sirius);
+	mw_galaxy->addContainedObject(sirius->getID());
 
 }
 
@@ -117,9 +116,9 @@ void Game::loadGame(char *file)
 				fileob->setAcceleration3(accx, accy, accz);
 				if (n == 13) {
 					IGObject *parent = getObject(pid);
-					parent->addContainedObject(fileob);
+					parent->addContainedObject(fileob->getID());
 				}
-				objects.push_back(fileob);
+				objects[fileob->getID()] = fileob;
 				if (id == 0)
 					universe = fileob;
 				Logger::getLogger()->debug("Loaded an Object");
@@ -186,13 +185,9 @@ IGObject *Game::getObject(unsigned int id)
 		return universe;
 	}
 	IGObject *rtn = NULL;
-	std::list < IGObject * >::iterator itcurr, itend;
-	itend = objects.end();
-	for (itcurr = objects.begin(); itcurr != itend; itcurr++) {
-		if ((*itcurr)->getID() == id) {
-			rtn = (*itcurr);
-			break;
-		}
+	std::map < unsigned int, IGObject * >::iterator obj = objects.find(id);
+	if (obj != objects.end()) {
+		rtn = (*obj).second;
 	}
 	return rtn;
 	//may need more work

@@ -2,7 +2,7 @@
 #define NET_H
 
 #include <pthread.h>
-#include <list>
+#include <map>
 #include <sys/select.h>
 
 class Connection;
@@ -44,7 +44,7 @@ class Network {
 
 	bool halt;
 
-	 std::list < Connection * >connections;
+	 std::map < int, Connection * >connections;
 
 
 };

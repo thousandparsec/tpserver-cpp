@@ -133,7 +133,7 @@ long long IGObject::getAccelerationZ()
 	return accz;
 }
 
-std::list < IGObject * >IGObject::getContainedObjects()
+std::set < unsigned int >IGObject::getContainedObjects()
 {
 	return children;
 }
@@ -194,20 +194,18 @@ void IGObject::setAcceleration3(long long x, long long y, long long z)
 	accz = z;
 }
 
-bool IGObject::addContainedObject(IGObject * addObject)
+bool IGObject::addContainedObject(unsigned int addObjectID)
 {
 	//check that the new object is *really* inside the object
 
-
-	children.push_back(addObject);
-	return true;
+	return children.insert(addObjectID).second;
 }
 
-bool IGObject::removeContainedObject(IGObject * removeObject)
+bool IGObject::removeContainedObject(unsigned int removeObjectID)
 {
 	// remove object
-	children.remove(removeObject);
-	return true;
+	unsigned int currsize = children.size();
+	return children.erase(removeObjectID) == currsize - 1;
 }
 
 void IGObject::createFrame(Frame * frame)
@@ -229,10 +227,10 @@ void IGObject::createFrame(Frame * frame)
 	frame->packInt(children.size());
 	//frame->packInt(0); //HACK hack
 	//for loop for children objects
-	std::list < IGObject * >::iterator itcurr, itend;
+	std::set < unsigned int >::iterator itcurr, itend;
 	itend = children.end();
 	for (itcurr = children.begin(); itcurr != itend; itcurr++) {
-		frame->packInt((*itcurr)->getID());
+		frame->packInt(*itcurr);
 	}
 
 
