@@ -45,6 +45,14 @@ Vector3d Vector3d::operator-(const Vector3d & rhs) const{
   return rtn;
 }
 
+bool Vector3d::operator==(const Vector3d &rhs) const{
+  return (x == rhs.x && y == rhs.y && z == rhs.z);
+}
+
+bool Vector3d::operator!=(const Vector3d &rhs) const{
+  return !(operator==(rhs));
+}
+
 long long Vector3d::getX() const{
   return x;
 }
