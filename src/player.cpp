@@ -402,6 +402,13 @@ void Player::processDescribeOrder(Frame * frame)
 	  curConnection->sendFrame(seq);
 	}
 	
+	if(numdesc == 0){
+	  Frame *of = curConnection->createFrame(frame);
+	  Logger::getLogger()->debug("asked for no orders to describe, silly client...");
+	  of->createFailFrame(fec_NonExistant, "You didn't ask for any order descriptions, try again");
+	  curConnection->sendFrame(of);
+	}
+
 	for(int i = 0; i < numdesc; i++){
 	  Frame *of = curConnection->createFrame(frame);
 	  int ordertype = frame->unpackInt();
