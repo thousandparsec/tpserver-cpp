@@ -31,9 +31,9 @@ void Game::createTutorial(){
   universe->setSize(100000000000ll);
   universe->setType(0);
   universe->setName("The Universe");
-  universe->setPosition3(0ll, 0ll, 0ll);
-  universe->setVelocity3(0ll, 0ll, 0ll);
-  universe->setAcceleration3(0ll, 0ll, 0ll);
+  universe->setPosition3(1ll, 1000ll, 5ll);
+  universe->setVelocity3(10ll, -2ll, 0ll);
+  universe->setAcceleration3(0ll, 0ll, 10ll);
   //add contained objects
   
 }
