@@ -153,7 +153,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		star->setName("Unknown Star System");
 		star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
 					    (long long)(((rand() % 1000) - 500) * 10000000),
-					    (long long)(((rand() % 1000) - 500) * 10000000)));
+					   /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
 		star->setVelocity(Vector3d(0ll, 0ll, 0ll));
 		
 		getObject(1)->addContainedObject(star->getID());
@@ -166,7 +166,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
 		planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 								   (long long)((rand() % 10000) - 5000),
-								   (long long)((rand() % 10000) - 5000)));
+								   /*(long long)((rand() % 10000) - 5000)*/ 0));
 		planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 				
 		star->addContainedObject(planet->getID());
@@ -179,7 +179,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
 		fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 								  (long long)((rand() % 10000) - 5000),
-								  (long long)((rand() % 10000) - 5000)));
+								  /*(long long)((rand() % 10000) - 5000)*/ 0));
 		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
 		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 	
@@ -241,12 +241,13 @@ std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
   std::list<unsigned int> oblist;
 
   for(std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr){
-    
-    unsigned long long br = itcurr->second->getSize() / 2;
-
-    long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-    if(diff <= 0)
-      oblist.push_back(itcurr->first);
+    if(itcurr->second->getContainerType() >= 1){
+      unsigned long long br = itcurr->second->getSize() / 2 + itcurr->second->getSize() % 2;
+      
+      //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
+      if(itcurr->second->getPosition().getDistanceSq(pos) <= br * br)
+	oblist.push_front(itcurr->first);
+    }
   }
   
   return oblist;
@@ -289,6 +290,20 @@ void Game::doEndOfTurn()
 	  objects.erase(*itrm);
 	}
 	scheduleRemove.clear();
+
+	// update positions and velocities
+	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+	  IGObject * ob = itcurr->second;
+	  ob->updatePosition();
+	  
+	}
+	
+	// to once a turn (right at the end)
+	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+	  IGObject * ob = itcurr->second;
+	  ob->getObjectData()->doOnceATurn(ob);
+	  
+	}
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;
