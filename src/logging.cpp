@@ -31,7 +31,7 @@ void Logger::debug(char *msg, ...)
   }
   va_end(ap);
   doLogging(0, fmsg);
-  
+  delete[] fmsg;
 }
 
 void Logger::info(char *msg, ...)
@@ -47,6 +47,7 @@ void Logger::info(char *msg, ...)
   }
   va_end(ap);
   doLogging(1, fmsg);
+  delete[] fmsg;
 }
 
 void Logger::warning(char *msg, ...)
@@ -62,6 +63,7 @@ void Logger::warning(char *msg, ...)
   }
   va_end(ap);
   doLogging(2, fmsg);
+  delete[] fmsg;
 }
 
 void Logger::error(char *msg, ...)
@@ -77,6 +79,7 @@ void Logger::error(char *msg, ...)
   }
   va_end(ap);
   doLogging(3, fmsg);
+  delete[] fmsg;
   exit(1);
 }
 
