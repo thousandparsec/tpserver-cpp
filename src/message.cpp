@@ -29,6 +29,8 @@ std::string Message::getBody(){
 }
 
 void Message::pack(Frame * frame){
+  frame->packInt(1);
+  frame->packInt(msgtype);
   frame->packString(subject.c_str());
   frame->packString(body.c_str());
 }
