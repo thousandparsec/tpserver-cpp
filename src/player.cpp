@@ -429,6 +429,13 @@ void Player::processGetBoards(Frame * frame){
     curConnection->sendFrame(seq);
   }
   
+  if(numboards == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no boards, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any boards, try again");
+    curConnection->sendFrame(of);
+  }
+
   for(int i = 0; i < numboards; i++){
     Frame *of = curConnection->createFrame(frame);
     int boardnum = frame->unpackInt();
