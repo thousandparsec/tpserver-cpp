@@ -179,6 +179,11 @@ void Connection::verCheck()
 	    f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support version 2 sorry.");
 	    sendFrame(f);
 	    //stay connected just in case they try again with a lower version
+	    // have to empty the receive queue though.
+	    delete[] buff;
+	    buff = new char[1024];
+	    len = read(sockfd, buff, 1024);
+	    Logger::getLogger()->debug("Read an extra %d bytes from the socket, into buffer of 1024", len);
 	  }else{
 	    
 	    // check the rest of the packet
