@@ -2,8 +2,13 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "logging.h"
 #include "settings.h"
@@ -68,9 +73,48 @@ void Network::start()
 	}
 	Logger::getLogger()->info("Starting Network");
 
+#ifdef HAVE_IPV6
+
+	struct addrinfo hints, *res, *ressave;
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+	
+	hints.ai_flags    = AI_PASSIVE;
+	hints.ai_family   = PF_UNSPEC; 
+	hints.ai_socktype = SOCK_STREAM;
+
+	int n = getaddrinfo(NULL, "6923", &hints, &res); // should be conf item
+	
+	if (n < 0) {
+	  fprintf(stderr, "getaddrinfo error:: [%s]\n", gai_strerror(n));
+	  Logger::getLogger()->error("Could not getaddrinfo");
+	}
+	
+	ressave=res;
+
+	serverFD=-1;
+	while (res) {
+	  serverFD = socket(res->ai_family,
+			  res->ai_socktype,
+			  res->ai_protocol);
+
+	  if (!(serverFD < 0)) {
+            if (bind(serverFD, res->ai_addr, res->ai_addrlen) == 0)
+	      break;
+	    
+            close(serverFD);
+            serverFD=-1;
+	  }
+	  res = res->ai_next;
+	}
+
+	freeaddrinfo(ressave);
+#else
 	serverFD = socket(AF_INET, SOCK_STREAM, 0);
+#endif
 	if (serverFD == -1)
 		Logger::getLogger()->error("Could not create Socket");
+#ifndef HAVE_IPV6
 	struct sockaddr_in myAddr;
 	myAddr.sin_family = AF_INET;
 	myAddr.sin_port = htons(6923);	// fix, make setting item
@@ -81,6 +125,7 @@ void Network::start()
 		perror("bind");
 		Logger::getLogger()->error("Failed to bind to port and address");
 	}
+#endif
 
 	if (listen(serverFD, 5) != 0)
 		Logger::getLogger()->error("Failed to listen");
