@@ -1,6 +1,8 @@
 #ifndef FLEET_H
 #define FLEET_H
 
+#include <map>
+
 #include "ownedobject.h"
 
 class Fleet:public OwnedObject {
@@ -12,7 +14,8 @@ class Fleet:public OwnedObject {
 	void doOnceATurn(IGObject * obj);
 
       private:
-
+	std::map<int, int> ships;
+	int damage;
 
 };
 
