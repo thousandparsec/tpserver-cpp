@@ -96,6 +96,8 @@ void DataStore::removeData(unsigned int dataid, Frame* frame, int pid){
       //remove chunk
       delete chunk;
       store.erase(itcurr);
+      frame->setType(ft02_OK);
+      frame->packString("Removed Data ok");
       
     }else{
       Logger::getLogger()->warning("A player tried to remove a DataChunk that wasn't for them.");
