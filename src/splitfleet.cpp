@@ -5,6 +5,8 @@
 #include "game.h"
 #include "logging.h"
 #include "fleet.h"
+#include "player.h"
+#include "message.h"
 
 #include "splitfleet.h"
 
@@ -64,6 +66,11 @@ bool SplitFleet::doOrder(IGObject * ob){
 
   Fleet* of = (Fleet*)(ob->getObjectData());
 
+  Message * msg = new Message();
+  msg->setSubject("Colonised planet");
+  msg->setType(0);
+  msg->setBody("Split fleet complete");
+
   IGObject * nfleet = new IGObject();
   Game::getGame()->addObject(nfleet);
   nfleet->setType(4);
@@ -100,7 +107,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     Game::getGame()->getObject(ob->getParent())->addContainedObject(nfleet->getID());
   }
   
-  
+  Game::getGame()->getPlayer(nf->getOwner())->postToBoard(msg);
   
   return true;
 }

@@ -7,6 +7,8 @@
 #include "logging.h"
 #include "fleet.h"
 #include "move.h"
+#include "player.h"
+#include "message.h"
 
 #include "mergefleet.h"
 
@@ -51,6 +53,13 @@ bool MergeFleet::doOrder(IGObject * ob){
   if(moveorder->doOrder(ob)){
 
     Fleet *myfleet = (Fleet*)(ob->getObjectData());
+
+    Message * msg = new Message();
+    msg->setSubject("Merge Fleet order complete");
+    msg->setBody("The two fleets have been merged");
+    msg->setType(0);
+   
+
     if(fleetid != 0){
       Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
       
@@ -63,6 +72,8 @@ bool MergeFleet::doOrder(IGObject * ob){
 	
       }
     }
+
+    Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
     
     return true;
   }else{

@@ -6,6 +6,7 @@
 #include "logging.h"
 #include "player.h"
 #include "fleet.h"
+#include "message.h"
 
 #include "move.h"
 
@@ -69,6 +70,13 @@ bool Move::doOrder(IGObject * ob){
   if(distance < max_speed){
   
     ob->setFuturePosition(dest);
+    
+    Message * msg = new Message();
+    msg->setSubject("Move order complete");
+    msg->setBody("The move order is complete on this object");
+    msg->setType(0);
+    Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+
     return true;
 
   }else{

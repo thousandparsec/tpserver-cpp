@@ -5,6 +5,8 @@
 #include "logging.h"
 #include "vector3d.h"
 #include "fleet.h"
+#include "message.h"
+#include "player.h"
 
 #include "ownedobject.h"
 
@@ -107,6 +109,12 @@ bool Build::doOrder(IGObject *ob)
     for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
     }
+
+    Message * msg = new Message();
+    msg->setSubject("Build Fleet order complete");
+    msg->setBody("The construction of your new fleet is complete");
+    msg->setType(0);
+    Game::getGame()->getPlayer(ownerid)->postToBoard(msg);
 
     return true;
   }

@@ -2,6 +2,10 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "game.h"
+#include "player.h"
+#include "message.h"
+#include "ownedobject.h"
 
 #include "nop.h"
 
@@ -46,7 +50,18 @@ bool Nop::inputFrame(Frame * f)
 
 bool Nop::doOrder(IGObject * ob){
   waitTime--;
-  return waitTime <= 0;
+  if(waitTime <= 0){
+    
+    Message * msg = new Message();
+    msg->setSubject("NOp order complete");
+    msg->setBody("The object has finished it's delay and is now continuing");
+    msg->setType(0);
+    Game::getGame()->getPlayer(((OwnedObject*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+
+    return true;
+  }else{
+    return false;
+  }
 }
 
 void Nop::describeOrder(Frame * f) const
