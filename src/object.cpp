@@ -306,6 +306,7 @@ Order * IGObject::getFirstOrder(){
 }
 
 void IGObject::removeFirstOrder(){
+  delete orders.front();
   orders.pop_front();
 }
 
