@@ -17,6 +17,8 @@ AC_LANG_CPLUSPLUS
 AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread library))
 #check headers, functions, etc
 
+AC_C_BIGENDIAN
+
 dnl Test for IPv6 socket addresses
 dnl "Borrowed" from skstream
 
