@@ -20,6 +20,10 @@
 
 #include <iostream>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "console.h"
 #include "logging.h"
 #include "game.h"
@@ -39,7 +43,8 @@ int main(int argc, char **argv)
 
 	parseOptions(argc, argv);
 
-	myLogger->info("Tpserver-cpp starting");
+	myLogger->info("Tpserver-cpp " VERSION " starting");
+	myLogger->info("This is GPL software, please see the COPYING file");
 
 	Console *myConsole = Console::getConsole();
 
