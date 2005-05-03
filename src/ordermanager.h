@@ -37,10 +37,13 @@ class OrderManager{
 
   void addOrderType(Order* prototype);
 
+  void doGetOrderTypes(Frame * frame, Frame * result);
+
  private:
   std::map<int, Order*> prototypeStore;
   int nextType;
 
+  unsigned int seqkey;
 
 };
 

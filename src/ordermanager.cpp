@@ -33,6 +33,8 @@
 
 OrderManager::OrderManager(){
   nextType = 1000;
+  
+  seqkey = 1;
 
   prototypeStore[odT_Nop] = new Nop();
   prototypeStore[odT_Move] = new Move();
@@ -75,4 +77,42 @@ Order* OrderManager::createOrder(int ot){
 void OrderManager::addOrderType(Order* prototype){
   prototype->setType(nextType);
   prototypeStore[nextType++] = prototype;
+  seqkey++;
+}
+
+void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
+   unsigned int lseqkey = frame->unpackInt();
+  if(lseqkey == 0xffffffff){
+    //start new seqkey
+    lseqkey = seqkey;
+  }
+
+  unsigned int start = frame->unpackInt();
+  unsigned int num = frame->unpackInt();
+
+  if(lseqkey != seqkey){
+    of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
+    return;
+  }
+
+  unsigned int num_remain;
+  if(num == 0xffffffff || start + num > prototypeStore.size()){
+    num = prototypeStore.size() - start;
+    num_remain = 0;
+  }else{
+    num_remain = prototypeStore.size() - start - num;
+  }
+
+  of->setType(ft03_ObjectIds_List);
+  of->packInt(lseqkey);
+  of->packInt(num_remain);
+  of->packInt(num);
+  std::map<int, Order*>::iterator itcurr = prototypeStore.begin();
+  advance(itcurr, start);
+  for(unsigned int i = 0; i < num; i++){
+    of->packInt(itcurr->first);
+    of->packInt64(0LL); //TODO mod time
+    ++itcurr;
+  }
+
 }
