@@ -82,6 +82,9 @@ class IGObject {
 	void createFrame(Frame * frame, int playerid);
 
 	ObjectData* getObjectData();
+	
+	void touchModTime();
+	long long getModTime() const;
 
       protected:
 	static Game *myGame;
@@ -100,6 +103,7 @@ class IGObject {
 	
 	unsigned int parentid;
 
+	long long modtime;
 
 	 std::set < unsigned int >children;
 

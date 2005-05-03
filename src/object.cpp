@@ -44,6 +44,7 @@ IGObject::IGObject()
 		myGame = Game::getGame();
 	}
 	myObjectData = NULL;
+	touchModTime();
 }
 
 IGObject::IGObject(IGObject & rhs)
@@ -68,6 +69,7 @@ IGObject::IGObject(IGObject & rhs)
 
 	children.clear();
 	//children = rhs.children;
+	touchModTime();
 }
 
 IGObject::~IGObject()
@@ -129,6 +131,7 @@ bool IGObject::setID(unsigned int newid)
 	//check to see if id is use
 	//if it is, then return false
 	//else
+  touchModTime();
 	id = newid;
 	return true;
 }
@@ -140,6 +143,7 @@ unsigned int IGObject::getParent(){
 void IGObject::autoSetID()
 {
 	id = nextAutoID++;
+	touchModTime();
 	//check that id is valid
 }
 
@@ -156,11 +160,13 @@ void IGObject::setType(unsigned int newtype)
 	  myObjectData = NULL;
 	  
 	}
+	touchModTime();
 }
 
 void IGObject::setSize(unsigned long long newsize)
 {
 	size = newsize;
+	touchModTime();
 }
 
 void IGObject::setName(char *newname)
@@ -171,12 +177,14 @@ void IGObject::setName(char *newname)
 	int len = strlen(newname) + 1;
 	name = new char[len];
 	strncpy(name, newname, len);
+	touchModTime();
 }
 
 void IGObject::setPosition(const Vector3d & npos)
 {
 	pos = npos;
 	futurepos = npos;
+	touchModTime();
 }
 
 void IGObject::setFuturePosition(const Vector3d & npos){
@@ -204,17 +212,20 @@ void IGObject::updatePosition(){
     }
   }
   pos = futurepos;
+  touchModTime();
 }
 
 void IGObject::setVelocity(const Vector3d & nvel)
 {
 	vel = nvel;
+	touchModTime();
 }
 
 void IGObject::removeFromParent()
 {
   Game::getGame()->getObject(parentid)->removeContainedObject(id);
   parentid = 0;
+  touchModTime();
 }
 
 int IGObject::getContainerType(){
@@ -232,7 +243,7 @@ bool IGObject::addContainedObject(unsigned int addObjectID)
 	//check that the new object is *really* inside the object
   
         Game::getGame()->getObject(addObjectID)->parentid = id;
-
+	touchModTime();
 	return children.insert(addObjectID).second;
   }
   return false;
@@ -242,6 +253,7 @@ bool IGObject::removeContainedObject(unsigned int removeObjectID)
 {
 	// remove object
 	unsigned int currsize = children.size();
+	touchModTime();
 	return children.erase(removeObjectID) == currsize - 1;
 }
 
@@ -255,6 +267,7 @@ bool IGObject::addOrder(Order * ord, int pos, int playerid)
       advance(inspos, pos);
       orders.insert(inspos, ord);
     }
+    touchModTime();
     return true;
   }
 	
@@ -273,6 +286,7 @@ bool IGObject::removeOrder(unsigned int pos, int playerid)
 	if(myObjectData->checkAllowedOrder((*delpos)->getType(), playerid)){
 	  delete(*delpos);
 	  orders.erase(delpos);
+	  touchModTime();
 	  return true;
 	}
 	return false;
@@ -306,6 +320,7 @@ Order * IGObject::getFirstOrder(){
 void IGObject::removeFirstOrder(){
   delete orders.front();
   orders.pop_front();
+  touchModTime();
 }
 
 
@@ -334,8 +349,12 @@ void IGObject::createFrame(Frame * frame, int playerid)
 
   
   if(frame->getVersion() > fv0_1){
-    frame->packInt(0);
-    frame->packInt(0);
+    if(frame->getVersion() < fv0_3){
+      frame->packInt(0);
+      frame->packInt(0);
+    }else{
+      frame->packInt64(modtime);
+    }
     frame->packInt(0);
     frame->packInt(0);
   }
@@ -348,4 +367,12 @@ void IGObject::createFrame(Frame * frame, int playerid)
 
 ObjectData* IGObject::getObjectData(){
   return myObjectData;
+}
+
+void IGObject::touchModTime(){
+  modtime = time(NULL);
+}
+
+long long IGObject::getModTime() const{
+  return modtime;
 }
