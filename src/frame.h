@@ -63,7 +63,7 @@ typedef enum {
 	ft03_Ping = 27,
 	ft03_ObjectIds_Get = 28,
 	ft03_ObjectIds_GetByPos = 29,
-	ft03_ObjectIds_GetByContiner = 30,
+	ft03_ObjectIds_GetByContainer = 30,
 	ft03_ObjectIds_List = 31,
 	ft03_OrderDescIds_Get = 32,
 	ft03_OrderDescIds_List = 33,
