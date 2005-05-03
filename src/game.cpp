@@ -263,6 +263,13 @@ Player *Game::findPlayer(char *name, char *pass)
 		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 	
 		star->addContainedObject(fleet->getID());
+
+		std::set<unsigned int> vis;
+		for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
+		  vis.insert(itid->first);
+		}
+		rtn->setVisibleObjects(vis);
+		
 	}
 	return rtn;
 }
@@ -428,6 +435,15 @@ void Game::doEndOfTurn()
 	  IGObject * ob = itcurr->second;
 	  ob->getObjectData()->doOnceATurn(ob);
 	  
+	}
+
+	// find the objects that are visible to each player
+	std::set<unsigned int> vis;
+	for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
+	  vis.insert(itid->first);
+	}
+	for(std::map<unsigned int, Player*>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
+	  (itplayer->second)->setVisibleObjects(vis);
 	}
 
 	// increment the time to the next turn

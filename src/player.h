@@ -20,6 +20,8 @@
  *
  */
 
+#include <set>
+
 class Connection;
 class Frame;
 class Board;
@@ -34,6 +36,8 @@ class Player {
 	void setPass(char *newpass);
 	void setConnection(Connection * newcon);
 	void setID(int newid);
+
+	void setVisibleObjects(std::set<unsigned int> vis);
 
 	void postToBoard(Message* msg);
 
@@ -50,6 +54,7 @@ class Player {
 
 	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
+	void processGetObjectIds(Frame * frame);
 	void processGetOrder(Frame * frame);
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
@@ -72,6 +77,9 @@ class Player {
 	 Player(Player & rhs);
 
 	Player operator=(Player & rhs);
+
+	std::set<unsigned int> visibleObjects;
+	unsigned int currObjSeq;
 
 
 };
