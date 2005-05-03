@@ -103,6 +103,7 @@ void Player::setID(int newid)
 
 void Player::setVisibleObjects(std::set<unsigned int> vis){
   visibleObjects = vis;
+  currObjSeq++;
 }
 
 void Player::postToBoard(Message* msg){
@@ -176,6 +177,9 @@ void Player::processIGFrame(Frame * frame)
 
 	case ft03_ObjectIds_Get:
 	  processGetObjectIds(frame);
+	  break;
+	case ft03_ObjectIds_GetByPos:
+	  processGetObjectIdsByPos(frame);
 	  break;
 
 	case ft03_Order_Probe:
@@ -338,6 +342,43 @@ void Player::processGetObjectIds(Frame * frame){
     of->packInt(*itcurr);
     of->packInt64(0LL); //TODO mod time
     ++itcurr;
+  }
+  curConnection->sendFrame(of);
+}
+
+void Player::processGetObjectIdsByPos(Frame* frame){
+ Logger::getLogger()->debug("doing get object by pos frame");
+  Frame *of = curConnection->createFrame(frame);
+  if (frame->getDataLength() >= 36) {
+    Vector3d pos;
+    unsigned long long r;
+
+    pos.unpack(frame);
+    r = frame->unpackInt64();
+
+    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(pos, r);
+
+    for(std::list<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
+      if(visibleObjects.find(*vischk) == visibleObjects.end()){
+	std::list<unsigned int>::iterator temp = vischk;
+	++temp;
+	oblist.erase(vischk);
+	vischk = temp;
+      }else{
+	++vischk;
+      }
+    }
+
+    of->setType(ft03_ObjectIds_List);
+    of->packInt(0);
+    of->packInt(0);
+    of->packInt(oblist.size());
+    for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+      of->packInt(*itcurr);
+      of->packInt64(0LL); //TODO mod time
+    }
+  }else{
+    of->createFailFrame(fec_FrameError, "Invalid frame");
   }
   curConnection->sendFrame(of);
 }

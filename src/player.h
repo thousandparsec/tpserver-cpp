@@ -55,6 +55,7 @@ class Player {
 	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
 	void processGetObjectIds(Frame * frame);
+	void processGetObjectIdsByPos(Frame * frame);
 	void processGetOrder(Frame * frame);
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
