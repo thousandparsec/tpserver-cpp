@@ -60,8 +60,7 @@ class Player {
 	void processGetMessages(Frame * frame);
 	void processPostMessage(Frame * frame);
 	void processRemoveMessages(Frame * frame);
- 	void processGetData(Frame* frame);
-/* 	void processRemoveData(Frame* frame); */
+
 	
 
 	Connection *curConnection;

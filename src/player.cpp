@@ -31,7 +31,7 @@
 #include "message.h"
 #include "ordermanager.h"
 #include "objectdata.h"
-#include "datastore.h"
+
 
 #include "player.h"
 
@@ -170,9 +170,7 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_Order_Probe:
 	  processProbeOrder(frame);
 	  break;
-	case ft03_Data_URL_Get:
-	  processGetData(frame);
-	  break;
+	
 
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
@@ -637,78 +635,4 @@ void Player::processRemoveMessages(Frame * frame){
 }
 
 
-
-void Player::processGetData(Frame* frame){
-  Logger::getLogger()->debug("doing Get Data frame");
-  
-  if(frame->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Get Data isn't supported in this protocol");
-    curConnection->sendFrame(of);
-    return;
-  }
-
-  int numdata = frame->unpackInt();
-  if(numdata > 1){
-    Frame *seq = curConnection->createFrame(frame);
-    seq->setType(ft02_Sequence);
-    seq->packInt(numdata);
-    curConnection->sendFrame(seq);
-  }
-  
-  if(numdata == 0){
-    Frame *of = curConnection->createFrame(frame);
-    Logger::getLogger()->debug("asked for no data chunk, silly client...");
-    of->createFailFrame(fec_NonExistant, "You didn't ask for any data, try again");
-    curConnection->sendFrame(of);
-  }
-
-  DataStore* ds = Game::getGame()->getDataStore();
-
-  for(int i = 0; i < numdata; i++){
-    Frame *of = curConnection->createFrame(frame);
-    int datanum = frame->unpackInt();
-    ds->getData(datanum, of, pid);
-    curConnection->sendFrame(of);
-  }
-
-}
-
-// void Player::processRemoveData(Frame* frame){
-//   Logger::getLogger()->debug("doing Remove Data frame");
-
-//   if(frame->getVersion() < fv0_3){
-//     Logger::getLogger()->debug("protocol version not high enough");
-//     Frame *of = curConnection->createFrame(frame);
-//     of->createFailFrame(fec_FrameError, "Remove Data isn't supported in this protocol");
-//     curConnection->sendFrame(of);
-//     return;
-//   }
-
-//   int numdata = frame->unpackInt();
-//   if(numdata > 1){
-//     Frame *seq = curConnection->createFrame(frame);
-//     seq->setType(ft02_Sequence);
-//     seq->packInt(numdata);
-//     curConnection->sendFrame(seq);
-//   }
-  
-//   if(numdata == 0){
-//     Frame *of = curConnection->createFrame(frame);
-//     Logger::getLogger()->debug("asked for no data chunks to be removed, silly client...");
-//     of->createFailFrame(fec_NonExistant, "You didn't ask for any data to be removed, try again");
-//     curConnection->sendFrame(of);
-//   }
-
-//   DataStore* ds = Game::getGame()->getDataStore();
-
-//   for(int i = 0; i < numdata; i++){
-//     Frame *of = curConnection->createFrame(frame);
-//     int datanum = frame->unpackInt();
-//     ds->removeData(datanum, of, pid);
-//     curConnection->sendFrame(of);
-//   }
-
-// }
 

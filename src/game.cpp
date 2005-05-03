@@ -36,7 +36,6 @@
 #include "objectdatamanager.h"
 #include "combatstrategy.h"
 #include "rspcombat.h"
-#include "datastore.h"
 
 #include "game.h"
 
@@ -345,10 +344,6 @@ CombatStrategy* Game::getCombatStrategy() const{
   return combatstrategy;
 }
 
-DataStore* Game::getDataStore() const{
-  return datastore;
-}
-
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
@@ -470,7 +465,6 @@ Game::Game()
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
   combatstrategy = new RSPCombat();
-  datastore = new DataStore();
   //this is a good place to seed the PNRG
   srand((getpid() + time(NULL)) % RAND_MAX);
 }
@@ -485,7 +479,6 @@ Game::~Game()
   delete ordermanager;
   delete objectdatamanager;
   delete combatstrategy;
-  delete datastore;
 }
 
 Game Game::operator=(Game & rhs)

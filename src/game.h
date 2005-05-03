@@ -30,7 +30,6 @@ class Vector3d;
 class OrderManager;
 class ObjectDataManager;
 class CombatStrategy;
-class DataStore;
 
 class Game {
 
@@ -58,8 +57,6 @@ class Game {
 	ObjectDataManager* getObjectDataManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
-
-	DataStore* getDataStore() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -90,7 +87,6 @@ class Game {
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;
-	DataStore * datastore;
 
 };
 
