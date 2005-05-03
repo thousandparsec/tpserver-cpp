@@ -181,6 +181,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_ObjectIds_GetByPos:
 	  processGetObjectIdsByPos(frame);
 	  break;
+	case ft03_ObjectIds_GetByContainer:
+	  processGetObjectIdsByContainer(frame);
+	  break;
 
 	case ft03_Order_Probe:
 	  processProbeOrder(frame);
@@ -347,7 +350,7 @@ void Player::processGetObjectIds(Frame * frame){
 }
 
 void Player::processGetObjectIdsByPos(Frame* frame){
- Logger::getLogger()->debug("doing get object by pos frame");
+ Logger::getLogger()->debug("doing get object ids by pos frame");
   Frame *of = curConnection->createFrame(frame);
   if (frame->getDataLength() >= 36) {
     Vector3d pos;
@@ -379,6 +382,53 @@ void Player::processGetObjectIdsByPos(Frame* frame){
     }
   }else{
     of->createFailFrame(fec_FrameError, "Invalid frame");
+  }
+  curConnection->sendFrame(of);
+}
+
+void Player::processGetObjectIdsByContainer(Frame * frame){
+  Logger::getLogger()->debug("doing get object ids by container frame");
+
+  Frame *of = curConnection->createFrame(frame);
+  if(frame->getDataLength() != 4){
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+  }else{
+    unsigned int objectID = frame->unpackInt();
+    if(visibleObjects.find(objectID) != visibleObjects.end()){
+      
+      IGObject *o = Game::getGame()->getObject(objectID);
+      
+      if(o != NULL){
+	std::set<unsigned int> contain = o->getContainedObjects();
+	
+	for(std::set<unsigned int>::iterator vischk = contain.begin(); vischk != contain.end();){
+	  if(visibleObjects.find(*vischk) == visibleObjects.end()){
+	    std::set<unsigned int>::iterator temp = vischk;
+	    ++temp;
+	    contain.erase(vischk);
+	    vischk = temp;
+	  }else{
+	    ++vischk;
+	  }
+	}
+
+	of->setType(ft03_ObjectIds_List);
+	of->packInt(0);
+	of->packInt(0);
+	of->packInt(contain.size());
+	for(std::set<unsigned int>::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
+	  of->packInt(*itcurr);
+	  of->packInt64(0LL); //TODO mod time
+	}
+	
+	
+      }else{
+	of->createFailFrame(fec_NonExistant, "No such Object");
+      }
+
+    }else{
+      of->createFailFrame(fec_NonExistant, "No such Object");
+    }
   }
   curConnection->sendFrame(of);
 }
