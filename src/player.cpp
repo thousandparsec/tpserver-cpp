@@ -184,7 +184,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_ObjectIds_GetByContainer:
 	  processGetObjectIdsByContainer(frame);
 	  break;
-
+	case ft03_OrderTypes_Get:
+	  processGetOrderTypes(frame);
+	  break;
 	case ft03_Order_Probe:
 	  processProbeOrder(frame);
 	  break;
@@ -619,6 +621,29 @@ void Player::processDescribeOrder(Frame * frame)
 	  Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
 	  curConnection->sendFrame(of);
 	}
+}
+
+void Player::processGetOrderTypes(Frame * frame){
+  Logger::getLogger()->debug("doing get order types frame");
+  
+  Frame *of = curConnection->createFrame(frame);
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    of->createFailFrame(fec_FrameError, "Get order type frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(frame->getDataLength() != 12){
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
+  
+  curConnection->sendFrame(of);
 }
 
 void Player::processProbeOrder(Frame * frame){

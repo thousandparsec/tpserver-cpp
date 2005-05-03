@@ -61,6 +61,7 @@ class Player {
 	void processAddOrder(Frame * frame);
 	void processRemoveOrder(Frame * frame);
 	void processDescribeOrder(Frame * frame);
+	void processGetOrderTypes(Frame * frame);
 	void processProbeOrder(Frame * frame);
 	void processGetTime(Frame * frame);
 	void processGetBoards(Frame * frame);
