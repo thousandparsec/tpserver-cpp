@@ -345,7 +345,7 @@ void Player::processGetObjectIds(Frame * frame){
   advance(itcurr, start);
   for(unsigned int i = 0; i < num; i++){
     of->packInt(*itcurr);
-    of->packInt64(0LL); //TODO mod time
+    of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
     ++itcurr;
   }
   curConnection->sendFrame(of);
@@ -380,7 +380,7 @@ void Player::processGetObjectIdsByPos(Frame* frame){
     of->packInt(oblist.size());
     for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
       of->packInt(*itcurr);
-      of->packInt64(0LL); //TODO mod time
+      of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
     }
   }else{
     of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -420,7 +420,7 @@ void Player::processGetObjectIdsByContainer(Frame * frame){
 	of->packInt(contain.size());
 	for(std::set<unsigned int>::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
 	  of->packInt(*itcurr);
-	  of->packInt64(0LL); //TODO mod time
+	  of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
 	}
 	
 	
