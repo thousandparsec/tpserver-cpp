@@ -44,7 +44,6 @@ IGObject::IGObject()
 		myGame = Game::getGame();
 	}
 	myObjectData = NULL;
-	touchModTime();
 }
 
 IGObject::IGObject(IGObject & rhs)
@@ -353,7 +352,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
       frame->packInt(0);
       frame->packInt(0);
     }else{
-      frame->packInt64(modtime);
+      frame->packInt64(myObjectData->getModTime());
     }
     frame->packInt(0);
     frame->packInt(0);
@@ -370,9 +369,9 @@ ObjectData* IGObject::getObjectData(){
 }
 
 void IGObject::touchModTime(){
-  modtime = time(NULL);
+  myObjectData->touchModTime();
 }
 
 long long IGObject::getModTime() const{
-  return modtime;
+  return myObjectData->getModTime();
 }

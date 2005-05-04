@@ -103,8 +103,6 @@ class IGObject {
 	
 	unsigned int parentid;
 
-	long long modtime;
-
 	 std::set < unsigned int >children;
 
 	 std::list < Order * >orders;

@@ -2,7 +2,7 @@
 #define OBJECTDATA_H
 /*  ObjectData base class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ class IGObject;
 class ObjectData {
 
       public:
+	ObjectData();
+	virtual ~ObjectData(){};
 
 	virtual void packExtraData(Frame * frame) = 0;
 
@@ -40,11 +42,14 @@ class ObjectData {
 
 	virtual ObjectData* clone() = 0;
 
+	void touchModTime();
+	long long getModTime() const;
+
       protected:
 
 
       private:
-
+	long long modtime;
 
 };
 

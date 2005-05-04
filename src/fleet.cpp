@@ -1,6 +1,6 @@
 /*  Fleet object
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,11 +37,13 @@ Fleet::~Fleet(){
 
 void Fleet::addShips(int type, int number){
   ships[type] += number;
+  touchModTime();
 }
 
 bool Fleet::removeShips(int type, int number){
   if(ships[type] >= number){
     ships[type] -= number;
+    touchModTime();
     return true;
   }
   return false;
@@ -91,6 +93,7 @@ bool Fleet::hit(int firepower){
       change = true;
     }
   }
+  touchModTime();
   return (ships[2] == 0 && ships[1] == 0 && ships[0] == 0);
 }
 
@@ -115,6 +118,7 @@ void Fleet::doOnceATurn(IGObject * obj)
   IGObject * pob = Game::getGame()->getObject(obj->getParent());
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
     damage = 0;
+    touchModTime();
   }
 }
 

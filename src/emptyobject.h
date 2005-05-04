@@ -2,7 +2,7 @@
 #define EMPTYOBJECT_H
 /*  Empty Object ObjectData class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 class EmptyObject:public ObjectData {
       public:
+	EmptyObject();
+	virtual ~EmptyObject(){};
 	void packExtraData(Frame * frame);
 	void doOnceATurn(IGObject * obj);
 	int getContainerType();

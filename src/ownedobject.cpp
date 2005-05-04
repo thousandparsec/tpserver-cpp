@@ -1,6 +1,6 @@
 /*  OwnedObject baseclass for ObjectData classes that are owned by players
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 #include "ownedobject.h"
 
-OwnedObject::OwnedObject()
+OwnedObject::OwnedObject() : ObjectData()
 {
 	playerid = -1;
 }
@@ -35,6 +35,7 @@ void OwnedObject::packExtraData(Frame * frame)
 void OwnedObject::setOwner(int player)
 {
 	playerid = player;
+	touchModTime();
 }
 
 int OwnedObject::getOwner()

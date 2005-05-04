@@ -1,6 +1,6 @@
 /*  ObjectData base class
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,10 +18,16 @@
  *
  */
 
+#include <time.h>
+
 #include "frame.h"
 #include "order.h"
 
 #include "objectdata.h"
+
+ObjectData::ObjectData(){
+  touchModTime();
+}
 
 void ObjectData::packAllowedOrders(Frame * frame, int playerid){
   frame->packInt(0);
@@ -29,4 +35,12 @@ void ObjectData::packAllowedOrders(Frame * frame, int playerid){
 
 bool ObjectData::checkAllowedOrder(int ot, int playerid){
   return false;
+}
+
+void ObjectData::touchModTime(){
+  modtime = time(NULL);
+}
+
+long long ObjectData::getModTime() const{
+  return modtime;
 }
