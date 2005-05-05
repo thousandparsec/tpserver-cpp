@@ -1,6 +1,6 @@
 /*  In Game Objects in the game universe
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -369,9 +369,13 @@ ObjectData* IGObject::getObjectData(){
 }
 
 void IGObject::touchModTime(){
-  myObjectData->touchModTime();
+  if(myObjectData != NULL)
+    myObjectData->touchModTime();
 }
 
 long long IGObject::getModTime() const{
-  return myObjectData->getModTime();
+  if(myObjectData != NULL)
+    return myObjectData->getModTime();
+  else
+    return 0LL;
 }
