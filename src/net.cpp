@@ -290,8 +290,8 @@ void Network::masterLoop()
 	  PlayerConnection* pc = dynamic_cast<PlayerConnection*>((connections.begin())->second);
 	  if(pc != NULL){
 	    pc->close();
+	    delete pc;
 	  }
-	  delete(*connections.begin()).second;
 	  connections.erase(connections.begin());
 	}
 
