@@ -43,7 +43,6 @@ PlayerConnection::PlayerConnection(int fd) : Connection()
 {
 	sockfd = fd;
 	status = 1;
-	Network::getNetwork()->addFD(fd);
 	player = NULL;
 }
 
@@ -57,7 +56,7 @@ void PlayerConnection::setFD(int fd)
 {
 	sockfd = fd;
 	status = 1;
-	Network::getNetwork()->addFD(fd);
+
 }
 
 void PlayerConnection::process()

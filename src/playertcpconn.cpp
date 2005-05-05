@@ -36,19 +36,15 @@
 
 #include "playertcpconn.h"
 
-PlayerTcpConnection::PlayerTcpConnection()
+PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection()
 {
-	status = 0;
-	player = NULL;
+
 }
 
 
-PlayerTcpConnection::PlayerTcpConnection(int fd)
+PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd)
 {
-	sockfd = fd;
-	status = 1;
-	Network::getNetwork()->addFD(fd);
-	player = NULL;
+
 }
 
 PlayerTcpConnection::~PlayerTcpConnection()
@@ -59,18 +55,9 @@ PlayerTcpConnection::~PlayerTcpConnection()
 }
 
 
-
-void PlayerTcpConnection::setFD(int fd)
-{
-	sockfd = fd;
-	status = 1;
-	Network::getNetwork()->addFD(fd);
-}
-
 void PlayerTcpConnection::close()
 {
 	Logger::getLogger()->debug("Closing connection");
-	Network::getNetwork()->removeFD(sockfd);
 	if (player != NULL) {
 		player->setConnection(NULL);
 		player = NULL;

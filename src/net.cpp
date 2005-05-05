@@ -1,5 +1,4 @@
-/*  Network and listen socket abstraction for tpserver-cpp with ipv4 and
- *   ipv6 support
+/*  Network abstraction for tpserver-cpp 
  *
  *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
@@ -36,6 +35,7 @@
 #include "settings.h"
 #include "connection.h"
 #include "playertcpconn.h"
+#include "tcpsocket.h"
 #include "game.h"
 #include "frame.h"
 
@@ -74,32 +74,34 @@ void Network::createFeaturesFrame(Frame* frame){
   }
 }
 
-void Network::addFD(int fd)
+void Network::addConnection(Connection* conn)
 {
-  Logger::getLogger()->debug("Adding a file descriptor %d", fd);
-	FD_SET(fd, &master_set);
-	if (max_fd < fd) {
-		max_fd = fd;
-	}
+  Logger::getLogger()->debug("Adding a file descriptor %d", conn->getFD());
+  connections[conn->getFD()] = conn;
+  FD_SET(conn->getFD(), &master_set);
+  if (max_fd < conn->getFD()) {
+    max_fd = conn->getFD();
+  }
 }
 
-void Network::removeFD(int fd)
+void Network::removeConnection(Connection* conn)
 {
-  Logger::getLogger()->debug("Removing a file descriptor %d", fd);
-	FD_CLR(fd, &master_set);
-	if (max_fd == fd) {
-		Logger::getLogger()->debug("Changing max_fd");
-		max_fd = serverFD;
-		std::map < int, Connection * >::iterator itcurr, itend;
-		itend = connections.end();
-		for (itcurr = connections.begin(); itcurr != itend; itcurr++) {
-			if (FD_ISSET((*itcurr).first, &master_set)) {
-				if (max_fd < (*itcurr).first)
-					max_fd = (*itcurr).first;
-			}
-		}
-
-	}
+  Logger::getLogger()->debug("Removing a file descriptor %d", conn->getFD());
+  FD_CLR(conn->getFD(), &master_set);
+  connections.erase(connections.find(conn->getFD()));
+  if (max_fd == conn->getFD()) {
+    Logger::getLogger()->debug("Changing max_fd");
+    max_fd = 0;
+    std::map < int, Connection * >::iterator itcurr, itend;
+    itend = connections.end();
+    for (itcurr = connections.begin(); itcurr != itend; itcurr++) {
+      
+      if (max_fd < (*itcurr).first)
+	max_fd = (*itcurr).first;
+      
+    }
+    
+  }
 }
 
 void Network::start()
@@ -110,66 +112,8 @@ void Network::start()
 	}
 	Logger::getLogger()->info("Starting Network");
 
-#ifdef HAVE_IPV6
-
-	struct addrinfo hints, *res, *ressave;
-
-	memset(&hints, 0, sizeof(struct addrinfo));
-	
-	hints.ai_flags    = AI_PASSIVE;
-	hints.ai_family   = PF_UNSPEC; 
-	hints.ai_socktype = SOCK_STREAM;
-
-	int n = getaddrinfo(NULL, "6923", &hints, &res); // should be conf item
-	
-	if (n < 0) {
-	  fprintf(stderr, "getaddrinfo error:: [%s]\n", gai_strerror(n));
-	  Logger::getLogger()->error("Could not getaddrinfo");
-	}
-	
-	ressave=res;
-
-	serverFD=-1;
-	while (res) {
-	  serverFD = socket(res->ai_family,
-			  res->ai_socktype,
-			  res->ai_protocol);
-
-	  if (!(serverFD < 0)) {
-            if (bind(serverFD, res->ai_addr, res->ai_addrlen) == 0)
-	      break;
-	    
-            close(serverFD);
-            serverFD=-1;
-	  }
-	  res = res->ai_next;
-	}
-
-	freeaddrinfo(ressave);
-#else
-	serverFD = socket(AF_INET, SOCK_STREAM, 0);
-#endif
-	if (serverFD == -1)
-		Logger::getLogger()->error("Could not create Socket");
-#ifndef HAVE_IPV6
-	struct sockaddr_in myAddr;
-	myAddr.sin_family = AF_INET;
-	myAddr.sin_port = htons(6923);	// fix, make setting item
-	myAddr.sin_addr.s_addr = INADDR_ANY;	// fix, make setting item
-	memset(&(myAddr.sin_zero), '\0', 8);
-
-	if (bind(serverFD, (struct sockaddr *) &myAddr, sizeof(struct sockaddr)) != 0) {
-		perror("bind");
-		Logger::getLogger()->error("Failed to bind to port and address");
-	}
-#endif
-
-	if (listen(serverFD, 5) != 0)
-		Logger::getLogger()->error("Failed to listen");
-
-	FD_ZERO(&master_set);
-	FD_SET(serverFD, &master_set);
-	max_fd = serverFD;
+	TcpSocket* listensocket = new TcpSocket(NULL, "6923");
+	addConnection(listensocket);
 
 	// time to create thread
 	halt = false;
@@ -185,7 +129,6 @@ void Network::stop()
 {
 	if (active) {
 		Logger::getLogger()->info("Stopping Network");
-		close(serverFD);
 
 		//more to come
 		halt = true;
@@ -230,38 +173,6 @@ void Network::masterLoop()
 
 		if (select(max_fd + 1, &cur_set, NULL, NULL, &tv) != 0) {
 
-			if (FD_ISSET(serverFD, &cur_set)) {
-				Logger::getLogger()->info("Accepting new connection");
-
-#ifdef HAVE_IPV6
-				struct sockaddr_storage clientaddr;
-				socklen_t addrlen = sizeof(clientaddr);
-				Connection *temp = new PlayerTcpConnection(accept(serverFD, 
-									 (struct sockaddr *)&clientaddr, 
-									 &addrlen));
-				connections[temp->getFD()] = temp;
-				char clienthost[NI_MAXHOST];
-				char clientname[NI_MAXHOST];
-				getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-					    clienthost, sizeof(clienthost),
-					    NULL, 0,
-					    NI_NUMERICHOST);
-				getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-					    clientname, sizeof(clientname),
-					    NULL, 0,
-					    0);
-
-				Logger::getLogger()->info("Connection accepted from %s [%s], connection id %d", 
-							  clientname, clienthost, temp->getFD());
-
-#else
-
-				Connection *temp = new PlayerTcpConnection(accept(serverFD, NULL, 0));
-				connections[temp->getFD()] = temp;
-
-#endif
-			}
-
 			std::map < int, Connection * >::iterator itcurr;
 			for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
 				if (FD_ISSET((*itcurr).first, &cur_set)) {
@@ -269,12 +180,8 @@ void Network::masterLoop()
 				}
 				if ((*itcurr).second->getStatus() == 0) {
 				  Logger::getLogger()->info("Closed connection %d", (*itcurr).second->getFD());
-					delete(*itcurr).second;
-					std::map < int, Connection * >::iterator temp;
-					temp = itcurr;
-					--temp;
-					connections.erase(itcurr);
-					itcurr = temp;
+				  Connection* conn = itcurr->second;
+				  removeConnection(conn);
 				}
 			}
 
@@ -290,9 +197,15 @@ void Network::masterLoop()
 	  PlayerConnection* pc = dynamic_cast<PlayerConnection*>((connections.begin())->second);
 	  if(pc != NULL){
 	    pc->close();
+	    removeConnection(pc);
 	    delete pc;
+	  }else{
+	    TcpSocket* ts = dynamic_cast<TcpSocket*>((connections.begin())->second);
+	    if(ts != NULL){
+	      removeConnection(ts);
+	      delete ts;
+	    }
 	  }
-	  connections.erase(connections.begin());
 	}
 
 
@@ -304,7 +217,7 @@ void Network::masterLoop()
 Network::Network()
 {
 
-
+  max_fd = 0;
 
 	halt = false;
 	active = false;

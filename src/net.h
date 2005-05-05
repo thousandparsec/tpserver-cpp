@@ -37,8 +37,8 @@ class Network {
 
 	//stuff
 
-	void addFD(int fd);
-	void removeFD(int fd);
+	void addConnection(Connection* conn);
+	void removeConnection(Connection* conn);
 
 	void start();
 
@@ -59,7 +59,6 @@ class Network {
 
 	static Network *myInstance;
 
-	int serverFD;
 	fd_set master_set;
 	int max_fd;
 	bool active;
