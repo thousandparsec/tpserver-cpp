@@ -1,6 +1,6 @@
 /*  Planet objects
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ Planet::Planet():OwnedObject()
 void Planet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);
+	frame->packInt(0); // no resources at this time
 }
 
 void Planet::doOnceATurn(IGObject * obj)
