@@ -190,7 +190,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_Order_Probe:
 	  processProbeOrder(frame);
 	  break;
-	
+	case ft03_BoardIds_Get:
+	  processGetBoardIds(frame);
+	  break;
 
 	default:
 		Logger::getLogger()->warning("Player: Discarded frame, not processed");
@@ -299,7 +301,7 @@ void Player::processGetObjectIds(Frame * frame){
   if(frame->getVersion() < fv0_3){
     Logger::getLogger()->debug("protocol version not high enough");
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    of->createFailFrame(fec_FrameError, "Get Object Ids isn't supported in this protocol");
     curConnection->sendFrame(of);
     return;
   }
@@ -726,6 +728,41 @@ void Player::processGetBoards(Frame * frame){
     }
     curConnection->sendFrame(of);
   }
+}
+
+void Player::processGetBoardIds(Frame * frame){
+   Logger::getLogger()->debug("Doing get board ids frame");
+   
+   if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+   if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  unsigned int seqkey = frame->unpackInt();
+  if(seqkey == 0xffffffff){
+    //start new seqkey
+    seqkey = 0;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_BoardIds_List);
+  of->packInt(seqkey);
+  of->packInt(0);
+  of->packInt(1);
+  of->packInt(0); //personal board
+  of->packInt64(0LL);
+  
+  curConnection->sendFrame(of);
 }
 
 void Player::processGetMessages(Frame * frame){

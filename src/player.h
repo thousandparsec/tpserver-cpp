@@ -65,6 +65,7 @@ class Player {
 	void processProbeOrder(Frame * frame);
 	void processGetTime(Frame * frame);
 	void processGetBoards(Frame * frame);
+	void processGetBoardIds(Frame * frame);
 	void processGetMessages(Frame * frame);
 	void processPostMessage(Frame * frame);
 	void processRemoveMessages(Frame * frame);
