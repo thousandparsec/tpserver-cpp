@@ -1,6 +1,6 @@
-#ifndef CONNECTION_H
-#define CONNECTION_H
-/*  Connection base class
+#ifndef PLAYERCONNECTION_H
+#define PLAYERCONNECTION_H
+/*  Player Connection class
  *
  *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
@@ -20,21 +20,41 @@
  *
  */
 
+class Player;
 
-class Connection {
+#include "frame.h"
+
+#include "connection.h"
+
+class PlayerConnection: public Connection {
   
  public:
-  Connection();
-  virtual ~Connection();
+  PlayerConnection();
+  PlayerConnection(int fd);
+  virtual ~PlayerConnection();
   
-  int getFD();
+  void setFD(int fd);
   
-  virtual void process() = 0;
-  int getStatus();
+  void process();
+  virtual void close() = 0;
+  virtual void sendFrame(Frame * frame) = 0;
+  
+  Frame* createFrame(Frame* oldframe = NULL);
+  
+  FrameVersion getProtocolVersion();
   
  protected:
-  int sockfd;
-  int status;
+  
+  virtual void verCheck() = 0;
+  void login();
+  
+  void inGameFrame();
+  
+  virtual bool readFrame(Frame * recvframe) = 0;
+  
+  Player *player;
+  
+  FrameVersion version;
   
 };
 

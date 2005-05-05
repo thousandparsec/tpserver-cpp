@@ -20,7 +20,7 @@
 
 #include "string.h"
 
-#include "connection.h"
+#include "playerconnection.h"
 #include "frame.h"
 #include "logging.h"
 #include "game.h"
@@ -91,7 +91,7 @@ void Player::setPass(char *newpass)
 	strncpy(passwd, newpass, len);
 }
 
-void Player::setConnection(Connection * newcon)
+void Player::setConnection(PlayerConnection * newcon)
 {
 	curConnection = newcon;
 }
@@ -126,7 +126,7 @@ char *Player::getPass()
 	return temp;
 }
 
-Connection *Player::getConnection()
+PlayerConnection *Player::getConnection()
 {
 	return curConnection;
 }

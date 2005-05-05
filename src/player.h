@@ -22,7 +22,7 @@
 
 #include <set>
 
-class Connection;
+class PlayerConnection;
 class Frame;
 class Board;
 class Message;
@@ -34,7 +34,7 @@ class Player {
 
 	void setName(char *newname);
 	void setPass(char *newpass);
-	void setConnection(Connection * newcon);
+	void setConnection(PlayerConnection * newcon);
 	void setID(int newid);
 
 	void setVisibleObjects(std::set<unsigned int> vis);
@@ -43,7 +43,7 @@ class Player {
 
 	char *getName();
 	char *getPass();
-	Connection *getConnection();
+	PlayerConnection *getConnection();
 	int getID();
 
 	void processIGFrame(Frame * frame);
@@ -71,7 +71,7 @@ class Player {
 
 	
 
-	Connection *curConnection;
+	PlayerConnection *curConnection;
 	char *name;
 	char *passwd;
 	int pid;

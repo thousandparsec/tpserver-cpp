@@ -35,6 +35,7 @@
 #include "logging.h"
 #include "settings.h"
 #include "connection.h"
+#include "playertcpconn.h"
 #include "game.h"
 #include "frame.h"
 
@@ -201,8 +202,8 @@ void Network::sendToAll(Frame * frame){
   std::map < int, Connection * >::iterator itcurr;
   char* data = frame->getData();
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-    Connection * currConn = itcurr->second;
-    if(currConn->getStatus() == 3){
+    PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
+    if(currConn != NULL && currConn->getStatus() == 3){
       Frame * currFrame = currConn->createFrame(NULL);
       currFrame->setType(frame->getType());
       currFrame->setData(data, frame->getDataLength());
@@ -235,7 +236,7 @@ void Network::masterLoop()
 #ifdef HAVE_IPV6
 				struct sockaddr_storage clientaddr;
 				socklen_t addrlen = sizeof(clientaddr);
-				Connection *temp = new Connection(accept(serverFD, 
+				Connection *temp = new PlayerTcpConnection(accept(serverFD, 
 									 (struct sockaddr *)&clientaddr, 
 									 &addrlen));
 				connections[temp->getFD()] = temp;
@@ -255,7 +256,7 @@ void Network::masterLoop()
 
 #else
 
-				Connection *temp = new Connection(accept(serverFD, NULL, 0));
+				Connection *temp = new PlayerTcpConnection(accept(serverFD, NULL, 0));
 				connections[temp->getFD()] = temp;
 
 #endif
@@ -286,9 +287,12 @@ void Network::masterLoop()
 	}
 
 	while (!connections.empty()) {
-		(*connections.begin()).second->close();
-		delete(*connections.begin()).second;
-		connections.erase(connections.begin());
+	  PlayerConnection* pc = dynamic_cast<PlayerConnection*>((connections.begin())->second);
+	  if(pc != NULL){
+	    pc->close();
+	  }
+	  delete(*connections.begin()).second;
+	  connections.erase(connections.begin());
 	}
 
 
