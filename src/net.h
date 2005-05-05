@@ -20,7 +20,7 @@
  *
  */
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <map>
 #include <sys/select.h>
 
@@ -49,7 +49,7 @@ class Network {
 	// don't you even think about calling these functions
 
 	void masterLoop();
-
+	void stopMainLoop();
 
       private:
 	 Network();
@@ -63,7 +63,7 @@ class Network {
 	int max_fd;
 	bool active;
 
-	pthread_t master;
+	//pthread_t master;
 
 
 	bool halt;

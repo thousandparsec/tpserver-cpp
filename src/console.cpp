@@ -1,6 +1,6 @@
 /*  Server terminal console for server
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,75 +38,77 @@ Console *Console::getConsole()
 	return myInstance;
 }
 
-void Console::mainLoop()
-{
-	Logger::getLogger()->info("Console ready");
-	while (true) {
-		// this is going to need a lot of work
-		char key;
-		int num;
-		num = scanf("%c", &key);
-		if (num != 1)
-			break;
-		if (key == 'q')
-			break;
-		if (key == 'h') {
-		  std::cout << "q to quit" << std::endl;
-		  std::cout << "h for help" << std::endl;
-		  std::cout << "t to end turn" << std::endl;
-		  std::cout << "T to get seconds until end of turn" << std::endl;
-		  std::cout << "n to stop network" << std::endl;
-		  std::cout << "N to start network" << std::endl;
-		}
-		if (key == 't') {
-			Logger::getLogger()->info("End Of Turn initiated from console");
-			Game::getGame()->doEndOfTurn();
-			Game::getGame()->resetEOTTimer();
+void Console::open(){
+  Network::getNetwork()->addConnection(this);
+  Logger::getLogger()->info("Console ready");
+}
 
-		}
-		if(key == 'T'){
-		  std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
-		}
-		if (key == 'n') {
-			Network::getNetwork()->stop();
-		}
-		if (key == 'N') {
-			Network::getNetwork()->start();
-		}
-		/*
-		if (key == 'l') {
-			char *file = new char[100];
-			num = scanf("%s", file);
-			if (num == 1) {
-				Game::getGame()->loadGame(file);
-			}
-		}
-		if (key == 'o') {
-			int player, object, order;
-			num = scanf("%d %d %d", &player, &object, &order);
-			if (num == 3) {
-				if (Game::getGame()->getObject(object)->addAction(-1, player, (OrderType) order)) {
-					Logger::getLogger()->info("Extra action enabled");
-				} else {
-					Logger::getLogger()->info("Extra action not added");
-				}
-			} else {
-				Logger::getLogger()->warning("Did not get the parameters");
-			}
-		}
-		*/
-	}
-	Logger::getLogger()->info("Server starting shutdown");
+void Console::process(){
+  // this is going to need a lot of work
+  char key;
+  int num;
+  num = scanf("%c", &key);
+  if (num != 1 || key == 'q')
+    Network::getNetwork()->stopMainLoop();
+  if (key == 'h') {
+    std::cout << "q to quit" << std::endl;
+    std::cout << "h for help" << std::endl;
+    std::cout << "t to end turn" << std::endl;
+    std::cout << "T to get seconds until end of turn" << std::endl;
+    std::cout << "n to stop network" << std::endl;
+    std::cout << "N to start network" << std::endl;
+  }
+  if (key == 't') {
+    Logger::getLogger()->info("End Of Turn initiated from console");
+    Game::getGame()->doEndOfTurn();
+    Game::getGame()->resetEOTTimer();
+    
+  }
+  if(key == 'T'){
+    std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
+  }
+  if (key == 'n') {
+    Network::getNetwork()->stop();
+  }
+  if (key == 'N') {
+    Network::getNetwork()->start();
+  }
+  /*
+    if (key == 'l') {
+    char *file = new char[100];
+    num = scanf("%s", file);
+    if (num == 1) {
+    Game::getGame()->loadGame(file);
+    }
+    }
+    if (key == 'o') {
+    int player, object, order;
+    num = scanf("%d %d %d", &player, &object, &order);
+    if (num == 3) {
+    if (Game::getGame()->getObject(object)->addAction(-1, player, (OrderType) order)) {
+    Logger::getLogger()->info("Extra action enabled");
+    } else {
+    Logger::getLogger()->info("Extra action not added");
+    }
+    } else {
+    Logger::getLogger()->warning("Did not get the parameters");
+    }
+    }
+  */
+  
 }
 
 void Console::close()
 {
-	Logger::getLogger()->info("Console closed");
+  Network::getNetwork()->removeConnection(this);
+  Logger::getLogger()->info("Console closed");
 }
 
-Console::Console()
+Console::Console() : Connection()
 {
 	Logger::getLogger()->info("Console opened");
+	status = 1;
+	sockfd = 2;
 }
 
 Console::~Console()

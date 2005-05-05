@@ -1,6 +1,6 @@
 /*  Main method for tpserver-cpp
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ int main(int argc, char **argv)
 	myLogger->info("This is GPL software, please see the COPYING file");
 
 	Console *myConsole = Console::getConsole();
+	myConsole->open();
 
 	Game *myGame = Game::getGame();
 	//hack temp code
@@ -57,7 +58,7 @@ int main(int argc, char **argv)
 	myNetwork->start();
 	//temp code end
 
-	myConsole->mainLoop();
+	myNetwork->masterLoop();
 
 	myNetwork->stop();
 	myGame->saveAndClose();

@@ -41,13 +41,6 @@
 
 #include "net.h"
 
-// thread start function
-static void *startMaster(void *arg)
-{
-	Network::getNetwork()->masterLoop();
-	return NULL;
-}
-
 
 // Network Class methods
 
@@ -115,12 +108,6 @@ void Network::start()
 	TcpSocket* listensocket = new TcpSocket(NULL, "6923");
 	addConnection(listensocket);
 
-	// time to create thread
-	halt = false;
-	pthread_create(&master, NULL, startMaster, NULL);
-
-
-
 	active = true;
 }
 
@@ -130,9 +117,28 @@ void Network::stop()
 	if (active) {
 		Logger::getLogger()->info("Stopping Network");
 
-		//more to come
-		halt = true;
-		pthread_join(master, NULL);
+		if(halt){
+		  std::map<int, Connection*>::iterator itcurr = connections.begin();
+		  while (itcurr != connections.end()) {
+		    PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
+		    if(pc != NULL){
+		      ++itcurr;
+		      pc->close();
+		      removeConnection(pc);
+		      delete pc;
+		    }else{
+		      TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
+		      if(ts != NULL){
+			++itcurr;
+			removeConnection(ts);
+			delete ts;
+		      }else{
+			++itcurr;
+		      }
+		    }
+		  }
+
+		}
 
 		active = false;
 
@@ -163,9 +169,11 @@ void Network::masterLoop()
 {
 	struct timeval tv;
 	fd_set cur_set;
+	halt = false;
 	while (!halt) {
 
 		//sleep(1);
+	  bool netstat = active;
 
 		cur_set = master_set;
 		tv.tv_sec = 0;
@@ -186,6 +194,30 @@ void Network::masterLoop()
 			}
 
 		}
+
+		if(netstat != active && active == false){
+		  std::map<int, Connection*>::iterator itcurr = connections.begin();
+		  while (itcurr != connections.end()) {
+		    PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
+		    if(pc != NULL){
+		      ++itcurr;
+		      pc->close();
+		      removeConnection(pc);
+		      delete pc;
+		    }else{
+		      TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
+		      if(ts != NULL){
+			++itcurr;
+			removeConnection(ts);
+			delete ts;
+		      }else{
+			++itcurr;
+		      }
+		    }
+		  }
+		  Logger::getLogger()->debug("Network really stopped");
+		}
+
 		if(Game::getGame()->secondsToEOT() <= 0){
 		  Game::getGame()->doEndOfTurn();
 		}
@@ -193,25 +225,14 @@ void Network::masterLoop()
 
 	}
 
-	while (!connections.empty()) {
-	  PlayerConnection* pc = dynamic_cast<PlayerConnection*>((connections.begin())->second);
-	  if(pc != NULL){
-	    pc->close();
-	    removeConnection(pc);
-	    delete pc;
-	  }else{
-	    TcpSocket* ts = dynamic_cast<TcpSocket*>((connections.begin())->second);
-	    if(ts != NULL){
-	      removeConnection(ts);
-	      delete ts;
-	    }
-	  }
-	}
+
 
 
 }
 
-
+void Network::stopMainLoop(){
+  halt = true;
+}
 
 
 Network::Network()
@@ -226,10 +247,6 @@ Network::Network()
 
 Network::~Network()
 {
-
-
-
-
 }
 
 
