@@ -41,7 +41,7 @@
 Console *Console::myInstance = NULL;
 
 static void linecomplete(char* line){
-  Console::getConsole()->completeLine(line);
+  Console::getConsole()->readLine(line);
 }
 
 static char** word_completion(const char* text, int start, int end){
@@ -50,6 +50,14 @@ static char** word_completion(const char* text, int start, int end){
 
 static char* command_generator(const char* text, int state){
   return Console::getConsole()->commandCompleter(text, state);
+}
+
+static char* turn_generator(const char* text, int state){
+  return Console::getConsole()->turnCommandCompleter(text, state);
+}
+
+static char* network_generator(const char* text, int state){
+  return Console::getConsole()->networkCommandCompleter(text, state);
 }
 
 Console *Console::getConsole()
@@ -136,7 +144,7 @@ void Console::close()
   Logger::getLogger()->info("Console closed");
 }
 
-void Console::completeLine(char* line){
+void Console::readLine(char* line){
 #ifdef HAVE_LIBREADLINE
   if(line != NULL){
     add_history(line);
@@ -147,8 +155,29 @@ void Console::completeLine(char* line){
     std::cout << std::endl << "Commands:" << std::endl;
     std::cout << "Quit, Exit\tQuit and shutdown the server" << std::endl;
     std::cout << "Help\t\tThis help" << std::endl;
+    std::cout << "Turn\t\tTurn management functions" << std::endl;
+    std::cout << "Network\t\tNetwork management functions" << std::endl;
 
     std::cout << std::endl;
+  }else if(strncasecmp(line, "turn", 4) == 0){
+    if(strncasecmp(line, "turn end", 8) == 0){
+       Logger::getLogger()->info("End Of Turn initiated from console");
+       Game::getGame()->doEndOfTurn();
+       Game::getGame()->resetEOTTimer();
+    }else if(strncasecmp(line, "turn time", 9) == 0){
+      std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
+    }else{
+      std::cout << line << " function not known" << std::endl;
+    }
+    
+  }else if(strncasecmp(line, "network", 7) == 0){
+    if(strncasecmp(line, "network start", 13) == 0){
+      Network::getNetwork()->start();
+    }else if(strncasecmp(line, "network stop", 12) == 0){
+      Network::getNetwork()->stop();
+    }else{
+      std::cout << line << " function not known" << std::endl;
+    }
   }
 
   free(line);
@@ -161,8 +190,16 @@ char** Console::wordCompletion(const char* text, int start, int end){
 
   matches = (char **)NULL;
 
-  if (start == 0)
+  commstate = 0;
+  if (start == 0){
     matches = rl_completion_matches (text, command_generator);
+  }
+  else if(strncasecmp(rl_line_buffer, "turn", 4) == 0){
+    matches = rl_completion_matches(text, turn_generator);
+  }else if(strncasecmp(rl_line_buffer, "network", 7) == 0){
+    matches = rl_completion_matches(text, network_generator);
+  }
+  rl_attempted_completion_over = 1;
 
   return (matches);
 #endif
@@ -175,28 +212,96 @@ char* Console::commandCompleter(const char* text, int state){
   char* cname = NULL;
   switch(commstate){
   case 0:
-    if(strncmp(text, "quit", strlen(text)) == 0){
+    if(strncasecmp(text, "quit", strlen(text)) == 0){
       cname = (char*)malloc(5);
       strncpy(cname, "quit", 5);
       commstate = 1;
       break;
     }
   case 1:
-    if(strncmp(text, "exit", strlen(text)) == 0){
+    if(strncasecmp(text, "exit", strlen(text)) == 0){
       cname = (char*)malloc(5);
       strncpy(cname, "exit", 5);
       commstate = 2;
       break;
     }
   case 2:
-    if(strncmp(text, "help", strlen(text)) == 0){
+    if(strncasecmp(text, "help", strlen(text)) == 0){
       cname = (char*)malloc(5);
       strncpy(cname, "help", 5);
       commstate = 3;
       break;
     }
+  case 3:
+    if(strncasecmp(text, "turn", strlen(text)) == 0){
+      cname = (char*)malloc(5);
+      strncpy(cname, "turn", 5);
+      commstate = 4;
+      break;
+    }
+  case 4:
+    if(strncasecmp(text, "network", strlen(text)) == 0){
+      cname = (char*)malloc(8);
+      strncpy(cname, "network", 8);
+      commstate = 5;
+      break;
+    }
   default:
-    commstate = 3;
+    commstate = 9;
+    break;
+  }
+  return cname;
+}
+
+char* Console::turnCommandCompleter(const char* text, int state){
+  if(state == 0){
+    commstate = 0;
+  }
+  char* cname = NULL;
+  switch(commstate){
+  case 0:
+    if(strncasecmp(text, "end", strlen(text)) == 0){
+      cname = (char*)malloc(4);
+      strncpy(cname, "end", 4);
+      commstate = 1;
+      break;
+    }
+  case 1:
+    if(strncasecmp(text, "time", strlen(text)) == 0){
+      cname = (char*)malloc(5);
+      strncpy(cname, "time", 5);
+      commstate = 2;
+      break;
+    }
+  default:
+    commstate = 9;
+    break;
+  }
+  return cname;
+}
+
+char* Console::networkCommandCompleter(const char* text, int state){
+  if(state == 0){
+    commstate = 0;
+  }
+  char* cname = NULL;
+  switch(commstate){
+  case 0:
+    if(strncasecmp(text, "start", strlen(text)) == 0){
+      cname = (char*)malloc(6);
+      strncpy(cname, "start", 6);
+      commstate = 1;
+      break;
+    }
+  case 1:
+    if(strncasecmp(text, "stop", strlen(text)) == 0){
+      cname = (char*)malloc(5);
+      strncpy(cname, "stop", 5);
+      commstate = 2;
+      break;
+    }
+  default:
+    commstate = 9;
     break;
   }
   return cname;
