@@ -53,6 +53,8 @@ Player::Player()
 	Message * msg = new Message();
 	msg->setSubject("Welcome");
 	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
+	msg->addReference(rst_Special, rssv_System);
+	msg->addReference(rst_Player, pid);
 	board->addMessage(msg, -1);
 }
 
