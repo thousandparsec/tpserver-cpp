@@ -1,6 +1,6 @@
 /*  Colonise order
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -95,11 +95,11 @@ bool Colonise::doOrder(IGObject * ob){
 	
 	msg->setSubject("Colonised planet");
 	msg->setBody("You have colonised a planet!");
-	msg->setType(0);
+
       }else{
 	msg->setSubject("Colonisation failed");
 	msg->setBody("Your fleet did not have a frigate to colonise the planet");
-	msg->setType(0);
+
       }
       
       if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
@@ -109,7 +109,7 @@ bool Colonise::doOrder(IGObject * ob){
     }else{
       msg->setSubject("Colonisation failed");
       msg->setBody("You already own the planet you tried to colonise");
-      msg->setType(0);
+ 
     }
     
     Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);

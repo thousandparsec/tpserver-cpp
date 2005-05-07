@@ -1,6 +1,6 @@
 /*  Nop order
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -74,7 +74,6 @@ bool Nop::doOrder(IGObject * ob){
     Message * msg = new Message();
     msg->setSubject("NOp order complete");
     msg->setBody("The object has finished it's delay and is now continuing");
-    msg->setType(0);
     Game::getGame()->getPlayer(((OwnedObject*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;

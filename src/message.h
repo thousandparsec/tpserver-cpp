@@ -2,7 +2,7 @@
 #define MESSAGE_H
 /*  Messages board Message class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@ class Frame;
 class Message{
 
  public:
+  Message();
 
-  void setType(int ntype);
-  int getType();
+  int getTurn();
 
   void setSubject(const std::string &nsub);
   std::string getSubject();
@@ -40,9 +40,10 @@ class Message{
   void pack(Frame * frame);
 
  private:
-  int msgtype;
   std::string subject;
   std::string body;
+  int turnnum;
+  
 
 };
 

@@ -1,6 +1,6 @@
 /*  Messages boards
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,9 +23,19 @@
 
 #include "board.h"
 
+Board::Board(){
+  modtime = time(NULL);
+}
+
+Board::~Board(){
+  for(std::list<Message*>::iterator itcurr = messages.begin(); itcurr != messages.end(); ++itcurr){
+    delete *itcurr;
+  }
+}
 
 void Board::setBoardID(int i){
   boardid = i;
+  modtime = time(NULL);
 }
 
 int Board::getBoardID(){
@@ -34,6 +44,7 @@ int Board::getBoardID(){
 
 void Board::setName(const std::string & nname){
   name = nname;
+  modtime = time(NULL);
 }
 
 std::string Board::getName(){
@@ -42,6 +53,7 @@ std::string Board::getName(){
 
 void Board::setDescription(const std::string & ndest){
   description = ndest;
+  modtime = time(NULL);
 }
 
 std::string Board::getDescription(){
@@ -56,6 +68,7 @@ void Board::addMessage(Message * msg, int pos){
     advance(itpos, pos);
     messages.insert(itpos, msg);
   }
+  modtime = time(NULL);
 }
 
 bool Board::removeMessage(unsigned int pos){
@@ -66,6 +79,7 @@ bool Board::removeMessage(unsigned int pos){
   advance(itpos, pos);
   delete (*itpos);
   messages.erase(itpos);
+  modtime = time(NULL);
   return true;
 }
 
@@ -75,6 +89,7 @@ void Board::packBoard(Frame * frame){
   frame->packString(name.c_str());
   frame->packString(description.c_str());
   frame->packInt(messages.size());
+  frame->packInt64(modtime);
 }
 
 void Board::packMessage(Frame * frame, unsigned int msgnum){

@@ -60,6 +60,7 @@ class Game {
 
 	void doEndOfTurn();
 	void resetEOTTimer();
+	int getTurnNumber();
 
 	int secondsToEOT();
 

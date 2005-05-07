@@ -3,7 +3,7 @@
 
 /*  Messages boards
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,9 @@ class Frame;
 class Board{
 
  public:
-  
+  Board();
+  ~Board();
+
   void setBoardID(int i);
   int getBoardID();
 
@@ -53,6 +55,8 @@ class Board{
   int boardid;
   std::string name;
   std::string description;
+
+  long long modtime;
 
 };
 

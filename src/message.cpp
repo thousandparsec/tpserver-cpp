@@ -1,6 +1,6 @@
 /*  Messages on boards
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,15 +19,16 @@
  */
 
 #include "frame.h"
+#include "game.h"
 
 #include "message.h"
 
-void Message::setType(int ntype){
-  msgtype = ntype;
+Message::Message(){
+  turnnum = Game::getGame()->getTurnNumber();
 }
 
-int Message::getType(){
-  return msgtype;
+int Message::getTurn(){
+  return turnnum;
 }
 
 void Message::setSubject(const std::string & nsub){
@@ -48,7 +49,9 @@ std::string Message::getBody(){
 
 void Message::pack(Frame * frame){
   frame->packInt(1);
-  frame->packInt(msgtype);
+  frame->packInt(0);
   frame->packString(subject.c_str());
   frame->packString(body.c_str());
+  frame->packInt(turnnum);
+  frame->packInt(0);
 }

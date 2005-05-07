@@ -1,6 +1,6 @@
 /*  Build object for BuildFleet orders
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -132,7 +132,7 @@ bool Build::doOrder(IGObject *ob)
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
     msg->setBody("The construction of your new fleet is complete");
-    msg->setType(0);
+ 
     Game::getGame()->getPlayer(ownerid)->postToBoard(msg);
 
     return true;

@@ -1,6 +1,6 @@
 /*  Move order
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,7 +93,6 @@ bool Move::doOrder(IGObject * ob){
     Message * msg = new Message();
     msg->setSubject("Move order complete");
     msg->setBody("The move order is complete on this object");
-    msg->setType(0);
     Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;

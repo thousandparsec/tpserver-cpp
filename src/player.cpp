@@ -51,7 +51,6 @@ Player::Player()
 	board->setDescription("System board");
 
 	Message * msg = new Message();
-	msg->setType(0);
 	msg->setSubject("Welcome");
 	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
 	board->addMessage(msg, -1);
@@ -450,7 +449,7 @@ void Player::processGetOrder(Frame * frame)
  
   int objectID = frame->unpackInt();
   
-  if(visibleObjects.find(objectID) != visibleObjects.end()){
+  if(visibleObjects.find(objectID) == visibleObjects.end()){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No such object");
     curConnection->sendFrame(of);
@@ -510,7 +509,7 @@ void Player::processAddOrder(Frame * frame)
 		// See if we have a valid object number
 		unsigned int objectID = frame->unpackInt();
 
-		 if(visibleObjects.find(objectID) != visibleObjects.end()){
+		 if(visibleObjects.find(objectID) == visibleObjects.end()){
 		   of->createFailFrame(fec_NonExistant, "No such object");
 		   curConnection->sendFrame(of);
 		   return;
@@ -557,7 +556,7 @@ void Player::processRemoveOrder(Frame * frame)
 
   int objectID = frame->unpackInt();
 
-  if(visibleObjects.find(objectID) != visibleObjects.end()){
+  if(visibleObjects.find(objectID) == visibleObjects.end()){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No such object");
     curConnection->sendFrame(of);
@@ -831,10 +830,10 @@ void Player::processPostMessage(Frame * frame){
 
   if(currboard != NULL){
     Message* msg = new Message();
-    frame->unpackInt(); //list header, is hopefully 1
-    msg->setType(frame->unpackInt());
+    frame->unpackInt(); // message type, no longer used
     msg->setSubject(std::string(frame->unpackString()));
     msg->setBody(std::string(frame->unpackString()));
+    frame->unpackInt(); // turn created - overwritten by current turn number
 
     currboard->addMessage(msg, pos);
 

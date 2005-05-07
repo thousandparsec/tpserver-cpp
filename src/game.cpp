@@ -29,6 +29,7 @@
 #include "objectdata.h"
 #include "ownedobject.h"
 #include "fleet.h"
+#include "universe.h"
 #include "frame.h"
 #include "net.h"
 #include "vector3d.h"
@@ -464,6 +465,10 @@ void Game::resetEOTTimer(){
 
 int Game::secondsToEOT(){
   return turnTime - time(NULL);
+}
+
+int Game::getTurnNumber(){
+  return ((Universe*)(universe->getObjectData()))->getYear();
 }
 
 void Game::saveAndClose()
