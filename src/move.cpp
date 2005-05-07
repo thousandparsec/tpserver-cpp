@@ -93,6 +93,8 @@ bool Move::doOrder(IGObject * ob){
     Message * msg = new Message();
     msg->setSubject("Move order complete");
     msg->setBody("The move order is complete on this object");
+    msg->addReference(rst_Action_Order, rsorav_Completion);
+    msg->addReference(rst_Object, ob->getID());
     Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;

@@ -74,7 +74,8 @@ bool Colonise::doOrder(IGObject * ob){
   if(moveorder->doOrder(ob)){
 
     Message * msg = new Message();
-    
+    msg->addReference(rst_Object, ob->getID());
+
     Fleet *fleet = (Fleet*)ob->getObjectData();
     Planet *planet = (Planet*)(Game::getGame()->getObject(planetid)->getObjectData());
     
@@ -95,11 +96,13 @@ bool Colonise::doOrder(IGObject * ob){
 	
 	msg->setSubject("Colonised planet");
 	msg->setBody("You have colonised a planet!");
+	msg->addReference(rst_Action_Order, rsorav_Completion);
+	msg->addReference(rst_Object, planetid);
 
       }else{
 	msg->setSubject("Colonisation failed");
 	msg->setBody("Your fleet did not have a frigate to colonise the planet");
-
+	msg->addReference(rst_Action_Order, rsorav_Invalid);
       }
       
       if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
@@ -109,7 +112,7 @@ bool Colonise::doOrder(IGObject * ob){
     }else{
       msg->setSubject("Colonisation failed");
       msg->setBody("You already own the planet you tried to colonise");
- 
+      msg->addReference(rst_Action_Order, rsorav_Canceled);
     }
     
     Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);

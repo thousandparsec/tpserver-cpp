@@ -75,8 +75,9 @@ bool MergeFleet::doOrder(IGObject * ob){
     Message * msg = new Message();
     msg->setSubject("Merge Fleet order complete");
     msg->setBody("The two fleets have been merged");
-
-   
+    msg->addReference(rst_Action_Order, rsorav_Completion);
+    msg->addReference(rst_Object, ob->getID());
+    msg->addReference(rst_Object, fleetid);
 
     if(fleetid != 0){
       Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());

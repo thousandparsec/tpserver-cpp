@@ -87,7 +87,7 @@ bool SplitFleet::doOrder(IGObject * ob){
 
   Message * msg = new Message();
   msg->setSubject("Split Fleet order complete");
-  msg->setBody("Split fleet complete");
+  msg->addReference(rst_Object, ob->getID());
 
   IGObject * nfleet = new IGObject();
   Game::getGame()->addObject(nfleet);
@@ -113,14 +113,19 @@ bool SplitFleet::doOrder(IGObject * ob){
       of->addShips(scurr->first, scurr->second);
     }
     Game::getGame()->scheduleRemoveObject(nfleet->getID());
-    
+    msg->setBody("Fleet not split, not enough ships");
+    msg->addReference(rst_Action_Order, rsorav_Incompatible);
   }else if(nf->numShips(0) == 0 && nf->numShips(1) == 0 && nf->numShips(2) == 0){
     Logger::getLogger()->debug("Split fleet doesn't have any ships, not creating new fleet");
     Game::getGame()->scheduleRemoveObject(nfleet->getID());
-    
+    msg->setBody("Fleet not split, not enough ships");
+    msg->addReference(rst_Action_Order, rsorav_Incompatible);
   }else{
     // add fleet to game universe
     Logger::getLogger()->debug("Split fleet successfully");
+    msg->setBody("Split fleet complete");
+    msg->addReference(rst_Object, nfleet->getID());
+    msg->addReference(rst_Action_Order, rsorav_Completion);
     Game::getGame()->addObject(nfleet);
     Game::getGame()->getObject(ob->getParent())->addContainedObject(nfleet->getID());
   }

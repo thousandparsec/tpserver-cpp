@@ -74,6 +74,8 @@ bool Nop::doOrder(IGObject * ob){
     Message * msg = new Message();
     msg->setSubject("NOp order complete");
     msg->setBody("The object has finished it's delay and is now continuing");
+    msg->addReference(rst_Action_Order, rsorav_Completion);
+    msg->addReference(rst_Object, ob->getID());
     Game::getGame()->getPlayer(((OwnedObject*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;

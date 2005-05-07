@@ -46,13 +46,13 @@ enum RefSysSpecialValue{
 
 enum RefSysPlayerAValue{
   rspav_Eliminated = 1,
-  rspav_quit = 2,
-  rspav_joined = 3
+  rspav_Quit = 2,
+  rspav_Joined = 3
 };
 
 enum RefSysOrderAValue{
   rsorav_Completion = 1,
-  rsorav_Conceled = 2,
+  rsorav_Canceled = 2,
   rsorav_Incompatible = 3,
   rsorav_Invalid = 4
 };

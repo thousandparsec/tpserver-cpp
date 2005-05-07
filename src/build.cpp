@@ -132,6 +132,9 @@ bool Build::doOrder(IGObject *ob)
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
     msg->setBody("The construction of your new fleet is complete");
+    msg->addReference(rst_Action_Order, rsorav_Completion);
+    msg->addReference(rst_Object, fleet->getID());
+    msg->addReference(rst_Object, ob->getID());
  
     Game::getGame()->getPlayer(ownerid)->postToBoard(msg);
 
