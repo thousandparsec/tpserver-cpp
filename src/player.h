@@ -38,6 +38,7 @@ class Player {
 	void setID(int newid);
 
 	void setVisibleObjects(std::set<unsigned int> vis);
+	bool isVisibleObject(unsigned int objid);
 
 	void postToBoard(Message* msg);
 

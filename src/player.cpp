@@ -105,6 +105,10 @@ void Player::setVisibleObjects(std::set<unsigned int> vis){
   currObjSeq++;
 }
 
+bool Player::isVisibleObject(unsigned int objid){
+  return visibleObjects.find(objid) != visibleObjects.end();
+}
+
 void Player::postToBoard(Message* msg){
   board->addMessage(msg, -1);
 }

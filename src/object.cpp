@@ -27,6 +27,7 @@
 #include "order.h"
 #include "objectdata.h"
 #include "objectdatamanager.h"
+#include "player.h"
 
 #include "object.h"
 
@@ -334,17 +335,37 @@ void IGObject::createFrame(Frame * frame, int playerid)
   pos.pack(frame);
   vel.pack(frame);
  
-  frame->packInt(children.size());
-  //for loop for children objects
+  std::set<unsigned int> temp = children;
   std::set < unsigned int >::iterator itcurr, itend;
-  itend = children.end();
-  for (itcurr = children.begin(); itcurr != itend; itcurr++) {
+  itcurr = temp.begin();
+  itend = temp.end();
+  Player* player = Game::getGame()->getPlayer(playerid);
+  while(itcurr != itend){
+    if(!player->isVisibleObject(*itcurr)){
+      std::set<unsigned int>::iterator itemp = itcurr;
+      ++itcurr;
+      temp.erase(itemp);
+    }else{
+      ++itcurr;
+    }
+  }
+
+  frame->packInt(temp.size());
+  //for loop for children objects
+  itend = temp.end();
+  for (itcurr = temp.begin(); itcurr != itend; itcurr++) {
     frame->packInt(*itcurr);
   }
 
+  int templength = frame->getDataLength();
+
   myObjectData->packAllowedOrders(frame, playerid);
-  // think about the next one...
-  frame->packInt(orders.size());
+
+  if(frame->getDataLength() - templength > 4){
+    frame->packInt(orders.size());
+  }else{
+    frame->packInt(0);
+  }
 
   
   if(frame->getVersion() > fv0_1){
