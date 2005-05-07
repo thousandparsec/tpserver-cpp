@@ -47,11 +47,19 @@ std::string Message::getBody(){
   return body;
 }
 
+void Message::addReference(int type, unsigned int value){
+  references.insert(std::pair<int, unsigned int>(type, value));
+}
+
 void Message::pack(Frame * frame){
   frame->packInt(1);
   frame->packInt(0);
   frame->packString(subject.c_str());
   frame->packString(body.c_str());
   frame->packInt(turnnum);
-  frame->packInt(0);
+  frame->packInt(references.size());
+  for(std::set<std::pair<int, unsigned int> >::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr){
+    frame->packInt((*itcurr).first);
+    frame->packInt((*itcurr).second);
+  }
 }

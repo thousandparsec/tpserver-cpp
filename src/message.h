@@ -21,6 +21,9 @@
  */
 
 #include <string>
+#include <set>
+
+#include "refsys.h"
 
 class Frame;
 
@@ -37,6 +40,8 @@ class Message{
   void setBody(const std::string &nbody);
   std::string getBody();
 
+  void addReference(int type, unsigned int value);
+
   void pack(Frame * frame);
 
  private:
@@ -44,6 +49,7 @@ class Message{
   std::string body;
   int turnnum;
   
+  std::set<std::pair<int, unsigned int> > references;
 
 };
 
