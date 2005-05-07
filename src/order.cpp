@@ -1,6 +1,6 @@
 /*  Order baseclass
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,16 +19,18 @@
  */
 
 #include <stdlib.h>
+#include <time.h>
 
 #include "frame.h"
 
 #include "order.h"
 
-/*Order::Order()
+Order::Order()
 {
-
+  descmodtime = time(NULL);
 }
 
+/*
 Order::~Order()
 {
 

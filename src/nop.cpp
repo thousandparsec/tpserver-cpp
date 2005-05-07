@@ -28,7 +28,7 @@
 
 #include "nop.h"
 
-Nop::Nop()
+Nop::Nop() : Order()
 {
 	type = odT_Nop;
 }
@@ -91,7 +91,7 @@ void Nop::describeOrder(Frame * f) const
   f->packString("wait");
   f->packInt(opT_Time);
   f->packString("The number of turns to wait");
-
+  f->packInt64(descmodtime);
 }
 
 Order* Nop::clone() const{

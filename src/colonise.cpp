@@ -32,7 +32,7 @@
 
 #include "colonise.h"
 
-Colonise::Colonise(){
+Colonise::Colonise() : Order(){
   type = odT_Colonise;
   moveorder = new Move();
 }
@@ -129,6 +129,7 @@ void Colonise::describeOrder(Frame * f) const{
   f->packString("planet");
   f->packInt(opT_Object_ID);
   f->packString("The target planet to be colonised");
+  f->packInt64(descmodtime);
   
 }
 

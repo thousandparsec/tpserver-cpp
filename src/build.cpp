@@ -31,7 +31,7 @@
 
 #include "build.h"
 
-Build::Build()
+Build::Build() : Order()
 {
   type = odT_Build;
   turnstogo = 0;
@@ -149,6 +149,7 @@ void Build::describeOrder(Frame *f) const
   f->packString("ships");
   f->packInt(6);
   f->packString("The type of ship to build");
+  f->packInt64(descmodtime);
 
 }
 

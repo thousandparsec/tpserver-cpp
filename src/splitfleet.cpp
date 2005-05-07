@@ -29,7 +29,7 @@
 
 #include "splitfleet.h"
 
-SplitFleet::SplitFleet(){
+SplitFleet::SplitFleet() : Order(){
   type = odT_Fleet_Split;
 }
 
@@ -138,7 +138,7 @@ void SplitFleet::describeOrder(Frame * f) const{
   f->packString("ships");
   f->packInt(opT_List);
   f->packString("The ships to be transferred");
-
+  f->packInt64(descmodtime);
 }
 
 Order* SplitFleet::clone() const{

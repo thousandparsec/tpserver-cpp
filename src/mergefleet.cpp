@@ -30,7 +30,7 @@
 
 #include "mergefleet.h"
 
-MergeFleet::MergeFleet(){
+MergeFleet::MergeFleet() : Order(){
   type = odT_Fleet_Merge;
   moveorder = new Move();
 }
@@ -107,6 +107,7 @@ void MergeFleet::describeOrder(Frame * f) const{
   f->packString("fleet");
   f->packInt(opT_Object_ID);
   f->packString("The fleet to be merged into");
+  f->packInt64(descmodtime);
 
 }
 

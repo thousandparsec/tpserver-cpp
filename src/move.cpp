@@ -29,7 +29,7 @@
 
 #include "move.h"
 
-Move::Move()
+Move::Move() : Order()
 {
 	type = odT_Move;
 }
@@ -118,7 +118,7 @@ void Move::describeOrder(Frame * f) const
   f->packString("pos");
   f->packInt(opT_Space_Coord_Abs);
   f->packString("The position in space to move to");
-
+  f->packInt64(descmodtime);
 }
 
 Order* Move::clone() const{
