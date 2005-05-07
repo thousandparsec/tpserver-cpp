@@ -1,6 +1,6 @@
 /*  Rock-Sissor-Paper combat
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "object.h"
 #include "fleet.h"
 #include "objectdatamanager.h"
+#include "message.h"
 
 #include "rspcombat.h"
 
@@ -37,18 +38,30 @@ void RSPCombat::doCombat(){
   }else if(c1->getType() == obT_Planet){
     f1 = new Fleet();
     f1->addShips(2, 2);
+    f1->setOwner(((OwnedObject*)c1->getObjectData())->getOwner());
   }
   if(c2->getType() == obT_Fleet){
     f2 = (Fleet*)(c2->getObjectData());
   }else if(c2->getType() == obT_Planet){
     f2 = new Fleet();
     f2->addShips(2, 2);
+    f2->setOwner(((OwnedObject*)c2->getObjectData())->getOwner());
   }
   if(f1 == NULL || f2 == NULL){
     return;
   }
 
-  
+  Message *msg1, *msg2;
+  msg1 = new Message();
+  msg2 = new Message();
+  msg1->setSubject("Combat");
+  msg2->setSubject("Combat");
+  msg1->addReference(rst_Object, c1->getID());
+  msg1->addReference(rst_Object, c2->getID());
+  msg1->addReference(rst_Player, f2->getOwner());
+  msg2->addReference(rst_Object, c2->getID());
+  msg2->addReference(rst_Object, c1->getID());
+  msg2->addReference(rst_Object, f1->getOwner());
 
   while(true){
     int r1 = rand() % 3;
@@ -63,26 +76,42 @@ void RSPCombat::doCombat(){
     }else if(r1 == r2 + 1 || r1 + 2 == r2){
       // f1 won
       d1 = f1->firepower(false);
-      if(d1 == 0)
+      if(d1 == 0){
+	msg1->setBody("Your fleet escaped");
+	msg2->setBody("Their fleet escaped");
 	break;
+      }
     }else{
       // f2 won
       d2 = f2->firepower(false);
-      if(d2 == 0)
+      if(d2 == 0){
+	msg1->setBody("Their fleet escaped");
+	msg2->setBody("Your fleet escaped");
 	break;
+      }
     }
 
     bool tte = false;
+    
+    std::string body1, body2;
+
     if(f1->hit(d2)){
+      body1 += "Your fleet was destroyed. ";
+      body2 += "You destroyed their fleet. ";
       c1 = NULL;
       tte = true;
     }
     if(f2->hit(d1)){
+      body2 += "Your fleet was destroyed.";
+      body1 += "You destroyed their fleet.";
       c2 = NULL;
       tte = true;
     }
-    if(tte)
+    if(tte){
+      msg1->setBody(body1);
+      msg2->setBody(body2);
       break;
+    }
 
   }
   
