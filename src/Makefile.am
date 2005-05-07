@@ -18,5 +18,5 @@ tpserver_cpp_SOURCES = main.cpp connection.cpp console.cpp \
 		rspcombat.cpp playerconnection.h playerconnection.cpp \
 		playertcpconn.h playertcpconn.cpp tcpsocket.h \
 		tcpsocket.cpp
-
+tpserver_cpp_LDADD = $(READLINE_LIBS)
 

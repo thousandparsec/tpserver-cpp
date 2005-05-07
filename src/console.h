@@ -33,12 +33,17 @@ class Console : public Connection{
 
 	void close();
 
+	void completeLine(char* line);
+	char** wordCompletion(const char* text, int start, int end);
+	char* commandCompleter(const char* text, int state);
 
       private:
 	 Console(Console & rhs);
 	Console operator=(Console & rhs);
 	 Console();
 	~Console();
+
+	int commstate;
 
 	static Console *myInstance;
 
