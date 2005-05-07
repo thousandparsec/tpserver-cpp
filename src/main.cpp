@@ -30,12 +30,6 @@
 #include "net.h"
 #include "settings.h"
 
-void parseOptions(int argc, char **argv)
-{
-	Settings *mySettings = Settings::getSettings();
-	mySettings->readArgs(argc, argv);
-}
-
 
 int main(int argc, char **argv)
 {
