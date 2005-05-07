@@ -2,7 +2,7 @@
 #define SETTINGS_H
 /*  Settings class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <map>
 
 class Settings {
 
@@ -28,16 +29,13 @@ class Settings {
 	static Settings *getSettings();
 
 	bool readArgs(int argc, char** argv);
+	bool readStandardConf();
+	bool readConfFile(std::string fname);
 
-	/*
-	   void set(int item, int value);
-	   void set(int item, std::string value);
-	   void set(int item, bool value);
+	void set(std::string item, std::string value);
 
-	   int get(int item);
-	   std::string get(int item);
-	   bool get(int item);
-	 */
+	std::string get(std::string item);
+	
 
 
       private:
@@ -46,9 +44,12 @@ class Settings {
 	 Settings(Settings & rhs);
 	Settings operator=(Settings & rhs);
 
+	void printHelp();
+
 	void setDefaultValues();
 
 	// settings storage
+	std::map<std::string, std::string> store;
 
 	static Settings *myInstance;
 

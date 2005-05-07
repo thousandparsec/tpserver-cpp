@@ -1,6 +1,6 @@
 /*  Setting class
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,13 @@
  */
 
 #include <cassert>
+#include <iostream>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#define VERSION "0.0.0"
+#endif
 
 #include "settings.h"
 
@@ -33,36 +40,55 @@ Settings *Settings::getSettings()
 	return myInstance;
 }
 
-bool Settings::readArgs(int arg, char** argv){
+bool Settings::readArgs(int argc, char** argv){
+
+  for(int i = 1; i < argc; i++){
+    if(argv[i][0] == '-'){
+      if(argv[i][1] == '-'){
+	//long option
+	if(strncmp(argv[i] + 2, "help", 4) == 0){
+	  printHelp();
+	  store["NEVER_START"] = "!";
+	}else if(strncmp(argv[i] + 2, "version", 7) == 0){
+	  std::cout << "tpserver-cpp " VERSION << std::endl;
+	  store["NEVER_START"] = "!";
+	}
+
+      }else{
+	//short option
+	if(strncmp(argv[i] + 1, "h", 2) == 0){
+	  printHelp();
+	  store["NEVER_START"] = "!";
+	}
+
+      }
+    }
+  }
 
   return true;
 }
 
-/*
-void Settings::set(int item, int value){
-
+bool Settings::readStandardConf(){
+  return readConfFile("/etc/tpserver-cpp/base.conf");
 }
 
-void Settings::set(int item, String value){
+bool Settings::readConfFile(std::string fname){
 
+  return true;
 }
 
-void set(int item, bool value){
-  
+void Settings::set(std::string item, std::string value){
+  store[item] = value;
 }
 
-int Settings::get(int item){
-  return -0;
-}
 
-String Settings::get(int item){
-  return "";
+std::string Settings::get(std::string item){
+  std::map<std::string, std::string>::iterator itcurr = store.find(item);
+  if(itcurr == store.end()){
+    return std::string("");
+  }
+  return itcurr->second;
 }
-
-bool Settings::get(int item){
-  return false;
-}
-*/
 
 Settings::Settings()
 {
@@ -85,6 +111,13 @@ Settings Settings::operator=(Settings & rhs)
   return *this;
 }
 
-void Settings::setDefaultValues(){
+void Settings::printHelp(){
+  std::cout << "tpserver-cpp <options>" << std::endl;
+  std::cout << " Options:" << std::endl;
+  std::cout << "\t-h\t--help\t\tPrint this help then exit" << std::endl;
+  std::cout << "\t\t--version\tPrint version then exit" << std::endl;
+}
 
+void Settings::setDefaultValues(){
+  store["NEVER_START"] = "0";
 }

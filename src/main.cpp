@@ -39,9 +39,13 @@ void parseOptions(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	Logger *myLogger = Logger::getLogger();
 
-	parseOptions(argc, argv);
+  Settings *mySettings = Settings::getSettings();
+  mySettings->readArgs(argc, argv);
+  
+  if(mySettings->get("NEVER_START") != "!"){
+
+	Logger *myLogger = Logger::getLogger();
 
 	myLogger->info("Tpserver-cpp " VERSION " starting");
 	myLogger->info("This is GPL software, please see the COPYING file");
@@ -67,5 +71,7 @@ int main(int argc, char **argv)
 	myLogger->info("TP-server exiting");
 	myLogger->flush();
 
-	return 0;
+  }
+
+  return 0;
 }
