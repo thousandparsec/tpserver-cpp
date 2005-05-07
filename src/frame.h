@@ -70,8 +70,8 @@ typedef enum {
 	ft03_Order_Probe = 34,
 	ft03_BoardIds_Get = 35,
 	ft03_BoardIds_List = 36,
-	ft03_ResourceIds_Get = 37,
-	ft03_ResourceIds_List = 38,
+	ft03_ResType_Get = 37,
+	ft03_ResType_List = 38,
 	ft03_Player_Get = 39,
 	ft03_Player = 40,
 	//Design category and component

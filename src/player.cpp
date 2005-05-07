@@ -135,6 +135,12 @@ int Player::getID()
 	return pid;
 }
 
+void Player::packFrame(Frame* frame){
+  frame->packInt(pid);
+  frame->packString(name);
+  frame->packString("Human");
+}
+
 void Player::processIGFrame(Frame * frame)
 {
   Logger::getLogger()->debug("IG Frame processor");
@@ -146,6 +152,9 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Object_GetByPos:
 		processGetObjectByPos(frame);
 		break;
+	case ft02_OrderDesc_Get:
+		processDescribeOrder(frame);
+		break;
 	case ft02_Order_Get:
 		processGetOrder(frame);
 		break;
@@ -154,9 +163,6 @@ void Player::processIGFrame(Frame * frame)
 		break;
 	case ft02_Order_Remove:
 		processRemoveOrder(frame);
-		break;
-	case ft02_OrderDesc_Get:
-		processDescribeOrder(frame);
 		break;
 	case ft02_Time_Remaining_Get:
 		processGetTime(frame);
@@ -172,6 +178,9 @@ void Player::processIGFrame(Frame * frame)
 	  break;
 	case ft02_Message_Remove:
 	  processRemoveMessages(frame);
+	  break;
+	case ft02_ResDesc_Get:
+	  processGetResourceDescription(frame);
 	  break;
 
 	case ft03_ObjectIds_Get:
@@ -191,6 +200,12 @@ void Player::processIGFrame(Frame * frame)
 	  break;
 	case ft03_BoardIds_Get:
 	  processGetBoardIds(frame);
+	  break;
+	case ft03_ResType_Get:
+	  processGetResourceTypes(frame);
+	  break;
+	case ft03_Player_Get:
+	  processGetPlayer(frame);
 	  break;
 
 	default:
@@ -893,5 +908,100 @@ void Player::processRemoveMessages(Frame * frame){
 
 }
 
+void Player::processGetResourceDescription(Frame * frame){
+  Logger::getLogger()->debug("doing Get Resource Description frame");
+  
+  int numress = frame->unpackInt();
+  if(numress > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numress);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numress == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no resource descriptions, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any resource descriptions, try again");
+    curConnection->sendFrame(of);
+  }
 
+  for(int i = 0; i < numress; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int rnum = frame->unpackInt();
+    
+    //There are no resources defined currently, so always fail.
+    of->createFailFrame(fec_NonExistant, "No Resource Descriptions available");
+
+    curConnection->sendFrame(of);
+  }
+}
+
+void Player::processGetResourceTypes(Frame* frame){
+  Logger::getLogger()->debug("doing Get Resource Types frame");
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+   if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  unsigned int seqkey = frame->unpackInt();
+  if(seqkey == 0xffffffff){
+    //start new seqkey
+    seqkey = 0;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_ResType_List);
+  of->packInt(seqkey);
+  of->packInt(0);
+  of->packInt(0); // no resource descriptions
+ 
+  curConnection->sendFrame(of);
+}
+
+void Player::processGetPlayer(Frame* frame){
+  Logger::getLogger()->debug("doing Get Player frame");
+  
+  int numplayers = frame->unpackInt();
+  if(numplayers > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numplayers);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numplayers == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no players, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any players, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numplayers; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int pnum = frame->unpackInt();
+    if(pnum == 0){
+      packFrame(of);
+    }else{
+      Player* p = Game::getGame()->getPlayer(pnum);
+      if(p != NULL){
+	p->packFrame(of);
+      }else{
+	of->createFailFrame(fec_NonExistant, "Player doesn't exist");
+      }
+    }
+    curConnection->sendFrame(of);
+  }
+}
 

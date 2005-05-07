@@ -46,6 +46,8 @@ class Player {
 	PlayerConnection *getConnection();
 	int getID();
 
+	void packFrame(Frame* frame);
+
 	void processIGFrame(Frame * frame);
 
       private:
@@ -70,7 +72,10 @@ class Player {
 	void processPostMessage(Frame * frame);
 	void processRemoveMessages(Frame * frame);
 
-	
+	void processGetResourceDescription(Frame * frame);
+	void processGetResourceTypes(Frame* frame);
+
+	void processGetPlayer(Frame* frame);
 
 	PlayerConnection *curConnection;
 	char *name;
