@@ -22,6 +22,8 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#else
+#define VERSION "0.0.0"
 #endif
 
 #include "console.h"
@@ -43,6 +45,8 @@ int main(int argc, char **argv)
 
 	myLogger->info("Tpserver-cpp " VERSION " starting");
 	myLogger->info("This is GPL software, please see the COPYING file");
+
+	mySettings->readConfFile();
 
 	Console *myConsole = Console::getConsole();
 	myConsole->open();

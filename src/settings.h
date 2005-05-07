@@ -29,14 +29,10 @@ class Settings {
 	static Settings *getSettings();
 
 	bool readArgs(int argc, char** argv);
-	bool readStandardConf();
-	bool readConfFile(std::string fname);
+	bool readConfFile();
 
 	void set(std::string item, std::string value);
-
 	std::string get(std::string item);
-	
-
 
       private:
 	 Settings();
@@ -45,6 +41,7 @@ class Settings {
 	Settings operator=(Settings & rhs);
 
 	void printHelp();
+	bool readConfFile(std::string fname);
 
 	void setDefaultValues();
 

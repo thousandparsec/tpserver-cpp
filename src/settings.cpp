@@ -68,8 +68,8 @@ bool Settings::readArgs(int argc, char** argv){
   return true;
 }
 
-bool Settings::readStandardConf(){
-  return readConfFile("/etc/tpserver-cpp/base.conf");
+bool Settings::readConfFile(){
+  return readConfFile(store["config_file"]);
 }
 
 bool Settings::readConfFile(std::string fname){
@@ -120,4 +120,5 @@ void Settings::printHelp(){
 
 void Settings::setDefaultValues(){
   store["NEVER_START"] = "0";
+  store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
 }
