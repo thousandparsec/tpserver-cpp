@@ -1,25 +1,31 @@
-.TH TPSERVER-CPP 1 "2004-09-30" "Lee Begg" "Thousand Parsec Server"
+.TH TPSERVER-CPP 1 "2005-05-07" "Lee Begg" "Thousand Parsec Server"
 .SH NAME 
 tpserver-cpp \- Thousand Parsec Server in C++
 .SH SYNOPSIS
-.B tpserver-cpp
+.B tpserver-cpp 
+[options]
 .SH DESCRIPTION
 .B tpserver-cpp
 is the C++ implementation of the Thousand Parsec Server.  It listens for TP clients on tcp port 6923,
 both IPv4 and IPv6 (if available).
+.SH OPTIONS
+.IP "\-\-help or \-h"
+Prints help then exits.
+.IP \-\-version
+Prints the version information then exits.
 .SH "CONSOLE COMMANDS"
 The server's console supports several admin functions.
-.IP h
+.IP help
 Prints the help for the console.
-.IP q
+.IP "quit or exit"
 Closes and quits the server.
-.IP t
+.IP "turn end"
 Start the end of turn sequence.
-.IP T
+.IP "turn time"
 Prints the number of seconds to the end of turn.
-.IP n
+.IP "network stop"
 Stops the network and closes all connections.
-.IP N
+.IP "network start"
 Starts the network and allows connections.
 .SH AUTHOR
 Lee Begg <lee at thousandparsec dot net>
