@@ -1,3 +1,18 @@
+15 May 05 - Lee
+	* Version 0.1.1
+	* Most of the required parts of TP03 plus ping frames (keep alive) -
+	but not Design and Component frames.
+	* Greatly improved messages to players.
+	* Added command completion using readline
+	* Now running single threaded
+	* Some work on Settings in preparation for future work (database in
+	particular)
+	* Players how have a list of the object Ids they can see, so with a
+	bit of work we have visibility defined - just need to reduce the list
+	passed to the player.
+	* Tagged and released before added design stuff, including NCL(scheme)
+	dependancies
+
 27 Jan 05 - Lee
 	* Version 0.1.0
 	* This release is for Minisec.
