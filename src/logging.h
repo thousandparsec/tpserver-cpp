@@ -2,7 +2,7 @@
 #define LOGGER_H
 /*  Logger class for server internal logging
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ class Logger {
 
 	void flush();
 
+	void reconfigure();
+
 
       private:
 	 Logger();
@@ -45,6 +47,8 @@ class Logger {
 	Logger operator=(Logger & rhs);
 
 	void doLogging(int level, char *msg);
+
+	int loglevel;
 	
 	static Logger *myInstance;
 

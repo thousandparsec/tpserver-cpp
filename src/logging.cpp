@@ -1,6 +1,6 @@
 /*  Logging for tpserver-cpp
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdarg.h>
+#include <sstream>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include "settings.h"
 
 #include "logging.h"
 
@@ -109,9 +112,13 @@ void Logger::flush()
 	info("Logger stopped");
 }
 
+void Logger::reconfigure(){
+  loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
+}
 
 Logger::Logger()
 {
+  reconfigure();
 	info("Logger started");
 }
 
@@ -123,21 +130,23 @@ Logger::~Logger()
 
 void Logger::doLogging(int level, char *msg)
 {
-  switch(level){
-  case 0:
-    std::cout << "< Debug > ";
-    break;
-  case 1:
-    std::cout << "< Info  > ";
-    break;
-  case 2:
-    std::cout << "<Warning> ";
-    break;
-  case 3:
-    std::cout << "< Error > ";
-
-  default:
-    std::cout << "<   " << level << "  > ";
+  if(level >= loglevel){
+    switch(level){
+    case 0:
+      std::cout << "< Debug > ";
+      break;
+    case 1:
+      std::cout << "< Info  > ";
+      break;
+    case 2:
+      std::cout << "<Warning> ";
+      break;
+    case 3:
+      std::cout << "< Error > ";
+      
+    default:
+      std::cout << "<   " << level << "  > ";
+    }
+    std::cout << msg << std::endl;
   }
-  std::cout << msg << std::endl;
 }

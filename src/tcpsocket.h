@@ -20,11 +20,13 @@
  *
  */
 
+#include <string>
+
 #include "connection.h"
 
 class TcpSocket : public Connection {
  public:
-  TcpSocket(char* address, char* port);
+  TcpSocket(std::string address, std::string port);
   virtual ~TcpSocket();
 
   void process();

@@ -105,7 +105,7 @@ void Network::start()
 	}
 	Logger::getLogger()->info("Starting Network");
 
-	TcpSocket* listensocket = new TcpSocket(NULL, "6923");
+	TcpSocket* listensocket = new TcpSocket(Settings::getSettings()->get("listen_addr"), Settings::getSettings()->get("listen_port"));
 	addConnection(listensocket);
 
 	active = true;

@@ -37,12 +37,17 @@
 
 #include "tcpsocket.h"
 
-TcpSocket::TcpSocket(char* address, char* port){
+TcpSocket::TcpSocket(std::string address, std::string port){
  
   status = 1;
   
-  if(port == NULL){
+  if(port.length() == 0){
     port = "6923";
+  }
+
+  const char* c_addr = address.c_str();
+  if(address.length() == 0){
+    c_addr = NULL;
   }
 
 #ifdef HAVE_IPV6
@@ -55,7 +60,7 @@ TcpSocket::TcpSocket(char* address, char* port){
 	hints.ai_family   = PF_UNSPEC; 
 	hints.ai_socktype = SOCK_STREAM;
 
-	int n = getaddrinfo(address, port, &hints, &res); // should be conf item
+	int n = getaddrinfo(c_addr, port.c_str(), &hints, &res); // should be conf item
 	
 	if (n < 0) {
 	  fprintf(stderr, "getaddrinfo error:: [%s]\n", gai_strerror(n));
