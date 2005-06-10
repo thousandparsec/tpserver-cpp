@@ -40,6 +40,10 @@ class Player {
 	void setVisibleObjects(std::set<unsigned int> vis);
 	bool isVisibleObject(unsigned int objid);
 
+	void addVisibleDesign(unsigned int designid);
+	void addUsableDesign(unsigned int designid);
+	void removeUsableDesign(unsigned int designid);
+
 	void postToBoard(Message* msg);
 
 	char *getName();
@@ -91,6 +95,8 @@ class Player {
 	std::set<unsigned int> visibleObjects;
 	unsigned int currObjSeq;
 
+	std::set<unsigned int> visibleDesigns;
+	std::set<unsigned int> usableDesigns;
 
 };
 

@@ -111,6 +111,20 @@ bool Player::isVisibleObject(unsigned int objid){
   return visibleObjects.find(objid) != visibleObjects.end();
 }
 
+void Player::addVisibleDesign(unsigned int designid){
+  visibleDesigns.insert(designid);
+}
+
+void Player::addUsableDesign(unsigned int designid){
+  usableDesigns.insert(designid);
+}
+
+void Player::removeUsableDesign(unsigned int designid){
+  std::set<unsigned int>::iterator dicurr = usableDesigns.find(designid);
+  if(dicurr != usableDesigns.end())
+    usableDesigns.erase(dicurr);
+}
+
 void Player::postToBoard(Message* msg){
   board->addMessage(msg, -1);
 }
