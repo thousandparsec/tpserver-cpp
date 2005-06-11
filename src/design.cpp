@@ -31,7 +31,24 @@ Design::~Design(){
 }
 
 void Design::packFrame(Frame* frame) const{
-
+  frame->packInt(designid);
+  frame->packInt(1);
+  frame->packInt(catid);
+  frame->packString(name.c_str());
+  frame->packString(description.c_str());
+  frame->packInt(inuse);
+  frame->packInt(owner);
+  frame->packInt(components.size());
+  for(std::list<unsigned int>::const_iterator itcurr = components.begin();
+      itcurr != components.end(); ++itcurr){
+    frame->packInt(*itcurr);
+  }
+  frame->packString(feedback.c_str());
+  frame->packInt(properties.size());
+  for(std::map<unsigned int, PropertyValue>::const_iterator itcurr = properties.begin();
+      itcurr != properties.end(); ++itcurr){
+    itcurr->second.packFrame(frame);
+  }
 }
 
 unsigned int Design::getDesignId() const{
@@ -60,6 +77,7 @@ void Design::eval(){
   //first, clear out any old ones
   valid = false;
   properties.clear();
+  feedback = "";
 
   // start calc
 }

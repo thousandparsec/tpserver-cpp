@@ -55,6 +55,7 @@ class Design{
   bool valid;
   std::list<unsigned int> components;
   std::map<unsigned int, PropertyValue> properties;
+  std::string feedback;
 
 };
 

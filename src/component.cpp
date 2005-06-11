@@ -31,6 +31,16 @@ Component::~Component(){
 }
 
 void Component::packFrame(Frame* frame) const{
-
+  frame->packInt(compid);
+  frame->packInt(1);
+  frame->packInt(catid);
+  frame->packString(name.c_str());
+  frame->packString(description.c_str());
+  frame->packString(tpcl_add.c_str());
+  frame->packInt(propertylist.size());
+  for(std::map<unsigned int, std::string>::const_iterator itcurr = propertylist.begin(); itcurr != propertylist.end(); ++itcurr){
+    frame->packInt(itcurr->first);
+    frame->packString(itcurr->second.c_str());
+  }
 }
 

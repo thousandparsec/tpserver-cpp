@@ -31,5 +31,9 @@ Property::~Property(){
 }
 
 void Property::packFrame(Frame* frame) const{
-
+  frame->packInt(propid);
+  frame->packInt(rank);
+  frame->packString(name.c_str());
+  frame->packString(description.c_str());
+  frame->packString(tpcl_display.c_str());
 }
