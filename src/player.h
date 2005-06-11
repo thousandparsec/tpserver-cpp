@@ -44,6 +44,9 @@ class Player {
 	void addUsableDesign(unsigned int designid);
 	void removeUsableDesign(unsigned int designid);
 
+	void addVisibleComponent(unsigned int compid);
+	void addUsableComponent(unsigned int compid);
+
 	void postToBoard(Message* msg);
 
 	char *getName();
@@ -97,6 +100,9 @@ class Player {
 
 	std::set<unsigned int> visibleDesigns;
 	std::set<unsigned int> usableDesigns;
+
+	std::set<unsigned int> visibleComponents;
+	std::set<unsigned int> usableComponents;
 
 };
 

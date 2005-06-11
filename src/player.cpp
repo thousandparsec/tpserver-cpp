@@ -125,6 +125,14 @@ void Player::removeUsableDesign(unsigned int designid){
     usableDesigns.erase(dicurr);
 }
 
+void Player::addVisibleComponent(unsigned int compid){
+  visibleComponents.insert(compid);
+}
+
+void Player::addUsableComponent(unsigned int compid){
+  usableComponents.insert(compid);
+}
+
 void Player::postToBoard(Message* msg){
   board->addMessage(msg, -1);
 }
