@@ -21,10 +21,12 @@
  */
 
 #include <map>
+#include <string>
 
 class Design;
 class Component;
 class Property;
+class Frame;
 
 class DesignStore{
  public:
@@ -38,14 +40,22 @@ class DesignStore{
   virtual void addDesign(Design* d);
   virtual bool modifyDesign(Design* d);
 
+  unsigned int getCategoryId() const;
+  std::string getName() const;
+  std::set<unsigned int> getDesignIds() const;
+  std::set<unsigned int> getComponentIds() const;
+  std::set<unsigned int> getPropertyIds() const;
+  
  protected:
   static unsigned int next_designid;
   static unsigned int next_componentid;
   static unsigned int next_propertyid;
+  static unsigned int next_categoryid;
   std::map<unsigned int, Design*> designs;
   std::map<unsigned int, Component*> components;
   std::map<unsigned int, Property*> properties;
-
+  unsigned int catid;
+  std::string name;
 };
 
 #endif

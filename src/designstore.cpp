@@ -24,15 +24,17 @@
 #include "property.h"
 #include "game.h"
 #include "player.h"
+#include "frame.h"
 
 #include "designstore.h"
 
 unsigned int DesignStore::next_designid = 1;
 unsigned int DesignStore::next_componentid = 1;
 unsigned int DesignStore::next_propertyid = 1;
+unsigned int DesignStore::next_categoryid = 1;
 
 DesignStore::DesignStore(){
-  
+  catid = next_categoryid++;
 }
 
 DesignStore::~DesignStore(){
@@ -102,3 +104,39 @@ bool DesignStore::modifyDesign(Design* d){
   delete current;
   return true;
 }
+
+unsigned int DesignStore::getCategoryId() const{
+  return catid;
+}
+
+std::string DesignStore::getName() const{
+  return name;
+}
+
+std::set<unsigned int> DesignStore::getDesignIds() const{
+  std::set<unsigned int> set;
+  for(std::map<unsigned int, Design*>::const_iterator itcurr = designs.begin();
+      itcurr != designs.end(); ++itcurr){
+    set.insert(itcurr->first);
+  }
+  return set;
+}
+
+std::set<unsigned int> DesignStore::getComponentIds() const{
+  std::set<unsigned int> set;
+  for(std::map<unsigned int, Component*>::const_iterator itcurr = components.begin();
+      itcurr != components.end(); ++itcurr){
+    set.insert(itcurr->first);
+  }
+  return set;
+}
+
+std::set<unsigned int> DesignStore::getPropertyIds() const{
+  std::set<unsigned int> set;
+  for(std::map<unsigned int, Property*>::const_iterator itcurr = properties.begin();
+      itcurr != properties.end(); ++itcurr){
+    set.insert(itcurr->first);
+  }
+  return set;
+}
+
