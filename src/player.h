@@ -85,6 +85,14 @@ class Player {
 
 	void processGetPlayer(Frame* frame);
 
+	void processGetCategory(Frame* frame);
+	void processGetCategoryIds(Frame* frame);
+	void processGetDesign(Frame* frame);
+	void processAddDesign(Frame* frame);
+	void processModifyDesign(Frame* frame);
+	void processGetComponent(Frame* frame);
+	void processGetProperty(Frame* frame);
+
 	PlayerConnection *curConnection;
 	char *name;
 	char *passwd;

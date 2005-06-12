@@ -18,6 +18,8 @@
  *
  */
 
+#include <algorithm>
+
 #include "string.h"
 
 #include "playerconnection.h"
@@ -31,7 +33,10 @@
 #include "message.h"
 #include "ordermanager.h"
 #include "objectdata.h"
-
+#include "designstore.h"
+#include "design.h"
+#include "component.h"
+#include "property.h"
 
 #include "player.h"
 
@@ -234,6 +239,28 @@ void Player::processIGFrame(Frame * frame)
 	  break;
 	case ft03_Player_Get:
 	  processGetPlayer(frame);
+	  break;
+
+	case ft03_Category_Get:
+	  processGetCategory(frame);
+	  break;
+	case ft03_CategoryIds_Get:
+	  processGetCategoryIds(frame);
+	  break;
+	case ft03_Design_Get:
+	  processGetDesign(frame);
+	  break;
+	case ft03_Design_Add:
+	  processAddDesign(frame);
+	  break;
+	case ft03_Design_Modify:
+	  processModifyDesign(frame);
+	  break;
+	case ft03_Component_Get:
+	  processGetComponent(frame);
+	  break;
+	case ft03_Property_Get:
+	  processGetProperty(frame);
 	  break;
 
 	default:
@@ -971,7 +998,7 @@ void Player::processGetResourceTypes(Frame* frame){
   if(frame->getVersion() < fv0_3){
     Logger::getLogger()->debug("protocol version not high enough");
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    of->createFailFrame(fec_FrameError, "Get Resource Types isn't supported in this protocol");
     curConnection->sendFrame(of);
     return;
   }
@@ -1033,3 +1060,222 @@ void Player::processGetPlayer(Frame* frame){
   }
 }
 
+void Player::processGetCategory(Frame* frame){
+  Logger::getLogger()->debug("doing Get Category frame");
+
+  int numcats = frame->unpackInt();
+  if(numcats > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numcats);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numcats == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no categories, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any categories, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numcats; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int catnum = frame->unpackInt();
+    DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+    if(ds == NULL){
+      of->createFailFrame(fec_NonExistant, "No Such Category");
+    }else{
+      of->setType(ft03_Category);
+      of->packInt(ds->getCategoryId());
+      of->packString(ds->getName().c_str());
+      //description?
+      std::set<unsigned int> outputset, ids = ds->getDesignIds();
+      set_difference(ids.begin(), ids.end(), visibleDesigns.begin(), visibleDesigns.end(), inserter(outputset, outputset.begin()));
+      of->packInt(outputset.size());
+      for(std::set<unsigned int>::iterator itcurr = outputset.begin();
+	  itcurr != outputset.end(); ++itcurr){
+	of->packInt(*itcurr);
+      }
+      ids = ds->getComponentIds();
+      set_difference(ids.begin(), ids.end(), visibleComponents.begin(), visibleComponents.end(), inserter(outputset, outputset.begin()));
+      of->packInt(outputset.size());
+      for(std::set<unsigned int>::iterator itcurr = outputset.begin();
+	  itcurr != outputset.end(); ++itcurr){
+	of->packInt(*itcurr);
+      }
+      ids = ds->getPropertyIds();
+      of->packInt(ids.size());
+      for(std::set<unsigned int>::iterator itcurr = ids.begin();
+	  itcurr != ids.end(); ++itcurr){
+	of->packInt(*itcurr);
+      }
+    }
+    curConnection->sendFrame(of);
+  }
+
+}
+
+void Player::processGetCategoryIds(Frame* frame){
+  Logger::getLogger()->debug("doing Get Category Ids frame");
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get Category ids isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  std::set<unsigned int> cids = Game::getGame()->getCategoryIds();
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_CategoryIds_List);
+  of->packInt(0);
+  of->packInt(0);
+  of->packInt(cids.size());
+  for(std::set<unsigned int>::iterator itcurr = cids.begin(); 
+      itcurr != cids.end(); ++itcurr){
+    of->packInt(*itcurr);
+    of->packInt64(0ll);
+  }
+ 
+  curConnection->sendFrame(of);
+}
+
+void Player::processGetDesign(Frame* frame){
+  Logger::getLogger()->debug("doing Get Design frame");
+
+  int catnum = frame->unpackInt();
+
+  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  if(ds == NULL){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No Such Category");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  int numdesigns = frame->unpackInt();
+  if(numdesigns > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numdesigns);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numdesigns == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no designs, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any designs, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numdesigns; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int designnum = frame->unpackInt();
+    //here is the problem, i don't know which category has the design...
+    Design* design = ds->getDesign(designnum);
+    if(design == NULL || visibleDesigns.find(designnum) == visibleDesigns.end()){
+       of->createFailFrame(fec_NonExistant, "No Such Design");
+    }else{
+      design->packFrame(of);
+    }
+    curConnection->sendFrame(of);
+  }
+}
+
+void Player::processAddDesign(Frame* frame){
+
+}
+
+void Player::processModifyDesign(Frame* frame){
+
+}
+
+void Player::processGetComponent(Frame* frame){
+  Logger::getLogger()->debug("doing Get Component frame");
+
+  int catnum = frame->unpackInt();
+
+  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  if(ds == NULL){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No Such Category");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  int numcomps = frame->unpackInt();
+  if(numcomps > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numcomps);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numcomps == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no components, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any components, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numcomps; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int compnum = frame->unpackInt();
+    Component* component = ds->getComponent(compnum);
+    if(component == NULL || visibleComponents.find(compnum) == visibleComponents.end()){
+      of->createFailFrame(fec_NonExistant, "No Such Component");
+    }else{
+      component->packFrame(of);
+    }
+    curConnection->sendFrame(of);
+  }
+}
+
+void Player::processGetProperty(Frame* frame){
+  Logger::getLogger()->debug("doing Get Property frame");
+
+  int catnum = frame->unpackInt();
+
+  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  if(ds == NULL){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No Such Category");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  int numprops = frame->unpackInt();
+  if(numprops > 1){
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numprops);
+    curConnection->sendFrame(seq);
+  }
+  
+  if(numprops == 0){
+    Frame *of = curConnection->createFrame(frame);
+    Logger::getLogger()->debug("asked for no properties, silly client...");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any properties, try again");
+    curConnection->sendFrame(of);
+  }
+
+  for(int i = 0; i < numprops; i++){
+    Frame *of = curConnection->createFrame(frame);
+    int propnum = frame->unpackInt();
+    Property* property = ds->getProperty(propnum);
+    if(property == NULL){
+      of->createFailFrame(fec_NonExistant, "No Such Property");
+    }else{
+      property->packFrame(of);
+    }
+    curConnection->sendFrame(of);
+  }
+}
