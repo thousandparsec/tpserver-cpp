@@ -60,6 +60,7 @@ class Game {
 	CombatStrategy* getCombatStrategy() const;
 
 	DesignStore* getDesignStore(unsigned int id) const;
+	std::set<unsigned int> getCategoryIds() const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();

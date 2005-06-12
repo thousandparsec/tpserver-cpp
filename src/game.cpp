@@ -361,6 +361,15 @@ DesignStore* Game::getDesignStore(unsigned int id) const{
   return NULL;
 }
 
+std::set<unsigned int> Game::getCategoryIds() const{
+  std::set<unsigned int> set;
+  for(std::map<unsigned int, DesignStore*>::const_iterator itcurr = designstores.begin();
+      itcurr != designstores.end(); ++itcurr){
+    set.insert(itcurr->first);
+  }
+  return set;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
