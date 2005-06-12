@@ -31,9 +31,18 @@ class PropertyValue{
   ~PropertyValue();
 
   PropertyValue operator=(const PropertyValue& rhs);
+  bool operator==(const PropertyValue& rhs) const;
   bool operator<(const PropertyValue& rhs) const;
 
   void packFrame(Frame* frame) const;
+
+  unsigned int getPropertyId() const;
+  double getValue() const;
+  std::string getDisplayString() const;
+
+  void setPropertyId(unsigned int id);
+  void setValue(double v);
+  void setDisplayString(const std::string& d);
 
  private:
   unsigned int propid;

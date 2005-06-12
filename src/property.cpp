@@ -32,8 +32,54 @@ Property::~Property(){
 
 void Property::packFrame(Frame* frame) const{
   frame->packInt(propid);
+  frame->packInt(1);
+  frame->packInt(catid);
   frame->packInt(rank);
   frame->packString(name.c_str());
   frame->packString(description.c_str());
   frame->packString(tpcl_display.c_str());
+}
+
+unsigned int Property::getPropertyId() const{
+  return propid;
+}
+
+unsigned int Property::getCategoryId() const{
+  return catid;
+}
+
+unsigned int Property::getRank() const{
+  return rank;
+}
+
+std::string Property::getName() const{
+  return name;
+}
+
+std::string Property::getTpclDisplayFunction() const{
+  return tpcl_display;
+}
+
+void Property::setPropertyId(unsigned int id){
+  propid = id;
+}
+
+void Property::setCategoryId(unsigned int id){
+  catid = id;
+}
+
+void Property::setRank(unsigned int r){
+  rank = r;
+}
+
+void Property::setName(const std::string& n){
+  name = n;
+}
+
+void Property::setDescription(const std::string& d){
+  description = d;
+}
+
+void Property::setTpclDisplayFunction(const std::string& d){
+  tpcl_display = d;
 }

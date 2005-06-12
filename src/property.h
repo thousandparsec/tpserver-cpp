@@ -31,8 +31,22 @@ class Property{
 
   void packFrame(Frame* frame) const;
 
+  unsigned int getPropertyId() const;
+  unsigned int getCategoryId() const;
+  unsigned int getRank() const;
+  std::string getName() const;
+  std::string getTpclDisplayFunction() const;
+  
+  void setPropertyId(unsigned int id);
+  void setCategoryId(unsigned int id);
+  void setRank(unsigned int r);
+  void setName(const std::string& n);
+  void setDescription(const std::string& d);
+  void setTpclDisplayFunction(const std::string& d);
+
  private:
   unsigned int propid;
+  unsigned int catid;
   unsigned int rank;
   std::string name;
   std::string description;

@@ -55,8 +55,20 @@ unsigned int Design::getDesignId() const{
   return designid;
 }
 
+unsigned int Design::getCategoryId() const{
+  return catid;
+}
+
+std::string Design::getName() const{
+  return name;
+}
+
 unsigned int Design::getOwner() const{
   return owner;
+}
+
+std::list<unsigned int> Design::getComponents() const{
+  return components;
 }
 
 unsigned int Design::getNumExist() const{
@@ -69,6 +81,29 @@ bool Design::isValid() const{
 
 void Design::setDesignId(unsigned int id){
   designid = id;
+}
+
+void Design::setCategoryId(unsigned int id){
+  catid = id;
+}
+
+void Design::setName(const std::string& n){
+  name = n;
+}
+
+void Design::setDescription(const std::string& d){
+  description = d;
+}
+
+void Design::setOwner(unsigned int o){
+  owner = o;
+}
+
+void Design::setComponents(std::list<unsigned int> cl){
+  components = cl;
+  valid = false;
+  properties.clear();
+  feedback = "";
 }
 
 void Design::eval(){

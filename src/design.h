@@ -36,11 +36,19 @@ class Design{
   void packFrame(Frame* frame) const;
 
   unsigned int getDesignId() const;
+  unsigned int getCategoryId() const;
+  std::string getName() const;
   unsigned int getOwner() const;
+  std::list<unsigned int> getComponents() const;
   unsigned int getNumExist() const;
   bool isValid() const;
 
   void setDesignId(unsigned int id);
+  void setCategoryId(unsigned int id);
+  void setName(const std::string& n);
+  void setDescription(const std::string& d);
+  void setOwner(unsigned int o);
+  void setComponents(std::list<unsigned int> cl);
 
   void eval();
 

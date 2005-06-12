@@ -44,6 +44,10 @@ PropertyValue PropertyValue::operator=(const PropertyValue& rhs){
   return *this;
 }
 
+bool PropertyValue::operator==(const PropertyValue& rhs) const{
+  return (propid == rhs.propid);
+}
+
 bool PropertyValue::operator<(const PropertyValue& rhs) const{
   return (propid < rhs.propid);
 }
@@ -53,3 +57,26 @@ void PropertyValue::packFrame(Frame* frame) const{
   frame->packString(display.c_str());
 }
 
+unsigned int PropertyValue::getPropertyId() const{
+  return propid;
+}
+
+double PropertyValue::getValue() const{
+  return value;
+}
+
+std::string PropertyValue::getDisplayString() const{
+  return display;
+}
+
+void PropertyValue::setPropertyId(unsigned int id){
+  propid = id;
+}
+
+void PropertyValue::setValue(double v){
+  value = v;
+}
+
+void PropertyValue::setDisplayString(const std::string& d){
+  display = d;
+}

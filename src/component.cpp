@@ -44,3 +44,42 @@ void Component::packFrame(Frame* frame) const{
   }
 }
 
+unsigned int Component::getComponentId() const{
+  return compid;
+}
+
+unsigned int Component::getCategoryId() const{
+  return catid;
+}
+
+std::string Component::getTpclAddFunction() const{
+  return tpcl_add;
+}
+
+std::map<unsigned int, std::string> Component::getPropertyList() const{
+  return propertylist;
+}
+
+void Component::setComponentId(unsigned int id){
+  compid = id;
+}
+
+void Component::setCategoryId(unsigned int id){
+  catid = id;
+}
+
+void Component::setName(const std::string& n){
+  name = n;
+}
+
+void Component::setDescription(const std::string& d){
+  description = d;
+}
+
+void Component::setTpclAddFunction(const std::string& a){
+  tpcl_add = a;
+}
+
+void Component::setPropertyList(std::map<unsigned int, std::string> pl){
+  propertylist = pl;
+}

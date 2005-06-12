@@ -79,32 +79,6 @@ Property* DesignStore::getProperty(unsigned int id){
   }
 }
 
-void DesignStore::addDesign(Design* d){
-  d->setDesignId(next_designid++);
-  d->eval();
-  designs[d->getDesignId()] = d;
-  Player* player = Game::getGame()->getPlayer(d->getOwner());
-  player->addVisibleDesign(d->getDesignId());
-  if(d->isValid()){
-    player->addUsableDesign(d->getDesignId());
-  }
-}
-
-bool DesignStore::modifyDesign(Design* d){
-  Design* current = designs[d->getDesignId()];
-  if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0)
-    return false;
-  Player* player = Game::getGame()->getPlayer(d->getOwner());
-  player->removeUsableDesign(d->getDesignId());
-  d->eval();
-  designs[d->getDesignId()] = d;
-  if(d->isValid()){
-    player->addUsableDesign(d->getDesignId());
-  }
-  delete current;
-  return true;
-}
-
 unsigned int DesignStore::getCategoryId() const{
   return catid;
 }
@@ -140,3 +114,44 @@ std::set<unsigned int> DesignStore::getPropertyIds() const{
   return set;
 }
 
+void DesignStore::setName(const std::string& n){
+  name = n;
+}
+
+void DesignStore::addDesign(Design* d){
+  d->setDesignId(next_designid++);
+  d->eval();
+  designs[d->getDesignId()] = d;
+  Player* player = Game::getGame()->getPlayer(d->getOwner());
+  player->addVisibleDesign(d->getDesignId());
+  if(d->isValid()){
+    player->addUsableDesign(d->getDesignId());
+  }
+}
+
+bool DesignStore::modifyDesign(Design* d){
+  Design* current = designs[d->getDesignId()];
+  if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0)
+    return false;
+  Player* player = Game::getGame()->getPlayer(d->getOwner());
+  player->removeUsableDesign(d->getDesignId());
+  d->eval();
+  designs[d->getDesignId()] = d;
+  if(d->isValid()){
+    player->addUsableDesign(d->getDesignId());
+  }
+  delete current;
+  return true;
+}
+
+void DesignStore::addComponent(Component* c){
+  c->setCategoryId(catid);
+  c->setComponentId(next_componentid++);
+  components[c->getComponentId()] = c;
+}
+
+void DesignStore::addProperty(Property* p){
+  p->setCategoryId(catid);
+  p->setPropertyId(next_propertyid++);
+  properties[p->getPropertyId()] = p;
+}

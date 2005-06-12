@@ -37,14 +37,19 @@ class DesignStore{
   Component* getComponent(unsigned int id);
   Property* getProperty(unsigned int id);
 
-  virtual void addDesign(Design* d);
-  virtual bool modifyDesign(Design* d);
-
   unsigned int getCategoryId() const;
   std::string getName() const;
   std::set<unsigned int> getDesignIds() const;
   std::set<unsigned int> getComponentIds() const;
   std::set<unsigned int> getPropertyIds() const;
+
+  void setName(const std::string& n);
+  
+  virtual void addDesign(Design* d);
+  virtual bool modifyDesign(Design* d);
+
+  virtual void addComponent(Component* c);
+  virtual void addProperty(Property* p);
   
  protected:
   static unsigned int next_designid;
