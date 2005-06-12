@@ -138,6 +138,10 @@ void Player::addUsableComponent(unsigned int compid){
   usableComponents.insert(compid);
 }
 
+bool Player::isUsableComponent(unsigned int compid){
+  return (usableComponents.find(compid) != usableComponents.end());
+}
+
 void Player::postToBoard(Message* msg){
   board->addMessage(msg, -1);
 }
@@ -1179,7 +1183,6 @@ void Player::processGetDesign(Frame* frame){
   for(int i = 0; i < numdesigns; i++){
     Frame *of = curConnection->createFrame(frame);
     int designnum = frame->unpackInt();
-    //here is the problem, i don't know which category has the design...
     Design* design = ds->getDesign(designnum);
     if(design == NULL || visibleDesigns.find(designnum) == visibleDesigns.end()){
        of->createFailFrame(fec_NonExistant, "No Such Design");
@@ -1191,11 +1194,83 @@ void Player::processGetDesign(Frame* frame){
 }
 
 void Player::processAddDesign(Frame* frame){
+  Logger::getLogger()->debug("doing Add Design frame");
 
+  Design* design = new Design();
+  frame->unpackInt(); //designid, don't take, overwrite
+  frame->unpackInt(); //num of categories, had better be 1
+  design->setCategoryId(frame->unpackInt());
+  design->setName(std::string(frame->unpackString()));
+  design->setDescription(std::string(frame->unpackString()));
+  frame->unpackInt(); //number in use, (client) read only
+  design->setOwner(pid);
+  unsigned int tpid = frame->unpackInt();
+  if(pid != tpid){
+    Logger::getLogger()->debug("Odd, client sent wrong player id %d", tpid);
+  }
+  unsigned int numcomp = frame->unpackInt();
+  std::list<unsigned int> comps;
+  for(unsigned int i = 0; i < numcomp; i++){
+    comps.push_back(frame->unpackInt());
+  }
+  //discard rest of frame
+
+  DesignStore* ds = Game::getGame()->getDesignStore(design->getCategoryId());
+  if(ds == NULL){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No Such Category");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  if(ds->addDesign(design)){
+    of->setType(ft02_OK);
+    of->packString("Design added");
+  }else{
+    of->createFailFrame(fec_FrameError, "Could not add design");
+  }
+  curConnection->sendFrame(of);
 }
 
 void Player::processModifyDesign(Frame* frame){
+  Logger::getLogger()->debug("doing Modify Design frame");
 
+  Design* design = new Design();
+  design->setDesignId(frame->unpackInt());
+  frame->unpackInt(); //num of categories, had better be 1
+  design->setCategoryId(frame->unpackInt());
+  design->setName(std::string(frame->unpackString()));
+  design->setDescription(std::string(frame->unpackString()));
+  frame->unpackInt(); //number in use, (client) read only
+  design->setOwner(pid);
+  unsigned int tpid = frame->unpackInt();
+  if(pid != tpid){
+    Logger::getLogger()->debug("Odd, client sent wrong player id %d", tpid);
+  }
+  unsigned int numcomp = frame->unpackInt();
+  std::list<unsigned int> comps;
+  for(unsigned int i = 0; i < numcomp; i++){
+    comps.push_back(frame->unpackInt());
+  }
+  //discard rest of frame
+
+  DesignStore* ds = Game::getGame()->getDesignStore(design->getCategoryId());
+  if(ds == NULL){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "No Such Category");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  if(ds->modifyDesign(design)){
+    of->setType(ft02_OK);
+    of->packString("Design modified");
+  }else{
+    of->createFailFrame(fec_FrameError, "Could not modify design");
+  }
+  curConnection->sendFrame(of);
 }
 
 void Player::processGetComponent(Frame* frame){

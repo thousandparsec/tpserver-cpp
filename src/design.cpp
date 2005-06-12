@@ -37,7 +37,7 @@ void Design::packFrame(Frame* frame) const{
   frame->packInt(catid);
   frame->packString(name.c_str());
   frame->packString(description.c_str());
-  frame->packInt(inuse);
+  frame->packInt(valid ? inuse : 0xFFFFFFFF);
   frame->packInt(owner);
   frame->packInt(components.size());
   for(std::list<unsigned int>::const_iterator itcurr = components.begin();

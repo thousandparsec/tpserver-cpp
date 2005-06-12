@@ -46,6 +46,7 @@ class Player {
 
 	void addVisibleComponent(unsigned int compid);
 	void addUsableComponent(unsigned int compid);
+	bool isUsableComponent(unsigned int compid);
 
 	void postToBoard(Message* msg);
 
@@ -96,7 +97,7 @@ class Player {
 	PlayerConnection *curConnection;
 	char *name;
 	char *passwd;
-	int pid;
+	unsigned int pid;
 	Board * board;
 
 	 Player(Player & rhs);

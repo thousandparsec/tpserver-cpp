@@ -118,15 +118,27 @@ void DesignStore::setName(const std::string& n){
   name = n;
 }
 
-void DesignStore::addDesign(Design* d){
+bool DesignStore::addDesign(Design* d){
   d->setDesignId(next_designid++);
+  if(d->getCategoryId() != catid)
+    return false;
+  //check components all come from this category
+  std::list<unsigned int> cl = d->getComponents();
+  Player* player = Game::getGame()->getPlayer(d->getOwner());
+  for(std::list<unsigned int>::iterator itcurr = cl.begin(); 
+      itcurr != cl.end(); ++itcurr){
+    if(!(player->isUsableComponent(*itcurr)))
+      return false;
+    if(components.find(*itcurr) == components.end())
+      return false;
+  }
   d->eval();
   designs[d->getDesignId()] = d;
-  Player* player = Game::getGame()->getPlayer(d->getOwner());
   player->addVisibleDesign(d->getDesignId());
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
   }
+  return true;
 }
 
 bool DesignStore::modifyDesign(Design* d){

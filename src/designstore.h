@@ -45,7 +45,7 @@ class DesignStore{
 
   void setName(const std::string& n);
   
-  virtual void addDesign(Design* d);
+  virtual bool addDesign(Design* d);
   virtual bool modifyDesign(Design* d);
 
   virtual void addComponent(Component* c);
