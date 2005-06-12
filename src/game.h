@@ -30,6 +30,7 @@ class Vector3d;
 class OrderManager;
 class ObjectDataManager;
 class CombatStrategy;
+class DesignStore;
 
 class Game {
 
@@ -57,6 +58,8 @@ class Game {
 	ObjectDataManager* getObjectDataManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
+
+	DesignStore* getDesignStore(unsigned int id) const;
 
 	void doEndOfTurn();
 	void resetEOTTimer();
@@ -88,6 +91,7 @@ class Game {
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;
+	std::map<unsigned int, DesignStore*> designstores;
 
 };
 

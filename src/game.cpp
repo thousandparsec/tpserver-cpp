@@ -37,6 +37,7 @@
 #include "objectdatamanager.h"
 #include "combatstrategy.h"
 #include "rspcombat.h"
+#include "designstore.h"
 
 #include "game.h"
 
@@ -156,7 +157,7 @@ void Game::createTutorial()
 	sirius->addContainedObject(s1->getID());
 
 	turnIncrement = 600;
-	turnTime = time(NULL) + 600;
+	resetEOTTimer();
 
 }
 
@@ -352,6 +353,14 @@ CombatStrategy* Game::getCombatStrategy() const{
   return combatstrategy;
 }
 
+DesignStore* Game::getDesignStore(unsigned int id) const{
+  std::map<unsigned int, DesignStore*>::const_iterator itcurr = designstores.find(id);
+  if(itcurr != designstores.end()){
+    return itcurr->second;
+  }
+  return NULL;
+}
+
 void Game::doEndOfTurn()
 {
 	Logger::getLogger()->info("End Of Turn started");
@@ -500,6 +509,10 @@ Game::~Game()
   delete ordermanager;
   delete objectdatamanager;
   delete combatstrategy;
+  while(!designstores.empty()){
+    delete designstores.begin()->second;
+    designstores.erase(designstores.begin());
+  }
 }
 
 Game Game::operator=(Game & rhs)
