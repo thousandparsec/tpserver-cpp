@@ -31,6 +31,7 @@ Property::~Property(){
 }
 
 void Property::packFrame(Frame* frame) const{
+  frame->setType(ft03_Property);
   frame->packInt(propid);
   frame->packInt(1);
   frame->packInt(catid);

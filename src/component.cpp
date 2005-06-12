@@ -31,6 +31,7 @@ Component::~Component(){
 }
 
 void Component::packFrame(Frame* frame) const{
+  frame->setType(ft03_Component);
   frame->packInt(compid);
   frame->packInt(1);
   frame->packInt(catid);

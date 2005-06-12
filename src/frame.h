@@ -75,7 +75,24 @@ typedef enum {
 	ft03_Player_Get = 39,
 	ft03_Player = 40,
 	//Design category and component
-	
+	ft03_Category_Get = 41,
+	ft03_Category = 42,
+	ft03_CategoryIds_Get = 43,
+	ft03_CategoryIds_List = 44,
+	ft03_Design_Get = 45,
+	ft03_Design = 46,
+	ft03_DesignIds_Get = 47,
+	ft03_DesignIds_List = 48,
+	ft03_Design_Add = 49,
+	ft03_Design_Modify = 50,
+	ft03_Component_Get = 51,
+	ft03_Component = 52,
+	ft03_ComponentIds_Get = 53,
+	ft03_ComponentIds_List = 54,
+	ft03_Property_Get = 55,
+	ft03_Property = 56,
+	ft03_PropertyIds_Get = 57,
+	ft03_PropertyIds_List = 58,
 	ft03_Max,
 
 
