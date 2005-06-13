@@ -31,17 +31,17 @@ class OrderManager;
 class ObjectDataManager;
 class CombatStrategy;
 class DesignStore;
+class Ruleset;
 
 class Game {
 
       public:
 	static Game *getGame();
 
-	void createRandomUniverse();
-	void createRealUniverse();
-	void createTutorial();
-	//void loadGame(char *file);
-	//void setSaveFile(char *file);
+	bool setRuleset(Ruleset* rs);
+	bool load();
+	bool start();
+
 	void save();
 
 	Player *findPlayer(char *name, char *pass);
@@ -96,6 +96,8 @@ class Game {
 	IGObject *universe;
 
 	std::set<unsigned int> scheduleRemove;
+
+	Ruleset* ruleset;
 
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;

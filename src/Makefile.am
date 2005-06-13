@@ -20,6 +20,6 @@ tpserver_cpp_SOURCES = main.cpp connection.cpp console.cpp \
 		tcpsocket.cpp refsys.h property.h property.cpp \
 		propertyvalue.h propertyvalue.cpp component.h \
 		component.cpp design.h design.cpp designstore.h \
-		designstore.cpp
+		designstore.cpp ruleset.h minisec.h minisec.cpp
 tpserver_cpp_LDADD = $(READLINE_LIBS)
 

@@ -32,6 +32,8 @@
 #include "net.h"
 #include "settings.h"
 
+#include "minisec.h"
+
 
 int main(int argc, char **argv)
 {
@@ -53,7 +55,9 @@ int main(int argc, char **argv)
 
 	Game *myGame = Game::getGame();
 	//hack temp code
-	myGame->createTutorial();
+	myGame->setRuleset(new MiniSec());
+	myGame->load();
+	myGame->start();
 
 	Network *myNetwork = Network::getNetwork();
 	//temp code - should be removed when console is working fully

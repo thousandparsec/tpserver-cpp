@@ -26,18 +26,16 @@
 #include "logging.h"
 #include "player.h"
 #include "object.h"
-#include "objectdata.h"
-#include "ownedobject.h"
-#include "fleet.h"
 #include "universe.h"
 #include "frame.h"
 #include "net.h"
 #include "vector3d.h"
 #include "ordermanager.h"
 #include "objectdatamanager.h"
+#include "ownedobject.h"
 #include "combatstrategy.h"
-#include "rspcombat.h"
 #include "designstore.h"
+#include "ruleset.h"
 
 #include "game.h"
 
@@ -51,127 +49,57 @@ Game *Game::getGame()
 	return myInstance;
 }
 
-void Game::createRandomUniverse()
-{
-	Logger::getLogger()->info("Creating random universe");
+bool Game::setRuleset(Ruleset* rs){
+  if(!loaded){
+    if(ruleset != NULL)
+      delete ruleset;
+    ruleset = rs;
+    return true;
+  }else{
+    return false;
+  }
 }
 
-void Game::createRealUniverse()
+bool Game::load()
 {
-	Logger::getLogger()->info("Creating real universe");
+  if(!loaded){
+    Logger::getLogger()->info("Loading Game");
+    
+    DesignStore *ds = new DesignStore();
+    ds->setName("Ships");
+    designstores[ds->getCategoryId()] = ds;
+    assert(ds->getCategoryId() == 1);
+
+    universe = new IGObject();
+    objects[universe->getID()] = universe;
+    universe->setType(obT_Universe);
+
+    //if nothing loaded from database
+    //init game
+    ruleset->initGame();
+    
+    loaded = true;
+    return true;
+  }else{
+    Logger::getLogger()->warning("Game already loaded");
+    return false;
+  }
+
 }
 
-void Game::createTutorial()
-{
-	Logger::getLogger()->info("Creating tutorial");
-	objects.clear();
-	universe = new IGObject();
-	objects[universe->getID()] = universe;
-	universe->setSize(100000000000ll);
-	universe->setType(obT_Universe);
-	universe->setName("The Universe");
-	universe->setPosition(Vector3d(0ll, 0ll, 0ll));
-	universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
-
-	//add contained objects
-	IGObject *mw_galaxy = new IGObject();
-	objects[mw_galaxy->getID()] = mw_galaxy;
-	mw_galaxy->setSize(10000000000ll);
-	mw_galaxy->setType(obT_Galaxy);
-	mw_galaxy->setName("Milky Way Galaxy");
-	mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
-	mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
-	
-	universe->addContainedObject(mw_galaxy->getID());
-	// star system 1
-	IGObject *sol = new IGObject();
-	objects[sol->getID()] = sol;
-	sol->setSize(1400000ll);
-	sol->setType(obT_Star_System);
-	sol->setName("Sol/Terra System");
-	sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
-	sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
-	
-	mw_galaxy->addContainedObject(sol->getID());
-	// star system 2
-	IGObject *ac = new IGObject();
-	objects[ac->getID()] = ac;
-	ac->setSize(800000ll);
-	ac->setType(obT_Star_System);
-	ac->setName("Alpha Centauri System");
-	ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
-	ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
-	
-	mw_galaxy->addContainedObject(ac->getID());
-	// star system 3
-	IGObject *sirius = new IGObject();
-	objects[sirius->getID()] = sirius;
-	sirius->setSize(2000000ll);
-	sirius->setType(obT_Star_System);
-	sirius->setName("Sirius System");
-	sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
-	sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
-	
-	mw_galaxy->addContainedObject(sirius->getID());
-
-	// now for some planets
-
-	IGObject *earth = new IGObject();
-	objects[earth->getID()] = earth;
-	earth->setSize(2);
-	earth->setType(obT_Planet);
-	earth->setName("Earth/Terra");
-	earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
-	sol->addContainedObject(earth->getID());
-
-	IGObject *venus = new IGObject();
-	objects[venus->getID()] = venus;
-	venus->setSize(2);
-	venus->setType(obT_Planet);
-	venus->setName("Venus");
-	venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
-	sol->addContainedObject(venus->getID());
-
-	IGObject *mars = new IGObject();
-	objects[mars->getID()] = mars;
-	mars->setSize(1);
-	mars->setType(obT_Planet);
-	mars->setName("Mars");
-	mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
-	sol->addContainedObject(mars->getID());
-
-	IGObject *acprime = new IGObject();
-	objects[acprime->getID()] = acprime;
-	acprime->setSize(2);
-	acprime->setType(obT_Planet);
-	acprime->setName("Alpha Centauri Prime");
-	acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
-	ac->addContainedObject(acprime->getID());
-
-	IGObject *s1 = new IGObject();
-	objects[s1->getID()] = s1;
-	s1->setSize(2);
-	s1->setType(obT_Planet);
-	s1->setName("Sirius 1");
-	s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
-	sirius->addContainedObject(s1->getID());
-
-	combatstrategy = new RSPCombat();
-	
-	loaded = true;
-
-	turnIncrement = 600; // 10 minutes
-	resetEOTTimer();
-	started = true;
+bool Game::start(){
+  if(loaded && !started){
+    Logger::getLogger()->info("Starting Game");
+    turnIncrement = 600; // 10 minutes
+    resetEOTTimer();
+    started = true;
+    return true;
+  }else{
+    Logger::getLogger()->warning("Game not starting, not loaded or already started");
+    return false;
+  }
 }
 
-/*
-void Game::loadGame(char *file)
-{
-
-
-}
-*/
 
 void Game::save()
 {
@@ -212,69 +140,24 @@ Player *Game::findPlayer(char *name, char *pass)
 		rtn = new Player();
 		rtn->setName(name);
 		rtn->setPass(pass);
-		players[rtn->getID()] = (rtn);
 
-		// HACK
-		// adds a star system, planet and fleet, owned by the player
-		IGObject *star = new IGObject();
-		objects[star->getID()] = star;
-		star->setSize(2000000ll);
-		star->setType(obT_Star_System);
-		char* temp = new char[strlen(name) + 13];
-		strncpy(temp, name, strlen(name));
-		strncpy(temp + strlen(name), " Star System", 12);
-		temp[strlen(name) + 12] = '\0';
-		star->setName(temp);
-		delete[] temp;
-		star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
-					    (long long)(((rand() % 1000) - 500) * 10000000),
-					   /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
-		star->setVelocity(Vector3d(0ll, 0ll, 0ll));
-		
-		getObject(1)->addContainedObject(star->getID());
-
-		IGObject *planet = new IGObject();
-		objects[planet->getID()] = planet;
-		planet->setSize(2);
-		planet->setType(obT_Planet);
-		temp = new char[strlen(name) + 8];
-		strncpy(temp, name, strlen(name));
-		strncpy(temp + strlen(name), " Planet", 7);
-		temp[strlen(name) + 7] = '\0';
-		planet->setName(temp);
-		delete[] temp;
-		((OwnedObject*)(planet->getObjectData()))->setOwner(rtn->getID());
-		planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-								   (long long)((rand() % 10000) - 5000),
-								   /*(long long)((rand() % 10000) - 5000)*/ 0));
-		planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-				
-		star->addContainedObject(planet->getID());
-
-		IGObject *fleet = new IGObject();
-		objects[fleet->getID()] = fleet;
-		fleet->setSize(2);
-		fleet->setType(obT_Fleet);
-		temp = new char[strlen(name) + 13];
-		strncpy(temp, name, strlen(name));
-		strncpy(temp + strlen(name), " First Fleet", 12);
-		temp[strlen(name) + 12] = '\0';
-		fleet->setName(temp);
-		delete[] temp;
-		((OwnedObject*)(fleet->getObjectData()))->setOwner(rtn->getID());
-		fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-								  (long long)((rand() % 10000) - 5000),
-								  /*(long long)((rand() % 10000) - 5000)*/ 0));
-		((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
-		fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-	
-		star->addContainedObject(fleet->getID());
-
-		std::set<unsigned int> vis;
-		for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
-		  vis.insert(itid->first);
+		if(ruleset->onAddPlayer(rtn)){
+		  // player can be added
+		  players[rtn->getID()] = (rtn);
+		  
+		  // HACK
+		  // set visibility
+		  
+		  std::set<unsigned int> vis;
+		  for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
+		    vis.insert(itid->first);
+		  }
+		  rtn->setVisibleObjects(vis);
+		}else{
+		  // player can not be added
+		  delete rtn;
+		  rtn = NULL;
 		}
-		rtn->setVisibleObjects(vis);
 		
 	}
 	return rtn;
@@ -531,13 +414,9 @@ Game::Game()
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
   combatstrategy = NULL;
+  ruleset = NULL;
   loaded = false;
   started = false;
-  
-  DesignStore *ds = new DesignStore();
-  ds->setName("Ships");
-  designstores[ds->getCategoryId()] = ds;
-  assert(ds->getCategoryId() == 1);
 
   turnIncrement = 86400; //24 hours
   resetEOTTimer();
@@ -556,6 +435,8 @@ Game::~Game()
   delete objectdatamanager;
   if(combatstrategy != NULL)
     delete combatstrategy;
+  if(ruleset != NULL)
+    delete ruleset;
   while(!designstores.empty()){
     delete designstores.begin()->second;
     designstores.erase(designstores.begin());
