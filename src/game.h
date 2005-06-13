@@ -58,9 +58,11 @@ class Game {
 	ObjectDataManager* getObjectDataManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
+	void setCombatStrategy(CombatStrategy* cs);
 
 	DesignStore* getDesignStore(unsigned int id) const;
 	std::set<unsigned int> getCategoryIds() const;
+	void addDesignStore(DesignStore* ds);
 
 	bool isLoaded() const;
 	bool isStarted() const;

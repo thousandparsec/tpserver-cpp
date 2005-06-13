@@ -357,6 +357,12 @@ CombatStrategy* Game::getCombatStrategy() const{
   return combatstrategy;
 }
 
+void Game::setCombatStrategy(CombatStrategy* cs){
+  if(combatstrategy != NULL)
+    delete combatstrategy;
+  combatstrategy = cs;
+}
+
 DesignStore* Game::getDesignStore(unsigned int id) const{
   std::map<unsigned int, DesignStore*>::const_iterator itcurr = designstores.find(id);
   if(itcurr != designstores.end()){
@@ -372,6 +378,10 @@ std::set<unsigned int> Game::getCategoryIds() const{
     set.insert(itcurr->first);
   }
   return set;
+}
+
+void Game::addDesignStore(DesignStore* ds){
+  designstores[ds->getCategoryId()] = ds;
 }
 
 bool Game::isLoaded() const{
@@ -520,8 +530,15 @@ Game::Game()
 {
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
+  combatstrategy = NULL;
   loaded = false;
   started = false;
+  
+  DesignStore *ds = new DesignStore();
+  ds->setName("Ships");
+  designstores[ds->getCategoryId()] = ds;
+  assert(ds->getCategoryId() == 1);
+
   turnIncrement = 86400; //24 hours
   resetEOTTimer();
   //this is a good place to seed the PNRG
@@ -537,7 +554,8 @@ Game::~Game()
 {
   delete ordermanager;
   delete objectdatamanager;
-  delete combatstrategy;
+  if(combatstrategy != NULL)
+    delete combatstrategy;
   while(!designstores.empty()){
     delete designstores.begin()->second;
     designstores.erase(designstores.begin());
