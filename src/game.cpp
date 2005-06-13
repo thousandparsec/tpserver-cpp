@@ -60,9 +60,13 @@ bool Game::setRuleset(Ruleset* rs){
   }
 }
 
+Ruleset* Game::getRuleset() const{
+  return ruleset;
+}
+
 bool Game::load()
 {
-  if(!loaded){
+  if(!loaded && ruleset != NULL){
     Logger::getLogger()->info("Loading Game");
     
     DesignStore *ds = new DesignStore();
@@ -70,13 +74,15 @@ bool Game::load()
     designstores[ds->getCategoryId()] = ds;
     assert(ds->getCategoryId() == 1);
 
+    ruleset->initGame();
+
     universe = new IGObject();
     objects[universe->getID()] = universe;
     universe->setType(obT_Universe);
 
     //if nothing loaded from database
     //init game
-    ruleset->initGame();
+    ruleset->createGame();
     
     loaded = true;
     return true;

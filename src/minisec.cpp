@@ -37,6 +37,10 @@ MiniSec::~MiniSec(){
 }
 
 void MiniSec::initGame(){
+
+}
+
+void MiniSec::createGame(){
   Game* game = Game::getGame();
   IGObject* universe = game->getObject(0);
 

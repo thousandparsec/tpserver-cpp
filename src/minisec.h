@@ -28,6 +28,7 @@ class MiniSec : public Ruleset{
   virtual ~MiniSec();
 
   void initGame();
+  void createGame();
   void startGame();
   void doOnceATurn();
   bool onAddPlayer(Player* player);

@@ -39,6 +39,8 @@ class Game {
 	static Game *getGame();
 
 	bool setRuleset(Ruleset* rs);
+	Ruleset* getRuleset() const;
+
 	bool load();
 	bool start();
 
