@@ -156,9 +156,13 @@ void Game::createTutorial()
 	s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
 	sirius->addContainedObject(s1->getID());
 
-	turnIncrement = 600;
-	resetEOTTimer();
+	combatstrategy = new RSPCombat();
+	
+	loaded = true;
 
+	turnIncrement = 600; // 10 minutes
+	resetEOTTimer();
+	started = true;
 }
 
 /*
@@ -370,8 +374,17 @@ std::set<unsigned int> Game::getCategoryIds() const{
   return set;
 }
 
+bool Game::isLoaded() const{
+  return loaded;
+}
+
+bool Game::isStarted() const{
+  return (loaded && started);
+}
+
 void Game::doEndOfTurn()
 {
+  if(loaded && started){
 	Logger::getLogger()->info("End Of Turn started");
 
 	// send frame to all connections that the end of turn has started
@@ -475,6 +488,10 @@ void Game::doEndOfTurn()
 	Network::getNetwork()->sendToAll(frame);
 
 	Logger::getLogger()->info("End Of Turn finished");
+  }else{
+    Logger::getLogger()->info("End Of Turn not run because game not started");
+    turnTime += turnIncrement;
+  }
 }
 
 void Game::resetEOTTimer(){
@@ -503,7 +520,10 @@ Game::Game()
 {
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
-  combatstrategy = new RSPCombat();
+  loaded = false;
+  started = false;
+  turnIncrement = 86400; //24 hours
+  resetEOTTimer();
   //this is a good place to seed the PNRG
   srand((getpid() + time(NULL)) % RAND_MAX);
 }

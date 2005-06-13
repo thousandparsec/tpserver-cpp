@@ -178,9 +178,16 @@ void PlayerConnection::inGameFrame()
 		  pong->packString("Keep alive ok, hope you're still there");
 		  sendFrame(pong);
 		}else{
-		  // should pass frame to player to do something with
-		  Logger::getLogger()->debug("inGameFrame");
-		  player->processIGFrame(frame);
+		  if(Game::getGame()->isStarted()){
+		    // should pass frame to player to do something with
+		    Logger::getLogger()->debug("inGameFrame");
+		    player->processIGFrame(frame);
+		  }else{
+		    Frame *gns = createFrame(frame);
+		    gns->createFailFrame(fec_TempUnavailable, "Game has not yet started, please wait");
+		    sendFrame(gns);
+		    delete frame;
+		  }
 		}
 	} else {
 		Logger::getLogger()->debug("noFrame :(");

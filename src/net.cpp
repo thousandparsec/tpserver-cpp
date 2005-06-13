@@ -103,12 +103,17 @@ void Network::start()
 		Logger::getLogger()->warning("Network already running");
 		return;
 	}
-	Logger::getLogger()->info("Starting Network");
 
-	TcpSocket* listensocket = new TcpSocket(Settings::getSettings()->get("listen_addr"), Settings::getSettings()->get("listen_port"));
-	addConnection(listensocket);
-
-	active = true;
+	if(Game::getGame()->isLoaded()){
+	  Logger::getLogger()->info("Starting Network");
+	  
+	  TcpSocket* listensocket = new TcpSocket(Settings::getSettings()->get("listen_addr"), Settings::getSettings()->get("listen_port"));
+	  addConnection(listensocket);
+	  
+	  active = true;
+	}else{
+	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
+	}
 }
 
 

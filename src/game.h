@@ -62,6 +62,9 @@ class Game {
 	DesignStore* getDesignStore(unsigned int id) const;
 	std::set<unsigned int> getCategoryIds() const;
 
+	bool isLoaded() const;
+	bool isStarted() const;
+
 	void doEndOfTurn();
 	void resetEOTTimer();
 	int getTurnNumber();
@@ -81,6 +84,9 @@ class Game {
 	
 	int turnTime;
 	int turnIncrement;
+
+	bool loaded;
+	bool started;
 	
 	std::map<unsigned int, Player *> players;
 	
