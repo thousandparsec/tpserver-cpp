@@ -67,18 +67,9 @@ Ruleset* Game::getRuleset() const{
 bool Game::load()
 {
   if(!loaded && ruleset != NULL){
-    Logger::getLogger()->info("Loading Game");
-    
-    DesignStore *ds = new DesignStore();
-    ds->setName("Ships");
-    designstores[ds->getCategoryId()] = ds;
-    assert(ds->getCategoryId() == 1);
+    Logger::getLogger()->info("Loading Game");  
 
     ruleset->initGame();
-
-    universe = new IGObject();
-    objects[universe->getID()] = universe;
-    universe->setType(obT_Universe);
 
     //if nothing loaded from database
     //init game
@@ -96,8 +87,11 @@ bool Game::load()
 bool Game::start(){
   if(loaded && !started){
     Logger::getLogger()->info("Starting Game");
-    turnIncrement = 600; // 10 minutes
+
+    ruleset->startGame();
+
     resetEOTTimer();
+
     started = true;
     return true;
   }else{
@@ -151,14 +145,8 @@ Player *Game::findPlayer(char *name, char *pass)
 		  // player can be added
 		  players[rtn->getID()] = (rtn);
 		  
-		  // HACK
-		  // set visibility
-		  
-		  std::set<unsigned int> vis;
-		  for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
-		    vis.insert(itid->first);
-		  }
-		  rtn->setVisibleObjects(vis);
+		  ruleset->onPlayerAdded(rtn);
+
 		}else{
 		  // player can not be added
 		  delete rtn;
@@ -178,6 +166,15 @@ Player* Game::getPlayer(unsigned int id){
   return rtn;
 }
 
+std::set<unsigned int> Game::getPlayerIds() const{
+  std::set<unsigned int> vis;
+  for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
+      itid != players.end(); ++itid){
+    vis.insert(itid->first);
+  }
+  return vis;
+}
+
 IGObject *Game::getObject(unsigned int id)
 {
 	if (id == 0) {
@@ -195,6 +192,9 @@ IGObject *Game::getObject(unsigned int id)
 void Game::addObject(IGObject* obj)
 {
   objects[obj->getID()] = obj;
+  if(obj->getID() == 0){
+    universe = obj;
+  }
 }
 
 void Game::scheduleRemoveObject(unsigned int id){
@@ -232,6 +232,15 @@ std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
   }
   
   return oblist;
+}
+
+std::set<unsigned int> Game::getObjectIds() const{
+  std::set<unsigned int> vis;
+  for(std::map<unsigned int, IGObject*>::const_iterator itid = objects.begin();
+      itid != objects.end(); ++itid){
+    vis.insert(itid->first);
+  }
+  return vis;
 }
 
 OrderManager* Game::getOrderManager() const{
@@ -369,10 +378,8 @@ void Game::doEndOfTurn()
 	}
 
 	// find the objects that are visible to each player
-	std::set<unsigned int> vis;
-	for(std::map<unsigned int, IGObject*>::iterator itid = objects.begin(); itid != objects.end(); ++itid){
-	  vis.insert(itid->first);
-	}
+	std::set<unsigned int> vis = getObjectIds();
+	
 	for(std::map<unsigned int, Player*>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
 	  (itplayer->second)->setVisibleObjects(vis);
 	}
@@ -403,6 +410,10 @@ int Game::secondsToEOT(){
 
 int Game::getTurnNumber(){
   return ((Universe*)(universe->getObjectData()))->getYear();
+}
+
+void Game::setTurnLength(unsigned int sec){
+  turnIncrement = sec;
 }
 
 void Game::saveAndClose()

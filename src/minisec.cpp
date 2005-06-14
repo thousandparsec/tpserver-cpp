@@ -18,6 +18,8 @@
  *
  */
 
+#include <cassert>
+
 #include "game.h"
 #include "object.h"
 #include "ownedobject.h"
@@ -25,6 +27,7 @@
 #include "objectdatamanager.h"
 #include "player.h"
 #include "rspcombat.h"
+#include "designstore.h"
 
 #include "minisec.h"
 
@@ -37,15 +40,22 @@ MiniSec::~MiniSec(){
 }
 
 void MiniSec::initGame(){
+  Game* game = Game::getGame();
+  
+  DesignStore *ds = new DesignStore();
+  ds->setName("Ships");
+  game->addDesignStore(ds);
+  assert(ds->getCategoryId() == 1);
 
 }
 
 void MiniSec::createGame(){
   Game* game = Game::getGame();
-  IGObject* universe = game->getObject(0);
-
+  
+  IGObject* universe = new IGObject();
+  game->addObject(universe);
+  universe->setType(obT_Universe);
   universe->setSize(100000000000ll);
-  //universe->setType(obT_Universe); // should already be set
   universe->setName("The Universe");
   universe->setPosition(Vector3d(0ll, 0ll, 0ll));
   universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
@@ -138,10 +148,17 @@ void MiniSec::createGame(){
 }
 
 void MiniSec::startGame(){
-
+  Game::getGame()->setTurnLength(600);
 }
 
 void MiniSec::doOnceATurn(){
+  Game* game = Game::getGame();
+  std::set<unsigned int> vis = game->getObjectIds();
+  std::set<unsigned int> players = game->getPlayerIds();
+  for(std::set<unsigned int>::iterator itplayer = players.begin(); 
+      itplayer != players.end(); ++itplayer){
+    game->getPlayer(*itplayer)->setVisibleObjects(vis);
+  }
 }
 
 bool MiniSec::onAddPlayer(Player* player){
@@ -203,4 +220,8 @@ bool MiniSec::onAddPlayer(Player* player){
   
   
   return true;
+}
+
+void MiniSec::onPlayerAdded(Player* player){
+  player->setVisibleObjects(Game::getGame()->getObjectIds());
 }

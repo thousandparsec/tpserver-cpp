@@ -48,6 +48,7 @@ class Game {
 
 	Player *findPlayer(char *name, char *pass);
 	Player* getPlayer(unsigned int id);
+	std::set<unsigned int> getPlayerIds() const;
 
 	IGObject *getObject(unsigned int id);
 	void addObject(IGObject* obj);
@@ -55,6 +56,7 @@ class Game {
 
 	std::list<unsigned int> getObjectsByPos(const Vector3d & pos, unsigned long long r);
 	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
+	std::set<unsigned int> getObjectIds() const;
 
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
@@ -74,6 +76,7 @@ class Game {
 	int getTurnNumber();
 
 	int secondsToEOT();
+	void setTurnLength(unsigned int sec);
 
 	void saveAndClose();
 

@@ -29,7 +29,8 @@ class Ruleset{
   virtual void startGame() = 0;
   virtual void doOnceATurn() = 0;
   virtual bool onAddPlayer(Player* player) = 0;
-
+  virtual void onPlayerAdded(Player* player) = 0;
+  
 };
 
 #endif

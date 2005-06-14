@@ -32,6 +32,7 @@ class MiniSec : public Ruleset{
   void startGame();
   void doOnceATurn();
   bool onAddPlayer(Player* player);
+  void onPlayerAdded(Player* player);
 
 };
 
