@@ -138,6 +138,12 @@ void Player::addUsableComponent(unsigned int compid){
   usableComponents.insert(compid);
 }
 
+void Player::removeUsableComponent(unsigned int compid){
+  std::set<unsigned int>::iterator cicurr = usableComponents.find(compid);
+  if(cicurr != usableComponents.end())
+    usableComponents.erase(cicurr);
+}
+
 bool Player::isUsableComponent(unsigned int compid){
   return (usableComponents.find(compid) != usableComponents.end());
 }

@@ -46,6 +46,7 @@ class Player {
 
 	void addVisibleComponent(unsigned int compid);
 	void addUsableComponent(unsigned int compid);
+	void removeUsableComponent(unsigned int compid);
 	bool isUsableComponent(unsigned int compid);
 
 	void postToBoard(Message* msg);

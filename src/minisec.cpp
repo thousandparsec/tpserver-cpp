@@ -38,6 +38,9 @@
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
+#include "property.h"
+#include "component.h"
+#include "design.h"
 
 #include "minisec.h"
 
@@ -56,6 +59,100 @@ void MiniSec::initGame(){
   ds->setName("Ships");
   game->addDesignStore(ds);
   assert(ds->getCategoryId() == 1);
+
+  Property* prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("Speed");
+  prop->setDescription("The number of units the ship can move each turn");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append (/ n 1000000) \" mega-units\")) ) )");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("BuildTime");
+  prop->setDescription("The number of turns to build the ship");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" turns\")) ) )");
+  ds->addProperty(prop);
+  
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("Amour");
+  prop->setDescription("The amount of amour on the ship");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("WeaponWin");
+  prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("WeaponDraw");
+  prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("Colonise");
+  prop->setDescription("Can the ship colonise planets");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (cond ((= n 1) \"Yes\") (else \"No\"))) ) )");
+  ds->addProperty(prop);
+
+  std::map<unsigned int, std::string> propertylist;
+
+  Component* comp = new Component();
+  comp->setCategoryId(1);
+  comp->setName("Scout hull");
+  comp->setDescription("The scout hull, fitted out with everything a scout needs");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist[1] = "(lambda (design) 300000000)";
+  propertylist[2] = "(lambda (design) 1)";
+  propertylist[3] = "(lambda (design) 2)";
+  propertylist[4] = "(lambda (design) 0)";
+  propertylist[5] = "(lambda (design) 0)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+  comp = new Component();
+  comp->setCategoryId(1);
+  comp->setName("Frigate hull");
+  comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist.clear();
+  propertylist[1] = "(lambda (design) 200000000)";
+  propertylist[2] = "(lambda (design) 2)";
+  propertylist[3] = "(lambda (design) 4)";
+  propertylist[4] = "(lambda (design) 2)";
+  propertylist[5] = "(lambda (design) 0)";
+  propertylist[6] = "(lambda (design) 1)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+  comp = new Component();
+  comp->setCategoryId(1);
+  comp->setName("Battleship hull");
+  comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist.clear();
+  propertylist[1] = "(lambda (design) 100000000)";
+  propertylist[2] = "(lambda (design) 4)";
+  propertylist[3] = "(lambda (design) 6)";
+  propertylist[4] = "(lambda (design) 3)";
+  propertylist[5] = "(lambda (design) 1)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+  
 
   ObjectDataManager* obdm = game->getObjectDataManager();
   obdm->addNewObjectType(new Universe());
@@ -249,4 +346,48 @@ bool MiniSec::onAddPlayer(Player* player){
 
 void MiniSec::onPlayerAdded(Player* player){
   player->setVisibleObjects(Game::getGame()->getObjectIds());
+
+  player->addVisibleComponent(1);
+  player->addVisibleComponent(2);
+  player->addVisibleComponent(3);
+
+  //temporarily add the components as usable to get the designs done
+  player->addUsableComponent(1);
+  player->addUsableComponent(2);
+  player->addUsableComponent(3);
+
+  Design* design = new Design();
+  design->setCategoryId(1);
+  design->setName("Scout");
+  design->setDescription("Scout ship");
+  design->setOwner(player->getID());
+  std::list<unsigned int> cl;
+  cl.push_back(1);
+  design->setComponents(cl);
+  Game::getGame()->getDesignStore(1)->addDesign(design);
+
+  design = new Design();
+  design->setCategoryId(1);
+  design->setName("Frigate");
+  design->setDescription("Frigate ship");
+  design->setOwner(player->getID());
+  cl.clear();
+  cl.push_back(2);
+  design->setComponents(cl);
+  Game::getGame()->getDesignStore(1)->addDesign(design);
+
+  design = new Design();
+  design->setCategoryId(1);
+  design->setName("Battleship");
+  design->setDescription("Battleship ship");
+  design->setOwner(player->getID());
+  cl.clear();
+  cl.push_back(3);
+  design->setComponents(cl);
+  Game::getGame()->getDesignStore(1)->addDesign(design);
+
+  //remove temporarily added usable components
+  player->removeUsableComponent(1);
+  player->removeUsableComponent(2);
+  player->removeUsableComponent(3);
 }
