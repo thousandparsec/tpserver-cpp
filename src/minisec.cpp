@@ -105,7 +105,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("Colonise");
   prop->setDescription("Can the ship colonise planets");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (cond ((= n 1) \"Yes\") (else \"No\"))) ) )");
+  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
   ds->addProperty(prop);
 
   std::map<unsigned int, std::string> propertylist;
@@ -114,7 +114,7 @@ void MiniSec::initGame(){
   comp->setCategoryId(1);
   comp->setName("Scout hull");
   comp->setDescription("The scout hull, fitted out with everything a scout needs");
-  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.Speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
   propertylist[1] = "(lambda (design) 300000000)";
   propertylist[2] = "(lambda (design) 1)";
   propertylist[3] = "(lambda (design) 2)";
@@ -127,7 +127,7 @@ void MiniSec::initGame(){
   comp->setCategoryId(1);
   comp->setName("Frigate hull");
   comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
-  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.Speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
   propertylist.clear();
   propertylist[1] = "(lambda (design) 200000000)";
   propertylist[2] = "(lambda (design) 2)";
@@ -142,7 +142,7 @@ void MiniSec::initGame(){
   comp->setCategoryId(1);
   comp->setName("Battleship hull");
   comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
-  comp->setTpclAddFunction("(lambda (design) (if (> design.speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  comp->setTpclAddFunction("(lambda (design) (if (> design.Speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
   propertylist.clear();
   propertylist[1] = "(lambda (design) 100000000)";
   propertylist[2] = "(lambda (design) 4)";
