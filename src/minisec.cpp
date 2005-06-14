@@ -23,11 +23,21 @@
 #include "game.h"
 #include "object.h"
 #include "ownedobject.h"
+#include "universe.h"
+#include "emptyobject.h"
+#include "planet.h"
 #include "fleet.h"
 #include "objectdatamanager.h"
 #include "player.h"
 #include "rspcombat.h"
 #include "designstore.h"
+#include "ordermanager.h"
+#include "nop.h"
+#include "move.h"
+#include "build.h"
+#include "colonise.h"
+#include "splitfleet.h"
+#include "mergefleet.h"
 
 #include "minisec.h"
 
@@ -47,6 +57,21 @@ void MiniSec::initGame(){
   game->addDesignStore(ds);
   assert(ds->getCategoryId() == 1);
 
+  ObjectDataManager* obdm = game->getObjectDataManager();
+  obdm->addNewObjectType(new Universe());
+  obdm->addNewObjectType(new EmptyObject());
+  obdm->addNewObjectType(new EmptyObject());
+  obdm->addNewObjectType(new Planet());
+  obdm->addNewObjectType(new Fleet());
+
+
+  OrderManager* ordm = game->getOrderManager();
+  ordm->addOrderType(new Nop());
+  ordm->addOrderType(new Move());
+  ordm->addOrderType(new Build());
+  ordm->addOrderType(new Colonise());
+  ordm->addOrderType(new SplitFleet());
+  ordm->addOrderType(new MergeFleet());
 }
 
 void MiniSec::createGame(){

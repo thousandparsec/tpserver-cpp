@@ -1,6 +1,6 @@
 /*  ObjectDataManager for managing ObjectData objects
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,21 +19,11 @@
  */
 
 #include "objectdata.h"
-#include "universe.h"
-#include "emptyobject.h"
-#include "planet.h"
-#include "fleet.h"
 
 #include "objectdatamanager.h"
 
 ObjectDataManager::ObjectDataManager(){
-  nextType = 1000;
-
-  prototypeStore[obT_Universe] = new Universe();
-  prototypeStore[obT_Galaxy] = new EmptyObject();
-  prototypeStore[obT_Star_System] = new EmptyObject();
-  prototypeStore[obT_Planet] = new Planet();
-  prototypeStore[obT_Fleet] = new Fleet();
+  nextType = 0;
 }
 
 ObjectDataManager::~ObjectDataManager(){
@@ -51,7 +41,7 @@ ObjectData* ObjectDataManager::createObjectData(int type){
 }
 
 bool ObjectDataManager::checkValid(int type){
-  return ((obT_Invalid < type && type < obT_Max) || (1000 <= type && type <= nextType - 1));
+  return (0 <= type && type <= nextType - 1);
 }
 
 int ObjectDataManager::addNewObjectType(ObjectData* od){
