@@ -81,6 +81,30 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
    AC_MSG_RESULT(no)
 ])
 
+AC_CHECK_LIB(dl, dlsym,,)
+
+dnl PLT MzScheme autoconf test
+AC_ARG_WITH(mzscheme,
+  AS_HELP_STRING([--with-mzscheme[=prefix]],
+    [Set the prefix to plt mzscheme]
+  ),
+  ,
+  [with_mzscheme=""]
+)
+
+if test "$with_mzscheme" = "no"; then
+  AC_MSG_ERROR([MzScheme is required, please specific prefix with --with-mzscheme])
+fi
+if test -n "$with_mzscheme"; then
+  CPPFLAGS="$CPPFLAGS -I$with_mzscheme/include"
+  LDFLAGS="$LDFLAGS -L$with_mzscheme/lib"
+  AC_MSG_WARN([MzScheme is not nice, please check that $with_mzscheme/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
+fi
+
+AC_CHECK_HEADER(scheme.h)
+AC_CHECK_LIB(mzgc, GC_init,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
+AC_CHECK_LIB(mzscheme,scheme_basic_env,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
+
 
 
 AC_CONFIG_FILES([
