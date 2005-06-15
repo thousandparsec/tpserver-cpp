@@ -1,3 +1,13 @@
 This is the server for Thousand Parsec.
 More info at
 http://www.thousandparsec.net/tp/
+
+REQUIRES
+========
+mzscheme (www.plt-scheme.org) [LGPL]
+ - note: you will probably need to pass the directory to the plt
+   to configure, and it will generally be /usr/lib/plt (as in 
+   debian), therefore, your configure command will be:
+     ./configure --with-mzscheme=/usr/lib/plt
+   You may also need to add the lib subdirectory to /etc/ld.so.conf
+   and run ldconfig as root before tpserver-cpp will run.
