@@ -1,5 +1,5 @@
 bin_PROGRAMS = tpserver-cpp
-tpserver_cpp_SOURCES = main.cpp connection.cpp console.cpp \
+COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp \
 		settings.cpp connection.h console.h \
 		frame.h game.h logging.h net.h settings.h \
@@ -20,6 +20,13 @@ tpserver_cpp_SOURCES = main.cpp connection.cpp console.cpp \
 		tcpsocket.cpp refsys.h property.h property.cpp \
 		propertyvalue.h propertyvalue.cpp component.h \
 		component.cpp design.h design.cpp designstore.h \
-		designstore.cpp ruleset.h minisec.h minisec.cpp
+		designstore.cpp ruleset.h minisec.h minisec.cpp \
+		tpscheme.h tpscheme.cpp
+if MZSCHEME
+tpserver_cpp_SOURCES = $(COMMONSOURCES) tpmzscheme.h tpmzscheme.cpp
+else
+tpserver_cpp_SOURCES = $(COMMONSOURCES)
+endif
+
 tpserver_cpp_LDADD = $(READLINE_LIBS)
 

@@ -112,6 +112,7 @@ if test -n "$with_mzscheme"; then
    AC_MSG_WARN([MzScheme is not nice, please check that $with_mzscheme/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
 fi
 
+AM_CONDITIONAL(MZSCHEME, true)
 
 AC_CONFIG_FILES([
 Makefile
