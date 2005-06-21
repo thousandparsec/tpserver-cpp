@@ -103,7 +103,7 @@ void Logger::error(char *msg, ...)
   va_end(ap);
   doLogging(3, fmsg);
   delete[] fmsg;
-  exit(1);
+  //exit(1);
 }
 
 
@@ -143,7 +143,7 @@ void Logger::doLogging(int level, char *msg)
       break;
     case 3:
       std::cout << "< Error > ";
-      
+      break;
     default:
       std::cout << "<   " << level << "  > ";
     }

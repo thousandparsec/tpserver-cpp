@@ -90,7 +90,7 @@ TcpSocket::TcpSocket(std::string address, std::string port){
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 #endif
 	if (sockfd == -1)
-		Logger::getLogger()->error("Could not create Socket");
+		Logger::getLogger()->warning("Could not create Socket");
 #ifndef HAVE_IPV6
 	struct sockaddr_in myAddr;
 	myAddr.sin_family = AF_INET;

@@ -108,9 +108,13 @@ void Network::start()
 	  Logger::getLogger()->info("Starting Network");
 	  
 	  TcpSocket* listensocket = new TcpSocket(Settings::getSettings()->get("listen_addr"), Settings::getSettings()->get("listen_port"));
-	  addConnection(listensocket);
-	  
-	  active = true;
+	  if(listensocket->getStatus() != 0){
+	    addConnection(listensocket);
+	    active = true;
+	  }else{
+	    delete listensocket;
+	    Logger::getLogger()->warning("Not starting network, listen socket couldn't be opened");
+	  }
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
