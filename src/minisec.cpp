@@ -65,7 +65,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("Speed");
   prop->setDescription("The number of units the ship can move each turn");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append (/ n 1000000) \" mega-units\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (/ n 1000000) \" mega-units\")) ) )");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -73,7 +73,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("BuildTime");
   prop->setDescription("The number of turns to build the ship");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" turns\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append n \" turns\")) ) )");
   ds->addProperty(prop);
   
   prop = new Property();
@@ -81,7 +81,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("Amour");
   prop->setDescription("The amount of amour on the ship");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -89,7 +89,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("WeaponWin");
   prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -97,7 +97,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("WeaponDraw");
   prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append n \" HP\")) ) )");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -105,7 +105,7 @@ void MiniSec::initGame(){
   prop->setRank(0);
   prop->setName("Colonise");
   prop->setDescription("Can the ship colonise planets");
-  prop->setTpclDisplayFunction("(lambda (design, bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
   ds->addProperty(prop);
 
   std::map<unsigned int, std::string> propertylist;
@@ -127,7 +127,7 @@ void MiniSec::initGame(){
   comp->setCategoryId(1);
   comp->setName("Frigate hull");
   comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
-  comp->setTpclAddFunction("(lambda (design) (if (> design.Speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  comp->setTpclAddFunction("(lambda (design) (if (> designType.Speed design 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
   propertylist.clear();
   propertylist[1] = "(lambda (design) 200000000)";
   propertylist[2] = "(lambda (design) 2)";
@@ -142,7 +142,7 @@ void MiniSec::initGame(){
   comp->setCategoryId(1);
   comp->setName("Battleship hull");
   comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
-  comp->setTpclAddFunction("(lambda (design) (if (> design.Speed 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
+  comp->setTpclAddFunction("(lambda (design) (if (> designType.Speed design 0) (cons #t \"\") (cons #f \"This is a complete component, nothing else can be included\")))");
   propertylist.clear();
   propertylist[1] = "(lambda (design) 100000000)";
   propertylist[2] = "(lambda (design) 4)";
