@@ -34,6 +34,7 @@ class Component{
 
   unsigned int getComponentId() const;
   unsigned int getCategoryId() const;
+  std::string getName() const;
   std::string getTpclAddFunction() const;
   std::map<unsigned int, std::string> getPropertyList() const;
 

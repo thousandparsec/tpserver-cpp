@@ -53,6 +53,10 @@ unsigned int Component::getCategoryId() const{
   return catid;
 }
 
+std::string Component::getName() const{
+  return name;
+}
+
 std::string Component::getTpclAddFunction() const{
   return tpcl_add;
 }
