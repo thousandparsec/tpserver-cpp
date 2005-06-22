@@ -167,3 +167,15 @@ void DesignStore::addProperty(Property* p){
   p->setPropertyId(next_propertyid++);
   properties[p->getPropertyId()] = p;
 }
+
+unsigned int DesignStore::getMaxDesignId() const{
+  return (next_designid - 1);
+}
+
+unsigned int DesignStore::getMaxComponentId() const{
+  return (next_componentid - 1);
+}
+
+unsigned int DesignStore::getMaxPropertyId() const{
+  return (next_propertyid - 1);
+}

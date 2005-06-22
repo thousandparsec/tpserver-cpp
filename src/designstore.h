@@ -20,6 +20,7 @@
  *
  */
 
+#include <set>
 #include <map>
 #include <string>
 
@@ -50,6 +51,10 @@ class DesignStore{
 
   virtual void addComponent(Component* c);
   virtual void addProperty(Property* p);
+
+  unsigned int getMaxDesignId() const;
+  unsigned int getMaxComponentId() const;
+  unsigned int getMaxPropertyId() const;
   
  protected:
   static unsigned int next_designid;
