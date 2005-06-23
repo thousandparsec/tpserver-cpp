@@ -19,6 +19,7 @@
  */
 
 #include "frame.h"
+#include "tpscheme.h"
 
 #include "design.h"
 
@@ -116,4 +117,15 @@ void Design::eval(){
   feedback = "";
 
   // start calc
+  TpScheme* scheme_intr = TpScheme::getImplemention();
+  scheme_intr->evalDesign(this);
+}
+
+void Design::setPropertyValues(std::map<unsigned int, PropertyValue> pvl){
+  properties = pvl;
+}
+
+void Design::setValid(bool v, const std::string& f){
+  valid = v;
+  feedback = f;
 }

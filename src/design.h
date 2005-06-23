@@ -51,6 +51,8 @@ class Design{
   void setComponents(std::list<unsigned int> cl);
 
   void eval();
+  void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);
+  void setValid(bool v, const std::string& f);
 
  protected:
   unsigned int designid;

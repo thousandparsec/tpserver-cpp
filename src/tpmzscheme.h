@@ -23,6 +23,7 @@
 #include "tpscheme.h"
 
 class Design;
+typedef struct Scheme_Env Scheme_Env;
 
 class TpMzScheme : public TpScheme{
  public:
@@ -33,6 +34,7 @@ class TpMzScheme : public TpScheme{
  private:
   TpMzScheme();
   static TpMzScheme* instance;
+  Scheme_Env * env;
 
 };
 
