@@ -122,12 +122,17 @@ void Player::addVisibleDesign(unsigned int designid){
 
 void Player::addUsableDesign(unsigned int designid){
   usableDesigns.insert(designid);
+  Logger::getLogger()->debug("Added valid design");
 }
 
 void Player::removeUsableDesign(unsigned int designid){
   std::set<unsigned int>::iterator dicurr = usableDesigns.find(designid);
   if(dicurr != usableDesigns.end())
     usableDesigns.erase(dicurr);
+}
+
+std::set<unsigned int> Player::getUsableDesigns() const{
+  return usableDesigns;
 }
 
 void Player::addVisibleComponent(unsigned int compid){
