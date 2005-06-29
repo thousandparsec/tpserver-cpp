@@ -42,6 +42,7 @@ class Design{
   std::list<unsigned int> getComponents() const;
   unsigned int getNumExist() const;
   bool isValid() const;
+  double getPropertyValue(unsigned int propid) const;
 
   void setDesignId(unsigned int id);
   void setCategoryId(unsigned int id);

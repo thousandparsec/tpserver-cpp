@@ -57,7 +57,7 @@ void Nop::createFrame(Frame * f, int objID, int pos)
 	f->packInt(1000);
 }
 
-bool Nop::inputFrame(Frame * f)
+bool Nop::inputFrame(Frame * f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns (read only, ignore client value)
   // TODO fix below in case the client sends a list greated than zero

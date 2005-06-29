@@ -131,6 +131,10 @@ void Player::removeUsableDesign(unsigned int designid){
     usableDesigns.erase(dicurr);
 }
 
+bool Player::isUsableDesign(unsigned int designid) const{
+  return (usableDesigns.find(designid) != usableDesigns.end());
+}
+
 std::set<unsigned int> Player::getUsableDesigns() const{
   return usableDesigns;
 }
@@ -614,7 +618,7 @@ void Player::processAddOrder(Frame * frame)
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
 				
-				if (ord->inputFrame(frame) && o->addOrder(ord, pos, pid)) {
+			  if (ord->inputFrame(frame, pid) && o->addOrder(ord, pos, pid)) {
 				    of->setType(ft02_OK);
 					of->packString("Order Added");
 				} else {
@@ -761,7 +765,7 @@ void Player::processProbeOrder(Frame * frame){
     of->createFailFrame(fec_NonExistant, "No such order type");
   }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), pid)){
     
-    ord->inputFrame(frame);
+    ord->inputFrame(frame, pid);
     ord->createFrame(of, obid, pos);
     
   }else{

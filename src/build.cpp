@@ -18,6 +18,8 @@
  *
  */
 
+#include <math.h>
+
 #include "frame.h"
 #include "object.h"
 #include "game.h"
@@ -26,6 +28,8 @@
 #include "fleet.h"
 #include "message.h"
 #include "player.h"
+#include "design.h"
+#include "designstore.h"
 
 #include "ownedobject.h"
 
@@ -51,19 +55,18 @@ void Build::createFrame(Frame *f, int objID, int pos)
 
   f->packInt(0); // size of resource list
 
-  f->packInt(3);
+  std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
 
-  f->packInt(0);
-  f->packString("Scout");
-  f->packInt(100);
+  f->packInt(designs.size());
 
-  f->packInt(1);
-  f->packString("Frigate");
-  f->packInt(100);
-
-  f->packInt(2);
-  f->packString("Battleship");
-  f->packInt(100);
+  for(std::set<unsigned int>::iterator itcurr = designs.begin();
+      itcurr != designs.end(); ++itcurr){
+    Design * design = ds->getDesign(*itcurr);
+    f->packInt(design->getDesignId());
+    f->packString(design->getName().c_str());
+    f->packInt(100);
+  }
 
   f->packInt(fleettype.size());
   for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
@@ -72,28 +75,25 @@ void Build::createFrame(Frame *f, int objID, int pos)
   }
 }
 
-bool Build::inputFrame(Frame *f)
+bool Build::inputFrame(Frame *f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns
   f->unpackInt(); // size of resource list (should be zero) TODO
   f->unpackInt(); // selectable list (should be zero) TODO
   
+  Player* player = Game::getGame()->getPlayer(playerid);
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
+
   for(int i = f->unpackInt(); i > 0; i--){
     int type = f->unpackInt();
     int number = f->unpackInt(); // number to build
     
-    fleettype[type] = number;
+    if(player->isUsableDesign(type) && number > 0){
+      fleettype[type] = number;
 
-    switch(type){
-    case 0:
-      turnstogo += 1 * number;
-      break;
-    case 1:
-      turnstogo += 2 * number;
-      break;
-    case 2:
-      turnstogo += 4 * number;
-      break;
+      Design* design = ds->getDesign(type);
+      turnstogo += (int)(ceil(number * design->getPropertyValue(1)));
+
     }
   }
   return true;

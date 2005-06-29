@@ -70,7 +70,7 @@ void Move::createFrame(Frame * f, int objID, int pos)
 	
 }
 
-bool Move::inputFrame(Frame * f)
+bool Move::inputFrame(Frame * f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns
   f->unpackInt(); // size of resource list, should be zero

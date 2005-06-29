@@ -30,7 +30,7 @@ class Colonise : public Order {
   virtual ~Colonise();
 
   void createFrame(Frame * f, int objID, int pos);
-  bool inputFrame(Frame * f);
+  bool inputFrame(Frame * f, unsigned int playerid);
   
   bool doOrder(IGObject * ob);
   

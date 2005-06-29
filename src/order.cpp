@@ -56,7 +56,7 @@ void Order::createFrame(Frame * f, int objID, int pos)
   
 }
 
-bool Order::inputFrame(Frame * f)
+bool Order::inputFrame(Frame * f, unsigned int playerid)
 {
   return true;
 }

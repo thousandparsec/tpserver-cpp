@@ -49,7 +49,7 @@ void Colonise::createFrame(Frame * f, int objID, int pos){
   
 }
 
-bool Colonise::inputFrame(Frame * f){
+bool Colonise::inputFrame(Frame * f, unsigned int playerid){
   f->unpackInt(); // number of turns
   f->unpackInt(); // size of resource list, should be zero
   // TODO: fix in case size of list is not zero

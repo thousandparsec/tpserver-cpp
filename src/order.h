@@ -58,7 +58,7 @@ class Order {
 	void setType(int ntype);
 
 	virtual void createFrame(Frame * f, int objID, int pos);
-	virtual bool inputFrame(Frame * f);
+	virtual bool inputFrame(Frame * f, unsigned int playerid);
 
 	virtual bool doOrder(IGObject * ob) = 0;
 

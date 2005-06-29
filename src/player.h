@@ -43,6 +43,7 @@ class Player {
 	void addVisibleDesign(unsigned int designid);
 	void addUsableDesign(unsigned int designid);
 	void removeUsableDesign(unsigned int designid);
+	bool isUsableDesign(unsigned int designid) const;
 	std::set<unsigned int> getUsableDesigns() const;
 
 	void addVisibleComponent(unsigned int compid);

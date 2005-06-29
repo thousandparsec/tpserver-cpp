@@ -81,6 +81,11 @@ bool Design::isValid() const{
   return valid;
 }
 
+double Design::getPropertyValue(unsigned int propid) const{
+  PropertyValue pv = properties.find(propid)->second;
+  return pv.getValue();
+}
+
 void Design::setDesignId(unsigned int id){
   designid = id;
 }
