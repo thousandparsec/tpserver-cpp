@@ -18,12 +18,16 @@
  *
  */
 
+#include <math.h>
+
 #include "frame.h"
 #include "order.h"
 #include "game.h"
 #include "planet.h"
 #include "object.h"
 #include "objectdatamanager.h"
+#include "design.h"
+#include "designstore.h"
 
 #include "fleet.h"
 
@@ -54,47 +58,62 @@ int Fleet::numShips(int type){
 }
 
 long long Fleet::maxSpeed(){
-  if(ships[2] > 0){
-    return 100000000;
-  }else if(ships[1] > 0){
-    return 200000000;
-  }else{
-    return 300000000;
+  double speed = 1e100;
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  for(std::map<int, int>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+    speed = fmax(speed, ds->getDesign(itcurr->first)->getPropertyValue(1));
   }
+  return (long long)(floor(speed));
 }
 
 int Fleet::firepower(bool draw){
-  int fp = 0;
-  if(draw){
-    fp += ships[2];
-  }else{
-    fp += ships[2] * 3;
-    fp += ships[1] * 2;
+  double fp = 0;
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  for(std::map<int, int>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+    if(draw){
+      fp += ds->getDesign(itcurr->first)->getPropertyValue(5) * itcurr->second;
+    }else{
+      fp += ds->getDesign(itcurr->first)->getPropertyValue(4) * itcurr->second;
+    }
   }
-  return fp;
+  return (int) (floor(fp));
 }
 
 bool Fleet::hit(int firepower){
   damage += firepower;
   bool change = true;
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
   while(change){
     change = false;
-    if(ships[2] > 0 && damage > 5 * ships[2]){
-      ships[2]--;
-      damage -= 6;
-      change = true;
-    }else if(ships[1] > 0 && damage > 3 * ships[1]){
-      ships[1]--;
-      damage -= 4;
-      change = true;
-    }else if(ships[0] > 0 && damage > ships[0]){
-      ships[0]--;
-      damage -= 2;
+    //find largest ship (by HP (prop 3))
+    int shiptype = 0;
+    int shiphp = 0;
+    for(std::map<int, int>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+      Design *design = ds->getDesign(itcurr->first);
+      if(shiphp < (int)design->getPropertyValue(3)){
+	shiptype = itcurr->first;
+	shiphp = (int)design->getPropertyValue(3);
+      }
+    }
+    if(shiphp == 0){
+      return false;
+    }
+    while(damage > shiphp && ships[shiptype] > 0){
+      ships[shiptype]--;
+      damage -= shiphp;
       change = true;
     }
+    if(ships[shiptype] == 0){
+      ships.erase(shiptype);
+      change = true;
+    }
+    
   }
   touchModTime();
-  return (ships[2] == 0 && ships[1] == 0 && ships[0] == 0);
+  return true;
 }
 
 void Fleet::packExtraData(Frame * frame)
@@ -124,7 +143,16 @@ void Fleet::doOnceATurn(IGObject * obj)
 
 void Fleet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
-    if(ships[1] > 0){
+    bool colonise = false;
+    DesignStore* ds = Game::getGame()->getDesignStore(1);
+    for(std::map<int, int>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+      if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){
+	colonise = true;
+	break;
+      }
+    }
+    if(colonise){
       frame->packInt(5);
       frame->packInt(odT_Colonise);
     }else{
@@ -141,7 +169,16 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
 }
 
 bool Fleet::checkAllowedOrder(int ot, int playerid){
-  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (ships[1] > 0 && ot == odT_Colonise)));
+  bool colonise = false;
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  for(std::map<int, int>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+    if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){
+      colonise = true;
+      break;
+    }
+  }
+  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (colonise && ot == odT_Colonise)));
 }
 
 int Fleet::getContainerType(){
