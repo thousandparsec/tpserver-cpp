@@ -96,7 +96,7 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
       fleettype[type] = number;
 
       Design* design = ds->getDesign(type);
-      turnstogo += (int)(ceil(number * design->getPropertyValue(1)));
+      turnstogo += (int)(ceil(number * design->getPropertyValue(2)));
 
     }
   }
