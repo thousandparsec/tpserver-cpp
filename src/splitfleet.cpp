@@ -26,6 +26,8 @@
 #include "fleet.h"
 #include "player.h"
 #include "message.h"
+#include "design.h"
+#include "designstore.h"
 
 #include "splitfleet.h"
 
@@ -40,22 +42,20 @@ void SplitFleet::createFrame(Frame * f, int objID, int pos){
   f->packInt(1); // number of turns
   f->packInt(0); // size of resource list
 
-  f->packInt(3);
-
   Fleet* of = (Fleet*)(Game::getGame()->getObject(objID)->getObjectData());
 
-  f->packInt(0);
-  f->packString("Scout");
-  f->packInt(of->numShips(0));
+  std::map<int, int> sotf = of->getShips();
 
-  f->packInt(1);
-  f->packString("Frigate");
-  f->packInt(of->numShips(1));
+  f->packInt(sotf.size());
+  DesignStore* ds = Game::getGame()->getDesignStore(1);
 
-  f->packInt(2);
-  f->packString("Battleship");
-  f->packInt(of->numShips(2));
-
+  for(std::map<int, int>::const_iterator itcurr = sotf.begin();
+      itcurr != sotf.end(); ++itcurr){
+    f->packInt(itcurr->first);
+    f->packString(ds->getDesign(itcurr->first)->getName().c_str());
+    f->packInt(itcurr->second);
+  }
+ 
   f->packInt(ships.size());
   for(std::map<int, int>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
     f->packInt(itcurr->first);
@@ -106,7 +106,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     }
   }
   
-  if(of->numShips(0) == 0 && of->numShips(1) == 0 && of->numShips(2) == 0){
+  if(of->totalShips() == 0){
     // whole fleet moved, put it back
     Logger::getLogger()->debug("Whole fleet split, putting it back");
     for(std::map<int, int>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
@@ -115,7 +115,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     Game::getGame()->scheduleRemoveObject(nfleet->getID());
     msg->setBody("Fleet not split, not enough ships");
     msg->addReference(rst_Action_Order, rsorav_Incompatible);
-  }else if(nf->numShips(0) == 0 && nf->numShips(1) == 0 && nf->numShips(2) == 0){
+  }else if(nf->totalShips() == 0){
     Logger::getLogger()->debug("Split fleet doesn't have any ships, not creating new fleet");
     Game::getGame()->scheduleRemoveObject(nfleet->getID());
     msg->setBody("Fleet not split, not enough ships");
