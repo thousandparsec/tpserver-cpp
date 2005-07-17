@@ -55,7 +55,9 @@ bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
 
   IGObject* target = Game::getGame()->getObject(fleetid);
 
-  if(target == NULL || (fleetid != 0 && target->getType() != 4) || (fleetid != 0 && ((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid){
+  if(target == NULL || (fleetid != 0 && 
+			(target->getType() != 4) || 
+			((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid)){
     Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
     return false;
   }
