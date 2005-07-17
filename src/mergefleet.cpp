@@ -55,7 +55,7 @@ bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
 
   IGObject* target = Game::getGame()->getObject(fleetid);
 
-  if(target == NULL || (fleetid != 0 && target->getType() != 4) /*|| ((Fleet*)(target->getObjectData()))->getOwner() != this object's owner */){
+  if(target == NULL || (fleetid != 0 && target->getType() != 4) || ((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid){
     Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
     return false;
   }
@@ -83,10 +83,12 @@ bool MergeFleet::doOrder(IGObject * ob){
       Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
       
       if(tfleet->getOwner() == myfleet->getOwner()){
-	tfleet->addShips(0, myfleet->numShips(0));
-	tfleet->addShips(1, myfleet->numShips(1));
-	tfleet->addShips(2, myfleet->numShips(2));
-	
+	std::map<int, int> ships = myfleet->getShips();
+	for(std::map<int, int>::iterator itcurr = ships.begin();
+	    itcurr != ships.end(); ++itcurr){
+	  tfleet->addShips(itcurr->first, itcurr->second);
+	}
+
 	Game::getGame()->scheduleRemoveObject(ob->getID());
 	
       }
