@@ -29,6 +29,8 @@
 #include "player.h"
 #include "move.h"
 #include "combatstrategy.h"
+#include "design.h"
+#include "designstore.h"
 
 #include "colonise.h"
 
@@ -87,12 +89,24 @@ bool Colonise::doOrder(IGObject * ob){
 	combat->setCombatants(ob, Game::getGame()->getObject(planetid));
 	combat->doCombat();
       }
-	
-	
-      if(fleet->numShips(1) >= 1){
+
+      DesignStore* ds = Game::getGame()->getDesignStore(1);
+      int shiptype = 0;
+      int shiphp = 2000000;
+      std::map<int, int> ships = fleet->getShips();
+      for(std::map<int, int>::iterator itcurr = ships.begin();
+	  itcurr != ships.end(); ++itcurr){
+	Design *design = ds->getDesign(itcurr->first);
+	if(design->getPropertyValue(6) != 0.0 && shiphp > (int)design->getPropertyValue(3)){
+	  shiptype = itcurr->first;
+	  shiphp = (int)design->getPropertyValue(3);
+	}
+      }
+      
+      if(shiptype != 0){
 	planet->setOwner(fleet->getOwner());
 	
-	fleet->removeShips(1, 1);
+	fleet->removeShips(shiptype, 1);
 	
 	msg->setSubject("Colonised planet");
 	msg->setBody("You have colonised a planet!");
@@ -105,7 +119,7 @@ bool Colonise::doOrder(IGObject * ob){
 	msg->addReference(rst_Action_Order, rsorav_Invalid);
       }
       
-      if(fleet->numShips(0) == 0 && fleet->numShips(1) == 0 && fleet->numShips(2) == 0){
+      if(fleet->totalShips() == 0){
 	Game::getGame()->scheduleRemoveObject(ob->getID());
       }
       
