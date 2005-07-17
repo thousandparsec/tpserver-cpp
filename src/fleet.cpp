@@ -57,12 +57,25 @@ int Fleet::numShips(int type){
   return ships[type];
 }
 
+std::map<int, int> Fleet::getShips() const{
+  return ships;
+}
+
+int Fleet::totalShips() const{
+  int num = 0;
+  for(std::map<int, int>::const_iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+    num += itcurr->second;
+  }
+  return num;
+}
+
 long long Fleet::maxSpeed(){
   double speed = 1e100;
   DesignStore* ds = Game::getGame()->getDesignStore(1);
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-    speed = fmax(speed, ds->getDesign(itcurr->first)->getPropertyValue(1));
+    speed = fmin(speed, ds->getDesign(itcurr->first)->getPropertyValue(1));
   }
   return (long long)(floor(speed));
 }

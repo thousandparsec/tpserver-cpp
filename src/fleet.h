@@ -32,6 +32,8 @@ class Fleet:public OwnedObject {
 	void addShips(int type, int number);
 	bool removeShips(int type, int number);
 	int numShips(int type);
+	std::map<int, int> getShips() const;
+	int totalShips() const;
 
 	long long maxSpeed();
 	int firepower(bool draw);
