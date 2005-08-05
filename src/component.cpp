@@ -58,7 +58,7 @@ std::string Component::getName() const{
   return name;
 }
 
-std::string Component::getTpclAddFunction() const{
+std::string Component::getTpclRequirementsFunction() const{
   return tpcl_requirements;
 }
 
@@ -82,7 +82,7 @@ void Component::setDescription(const std::string& d){
   description = d;
 }
 
-void Component::setTpclAddFunction(const std::string& a){
+void Component::setTpclRequirementsFunction(const std::string& a){
   tpcl_requirements = a;
 }
 

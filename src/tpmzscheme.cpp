@@ -213,7 +213,7 @@ void TpMzScheme::evalDesign(Design* d){
       }
       
       //for each component in the design
-      temp = scheme_eval_string((std::string("(") + ds->getComponent(curval)->getTpclAddFunction() + " design)").c_str(), env);
+      temp = scheme_eval_string((std::string("(") + ds->getComponent(curval)->getTpclRequirementsFunction() + " design)").c_str(), env);
       if(!SCHEME_PAIRP(temp) || !SCHEME_STRINGP(SCHEME_CDR(temp))){
 	Logger::getLogger()->warning("MzScheme: (a) Return not a pair, or the wrong time in the pair");
       }else{

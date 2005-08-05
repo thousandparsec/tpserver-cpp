@@ -35,14 +35,14 @@ class Component{
   unsigned int getComponentId() const;
   unsigned int getCategoryId() const;
   std::string getName() const;
-  std::string getTpclAddFunction() const;
+  std::string getTpclRequirementsFunction() const;
   std::map<unsigned int, std::string> getPropertyList() const;
 
   void setComponentId(unsigned int id);
   void setCategoryId(unsigned int id);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
-  void setTpclAddFunction(const std::string& a);
+  void setTpclRequirementsFunction(const std::string& a);
   void setPropertyList(std::map<unsigned int, std::string> pl);
   
  protected:
