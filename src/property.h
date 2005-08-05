@@ -48,6 +48,7 @@ class Property{
   unsigned int propid;
   unsigned int catid;
   unsigned int rank;
+  unsigned long long timestamp;
   std::string name;
   std::string description;
   std::string tpcl_display;

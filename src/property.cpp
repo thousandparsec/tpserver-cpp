@@ -18,12 +18,15 @@
  *
  */
 
+#include <time.h>
+
 #include "frame.h"
 
 #include "property.h"
 
 Property::Property(){
   propid = 0;
+  timestamp = time(NULL);
 }
 
 Property::~Property(){
@@ -33,6 +36,7 @@ Property::~Property(){
 void Property::packFrame(Frame* frame) const{
   frame->setType(ft03_Property);
   frame->packInt(propid);
+  frame->packInt64(timestamp);
   frame->packInt(1);
   frame->packInt(catid);
   frame->packInt(rank);

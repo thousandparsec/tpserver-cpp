@@ -48,9 +48,10 @@ class Component{
  protected:
   unsigned int compid;
   unsigned int catid;
+  unsigned long long timestamp;
   std::string name;
   std::string description;
-  std::string tpcl_add;
+  std::string tpcl_requirements;
   std::map<unsigned int, std::string> propertylist;
   
 

@@ -64,6 +64,7 @@ class Design{
   unsigned int exist;
   unsigned int owner;
   bool valid;
+  unsigned long long timestamp;
   std::list<unsigned int> components;
   std::map<unsigned int, PropertyValue> properties;
   std::string feedback;

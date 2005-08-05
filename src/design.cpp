@@ -34,6 +34,7 @@ Design::~Design(){
 void Design::packFrame(Frame* frame) const{
   frame->setType(ft03_Design);
   frame->packInt(designid);
+  frame->packInt64(timestamp);
   frame->packInt(1);
   frame->packInt(catid);
   frame->packString(name.c_str());

@@ -33,11 +33,12 @@ Component::~Component(){
 void Component::packFrame(Frame* frame) const{
   frame->setType(ft03_Component);
   frame->packInt(compid);
+  frame->packInt64(timestamp);
   frame->packInt(1);
   frame->packInt(catid);
   frame->packString(name.c_str());
   frame->packString(description.c_str());
-  frame->packString(tpcl_add.c_str());
+  frame->packString(tpcl_requirements.c_str());
   frame->packInt(propertylist.size());
   for(std::map<unsigned int, std::string>::const_iterator itcurr = propertylist.begin(); itcurr != propertylist.end(); ++itcurr){
     frame->packInt(itcurr->first);
@@ -58,7 +59,7 @@ std::string Component::getName() const{
 }
 
 std::string Component::getTpclAddFunction() const{
-  return tpcl_add;
+  return tpcl_requirements;
 }
 
 std::map<unsigned int, std::string> Component::getPropertyList() const{
@@ -82,7 +83,7 @@ void Component::setDescription(const std::string& d){
 }
 
 void Component::setTpclAddFunction(const std::string& a){
-  tpcl_add = a;
+  tpcl_requirements = a;
 }
 
 void Component::setPropertyList(std::map<unsigned int, std::string> pl){
