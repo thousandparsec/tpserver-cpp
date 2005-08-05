@@ -40,11 +40,13 @@ class DesignStore{
 
   unsigned int getCategoryId() const;
   std::string getName() const;
+  std::string getDescription() const;
   std::set<unsigned int> getDesignIds() const;
   std::set<unsigned int> getComponentIds() const;
   std::set<unsigned int> getPropertyIds() const;
 
   void setName(const std::string& n);
+  void setDescription(const std::string& d);
   
   virtual bool addDesign(Design* d);
   virtual bool modifyDesign(Design* d);
@@ -66,6 +68,7 @@ class DesignStore{
   std::map<unsigned int, Property*> properties;
   unsigned int catid;
   std::string name;
+  std::string desc;
 };
 
 #endif

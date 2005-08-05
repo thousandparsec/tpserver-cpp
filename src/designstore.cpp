@@ -87,6 +87,10 @@ std::string DesignStore::getName() const{
   return name;
 }
 
+std::string DesignStore::getDescription() const{
+  return desc;
+}
+
 std::set<unsigned int> DesignStore::getDesignIds() const{
   std::set<unsigned int> set;
   for(std::map<unsigned int, Design*>::const_iterator itcurr = designs.begin();
@@ -116,6 +120,10 @@ std::set<unsigned int> DesignStore::getPropertyIds() const{
 
 void DesignStore::setName(const std::string& n){
   name = n;
+}
+
+void DesignStore::setDescription(const std::string& d){
+  desc = d;
 }
 
 bool DesignStore::addDesign(Design* d){

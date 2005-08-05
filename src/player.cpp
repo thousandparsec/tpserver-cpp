@@ -1106,28 +1106,9 @@ void Player::processGetCategory(Frame* frame){
     }else{
       of->setType(ft03_Category);
       of->packInt(ds->getCategoryId());
+      of->packInt64(0LL); //timestamp
       of->packString(ds->getName().c_str());
-      //description?
-      std::set<unsigned int> outputset, ids = ds->getDesignIds();
-      set_difference(ids.begin(), ids.end(), visibleDesigns.begin(), visibleDesigns.end(), inserter(outputset, outputset.begin()));
-      of->packInt(outputset.size());
-      for(std::set<unsigned int>::iterator itcurr = outputset.begin();
-	  itcurr != outputset.end(); ++itcurr){
-	of->packInt(*itcurr);
-      }
-      ids = ds->getComponentIds();
-      set_difference(ids.begin(), ids.end(), visibleComponents.begin(), visibleComponents.end(), inserter(outputset, outputset.begin()));
-      of->packInt(outputset.size());
-      for(std::set<unsigned int>::iterator itcurr = outputset.begin();
-	  itcurr != outputset.end(); ++itcurr){
-	of->packInt(*itcurr);
-      }
-      ids = ds->getPropertyIds();
-      of->packInt(ids.size());
-      for(std::set<unsigned int>::iterator itcurr = ids.begin();
-	  itcurr != ids.end(); ++itcurr){
-	of->packInt(*itcurr);
-      }
+      of->packString(ds->getDescription().c_str());
     }
     curConnection->sendFrame(of);
   }
@@ -1213,6 +1194,7 @@ void Player::processAddDesign(Frame* frame){
 
   Design* design = new Design();
   frame->unpackInt(); //designid, don't take, overwrite
+  frame->unpackInt64(); //timestamp, discard
   frame->unpackInt(); //num of categories, had better be 1
   design->setCategoryId(frame->unpackInt());
   design->setName(std::string(frame->unpackString()));
@@ -1253,6 +1235,7 @@ void Player::processModifyDesign(Frame* frame){
 
   Design* design = new Design();
   design->setDesignId(frame->unpackInt());
+  frame->unpackInt64(); //timestamp, discard
   frame->unpackInt(); //num of categories, had better be 1
   design->setCategoryId(frame->unpackInt());
   design->setName(std::string(frame->unpackString()));
