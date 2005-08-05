@@ -66,6 +66,8 @@ class Player {
 
 	static int nextpid;
 
+	void processPermDisabled(Frame * frame);
+
 	void processGetObjectById(Frame * frame);
 	void processGetObjectByPos(Frame * frame);
 	void processGetObjectIds(Frame * frame);
@@ -94,8 +96,11 @@ class Player {
 	void processGetDesign(Frame* frame);
 	void processAddDesign(Frame* frame);
 	void processModifyDesign(Frame* frame);
+	void processGetDesignIds(Frame* frame);
 	void processGetComponent(Frame* frame);
+	void processGetComponentIds(Frame* frame);
 	void processGetProperty(Frame* frame);
+	void processGetPropertyIds(Frame* frame);
 
 	PlayerConnection *curConnection;
 	char *name;

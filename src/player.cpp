@@ -263,6 +263,11 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_Category_Get:
 	  processGetCategory(frame);
 	  break;
+	case ft03_Category_Add:
+	case ft03_Category_Remove:
+	  // don't allow either of these
+	  processPermDisabled(frame);
+	  break;
 	case ft03_CategoryIds_Get:
 	  processGetCategoryIds(frame);
 	  break;
@@ -275,11 +280,24 @@ void Player::processIGFrame(Frame * frame)
 	case ft03_Design_Modify:
 	  processModifyDesign(frame);
 	  break;
+	case ft03_Design_Remove:
+	  //currently disabled
+	  processPermDisabled(frame);
+	  break;
+	case ft03_DesignIds_Get:
+	  processGetDesignIds(frame);
+	  break;
 	case ft03_Component_Get:
 	  processGetComponent(frame);
 	  break;
+	case ft03_ComponentIds_Get:
+	  processGetComponentIds(frame);
+	  break;
 	case ft03_Property_Get:
 	  processGetProperty(frame);
+	  break;
+	case ft03_PropertyIds_Get:
+	  processGetPropertyIds(frame);
 	  break;
 
 	default:
@@ -296,6 +314,14 @@ void Player::processIGFrame(Frame * frame)
 }
 
 
+
+void Player::processPermDisabled(Frame * frame){
+  Logger::getLogger()->debug("doing a frame that is disabled");
+
+  Frame *of = curConnection->createFrame(frame);
+  of->createFailFrame(fec_PermUnavailable, "Server does not support this frame type");
+  curConnection->sendFrame(of);
+}
 
 void Player::processGetObjectById(Frame * frame)
 {
@@ -1271,6 +1297,38 @@ void Player::processModifyDesign(Frame* frame){
   curConnection->sendFrame(of);
 }
 
+void Player::processGetDesignIds(Frame* frame){
+ Logger::getLogger()->debug("doing Get Design Ids frame");
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_DesignIds_List);
+  of->packInt(0);
+  of->packInt(0);
+  of->packInt(visibleDesigns.size());
+  for(std::set<unsigned int>::iterator itcurr = visibleDesigns.begin(); 
+      itcurr != visibleDesigns.end(); ++itcurr){
+    of->packInt(*itcurr);
+    of->packInt64(0ll);
+  }
+ 
+  curConnection->sendFrame(of);
+}
+
 void Player::processGetComponent(Frame* frame){
   Logger::getLogger()->debug("doing Get Component frame");
 
@@ -1312,6 +1370,38 @@ void Player::processGetComponent(Frame* frame){
   }
 }
 
+void Player::processGetComponentIds(Frame* frame){
+ Logger::getLogger()->debug("doing Get Component Ids frame");
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_ComponentIds_List);
+  of->packInt(0);
+  of->packInt(0);
+  of->packInt(visibleDesigns.size());
+  for(std::set<unsigned int>::iterator itcurr = visibleComponents.begin(); 
+      itcurr != visibleComponents.end(); ++itcurr){
+    of->packInt(*itcurr);
+    of->packInt64(0ll);
+  }
+ 
+  curConnection->sendFrame(of);
+}
+
 void Player::processGetProperty(Frame* frame){
   Logger::getLogger()->debug("doing Get Property frame");
 
@@ -1351,4 +1441,37 @@ void Player::processGetProperty(Frame* frame){
     }
     curConnection->sendFrame(of);
   }
+}
+
+void Player::processGetPropertyIds(Frame* frame){
+ Logger::getLogger()->debug("doing Get Property Ids frame");
+  
+  if(frame->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  if(frame->getDataLength() != 12){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  std::set<unsigned int> propids = Game::getGame()->getDesignStore(1)->getPropertyIds();
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft03_PropertyIds_List);
+  of->packInt(0);
+  of->packInt(0);
+  of->packInt(propids.size());
+  for(std::set<unsigned int>::iterator itcurr = propids.begin(); 
+      itcurr != propids.end(); ++itcurr){
+    of->packInt(*itcurr);
+    of->packInt64(0ll);
+  }
+ 
+  curConnection->sendFrame(of);
 }
