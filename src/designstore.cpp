@@ -144,10 +144,12 @@ bool DesignStore::addDesign(Design* d){
   }
   d->eval();
   designs[d->getDesignId()] = d;
+  categories[d->getCategoryId()]->doAddDesign(d);
   player->addVisibleDesign(d->getDesignId());
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
   }
+  
   return true;
 }
 
@@ -158,12 +160,20 @@ bool DesignStore::modifyDesign(Design* d){
   Player* player = Game::getGame()->getPlayer(d->getOwner());
   player->removeUsableDesign(d->getDesignId());
   d->eval();
-  designs[d->getDesignId()] = d;
+  bool rtv;
+  if(categories[d->getCategoryId()]->doModifyDesign(d)){
+    designs[d->getDesignId()] = d;
+    delete current;
+    rtv = true;
+  }else{
+    delete d;
+    d = current;
+    rtv = false;
+  }
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
   }
-  delete current;
-  return true;
+  return rtv;
 }
 
 void DesignStore::addComponent(Component* c){
