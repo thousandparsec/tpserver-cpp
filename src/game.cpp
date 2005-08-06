@@ -261,25 +261,8 @@ void Game::setCombatStrategy(CombatStrategy* cs){
   combatstrategy = cs;
 }
 
-DesignStore* Game::getDesignStore(unsigned int id) const{
-  std::map<unsigned int, DesignStore*>::const_iterator itcurr = designstores.find(id);
-  if(itcurr != designstores.end()){
-    return itcurr->second;
-  }
-  return NULL;
-}
-
-std::set<unsigned int> Game::getCategoryIds() const{
-  std::set<unsigned int> set;
-  for(std::map<unsigned int, DesignStore*>::const_iterator itcurr = designstores.begin();
-      itcurr != designstores.end(); ++itcurr){
-    set.insert(itcurr->first);
-  }
-  return set;
-}
-
-void Game::addDesignStore(DesignStore* ds){
-  designstores[ds->getCategoryId()] = ds;
+DesignStore* Game::getDesignStore() const{
+  return designstore;
 }
 
 bool Game::isLoaded() const{
@@ -430,6 +413,7 @@ Game::Game()
 {
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
+  designstore = new DesignStore();
   combatstrategy = NULL;
   ruleset = NULL;
   loaded = false;
@@ -454,10 +438,7 @@ Game::~Game()
     delete combatstrategy;
   if(ruleset != NULL)
     delete ruleset;
-  while(!designstores.empty()){
-    delete designstores.begin()->second;
-    designstores.erase(designstores.begin());
-  }
+  delete designstore;
 }
 
 Game Game::operator=(Game & rhs)

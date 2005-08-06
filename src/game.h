@@ -64,9 +64,7 @@ class Game {
 	CombatStrategy* getCombatStrategy() const;
 	void setCombatStrategy(CombatStrategy* cs);
 
-	DesignStore* getDesignStore(unsigned int id) const;
-	std::set<unsigned int> getCategoryIds() const;
-	void addDesignStore(DesignStore* ds);
+	DesignStore* getDesignStore() const;
 
 	bool isLoaded() const;
 	bool isStarted() const;
@@ -107,7 +105,7 @@ class Game {
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;
-	std::map<unsigned int, DesignStore*> designstores;
+	DesignStore* designstore;
 
 };
 

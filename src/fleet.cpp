@@ -72,7 +72,7 @@ int Fleet::totalShips() const{
 
 long long Fleet::maxSpeed(){
   double speed = 1e100;
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     speed = fmin(speed, ds->getDesign(itcurr->first)->getPropertyValue(1));
@@ -82,7 +82,7 @@ long long Fleet::maxSpeed(){
 
 int Fleet::firepower(bool draw){
   double fp = 0;
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     if(draw){
@@ -97,7 +97,7 @@ int Fleet::firepower(bool draw){
 bool Fleet::hit(int firepower){
   damage += firepower;
   bool change = true;
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   while(change){
     change = false;
     //find largest ship (by HP (prop 3))
@@ -157,7 +157,7 @@ void Fleet::doOnceATurn(IGObject * obj)
 void Fleet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
     bool colonise = false;
-    DesignStore* ds = Game::getGame()->getDesignStore(1);
+    DesignStore* ds = Game::getGame()->getDesignStore();
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
       if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){
@@ -183,7 +183,7 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
 
 bool Fleet::checkAllowedOrder(int ot, int playerid){
   bool colonise = false;
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){

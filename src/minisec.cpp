@@ -41,6 +41,7 @@
 #include "property.h"
 #include "component.h"
 #include "design.h"
+#include "category.h"
 
 #include "minisec.h"
 
@@ -55,10 +56,12 @@ MiniSec::~MiniSec(){
 void MiniSec::initGame(){
   Game* game = Game::getGame();
   
-  DesignStore *ds = new DesignStore();
-  ds->setName("Ships");
-  game->addDesignStore(ds);
-  assert(ds->getCategoryId() == 1);
+  DesignStore *ds = game->getDesignStore();
+  Category * cat = new Category();
+  cat->setName("Ships");
+  cat->setDescription("The Ship design and component category");
+  ds->addCategory(cat);
+  assert(cat->getCategoryId() == 1);
 
   Property* prop = new Property();
   prop->setCategoryId(1);
@@ -376,7 +379,7 @@ void MiniSec::onPlayerAdded(Player* player){
   std::list<unsigned int> cl;
   cl.push_back(1);
   design->setComponents(cl);
-  Game::getGame()->getDesignStore(1)->addDesign(design);
+  Game::getGame()->getDesignStore()->addDesign(design);
 
   design = new Design();
   design->setCategoryId(1);
@@ -386,7 +389,7 @@ void MiniSec::onPlayerAdded(Player* player){
   cl.clear();
   cl.push_back(2);
   design->setComponents(cl);
-  Game::getGame()->getDesignStore(1)->addDesign(design);
+  Game::getGame()->getDesignStore()->addDesign(design);
 
   design = new Design();
   design->setCategoryId(1);
@@ -396,7 +399,7 @@ void MiniSec::onPlayerAdded(Player* player){
   cl.clear();
   cl.push_back(3);
   design->setComponents(cl);
-  Game::getGame()->getDesignStore(1)->addDesign(design);
+  Game::getGame()->getDesignStore()->addDesign(design);
 
   //remove temporarily added usable components
   player->removeUsableComponent(1);

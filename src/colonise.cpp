@@ -90,7 +90,7 @@ bool Colonise::doOrder(IGObject * ob){
 	combat->doCombat();
       }
 
-      DesignStore* ds = Game::getGame()->getDesignStore(1);
+      DesignStore* ds = Game::getGame()->getDesignStore();
       int shiptype = 0;
       int shiphp = 2000000;
       std::map<int, int> ships = fleet->getShips();

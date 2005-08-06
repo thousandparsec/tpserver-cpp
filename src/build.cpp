@@ -56,7 +56,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
   f->packInt(0); // size of resource list
 
   std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<unsigned int> dids = ds->getDesignIds();
   std::set<unsigned int> usable;
@@ -86,7 +86,7 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   f->unpackInt(); // selectable list (should be zero) TODO
   
   Player* player = Game::getGame()->getPlayer(playerid);
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
 
   for(int i = f->unpackInt(); i > 0; i--){
     int type = f->unpackInt();

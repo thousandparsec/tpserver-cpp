@@ -43,7 +43,7 @@ TpMzScheme* TpMzScheme::getImplemention(){
 
 void TpMzScheme::evalDesign(Design* d){
 
-  DesignStore *ds = Game::getGame()->getDesignStore(d->getCategoryId());
+  DesignStore *ds = Game::getGame()->getDesignStore();
   
   if (scheme_setjmp(scheme_error_buf)) {
     Logger::getLogger()->warning("MzScheme Error");

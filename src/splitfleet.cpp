@@ -47,7 +47,7 @@ void SplitFleet::createFrame(Frame * f, int objID, int pos){
   std::map<int, int> sotf = of->getShips();
 
   f->packInt(sotf.size());
-  DesignStore* ds = Game::getGame()->getDesignStore(1);
+  DesignStore* ds = Game::getGame()->getDesignStore();
 
   for(std::map<int, int>::const_iterator itcurr = sotf.begin();
       itcurr != sotf.end(); ++itcurr){

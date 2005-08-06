@@ -34,6 +34,7 @@
 #include "ordermanager.h"
 #include "objectdata.h"
 #include "designstore.h"
+#include "category.h"
 #include "design.h"
 #include "component.h"
 #include "property.h"
@@ -1126,15 +1127,11 @@ void Player::processGetCategory(Frame* frame){
   for(int i = 0; i < numcats; i++){
     Frame *of = curConnection->createFrame(frame);
     int catnum = frame->unpackInt();
-    DesignStore* ds = Game::getGame()->getDesignStore(catnum);
-    if(ds == NULL){
+    Category* cat = Game::getGame()->getDesignStore()->getCategory(catnum);
+    if(cat == NULL){
       of->createFailFrame(fec_NonExistant, "No Such Category");
     }else{
-      of->setType(ft03_Category);
-      of->packInt(ds->getCategoryId());
-      of->packInt64(0LL); //timestamp
-      of->packString(ds->getName().c_str());
-      of->packString(ds->getDescription().c_str());
+      cat->packFrame(of);
     }
     curConnection->sendFrame(of);
   }
@@ -1159,7 +1156,7 @@ void Player::processGetCategoryIds(Frame* frame){
     return;
   }
 
-  std::set<unsigned int> cids = Game::getGame()->getCategoryIds();
+  std::set<unsigned int> cids = Game::getGame()->getDesignStore()->getCategoryIds();
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_CategoryIds_List);
   of->packInt(0);
@@ -1177,9 +1174,7 @@ void Player::processGetCategoryIds(Frame* frame){
 void Player::processGetDesign(Frame* frame){
   Logger::getLogger()->debug("doing Get Design frame");
 
-  int catnum = frame->unpackInt();
-
-  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   if(ds == NULL){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No Such Category");
@@ -1238,7 +1233,7 @@ void Player::processAddDesign(Frame* frame){
   }
   //discard rest of frame
 
-  DesignStore* ds = Game::getGame()->getDesignStore(design->getCategoryId());
+  DesignStore* ds = Game::getGame()->getDesignStore();
   if(ds == NULL){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No Such Category");
@@ -1279,7 +1274,7 @@ void Player::processModifyDesign(Frame* frame){
   }
   //discard rest of frame
 
-  DesignStore* ds = Game::getGame()->getDesignStore(design->getCategoryId());
+  DesignStore* ds = Game::getGame()->getDesignStore();
   if(ds == NULL){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No Such Category");
@@ -1332,9 +1327,7 @@ void Player::processGetDesignIds(Frame* frame){
 void Player::processGetComponent(Frame* frame){
   Logger::getLogger()->debug("doing Get Component frame");
 
-  int catnum = frame->unpackInt();
-
-  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   if(ds == NULL){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No Such Category");
@@ -1405,9 +1398,7 @@ void Player::processGetComponentIds(Frame* frame){
 void Player::processGetProperty(Frame* frame){
   Logger::getLogger()->debug("doing Get Property frame");
 
-  int catnum = frame->unpackInt();
-
-  DesignStore* ds = Game::getGame()->getDesignStore(catnum);
+  DesignStore* ds = Game::getGame()->getDesignStore();
   if(ds == NULL){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No Such Category");
@@ -1461,7 +1452,7 @@ void Player::processGetPropertyIds(Frame* frame){
     return;
   }
 
-  std::set<unsigned int> propids = Game::getGame()->getDesignStore(1)->getPropertyIds();
+  std::set<unsigned int> propids = Game::getGame()->getDesignStore()->getPropertyIds();
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_PropertyIds_List);
   of->packInt(0);

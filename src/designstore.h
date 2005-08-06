@@ -24,35 +24,33 @@
 #include <map>
 #include <string>
 
+class Category;
 class Design;
 class Component;
 class Property;
-class Frame;
 
 class DesignStore{
  public:
   DesignStore();
-  virtual ~DesignStore();
+  ~DesignStore();
 
+  Category* getCategory(unsigned int id);
   Design* getDesign(unsigned int id);
   Component* getComponent(unsigned int id);
   Property* getProperty(unsigned int id);
 
-  unsigned int getCategoryId() const;
-  std::string getName() const;
-  std::string getDescription() const;
+  std::set<unsigned int> getCategoryIds() const;
   std::set<unsigned int> getDesignIds() const;
   std::set<unsigned int> getComponentIds() const;
   std::set<unsigned int> getPropertyIds() const;
+ 
+  void addCategory(Category* c);
 
-  void setName(const std::string& n);
-  void setDescription(const std::string& d);
-  
-  virtual bool addDesign(Design* d);
-  virtual bool modifyDesign(Design* d);
+  bool addDesign(Design* d);
+  bool modifyDesign(Design* d);
 
-  virtual void addComponent(Component* c);
-  virtual void addProperty(Property* p);
+  void addComponent(Component* c);
+  void addProperty(Property* p);
 
   unsigned int getMaxDesignId() const;
   unsigned int getMaxComponentId() const;
@@ -63,12 +61,11 @@ class DesignStore{
   static unsigned int next_componentid;
   static unsigned int next_propertyid;
   static unsigned int next_categoryid;
+  std::map<unsigned int, Category*> categories;
   std::map<unsigned int, Design*> designs;
   std::map<unsigned int, Component*> components;
   std::map<unsigned int, Property*> properties;
-  unsigned int catid;
-  std::string name;
-  std::string desc;
+  
 };
 
 #endif

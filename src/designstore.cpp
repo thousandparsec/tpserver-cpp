@@ -19,12 +19,12 @@
  */
 
 
+#include "category.h"
 #include "design.h"
 #include "component.h"
 #include "property.h"
 #include "game.h"
 #include "player.h"
-#include "frame.h"
 
 #include "designstore.h"
 
@@ -34,7 +34,6 @@ unsigned int DesignStore::next_propertyid = 1;
 unsigned int DesignStore::next_categoryid = 1;
 
 DesignStore::DesignStore(){
-  catid = next_categoryid++;
 }
 
 DesignStore::~DesignStore(){
@@ -49,6 +48,15 @@ DesignStore::~DesignStore(){
   while(!properties.empty()){
     delete properties.begin()->second;
     properties.erase(properties.begin());
+  }
+}
+
+Category* DesignStore::getCategory(unsigned int id){
+  std::map<unsigned int, Category*>::iterator pos = categories.find(id);
+  if(pos != categories.end()){
+    return pos->second;
+  }else{
+    return NULL;
   }
 }
 
@@ -79,16 +87,14 @@ Property* DesignStore::getProperty(unsigned int id){
   }
 }
 
-unsigned int DesignStore::getCategoryId() const{
-  return catid;
-}
 
-std::string DesignStore::getName() const{
-  return name;
-}
-
-std::string DesignStore::getDescription() const{
-  return desc;
+std::set<unsigned int> DesignStore::getCategoryIds() const{
+  std::set<unsigned int> set;
+  for(std::map<unsigned int, Category*>::const_iterator itcurr = categories.begin();
+      itcurr != categories.end(); ++itcurr){
+    set.insert(itcurr->first);
+  }
+  return set;
 }
 
 std::set<unsigned int> DesignStore::getDesignIds() const{
@@ -118,18 +124,14 @@ std::set<unsigned int> DesignStore::getPropertyIds() const{
   return set;
 }
 
-void DesignStore::setName(const std::string& n){
-  name = n;
-}
-
-void DesignStore::setDescription(const std::string& d){
-  desc = d;
+void DesignStore::addCategory(Category* c){
+  c->setCategoryId(next_categoryid++);
+  categories[c->getCategoryId()] = c;
 }
 
 bool DesignStore::addDesign(Design* d){
   d->setDesignId(next_designid++);
-  if(d->getCategoryId() != catid)
-    return false;
+  
   //check components all come from this category
   std::list<unsigned int> cl = d->getComponents();
   Player* player = Game::getGame()->getPlayer(d->getOwner());
@@ -165,13 +167,11 @@ bool DesignStore::modifyDesign(Design* d){
 }
 
 void DesignStore::addComponent(Component* c){
-  c->setCategoryId(catid);
   c->setComponentId(next_componentid++);
   components[c->getComponentId()] = c;
 }
 
 void DesignStore::addProperty(Property* p){
-  p->setCategoryId(catid);
   p->setPropertyId(next_propertyid++);
   properties[p->getPropertyId()] = p;
 }
