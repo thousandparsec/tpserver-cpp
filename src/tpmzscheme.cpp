@@ -51,39 +51,11 @@ void TpMzScheme::evalDesign(Design* d){
     Scheme_Object* temp;
 
     std::ostringstream formater;
-    formater << "(define-values (struct:component_list make-component_list component_list? component_list-ref component_list-realset!)(make-component_list-type "
-	     << ds->getMaxComponentId() << "))";
-
-    temp = scheme_eval_string(formater.str().c_str(), env);
-    
-    temp = scheme_eval_string("(define component_list-set! (lambda (clist id val) component_list-realset! clist (- id 1) val))", env);
-
-    std::set<unsigned int> compids = ds->getComponentIds();
-    for(std::set<unsigned int>::iterator compit = compids.begin();
-	compit != compids.end(); ++compit){
-      // for each component type
-      Component* c = ds->getComponent(*compit);
-      if(c != NULL){
-	formater.str("");
-	formater << "(define component." << c->getName() 
-		 << " (make-component_list-accessor component_list-ref "
-		 << c->getComponentId() << " \"" << c->getName() 
-		 << "\" ))";
-	temp = scheme_eval_string(formater.str().c_str(), env);
-	
-      }
-    }
-    compids.clear();
-
+   
     formater.str("");
     formater << "(define-values (struct:designType make-designType designType? designType-ref designType-set!)(make-design-type "
 	     << ds->getMaxPropertyId() << "))";
     temp = scheme_eval_string(formater.str().c_str(), env);
-    
-    temp = scheme_eval_string("(define designType._num-components (make-property-accessor designType-ref -1 \"_num-components\" ))", env);
-    //temp = scheme_eval_string("(define _num-components-pset! (make-property-setter designType-set! -1 \"_num-components\" ))", env);
-    temp = scheme_eval_string("(define designType._components (make-property-accessor designType-ref 0 \"_components\" ))", env);
-    //temp = scheme_eval_string("(define _components-pset! (make-property-setter designType-set! 0 \"_components\" ))", env);
     
     temp = scheme_eval_string("(define property-designType-set! (lambda (design id val) designType-set! (+ id 1) val))", env);
 
@@ -105,34 +77,8 @@ void TpMzScheme::evalDesign(Design* d){
     propids.clear();
 
     std::list<unsigned int> complist = d->getComponents();
-    formater.str("");
-    formater << "(define design (make-designType  " << complist.size()
-	     << " (make-component_list)))";
-    temp = scheme_eval_string(formater.str().c_str(), env);
 
-
-    Logger::getLogger()->debug("About to add components");
-    
-    std::vector<unsigned int> clist(complist.size());
-    std::copy(complist.begin(), complist.end(), clist.begin());
-
-    std::sort(clist.begin(), clist.end());
-    std::vector<unsigned int>::iterator compit = clist.begin();
-    while(compit != clist.end()){
-      unsigned int count = 0;
-      unsigned int curval = *compit;
-      while(compit != clist.end() && (*compit) == curval){
-	count++;
-	++compit;
-      }
-      
-      //for each component in the design
-      formater.str("");
-      formater << "(component_list-set! (designType._components design) "
-	       << curval << " " << count << ")";
-      temp = scheme_eval_string(formater.str().c_str(), env);
-    }
-    // ok, inital design object created
+    temp = scheme_eval_string("(define design (make-designType))", env);
 
     std::map<unsigned int, std::map<unsigned int, std::list<std::string> > > propranking;
     for(std::list<unsigned int>::iterator compit = complist.begin();
@@ -205,7 +151,11 @@ void TpMzScheme::evalDesign(Design* d){
     bool valid = true;
     std::string feedback = "";
     Logger::getLogger()->debug("About to process add functions");
-    compit = clist.begin();
+
+    std::vector<unsigned int> clist(complist.size());
+    std::copy(complist.begin(), complist.end(), clist.begin());
+    std::sort(clist.begin(), clist.end());
+    std::vector<unsigned int>::iterator compit = clist.begin();
     while(compit != clist.end()){
       unsigned int curval = *compit;
       while(compit != clist.end() && (*compit) == curval){
@@ -238,8 +188,7 @@ TpMzScheme::TpMzScheme(){
   if (scheme_setjmp(scheme_error_buf)) {
     Logger::getLogger()->warning("MzScheme Error");
   } else {
-    Scheme_Object *temp = scheme_eval_string("(load \"componentstruct.scm\")",env);
-    temp = scheme_eval_string("(load \"designstruct.scm\")",env);
+    scheme_eval_string("(load \"designstruct.scm\")",env);
     
   }
 }
