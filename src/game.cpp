@@ -146,6 +146,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		  players[rtn->getID()] = (rtn);
 		  
 		  ruleset->onPlayerAdded(rtn);
+		  rtn->setVisibleObjects(getObjectIds());
 
 		}else{
 		  // player can not be added
