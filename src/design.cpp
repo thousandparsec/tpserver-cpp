@@ -83,8 +83,12 @@ bool Design::isValid() const{
 }
 
 double Design::getPropertyValue(unsigned int propid) const{
-  PropertyValue pv = properties.find(propid)->second;
-  return pv.getValue();
+  std::map<unsigned int, PropertyValue>::const_iterator itpos = properties.find(propid);
+  if(itpos != properties.end()){
+    PropertyValue pv = itpos->second;
+    return pv.getValue();
+  }else
+    return 0.0;
 }
 
 void Design::setDesignId(unsigned int id){
