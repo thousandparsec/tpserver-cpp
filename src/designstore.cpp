@@ -178,6 +178,20 @@ bool DesignStore::modifyDesign(Design* d){
 
 void DesignStore::addComponent(Component* c){
   c->setComponentId(next_componentid++);
+  Property *p = new Property();
+  p->setCategoryId(c->getCategoryId());
+  p->setRank(0);
+  p->setName(c->getName());
+  p->setDescription("The number of " + c->getName() + " components in the design");
+  p->setTpclDisplayFunction(
+      "(lambda (design bits)"
+	"(let "
+	  "((n (apply + bits)))"
+	  "(cons n (string-append (number->string n) \" components\"))))");
+  addProperty(p);
+  std::map<unsigned int, std::string> pl = c->getPropertyList();
+  pl[p->getPropertyId()] = "(lambda (design) 1)";
+  c->setPropertyList(pl);
   components[c->getComponentId()] = c;
 }
 
