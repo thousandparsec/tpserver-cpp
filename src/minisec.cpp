@@ -42,6 +42,7 @@
 #include "component.h"
 #include "design.h"
 #include "category.h"
+#include "logging.h"
 
 #include "minisec.h"
 
@@ -111,6 +112,17 @@ void MiniSec::initGame(){
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
   ds->addProperty(prop);
 
+  prop = new Property();
+  prop->setCategoryId(1);
+  prop->setRank(0);
+  prop->setName("_num-components");
+  prop->setDescription("The total number of components in the design");
+  prop->setTpclDisplayFunction(
+     "(lambda (design bits)"
+       "(let ((n (apply + bits)))"
+       "(cons n (string-append (number->string n) \" components\"))))");
+  ds->addProperty(prop);
+
   std::map<unsigned int, std::string> propertylist;
 
   Component* comp = new Component();
@@ -127,6 +139,7 @@ void MiniSec::initGame(){
   propertylist[3] = "(lambda (design) 2)";
   propertylist[4] = "(lambda (design) 0)";
   propertylist[5] = "(lambda (design) 0)";
+  propertylist[7] = "(lambda (design) 1)";
   comp->setPropertyList(propertylist);
   ds->addComponent(comp);
 
@@ -146,6 +159,7 @@ void MiniSec::initGame(){
   propertylist[4] = "(lambda (design) 2)";
   propertylist[5] = "(lambda (design) 0)";
   propertylist[6] = "(lambda (design) 1)";
+  propertylist[7] = "(lambda (design) 1)";
   comp->setPropertyList(propertylist);
   ds->addComponent(comp);
 
@@ -164,6 +178,7 @@ void MiniSec::initGame(){
   propertylist[3] = "(lambda (design) 6)";
   propertylist[4] = "(lambda (design) 3)";
   propertylist[5] = "(lambda (design) 1)";
+  propertylist[7] = "(lambda (design) 1)";
   comp->setPropertyList(propertylist);
   ds->addComponent(comp);
 
@@ -299,7 +314,62 @@ void MiniSec::doOnceATurn(){
 }
 
 bool MiniSec::onAddPlayer(Player* player){
+  
+  return true;
+}
+
+void MiniSec::onPlayerAdded(Player* player){
   Game *game = Game::getGame();
+
+  Logger::getLogger()->debug("MiniSec::onPlayerAdded");
+
+  player->setVisibleObjects(game->getObjectIds());
+
+  player->addVisibleComponent(1);
+  player->addVisibleComponent(2);
+  player->addVisibleComponent(3);
+
+  //temporarily add the components as usable to get the designs done
+  player->addUsableComponent(1);
+  player->addUsableComponent(2);
+  player->addUsableComponent(3);
+
+  Design* design = new Design();
+  design->setCategoryId(1);
+  design->setName("Scout");
+  design->setDescription("Scout ship");
+  design->setOwner(player->getID());
+  std::list<unsigned int> cl;
+  cl.push_back(1);
+  design->setComponents(cl);
+  game->getDesignStore()->addDesign(design);
+  unsigned int scoutid = design->getDesignId();
+
+  design = new Design();
+  design->setCategoryId(1);
+  design->setName("Frigate");
+  design->setDescription("Frigate ship");
+  design->setOwner(player->getID());
+  cl.clear();
+  cl.push_back(2);
+  design->setComponents(cl);
+  game->getDesignStore()->addDesign(design);
+
+  design = new Design();
+  design->setCategoryId(1);
+  design->setName("Battleship");
+  design->setDescription("Battleship ship");
+  design->setOwner(player->getID());
+  cl.clear();
+  cl.push_back(3);
+  design->setComponents(cl);
+  game->getDesignStore()->addDesign(design);
+
+  //remove temporarily added usable components
+  player->removeUsableComponent(1);
+  player->removeUsableComponent(2);
+  player->removeUsableComponent(3);
+
   char* name = player->getName();
   IGObject *star = new IGObject();
   game->addObject(star);
@@ -350,59 +420,9 @@ bool MiniSec::onAddPlayer(Player* player){
   fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 						    (long long)((rand() % 10000) - 5000),
 						    /*(long long)((rand() % 10000) - 5000)*/ 0));
-  ((Fleet*)(fleet->getObjectData()))->addShips(0, 2);
+  ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
   fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
   star->addContainedObject(fleet->getID());
-  
-  
-  return true;
-}
 
-void MiniSec::onPlayerAdded(Player* player){
-  player->setVisibleObjects(Game::getGame()->getObjectIds());
-
-  player->addVisibleComponent(1);
-  player->addVisibleComponent(2);
-  player->addVisibleComponent(3);
-
-  //temporarily add the components as usable to get the designs done
-  player->addUsableComponent(1);
-  player->addUsableComponent(2);
-  player->addUsableComponent(3);
-
-  Design* design = new Design();
-  design->setCategoryId(1);
-  design->setName("Scout");
-  design->setDescription("Scout ship");
-  design->setOwner(player->getID());
-  std::list<unsigned int> cl;
-  cl.push_back(1);
-  design->setComponents(cl);
-  Game::getGame()->getDesignStore()->addDesign(design);
-
-  design = new Design();
-  design->setCategoryId(1);
-  design->setName("Frigate");
-  design->setDescription("Frigate ship");
-  design->setOwner(player->getID());
-  cl.clear();
-  cl.push_back(2);
-  design->setComponents(cl);
-  Game::getGame()->getDesignStore()->addDesign(design);
-
-  design = new Design();
-  design->setCategoryId(1);
-  design->setName("Battleship");
-  design->setDescription("Battleship ship");
-  design->setOwner(player->getID());
-  cl.clear();
-  cl.push_back(3);
-  design->setComponents(cl);
-  Game::getGame()->getDesignStore()->addDesign(design);
-
-  //remove temporarily added usable components
-  player->removeUsableComponent(1);
-  player->removeUsableComponent(2);
-  player->removeUsableComponent(3);
 }
