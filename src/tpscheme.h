@@ -26,6 +26,8 @@ class TpScheme{
  public:
   static TpScheme* getImplemention();
 
+        virtual ~TpScheme();
+
   virtual void evalDesign(Design* d) = 0;
 
 };

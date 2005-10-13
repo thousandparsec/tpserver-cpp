@@ -23,7 +23,8 @@
 class Player;
 
 class Ruleset{
- public:
+  public:
+        virtual ~Ruleset(){};
   virtual void initGame() = 0;
   virtual void createGame() = 0;
   virtual void startGame() = 0;

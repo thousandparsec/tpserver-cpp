@@ -36,3 +36,6 @@ TpScheme* TpScheme::getImplemention(){
 #endif
 
 }
+
+TpScheme::~TpScheme(){
+}
