@@ -1175,12 +1175,6 @@ void Player::processGetDesign(Frame* frame){
   Logger::getLogger()->debug("doing Get Design frame");
 
   DesignStore* ds = Game::getGame()->getDesignStore();
-  if(ds == NULL){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No Such Category");
-    curConnection->sendFrame(of);
-    return;
-  }
 
   int numdesigns = frame->unpackInt();
   if(numdesigns > 1){
@@ -1234,12 +1228,6 @@ void Player::processAddDesign(Frame* frame){
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();
-  if(ds == NULL){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No Such Category");
-    curConnection->sendFrame(of);
-    return;
-  }
 
   Frame *of = curConnection->createFrame(frame);
   if(ds->addDesign(design)){
@@ -1275,12 +1263,6 @@ void Player::processModifyDesign(Frame* frame){
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();
-  if(ds == NULL){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No Such Category");
-    curConnection->sendFrame(of);
-    return;
-  }
 
   Frame *of = curConnection->createFrame(frame);
   if(ds->modifyDesign(design)){
@@ -1328,12 +1310,6 @@ void Player::processGetComponent(Frame* frame){
   Logger::getLogger()->debug("doing Get Component frame");
 
   DesignStore* ds = Game::getGame()->getDesignStore();
-  if(ds == NULL){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No Such Category");
-    curConnection->sendFrame(of);
-    return;
-  }
 
   int numcomps = frame->unpackInt();
   if(numcomps > 1){
@@ -1399,12 +1375,6 @@ void Player::processGetProperty(Frame* frame){
   Logger::getLogger()->debug("doing Get Property frame");
 
   DesignStore* ds = Game::getGame()->getDesignStore();
-  if(ds == NULL){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No Such Category");
-    curConnection->sendFrame(of);
-    return;
-  }
 
   int numprops = frame->unpackInt();
   if(numprops > 1){
