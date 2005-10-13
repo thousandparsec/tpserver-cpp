@@ -53,6 +53,7 @@ class Order {
 
       public:
 	Order();
+        virtual ~Order();
 
 	int getType() const;
 	void setType(int ntype);

@@ -30,12 +30,10 @@ Order::Order()
   descmodtime = time(NULL);
 }
 
-/*
 Order::~Order()
 {
 
 }
-*/
 
 int Order::getType() const
 {
