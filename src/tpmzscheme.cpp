@@ -41,6 +41,9 @@ TpMzScheme* TpMzScheme::getImplemention(){
   return instance;
 }
 
+TpMzScheme::~TpMzScheme(){
+}
+
 void TpMzScheme::evalDesign(Design* d){
 
   DesignStore *ds = Game::getGame()->getDesignStore();

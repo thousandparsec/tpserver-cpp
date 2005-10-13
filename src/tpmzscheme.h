@@ -29,6 +29,7 @@ class TpMzScheme : public TpScheme{
  public:
   static TpMzScheme* getImplemention();
 
+        virtual ~TpMzScheme();
   virtual void evalDesign(Design* d);
 
  private:
