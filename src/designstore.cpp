@@ -133,15 +133,15 @@ bool DesignStore::addDesign(Design* d){
   d->setDesignId(next_designid++);
   
   //check components all come from this category
-  std::list<unsigned int> cl = d->getComponents();
-  Player* player = Game::getGame()->getPlayer(d->getOwner());
-  for(std::list<unsigned int>::iterator itcurr = cl.begin(); 
-      itcurr != cl.end(); ++itcurr){
-    if(!(player->isUsableComponent(*itcurr)))
-      return false;
-    if(components.find(*itcurr) == components.end())
-      return false;
-  }
+    std::map<unsigned int, unsigned int> cl = d->getComponents();
+    Player* player = Game::getGame()->getPlayer(d->getOwner());
+    for(std::map<unsigned int, unsigned int>::iterator itcurr = cl.begin(); 
+            itcurr != cl.end(); ++itcurr){
+        if(!(player->isUsableComponent(itcurr->first)))
+            return false;
+        if(components.find(itcurr->first) == components.end())
+            return false;
+    }
   d->eval();
   designs[d->getDesignId()] = d;
   categories[d->getCategoryId()]->doAddDesign(d);

@@ -76,19 +76,21 @@ void TpMzScheme::evalDesign(Design* d){
     }
     propids.clear();
 
-    std::list<unsigned int> complist = d->getComponents();
+        std::map<unsigned int, unsigned int> complist = d->getComponents();
 
     temp = scheme_eval_string("(define design (make-designType))", env);
 
-    std::map<unsigned int, std::map<unsigned int, std::list<std::string> > > propranking;
-    for(std::list<unsigned int>::iterator compit = complist.begin();
-	compit != complist.end(); ++compit){
-      Component *c = ds->getComponent(*compit);
-      std::map<unsigned int, std::string> pilist = c->getPropertyList();
-      for(std::map<unsigned int, std::string>::iterator piit = pilist.begin();
-	  piit != pilist.end(); ++piit){
-	Property* p = ds->getProperty(piit->first);
-	propranking[p->getRank()][p->getPropertyId()].push_back(piit->second);
+        std::map<unsigned int, std::map<unsigned int, std::list<std::string> > > propranking;
+        for(std::map<unsigned int, unsigned int>::iterator compit = complist.begin();
+                compit != complist.end(); ++compit){
+            Component *c = ds->getComponent(compit->first);
+            std::map<unsigned int, std::string> pilist = c->getPropertyList();
+            for(std::map<unsigned int, std::string>::iterator piit = pilist.begin();
+                    piit != pilist.end(); ++piit){
+                Property* p = ds->getProperty(piit->first);
+                for(unsigned int i = 0; i < compit->second; i++){
+                    propranking[p->getRank()][p->getPropertyId()].push_back(piit->second);
+                }
       }
 
     }
@@ -150,17 +152,12 @@ void TpMzScheme::evalDesign(Design* d){
     
     bool valid = true;
     std::string feedback = "";
-    Logger::getLogger()->debug("About to process add functions");
+        Logger::getLogger()->debug("About to process requirement functions");
 
-    std::vector<unsigned int> clist(complist.size());
-    std::copy(complist.begin(), complist.end(), clist.begin());
-    std::sort(clist.begin(), clist.end());
-    std::vector<unsigned int>::iterator compit = clist.begin();
-    while(compit != clist.end()){
-      unsigned int curval = *compit;
-      while(compit != clist.end() && (*compit) == curval){
-	++compit;
-      }
+        for(std::map<unsigned int, unsigned int>::iterator compit = complist.begin();
+                compit != complist.end();
+                ++compit){
+            unsigned int curval = compit->first;
       
       //for each component in the design
       temp = scheme_eval_string((std::string("(") + ds->getComponent(curval)->getTpclRequirementsFunction() + " design)").c_str(), env);

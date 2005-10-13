@@ -42,9 +42,10 @@ void Design::packFrame(Frame* frame) const{
   frame->packInt(valid ? inuse : 0xFFFFFFFF);
   frame->packInt(owner);
   frame->packInt(components.size());
-  for(std::list<unsigned int>::const_iterator itcurr = components.begin();
+  for(std::map<unsigned int, unsigned int>::const_iterator itcurr = components.begin();
       itcurr != components.end(); ++itcurr){
-    frame->packInt(*itcurr);
+    frame->packInt(itcurr->first);
+    frame->packInt(itcurr->second);
   }
   frame->packString(feedback.c_str());
   frame->packInt(properties.size());
@@ -70,7 +71,7 @@ unsigned int Design::getOwner() const{
   return owner;
 }
 
-std::list<unsigned int> Design::getComponents() const{
+std::map<unsigned int, unsigned int> Design::getComponents() const{
   return components;
 }
 
@@ -111,7 +112,7 @@ void Design::setOwner(unsigned int o){
   owner = o;
 }
 
-void Design::setComponents(std::list<unsigned int> cl){
+void Design::setComponents(std::map<unsigned int, unsigned int> cl){
   components = cl;
   valid = false;
   properties.clear();

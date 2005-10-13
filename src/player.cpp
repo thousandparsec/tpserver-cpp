@@ -1221,10 +1221,12 @@ void Player::processAddDesign(Frame* frame){
     Logger::getLogger()->debug("Odd, client sent wrong player id %d", tpid);
   }
   unsigned int numcomp = frame->unpackInt();
-  std::list<unsigned int> comps;
+  std::map<unsigned int, unsigned int> comps;
   for(unsigned int i = 0; i < numcomp; i++){
-    comps.push_back(frame->unpackInt());
+        unsigned int compid = frame->unpackInt();
+        comps[compid] = (frame->unpackInt());
   }
+    design->setComponents(comps);
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -1256,10 +1258,12 @@ void Player::processModifyDesign(Frame* frame){
     Logger::getLogger()->debug("Odd, client sent wrong player id %d", tpid);
   }
   unsigned int numcomp = frame->unpackInt();
-  std::list<unsigned int> comps;
+  std::map<unsigned int, unsigned int> comps;
   for(unsigned int i = 0; i < numcomp; i++){
-    comps.push_back(frame->unpackInt());
+        unsigned int compid = frame->unpackInt();
+        comps[compid] = (frame->unpackInt());
   }
+    design->setComponents(comps);
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();

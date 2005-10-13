@@ -339,8 +339,8 @@ void MiniSec::onPlayerAdded(Player* player){
   design->setName("Scout");
   design->setDescription("Scout ship");
   design->setOwner(player->getID());
-  std::list<unsigned int> cl;
-  cl.push_back(1);
+    std::map<unsigned int, unsigned int> cl;
+    cl[1] = 1;
   design->setComponents(cl);
   game->getDesignStore()->addDesign(design);
   unsigned int scoutid = design->getDesignId();
@@ -351,7 +351,7 @@ void MiniSec::onPlayerAdded(Player* player){
   design->setDescription("Frigate ship");
   design->setOwner(player->getID());
   cl.clear();
-  cl.push_back(2);
+    cl[2] = 1;
   design->setComponents(cl);
   game->getDesignStore()->addDesign(design);
 
@@ -361,7 +361,7 @@ void MiniSec::onPlayerAdded(Player* player){
   design->setDescription("Battleship ship");
   design->setOwner(player->getID());
   cl.clear();
-  cl.push_back(3);
+    cl[3] = 1;
   design->setComponents(cl);
   game->getDesignStore()->addDesign(design);
 

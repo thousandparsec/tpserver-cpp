@@ -21,7 +21,6 @@
  */
 
 #include <string>
-#include <list>
 #include <map>
 
 #include "propertyvalue.h"
@@ -39,7 +38,7 @@ class Design{
   unsigned int getCategoryId() const;
   std::string getName() const;
   unsigned int getOwner() const;
-  std::list<unsigned int> getComponents() const;
+  std::map<unsigned int, unsigned int> getComponents() const;
   unsigned int getNumExist() const;
   bool isValid() const;
   double getPropertyValue(unsigned int propid) const;
@@ -49,7 +48,7 @@ class Design{
   void setName(const std::string& n);
   void setDescription(const std::string& d);
   void setOwner(unsigned int o);
-  void setComponents(std::list<unsigned int> cl);
+  void setComponents(std::map<unsigned int, unsigned int> cl);
 
   void eval();
   void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);
@@ -65,7 +64,7 @@ class Design{
   unsigned int owner;
   bool valid;
   unsigned long long timestamp;
-  std::list<unsigned int> components;
+  std::map<unsigned int, unsigned int> components;
   std::map<unsigned int, PropertyValue> properties;
   std::string feedback;
 
