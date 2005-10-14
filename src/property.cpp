@@ -43,6 +43,7 @@ void Property::packFrame(Frame* frame) const{
   frame->packString(name.c_str());
   frame->packString(description.c_str());
   frame->packString(tpcl_display.c_str());
+    frame->packString(tpcl_requires.c_str());
 }
 
 unsigned int Property::getPropertyId() const{
@@ -63,6 +64,10 @@ std::string Property::getName() const{
 
 std::string Property::getTpclDisplayFunction() const{
   return tpcl_display;
+}
+
+std::string Property::getTpclRequirementsFunction() const{
+    return tpcl_requires;
 }
 
 void Property::setPropertyId(unsigned int id){
@@ -87,4 +92,8 @@ void Property::setDescription(const std::string& d){
 
 void Property::setTpclDisplayFunction(const std::string& d){
   tpcl_display = d;
+}
+
+void Property::setTpclRequirementsFunction(const std::string& r){
+    tpcl_requires = r;
 }

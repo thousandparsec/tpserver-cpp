@@ -70,6 +70,7 @@ void MiniSec::initGame(){
   prop->setName("Speed");
   prop->setDescription("The number of units the ship can move each turn");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -78,6 +79,7 @@ void MiniSec::initGame(){
   prop->setName("BuildTime");
   prop->setDescription("The number of turns to build the ship");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
   
   prop = new Property();
@@ -86,6 +88,7 @@ void MiniSec::initGame(){
   prop->setName("Amour");
   prop->setDescription("The amount of amour on the ship");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -94,6 +97,7 @@ void MiniSec::initGame(){
   prop->setName("WeaponWin");
   prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -102,6 +106,7 @@ void MiniSec::initGame(){
   prop->setName("WeaponDraw");
   prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -110,6 +115,7 @@ void MiniSec::initGame(){
   prop->setName("Colonise");
   prop->setDescription("Can the ship colonise planets");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   prop = new Property();
@@ -121,6 +127,7 @@ void MiniSec::initGame(){
      "(lambda (design bits)"
        "(let ((n (apply + bits)))"
        "(cons n (string-append (number->string n) \" components\"))))");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
   std::map<unsigned int, std::string> propertylist;

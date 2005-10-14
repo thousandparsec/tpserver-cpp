@@ -147,7 +147,6 @@ void TpMzScheme::evalDesign(Design* d){
 	propertyvalues[pv.getPropertyId()] = pv;
       }
     }
-    propranking.clear();
 
     d->setPropertyValues(propertyvalues);
 
@@ -173,6 +172,25 @@ void TpMzScheme::evalDesign(Design* d){
 	  feedback += strtemp + " ";
       }
     }
+
+        for(std::map<unsigned int, std::map<unsigned int, std::list<std::string> > >::iterator rpiit = propranking.begin();
+                rpiit != propranking.end(); ++rpiit){
+            std::map<unsigned int, std::list<std::string> > pilist = rpiit->second;
+            for(std::map<unsigned int, std::list<std::string> >::iterator piit = pilist.begin();
+                    piit != pilist.end(); ++piit){
+                temp = scheme_eval_string((std::string("(") + ds->getProperty(piit->first)->getTpclRequirementsFunction() + " design)").c_str(), env);
+                if(!SCHEME_PAIRP(temp) || !SCHEME_STRINGP(SCHEME_CDR(temp))){
+                    Logger::getLogger()->warning("MzScheme: (a) Return not a pair, or the wrong time in the pair");
+                }else{
+                    valid &= SCHEME_TRUEP(SCHEME_CAR(temp));
+                    std::string strtemp = SCHEME_STR_VAL(SCHEME_CDR(temp));
+                    if(strtemp.length() > 0)
+                        feedback += strtemp + " ";
+                }
+            }
+        }
+
+        propranking.clear();
 
     d->setValid(valid, feedback);
     

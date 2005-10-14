@@ -36,6 +36,7 @@ class Property{
   unsigned int getRank() const;
   std::string getName() const;
   std::string getTpclDisplayFunction() const;
+        std::string getTpclRequirementsFunction() const;
   
   void setPropertyId(unsigned int id);
   void setCategoryId(unsigned int id);
@@ -43,6 +44,7 @@ class Property{
   void setName(const std::string& n);
   void setDescription(const std::string& d);
   void setTpclDisplayFunction(const std::string& d);
+        void setTpclRequirementsFunction(const std::string& r);
 
  private:
   unsigned int propid;
@@ -52,6 +54,7 @@ class Property{
   std::string name;
   std::string description;
   std::string tpcl_display;
+        std::string tpcl_requires;
 
 };
 

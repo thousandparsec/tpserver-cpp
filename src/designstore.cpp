@@ -188,6 +188,7 @@ void DesignStore::addComponent(Component* c){
 	"(let "
 	  "((n (apply + bits)))"
 	  "(cons n (string-append (number->string n) \" components\"))))");
+    p->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   addProperty(p);
   std::map<unsigned int, std::string> pl = c->getPropertyList();
   pl[p->getPropertyId()] = "(lambda (design) 1)";
