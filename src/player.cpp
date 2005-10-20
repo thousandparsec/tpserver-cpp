@@ -946,11 +946,18 @@ void Player::processPostMessage(Frame * frame){
 
   if(currboard != NULL){
     Message* msg = new Message();
-    frame->unpackInt(); // message type, no longer used
+        int msgtypes = frame->unpackInt(); // message type, no longer used
+        for(int i = 0; i < msgtypes; i++){
+            //have to clear the list of msgtypes
+            // only filled under TP02
+            frame->unpackInt();
+        }
     msg->setSubject(std::string(frame->unpackString()));
     msg->setBody(std::string(frame->unpackString()));
-    frame->unpackInt(); // turn created - overwritten by current turn number
-
+        if(frame->getVersion() >= fv0_3){
+            frame->unpackInt(); // turn created - overwritten by current turn number
+            //other new fields TODO
+        }
     currboard->addMessage(msg, pos);
 
     of->setType(ft02_OK);
