@@ -302,7 +302,7 @@ void Player::processIGFrame(Frame * frame)
 	  break;
 
 	default:
-		Logger::getLogger()->warning("Player: Discarded frame, not processed");
+        Logger::getLogger()->warning("Player: Discarded frame, not processed, was type %d", frame->getType());
 
 		// Send a failed frame
   		Frame *of = curConnection->createFrame(frame);
@@ -851,7 +851,7 @@ void Player::processGetBoardIds(Frame * frame){
    if(frame->getVersion() < fv0_3){
     Logger::getLogger()->debug("protocol version not high enough");
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Probe order isn't supported in this protocol");
+    of->createFailFrame(fec_FrameError, "Get Board Ids isn't supported in this protocol");
     curConnection->sendFrame(of);
     return;
   }
@@ -868,14 +868,21 @@ void Player::processGetBoardIds(Frame * frame){
     //start new seqkey
     seqkey = 0;
   }
+    frame->unpackInt(); // starting number
+    uint32_t numtoget = frame->unpackInt();
 
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_BoardIds_List);
   of->packInt(seqkey);
+    if(numtoget == 0){
+        of->packInt(1);
+        of->packInt(0);
+    }else{
   of->packInt(0);
   of->packInt(1);
   of->packInt(0); //personal board
-  of->packInt64(0LL);
+        of->packInt64(board->getModTime());
+    }
   
   curConnection->sendFrame(of);
 }
