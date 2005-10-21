@@ -1169,15 +1169,27 @@ void Player::processGetCategoryIds(Frame* frame){
     curConnection->sendFrame(of);
     return;
   }
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
 
   std::set<unsigned int> cids = Game::getGame()->getDesignStore()->getCategoryIds();
+    if(snum > cids.size()){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > cids.size() - snum){
+        numtoget = cids.size() - snum;
+    }
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_CategoryIds_List);
   of->packInt(0);
-  of->packInt(0);
-  of->packInt(cids.size());
-  for(std::set<unsigned int>::iterator itcurr = cids.begin(); 
-      itcurr != cids.end(); ++itcurr){
+    of->packInt(cids.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::set<unsigned int>::iterator itcurr = cids.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(0ll);
   }
@@ -1309,14 +1321,27 @@ void Player::processGetDesignIds(Frame* frame){
     curConnection->sendFrame(of);
     return;
   }
-
+  
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
+    if(snum > visibleDesigns.size()){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > visibleDesigns.size() - snum){
+        numtoget = visibleDesigns.size() - snum;
+    }
+    
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_DesignIds_List);
   of->packInt(0);
-  of->packInt(0);
-  of->packInt(visibleDesigns.size());
-  for(std::set<unsigned int>::iterator itcurr = visibleDesigns.begin(); 
-      itcurr != visibleDesigns.end(); ++itcurr){
+    of->packInt(visibleDesigns.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::set<unsigned int>::iterator itcurr = visibleDesigns.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(0ll);
   }
@@ -1368,20 +1393,32 @@ void Player::processGetComponentIds(Frame* frame){
     return;
   }
   
-  if(frame->getDataLength() != 12){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    curConnection->sendFrame(of);
-    return;
-  }
-
+    if(frame->getDataLength() != 12){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_FrameError, "Invalid frame");
+        curConnection->sendFrame(of);
+        return;
+    }
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
+    if(snum > visibleComponents.size()){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > visibleComponents.size() - snum){
+        numtoget = visibleComponents.size() - snum;
+    }
+  
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_ComponentIds_List);
   of->packInt(0);
-  of->packInt(0);
-  of->packInt(visibleDesigns.size());
-  for(std::set<unsigned int>::iterator itcurr = visibleComponents.begin(); 
-      itcurr != visibleComponents.end(); ++itcurr){
+    of->packInt(visibleComponents.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::set<unsigned int>::iterator itcurr = visibleComponents.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(0ll);
   }
@@ -1441,13 +1478,26 @@ void Player::processGetPropertyIds(Frame* frame){
   }
 
   std::set<unsigned int> propids = Game::getGame()->getDesignStore()->getPropertyIds();
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
+    if(snum > propids.size()){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > propids.size() - snum){
+        numtoget = propids.size() - snum;
+    }
+    
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_PropertyIds_List);
   of->packInt(0);
-  of->packInt(0);
-  of->packInt(propids.size());
-  for(std::set<unsigned int>::iterator itcurr = propids.begin(); 
-      itcurr != propids.end(); ++itcurr){
+    of->packInt(propids.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::set<unsigned int>::iterator itcurr = propids.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(0ll);
   }
