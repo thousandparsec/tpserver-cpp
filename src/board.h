@@ -49,6 +49,8 @@ class Board{
   void packBoard(Frame * frame);
   void packMessage(Frame * frame, unsigned int msgnum);
 
+        long long getModTime() const;
+
  private:
   std::list<Message*> messages;
 

@@ -104,3 +104,7 @@ void Board::packMessage(Frame * frame, unsigned int msgnum){
     frame->createFailFrame(fec_NonExistant, "No such Message on board");
   }
 }
+
+long long Board::getModTime() const{
+    return modtime;
+}
