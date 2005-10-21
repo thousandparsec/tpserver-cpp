@@ -1169,11 +1169,13 @@ void Player::processGetCategoryIds(Frame* frame){
     curConnection->sendFrame(of);
     return;
   }
+    frame->unpackInt(); //seqnum
     uint32_t snum = frame->unpackInt();
     uint32_t numtoget = frame->unpackInt();
 
   std::set<unsigned int> cids = Game::getGame()->getDesignStore()->getCategoryIds();
     if(snum > cids.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, cids.size());
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "Starting number too high");
         curConnection->sendFrame(of);
@@ -1322,9 +1324,11 @@ void Player::processGetDesignIds(Frame* frame){
     return;
   }
   
+    frame->unpackInt(); //seqnum
     uint32_t snum = frame->unpackInt();
     uint32_t numtoget = frame->unpackInt();
     if(snum > visibleDesigns.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "Starting number too high");
         curConnection->sendFrame(of);
@@ -1399,9 +1403,11 @@ void Player::processGetComponentIds(Frame* frame){
         curConnection->sendFrame(of);
         return;
     }
+    frame->unpackInt(); //seqnum
     uint32_t snum = frame->unpackInt();
     uint32_t numtoget = frame->unpackInt();
     if(snum > visibleComponents.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "Starting number too high");
         curConnection->sendFrame(of);
@@ -1478,9 +1484,11 @@ void Player::processGetPropertyIds(Frame* frame){
   }
 
   std::set<unsigned int> propids = Game::getGame()->getDesignStore()->getPropertyIds();
+    frame->unpackInt(); //seqnum
     uint32_t snum = frame->unpackInt();
     uint32_t numtoget = frame->unpackInt();
     if(snum > propids.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, propids.size());
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "Starting number too high");
         curConnection->sendFrame(of);
