@@ -68,6 +68,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("Speed");
+    prop->setDisplayName("Speed");
   prop->setDescription("The number of units the ship can move each turn");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -77,6 +78,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("BuildTime");
+    prop->setDisplayName("Build Time");
   prop->setDescription("The number of turns to build the ship");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -86,6 +88,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("Amour");
+    prop->setDisplayName("Amour");
   prop->setDescription("The amount of amour on the ship");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -95,6 +98,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("WeaponWin");
+    prop->setDisplayName("Weapon Strength at Win");
   prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -104,6 +108,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("WeaponDraw");
+    prop->setDisplayName("Weapon Strength at Draw");
   prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -113,6 +118,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("Colonise");
+    prop->setDisplayName("Can Colonise Planets");
   prop->setDescription("Can the ship colonise planets");
   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
@@ -122,6 +128,7 @@ void MiniSec::initGame(){
   prop->setCategoryId(1);
   prop->setRank(0);
   prop->setName("_num-components");
+    prop->setDisplayName("Number of Conponents");
   prop->setDescription("The total number of components in the design");
   prop->setTpclDisplayFunction(
      "(lambda (design bits)"

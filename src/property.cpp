@@ -41,6 +41,7 @@ void Property::packFrame(Frame* frame) const{
   frame->packInt(catid);
   frame->packInt(rank);
   frame->packString(name.c_str());
+    frame->packString(display.c_str());
   frame->packString(description.c_str());
   frame->packString(tpcl_display.c_str());
     frame->packString(tpcl_requires.c_str());
@@ -60,6 +61,10 @@ unsigned int Property::getRank() const{
 
 std::string Property::getName() const{
   return name;
+}
+
+std::string Property::getDisplayName() const{
+    return display;
 }
 
 std::string Property::getTpclDisplayFunction() const{
@@ -84,6 +89,10 @@ void Property::setRank(unsigned int r){
 
 void Property::setName(const std::string& n){
   name = n;
+}
+
+void Property::setDisplayName(const std::string& d){
+    display = d;
 }
 
 void Property::setDescription(const std::string& d){
