@@ -963,7 +963,12 @@ void Player::processPostMessage(Frame * frame){
     msg->setBody(std::string(frame->unpackString()));
         if(frame->getVersion() >= fv0_3){
             frame->unpackInt(); // turn created - overwritten by current turn number
-            //other new fields TODO
+            uint32_t numrefs = frame->unpackInt();
+            for(uint32_t i = 0; i < numrefs; i++){
+                int32_t rtype = frame->unpackInt();
+                uint32_t rid = frame->unpackInt();
+                msg->addReference(rtype, rid);
+            }
         }
     currboard->addMessage(msg, pos);
 
