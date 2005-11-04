@@ -30,3 +30,5 @@ endif
 
 tpserver_cpp_LDADD = $(READLINE_LIBS)
 
+data_DATA = designstruct.scm
+

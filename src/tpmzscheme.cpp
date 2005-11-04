@@ -23,6 +23,14 @@
 #include <algorithm>
 #include <vector>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#ifndef DATADIR
+#define DATADIR "/usr/local/share"
+#endif
+#endif
+
 #include "design.h"
 #include "logging.h"
 #include "designstore.h"
@@ -201,12 +209,25 @@ void TpMzScheme::evalDesign(Design* d){
 }
 
 TpMzScheme::TpMzScheme(){
-  //scheme_set_stack_base(NULL, 1); /* required for OS X, only */
+    //scheme_set_stack_base(NULL, 1); /* required for OS X, only. WILL NOT WORK HERE */
+    bool loaded = false;
   env = scheme_basic_env();
   if (scheme_setjmp(scheme_error_buf)) {
     Logger::getLogger()->warning("MzScheme Error");
   } else {
     scheme_eval_string("(load \"designstruct.scm\")",env);
-    
+        loaded = true;
   }
+    if(loaded == false){
+        if (scheme_setjmp(scheme_error_buf)) {
+            Logger::getLogger()->warning("MzScheme Error");
+        } else {
+            scheme_eval_string("(load \"" DATADIR "/designstruct.scm\")", env);
+            loaded = true;
+        }
+    }
+    if(loaded == false){
+        Logger::getLogger()->warning("MzScheme Error");
+        //throw exception?
+    }
 }
