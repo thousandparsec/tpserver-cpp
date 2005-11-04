@@ -370,6 +370,8 @@ void Game::doEndOfTurn()
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;
+        if(secondsToEOT() <= 0)
+            resetEOTTimer();
 
 	// send frame to all connections that the end of turn has finished
 	frame = new Frame(fv0_2);
