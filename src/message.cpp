@@ -52,14 +52,20 @@ void Message::addReference(int type, unsigned int value){
 }
 
 void Message::pack(Frame * frame){
-  frame->packInt(1);
-  frame->packInt(0);
+    if(frame->getVersion() == fv0_2){
+        frame->packInt(1);
+        frame->packInt(0);
+    }else{
+        frame->packInt(0);
+    }
   frame->packString(subject.c_str());
   frame->packString(body.c_str());
+    if(frame->getVersion() > fv0_2){
   frame->packInt(turnnum);
   frame->packInt(references.size());
   for(std::set<std::pair<int, unsigned int> >::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr){
     frame->packInt((*itcurr).first);
     frame->packInt((*itcurr).second);
   }
+    }
 }
