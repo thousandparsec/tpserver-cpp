@@ -1,9 +1,9 @@
-AC_INIT([tpserver-cpp],[0.1.1],[lee@thousandparsec.net])
+AC_INIT([tpserver-cpp],[0.1.2],[lee@thousandparsec.net])
 AC_CONFIG_SRCDIR(src/main.cpp)
 
 AC_CANONICAL_TARGET([])
 
-AM_INIT_AUTOMAKE(tpserver-cpp, 0.1.1)
+AM_INIT_AUTOMAKE(tpserver-cpp, 0.1.2)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE
@@ -127,7 +127,7 @@ dnl
 dnl    AC_DEFINE_DIR(DATADIR, datadir)
 dnl    AC_DEFINE_DIR(PROG_PATH, bindir, [Location of installed binaries])
 dnl
-dnl @version $Id: configure.ac,v 1.12 2005/11/04 22:38:58 lee Exp $
+dnl @version $Id: configure.ac,v 1.13 2005/11/15 22:29:28 lee Exp $
 dnl @author Guido Draheim <guidod@gmx.de>, original by Alexandre Oliva
 
 AC_DEFUN([AC_DEFINE_DIR], [

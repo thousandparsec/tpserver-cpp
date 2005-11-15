@@ -1,3 +1,13 @@
+14 Nov 05 - Lee
+	* Version 0.1.2
+	* Full TP03 support
+	* Settings improvements in preparation for presistance
+	* New command line arguments and updated man page
+	* Can now change the port/address the server listens on
+	* Full design support
+	* Minisec still supported
+	* Now requires MzScheme for  TPCL (ex NCL)
+
 15 May 05 - Lee
 	* Version 0.1.1
 	* Most of the required parts of TP03 plus ping frames (keep alive) -
