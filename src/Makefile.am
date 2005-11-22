@@ -23,12 +23,20 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		designstore.cpp ruleset.h minisec.h minisec.cpp \
 		tpscheme.h tpscheme.cpp category.h category.cpp
 if MZSCHEME
-tpserver_cpp_SOURCES = $(COMMONSOURCES) tpmzscheme.h tpmzscheme.cpp
+SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else
-tpserver_cpp_SOURCES = $(COMMONSOURCES)
+SCHEMESOURCES =
 endif
 
-tpserver_cpp_LDADD = $(READLINE_LIBS)
+if MYSQL
+DBSOURCES = 
+else
+DBSOURCES =
+endif
+
+tpserver_cpp_SOURCES = $(COMMONSOURCES) $(SCHEMESOURCES) $(DBSOURCES)
+
+tpserver_cpp_LDADD = $(READLINE_LIBS) $(MYSQL_LIBS)
 
 data_DATA = designstruct.scm
 EXTRA_DIST = designstruct.scm

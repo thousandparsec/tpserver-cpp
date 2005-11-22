@@ -114,6 +114,47 @@ fi
 
 AM_CONDITIONAL(MZSCHEME, true)
 
+
+dnl MySql autoconf test stolen from BONIC, then hacked
+AC_ARG_WITH(mysql,
+  AS_HELP_STRING([--with-mysql],
+    [Set to use mysql]
+  ),
+  ,
+)
+if test "$with_mysql" = "no"; then
+  AC_MSG_ERROR([MySql is required currently, please turn it on with --with-mysql])
+fi
+AC_ARG_VAR([MYSQL_CONFIG], [mysql_config program])
+
+if test -z "$MYSQL_CONFIG"; then
+  AC_PATH_PROG(MYSQL_CONFIG,mysql_config,,)
+fi
+
+# THIS SMALL CHANGE TO THE STANDARD .M4 FILE SIMPLY SETS A VARIABLE IF
+# MYSQL IS NOT THERE.
+if test -z "$MYSQL_CONFIG"; then
+    no_mysql=yes
+else
+    AC_MSG_CHECKING(mysql libraries)
+    MYSQL_LIBS=`${MYSQL_CONFIG} --libs`
+    AC_MSG_RESULT($MYSQL_LIBS)
+    AC_MSG_CHECKING(mysql includes)
+    MYSQL_CFLAGS=`${MYSQL_CONFIG} --cflags`
+    CPPFLAGS="$CPPFLAGS $MYSQL_CFLAGS"
+    AC_MSG_RESULT($MYSQL_CFLAGS)
+    no_mysql=no
+fi
+AC_SUBST(MYSQL_LIBS)
+
+if test "$no_mysql" = "yes"; then
+  AC_MSG_ERROR([MySql is required, please specific prefix with --with-mysql])
+else
+  AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the 'mysql' library (-lmysql).]),
+fi
+
+AM_CONDITIONAL(MYSQL, true)
+
 dnl @synopsis AC_DEFINE_DIR(VARNAME, DIR [, DESCRIPTION])
 dnl
 dnl This macro _AC_DEFINEs VARNAME to the expansion of the DIR
@@ -127,7 +168,7 @@ dnl
 dnl    AC_DEFINE_DIR(DATADIR, datadir)
 dnl    AC_DEFINE_DIR(PROG_PATH, bindir, [Location of installed binaries])
 dnl
-dnl @version $Id: configure.ac,v 1.13 2005/11/15 22:29:28 lee Exp $
+dnl @version $Id: configure.ac,v 1.14 2005/11/22 14:31:03 lee Exp $
 dnl @author Guido Draheim <guidod@gmx.de>, original by Alexandre Oliva
 
 AC_DEFUN([AC_DEFINE_DIR], [
