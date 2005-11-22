@@ -2,8 +2,11 @@ This is the server for Thousand Parsec.
 More info at
 http://www.thousandparsec.net/tp/
 
-REQUIRES
+REQUIRES (to build also requires the dev packages)
 ========
+readline (standard with most distributions)
+pthreads (part of libc, standard)
+
 mzscheme (www.plt-scheme.org) [LGPL]
  - note: you will probably need to pass the directory to the plt
    to configure, and it will generally be /usr/lib/plt (as in 
@@ -11,3 +14,6 @@ mzscheme (www.plt-scheme.org) [LGPL]
      ./configure --with-mzscheme=/usr/lib/plt
    You may also need to add the lib subdirectory to /etc/ld.so.conf
    and run ldconfig as root before tpserver-cpp will run.
+
+mysql (www.mysql.com) [GPL]
+ - note: see ./configure --help for options and env vars.
