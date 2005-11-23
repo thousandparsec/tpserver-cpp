@@ -114,10 +114,9 @@ bool Build::doOrder(IGObject *ob)
     
     IGObject *fleet = new IGObject();
 
-    //add fleet to universe
-    Game::getGame()->addObject(fleet);
+    
     //add fleet to container
-    ob->addContainedObject(fleet->getID());
+    fleet->addToParent(ob->getID());
 
     fleet->setSize(2);
     fleet->setType(4);
@@ -125,13 +124,14 @@ bool Build::doOrder(IGObject *ob)
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
     fleet->setPosition(ob->getPosition());
     fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-   
     
     //set ship type
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
     for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
     }
+    //add fleet to universe
+    Game::getGame()->addObject(fleet);
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");

@@ -90,7 +90,6 @@ bool SplitFleet::doOrder(IGObject * ob){
   msg->addReference(rst_Object, ob->getID());
 
   IGObject * nfleet = new IGObject();
-  Game::getGame()->addObject(nfleet);
   nfleet->setType(4);
   nfleet->setSize(2);
   nfleet->setName("A fleet");
@@ -126,8 +125,8 @@ bool SplitFleet::doOrder(IGObject * ob){
     msg->setBody("Split fleet complete");
     msg->addReference(rst_Object, nfleet->getID());
     msg->addReference(rst_Action_Order, rsorav_Completion);
+    nfleet->addToParent(ob->getParent());
     Game::getGame()->addObject(nfleet);
-    Game::getGame()->getObject(ob->getParent())->addContainedObject(nfleet->getID());
   }
   
   Game::getGame()->getPlayer(nf->getOwner())->postToBoard(msg);

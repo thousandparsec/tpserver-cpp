@@ -192,33 +192,48 @@ void IGObject::setFuturePosition(const Vector3d & npos){
 }
 
 void IGObject::updatePosition(){
-  vel = futurepos - pos;
+    Vector3d nvel = futurepos - pos;
+    if(nvel != vel){
+        vel = nvel;
+        touchModTime();
+    }
 
   // recontainerise if necessary
   if(pos != futurepos && Game::getGame()->getObject(parentid)->getContainerType() >= 1){
-    removeFromParent();
+    //removeFromParent();
     
     std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(futurepos);
     for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
       Logger::getLogger()->debug("Container object %d", *itcurr);
       //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
       if(*itcurr != id && Game::getGame()->getObject(*itcurr)->size >= size){
-	Game::getGame()->getObject(*itcurr)->addContainedObject(id);
+        if(*itcurr != parentid){
+            removeFromParent();
+            addToParent(*itcurr);
+        }
 	break;
       }
     }
     if(parentid == 0){
-      Game::getGame()->getObject(0)->addContainedObject(id);
+        removeFromParent();
+        addToParent(0);
     }
+    pos = futurepos;
+    touchModTime();
   }
-  pos = futurepos;
-  touchModTime();
+  
 }
 
 void IGObject::setVelocity(const Vector3d & nvel)
 {
 	vel = nvel;
 	touchModTime();
+}
+
+void IGObject::addToParent(uint32_t pid){
+    parentid = pid;
+    Game::getGame()->getObject(parentid)->addContainedObject(id);
+    touchModTime();
 }
 
 void IGObject::removeFromParent()
@@ -242,7 +257,7 @@ bool IGObject::addContainedObject(unsigned int addObjectID)
   if(myObjectData->getContainerType() >= 1){
 	//check that the new object is *really* inside the object
   
-        Game::getGame()->getObject(addObjectID)->parentid = id;
+        //Game::getGame()->getObject(addObjectID)->parentid = id;
 	touchModTime();
 	return children.insert(addObjectID).second;
   }

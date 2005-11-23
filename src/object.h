@@ -63,6 +63,7 @@ class IGObject {
 	void setVelocity(const Vector3d & nvel);
 	
 	void removeFromParent();
+        void addToParent(uint32_t pid);
 
 	int getContainerType();
 	std::set<unsigned int> getContainedObjects();

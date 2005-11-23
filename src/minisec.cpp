@@ -219,95 +219,95 @@ void MiniSec::createGame(){
   Game* game = Game::getGame();
   
   IGObject* universe = new IGObject();
-  game->addObject(universe);
   universe->setType(obT_Universe);
   universe->setSize(100000000000ll);
   universe->setName("The Universe");
   universe->setPosition(Vector3d(0ll, 0ll, 0ll));
   universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
-
+  game->addObject(universe);
+  
   //add contained objects
   IGObject *mw_galaxy = new IGObject();
-  game->addObject(mw_galaxy);
   mw_galaxy->setSize(10000000000ll);
   mw_galaxy->setType(obT_Galaxy);
   mw_galaxy->setName("Milky Way Galaxy");
   mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
   mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
+  mw_galaxy->addToParent(universe->getID());
+  game->addObject(mw_galaxy);
   
-  universe->addContainedObject(mw_galaxy->getID());
   // star system 1
   IGObject *sol = new IGObject();
-  game->addObject(sol);
   sol->setSize(1400000ll);
   sol->setType(obT_Star_System);
   sol->setName("Sol/Terra System");
   sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
   sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  
-  mw_galaxy->addContainedObject(sol->getID());
+  sol->addToParent(mw_galaxy->getID());
+  game->addObject(sol);
+
   // star system 2
   IGObject *ac = new IGObject();
-  game->addObject(ac);
   ac->setSize(800000ll);
   ac->setType(obT_Star_System);
   ac->setName("Alpha Centauri System");
   ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
   ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
+  ac->addToParent(mw_galaxy->getID());
+  game->addObject(ac);
   
-  mw_galaxy->addContainedObject(ac->getID());
   // star system 3
   IGObject *sirius = new IGObject();
-  game->addObject(sirius);
   sirius->setSize(2000000ll);
   sirius->setType(obT_Star_System);
   sirius->setName("Sirius System");
   sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
   sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  
-  mw_galaxy->addContainedObject(sirius->getID());
+  sirius->addToParent(mw_galaxy->getID());
+  game->addObject(sirius);
+
   
   // now for some planets
   
   IGObject *earth = new IGObject();
-  game->addObject(earth);
   earth->setSize(2);
   earth->setType(obT_Planet);
   earth->setName("Earth/Terra");
   earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
-  sol->addContainedObject(earth->getID());
+  earth->addToParent(sol->getID());
+  game->addObject(earth);
   
   IGObject *venus = new IGObject();
-  game->addObject(venus);
   venus->setSize(2);
   venus->setType(obT_Planet);
   venus->setName("Venus");
   venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
-  sol->addContainedObject(venus->getID());
+  venus->addToParent(sol->getID());
+  game->addObject(venus);
   
   IGObject *mars = new IGObject();
-  game->addObject(mars);
   mars->setSize(1);
   mars->setType(obT_Planet);
   mars->setName("Mars");
   mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
-  sol->addContainedObject(mars->getID());
+  mars->addToParent(sol->getID());
+  game->addObject(mars);
   
   IGObject *acprime = new IGObject();
-  game->addObject(acprime);
   acprime->setSize(2);
   acprime->setType(obT_Planet);
   acprime->setName("Alpha Centauri Prime");
   acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
-  ac->addContainedObject(acprime->getID());
+  acprime->addToParent(ac->getID());
+  game->addObject(acprime);
   
   IGObject *s1 = new IGObject();
-  game->addObject(s1);
   s1->setSize(2);
   s1->setType(obT_Planet);
   s1->setName("Sirius 1");
   s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
-  sirius->addContainedObject(s1->getID());
+  s1->addToParent(sirius->getID());
+  game->addObject(s1);
   
   game->setCombatStrategy(new RSPCombat());
   
@@ -386,7 +386,6 @@ void MiniSec::onPlayerAdded(Player* player){
 
   char* name = player->getName();
   IGObject *star = new IGObject();
-  game->addObject(star);
   star->setSize(2000000ll);
   star->setType(obT_Star_System);
   char* temp = new char[strlen(name) + 13];
@@ -400,10 +399,10 @@ void MiniSec::onPlayerAdded(Player* player){
 			     /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
   star->setVelocity(Vector3d(0ll, 0ll, 0ll));
   
-  game->getObject(1)->addContainedObject(star->getID());
+  star->addToParent(1);
+  game->addObject(star);
   
   IGObject *planet = new IGObject();
-  game->addObject(planet);
   planet->setSize(2);
   planet->setType(obT_Planet);
   temp = new char[strlen(name) + 8];
@@ -418,10 +417,10 @@ void MiniSec::onPlayerAdded(Player* player){
 						     /*(long long)((rand() % 10000) - 5000)*/ 0));
   planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
-  star->addContainedObject(planet->getID());
+  planet->addToParent(star->getID());
+  game->addObject(planet);
   
   IGObject *fleet = new IGObject();
-  game->addObject(fleet);
   fleet->setSize(2);
   fleet->setType(obT_Fleet);
   temp = new char[strlen(name) + 13];
@@ -437,6 +436,7 @@ void MiniSec::onPlayerAdded(Player* player){
   ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
   fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
-  star->addContainedObject(fleet->getID());
+  fleet->addToParent(star->getID());
+  game->addObject(fleet);
 
 }

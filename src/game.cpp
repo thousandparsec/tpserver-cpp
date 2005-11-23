@@ -197,6 +197,7 @@ void Game::addObject(IGObject* obj)
   if(obj->getID() == 0){
     universe = obj;
   }
+    persistence->saveObject(obj);
 }
 
 void Game::scheduleRemoveObject(unsigned int id){
