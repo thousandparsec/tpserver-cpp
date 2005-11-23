@@ -31,6 +31,10 @@
 #include "game.h"
 #include "net.h"
 #include "settings.h"
+#include "persistence.h"
+#ifdef HAVE_LIBMYSQL
+#include "mysqlpersistence.h"
+#endif
 
 #include "minisec.h"
 
@@ -48,12 +52,30 @@ int main(int argc, char **argv)
 	myLogger->info("Tpserver-cpp " VERSION " starting");
 	myLogger->info("This is GPL software, please see the COPYING file");
 
+        try{
+
 	mySettings->readConfFile();
 
 	Console *myConsole = Console::getConsole();
 	myConsole->open();
 
 	Game *myGame = Game::getGame();
+
+            try{
+                Persistence* myPersistence = 
+#ifdef HAVE_LIBMYSQL
+                    new MysqlPersistence();
+#else
+                    new Persistence();
+#endif
+                if(myPersistence->init()){
+                    myLogger->debug("Persistence initialised");
+                }else{
+                    myLogger->error("Problem initialising Persistence");
+                    throw std::exception();
+                }
+                myGame->setPersistence(myPersistence);
+
 	//hack temp code
 	myGame->setRuleset(new MiniSec());
 	myGame->load();
@@ -68,7 +90,14 @@ int main(int argc, char **argv)
 
 	myNetwork->stop();
 	myGame->saveAndClose();
+                myPersistence->shutdown();
+            }catch(std::exception e){
+            }
 	myConsole->close();
+
+        }catch(std::exception e){
+            myLogger->debug("Caught exception, exiting");
+        }
 
 	myLogger->info("TP-server exiting");
 	myLogger->flush();
