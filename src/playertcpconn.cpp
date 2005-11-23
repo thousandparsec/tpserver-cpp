@@ -27,6 +27,10 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#ifndef VERSION
+#define VERSION "0.0.0"
+#endif
+
 
 #include "logging.h"
 #include "net.h"
@@ -188,7 +192,7 @@ void PlayerTcpConnection::verCheck()
 		okframe->setSequence(seqNum);
 		okframe->setType(ft02_OK);
 		
-		okframe->packString("Protocol check ok, continue!");
+		okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
 		sendFrame(okframe);
 	      }else{
 		Logger::getLogger()->warning("First frame wasn't Connect or GetFeatures, was %d", typeNum);
