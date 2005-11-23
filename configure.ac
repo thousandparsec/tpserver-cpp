@@ -150,7 +150,7 @@ AC_SUBST(MYSQL_LIBS)
 if test "$no_mysql" = "yes"; then
   AC_MSG_ERROR([MySql is required, please specific prefix with --with-mysql])
 else
-  AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the 'mysql' library (-lmysql).]),
+  AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the `mysql' library (-lmysql).])
 fi
 
 AM_CONDITIONAL(MYSQL, true)
@@ -168,7 +168,6 @@ dnl
 dnl    AC_DEFINE_DIR(DATADIR, datadir)
 dnl    AC_DEFINE_DIR(PROG_PATH, bindir, [Location of installed binaries])
 dnl
-dnl @version $Id: configure.ac,v 1.14 2005/11/22 14:31:03 lee Exp $
 dnl @author Guido Draheim <guidod@gmx.de>, original by Alexandre Oliva
 
 AC_DEFUN([AC_DEFINE_DIR], [
