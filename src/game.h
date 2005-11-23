@@ -32,6 +32,7 @@ class ObjectDataManager;
 class CombatStrategy;
 class DesignStore;
 class Ruleset;
+class Persistence;
 
 class Game {
 
@@ -65,6 +66,9 @@ class Game {
 	void setCombatStrategy(CombatStrategy* cs);
 
 	DesignStore* getDesignStore() const;
+
+        Persistence* getPersistence() const;
+        void setPersistence(Persistence* p);
 
 	bool isLoaded() const;
 	bool isStarted() const;
@@ -106,6 +110,7 @@ class Game {
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;
 	DesignStore* designstore;
+        Persistence* persistence;
 
 };
 

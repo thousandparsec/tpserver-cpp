@@ -36,6 +36,7 @@
 #include "combatstrategy.h"
 #include "designstore.h"
 #include "ruleset.h"
+#include "persistence.h"
 
 #include "game.h"
 
@@ -266,6 +267,14 @@ DesignStore* Game::getDesignStore() const{
   return designstore;
 }
 
+Persistence* Game::getPersistence() const{
+    return persistence;
+}
+
+void Game::setPersistence(Persistence* p){
+    persistence = p;
+}
+
 bool Game::isLoaded() const{
   return loaded;
 }
@@ -419,6 +428,7 @@ Game::Game()
   designstore = new DesignStore();
   combatstrategy = NULL;
   ruleset = NULL;
+    persistence = NULL;
   loaded = false;
   started = false;
 
@@ -442,6 +452,8 @@ Game::~Game()
   if(ruleset != NULL)
     delete ruleset;
   delete designstore;
+    if(persistence != NULL)
+        delete persistence;
 }
 
 Game Game::operator=(Game & rhs)
