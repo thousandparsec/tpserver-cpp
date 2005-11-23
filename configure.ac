@@ -115,45 +115,46 @@ fi
 AM_CONDITIONAL(MZSCHEME, true)
 
 
-dnl MySql autoconf test stolen from BONIC, then hacked
+dnl MySql autoconf test stolen from BONIC, then hacked, lots
 AC_ARG_WITH(mysql,
   AS_HELP_STRING([--with-mysql],
     [Set to use mysql]
   ),
   ,
 )
-if test "$with_mysql" = "no"; then
-  AC_MSG_ERROR([MySql is required currently, please turn it on with --with-mysql])
-fi
 AC_ARG_VAR([MYSQL_CONFIG], [mysql_config program])
-
-if test -z "$MYSQL_CONFIG"; then
-  AC_PATH_PROG(MYSQL_CONFIG,mysql_config,,)
-fi
-
-# THIS SMALL CHANGE TO THE STANDARD .M4 FILE SIMPLY SETS A VARIABLE IF
-# MYSQL IS NOT THERE.
-if test -z "$MYSQL_CONFIG"; then
-    no_mysql=yes
+if test "$with_mysql" = "no"; then
+    AM_CONDITIONAL(MYSQL, false)
 else
-    AC_MSG_CHECKING(mysql libraries)
-    MYSQL_LIBS=`${MYSQL_CONFIG} --libs`
-    AC_MSG_RESULT($MYSQL_LIBS)
-    AC_MSG_CHECKING(mysql includes)
-    MYSQL_CFLAGS=`${MYSQL_CONFIG} --cflags`
-    CPPFLAGS="$CPPFLAGS $MYSQL_CFLAGS"
-    AC_MSG_RESULT($MYSQL_CFLAGS)
-    no_mysql=no
-fi
-AC_SUBST(MYSQL_LIBS)
 
-if test "$no_mysql" = "yes"; then
-  AC_MSG_ERROR([MySql is required, please specific prefix with --with-mysql])
-else
-  AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the `mysql' library (-lmysql).])
+    if test -z "$MYSQL_CONFIG"; then
+        AC_PATH_PROG(MYSQL_CONFIG,mysql_config,,)
+    fi
+
+    # THIS SMALL CHANGE TO THE STANDARD .M4 FILE SIMPLY SETS A VARIABLE IF
+    # MYSQL IS NOT THERE.
+    if test -z "$MYSQL_CONFIG"; then
+        no_mysql=yes
+    else
+        AC_MSG_CHECKING(mysql libraries)
+        MYSQL_LIBS=`${MYSQL_CONFIG} --libs`
+        AC_MSG_RESULT($MYSQL_LIBS)
+        AC_MSG_CHECKING(mysql includes)
+        MYSQL_CFLAGS=`${MYSQL_CONFIG} --cflags`
+        CPPFLAGS="$CPPFLAGS $MYSQL_CFLAGS"
+        AC_MSG_RESULT($MYSQL_CFLAGS)
+        no_mysql=no
+    fi
+    AC_SUBST(MYSQL_LIBS)
+    
+    if test "$no_mysql" = "yes"; then
+        AM_CONDITIONAL(MYSQL, false)
+    else
+        AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the `mysql' library (-lmysql).])
+        AM_CONDITIONAL(MYSQL, true)
+    fi
 fi
 
-AM_CONDITIONAL(MYSQL, true)
 
 dnl @synopsis AC_DEFINE_DIR(VARNAME, DIR [, DESCRIPTION])
 dnl
