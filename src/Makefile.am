@@ -21,7 +21,8 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		propertyvalue.h propertyvalue.cpp component.h \
 		component.cpp design.h design.cpp designstore.h \
 		designstore.cpp ruleset.h minisec.h minisec.cpp \
-		tpscheme.h tpscheme.cpp category.h category.cpp
+		tpscheme.h tpscheme.cpp category.h category.cpp \
+		persistence.h persistence.cpp
 if MZSCHEME
 SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else
