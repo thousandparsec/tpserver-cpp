@@ -22,6 +22,8 @@
 #include <my_sys.h>
 #include <mysql.h>
 
+#include <sstream>
+
 #include "logging.h"
 #include "settings.h"
 
@@ -46,13 +48,16 @@ MysqlPersistence::~MysqlPersistence(){
 }
 
 bool MysqlPersistence::init(){
+    lock();
     if(conn != NULL){
         Logger::getLogger()->warning("Mysql Persistence already running");
+        unlock();
         return false;
     }
     conn = mysql_init(NULL);
     if(conn == NULL){
         Logger::getLogger()->error("Could not init mysql");
+        unlock();
         return false;
     }
     Settings* conf = Settings::getSettings();
@@ -77,6 +82,7 @@ bool MysqlPersistence::init(){
         Logger::getLogger()->error("mysql database name not specified");
         mysql_close(conn);
         conn = NULL;
+        unlock();
         return false;
     }
     const char* sock = NULL;
@@ -88,14 +94,93 @@ bool MysqlPersistence::init(){
         Logger::getLogger()->error("Could not connect to mysql server - %s", mysql_error(conn));
         mysql_close(conn);
         conn = NULL;
+        unlock();
         return false;
     }
+    
+    // check for tables, create if necessary
+    
+    if(mysql_query(conn, "SELECT * FROM tableversion;") != 0){
+        // create tables
+        Logger::getLogger()->info("Creating database tables");
+        try{
+            if(mysql_query(conn, "CREATE TABLE tableversion ( tableid INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+               "name VARCHAR(50) NOT NULL UNIQUE, version INT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
+                    "(NULL, 'order', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
+                    "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'component', 0), (NULL, 'property', 0);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, " 
+                    "name TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, posx BIGINT NOT NULL, "
+                    "posy BIGINT NOT NULL, posz BIGINT NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, "
+                    "orders INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+
+            
+        }catch(std::exception e){
+            Logger::getLogger()->error("Mysql creating tables: %s", mysql_error(conn));
+            Logger::getLogger()->error("You may need to delete the tables and start again");
+            mysql_close(conn);
+            conn = NULL;
+            unlock();
+            return false;
+        }
+    }else{
+        // check for tables to be updated.
+        MYSQL_RES *tableversions = mysql_store_result(conn);
+        // Since this is the first release, there are no tables to update.
+        mysql_free_result(tableversions);
+    }
+    
+    unlock();
     return true;
 }
 
 void MysqlPersistence::shutdown(){
+    lock();
+    // TEMP HACK
+    mysql_query(conn, "DELETE FROM object;");
+    // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);
         conn = NULL;
     }
+    unlock();
+}
+
+bool MysqlPersistence::saveObject(IGObject* ob){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO object VALUES (" << ob->getID() << ", " << ob->getType() << ", ";
+    querybuilder << "'" << addslashes(ob->getName()) << "', " << ob->getParent() << ", ";
+    querybuilder << ob->getSize() << ", " << ob->getPosition().getX() << ", " << ob->getPosition().getY() << ", ";
+    querybuilder << ob->getPosition().getZ() << ", " << ob->getVelocity().getX() << ", ";
+    querybuilder << ob->getVelocity().getY() << ", " << ob->getVelocity().getZ() << ", " << ob->getNumOrders(-1);
+    querybuilder << ", " << ob->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store object %d - %s", ob->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+
+std::string MysqlPersistence::addslashes(const std::string& in) const{
+    char* buf = new char[in.length() * 2 + 1];
+    uint len = mysql_real_escape_string(conn, buf, in.c_str(), in.length());
+    std::string rtv(buf, len);
+    delete[] buf;
+    return rtv;
+}
+
+void MysqlPersistence::lock(){
+}
+
+void MysqlPersistence::unlock(){
 }

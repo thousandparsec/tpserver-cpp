@@ -34,7 +34,7 @@ public:
     virtual bool init();
     virtual void shutdown();
 
-//     virtual bool saveObject(IGObject* ob);
+    virtual bool saveObject(IGObject* ob);
 //     virtual IGObject* retrieveObject(uint32_t obid);
 // 
 //     virtual bool saveOrder(Order* ord);
@@ -64,7 +64,11 @@ public:
 //     virtual bool saveProperty(Property* prop);
 //     virtual Property* retrieveProperty(uint32_t propid);
 
+    std::string addslashes(const std::string& in) const;
+
 private:
+    void lock();
+    void unlock();
     MYSQL *conn;
 
 };
