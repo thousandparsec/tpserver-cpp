@@ -137,7 +137,7 @@ else
         no_mysql=yes
     else
         AC_MSG_CHECKING(mysql libraries)
-        MYSQL_LIBS=`${MYSQL_CONFIG} --libs`
+        MYSQL_LIBS=`${MYSQL_CONFIG} --libs_r`
         AC_MSG_RESULT($MYSQL_LIBS)
         AC_MSG_CHECKING(mysql includes)
         MYSQL_CFLAGS=`${MYSQL_CONFIG} --cflags`
