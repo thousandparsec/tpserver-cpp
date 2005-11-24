@@ -194,6 +194,11 @@ IGObject *Game::getObject(unsigned int id)
 	if (obj != objects.end()) {
 		rtn = (*obj).second;
 	}
+        if(rtn == NULL){
+            rtn = persistence->retrieveObject(id);
+            if(rtn != NULL)
+                objects[id] = rtn;
+        }
 	return rtn;
 	//may need more work
 }
