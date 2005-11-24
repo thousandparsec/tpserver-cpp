@@ -74,7 +74,14 @@ bool Game::load()
 
     //if nothing loaded from database
     //init game
-    ruleset->createGame();
+        universe = persistence->retrieveObject(0);
+        if(universe != NULL){
+            objects[0] = universe;
+            //maybe load the other objects too
+        }else{
+            Logger::getLogger()->info("Creating Game");
+            ruleset->createGame();
+        }
     
     loaded = true;
     return true;
