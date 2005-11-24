@@ -415,3 +415,17 @@ long long IGObject::getModTime() const{
   else
     return 0LL;
 }
+
+void IGObject::setParent(uint32_t pid){
+    parentid = pid;
+}
+
+void IGObject::setNumOrders(uint32_t num){
+    //TODO
+    Logger::getLogger()->debug("IGObject::setNumOrders");
+}
+
+void IGObject::setModTime(uint64_t time){
+    if(myObjectData != NULL)
+        myObjectData->setModTime(time);
+}

@@ -20,6 +20,8 @@
  *
  */
 
+#include <stdint.h>
+
 class Game;
 class Frame;
 class IGObject;
@@ -44,6 +46,8 @@ class ObjectData {
 
 	void touchModTime();
 	long long getModTime() const;
+        //persistence only
+        void setModTime(uint64_t time);
 
       protected:
 

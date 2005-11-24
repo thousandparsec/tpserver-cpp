@@ -87,6 +87,11 @@ class IGObject {
 	void touchModTime();
 	long long getModTime() const;
 
+        // Only Persistence classes should call these
+        void setParent(uint32_t pid);
+        void setNumOrders(uint32_t num);
+        void setModTime(uint64_t time);
+
       protected:
 	static Game *myGame;
 

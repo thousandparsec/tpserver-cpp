@@ -44,3 +44,7 @@ void ObjectData::touchModTime(){
 long long ObjectData::getModTime() const{
   return modtime;
 }
+
+void ObjectData::setModTime(uint64_t time){
+    modtime = time;
+}
