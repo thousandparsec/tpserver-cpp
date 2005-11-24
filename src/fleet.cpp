@@ -160,7 +160,7 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
     DesignStore* ds = Game::getGame()->getDesignStore();
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-      if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){
+      if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 1.0){
 	colonise = true;
 	break;
       }
@@ -186,7 +186,7 @@ bool Fleet::checkAllowedOrder(int ot, int playerid){
   DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-    if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 0.0){
+    if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 1.0){
       colonise = true;
       break;
     }
