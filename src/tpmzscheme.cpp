@@ -68,7 +68,7 @@ void TpMzScheme::evalDesign(Design* d){
 	     << ds->getMaxPropertyId() << "))";
     temp = scheme_eval_string(formater.str().c_str(), env);
     
-    temp = scheme_eval_string("(define property-designType-set! (lambda (design id val) designType-set! (+ id 1) val))", env);
+    temp = scheme_eval_string("(define property-designType-set! (lambda (design id val) (designType-set! design (- id 1) val)))", env);
 
     std::set<unsigned int> propids = ds->getPropertyIds();
     for(std::set<unsigned int>::iterator propit = propids.begin();
@@ -204,6 +204,9 @@ void TpMzScheme::evalDesign(Design* d){
     
 
     Logger::getLogger()->debug("Eval'ed design");
+    if(!valid){
+        Logger::getLogger()->debug("Design %s is not valid, reason: %s", d->getName().c_str(), feedback.c_str());
+    }
   }
   
 }

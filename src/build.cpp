@@ -58,15 +58,20 @@ void Build::createFrame(Frame *f, int objID, int pos)
   std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
   DesignStore* ds = Game::getGame()->getDesignStore();
 
-  std::set<unsigned int> dids = ds->getDesignIds();
-  std::set<unsigned int> usable;
-  set_intersection(designs.begin(), designs.end(), dids.begin(), dids.end(), inserter(usable, usable.begin()));
+  std::set<Design*> usable;
+    for(std::set<uint>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
+        Design* design = ds->getDesign(*itcurr);
+        if(design->getCategoryId() == 1){
+            usable.insert(design);
+        }
+    }
   
   f->packInt(usable.size());
+    Logger::getLogger()->debug("There are %d designs in the usable list", usable.size());
 
-  for(std::set<unsigned int>::iterator itcurr = usable.begin();
+  for(std::set<Design*>::iterator itcurr = usable.begin();
       itcurr != usable.end(); ++itcurr){
-    Design * design = ds->getDesign(*itcurr);
+    Design * design = (*itcurr);
     f->packInt(design->getDesignId());
     f->packString(design->getName().c_str());
     f->packInt(100);
