@@ -132,11 +132,26 @@ bool MysqlPersistence::init(){
     }else{
         // check for tables to be updated.
         MYSQL_RES *tableversions = mysql_store_result(conn);
+        if(tableversions == NULL){
+            Logger::getLogger()->error("Mysql: table versions query result error: %s", mysql_error(conn));
+            Logger::getLogger()->error("You may need to delete the tables and start again");
+            mysql_close(conn);
+            conn = NULL;
+            unlock();
+            return false;
+        }
         // Since this is the first release, there are no tables to update.
         mysql_free_result(tableversions);
     }
     
     unlock();
+    
+    if(mysql_thread_safe()){
+        Logger::getLogger()->debug("Mysql is thread safe");
+    }else{
+        Logger::getLogger()->debug("Mysql is NOT thread safe");
+    }
+    
     return true;
 }
 
@@ -166,10 +181,82 @@ bool MysqlPersistence::saveObject(IGObject* ob){
         unlock();
         return false;
     }
+    //store type-specific information
     unlock();
     return true;
 }
 
+IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM object WHERE objectid = " << obid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve object %d - %s", obid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve object: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    
+    //children object ids
+    querybuilder.str("");
+    querybuilder << "SELECT objectid FROM object WHERE parentid = " << obid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve object %d - %s", obid, mysql_error(conn));
+        unlock();
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    MYSQL_RES *childres = mysql_store_result(conn);
+
+    if(childres == NULL){
+        Logger::getLogger()->error("Mysql: retrieve object: Could not store result - %s", mysql_error(conn));
+        unlock();
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such object %d", obid);
+        mysql_free_result(obresult);
+        mysql_free_result(childres);
+        return NULL;
+    }
+    IGObject* object = new IGObject();
+    object->setID(obid);
+    object->setType(atoi(row[1]));
+    object->setName(row[2]);
+    object->setParent(atoi(row[3]));
+    object->setSize(strtoull(row[4], NULL, 10));
+    Vector3d vec;
+    vec.setAll(atoll(row[5]), atoll(row[6]), atoll(row[7]));
+    object->setPosition(vec);
+    vec.setAll(atoll(row[8]), atoll(row[9]), atoll(row[10]));
+    object->setVelocity(vec);
+    object->setNumOrders(atoi(row[11]));
+    
+    MYSQL_ROW children;
+    while((children = mysql_fetch_row(childres)) != NULL){
+        object->addContainedObject(atoi(row[0]));
+    }
+    mysql_free_result(childres);
+    
+    object->setModTime(strtoull(row[12], NULL, 10));
+    mysql_free_result(obresult);
+
+    lock();
+    // fetch type-specific information
+    unlock();
+    return object;
+}
 
 std::string MysqlPersistence::addslashes(const std::string& in) const{
     char* buf = new char[in.length() * 2 + 1];

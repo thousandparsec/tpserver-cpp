@@ -35,8 +35,8 @@ public:
     virtual void shutdown();
 
     virtual bool saveObject(IGObject* ob);
-//     virtual IGObject* retrieveObject(uint32_t obid);
-// 
+    virtual IGObject* retrieveObject(uint32_t obid);
+
 //     virtual bool saveOrder(Order* ord);
 //     virtual Order* retrieveOrder(uint32_t orpid);
 //     virtual Order* retrieveOrder(uint32_t obid, uint32_t slot);
