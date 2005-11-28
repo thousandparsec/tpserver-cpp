@@ -49,6 +49,10 @@ IGObject* Persistence::retrieveObject(uint32_t obid){
     return NULL;
 }
 
+uint32_t Persistence::getMaxObjectId(){
+    return 0;
+}
+
 bool Persistence::saveOrder(Order* ord){
     return false;
 }

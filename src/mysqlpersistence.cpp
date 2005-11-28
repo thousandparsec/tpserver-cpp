@@ -258,6 +258,28 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     return object;
 }
 
+uint32_t MysqlPersistence::getMaxObjectId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(objectid) FROM object;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max object id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max objectid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
 std::string MysqlPersistence::addslashes(const std::string& in) const{
     char* buf = new char[in.length() * 2 + 1];
     uint len = mysql_real_escape_string(conn, buf, in.c_str(), in.length());
