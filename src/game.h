@@ -27,6 +27,7 @@
 class Player;
 class IGObject;
 class Vector3d;
+class ObjectManager;
 class OrderManager;
 class ObjectDataManager;
 class CombatStrategy;
@@ -51,14 +52,7 @@ class Game {
 	Player* getPlayer(unsigned int id);
 	std::set<unsigned int> getPlayerIds() const;
 
-	IGObject *getObject(unsigned int id);
-	void addObject(IGObject* obj);
-	void scheduleRemoveObject(unsigned int id);
-
-	std::list<unsigned int> getObjectsByPos(const Vector3d & pos, unsigned long long r);
-	std::list<unsigned int> getContainerByPos(const Vector3d & pos);
-	std::set<unsigned int> getObjectIds() const;
-
+        ObjectManager* getObjectManager() const;
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
 	
@@ -99,13 +93,9 @@ class Game {
 	
 	std::map<unsigned int, Player *> players;
 	
-	std::map<unsigned int, IGObject *> objects;
-	IGObject *universe;
-
-	std::set<unsigned int> scheduleRemove;
-
 	Ruleset* ruleset;
 
+        ObjectManager* objectmanager;
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
 	CombatStrategy * combatstrategy;

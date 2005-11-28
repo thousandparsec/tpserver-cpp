@@ -21,6 +21,7 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "game.h"
 #include "logging.h"
 #include "fleet.h"
@@ -42,7 +43,7 @@ void SplitFleet::createFrame(Frame * f, int objID, int pos){
   f->packInt(1); // number of turns
   f->packInt(0); // size of resource list
 
-  Fleet* of = (Fleet*)(Game::getGame()->getObject(objID)->getObjectData());
+  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData());
 
   std::map<int, int> sotf = of->getShips();
 
@@ -61,7 +62,7 @@ void SplitFleet::createFrame(Frame * f, int objID, int pos){
     f->packInt(itcurr->first);
     f->packInt(itcurr->second);
   }
-  
+  Game::getGame()->getObjectManager()->doneWithObject(objID);
 }
 
 bool SplitFleet::inputFrame(Frame * f, unsigned int playerid){
@@ -89,7 +90,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   msg->setSubject("Split Fleet order complete");
   msg->addReference(rst_Object, ob->getID());
 
-  IGObject * nfleet = new IGObject();
+  IGObject * nfleet = Game::getGame() ->getObjectManager()->createNewObject();
   nfleet->setType(4);
   nfleet->setSize(2);
   nfleet->setName("A fleet");
@@ -111,12 +112,12 @@ bool SplitFleet::doOrder(IGObject * ob){
     for(std::map<int, int>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
       of->addShips(scurr->first, scurr->second);
     }
-    Game::getGame()->scheduleRemoveObject(nfleet->getID());
+    Game::getGame()->getObjectManager()->discardNewObject(nfleet);
     msg->setBody("Fleet not split, not enough ships");
     msg->addReference(rst_Action_Order, rsorav_Incompatible);
   }else if(nf->totalShips() == 0){
     Logger::getLogger()->debug("Split fleet doesn't have any ships, not creating new fleet");
-    Game::getGame()->scheduleRemoveObject(nfleet->getID());
+    Game::getGame()->getObjectManager()->discardNewObject(nfleet);
     msg->setBody("Fleet not split, not enough ships");
     msg->addReference(rst_Action_Order, rsorav_Incompatible);
   }else{
@@ -126,7 +127,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Object, nfleet->getID());
     msg->addReference(rst_Action_Order, rsorav_Completion);
     nfleet->addToParent(ob->getParent());
-    Game::getGame()->addObject(nfleet);
+    Game::getGame()->getObjectManager()->addObject(nfleet);
   }
   
   Game::getGame()->getPlayer(nf->getOwner())->postToBoard(msg);

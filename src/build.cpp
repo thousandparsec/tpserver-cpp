@@ -22,6 +22,7 @@
 
 #include "frame.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "game.h"
 #include "logging.h"
 #include "vector3d.h"
@@ -55,7 +56,8 @@ void Build::createFrame(Frame *f, int objID, int pos)
 
   f->packInt(0); // size of resource list
 
-  std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+    Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<Design*> usable;
@@ -117,7 +119,7 @@ bool Build::doOrder(IGObject *ob)
 		   
     //create fleet
     
-    IGObject *fleet = new IGObject();
+    IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
 
     
     //add fleet to container
@@ -136,7 +138,7 @@ bool Build::doOrder(IGObject *ob)
       thefleet->addShips(itcurr->first, itcurr->second);
     }
     //add fleet to universe
-    Game::getGame()->addObject(fleet);
+    Game::getGame()->getObjectManager()->addObject(fleet);
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");

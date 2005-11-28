@@ -25,6 +25,7 @@
 #include "game.h"
 #include "planet.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "objectdatamanager.h"
 #include "design.h"
 #include "designstore.h"
@@ -147,11 +148,12 @@ void Fleet::packExtraData(Frame * frame)
 
 void Fleet::doOnceATurn(IGObject * obj)
 {
-  IGObject * pob = Game::getGame()->getObject(obj->getParent());
+  IGObject * pob = Game::getGame()->getObjectManager()->getObject(obj->getParent());
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
     damage = 0;
     touchModTime();
   }
+    Game::getGame()->getObjectManager()->doneWithObject(obj->getParent());
 }
 
 void Fleet::packAllowedOrders(Frame * frame, int playerid){

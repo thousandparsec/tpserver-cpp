@@ -25,6 +25,7 @@
 #include "logging.h"
 #include "game.h"
 #include "order.h"
+#include "objectmanager.h"
 #include "objectdata.h"
 #include "objectdatamanager.h"
 #include "player.h"
@@ -33,13 +34,10 @@
 
 Game *IGObject::myGame = NULL;
 
-unsigned int IGObject::nextAutoID = 0;
-
 IGObject::IGObject()
 {
-	id = nextAutoID++;
+	id = 0xffffffff;
 	parentid = 0;
-	//check that new id is valid - TODO
 	name = NULL;
 	if (myGame == NULL) {
 		myGame = Game::getGame();
@@ -140,13 +138,6 @@ unsigned int IGObject::getParent(){
   return parentid;
 }
 
-void IGObject::autoSetID()
-{
-	id = nextAutoID++;
-	touchModTime();
-	//check that id is valid
-}
-
 void IGObject::setType(unsigned int newtype)
 {
 	type = newtype;
@@ -154,7 +145,7 @@ void IGObject::setType(unsigned int newtype)
 	if(myObjectData != NULL)
 	  delete myObjectData;
 
-	myObjectData = Game::getGame()->getObjectDataManager()->createObjectData(type);
+	myObjectData = myGame->getObjectDataManager()->createObjectData(type);
 	if(myObjectData == NULL){
 	  Logger::getLogger()->warning("Object type not found");
 	  myObjectData = NULL;
@@ -199,20 +190,21 @@ void IGObject::updatePosition(){
     }
 
   // recontainerise if necessary
-  if(pos != futurepos && Game::getGame()->getObject(parentid)->getContainerType() >= 1){
+  if(pos != futurepos && myGame->getObjectManager()->getObject(parentid)->getContainerType() >= 1){
     //removeFromParent();
-    
-    std::list<unsigned int> oblist = Game::getGame()->getContainerByPos(futurepos);
-    for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+    myGame->getObjectManager()->doneWithObject(parentid);
+    std::set<unsigned int> oblist = myGame->getObjectManager()->getContainerByPos(futurepos);
+    for(std::set<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
       Logger::getLogger()->debug("Container object %d", *itcurr);
       //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-      if(*itcurr != id && Game::getGame()->getObject(*itcurr)->size >= size){
+      if(*itcurr != id && myGame->getObjectManager()->getObject(*itcurr)->size >= size){
         if(*itcurr != parentid){
             removeFromParent();
             addToParent(*itcurr);
         }
 	break;
       }
+        myGame->getObjectManager()->doneWithObject(*itcurr);
     }
     if(parentid == 0){
         removeFromParent();
@@ -220,8 +212,9 @@ void IGObject::updatePosition(){
     }
     pos = futurepos;
     touchModTime();
-  }
-  
+  }else{
+    myGame->getObjectManager()->doneWithObject(parentid);
+    }
 }
 
 void IGObject::setVelocity(const Vector3d & nvel)
@@ -232,13 +225,15 @@ void IGObject::setVelocity(const Vector3d & nvel)
 
 void IGObject::addToParent(uint32_t pid){
     parentid = pid;
-    Game::getGame()->getObject(parentid)->addContainedObject(id);
+    myGame->getObjectManager()->getObject(parentid)->addContainedObject(id);
+    myGame->getObjectManager()->doneWithObject(parentid);
     touchModTime();
 }
 
 void IGObject::removeFromParent()
 {
-  Game::getGame()->getObject(parentid)->removeContainedObject(id);
+  myGame->getObjectManager()->getObject(parentid)->removeContainedObject(id);
+    myGame->getObjectManager()->doneWithObject(parentid);
   parentid = 0;
   touchModTime();
 }

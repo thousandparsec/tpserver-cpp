@@ -30,6 +30,7 @@
 #include "frame.h"
 #include "net.h"
 #include "vector3d.h"
+#include "objectmanager.h"
 #include "ordermanager.h"
 #include "objectdatamanager.h"
 #include "ownedobject.h"
@@ -74,10 +75,9 @@ bool Game::load()
 
     //if nothing loaded from database
     //init game
-        universe = persistence->retrieveObject(0);
+        IGObject* universe = objectmanager->getObject(0);
         if(universe != NULL){
-            objects[0] = universe;
-            //maybe load the other objects too
+            objectmanager->doneWithObject(0);
         }else{
             Logger::getLogger()->info("Creating Game");
             ruleset->createGame();
@@ -154,7 +154,7 @@ Player *Game::findPlayer(char *name, char *pass)
 		  players[rtn->getID()] = (rtn);
 		  
 		  ruleset->onPlayerAdded(rtn);
-		  rtn->setVisibleObjects(getObjectIds());
+		  rtn->setVisibleObjects(objectmanager->getAllIds());
 
 		}else{
 		  // player can not be added
@@ -184,78 +184,8 @@ std::set<unsigned int> Game::getPlayerIds() const{
   return vis;
 }
 
-IGObject *Game::getObject(unsigned int id)
-{
-	if (id == 0) {
-		return universe;
-	}
-	IGObject *rtn = NULL;
-	std::map < unsigned int, IGObject * >::iterator obj = objects.find(id);
-	if (obj != objects.end()) {
-		rtn = (*obj).second;
-	}
-        if(rtn == NULL){
-            rtn = persistence->retrieveObject(id);
-            if(rtn != NULL)
-                objects[id] = rtn;
-        }
-	return rtn;
-	//may need more work
-}
-
-void Game::addObject(IGObject* obj)
-{
-  objects[obj->getID()] = obj;
-  if(obj->getID() == 0){
-    universe = obj;
-  }
-    persistence->saveObject(obj);
-}
-
-void Game::scheduleRemoveObject(unsigned int id){
-  scheduleRemove.insert(id);
-}
-
-std::list <unsigned int> Game::getObjectsByPos(const Vector3d & pos, unsigned long long r)
-{
-  std::list <unsigned int> oblist;
-
-  std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin();
-
-  for( ; itcurr != objects.end(); ++itcurr) {
-    unsigned long long br = itcurr->second->getSize() / 2;
-    unsigned long long diff = itcurr->second->getPosition().getDistance(pos); /*- r - br;*/
-    if(diff <=  r + br)
-      oblist.push_back(itcurr->first);
-
-  }
-  
-  return oblist;
-}
-
-std::list <unsigned int> Game::getContainerByPos(const Vector3d & pos){
-  std::list<unsigned int> oblist;
-
-  for(std::map<unsigned int, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr){
-    if(itcurr->second->getContainerType() >= 1){
-      unsigned long long br = itcurr->second->getSize() / 2 + itcurr->second->getSize() % 2;
-      
-      //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-      if((unsigned long long)(itcurr->second->getPosition().getDistance(pos)) <= br)
-	oblist.push_front(itcurr->first);
-    }
-  }
-  
-  return oblist;
-}
-
-std::set<unsigned int> Game::getObjectIds() const{
-  std::set<unsigned int> vis;
-  for(std::map<unsigned int, IGObject*>::const_iterator itid = objects.begin();
-      itid != objects.end(); ++itid){
-    vis.insert(itid->first);
-  }
-  return vis;
+ObjectManager* Game::getObjectManager() const{
+    return objectmanager;
 }
 
 OrderManager* Game::getOrderManager() const{
@@ -298,93 +228,89 @@ bool Game::isStarted() const{
 
 void Game::doEndOfTurn()
 {
-  if(loaded && started){
-	Logger::getLogger()->info("End Of Turn started");
+    if(loaded && started){
+        Logger::getLogger()->info("End Of Turn started");
 
-	// send frame to all connections that the end of turn has started
-	Frame * frame = new Frame(fv0_2);
-	frame->setType(ft02_Time_Remaining);
-	frame->packInt(0);
-	Network::getNetwork()->sendToAll(frame);
+        // send frame to all connections that the end of turn has started
+        Frame * frame = new Frame(fv0_2);
+        frame->setType(ft02_Time_Remaining);
+        frame->packInt(0);
+        Network::getNetwork()->sendToAll(frame);
 
 	// DO END OF TURN STUFF HERE
-	std::map<unsigned int, IGObject *>::iterator itcurr;
+	std::set<uint32_t>::iterator itcurr;
+        std::set<uint32_t> objects = objectmanager->getAllIds();
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-	  IGObject * ob = itcurr->second;
-	  Order * currOrder = ob->getFirstOrder();
-	  if(currOrder != NULL){
-	    if(currOrder->doOrder(ob)){
-	      ob->removeFirstOrder();
-	    }
-	  }
+            IGObject * ob = objectmanager->getObject(*itcurr);
+            Order * currOrder = ob->getFirstOrder();
+            if(currOrder != NULL){
+                if(currOrder->doOrder(ob)){
+                ob->removeFirstOrder();
+                }
+            }
+            objectmanager->doneWithObject(ob->getID());
 	}
 
-	std::set<unsigned int>::iterator itrm;
-	for(itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
-	  objects[*itrm]->removeFromParent();
-	  delete objects[*itrm];
-	  objects.erase(*itrm);
-	}
-	scheduleRemove.clear();
+	objectmanager->clearRemovedObjects();
 
 	// update positions and velocities
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-	  IGObject * ob = itcurr->second;
-	  ob->updatePosition();
-	  
-	}
+            IGObject * ob = objectmanager->getObject(*itcurr);
+            ob->updatePosition();
+            objectmanager->doneWithObject(ob->getID());
+        }
 
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-	  IGObject * ob = itcurr->second;
-	  //ob->updatePosition();
-	  std::set<unsigned int> cont = ob->getContainedObjects();
-	  for(std::set<unsigned int>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
-	    if(objects[(*ita)]->getType() == obT_Fleet || (objects[(*ita)]->getType() == obT_Planet && ((OwnedObject*)(objects[(*ita)])->getObjectData())->getOwner() != -1)){
-	      for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
-		if((*ita != *itb) && (objects[(*itb)]->getType() == obT_Fleet || (objects[(*itb)]->getType() == obT_Planet && ((OwnedObject*)(objects[(*itb)])->getObjectData())->getOwner() != -1))){
-		  if(((OwnedObject*)(objects[(*ita)]->getObjectData()))->getOwner() != ((OwnedObject*)(objects[(*itb)]->getObjectData()))->getOwner()){
-		    unsigned long long diff = objects[(*ita)]->getPosition().getDistance(objects[(*itb)]->getPosition());
-		    if(diff <= objects[(*ita)]->getSize() / 2 + objects[(*itb)]->getSize() / 2){
-		      combatstrategy->setCombatants(objects[(*ita)], objects[(*itb)]);
-		      combatstrategy->doCombat();
-		      if(!combatstrategy->isAliveCombatant1()){
-			if(objects[(*ita)]->getType() == obT_Planet){
-			  ((OwnedObject*)(objects[(*ita)]->getObjectData()))->setOwner(-1);
-			}else{
-			  scheduleRemove.insert(*ita);
-			}
-		      }
-		      if(!combatstrategy->isAliveCombatant2()){
-			if(objects[(*itb)]->getType() == obT_Planet){
-			  ((OwnedObject*)(objects[(*itb)]->getObjectData()))->setOwner(-1);
-			}else{
-			  scheduleRemove.insert(*itb);
-			}
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+            IGObject * ob = objectmanager->getObject(*itcurr);
+            //ob->updatePosition();
+            std::set<unsigned int> cont = ob->getContainedObjects();
+            for(std::set<uint32_t>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
+                IGObject* itaobj = objectmanager->getObject(*ita);
+                if(itaobj->getType() == obT_Fleet || (itaobj->getType() == obT_Planet && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != -1)){
+                    for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
+                        IGObject* itbobj = objectmanager->getObject(*itb);
+                        if((*ita != *itb) && (itbobj->getType() == obT_Fleet || (itbobj->getType() == obT_Planet && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != -1))){
+                            if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(itbobj->getObjectData()))->getOwner()){
+                                uint64_t diff = itaobj->getPosition().getDistance(itbobj->getPosition());
+                                if(diff <= itaobj->getSize() / 2 + itbobj->getSize() / 2){
+                                    combatstrategy->setCombatants(itaobj, itbobj);
+                                    combatstrategy->doCombat();
+                                    if(!combatstrategy->isAliveCombatant1()){
+                                        if(itaobj->getType() == obT_Planet){
+                                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(-1);
+                                        }else{
+                                            objectmanager->scheduleRemoveObject(*ita);
+                                        }
+                                    }
+                                    if(!combatstrategy->isAliveCombatant2()){
+                                        if(itbobj->getType() == obT_Planet){
+                                            ((OwnedObject*)(itbobj->getObjectData()))->setOwner(-1);
+                                        }else{
+                                            objectmanager->scheduleRemoveObject(*itb);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        objectmanager->doneWithObject(itbobj->getID());
+                    }
+                }
+                objectmanager->doneWithObject(itaobj->getID());
+            }
+            objectmanager->doneWithObject(ob->getID());
+        }
 
-	for(itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
-	  objects[*itrm]->removeFromParent();
-	  delete objects[*itrm];
-	  objects.erase(*itrm);
-	}
-	scheduleRemove.clear();
+        objectmanager->clearRemovedObjects();
 	
 	// to once a turn (right at the end)
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-	  IGObject * ob = itcurr->second;
+	  IGObject * ob = objectmanager->getObject(*itcurr);
 	  ob->getObjectData()->doOnceATurn(ob);
-	  
+	  objectmanager->doneWithObject(ob->getID());
 	}
 
 	// find the objects that are visible to each player
-	std::set<unsigned int> vis = getObjectIds();
+	std::set<uint32_t> vis = objectmanager->getAllIds();
 	
 	for(std::map<unsigned int, Player*>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
 	  (itplayer->second)->setVisibleObjects(vis);
@@ -402,10 +328,10 @@ void Game::doEndOfTurn()
 	Network::getNetwork()->sendToAll(frame);
 
 	Logger::getLogger()->info("End Of Turn finished");
-  }else{
-    Logger::getLogger()->info("End Of Turn not run because game not started");
-    turnTime += turnIncrement;
-  }
+    }else{
+        Logger::getLogger()->info("End Of Turn not run because game not started");
+        turnTime += turnIncrement;
+    }
 }
 
 void Game::resetEOTTimer(){
@@ -417,7 +343,9 @@ int Game::secondsToEOT(){
 }
 
 int Game::getTurnNumber(){
-  return ((Universe*)(universe->getObjectData()))->getYear();
+    int turnnum = ((Universe*)(objectmanager->getObject(0)->getObjectData()))->getYear();
+    objectmanager->doneWithObject(0);
+    return turnnum;
 }
 
 void Game::setTurnLength(unsigned int sec){
@@ -436,6 +364,7 @@ void Game::saveAndClose()
 
 Game::Game()
 {
+    objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
   designstore = new DesignStore();
@@ -458,6 +387,7 @@ Game::Game(Game & rhs)
 
 Game::~Game()
 {
+    delete objectmanager;
   delete ordermanager;
   delete objectdatamanager;
   if(combatstrategy != NULL)

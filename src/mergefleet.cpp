@@ -21,6 +21,7 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "game.h"
 #include "logging.h"
 #include "fleet.h"
@@ -41,8 +42,10 @@ MergeFleet::~MergeFleet(){
 
 void MergeFleet::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
-  moveorder->setDest(Game::getGame()->getObject(fleetid)->getPosition());
-  f->packInt(moveorder->getETA(Game::getGame()->getObject(objID))); // number of turns
+  moveorder->setDest(Game::getGame()->getObjectManager()->getObject(fleetid)->getPosition());
+    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+  f->packInt(moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID))); // number of turns
+    Game::getGame()->getObjectManager()->doneWithObject(objID);
   f->packInt(0); // size of resource list
   f->packInt(fleetid);
 }
@@ -53,7 +56,7 @@ bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
   // TODO: fix in case size of list is not zero
   fleetid = f->unpackInt();
 
-  IGObject* target = Game::getGame()->getObject(fleetid);
+  IGObject* target = Game::getGame()->getObjectManager()->getObject(fleetid);
 
   if(target == NULL || (fleetid != 0 && 
 			(target->getType() != 4) || 
@@ -62,14 +65,15 @@ bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
     return false;
   }
   moveorder->setDest(target->getPosition());
-
+    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
   return true;
 }
 
 
 bool MergeFleet::doOrder(IGObject * ob){
-  moveorder->setDest(Game::getGame()->getObject(fleetid)->getPosition());
-  
+  moveorder->setDest(Game::getGame()->getObjectManager()->getObject(fleetid)->getPosition());
+  Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+
   if(moveorder->doOrder(ob)){
 
     Fleet *myfleet = (Fleet*)(ob->getObjectData());
@@ -82,7 +86,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Object, fleetid);
 
     if(fleetid != 0){
-      Fleet *tfleet = (Fleet*)(Game::getGame()->getObject(fleetid)->getObjectData());
+      Fleet *tfleet = (Fleet*)(Game::getGame()->getObjectManager()->getObject(fleetid)->getObjectData());
       
       if(tfleet->getOwner() == myfleet->getOwner()){
 	std::map<int, int> ships = myfleet->getShips();
@@ -91,9 +95,10 @@ bool MergeFleet::doOrder(IGObject * ob){
 	  tfleet->addShips(itcurr->first, itcurr->second);
 	}
 
-	Game::getGame()->scheduleRemoveObject(ob->getID());
+	Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
 	
       }
+    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
     }
 
     Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);

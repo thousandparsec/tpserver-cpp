@@ -31,6 +31,7 @@
 #include "vector3d.h"
 #include "board.h"
 #include "message.h"
+#include "objectmanager.h"
 #include "ordermanager.h"
 #include "objectdata.h"
 #include "designstore.h"
@@ -348,9 +349,10 @@ void Player::processGetObjectById(Frame * frame)
 		  
 		  if(visibleObjects.find(objectID) != visibleObjects.end()){
 
-		    IGObject* o = Game::getGame()->getObject(objectID);
+                    IGObject* o = Game::getGame()->getObjectManager()->getObject(objectID);
 		    if (o != NULL) {
 		      o->createFrame(of, pid);
+                        Game::getGame()->getObjectManager()->doneWithObject(objectID);
 		    } else {
 		      of->createFailFrame(fec_NonExistant, "No such object");
 		    }
@@ -380,11 +382,11 @@ void Player::processGetObjectByPos(Frame * frame)
     pos.unpack(frame);
     r = frame->unpackInt64();
 
-    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(pos, r);
+    std::set<unsigned int> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
 
-    for(std::list<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
+    for(std::set<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
       if(visibleObjects.find(*vischk) == visibleObjects.end()){
-	std::list<unsigned int>::iterator temp = vischk;
+	std::set<unsigned int>::iterator temp = vischk;
 	++temp;
 	oblist.erase(vischk);
 	vischk = temp;
@@ -397,10 +399,11 @@ void Player::processGetObjectByPos(Frame * frame)
     of->packInt(oblist.size());
     curConnection->sendFrame(of);
 
-    std::list<unsigned int>::iterator obCurr = oblist.begin();
+    std::set<unsigned int>::iterator obCurr = oblist.begin();
     for( ; obCurr != oblist.end(); ++obCurr) {
       of = curConnection->createFrame(frame);
-      Game::getGame()->getObject(*obCurr)->createFrame(of, pid);
+      Game::getGame()->getObjectManager()->getObject(*obCurr)->createFrame(of, pid);
+      Game::getGame()->getObjectManager()->doneWithObject(*obCurr);
       curConnection->sendFrame(of);
     }
 
@@ -462,7 +465,8 @@ void Player::processGetObjectIds(Frame * frame){
   advance(itcurr, start);
   for(unsigned int i = 0; i < num; i++){
     of->packInt(*itcurr);
-    of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
+    of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
+    Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
     ++itcurr;
   }
   curConnection->sendFrame(of);
@@ -478,11 +482,11 @@ void Player::processGetObjectIdsByPos(Frame* frame){
     pos.unpack(frame);
     r = frame->unpackInt64();
 
-    std::list<unsigned int> oblist = Game::getGame()->getObjectsByPos(pos, r);
+    std::set<unsigned int> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
 
-    for(std::list<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
+    for(std::set<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
       if(visibleObjects.find(*vischk) == visibleObjects.end()){
-	std::list<unsigned int>::iterator temp = vischk;
+	std::set<unsigned int>::iterator temp = vischk;
 	++temp;
 	oblist.erase(vischk);
 	vischk = temp;
@@ -495,9 +499,10 @@ void Player::processGetObjectIdsByPos(Frame* frame){
     of->packInt(0);
     of->packInt(0);
     of->packInt(oblist.size());
-    for(std::list<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+    for(std::set<unsigned int>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
       of->packInt(*itcurr);
-      of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
+      of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
+      Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
     }
   }else{
     of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -515,7 +520,7 @@ void Player::processGetObjectIdsByContainer(Frame * frame){
     unsigned int objectID = frame->unpackInt();
     if(visibleObjects.find(objectID) != visibleObjects.end()){
       
-      IGObject *o = Game::getGame()->getObject(objectID);
+        IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
       
       if(o != NULL){
 	std::set<unsigned int> contain = o->getContainedObjects();
@@ -537,9 +542,10 @@ void Player::processGetObjectIdsByContainer(Frame * frame){
 	of->packInt(contain.size());
 	for(std::set<unsigned int>::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
 	  of->packInt(*itcurr);
-	  of->packInt64(Game::getGame()->getObject(*itcurr)->getModTime());
+            of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
+            Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
 	}
-	
+        Game::getGame()->getObjectManager()->doneWithObject(objectID);
 	
       }else{
 	of->createFailFrame(fec_NonExistant, "No such Object");
@@ -572,7 +578,7 @@ void Player::processGetOrder(Frame * frame)
     return;
   }
 
-  IGObject *o = Game::getGame()->getObject(objectID);
+  IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
   if (o == NULL) {
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No such object");
@@ -608,7 +614,7 @@ void Player::processGetOrder(Frame * frame)
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not get Order");
     }
-    
+    Game::getGame()->getObjectManager()->doneWithObject(objectID);
     curConnection->sendFrame(of);
   }
   
@@ -631,7 +637,7 @@ void Player::processAddOrder(Frame * frame)
 		   return;
 		 }
 
-		IGObject *o = Game::getGame()->getObject(objectID);
+                IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
 		if (o == NULL) {
 			of->createFailFrame(fec_NonExistant, "No such object");
 			
@@ -652,6 +658,7 @@ void Player::processAddOrder(Frame * frame)
 					of->createFailFrame(fec_TempUnavailable, "Could not add order");
 				}
 			}
+                Game::getGame()->getObjectManager()->doneWithObject(objectID);
 		}
 	} else {
 		of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -698,13 +705,14 @@ void Player::processRemoveOrder(Frame * frame)
   for(int i = 0; i < num_orders; i++){
     Frame *of = curConnection->createFrame(frame);
     int ordpos = frame->unpackInt();
-    IGObject * obj = Game::getGame()->getObject(objectID);
+    IGObject * obj = Game::getGame()->getObjectManager()->getObject(objectID);
     if (obj != NULL && obj->removeOrder(ordpos, pid)) {
       of->setType(ft02_OK);
       of->packString("Order removed");
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
     }
+    Game::getGame()->getObjectManager()->doneWithObject(objectID);
 
     curConnection->sendFrame(of);
     
@@ -775,12 +783,13 @@ void Player::processProbeOrder(Frame * frame){
   }
 
   int obid = frame->unpackInt();
-  IGObject* theobject = Game::getGame()->getObject(obid);
+  IGObject* theobject = Game::getGame()->getObjectManager()->getObject(obid);
   if(theobject == NULL){
     Logger::getLogger()->debug("The object the probed orders are for doesn't exist");
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_NonExistant, "No such object");
     curConnection->sendFrame(of);
+    return;
   }
 
   int pos = frame->unpackInt();
@@ -801,8 +810,8 @@ void Player::processProbeOrder(Frame * frame){
     of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
     
   }
+  Game::getGame()->getObjectManager()->doneWithObject(obid);
   curConnection->sendFrame(of);
-  
   
 }
 

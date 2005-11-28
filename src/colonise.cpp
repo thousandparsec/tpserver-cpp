@@ -21,6 +21,7 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "game.h"
 #include "logging.h"
 #include "message.h"
@@ -45,7 +46,8 @@ Colonise::~Colonise(){
 
 void Colonise::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
-  f->packInt(moveorder->getETA(Game::getGame()->getObject(objID))); // number of turns
+  f->packInt(moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID))); // number of turns
+    Game::getGame()->getObjectManager()->doneWithObject(objID);
   f->packInt(0); // size of resource list
   f->packInt(planetid);
   
@@ -57,14 +59,15 @@ bool Colonise::inputFrame(Frame * f, unsigned int playerid){
   // TODO: fix in case size of list is not zero
   planetid = f->unpackInt();
 
-  IGObject* target = Game::getGame()->getObject(planetid);
+  IGObject* target = Game::getGame()->getObjectManager()->getObject(planetid);
 
   if(target == NULL || (planetid != 0 && target->getType() != 3)){
     Logger::getLogger()->debug("Player trying to colonise something that is not a planet");
+    Game::getGame()->getObjectManager()->doneWithObject(planetid);
     return false;
   }
   moveorder->setDest(target->getPosition());
-  
+  Game::getGame()->getObjectManager()->doneWithObject(planetid);
   return true;
 }
 
@@ -79,14 +82,14 @@ bool Colonise::doOrder(IGObject * ob){
     msg->addReference(rst_Object, ob->getID());
 
     Fleet *fleet = (Fleet*)ob->getObjectData();
-    Planet *planet = (Planet*)(Game::getGame()->getObject(planetid)->getObjectData());
+    Planet *planet = (Planet*)(Game::getGame()->getObjectManager()->getObject(planetid)->getObjectData());
     
     if(planet->getOwner() != fleet->getOwner()){
       
       if(planet->getOwner() != -1){
 	//combat
 	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
-	combat->setCombatants(ob, Game::getGame()->getObject(planetid));
+	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(planetid));
 	combat->doCombat();
       }
 
@@ -120,7 +123,7 @@ bool Colonise::doOrder(IGObject * ob){
       }
       
       if(fleet->totalShips() == 0){
-	Game::getGame()->scheduleRemoveObject(ob->getID());
+	Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
       }
       
     }else{
@@ -130,7 +133,7 @@ bool Colonise::doOrder(IGObject * ob){
     }
     
     Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);
-
+    Game::getGame()->getObjectManager()->doneWithObject(planetid);
     return true;
   }else{
     return false;

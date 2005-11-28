@@ -21,6 +21,7 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
+#include "objectmanager.h"
 #include "game.h"
 #include "logging.h"
 #include "player.h"
@@ -61,8 +62,9 @@ void Move::createFrame(Frame * f, int objID, int pos)
 {
 	Order::createFrame(f, objID, pos);
 
-	unsigned long long distance = dest.getDistance(Game::getGame()->getObject(objID)->getPosition());
-	unsigned long max_speed = ((Fleet*)(Game::getGame()->getObject(objID)->getObjectData()))->maxSpeed();
+	unsigned long long distance = dest.getDistance(Game::getGame()->getObjectManager()->getObject(objID)->getPosition());
+	unsigned long max_speed = ((Fleet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->maxSpeed();
+        Game::getGame()->getObjectManager()->doneWithObject(objID);
 	
 	f->packInt((int)(distance / max_speed) + 1); // number of turns
 	f->packInt(0); // size of resource list
