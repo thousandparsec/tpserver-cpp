@@ -47,7 +47,6 @@ class ObjectManager{
     std::set<uint32_t> getAllIds();
 
  private:
-    IGObject *universe;
     std::map<uint32_t, IGObject *> objects;
     std::map<uint32_t, uint64_t> objmtime;
     std::map<uint32_t, uint32_t> objatime;

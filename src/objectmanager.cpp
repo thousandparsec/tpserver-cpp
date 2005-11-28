@@ -46,9 +46,6 @@ IGObject* ObjectManager::createNewObject(){
 
 void ObjectManager::addObject(IGObject* obj){
     objects[obj->getID()] = obj;
-    if(obj->getID() == 0){
-        universe = obj;
-    }
     Game::getGame()->getPersistence()->saveObject(obj);
 }
 
@@ -60,24 +57,23 @@ void ObjectManager::discardNewObject(IGObject* obj){
 }
 
 IGObject *ObjectManager::getObject(uint32_t id){
-    if (id == 0) {
-        return universe;
-    }
-    IGObject *rtn = NULL;
+     IGObject *rtn = NULL;
+   
     std::map < unsigned int, IGObject * >::iterator obj = objects.find(id);
     if (obj != objects.end()) {
         rtn = (*obj).second;
     }
     if(rtn == NULL){
         rtn = Game::getGame()->getPersistence()->retrieveObject(id);
-        if(rtn != NULL)
+        if(rtn != NULL){
             objects[id] = rtn;
+        }
     }
     return rtn;
     //may need more work
 }
 
-void doneWithObject(uint32_t id){
+void ObjectManager::doneWithObject(uint32_t id){
 }
 
 void ObjectManager::scheduleRemoveObject(uint32_t id){
