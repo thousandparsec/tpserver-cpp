@@ -21,10 +21,12 @@
  */
 
 #include <string>
+#include <map>
 
 #include "persistence.h"
 
 typedef struct st_mysql MYSQL;
+class MysqlObjectType;
 
 class MysqlPersistence : public Persistence{
 public:
@@ -66,11 +68,15 @@ public:
 //     virtual Property* retrieveProperty(uint32_t propid);
 
     std::string addslashes(const std::string& in) const;
+    uint32_t getTableVersion(const std::string& name);
+    
+    void addObjectType(MysqlObjectType* ot);
 
 private:
     void lock();
     void unlock();
     MYSQL *conn;
+    std::map<uint32_t, MysqlObjectType*> objecttypes;
 
 };
 

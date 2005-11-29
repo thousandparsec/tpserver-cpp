@@ -36,6 +36,7 @@
 #include "design.h"
 #include "component.h"
 #include "property.h"
+#include "mysqlobjecttype.h"
 
 #include "mysqlpersistence.h"
 
@@ -181,9 +182,17 @@ bool MysqlPersistence::saveObject(IGObject* ob){
         unlock();
         return false;
     }
+    bool rtv;
     //store type-specific information
+    MysqlObjectType* obtype = objecttypes[ob->getType()];
+    if(obtype != NULL){
+        rtv = obtype->save(this, conn, ob);
+    }else{
+        Logger::getLogger()->error("Mysql: Object type %d not registered", ob->getType());
+        rtv = false;
+    }
     unlock();
-    return true;
+    return rtv;
 }
 
 IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
@@ -248,13 +257,25 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
         object->addContainedObject(atoi(row[0]));
     }
     mysql_free_result(childres);
-    
-    object->setModTime(strtoull(row[12], NULL, 10));
-    mysql_free_result(obresult);
 
-    lock();
     // fetch type-specific information
-    unlock();
+    MysqlObjectType* obtype = objecttypes[object->getType()];
+    if(obtype != NULL){
+        lock();
+        bool sucessful = obtype->retrieve(conn, object);
+        unlock();
+        object->setModTime(strtoull(row[12], NULL, 10));
+        if(!sucessful){
+            Logger::getLogger()->error("Mysql: Could not retrieve object type specific data");
+            delete object;
+            object = NULL;
+        }
+    }else{
+        Logger::getLogger()->error("Mysql: Object type %d not registered", object->getType());
+        delete object;
+        object = NULL;
+    }
+    mysql_free_result(obresult);
     return object;
 }
 
@@ -286,6 +307,35 @@ std::string MysqlPersistence::addslashes(const std::string& in) const{
     std::string rtv(buf, len);
     delete[] buf;
     return rtv;
+}
+
+uint32_t MysqlPersistence::getTableVersion(const std::string& name){
+    if(mysql_query(conn, (std::string("SELECT version FROM tableversion WHERE name='") + addslashes(name) + "';").c_str()) != 0){
+        Logger::getLogger()->error("Mysql: table version query error: %s", mysql_error(conn));
+        throw std::exception();
+    }else{
+        MYSQL_RES *tableversion = mysql_store_result(conn);
+        if(tableversion == NULL){
+            Logger::getLogger()->error("Mysql: table versions query result error: %s", mysql_error(conn));
+            throw std::exception();
+        }
+
+        MYSQL_ROW row = mysql_fetch_row(tableversion);
+        if(row == NULL || row[0] == NULL){
+            Logger::getLogger()->error("Mysql: table versions row error: %s", mysql_error(conn));
+            throw std::exception();
+        }
+        uint32_t version = atoi(row[0]);
+        mysql_free_result(tableversion);
+        return version;
+    }
+}
+
+void MysqlPersistence::addObjectType(MysqlObjectType* ot){
+    objecttypes[ot->getType()] = ot;
+    lock();
+    ot->initialise(this, conn);
+    unlock();
 }
 
 void MysqlPersistence::lock(){

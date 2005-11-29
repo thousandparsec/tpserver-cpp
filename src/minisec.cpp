@@ -20,6 +20,10 @@
 
 #include <cassert>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "game.h"
 #include "object.h"
 #include "objectmanager.h"
@@ -44,6 +48,11 @@
 #include "design.h"
 #include "category.h"
 #include "logging.h"
+
+#ifdef HAVE_LIBMYSQL
+#include "mysqlpersistence.h"
+#include "mysqluniverse.h"
+#endif
 
 #include "minisec.h"
 
@@ -206,6 +215,14 @@ void MiniSec::initGame(){
   obdm->addNewObjectType(new Planet());
   obdm->addNewObjectType(new Fleet());
 
+#ifdef HAVE_LIBMYSQL
+    MysqlPersistence* database = dynamic_cast<MysqlPersistence*>(game->getPersistence());
+    if(database != NULL){
+        MysqlUniverse* uni = new MysqlUniverse();
+        uni->setType(0);
+        database->addObjectType(uni);
+    }
+#endif
 
   OrderManager* ordm = game->getOrderManager();
   ordm->addOrderType(new Nop());

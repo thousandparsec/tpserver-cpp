@@ -31,7 +31,9 @@ SCHEMESOURCES =
 endif
 
 if MYSQL
-DBSOURCES = mysqlpersistence.h mysqlpersistence.cpp
+DBSOURCES = mysqlpersistence.h mysqlpersistence.cpp \
+		mysqlobjecttype.h mysqlobjecttype.cpp \
+		mysqluniverse.h mysqluniverse.cpp
 else
 DBSOURCES =
 endif
