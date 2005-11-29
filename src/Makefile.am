@@ -33,7 +33,8 @@ endif
 if MYSQL
 DBSOURCES = mysqlpersistence.h mysqlpersistence.cpp \
 		mysqlobjecttype.h mysqlobjecttype.cpp \
-		mysqluniverse.h mysqluniverse.cpp
+		mysqluniverse.h mysqluniverse.cpp \
+		mysqlemptyobject.h mysqlemptyobject.cpp
 else
 DBSOURCES =
 endif

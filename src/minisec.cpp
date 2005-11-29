@@ -52,6 +52,7 @@
 #ifdef HAVE_LIBMYSQL
 #include "mysqlpersistence.h"
 #include "mysqluniverse.h"
+#include "mysqlemptyobject.h"
 #endif
 
 #include "minisec.h"
@@ -221,6 +222,12 @@ void MiniSec::initGame(){
         MysqlUniverse* uni = new MysqlUniverse();
         uni->setType(0);
         database->addObjectType(uni);
+        MysqlEmptyObject* emt = new MysqlEmptyObject();
+        emt->setType(1);
+        database->addObjectType(emt);
+        emt = new MysqlEmptyObject();
+        emt->setType(2);
+        database->addObjectType(emt);
     }
 #endif
 
