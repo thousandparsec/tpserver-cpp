@@ -2,7 +2,7 @@
 #define FLEET_H
 /*  Fleet Object class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ class Fleet:public OwnedObject {
 	long long maxSpeed();
 	int firepower(bool draw);
 	bool hit(int firepower);
+
+        int getDamage() const;
+        void setDamage(int nd);
 
 	void packExtraData(Frame * frame);
 

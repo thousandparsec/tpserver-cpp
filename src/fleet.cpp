@@ -130,6 +130,15 @@ bool Fleet::hit(int firepower){
   return true;
 }
 
+int Fleet::getDamage() const{
+    return damage;
+}
+
+void Fleet::setDamage(int nd){
+    damage = nd;
+    touchModTime();
+}
+
 void Fleet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);
