@@ -75,5 +75,8 @@ void MysqlUniverse::initialise(MysqlPersistence* persistence, MYSQL* conn){
                 "year INT UNSIGNED NOT NULL);") != 0){
             Logger::getLogger()->debug("Could not send query to create universe table");
         }
+        if(mysql_query(conn, "INSERT INTO tableversion VALUES(NULL, 'universe', 0);") != 0){
+            Logger::getLogger()->debug("Could not set universe table version");
+        }
     }
 }
