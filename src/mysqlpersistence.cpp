@@ -162,6 +162,8 @@ void MysqlPersistence::shutdown(){
     mysql_query(conn, "DELETE FROM object;");
     mysql_query(conn, "DELETE FROM universe;");
     mysql_query(conn, "DELETE FROM planet;");
+    mysql_query(conn, "DELETE FROM fleet;");
+    mysql_query(conn, "DELETE FROM fleetship;");
     // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);

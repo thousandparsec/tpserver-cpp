@@ -35,7 +35,8 @@ DBSOURCES = mysqlpersistence.h mysqlpersistence.cpp \
 		mysqlobjecttype.h mysqlobjecttype.cpp \
 		mysqluniverse.h mysqluniverse.cpp \
 		mysqlemptyobject.h mysqlemptyobject.cpp \
-		mysqlplanet.h mysqlplanet.cpp
+		mysqlplanet.h mysqlplanet.cpp \
+		mysqlfleet.h mysqlfleet.cpp
 else
 DBSOURCES =
 endif

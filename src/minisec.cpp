@@ -54,6 +54,7 @@
 #include "mysqluniverse.h"
 #include "mysqlemptyobject.h"
 #include "mysqlplanet.h"
+#include "mysqlfleet.h"
 #endif
 
 #include "minisec.h"
@@ -232,6 +233,9 @@ void MiniSec::initGame(){
         MysqlPlanet* plnt = new MysqlPlanet();
         plnt->setType(3);
         database->addObjectType(plnt);
+        MysqlFleet* flt = new MysqlFleet();
+        flt->setType(4);
+        database->addObjectType(flt);
     }
 #endif
 
