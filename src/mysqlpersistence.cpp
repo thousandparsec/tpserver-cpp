@@ -161,6 +161,7 @@ void MysqlPersistence::shutdown(){
     // TEMP HACK
     mysql_query(conn, "DELETE FROM object;");
     mysql_query(conn, "DELETE FROM universe;");
+    mysql_query(conn, "DELETE FROM planet;");
     // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);
@@ -322,12 +323,8 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
         }
 
         MYSQL_ROW row = mysql_fetch_row(tableversion);
-        if(row == NULL){ 
-            Logger::getLogger()->error("Mysql: table versions row error: %s", mysql_error(conn));
-            throw std::exception();
-        }
-        if(row[0] == NULL){
-            Logger::getLogger()->warning("Mysql: table versions not found");
+        if(row == NULL || row[0] == NULL){ 
+            Logger::getLogger()->warning("Mysql: table version not found");
             throw std::exception();
         }
         uint32_t version = atoi(row[0]);

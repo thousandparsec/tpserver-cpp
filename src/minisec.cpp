@@ -53,6 +53,7 @@
 #include "mysqlpersistence.h"
 #include "mysqluniverse.h"
 #include "mysqlemptyobject.h"
+#include "mysqlplanet.h"
 #endif
 
 #include "minisec.h"
@@ -228,6 +229,9 @@ void MiniSec::initGame(){
         emt = new MysqlEmptyObject();
         emt->setType(2);
         database->addObjectType(emt);
+        MysqlPlanet* plnt = new MysqlPlanet();
+        plnt->setType(3);
+        database->addObjectType(plnt);
     }
 #endif
 
