@@ -81,7 +81,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
    AC_MSG_RESULT(no)
 ])
 
-
+AM_PATH_LIBGNUTLS(, [AC_DEFINE(HAVE_LIBGNUTLS, 1, [Define to 1 if you have the `gnutls' library (-lgnutls).])
+        AM_CONDITIONAL(GNUTLS, true)])
 
 dnl PLT MzScheme autoconf test
 AC_ARG_WITH(mzscheme,

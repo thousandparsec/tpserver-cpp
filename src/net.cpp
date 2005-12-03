@@ -39,6 +39,11 @@
 #include "game.h"
 #include "frame.h"
 
+#ifdef HAVE_LIBGNUTLS
+#include "tlssocket.h"
+#include "playertlsconn.h"
+#endif
+
 #include "net.h"
 
 
@@ -115,6 +120,16 @@ void Network::start()
 	    delete listensocket;
 	    Logger::getLogger()->warning("Not starting network, listen socket couldn't be opened");
 	  }
+#ifdef HAVE_LIBGNUTLS
+            TlsSocket* secsocket = new TlsSocket(Settings::getSettings()->get("secure_addr"), Settings::getSettings()->get("secure_port"));
+             if(secsocket->getStatus() != 0){
+                addConnection(secsocket);
+                active = true;
+            }else{
+                delete secsocket;
+                Logger::getLogger()->warning("Not starting sec network, listen socket couldn't be opened");
+            }
+#endif
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
@@ -142,7 +157,18 @@ void Network::stop()
 			removeConnection(ts);
 			delete ts;
 		      }else{
-			++itcurr;
+#ifdef HAVE_LIBGNUTLS
+                        TlsSocket* sts = dynamic_cast<TlsSocket*>(itcurr->second);
+                        if(sts != NULL){
+                            ++itcurr;
+                            removeConnection(sts);
+                            delete sts;
+                        }else{
+#endif
+                            ++itcurr;
+#ifdef HAVE_LIBGNUTLS
+                        }
+#endif
 		      }
 		    }
 		  }

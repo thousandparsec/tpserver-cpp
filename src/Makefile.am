@@ -41,9 +41,16 @@ else
 DBSOURCES =
 endif
 
-tpserver_cpp_SOURCES = $(COMMONSOURCES) $(SCHEMESOURCES) $(DBSOURCES)
+if GNUTLS
+GNUTLSSOURCES = tlsmanager.h tlsmanager.cpp tlssocket.h tlssocket.cpp \
+		playertlsconn.h playertlsconn.cpp
+else
+GNUTLSSOURCES =
+endif
 
-tpserver_cpp_LDADD = $(READLINE_LIBS) $(MYSQL_LIBS)
+tpserver_cpp_SOURCES = $(COMMONSOURCES) $(SCHEMESOURCES) $(DBSOURCES) $(GNUTLSSOURCES)
+
+tpserver_cpp_LDADD = $(READLINE_LIBS) $(MYSQL_LIBS) $(LIBGNUTLS_LIBS)
 
 data_DATA = designstruct.scm
 EXTRA_DIST = designstruct.scm
