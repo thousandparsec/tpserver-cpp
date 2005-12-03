@@ -6,7 +6,7 @@ REQUIRES (to build also requires the dev packages)
 ========
 readline (standard with most distributions)
 pthreads (part of libc, standard)
-libgnutls (common in latest distros)
+libgnutls (common in latest distros, optional needed for secure sockets)
 
 mzscheme (www.plt-scheme.org) [LGPL]
  - note: you will probably need to pass the directory to the plt
