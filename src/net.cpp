@@ -129,6 +129,16 @@ void Network::start()
                 delete secsocket;
                 Logger::getLogger()->warning("Not starting sec network, listen socket couldn't be opened");
             }
+            if(Settings::getSettings()->get("https") != ""){
+                TlsSocket* secsocket = new TlsSocket(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
+                if(secsocket->getStatus() != 0){
+                    addConnection(secsocket);
+                    active = true;
+                }else{
+                    delete secsocket;
+                    Logger::getLogger()->warning("Not starting https network, listen socket couldn't be opened");
+                }
+            }
 #endif
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
