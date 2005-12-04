@@ -54,16 +54,16 @@ PlayerTlsConnection::PlayerTlsConnection(int fd) : PlayerConnection(fd)
 
     gnutls_init (&session, GNUTLS_SERVER);
     /* Use the default priorities, plus, export cipher suites.
-   */
-  gnutls_set_default_export_priority (session);
+    */
+    gnutls_set_default_export_priority (session);
 
-  gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, TlsManager::getInstance()->getCredentials());
+    gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, TlsManager::getInstance()->getCredentials());
 
-  /* request client certificate if any.
-   */
-  //gnutls_certificate_server_set_request (session, GNUTLS_CERT_REQUEST);
+    /* request client certificate if any.
+    */
+    //gnutls_certificate_server_set_request (session, GNUTLS_CERT_REQUEST);
 
-  gnutls_dh_set_prime_bits (session, 1024);
+    gnutls_dh_set_prime_bits (session, 1024);
 
     gnutls_transport_set_ptr (session, (gnutls_transport_ptr_t) fd);
     int ret = gnutls_handshake (session);

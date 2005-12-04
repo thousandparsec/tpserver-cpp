@@ -40,7 +40,7 @@ void TlsManager::reference(){
         gnutls_global_init ();
         gnutls_certificate_allocate_credentials (&credentials);
         if(settings->get("x509_tls") != ""){
-            //gnutls_certificate_set_x509_trust_file (credentials, settings->get("x509_ca_file").c_str(), GNUTLS_X509_FMT_PEM);
+            gnutls_certificate_set_x509_trust_file (credentials, settings->get("x509_trust_file").c_str(), GNUTLS_X509_FMT_PEM);
 
             //gnutls_certificate_set_x509_crl_file (credentials, settings->get("x509_crl_file").c_str(), GNUTLS_X509_FMT_PEM);
 
@@ -73,6 +73,7 @@ gnutls_certificate_credentials_t TlsManager::getCredentials(){
 
 TlsManager::TlsManager(): refcount(0){
     Settings::getSettings()->set("x509_tls", "yes");
-    Settings::getSettings()->set("x509_cert_file", "ca-cert.pem");
-    Settings::getSettings()->set("x509_key_file", "ca-key.pem");
+    Settings::getSettings()->set("x509_cert_file", "cert.pem");
+    Settings::getSettings()->set("x509_key_file", "key.pem");
+    Settings::getSettings()->set("x509_trust_file", "ca-cert.pem");
 }
