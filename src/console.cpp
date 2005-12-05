@@ -35,6 +35,7 @@
 #include "net.h"
 #include "game.h"
 #include "object.h"
+#include "settings.h"
 
 #include "console.h"
 
@@ -58,6 +59,10 @@ static char* turn_generator(const char* text, int state){
 
 static char* network_generator(const char* text, int state){
   return Console::getConsole()->networkCommandCompleter(text, state);
+}
+
+static char* settings_generator(const char* text, int state){
+    return Console::getConsole()->settingsCommandCompleter(text, state);
 }
 
 Console *Console::getConsole()
@@ -157,6 +162,7 @@ void Console::readLine(char* line){
     std::cout << "Help\t\tThis help" << std::endl;
     std::cout << "Turn\t\tTurn management functions" << std::endl;
     std::cout << "Network\t\tNetwork management functions" << std::endl;
+    std::cout << "Settings\tSettings get and set functions" << std::endl;
 
     std::cout << std::endl;
   }else if(strncasecmp(line, "turn", 4) == 0){
@@ -178,6 +184,19 @@ void Console::readLine(char* line){
     }else{
       std::cout << line << " function not known" << std::endl;
     }
+  }else if(strncasecmp(line, "settings", 8) == 0){
+        if(strncasecmp(line, "settings set", 12) == 0){
+            std::string tmp1(line);
+            tmp1 = tmp1.substr(13);
+            size_t pos1 = tmp1.find(' ');
+            Settings::getSettings()->set(tmp1.substr(0, pos1), tmp1.substr(pos1+1));
+            std::cout << "Setting value of \"" << tmp1.substr(0, pos1) << "\" to \"" << tmp1.substr(pos1+1) << "\"." << std::endl;
+        }else if(strncasecmp(line, "settings get", 12) == 0){
+            std::string tmp = std::string(line).substr(13);
+            std::cout << "Setting \"" << tmp << "\" is set to \"" << Settings::getSettings()->get(tmp) << "\"." << std::endl;
+        }else{
+            std::cout << line << " function not known" << std::endl;
+        }
   }
 
   free(line);
@@ -198,6 +217,8 @@ char** Console::wordCompletion(const char* text, int start, int end){
     matches = rl_completion_matches(text, turn_generator);
   }else if(strncasecmp(rl_line_buffer, "network", 7) == 0){
     matches = rl_completion_matches(text, network_generator);
+  }else if(strncasecmp(rl_line_buffer, "settings", 8) == 0){
+    matches = rl_completion_matches(text, settings_generator);
   }
   rl_attempted_completion_over = 1;
 
@@ -246,6 +267,13 @@ char* Console::commandCompleter(const char* text, int state){
       commstate = 5;
       break;
     }
+    case 5:
+        if(strncasecmp(text, "settings", strlen(text)) == 0){
+            cname = (char*)malloc(9);
+            strncpy(cname, "settings", 9);
+            commstate = 6;
+            break;
+        }
   default:
     commstate = 9;
     break;
@@ -297,6 +325,33 @@ char* Console::networkCommandCompleter(const char* text, int state){
     if(strncasecmp(text, "stop", strlen(text)) == 0){
       cname = (char*)malloc(5);
       strncpy(cname, "stop", 5);
+      commstate = 2;
+      break;
+    }
+  default:
+    commstate = 9;
+    break;
+  }
+  return cname;
+}
+
+char* Console::settingsCommandCompleter(const char* text, int state){
+  if(state == 0){
+    commstate = 0;
+  }
+  char* cname = NULL;
+  switch(commstate){
+  case 0:
+    if(strncasecmp(text, "set", strlen(text)) == 0){
+      cname = (char*)malloc(4);
+      strncpy(cname, "set", 4);
+      commstate = 1;
+      break;
+    }
+  case 1:
+    if(strncasecmp(text, "get", strlen(text)) == 0){
+      cname = (char*)malloc(4);
+      strncpy(cname, "get", 4);
       commstate = 2;
       break;
     }

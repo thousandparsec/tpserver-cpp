@@ -38,6 +38,7 @@ class Console : public Connection{
 	char* commandCompleter(const char* text, int state);
 	char* turnCommandCompleter(const char* text, int state);
 	char* networkCommandCompleter(const char* text, int state);
+        char* settingsCommandCompleter(const char* text, int state);
 
       private:
 	 Console(Console & rhs);
