@@ -172,6 +172,14 @@ void Console::readLine(char* line){
        Game::getGame()->resetEOTTimer();
     }else if(strncasecmp(line, "turn time", 9) == 0){
       std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
+    }else if(strncasecmp(line, "turn reset", 10) == 0){
+        Game::getGame()->resetEOTTimer();
+        std::cout << "Reset EOT timer, " << Game::getGame()->secondsToEOT() 
+                << " seconds to EOT" << std::endl;
+    }else if(strncasecmp(line, "turn length ", 12) == 0){
+        uint32_t tlen = atoi(line+12);
+        Game::getGame()->setTurnLength(tlen);
+        std::cout << "Setting turn length to " << tlen << " seconds" << std::endl;
     }else{
       std::cout << line << " function not known" << std::endl;
     }
@@ -301,6 +309,20 @@ char* Console::turnCommandCompleter(const char* text, int state){
       commstate = 2;
       break;
     }
+      case 2:
+          if(strncasecmp(text, "reset", strlen(text)) == 0){
+              cname = (char*)malloc(6);
+              strncpy(cname, "reset", 6);
+              commstate = 3;
+              break;
+          }
+      case 3:
+          if(strncasecmp(text, "length", strlen(text)) == 0){
+              cname = (char*)malloc(7);
+              strncpy(cname, "length", 7);
+              commstate = 4;
+              break;
+          }
   default:
     commstate = 9;
     break;
