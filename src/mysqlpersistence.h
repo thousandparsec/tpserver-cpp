@@ -38,6 +38,7 @@ public:
 
     virtual bool saveObject(IGObject* ob);
     virtual IGObject* retrieveObject(uint32_t obid);
+    virtual bool removeObject(uint32_t obid);
     virtual uint32_t getMaxObjectId();
 
 //     virtual bool saveOrder(Order* ord);

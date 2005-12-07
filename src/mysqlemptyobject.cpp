@@ -31,5 +31,9 @@ bool MysqlEmptyObject::retrieve(MYSQL* conn, IGObject* ob){
     return true;
 }
 
+bool MysqlEmptyObject::remove(MYSQL* conn, uint32_t obid){
+    return true;
+}
+
 void MysqlEmptyObject::initialise(MysqlPersistence* persistence, MYSQL* conn){
 }

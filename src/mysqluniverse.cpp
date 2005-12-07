@@ -66,6 +66,16 @@ bool MysqlUniverse::retrieve(MYSQL* conn, IGObject* ob){
     return true;
 }
 
+bool MysqlUniverse::remove(MYSQL* conn, uint32_t obid){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM universe WHERE objectid = " << obid << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove universe - %s", mysql_error(conn));
+        return false;
+    }
+    return true;
+}
+
 void MysqlUniverse::initialise(MysqlPersistence* persistence, MYSQL* conn){
     try{
         uint32_t ver = persistence->getTableVersion("universe");

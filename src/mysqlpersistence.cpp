@@ -283,6 +283,56 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     return object;
 }
 
+bool MysqlPersistence::removeObject(uint32_t obid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT type FROM object WHERE objectid=" << obid <<";";
+    uint32_t objecttype;
+    lock();
+    try{
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: remove object query error: %s", mysql_error(conn));
+            throw std::exception();
+        }else{
+            MYSQL_RES *objtyperes = mysql_store_result(conn);
+            if(objtyperes == NULL){
+                Logger::getLogger()->error("Mysql: remove object query result error: %s", mysql_error(conn));
+                throw std::exception();
+            }
+            unlock();
+    
+            MYSQL_ROW row = mysql_fetch_row(objtyperes);
+            if(row == NULL || row[0] == NULL){ 
+                Logger::getLogger()->warning("Mysql remove object: object not found");
+                throw std::exception();
+            }
+            objecttype = atoi(row[0]);
+            mysql_free_result(objtyperes);
+        }
+    }catch(std::exception e){
+        unlock();
+        return false;
+    }
+    querybuilder.str("DELETE FROM object WHERE objectid=");
+    querybuilder << obid << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove object %d - %s", obid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    bool rtv;
+    //store type-specific information
+    MysqlObjectType* obtype = objecttypes[objecttype];
+    if(obtype != NULL){
+        rtv = obtype->remove(conn, obid);
+    }else{
+        Logger::getLogger()->error("Mysql: Object type %d not registered", objecttype);
+        rtv = false;
+    }
+    unlock();
+    return rtv;
+    
+}
+
 uint32_t MysqlPersistence::getMaxObjectId(){
     lock();
     if(mysql_query(conn, "SELECT MAX(objectid) FROM object;") != 0){

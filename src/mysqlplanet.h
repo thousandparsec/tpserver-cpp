@@ -28,7 +28,8 @@ public:
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
     virtual bool retrieve(MYSQL* conn, IGObject* ob);
-    
+    virtual bool remove(MYSQL* conn, uint32_t obid);
+
     virtual void initialise(MysqlPersistence* persistence, MYSQL* conn);
 
 };
