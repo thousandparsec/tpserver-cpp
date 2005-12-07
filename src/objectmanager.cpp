@@ -83,7 +83,7 @@ void ObjectManager::scheduleRemoveObject(uint32_t id){
 void ObjectManager::clearRemovedObjects(){
     for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
-        // remove from persistence
+        Game::getGame()->getPersistence()->removeObject(*itrm);
         delete objects[*itrm];
         objects.erase(*itrm);
     }
