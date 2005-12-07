@@ -249,6 +249,8 @@ void Game::doEndOfTurn()
             if(currOrder != NULL){
                 if(currOrder->doOrder(ob)){
                 ordermanager->removeFirstOrder(ob);
+                }else{
+                    ob->touchModTime();
                 }
             }
             objectmanager->doneWithObject(ob->getID());
