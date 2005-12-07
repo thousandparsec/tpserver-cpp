@@ -34,6 +34,7 @@ public:
     uint32_t getType() const;
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob) = 0;
+    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob) = 0;
     virtual bool retrieve(MYSQL* conn, IGObject* ob) = 0;
     virtual bool remove(MYSQL* conn, uint32_t obid) = 0;
     

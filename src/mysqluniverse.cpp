@@ -43,6 +43,20 @@ bool MysqlUniverse::save(MysqlPersistence* persistence, MYSQL* conn, IGObject* o
     return true;
 }
 
+bool MysqlUniverse::update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE universe SET year=" << ((Universe*)(ob->getObjectData()))->getYear() << " WHERE objectid=" << ob->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store universe - %s", mysql_error(conn));
+        return false;
+    }
+    if(mysql_affected_rows(conn) != 1){
+        Logger::getLogger()->error("Universe doesn't exist in database, saving it");
+        return save(persistence, conn, ob);
+    }
+    return true;
+}
+
 bool MysqlUniverse::retrieve(MYSQL* conn, IGObject* ob){
     std::ostringstream querybuilder;
     querybuilder << "SELECT year FROM universe WHERE objectid = " << ob->getID() << ";";

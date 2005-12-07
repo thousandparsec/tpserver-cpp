@@ -27,6 +27,10 @@ bool MysqlEmptyObject::save(MysqlPersistence* persistence, MYSQL* conn, IGObject
     return true;
 }
 
+bool MysqlEmptyObject::update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob){
+    return true;
+}
+
 bool MysqlEmptyObject::retrieve(MYSQL* conn, IGObject* ob){
     return true;
 }

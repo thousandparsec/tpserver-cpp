@@ -45,6 +45,10 @@ bool Persistence::saveObject(IGObject* ob){
     return false;
 }
 
+bool Persistence::updateObject(IGObject* ob){
+    return false;
+}
+
 IGObject* Persistence::retrieveObject(uint32_t obid){
     return NULL;
 }

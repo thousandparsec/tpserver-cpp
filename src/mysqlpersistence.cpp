@@ -94,7 +94,7 @@ bool MysqlPersistence::init(){
     if(ssock.length() != 0)
         sock = ssock.c_str();
     int port = atoi(conf->get("mysql_port").c_str());
-    if(mysql_real_connect(conn, host, user, pass, db, port, sock, 0) == NULL){
+    if(mysql_real_connect(conn, host, user, pass, db, port, sock, CLIENT_FOUND_ROWS) == NULL){
         Logger::getLogger()->error("Could not connect to mysql server - %s", mysql_error(conn));
         mysql_close(conn);
         conn = NULL;
@@ -203,6 +203,37 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     MysqlObjectType* obtype = objecttypes[ob->getType()];
     if(obtype != NULL){
         rtv = obtype->save(this, conn, ob);
+    }else{
+        Logger::getLogger()->error("Mysql: Object type %d not registered", ob->getType());
+        rtv = false;
+    }
+    unlock();
+    return rtv;
+}
+
+//#include <iostream>
+
+bool MysqlPersistence::updateObject(IGObject* ob){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE object SET type=" << ob->getType() << ", name='";
+    querybuilder << addslashes(ob->getName()) << "', parentid=" << ob->getParent() << ", size=";
+    querybuilder << ob->getSize() << ", posx=" << ob->getPosition().getX() << ", posy=" << ob->getPosition().getY() << ", posz=";
+    querybuilder << ob->getPosition().getZ() << ", velx=" << ob->getVelocity().getX() << ", vely=";
+    querybuilder << ob->getVelocity().getY() << ", velz=" << ob->getVelocity().getZ() << ", orders=" << ob->getNumOrders(-1);
+    querybuilder << ", modtime=" << ob->getModTime() << " WHERE objectid=" << ob->getID() << ";";
+    lock();
+    std::string query = querybuilder.str();
+    //std::cout << "Query: " << query << std::endl;
+    if(mysql_query(conn, query.c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not update object %d - %s", ob->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    bool rtv;
+    //store type-specific information
+    MysqlObjectType* obtype = objecttypes[ob->getType()];
+    if(obtype != NULL){
+        rtv = obtype->update(this, conn, ob);
     }else{
         Logger::getLogger()->error("Mysql: Object type %d not registered", ob->getType());
         rtv = false;

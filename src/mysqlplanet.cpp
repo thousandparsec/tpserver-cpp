@@ -43,6 +43,20 @@ bool MysqlPlanet::save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob)
     return true;
 }
 
+bool MysqlPlanet::update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE planet SET owner=" << ((Planet*)(ob->getObjectData()))->getOwner() << " WHERE objectid=" << ob->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store planet - %s", mysql_error(conn));
+        return false;
+    }
+    if(mysql_affected_rows(conn) != 1){
+        Logger::getLogger()->error("Planet doesn't exist in database, saving it");
+        return save(persistence, conn, ob);
+    }
+    return true;
+}
+
 bool MysqlPlanet::retrieve(MYSQL* conn, IGObject* ob){
     std::ostringstream querybuilder;
     querybuilder << "SELECT owner FROM planet WHERE objectid = " << ob->getID() << ";";
