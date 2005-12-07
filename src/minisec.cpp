@@ -55,6 +55,12 @@
 #include "mysqlemptyobject.h"
 #include "mysqlplanet.h"
 #include "mysqlfleet.h"
+#include "mysqlordernop.h"
+#include "mysqlordermove.h"
+#include "mysqlorderbuild.h"
+#include "mysqlordercolonise.h"
+#include "mysqlordersplitfleet.h"
+#include "mysqlordermergefleet.h"
 #endif
 
 #include "minisec.h"
@@ -246,6 +252,29 @@ void MiniSec::initGame(){
   ordm->addOrderType(new Colonise());
   ordm->addOrderType(new SplitFleet());
   ordm->addOrderType(new MergeFleet());
+
+#ifdef HAVE_LIBMYSQL
+    if(database != NULL){
+        MysqlOrderNop* nop = new MysqlOrderNop();
+        nop->setType(0);
+        database->addOrderType(nop);
+        MysqlOrderMove* move = new MysqlOrderMove();
+        move->setType(1);
+        database->addOrderType(move);
+        MysqlOrderBuild* build = new MysqlOrderBuild();
+        build->setType(2);
+        database->addOrderType(build);
+        MysqlOrderColonise* colonise = new MysqlOrderColonise();
+        colonise->setType(3);
+        database->addOrderType(colonise);
+        MysqlOrderSplitFleet* sf = new MysqlOrderSplitFleet();
+        sf->setType(4);
+        database->addOrderType(sf);
+        MysqlOrderMergeFleet* mf = new MysqlOrderMergeFleet();
+        mf->setType(5);
+        database->addOrderType(mf);
+    }
+#endif
 }
 
 void MiniSec::createGame(){

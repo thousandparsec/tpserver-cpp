@@ -26,6 +26,8 @@
 
 #include "logging.h"
 #include "settings.h"
+#include "game.h"
+#include "ordermanager.h"
 
 #include "object.h"
 #include "order.h"
@@ -37,6 +39,7 @@
 #include "component.h"
 #include "property.h"
 #include "mysqlobjecttype.h"
+#include "mysqlordertype.h"
 
 #include "mysqlpersistence.h"
 
@@ -110,7 +113,7 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
-                    "(NULL, 'order', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
+                    "(NULL, 'ordertype', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
                     "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'component', 0), (NULL, 'property', 0);") != 0){
                 throw std::exception();
             }
@@ -118,6 +121,13 @@ bool MysqlPersistence::init(){
                     "name TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, posx BIGINT NOT NULL, "
                     "posy BIGINT NOT NULL, posz BIGINT NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, "
                     "orders INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE ordertype (orderid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE orderslot (objectid INT UNSIGNED NOT NULL, slot INT UNSIGNED NOT NULL, "
+                        "orderid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (objectid, slot));") != 0){
                 throw std::exception();
             }
 
@@ -164,6 +174,8 @@ void MysqlPersistence::shutdown(){
     mysql_query(conn, "DELETE FROM planet;");
     mysql_query(conn, "DELETE FROM fleet;");
     mysql_query(conn, "DELETE FROM fleetship;");
+    mysql_query(conn, "DELETE FROM ordertype;");
+    mysql_query(conn, "DELETE FROM orderslot;");
     // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);
@@ -312,8 +324,8 @@ bool MysqlPersistence::removeObject(uint32_t obid){
         unlock();
         return false;
     }
-    querybuilder.str("DELETE FROM object WHERE objectid=");
-    querybuilder << obid << ";";
+    querybuilder.str("");
+    querybuilder << "DELETE FROM object WHERE objectid=" << obid << ";";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not remove object %d - %s", obid, mysql_error(conn));
         unlock();
@@ -344,6 +356,173 @@ uint32_t MysqlPersistence::getMaxObjectId(){
     unlock();
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: get max objectid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO ordertype VALUES (" << ordid << ", " << ord->getType() << ");";
+     lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store order %d - %s", ordid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    bool rtv;
+    //store type-specific information
+    MysqlOrderType* ordtype = ordertypes[ord->getType()];
+    if(ordtype != NULL){
+        rtv = ordtype->save(this, conn, ordid, ord);
+    }else{
+        Logger::getLogger()->error("Mysql: Order type %d not registered", ord->getType());
+        rtv = false;
+    }
+    unlock();
+    return rtv;
+}
+
+Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT type FROM ordertype WHERE orderid = " << ordid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve order %d - %s", ordid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *ordresult = mysql_store_result(conn);
+    if(ordresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve order: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock();
+    MYSQL_ROW row = mysql_fetch_row(ordresult);
+    uint32_t ordertype;
+    if(row != NULL && row[0] != NULL){
+        ordertype = atoi(row[0]);
+    }else{
+        mysql_free_result(ordresult);
+        Logger::getLogger()->error("Mysql: retrieve order: no such order %d - %s", ordid, mysql_error(conn));
+        return NULL;
+   }
+    mysql_free_result(ordresult);
+    Order* order = Game::getGame()->getOrderManager()->createOrder(ordertype);
+    // fetch type-specific information
+    MysqlOrderType* ordtype = ordertypes[order->getType()];
+    if(ordtype != NULL){
+        lock();
+        bool sucessful = ordtype->retrieve(conn, ordid, order);
+        unlock();
+        if(!sucessful){
+            Logger::getLogger()->error("Mysql: Could not retrieve order type specific data");
+            delete order;
+            order = NULL;
+        }
+    }else{
+        Logger::getLogger()->error("Mysql: Order type %d not registered", order->getType());
+        delete order;
+        order = NULL;
+    }
+    return order;
+}
+
+bool MysqlPersistence::removeOrder(uint32_t ordid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT type FROM ordertype WHERE orderid=" << ordid <<";";
+    uint32_t ordertype;
+    lock();
+    try{
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: remove order query error: %s", mysql_error(conn));
+            throw std::exception();
+        }else{
+            MYSQL_RES *ordtyperes = mysql_store_result(conn);
+            if(ordtyperes == NULL){
+                Logger::getLogger()->error("Mysql: remove order query result error: %s", mysql_error(conn));
+                throw std::exception();
+            }
+    
+            MYSQL_ROW row = mysql_fetch_row(ordtyperes);
+            if(row == NULL || row[0] == NULL){ 
+                Logger::getLogger()->warning("Mysql remove order: order not found");
+                throw std::exception();
+            }
+            ordertype = atoi(row[0]);
+            mysql_free_result(ordtyperes);
+        }
+    }catch(std::exception e){
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM ordertype WHERE orderid=" << ordid << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove order %d - %s", ordid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    bool rtv;
+    //store type-specific information
+    MysqlOrderType* ordtype = ordertypes[ordertype];
+    if(ordtype != NULL){
+        rtv = ordtype->remove(conn, ordid);
+    }else{
+        Logger::getLogger()->error("Mysql: Order type %d not registered", ordertype);
+        rtv = false;
+    }
+    unlock();
+    return rtv;
+}
+
+bool MysqlPersistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM orderslot WHERE objectid=" << obid <<";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove orderslots for object %d - %s", obid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    if(!list.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO orderslot VALUES ";
+        uint32_t slotnum = 0;
+        for(std::list<uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
+            if(itcurr != list.begin()){
+                querybuilder << ", ";
+            }
+            querybuilder << "(" << obid << ", " << slotnum << ", " << (*itcurr) << ")";
+            slotnum++;
+        }
+        querybuilder << ";";
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store orderslots - %s", mysql_error(conn));
+            return false;
+        }
+    }
+    return true;
+}
+
+uint32_t MysqlPersistence::getMaxOrderId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(orderid) FROM ordertype;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max order id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max orderid: Could not store result - %s", mysql_error(conn));
         return 0;
     }
     MYSQL_ROW max = mysql_fetch_row(obresult);
@@ -387,6 +566,13 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
 
 void MysqlPersistence::addObjectType(MysqlObjectType* ot){
     objecttypes[ot->getType()] = ot;
+    lock();
+    ot->initialise(this, conn);
+    unlock();
+}
+
+void MysqlPersistence::addOrderType(MysqlOrderType* ot){
+    ordertypes[ot->getType()] = ot;
     lock();
     ot->initialise(this, conn);
     unlock();

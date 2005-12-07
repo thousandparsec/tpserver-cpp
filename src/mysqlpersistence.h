@@ -27,6 +27,7 @@
 
 typedef struct st_mysql MYSQL;
 class MysqlObjectType;
+class MysqlOrderType;
 
 class MysqlPersistence : public Persistence{
 public:
@@ -41,9 +42,11 @@ public:
     virtual bool removeObject(uint32_t obid);
     virtual uint32_t getMaxObjectId();
 
-//     virtual bool saveOrder(Order* ord);
-//     virtual Order* retrieveOrder(uint32_t orpid);
-//     virtual Order* retrieveOrder(uint32_t obid, uint32_t slot);
+    virtual bool saveOrder(uint32_t ordid, Order* ord);
+    virtual Order* retrieveOrder(uint32_t ordid);
+    virtual bool removeOrder(uint32_t ordid);
+    virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);
+    virtual uint32_t getMaxOrderId();
 // 
 //     virtual bool saveBoard(Board* board);
 //     virtual Board* retrieveBoard(uint32_t boardid);
@@ -72,12 +75,14 @@ public:
     uint32_t getTableVersion(const std::string& name);
     
     void addObjectType(MysqlObjectType* ot);
+    void addOrderType(MysqlOrderType* ot);
 
 private:
     void lock();
     void unlock();
     MYSQL *conn;
     std::map<uint32_t, MysqlObjectType*> objecttypes;
+    std::map<uint32_t, MysqlOrderType*> ordertypes;
 
 };
 
