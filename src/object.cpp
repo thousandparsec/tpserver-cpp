@@ -84,6 +84,7 @@ IGObject::~IGObject()
 IGObject IGObject::operator=(IGObject & rhs)
 {
 	//TODO
+        Logger::getLogger()->warning("Object Assignment operator");
 	return *this;
 }
 
