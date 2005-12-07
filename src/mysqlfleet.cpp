@@ -130,8 +130,7 @@ bool MysqlFleet::retrieve(MYSQL* conn, IGObject* ob){
         Logger::getLogger()->error("Mysql: retrieve fleet ships: Could not store result - %s", mysql_error(conn));
         return false;
     }
-    row = mysql_fetch_row(obresult);
-    while(row != NULL){
+    while((row= mysql_fetch_row(obresult)) != NULL){
         fleet->addShips(atoi(row[0]), atoi(row[1]));
     }
     mysql_free_result(obresult);
