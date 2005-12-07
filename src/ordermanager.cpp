@@ -208,6 +208,7 @@ void OrderManager::updateFirstOrder(IGObject* obj){
     uint32_t orderid = oolist.front();
     Order* ord = ordercache[orderid];
     Game::getGame()->getPersistence()->updateOrder(orderid, ord);
+    obj->touchModTime();
 }
 
 std::set<uint32_t> OrderManager::getObjectsWithOrders(){
