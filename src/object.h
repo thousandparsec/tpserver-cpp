@@ -26,13 +26,12 @@
 
 // must try to fix this
 
-#include "order.h"
 #include "vector3d.h"
 
 class Frame;
 class Game;
 class ObjectData;
-//class Order;
+
 
 
 class IGObject {
@@ -70,15 +69,9 @@ class IGObject {
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
 
-	bool addOrder(Order * ord, int pos, int playerid);
-	bool removeOrder(unsigned int pos, int playerid);
-	Order *getOrder(int pos, int playerid);
-	int getNumOrders(int playerid);
+	uint32_t getNumOrders(int playerid);
 
-	Order * getFirstOrder();
-	void removeFirstOrder();
-
-
+        void setNumOrders(uint32_t num);
 
 	void createFrame(Frame * frame, int playerid);
 
@@ -89,15 +82,12 @@ class IGObject {
 
         // Only Persistence classes should call these
         void setParent(uint32_t pid);
-        void setNumOrders(uint32_t num);
         void setModTime(uint64_t time);
 
       protected:
 	static Game *myGame;
 
       private:
-
-	static unsigned int nextAutoID;
 
 	unsigned int id;
 	unsigned int type;
@@ -111,7 +101,7 @@ class IGObject {
 
 	 std::set < unsigned int >children;
 
-	 std::list < Order * >orders;
+	 uint32_t ordernum;
 
 	 ObjectData *myObjectData;
 

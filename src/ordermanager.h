@@ -21,6 +21,8 @@
  */
 
 #include <map>
+#include <set>
+#include <list>
 
 class Order;
 class Frame;
@@ -33,17 +35,28 @@ class OrderManager{
   
   bool checkOrderType(int type);
   void describeOrder(int ordertype, Frame * f);
-  Order* createOrder(int ot);
-
   void addOrderType(Order* prototype);
-
   void doGetOrderTypes(Frame * frame, Frame * result);
+
+  Order* createOrder(int ot);
+    bool addOrder(Order* ord, IGObject* obj, uint32_t pos, uint32_t playerid);
+    bool removeOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
+    Order* getOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
+    Order * getFirstOrder(IGObject* obj);
+    void removeFirstOrder(IGObject* obj);
+
+    std::set<uint32_t> getObjectsWithOrders();
+
 
  private:
   std::map<int, Order*> prototypeStore;
   int nextType;
 
   unsigned int seqkey;
+
+    std::map<uint32_t, std::list<uint32_t> > objectorders;
+    std::map<uint32_t, Order*> ordercache;
+    uint32_t nextOrderId;
 
 };
 

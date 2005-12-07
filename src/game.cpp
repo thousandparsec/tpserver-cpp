@@ -26,6 +26,7 @@
 #include "logging.h"
 #include "player.h"
 #include "object.h"
+#include "order.h"
 #include "universe.h"
 #include "frame.h"
 #include "net.h"
@@ -239,13 +240,15 @@ void Game::doEndOfTurn()
 
 	// DO END OF TURN STUFF HERE
 	std::set<uint32_t>::iterator itcurr;
-        std::set<uint32_t> objects = objectmanager->getAllIds();
+
+        //do orders
+        std::set<uint32_t> objects = ordermanager->getObjectsWithOrders();
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
             IGObject * ob = objectmanager->getObject(*itcurr);
-            Order * currOrder = ob->getFirstOrder();
+            Order * currOrder = ordermanager->getFirstOrder(ob);
             if(currOrder != NULL){
                 if(currOrder->doOrder(ob)){
-                ob->removeFirstOrder();
+                ordermanager->removeFirstOrder(ob);
                 }
             }
             objectmanager->doneWithObject(ob->getID());
@@ -254,6 +257,7 @@ void Game::doEndOfTurn()
 	objectmanager->clearRemovedObjects();
 
 	// update positions and velocities
+        objects = objectmanager->getAllIds();
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
             IGObject * ob = objectmanager->getObject(*itcurr);
             ob->updatePosition();

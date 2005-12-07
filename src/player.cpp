@@ -608,7 +608,7 @@ void Player::processGetOrder(Frame * frame)
     Frame *of = curConnection->createFrame(frame);
 
     int ordpos = frame->unpackInt();
-    Order *ord = o->getOrder(ordpos, pid);
+    Order *ord = Game::getGame()->getOrderManager()->getOrder(o, ordpos, pid);
     if (ord != NULL) {
       ord->createFrame(of, objectID, ordpos);
     } else {
@@ -651,7 +651,7 @@ void Player::processAddOrder(Frame * frame)
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
 				
-			  if (ord->inputFrame(frame, pid) && o->addOrder(ord, pos, pid)) {
+                            if (ord->inputFrame(frame, pid) && Game::getGame()->getOrderManager()->addOrder(ord, o, pos, pid)) {
 				    of->setType(ft02_OK);
 					of->packString("Order Added");
 				} else {
@@ -706,7 +706,7 @@ void Player::processRemoveOrder(Frame * frame)
     Frame *of = curConnection->createFrame(frame);
     int ordpos = frame->unpackInt();
     IGObject * obj = Game::getGame()->getObjectManager()->getObject(objectID);
-    if (obj != NULL && obj->removeOrder(ordpos, pid)) {
+    if (obj != NULL && Game::getGame()->getOrderManager()->removeOrder(obj, ordpos, pid)) {
       of->setType(ft02_OK);
       of->packString("Order removed");
     } else {

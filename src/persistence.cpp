@@ -49,20 +49,32 @@ IGObject* Persistence::retrieveObject(uint32_t obid){
     return NULL;
 }
 
+bool Persistence::removeObject(uint32_t obid){
+    return false;
+}
+
 uint32_t Persistence::getMaxObjectId(){
     return 0;
 }
 
-bool Persistence::saveOrder(Order* ord){
+bool Persistence::saveOrder(uint32_t ordid, Order* ord){
     return false;
 }
 
-Order* Persistence::retrieveOrder(uint32_t orpid){
+Order* Persistence::retrieveOrder(uint32_t ordid){
     return NULL;
 }
 
-Order* Persistence::retrieveOrder(uint32_t obid, uint32_t slot){
-    return NULL;
+bool Persistence::removeOrder(uint32_t ordid){
+    return false;
+}
+
+bool Persistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
+    return false;
+}
+
+uint32_t Persistence::getMaxOrderId(){
+    return 0;
 }
 
 bool Persistence::saveBoard(Board* board){

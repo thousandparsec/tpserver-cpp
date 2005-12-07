@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <list>
 
 class IGObject;
 class Order;
@@ -41,11 +42,14 @@ public:
 
     virtual bool saveObject(IGObject* ob);
     virtual IGObject* retrieveObject(uint32_t obid);
+    virtual bool removeObject(uint32_t obid);
     virtual uint32_t getMaxObjectId();
 
-    virtual bool saveOrder(Order* ord);
-    virtual Order* retrieveOrder(uint32_t orpid);
-    virtual Order* retrieveOrder(uint32_t obid, uint32_t slot);
+    virtual bool saveOrder(uint32_t ordid, Order* ord);
+    virtual Order* retrieveOrder(uint32_t ordid);
+    virtual bool removeOrder(uint32_t ordid);
+    virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);
+    virtual uint32_t getMaxOrderId();
 
     virtual bool saveBoard(Board* board);
     virtual Board* retrieveBoard(uint32_t boardid);

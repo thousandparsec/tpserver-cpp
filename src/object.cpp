@@ -24,7 +24,6 @@
 #include "frame.h"
 #include "logging.h"
 #include "game.h"
-#include "order.h"
 #include "objectmanager.h"
 #include "objectdata.h"
 #include "objectdatamanager.h"
@@ -43,6 +42,7 @@ IGObject::IGObject()
 		myGame = Game::getGame();
 	}
 	myObjectData = NULL;
+    ordernum = 0;
 }
 
 IGObject::IGObject(IGObject & rhs)
@@ -267,72 +267,20 @@ bool IGObject::removeContainedObject(unsigned int removeObjectID)
 	return children.erase(removeObjectID) == currsize - 1;
 }
 
-bool IGObject::addOrder(Order * ord, int pos, int playerid)
+uint32_t IGObject::getNumOrders(int playerid)
 {
-  if (myObjectData->checkAllowedOrder(ord->getType(), playerid)) {
-    if (pos == -1) {
-      orders.push_back(ord);
-    } else {
-      std::list < Order * >::iterator inspos = orders.begin();
-      advance(inspos, pos);
-      orders.insert(inspos, ord);
-    }
-    touchModTime();
-    return true;
-  }
-	
-  return false;
-}
-
-bool IGObject::removeOrder(unsigned int pos, int playerid)
-{
-        if (pos >= orders.size()) {
-                return false;
-        }
-
-	std::list < Order * >::iterator delpos = orders.begin();
-	assert (pos < orders.size());
-	advance(delpos, pos);
-	if(myObjectData->checkAllowedOrder((*delpos)->getType(), playerid)){
-	  delete(*delpos);
-	  orders.erase(delpos);
-	  touchModTime();
-	  return true;
-	}
-	return false;
-}
-
-Order *IGObject::getOrder(int pos, int playerid)
-{
-
-  std::list < Order * >::iterator showpos = orders.begin();
-  advance(showpos, pos);
-  if (showpos != orders.end() && myObjectData->checkAllowedOrder((*showpos)->getType(), playerid)) {
-    return (*showpos);
-  }
-  return NULL;
-}
-
-int IGObject::getNumOrders(int playerid)
-{
-  if((!orders.empty()) && myObjectData->checkAllowedOrder(orders.front()->getType(), playerid)){
-    return orders.size();
+    //check if nop order (order type 0) is allowed
+  if(myObjectData->checkAllowedOrder(0, playerid)){
+    return ordernum;
   }
   return 0;
 }
 
-Order * IGObject::getFirstOrder(){
-  if(orders.empty())
-    return NULL;
-  return orders.front();
+void IGObject::setNumOrders(uint32_t num){
+    touchModTime();
+    ordernum = num;
+    Logger::getLogger()->debug("IGObject::setNumOrders");
 }
-
-void IGObject::removeFirstOrder(){
-  delete orders.front();
-  orders.pop_front();
-  touchModTime();
-}
-
 
 void IGObject::createFrame(Frame * frame, int playerid)
 {
@@ -372,7 +320,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
   myObjectData->packAllowedOrders(frame, playerid);
 
   if(frame->getDataLength() - templength > 4){
-    frame->packInt(orders.size());
+    frame->packInt(ordernum);
   }else{
     frame->packInt(0);
   }
@@ -413,11 +361,6 @@ long long IGObject::getModTime() const{
 
 void IGObject::setParent(uint32_t pid){
     parentid = pid;
-}
-
-void IGObject::setNumOrders(uint32_t num){
-    //TODO
-    Logger::getLogger()->debug("IGObject::setNumOrders");
 }
 
 void IGObject::setModTime(uint64_t time){
