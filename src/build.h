@@ -2,7 +2,7 @@
 #define BUILD_H
 /*  BuildFleet order
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,12 +34,18 @@ class Build : public Order{
 
   bool doOrder(IGObject *ob);
 
+    uint32_t getTimeToGo() const;
+    std::map<uint32_t, uint32_t> getShips() const;
+
+    void setTimeToGo(uint32_t ttg);
+    void addShips(uint32_t designid, uint32_t count);
+
   void describeOrder(Frame *f) const;
   Order* clone() const;
 
  private:
-  std::map<int, int> fleettype;
-  int turnstogo;
+  std::map<uint32_t, uint32_t> fleettype;
+  uint32_t turnstogo;
 };
 
 #endif

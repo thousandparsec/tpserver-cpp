@@ -80,7 +80,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
   }
 
   f->packInt(fleettype.size());
-  for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+  for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
     f->packInt(itcurr->first);
     f->packInt(itcurr->second);
   }
@@ -96,8 +96,8 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   for(int i = f->unpackInt(); i > 0; i--){
-    int type = f->unpackInt();
-    int number = f->unpackInt(); // number to build
+    uint32_t type = f->unpackInt();
+    uint32_t number = f->unpackInt(); // number to build
     
     if(player->isUsableDesign(type) && number > 0){
       fleettype[type] = number;
@@ -134,7 +134,7 @@ bool Build::doOrder(IGObject *ob)
     
     //set ship type
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
-    for(std::map<int,int>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
     }
     //add fleet to universe
@@ -152,6 +152,22 @@ bool Build::doOrder(IGObject *ob)
     return true;
   }
   return false;
+}
+
+ uint32_t Build::getTimeToGo() const{
+    return turnstogo;
+}
+
+std::map<uint32_t, uint32_t> Build::getShips() const{
+    return fleettype;
+}
+
+void Build::setTimeToGo(uint32_t ttg){
+    turnstogo = ttg;
+}
+
+void Build::addShips(uint32_t designid, uint32_t count){
+    fleettype[designid] = count;
 }
 
 void Build::describeOrder(Frame *f) const
