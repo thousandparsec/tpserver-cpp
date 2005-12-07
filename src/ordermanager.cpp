@@ -31,7 +31,7 @@ OrderManager::OrderManager(){
   nextType = 0;
   
   seqkey = 1;
-    nextOrderId = 1;
+    nextOrderId = 0;
 }
 
 OrderManager::~OrderManager(){
@@ -108,6 +108,9 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
 
 bool OrderManager::addOrder(Order* ord, IGObject* obj, uint32_t pos, uint32_t playerid){
     if (obj->getObjectData()->checkAllowedOrder(ord->getType(), playerid)) {
+        if(nextOrderId == 0){
+            nextOrderId = Game::getGame()->getPersistence()->getMaxOrderId();
+        }
         uint32_t orderid = nextOrderId++;
         ordercache[orderid] = ord;
         std::list<uint32_t> oolist = objectorders[obj->getID()];
