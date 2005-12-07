@@ -159,8 +159,10 @@ void Fleet::doOnceATurn(IGObject * obj)
 {
   IGObject * pob = Game::getGame()->getObjectManager()->getObject(obj->getParent());
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
-    damage = 0;
-    touchModTime();
+    if(damage != 0){
+        damage = 0;
+        touchModTime();
+    }
   }
     Game::getGame()->getObjectManager()->doneWithObject(obj->getParent());
 }
