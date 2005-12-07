@@ -58,7 +58,7 @@ void SplitFleet::createFrame(Frame * f, int objID, int pos){
   }
  
   f->packInt(ships.size());
-  for(std::map<int, int>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
+  for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
     f->packInt(itcurr->first);
     f->packInt(itcurr->second);
   }
@@ -97,7 +97,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   Fleet* nf = (Fleet*)(nfleet->getObjectData());
   nf->setOwner(of->getOwner());
   nfleet->setPosition(ob->getPosition());
-  for(std::map<int, int>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
+  for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
     if(of->removeShips(scurr->first, scurr->second)){
       nf->addShips(scurr->first, scurr->second);
     }else{
@@ -109,7 +109,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   if(of->totalShips() == 0){
     // whole fleet moved, put it back
     Logger::getLogger()->debug("Whole fleet split, putting it back");
-    for(std::map<int, int>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
+    for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
       of->addShips(scurr->first, scurr->second);
     }
     Game::getGame()->getObjectManager()->discardNewObject(nfleet);
@@ -133,6 +133,14 @@ bool SplitFleet::doOrder(IGObject * ob){
   Game::getGame()->getPlayer(nf->getOwner())->postToBoard(msg);
   
   return true;
+}
+
+std::map<uint32_t, uint32_t> SplitFleet::getShips() const{
+    return ships;
+}
+
+void SplitFleet::addShips(uint32_t designid, uint32_t count){
+    ships[designid] = count;
 }
 
 void SplitFleet::describeOrder(Frame * f) const{

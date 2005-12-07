@@ -109,6 +109,18 @@ bool MergeFleet::doOrder(IGObject * ob){
   }
 }
 
+uint32_t MergeFleet::getFleetId() const{
+    return fleetid;
+}
+
+void MergeFleet::setFleetId(uint32_t nfi){
+    fleetid = nfi;
+
+    IGObject* target = Game::getGame()->getObjectManager()->getObject(fleetid);
+    moveorder->setDest(target->getPosition());
+    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+}
+
 void MergeFleet::describeOrder(Frame * f) const{
   Order::describeOrder(f);
   f->packString("MergeFleet");

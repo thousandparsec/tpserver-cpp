@@ -34,6 +34,9 @@ class MergeFleet : public Order{
   
   bool doOrder(IGObject * ob);
   
+    uint32_t getFleetId() const;
+    void setFleetId(uint32_t nfi);
+
   void describeOrder(Frame * f) const;
   Order* clone() const;
 

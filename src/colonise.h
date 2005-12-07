@@ -34,6 +34,9 @@ class Colonise : public Order {
   
   bool doOrder(IGObject * ob);
   
+    uint32_t getPlanetId() const;
+    void setPlanetId(uint32_t npi);
+
   void describeOrder(Frame * f) const;
   Order* clone() const;
 

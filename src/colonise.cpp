@@ -140,6 +140,17 @@ bool Colonise::doOrder(IGObject * ob){
   }
 }
 
+uint32_t Colonise::getPlanetId() const{
+    return planetid;
+}
+
+void Colonise::setPlanetId(uint32_t npi){
+    planetid = npi;
+
+    IGObject* target = Game::getGame()->getObjectManager()->getObject(planetid);
+    moveorder->setDest(target->getPosition());
+    Game::getGame()->getObjectManager()->doneWithObject(planetid);
+}
 
 void Colonise::describeOrder(Frame * f) const{
   Order::describeOrder(f);

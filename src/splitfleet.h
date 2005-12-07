@@ -33,11 +33,14 @@ class SplitFleet : public Order{
   
   bool doOrder(IGObject * ob);
   
+    std::map<uint32_t, uint32_t> getShips() const;
+    void addShips(uint32_t designid, uint32_t count);
+
   void describeOrder(Frame * f) const;
   Order* clone() const;
   
  private:
-  std::map<int, int> ships;
+  std::map<uint32_t, uint32_t> ships;
 
 };
 
