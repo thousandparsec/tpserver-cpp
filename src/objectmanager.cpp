@@ -131,10 +131,17 @@ std::set<uint32_t> ObjectManager::getContainerByPos(const Vector3d & pos){
 }
 
 std::set<uint32_t> ObjectManager::getAllIds(){
-    std::set<unsigned int> vis;
+    std::set<uint32_t> vis;
+    if(objects.size() < 5){
+        vis = Game::getGame()->getPersistence()->getObjectIds();
+        for(std::set<uint32_t>::const_iterator itcurr = vis.begin(); itcurr != vis.end(); ++itcurr){
+            objects[*itcurr] = NULL;
+        }
+    }
     for(std::map<uint32_t, IGObject*>::const_iterator itid = objects.begin();
         itid != objects.end(); ++itid){
         vis.insert(itid->first);
     }
+
     return vis;
 }

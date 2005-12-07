@@ -61,6 +61,10 @@ uint32_t Persistence::getMaxObjectId(){
     return 0;
 }
 
+std::set<uint32_t> Persistence::getObjectIds(){
+    return std::set<uint32_t>();
+}
+
 bool Persistence::saveOrder(uint32_t ordid, Order* ord){
     return false;
 }

@@ -301,8 +301,12 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     
     MYSQL_ROW children;
     while((children = mysql_fetch_row(childres)) != NULL){
-        object->addContainedObject(atoi(row[0]));
+        uint32_t childid = atoi(children[0]);
+        Logger::getLogger()->debug("childid: %d", childid);
+        if(childid != object->getID())
+            object->addContainedObject(childid);
     }
+    Logger::getLogger()->debug("num children: %d", object->getContainedObjects().size());
     mysql_free_result(childres);
 
     // fetch type-specific information
@@ -396,6 +400,28 @@ uint32_t MysqlPersistence::getMaxObjectId(){
     }
     mysql_free_result(obresult);
     return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getObjectIds(){
+    lock();
+    if(mysql_query(conn, "SELECT objectid FROM object;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query object ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get objectids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
 }
 
 bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){

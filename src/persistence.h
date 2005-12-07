@@ -22,6 +22,7 @@
 
 #include <string>
 #include <list>
+#include <set>
 
 class IGObject;
 class Order;
@@ -45,6 +46,7 @@ public:
     virtual IGObject* retrieveObject(uint32_t obid);
     virtual bool removeObject(uint32_t obid);
     virtual uint32_t getMaxObjectId();
+    virtual std::set<uint32_t> getObjectIds();
 
     virtual bool saveOrder(uint32_t ordid, Order* ord);
     virtual bool updateOrder(uint32_t ordid, Order* ord);
