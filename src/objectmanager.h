@@ -49,7 +49,6 @@ class ObjectManager{
  private:
     std::map<uint32_t, IGObject *> objects;
     std::map<uint32_t, uint64_t> objmtime;
-    std::map<uint32_t, uint32_t> objatime;
     std::set<uint32_t> scheduleRemove;
     uint32_t nextid;
 };
