@@ -41,17 +41,28 @@ bool MysqlOrderBuild::save(MysqlPersistence* persistence, MYSQL* conn, uint32_t 
     querybuilder.str("");
     querybuilder << "INSERT INTO buildship VALUES ";
     std::map<uint32_t, uint32_t> ships = static_cast<Build*>(ord)->getShips();
-    for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
-        if(itcurr != ships.begin())
-            querybuilder << ", ";
-        querybuilder << "(" << ordid << ", " << itcurr->first << ", " << itcurr->second << ")";
+    if(!ships.empty()){
+        for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
+            if(itcurr != ships.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << ordid << ", " << itcurr->first << ", " << itcurr->second << ")";
+        }
+        querybuilder << ";";
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store buildships - %s", mysql_error(conn));
+            return false;
+        }
     }
-    querybuilder << ";";
+    return true;
+}
+
+bool MysqlOrderBuild::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE build SET turnstogo=" << static_cast<Build*>(ord)->getTimeToGo() << " WHERE orderid=" << ordid << "; ";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not store buildships - %s", mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not update build - %s", mysql_error(conn));
         return false;
     }
-    
     return true;
 }
 

@@ -46,6 +46,7 @@ public:
     virtual uint32_t getMaxObjectId();
 
     virtual bool saveOrder(uint32_t ordid, Order* ord);
+    virtual bool updateOrder(uint32_t ordid, Order* ord);
     virtual Order* retrieveOrder(uint32_t ordid);
     virtual bool removeOrder(uint32_t ordid);
     virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);

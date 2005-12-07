@@ -144,6 +144,7 @@ bool OrderManager::removeOrder(IGObject* obj, uint32_t pos, uint32_t playerid){
     Order* ord = ordercache[orderid];
     if(ord == NULL){
         ord = Game::getGame()->getPersistence()->retrieveOrder(orderid);
+        ordercache[orderid] = ord;
     }
     
     if(ord != NULL){
@@ -173,6 +174,7 @@ Order* OrderManager::getOrder(IGObject* obj, uint32_t pos, uint32_t playerid){
     Order* ord = ordercache[orderid];
     if(ord == NULL){
         ord = Game::getGame()->getPersistence()->retrieveOrder(orderid);
+        ordercache[orderid] = ord;
     }
     return ord;
 }
@@ -186,6 +188,7 @@ Order * OrderManager::getFirstOrder(IGObject* obj){
     Order* ord = ordercache[orderid];
     if(ord == NULL){
         ord = Game::getGame()->getPersistence()->retrieveOrder(orderid);
+        ordercache[orderid] = ord;
     }
     return ord;
 }
@@ -200,6 +203,13 @@ void OrderManager::removeFirstOrder(IGObject* obj){
     obj->setNumOrders(oolist.size());
 }
 
+void OrderManager::updateFirstOrder(IGObject* obj){
+    std::list<uint32_t> oolist = objectorders[obj->getID()];
+    uint32_t orderid = oolist.front();
+    Order* ord = ordercache[orderid];
+    Game::getGame()->getPersistence()->updateOrder(orderid, ord);
+}
+
 std::set<uint32_t> OrderManager::getObjectsWithOrders(){
     std::set<uint32_t> set;
     for(std::map<uint32_t, std::list<uint32_t> >::iterator itcurr = objectorders.begin();
@@ -211,4 +221,24 @@ std::set<uint32_t> OrderManager::getObjectsWithOrders(){
     return set;
 }
 
+void OrderManager::removeAllOrders(uint32_t objectid){
+    std::list<uint32_t> oolist = objectorders[objectid];
 
+    std::list<uint32_t>::iterator itpos = oolist.begin();
+    
+    for(std::list<uint32_t>::iterator itpos = oolist.begin(); itpos != oolist.end(); ++itpos){
+        uint32_t orderid = *itpos;
+        Order* ord = ordercache[orderid];
+        if(ord == NULL){
+            delete ord;
+        }
+        Game::getGame()->getPersistence()->removeOrder(orderid);
+
+    }
+    
+    //clear orderlist/slots
+    oolist.clear();
+    Game::getGame()->getPersistence()->saveOrderList(objectid, oolist);
+    objectorders.erase(objectid);
+
+}

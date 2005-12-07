@@ -41,6 +41,16 @@ bool MysqlOrderNop::save(MysqlPersistence* persistence, MYSQL* conn, uint32_t or
     return true;
 }
 
+bool MysqlOrderNop::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE nop SET waittime=" << static_cast<Nop*>(ord)->getTime() << " WHERE orderid=" << ordid << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not update nop - %s", mysql_error(conn));
+        return false;
+    }
+    return true;
+}
+
 bool MysqlOrderNop::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
     querybuilder << "SELECT waittime FROM nop WHERE orderid = " << ordid << ";";

@@ -44,6 +44,10 @@ bool MysqlOrderMove::save(MysqlPersistence* persistence, MYSQL* conn, uint32_t o
     return true;
 }
 
+bool MysqlOrderMove::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    return true;
+}
+
 bool MysqlOrderMove::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
     querybuilder << "SELECT destx,desty,destz FROM move WHERE orderid = " << ordid << ";";

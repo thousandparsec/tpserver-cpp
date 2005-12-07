@@ -41,6 +41,10 @@ bool MysqlOrderMergeFleet::save(MysqlPersistence* persistence, MYSQL* conn, uint
     return true;
 }
 
+bool MysqlOrderMergeFleet::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    return true;
+}
+
 bool MysqlOrderMergeFleet::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
     querybuilder << "SELECT fleetid FROM mergefleet WHERE orderid = " << ordid << ";";

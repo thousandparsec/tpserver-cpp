@@ -389,6 +389,22 @@ bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
     return rtv;
 }
 
+bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
+    std::ostringstream querybuilder;
+    lock();
+    bool rtv;
+    //update type-specific information
+    MysqlOrderType* ordtype = ordertypes[ord->getType()];
+    if(ordtype != NULL){
+        rtv = ordtype->update(this, conn, ordid, ord);
+    }else{
+        Logger::getLogger()->error("Mysql: Order type %d not registered", ord->getType());
+        rtv = false;
+    }
+    unlock();
+    return rtv;
+}
+
 Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
     std::ostringstream querybuilder;
     querybuilder << "SELECT type FROM ordertype WHERE orderid = " << ordid << ";";

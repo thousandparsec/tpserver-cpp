@@ -48,6 +48,10 @@ bool MysqlOrderSplitFleet::save(MysqlPersistence* persistence, MYSQL* conn, uint
     return true;
 }
 
+bool MysqlOrderSplitFleet::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    return true;
+}
+
 bool MysqlOrderSplitFleet::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
     

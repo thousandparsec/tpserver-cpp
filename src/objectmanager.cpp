@@ -23,6 +23,7 @@
 #include "persistence.h"
 #include "game.h"
 #include "object.h"
+#include "ordermanager.h"
 
 #include "objectmanager.h"
 
@@ -83,6 +84,7 @@ void ObjectManager::scheduleRemoveObject(uint32_t id){
 void ObjectManager::clearRemovedObjects(){
     for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
+        Game::getGame()->getOrderManager()->removeAllOrders(*itrm);
         Game::getGame()->getPersistence()->removeObject(*itrm);
         delete objects[*itrm];
         objects.erase(*itrm);

@@ -41,6 +41,10 @@ bool MysqlOrderColonise::save(MysqlPersistence* persistence, MYSQL* conn, uint32
     return true;
 }
 
+bool MysqlOrderColonise::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
+    return true;
+}
+
 bool MysqlOrderColonise::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
     querybuilder << "SELECT planetid FROM colonise WHERE orderid = " << ordid << ";";

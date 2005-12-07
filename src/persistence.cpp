@@ -61,6 +61,10 @@ bool Persistence::saveOrder(uint32_t ordid, Order* ord){
     return false;
 }
 
+bool Persistence::updateOrder(uint32_t ordid, Order* ord){
+    return false;
+}
+
 Order* Persistence::retrieveOrder(uint32_t ordid){
     return NULL;
 }

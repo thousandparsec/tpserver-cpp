@@ -33,6 +33,7 @@ public:
     virtual ~MysqlOrderColonise();
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
+    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
     virtual bool retrieve(MYSQL* conn, uint32_t ordid, Order* ord);
     virtual bool remove(MYSQL* conn, uint32_t ordid);
     

@@ -44,9 +44,11 @@ class OrderManager{
     Order* getOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
     Order * getFirstOrder(IGObject* obj);
     void removeFirstOrder(IGObject* obj);
+    void updateFirstOrder(IGObject* obj);
 
     std::set<uint32_t> getObjectsWithOrders();
 
+    void removeAllOrders(uint32_t objectid);
 
  private:
   std::map<int, Order*> prototypeStore;

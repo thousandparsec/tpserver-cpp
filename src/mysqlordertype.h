@@ -34,6 +34,7 @@ public:
     uint32_t getType() const;
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord) = 0;
+    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord) = 0;
     virtual bool retrieve(MYSQL* conn, uint32_t ordid, Order* ord) = 0;
     virtual bool remove(MYSQL* conn, uint32_t ordid) = 0;
     
