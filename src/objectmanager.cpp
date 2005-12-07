@@ -112,7 +112,7 @@ std::set<uint32_t> ObjectManager::getContainerByPos(const Vector3d & pos){
         uint64_t br = itcurr->second->getSize() / 2 + itcurr->second->getSize() % 2;
         
         //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-        if((uint64_t)(itcurr->second->getPosition().getDistance(pos)) <= br)
+        if(itcurr->second->getPosition().getDistance(pos) <= br)
             oblist.insert(itcurr->first);
         }
     }
