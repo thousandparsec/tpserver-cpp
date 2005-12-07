@@ -109,8 +109,8 @@ bool MysqlFleet::remove(MYSQL* conn, uint32_t obid){
         Logger::getLogger()->error("Mysql: Could not remove fleet - %s", mysql_error(conn));
         return false;
     }
-    querybuilder.str("DELETE FROM fleetship WHERE objectid = ");
-    querybuilder << obid << ";";
+    querybuilder.str("");
+    querybuilder << "DELETE FROM fleetship WHERE objectid = " << obid << ";";
      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not remove fleetships - %s", mysql_error(conn));
         return false;
