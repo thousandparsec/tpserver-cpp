@@ -24,6 +24,7 @@
 #include "message.h"
 #include "game.h"
 #include "player.h"
+#include "playermanager.h"
 
 #include "rspcombat.h"
 
@@ -65,8 +66,8 @@ void RSPCombat::doCombat(){
   msg2->addReference(rst_Object, c1->getID());
   msg2->addReference(rst_Object, f1->getOwner());
 
-  Game::getGame()->getPlayer(f1->getOwner())->postToBoard(msg1);
-  Game::getGame()->getPlayer(f2->getOwner())->postToBoard(msg2);
+  Game::getGame()->getPlayerManager()->getPlayer(f1->getOwner())->postToBoard(msg1);
+  Game::getGame()->getPlayerManager()->getPlayer(f2->getOwner())->postToBoard(msg2);
 
   while(true){
     int r1 = rand() % 3;

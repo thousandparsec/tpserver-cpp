@@ -30,6 +30,8 @@
 #include "frame.h"
 #include "game.h"
 #include "player.h"
+#include "playermanager.h"
+#include "settings.h"
 
 #include "playerconnection.h"
 
@@ -107,15 +109,21 @@ Frame* PlayerConnection::createFrame(Frame* oldframe)
 
 void PlayerConnection::login()
 {
-	Frame *recvframe = createFrame();
-	if (readFrame(recvframe)) {
-	  if(recvframe->getType() == ft02_Login){
-		char *username = recvframe->unpackString();
-		char *password = recvframe->unpackString();
-		if (username != NULL && password != NULL) {
-			//authenicate
-			player = Game::getGame()->findPlayer(username, password);
-			if (player != NULL) {
+    Frame *recvframe = createFrame();
+    if (readFrame(recvframe)) {
+        if(recvframe->getType() == ft02_Login){
+            char *username = recvframe->unpackString();
+            char *password = recvframe->unpackString();
+            if (username != NULL && password != NULL) {
+                //authenicate
+                try{
+                    player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
+                }catch(std::exception e){
+                    if (Settings::getSettings()->get("autoadd_players") == "yes") {
+                        player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+                    }
+                }
+                if(player != NULL){
 				Frame *okframe = createFrame(recvframe);
 				okframe->setType(ft02_OK);
 				okframe->packString("Welcome");

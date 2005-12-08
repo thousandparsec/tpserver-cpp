@@ -25,6 +25,7 @@
 #include "property.h"
 #include "game.h"
 #include "player.h"
+#include "playermanager.h"
 
 #include "designstore.h"
 
@@ -134,7 +135,7 @@ bool DesignStore::addDesign(Design* d){
   
   //check components all come from this category
     std::map<unsigned int, unsigned int> cl = d->getComponents();
-    Player* player = Game::getGame()->getPlayer(d->getOwner());
+    Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
     for(std::map<unsigned int, unsigned int>::iterator itcurr = cl.begin(); 
             itcurr != cl.end(); ++itcurr){
         if(!(player->isUsableComponent(itcurr->first)))
@@ -157,7 +158,7 @@ bool DesignStore::modifyDesign(Design* d){
   Design* current = designs[d->getDesignId()];
   if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0)
     return false;
-  Player* player = Game::getGame()->getPlayer(d->getOwner());
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   player->removeUsableDesign(d->getDesignId());
   d->eval();
   bool rtv;

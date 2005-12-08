@@ -27,6 +27,7 @@
 #include "objectmanager.h"
 #include "objectdata.h"
 #include "objectdatamanager.h"
+#include "playermanager.h"
 #include "player.h"
 
 #include "object.h"
@@ -298,7 +299,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
   std::set < unsigned int >::iterator itcurr, itend;
   itcurr = temp.begin();
   itend = temp.end();
-  Player* player = Game::getGame()->getPlayer(playerid);
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   while(itcurr != itend){
     if(!player->isVisibleObject(*itcurr)){
       std::set<unsigned int>::iterator itemp = itcurr;

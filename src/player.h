@@ -21,6 +21,7 @@
  */
 
 #include <set>
+#include <string>
 
 class PlayerConnection;
 class Frame;
@@ -32,10 +33,10 @@ class Player {
 	Player();
 	~Player();
 
-	void setName(char *newname);
-	void setPass(char *newpass);
+	void setName(const std::string& newname);
+	void setPass(const std::string& newpass);
 	void setConnection(PlayerConnection * newcon);
-	void setID(int newid);
+        void setId(uint32_t newid);
 
 	void setVisibleObjects(std::set<unsigned int> vis);
 	bool isVisibleObject(unsigned int objid);
@@ -53,8 +54,8 @@ class Player {
 
 	void postToBoard(Message* msg);
 
-	char *getName();
-	char *getPass();
+	std::string getName() const;
+	std::string getPass() const;
 	PlayerConnection *getConnection();
 	int getID();
 
@@ -63,8 +64,6 @@ class Player {
 	void processIGFrame(Frame * frame);
 
       private:
-
-	static int nextpid;
 
 	void processPermDisabled(Frame * frame);
 
@@ -103,9 +102,9 @@ class Player {
 	void processGetPropertyIds(Frame* frame);
 
 	PlayerConnection *curConnection;
-	char *name;
-	char *passwd;
-	unsigned int pid;
+	std::string name;
+	std::string passwd;
+	uint32_t pid;
 	Board * board;
 
 	 Player(Player & rhs);

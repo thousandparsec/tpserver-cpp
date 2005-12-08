@@ -32,6 +32,7 @@
 #include "combatstrategy.h"
 #include "design.h"
 #include "designstore.h"
+#include "playermanager.h"
 
 #include "colonise.h"
 
@@ -132,7 +133,7 @@ bool Colonise::doOrder(IGObject * ob){
       msg->addReference(rst_Action_Order, rsorav_Canceled);
     }
     
-    Game::getGame()->getPlayer(fleet->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->postToBoard(msg);
     Game::getGame()->getObjectManager()->doneWithObject(planetid);
     return true;
   }else{

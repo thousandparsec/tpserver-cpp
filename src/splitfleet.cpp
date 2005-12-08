@@ -29,6 +29,7 @@
 #include "message.h"
 #include "design.h"
 #include "designstore.h"
+#include "playermanager.h"
 
 #include "splitfleet.h"
 
@@ -130,7 +131,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     Game::getGame()->getObjectManager()->addObject(nfleet);
   }
   
-  Game::getGame()->getPlayer(nf->getOwner())->postToBoard(msg);
+  Game::getGame()->getPlayerManager()->getPlayer(nf->getOwner())->postToBoard(msg);
   
   return true;
 }

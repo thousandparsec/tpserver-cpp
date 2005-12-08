@@ -31,6 +31,7 @@
 #include "player.h"
 #include "design.h"
 #include "designstore.h"
+#include "playermanager.h"
 
 #include "ownedobject.h"
 
@@ -56,7 +57,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
 
   f->packInt(0); // size of resource list
 
-  std::set<unsigned int> designs = Game::getGame()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -92,7 +93,7 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   f->unpackInt(); // size of resource list (should be zero) TODO
   f->unpackInt(); // selectable list (should be zero) TODO
   
-  Player* player = Game::getGame()->getPlayer(playerid);
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   for(int i = f->unpackInt(); i > 0; i--){
@@ -147,7 +148,7 @@ bool Build::doOrder(IGObject *ob)
     msg->addReference(rst_Object, fleet->getID());
     msg->addReference(rst_Object, ob->getID());
  
-    Game::getGame()->getPlayer(ownerid)->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
 
     return true;
   }

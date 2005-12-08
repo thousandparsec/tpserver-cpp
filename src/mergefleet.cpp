@@ -28,6 +28,7 @@
 #include "move.h"
 #include "player.h"
 #include "message.h"
+#include "playermanager.h"
 
 #include "mergefleet.h"
 
@@ -101,7 +102,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     Game::getGame()->getObjectManager()->doneWithObject(fleetid);
     }
 
-    Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
     
     return true;
   }else{

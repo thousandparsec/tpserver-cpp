@@ -34,6 +34,7 @@
 #include "objectmanager.h"
 #include "ordermanager.h"
 #include "objectdatamanager.h"
+#include "playermanager.h"
 #include "ownedobject.h"
 #include "combatstrategy.h"
 #include "designstore.h"
@@ -117,75 +118,75 @@ void Game::save()
 	Logger::getLogger()->info("Game saved");
 }
 
-Player *Game::findPlayer(char *name, char *pass)
-{
-	Logger::getLogger()->debug("finding player");
-
-	//look for current/known players
-	Player *rtn = NULL;
-
-	// hack HACK!!
-	if (strcmp("guest", name) == 0 && strcmp("guest", pass) == 0)
-		return rtn;
-	// end of hack HACK!!
-
-	std::map<unsigned int, Player*>::iterator itcurr;
-
-	for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
-		char *itname = (*itcurr).second->getName();
-		if (strncmp(name, itname, strlen(name) + 1) == 0) {
-			char *itpass = (*itcurr).second->getPass();
-			if (strncmp(pass, itpass, strlen(pass) + 1) == 0) {
-				rtn = (*itcurr).second;
-			}
-			delete itpass;
-		}
-		delete itname;
-		if (rtn != NULL)
-			break;
-	}
-
-	if (rtn == NULL) {
-		//if new, create new player
-
-		rtn = new Player();
-		rtn->setName(name);
-		rtn->setPass(pass);
-
-		if(ruleset->onAddPlayer(rtn)){
-		  // player can be added
-		  players[rtn->getID()] = (rtn);
-		  
-		  ruleset->onPlayerAdded(rtn);
-		  rtn->setVisibleObjects(objectmanager->getAllIds());
-
-		}else{
-		  // player can not be added
-		  delete rtn;
-		  rtn = NULL;
-		}
-		
-	}
-	return rtn;
-}
-
-Player* Game::getPlayer(unsigned int id){
-  Player* rtn = NULL;
-  std::map<unsigned int, Player*>::iterator pl = players.find(id);
-  if(pl != players.end()){
-    rtn = (*pl).second;
-  }
-  return rtn;
-}
-
-std::set<unsigned int> Game::getPlayerIds() const{
-  std::set<unsigned int> vis;
-  for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
-      itid != players.end(); ++itid){
-    vis.insert(itid->first);
-  }
-  return vis;
-}
+// Player *Game::findPlayer(char *name, char *pass)
+// {
+// 	Logger::getLogger()->debug("finding player");
+// 
+// 	//look for current/known players
+// 	Player *rtn = NULL;
+// 
+// 	// hack HACK!!
+// 	if (strcmp("guest", name) == 0 && strcmp("guest", pass) == 0)
+// 		return rtn;
+// 	// end of hack HACK!!
+// 
+// 	std::map<unsigned int, Player*>::iterator itcurr;
+// 
+// 	for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+// 		char *itname = (*itcurr).second->getName();
+// 		if (strncmp(name, itname, strlen(name) + 1) == 0) {
+// 			char *itpass = (*itcurr).second->getPass();
+// 			if (strncmp(pass, itpass, strlen(pass) + 1) == 0) {
+// 				rtn = (*itcurr).second;
+// 			}
+// 			delete itpass;
+// 		}
+// 		delete itname;
+// 		if (rtn != NULL)
+// 			break;
+// 	}
+// 
+// 	if (rtn == NULL) {
+// 		//if new, create new player
+// 
+// 		rtn = new Player();
+// 		rtn->setName(name);
+// 		rtn->setPass(pass);
+// 
+// 		if(ruleset->onAddPlayer(rtn)){
+// 		  // player can be added
+// 		  players[rtn->getID()] = (rtn);
+// 		  
+// 		  ruleset->onPlayerAdded(rtn);
+// 		  rtn->setVisibleObjects(objectmanager->getAllIds());
+// 
+// 		}else{
+// 		  // player can not be added
+// 		  delete rtn;
+// 		  rtn = NULL;
+// 		}
+// 		
+// 	}
+// 	return rtn;
+// }
+// 
+// Player* Game::getPlayer(unsigned int id){
+//   Player* rtn = NULL;
+//   std::map<unsigned int, Player*>::iterator pl = players.find(id);
+//   if(pl != players.end()){
+//     rtn = (*pl).second;
+//   }
+//   return rtn;
+// }
+// 
+// std::set<unsigned int> Game::getPlayerIds() const{
+//   std::set<unsigned int> vis;
+//   for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
+//       itid != players.end(); ++itid){
+//     vis.insert(itid->first);
+//   }
+//   return vis;
+// }
 
 ObjectManager* Game::getObjectManager() const{
     return objectmanager;
@@ -197,6 +198,10 @@ OrderManager* Game::getOrderManager() const{
 
 ObjectDataManager* Game::getObjectDataManager() const{
   return objectdatamanager;
+}
+
+PlayerManager* Game::getPlayerManager() const{
+    return playermanager;
 }
 
 CombatStrategy* Game::getCombatStrategy() const{
@@ -319,10 +324,11 @@ void Game::doEndOfTurn()
 
 	// find the objects that are visible to each player
 	std::set<uint32_t> vis = objectmanager->getAllIds();
-	
-	for(std::map<unsigned int, Player*>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-	  (itplayer->second)->setVisibleObjects(vis);
+        std::set<uint32_t> players = playermanager->getAllIds();
+	for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
+            playermanager->getPlayer(*itplayer)->setVisibleObjects(vis);
 	}
+        playermanager->updateAll();
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;
@@ -375,6 +381,7 @@ Game::Game()
     objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
+    playermanager = new PlayerManager();
   designstore = new DesignStore();
   combatstrategy = NULL;
   ruleset = NULL;
@@ -398,6 +405,7 @@ Game::~Game()
     delete objectmanager;
   delete ordermanager;
   delete objectdatamanager;
+    delete playermanager;
   if(combatstrategy != NULL)
     delete combatstrategy;
   if(ruleset != NULL)

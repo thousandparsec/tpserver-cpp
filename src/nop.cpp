@@ -25,6 +25,7 @@
 #include "player.h"
 #include "message.h"
 #include "ownedobject.h"
+#include "playermanager.h"
 
 #include "nop.h"
 
@@ -76,7 +77,7 @@ bool Nop::doOrder(IGObject * ob){
     msg->setBody("The object has finished it's delay and is now continuing");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayer(((OwnedObject*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(((OwnedObject*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;
   }else{

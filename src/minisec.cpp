@@ -48,6 +48,7 @@
 #include "design.h"
 #include "category.h"
 #include "logging.h"
+#include "playermanager.h"
 
 #ifdef HAVE_LIBMYSQL
 #include "mysqlpersistence.h"
@@ -383,11 +384,11 @@ void MiniSec::startGame(){
 void MiniSec::doOnceATurn(){
   Game* game = Game::getGame();
   std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
-  std::set<unsigned int> players = game->getPlayerIds();
-  for(std::set<unsigned int>::iterator itplayer = players.begin(); 
-      itplayer != players.end(); ++itplayer){
-    game->getPlayer(*itplayer)->setVisibleObjects(vis);
-  }
+    std::set<uint32_t> players = game->getPlayerManager()->getAllIds();
+    for(std::set<uint32_t>::iterator itplayer = players.begin(); 
+            itplayer != players.end(); ++itplayer){
+        game->getPlayerManager()->getPlayer(*itplayer)->setVisibleObjects(vis);
+    }
 }
 
 bool MiniSec::onAddPlayer(Player* player){
@@ -447,7 +448,7 @@ void MiniSec::onPlayerAdded(Player* player){
   player->removeUsableComponent(2);
   player->removeUsableComponent(3);
 
-  char* name = player->getName();
+  const char* name = player->getName().c_str();
   IGObject *star = game->getObjectManager()->createNewObject();
   star->setSize(2000000ll);
   star->setType(obT_Star_System);

@@ -23,7 +23,7 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		designstore.cpp ruleset.h minisec.h minisec.cpp \
 		tpscheme.h tpscheme.cpp category.h category.cpp \
 		persistence.h persistence.cpp objectmanager.h \
-		objectmanager.cpp
+		objectmanager.cpp playermanager.h playermanager.cpp
 if MZSCHEME
 SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else

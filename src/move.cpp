@@ -27,6 +27,7 @@
 #include "player.h"
 #include "fleet.h"
 #include "message.h"
+#include "playermanager.h"
 
 #include "move.h"
 
@@ -97,7 +98,7 @@ bool Move::doOrder(IGObject * ob){
     msg->setBody("The move order is complete on this object");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;
 

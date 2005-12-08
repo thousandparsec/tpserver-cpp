@@ -20,7 +20,7 @@
 
 #include <algorithm>
 
-#include "string.h"
+// #include "string.h"
 
 #include "playerconnection.h"
 #include "frame.h"
@@ -33,6 +33,7 @@
 #include "message.h"
 #include "objectmanager.h"
 #include "ordermanager.h"
+#include "playermanager.h"
 #include "objectdata.h"
 #include "designstore.h"
 #include "category.h"
@@ -42,14 +43,11 @@
 
 #include "player.h"
 
-int Player::nextpid = 1;
 
 Player::Player()
 {
 	curConnection = NULL;
-	name = NULL;
-	passwd = NULL;
-	pid = nextpid++;
+	pid = 0;
 	currObjSeq = 0;
 
 	board = new Board();
@@ -67,36 +65,20 @@ Player::Player()
 
 Player::~Player()
 {
-	if (name != NULL) {
-		delete[]name;
-	}
-	if (passwd != NULL) {
-		delete[]passwd;
-	}
 	if (curConnection != NULL) {
 		curConnection->close();
 	}
 	delete board;
 }
 
-void Player::setName(char *newname)
+void Player::setName(const std::string& newname)
 {
-	if (name != NULL) {
-		delete[]name;
-	}
-	int len = strlen(newname) + 1;
-	name = new char[len];
-	strncpy(name, newname, len);
+    name = newname;
 }
 
-void Player::setPass(char *newpass)
+void Player::setPass(const std::string& newpass)
 {
-	if (passwd != NULL) {
-		delete[]passwd;
-	}
-	int len = strlen(newpass) + 1;
-	passwd = new char[len];
-	strncpy(passwd, newpass, len);
+    passwd = newpass;
 }
 
 void Player::setConnection(PlayerConnection * newcon)
@@ -104,7 +86,7 @@ void Player::setConnection(PlayerConnection * newcon)
 	curConnection = newcon;
 }
 
-void Player::setID(int newid)
+void Player::setId(uint32_t newid)
 {
 	pid = newid;
 }
@@ -163,20 +145,12 @@ void Player::postToBoard(Message* msg){
   board->addMessage(msg, -1);
 }
 
-char *Player::getName()
-{
-	int len = strlen(name) + 1;
-	char *temp = new char[len];
-	strncpy(temp, name, len);
-	return temp;
+std::string Player::getName() const{
+    return name;
 }
 
-char *Player::getPass()
-{
-	int len = strlen(passwd) + 1;
-	char *temp = new char[len];
-	strncpy(temp, passwd, len);
-	return temp;
+std::string Player::getPass() const{
+    return passwd;
 }
 
 PlayerConnection *Player::getConnection()
@@ -191,7 +165,7 @@ int Player::getID()
 
 void Player::packFrame(Frame* frame){
   frame->packInt(pid);
-  frame->packString(name);
+  frame->packString(name.c_str());
   frame->packString("Human");
 }
 
@@ -1123,7 +1097,7 @@ void Player::processGetPlayer(Frame* frame){
     if(pnum == 0){
       packFrame(of);
     }else{
-      Player* p = Game::getGame()->getPlayer(pnum);
+        Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
       if(p != NULL){
 	p->packFrame(of);
       }else{

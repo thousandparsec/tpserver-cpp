@@ -30,6 +30,7 @@ class Vector3d;
 class ObjectManager;
 class OrderManager;
 class ObjectDataManager;
+class PlayerManager;
 class CombatStrategy;
 class DesignStore;
 class Ruleset;
@@ -48,13 +49,14 @@ class Game {
 
 	void save();
 
-	Player *findPlayer(char *name, char *pass);
-	Player* getPlayer(unsigned int id);
-	std::set<unsigned int> getPlayerIds() const;
+// 	Player *findPlayer(char *name, char *pass);
+// 	Player* getPlayer(unsigned int id);
+// 	std::set<unsigned int> getPlayerIds() const;
 
         ObjectManager* getObjectManager() const;
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
+        PlayerManager* getPlayerManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
 	void setCombatStrategy(CombatStrategy* cs);
@@ -91,13 +93,14 @@ class Game {
 	bool loaded;
 	bool started;
 	
-	std::map<unsigned int, Player *> players;
+	//std::map<unsigned int, Player *> players;
 	
 	Ruleset* ruleset;
 
         ObjectManager* objectmanager;
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
+        PlayerManager* playermanager;
 	CombatStrategy * combatstrategy;
 	DesignStore* designstore;
         Persistence* persistence;
