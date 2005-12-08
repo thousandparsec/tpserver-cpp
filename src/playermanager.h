@@ -38,6 +38,7 @@ public:
     Player* findPlayer(const std::string &name, const std::string &pass);
 
     void updateAll();
+    void updatePlayer(uint32_t id);
 
     std::set<uint32_t> getAllIds();
 

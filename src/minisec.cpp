@@ -503,4 +503,5 @@ void MiniSec::onPlayerAdded(Player* player){
   fleet->addToParent(star->getID());
   game->getObjectManager()->addObject(fleet);
 
+    game->getPlayerManager()->updatePlayer(player->getID());
 }

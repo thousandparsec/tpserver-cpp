@@ -150,7 +150,7 @@ bool DesignStore::addDesign(Design* d){
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
   }
-  
+  Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
   return true;
 }
 
