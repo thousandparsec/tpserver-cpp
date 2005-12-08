@@ -83,6 +83,7 @@ bool Game::load()
             objectmanager->init();
             ordermanager->init();
             playermanager->init();
+            designstore->init();
         }else{
             Logger::getLogger()->info("Creating Game");
             ruleset->createGame();
