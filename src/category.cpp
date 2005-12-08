@@ -18,6 +18,7 @@
  *
  */
 
+#include <time.h>
 
 #include "design.h"
 #include "frame.h"
@@ -27,6 +28,7 @@
 
 Category::Category(){
   catid = 0;
+    modtime = time(NULL);
 }
 
 Category::~Category(){
@@ -42,6 +44,10 @@ std::string Category::getName() const{
 
 std::string Category::getDescription() const{
   return desc;
+}
+
+uint64_t Category::getModTime() const{
+    return modtime;
 }
 
 void Category::packFrame(Frame* frame) const{
@@ -70,4 +76,8 @@ void Category::setName(const std::string& n){
 
 void Category::setDescription(const std::string& d){
   desc = d;
+}
+
+void Category::setModTime(uint64_t nmt){
+    modtime = nmt;
 }

@@ -37,11 +37,16 @@ class Design{
   unsigned int getDesignId() const;
   unsigned int getCategoryId() const;
   std::string getName() const;
+    std::string getDescription() const;
   unsigned int getOwner() const;
   std::map<unsigned int, unsigned int> getComponents() const;
   unsigned int getNumExist() const;
+    uint32_t getInUse() const;
   bool isValid() const;
+    std::string getFeedback() const;
   double getPropertyValue(unsigned int propid) const;
+    std::map<uint32_t, PropertyValue> getPropertyValues() const;
+    uint64_t getModTime() const;
 
   void setDesignId(unsigned int id);
   void setCategoryId(unsigned int id);
@@ -49,6 +54,9 @@ class Design{
   void setDescription(const std::string& d);
   void setOwner(unsigned int o);
   void setComponents(std::map<unsigned int, unsigned int> cl);
+    void setInUse(uint32_t niu);
+    void setNumExist(uint32_t nne);
+    void setModTime(uint64_t nmt);
 
   void eval();
   void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);

@@ -18,6 +18,8 @@
  *
  */
 
+#include <time.h>
+
 #include "frame.h"
 #include "tpscheme.h"
 
@@ -25,6 +27,9 @@
 
 Design::Design(){
   valid = false;
+    timestamp = time(NULL);
+    inuse = 0;
+    exist = 0;
 }
 
 Design::~Design(){
@@ -67,6 +72,10 @@ std::string Design::getName() const{
   return name;
 }
 
+std::string Design::getDescription() const{
+    return description;
+}
+
 unsigned int Design::getOwner() const{
   return owner;
 }
@@ -79,8 +88,16 @@ unsigned int Design::getNumExist() const{
   return exist;
 }
 
+uint32_t Design::getInUse() const{
+    return inuse;
+}
+
 bool Design::isValid() const{
   return valid;
+}
+
+std::string Design::getFeedback() const{
+    return feedback;
 }
 
 double Design::getPropertyValue(unsigned int propid) const{
@@ -90,6 +107,14 @@ double Design::getPropertyValue(unsigned int propid) const{
     return pv.getValue();
   }else
     return 0.0;
+}
+
+std::map<uint32_t, PropertyValue> Design::getPropertyValues() const{
+    return properties;
+}
+
+uint64_t Design::getModTime() const{
+    return timestamp;
 }
 
 void Design::setDesignId(unsigned int id){
@@ -117,6 +142,18 @@ void Design::setComponents(std::map<unsigned int, unsigned int> cl){
   valid = false;
   properties.clear();
   feedback = "";
+}
+
+void Design::setInUse(uint32_t niu){
+    inuse = niu;
+}
+
+void Design::setNumExist(uint32_t nne){
+    exist = nne;
+}
+
+void Design::setModTime(uint64_t nmt){
+    timestamp = nmt;
 }
 
 void Design::eval(){

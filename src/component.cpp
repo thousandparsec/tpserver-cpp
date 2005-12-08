@@ -18,12 +18,15 @@
  *
  */
 
+#include <time.h>
+
 #include "frame.h"
 
 #include "component.h"
 
 Component::Component(){
   compid = 0;
+    timestamp = time(NULL);
 }
 
 Component::~Component(){
@@ -58,12 +61,20 @@ std::string Component::getName() const{
   return name;
 }
 
+std::string Component::getDescription() const{
+    return description;
+}
+
 std::string Component::getTpclRequirementsFunction() const{
   return tpcl_requirements;
 }
 
 std::map<unsigned int, std::string> Component::getPropertyList() const{
   return propertylist;
+}
+
+uint64_t Component::getModTime() const{
+    return timestamp;
 }
 
 void Component::setComponentId(unsigned int id){
@@ -88,4 +99,8 @@ void Component::setTpclRequirementsFunction(const std::string& a){
 
 void Component::setPropertyList(std::map<unsigned int, std::string> pl){
   propertylist = pl;
+}
+
+void Component::setModTime(uint64_t nmt){
+    timestamp = nmt;
 }

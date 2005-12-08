@@ -33,6 +33,7 @@ class Category{
   unsigned int getCategoryId() const;
   std::string getName() const;
   std::string getDescription() const;
+    uint64_t getModTime() const;
   void packFrame(Frame* frame) const;
 
   virtual bool doAddDesign(Design* d);
@@ -41,11 +42,13 @@ class Category{
   void setCategoryId(unsigned int c);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
+    void setModTime(uint64_t nmt);
 
  protected:
   unsigned int catid;
   std::string name;
   std::string desc;
+    uint64_t modtime;
 
 };
 

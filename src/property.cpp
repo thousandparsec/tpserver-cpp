@@ -67,12 +67,20 @@ std::string Property::getDisplayName() const{
     return display;
 }
 
+std::string Property::getDescription() const{
+    return description;
+}
+
 std::string Property::getTpclDisplayFunction() const{
   return tpcl_display;
 }
 
 std::string Property::getTpclRequirementsFunction() const{
     return tpcl_requires;
+}
+
+uint64_t Property::getModTime() const{
+    return timestamp;
 }
 
 void Property::setPropertyId(unsigned int id){
@@ -105,4 +113,8 @@ void Property::setTpclDisplayFunction(const std::string& d){
 
 void Property::setTpclRequirementsFunction(const std::string& r){
     tpcl_requires = r;
+}
+
+void Property::setModTime(uint64_t nmt){
+    timestamp = nmt;
 }
