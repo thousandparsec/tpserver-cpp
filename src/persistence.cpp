@@ -121,12 +121,20 @@ bool Persistence::savePlayer(Player* player){
     return false;
 }
 
+bool Persistence::updatePlayer(Player* player){
+    return false;
+}
+
 Player* Persistence::retrievePlayer(uint32_t playerid){
     return NULL;
 }
 
-Player* Persistence::retrievePlayer(const std::string& name){
-    return NULL;
+uint32_t Persistence::getMaxPlayerId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getPlayerIds(){
+    return std::set<uint32_t>();
 }
 
 bool Persistence::saveCategory(Category* cat){

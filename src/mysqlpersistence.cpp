@@ -114,6 +114,8 @@ bool MysqlPersistence::init(){
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
                     "(NULL, 'ordertype', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
+                    "(NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
+                    "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), "
                     "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'component', 0), (NULL, 'property', 0);") != 0){
                 throw std::exception();
             }
@@ -131,7 +133,31 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
 
-            
+            if(mysql_query(conn, "CREATE TABLE player (playerid INT UNSIGNED NOT NULL PRIMARY KEY, name TEXT NOT NULL, "
+                    "password TEXT NOT NULL, boardid INT UNSIGNED NOT NULL, UNIQUE (name(255)));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playerdesignvisible (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
+                    "PRIMARY KEY (playerid, designid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playerdesignusable (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
+               "PRIMARY KEY (playerid, designid));") != 0){
+                   throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playercomponentvisible (playerid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
+                  "PRIMARY KEY (playerid, componentid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playercomponentusable (playerid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
+                    "PRIMARY KEY (playerid, componentid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playerobjectvisible (playerid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, "
+                    "PRIMARY KEY (playerid, objectid));") != 0){
+                throw std::exception();
+            }
+               
         }catch(std::exception e){
             Logger::getLogger()->error("Mysql creating tables: %s", mysql_error(conn));
             Logger::getLogger()->error("You may need to delete the tables and start again");
@@ -176,6 +202,12 @@ void MysqlPersistence::shutdown(){
     mysql_query(conn, "DELETE FROM fleetship;");
     mysql_query(conn, "DELETE FROM ordertype;");
     mysql_query(conn, "DELETE FROM orderslot;");
+    mysql_query(conn, "DELETE FROM player;");
+    mysql_query(conn, "DELETE FROM playerdesignvisible;");
+    mysql_query(conn, "DELETE FROM playerdesignusable;");
+    mysql_query(conn, "DELETE FROM playercomponentvisible;");
+    mysql_query(conn, "DELETE FROM playercomponentusable;");
+    mysql_query(conn, "DELETE FROM playerobjectvisible;");
     // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);
@@ -589,15 +621,15 @@ std::list<uint32_t> MysqlPersistence::retrieveOrderList(uint32_t obid){
     std::ostringstream querybuilder;
     querybuilder << "SELECT orderid FROM orderslot WHERE objectid=" << obid <<" ORDER BY slot;";
     lock();
-    if(mysql_query(conn, "SELECT objectid FROM ordertype") != 0){
-        Logger::getLogger()->error("Mysql: Could not query objects with orders - %s", mysql_error(conn));
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not query order list - %s", mysql_error(conn));
         unlock();
         return std::list<uint32_t>();
     }
     MYSQL_RES *ordresult = mysql_store_result(conn);
     unlock();
     if(ordresult == NULL){
-        Logger::getLogger()->error("Mysql: get objects with orders: Could not store result - %s", mysql_error(conn));
+        Logger::getLogger()->error("Mysql: get order list: Could not store result - %s", mysql_error(conn));
         return std::list<uint32_t>();
     }
     MYSQL_ROW max;
@@ -612,7 +644,7 @@ std::list<uint32_t> MysqlPersistence::retrieveOrderList(uint32_t obid){
 
 std::set<uint32_t> MysqlPersistence::retrieveObjectsWithOrders(){
     lock();
-    if(mysql_query(conn, "SELECT objectid FROM ordertype") != 0){
+    if(mysql_query(conn, "SELECT DISTINCT objectid FROM orderslot;") != 0){
         Logger::getLogger()->error("Mysql: Could not query objects with orders - %s", mysql_error(conn));
         unlock();
         return std::set<uint32_t>();
@@ -653,6 +685,443 @@ uint32_t MysqlPersistence::getMaxOrderId(){
     }
     mysql_free_result(obresult);
     return maxid;
+}
+
+bool MysqlPersistence::savePlayer(Player* player){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO player VALUES (" << player->getID() << ", '" << player->getName() << "', '";
+    querybuilder << player->getPass() << "', " << player->getBoardId() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store player %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::set<uint32_t> idset = player->getVisibleDesigns();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerdesignvisible VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store player visible designs %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getUsableDesigns();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerdesignusable VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store player usable designs %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getVisibleComponents();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playercomponentusable VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store player visible components %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getUsableComponents();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playercomponentusable VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store player usable components %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getVisibleObjects();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerobjectvisible VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store player visible objects %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+bool MysqlPersistence::updatePlayer(Player* player){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE player SET name='" << player->getName() << "', password='" << player->getPass();
+    querybuilder << "', boardid=" << player->getBoardId() << " WHERE playerid=" << player->getID() << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not update player %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playerdesignvisible WHERE playerid=" << player->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove player visible designs %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playerdesignusable WHERE playerid=" << player->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove player usable designs %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playercomponentvisible WHERE playerid=" << player->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove player visible components %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playercomponentusable WHERE playerid=" << player->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove player usable components %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playerobjectvisible WHERE playerid=" << player->getID() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove player visible objects %d - %s", player->getID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::set<uint32_t> idset = player->getVisibleDesigns();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerdesignvisible VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update player visible designs %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getUsableDesigns();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerdesignusable VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update player usable designs %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getVisibleComponents();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playercomponentvisible VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update player visible components %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getUsableComponents();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playercomponentusable VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update player usable components %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    idset = player->getVisibleObjects();
+    if(!idset.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO playerobjectvisible VALUES ";
+        for(std::set<uint32_t>::iterator itcurr = idset.begin(); itcurr != idset.end(); ++itcurr){
+            if(itcurr != idset.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << player->getID() << ", " << (*itcurr) << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update player visible objects %d - %s", player->getID(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM player WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player %d - %s", playerid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such player %d", playerid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Player* player = new Player();
+    player->setId(playerid);
+    player->setName(row[1]);
+    player->setPass(row[2]);
+    //Board atoi(row[3]);
+    mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT designid FROM playerdesignvisible WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player visible designs %d - %s", playerid, mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(res == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player visible designs: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    while((row = mysql_fetch_row(res)) != NULL){
+        player->addVisibleDesign(atoi(row[0]));
+    }
+    mysql_free_result(res);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT designid FROM playerdesignusable WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player usable designs %d - %s", playerid, mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    res = mysql_store_result(conn);
+    if(res == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player usable designs: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    while((row = mysql_fetch_row(res)) != NULL){
+        player->addUsableDesign(atoi(row[0]));
+    }
+    mysql_free_result(res);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT componentid FROM playercomponentvisible WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player visible components %d - %s", playerid, mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    res = mysql_store_result(conn);
+    if(res == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player visible components: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    while((row = mysql_fetch_row(res)) != NULL){
+        player->addVisibleComponent(atoi(row[0]));
+    }
+    mysql_free_result(res);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT componentid FROM playercomponentusable WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player usable components %d - %s", playerid, mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    res = mysql_store_result(conn);
+    if(res == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player usable components: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    while((row = mysql_fetch_row(res)) != NULL){
+        player->addUsableComponent(atoi(row[0]));
+    }
+    mysql_free_result(res);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT objectid FROM playerobjectvisible WHERE playerid = " << playerid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve player visible objects %d - %s", playerid, mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    res = mysql_store_result(conn);
+    if(res == NULL){
+        Logger::getLogger()->error("Mysql: retrieve player visible objects: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete player;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::set<uint32_t> obids;
+    while((row = mysql_fetch_row(res)) != NULL){
+        obids.insert(atoi(row[0]));
+    }
+    mysql_free_result(res);
+    player->setVisibleObjects(obids);
+    
+    return player;
+}
+
+uint32_t MysqlPersistence::getMaxPlayerId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(playerid) FROM player;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max player id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max playerid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getPlayerIds(){
+    lock();
+    if(mysql_query(conn, "SELECT playerid FROM player;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query player ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get playerids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
 }
 
 std::string MysqlPersistence::addslashes(const std::string& in) const{

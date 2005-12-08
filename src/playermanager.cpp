@@ -36,7 +36,12 @@ PlayerManager::~PlayerManager(){
 }
 
 void PlayerManager::init(){
-
+    Persistence* persist = Game::getGame()->getPersistence();
+    nextid = persist->getMaxPlayerId() + 1;
+    std::set<uint32_t> pidset(persist->getPlayerIds());
+    for(std::set<uint32_t>::iterator itcurr = pidset.begin(); itcurr != pidset.end(); ++itcurr){
+        players[*itcurr] = NULL;
+    }
 }
 
 Player* PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
@@ -49,11 +54,13 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
     if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
         // player can be added
         players[rtn->getID()] = (rtn);
+        Game::getGame()->getPersistence()->savePlayer(rtn);
         
         Game::getGame()->getRuleset()->onPlayerAdded(rtn);
         
         //HACK
         rtn->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
+        Game::getGame()->getPersistence()->updatePlayer(rtn);
 
     }else{
         // player can not be added
@@ -69,6 +76,10 @@ Player* PlayerManager::getPlayer(uint32_t id){
     std::map<unsigned int, Player*>::iterator pl = players.find(id);
     if(pl != players.end()){
         rtn = (*pl).second;
+    }
+    if(rtn == NULL){
+        rtn = Game::getGame()->getPersistence()->retrievePlayer(id);
+        players[id] = rtn;
     }
     return rtn;
 }
@@ -87,10 +98,17 @@ Player* PlayerManager::findPlayer(const std::string &name, const std::string &pa
     std::map<unsigned int, Player*>::iterator itcurr;
 
     for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
-        std::string itname = (*itcurr).second->getName();
-        if (name == itname) {
-            rtn = (*itcurr).second;
-            break;
+        Player* p = (*itcurr).second;
+        if(p == NULL){
+            p = Game::getGame()->getPersistence()->retrievePlayer(itcurr->first);
+            itcurr->second = p;
+        }
+        if(p != NULL){
+            std::string itname = p->getName();
+            if (name == itname) {
+                rtn = p;
+                break;
+            }
         }
     }
     
@@ -107,11 +125,13 @@ Player* PlayerManager::findPlayer(const std::string &name, const std::string &pa
 }
 
 void PlayerManager::updateAll(){
-
+    for(std::map<uint32_t, Player*>::iterator itcurr = players.begin(); itcurr != players.end(); ++itcurr){
+        Game::getGame()->getPersistence()->updatePlayer(itcurr->second);
+    }
 }
 
 void PlayerManager::updatePlayer(uint32_t id){
-    
+    Game::getGame()->getPersistence()->updatePlayer(players[id]);
 }
 
 std::set<uint32_t> PlayerManager::getAllIds(){

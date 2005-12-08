@@ -65,8 +65,10 @@ public:
     virtual Message* retrieveMessage(uint32_t boardid, uint32_t slot);
 
     virtual bool savePlayer(Player* player);
+    virtual bool updatePlayer(Player* player);
     virtual Player* retrievePlayer(uint32_t playerid);
-    virtual Player* retrievePlayer(const std::string& name);
+    virtual uint32_t getMaxPlayerId();
+    virtual std::set<uint32_t> getPlayerIds();
 
     virtual bool saveCategory(Category* cat);
     virtual Category* retriveCategory(uint32_t catid);
