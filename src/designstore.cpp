@@ -227,7 +227,7 @@ void DesignStore::addComponent(Component* c){
   p->setCategoryId(c->getCategoryId());
   p->setRank(0);
   p->setName(c->getName());
-    p->setDisplayName(c->getName());
+    p->setDisplayName("Numer of " + c->getName() + " components");
   p->setDescription("The number of " + c->getName() + " components in the design");
   p->setTpclDisplayFunction(
       "(lambda (design bits)"
