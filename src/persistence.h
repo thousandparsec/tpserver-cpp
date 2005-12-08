@@ -72,15 +72,24 @@ public:
 
     virtual bool saveCategory(Category* cat);
     virtual Category* retriveCategory(uint32_t catid);
+    virtual uint32_t getMaxCategoryId();
+    virtual std::set<uint32_t> getCategoryIds();
 
     virtual bool saveDesign(Design* design);
+    virtual bool updateDesign(Design* design);
     virtual Design* retrieveDesign(uint32_t designid);
+    virtual uint32_t getMaxDesignId();
+    virtual std::set<uint32_t> getDesignIds();
 
     virtual bool saveComponent(Component* comp);
     virtual Component* retrieveComponent(uint32_t compid);
+    virtual uint32_t getMaxComponentId();
+    virtual std::set<uint32_t> getComponentIds();
 
     virtual bool saveProperty(Property* prop);
     virtual Property* retrieveProperty(uint32_t propid);
+    virtual uint32_t getMaxPropertyId();
+    virtual std::set<uint32_t> getPropertyIds();
 
 };
 

@@ -145,12 +145,32 @@ Category* Persistence::retriveCategory(uint32_t catid){
     return NULL;
 }
 
+uint32_t Persistence::getMaxCategoryId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getCategoryIds(){
+    return std::set<uint32_t>();
+}
+
 bool Persistence::saveDesign(Design* design){
+    return false;
+}
+
+bool Persistence::updateDesign(Design* design){
     return false;
 }
 
 Design* Persistence::retrieveDesign(uint32_t designid){
     return NULL;
+}
+
+uint32_t Persistence::getMaxDesignId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getDesignIds(){
+    return std::set<uint32_t>();
 }
 
 bool Persistence::saveComponent(Component* comp){
@@ -161,6 +181,14 @@ Component* Persistence::retrieveComponent(uint32_t compid){
     return NULL;
 }
 
+uint32_t Persistence::getMaxComponentId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getComponentIds(){
+    return std::set<uint32_t>();
+}
+
 bool Persistence::saveProperty(Property* prop){
     return false;
 }
@@ -169,3 +197,10 @@ Property* Persistence::retrieveProperty(uint32_t propid){
     return NULL;
 }
 
+uint32_t Persistence::getMaxPropertyId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getPropertyIds(){
+    return std::set<uint32_t>();
+}
