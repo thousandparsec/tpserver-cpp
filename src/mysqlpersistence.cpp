@@ -689,8 +689,8 @@ uint32_t MysqlPersistence::getMaxOrderId(){
 
 bool MysqlPersistence::savePlayer(Player* player){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO player VALUES (" << player->getID() << ", '" << player->getName() << "', '";
-    querybuilder << player->getPass() << "', " << player->getBoardId() << ");";
+    querybuilder << "INSERT INTO player VALUES (" << player->getID() << ", '" << addslashes(player->getName()) << "', '";
+    querybuilder << addslashes(player->getPass()) << "', " << player->getBoardId() << ");";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not store player %d - %s", player->getID(), mysql_error(conn));
@@ -793,7 +793,7 @@ bool MysqlPersistence::savePlayer(Player* player){
 
 bool MysqlPersistence::updatePlayer(Player* player){
     std::ostringstream querybuilder;
-    querybuilder << "UPDATE player SET name='" << player->getName() << "', password='" << player->getPass();
+    querybuilder << "UPDATE player SET name='" << addslashes(player->getName()) << "', password='" << addslashes(player->getPass());
     querybuilder << "', boardid=" << player->getBoardId() << " WHERE playerid=" << player->getID() << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
