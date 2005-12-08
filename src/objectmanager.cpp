@@ -39,14 +39,13 @@ void ObjectManager::init(){
     for(std::set<uint32_t>::const_iterator itcurr = vis.begin(); itcurr != vis.end(); ++itcurr){
         objects[*itcurr] = NULL;
     }
+
+    nextid = Game::getGame()->getPersistence()->getMaxObjectId();
+    if(nextid != 0)
+        nextid++;
 }
 
 IGObject* ObjectManager::createNewObject(){
-    if(nextid == 0){
-        nextid = Game::getGame()->getPersistence()->getMaxObjectId();
-        if(nextid != 0)
-            nextid++;
-    }
     IGObject* obj = new IGObject();
     obj->setID(nextid++);
     return obj;
