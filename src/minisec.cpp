@@ -77,144 +77,7 @@ MiniSec::~MiniSec(){
 void MiniSec::initGame(){
   Game* game = Game::getGame();
   
-  DesignStore *ds = game->getDesignStore();
-  Category * cat = new Category();
-  cat->setName("Ships");
-  cat->setDescription("The Ship design and component category");
-  ds->addCategory(cat);
-  assert(cat->getCategoryId() == 1);
-
-  Property* prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("Speed");
-    prop->setDisplayName("Speed");
-  prop->setDescription("The number of units the ship can move each turn");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("BuildTime");
-    prop->setDisplayName("Build Time");
-  prop->setDescription("The number of turns to build the ship");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
   
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("Amour");
-    prop->setDisplayName("Amour");
-  prop->setDescription("The amount of amour on the ship");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("WeaponWin");
-    prop->setDisplayName("Weapon Strength at Win");
-  prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("WeaponDraw");
-    prop->setDisplayName("Weapon Strength at Draw");
-  prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("Colonise");
-    prop->setDisplayName("Can Colonise Planets");
-  prop->setDescription("Can the ship colonise planets");
-  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  prop = new Property();
-  prop->setCategoryId(1);
-  prop->setRank(0);
-  prop->setName("_num-components");
-    prop->setDisplayName("Number of Conponents");
-  prop->setDescription("The total number of components in the design");
-  prop->setTpclDisplayFunction(
-     "(lambda (design bits)"
-       "(let ((n (apply + bits)))"
-       "(cons n (string-append (number->string n) \" components\"))))");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-  ds->addProperty(prop);
-
-  std::map<unsigned int, std::string> propertylist;
-
-  Component* comp = new Component();
-  comp->setCategoryId(1);
-  comp->setName("ScoutHull");
-  comp->setDescription("The scout hull, fitted out with everything a scout needs");
-  comp->setTpclRequirementsFunction(
-      "(lambda (design) "
-	"(if (= (designType._num-components design) 1) "
-          "(cons #t \"\") "
-          "(cons #f \"This is a complete component, nothing else can be included\")))");
-  propertylist[1] = "(lambda (design) 300000000)";
-  propertylist[2] = "(lambda (design) 1)";
-  propertylist[3] = "(lambda (design) 2)";
-  propertylist[4] = "(lambda (design) 0)";
-  propertylist[5] = "(lambda (design) 0)";
-  propertylist[7] = "(lambda (design) 1)";
-  comp->setPropertyList(propertylist);
-  ds->addComponent(comp);
-
-  comp = new Component();
-  comp->setCategoryId(1);
-  comp->setName("FrigateHull");
-  comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
-  comp->setTpclRequirementsFunction(
-       "(lambda (design) "
-         "(if (= (designType._num-components design) 1) "
-         "(cons #t \"\") "
-         "(cons #f \"This is a complete component, nothing else can be included\")))");
-  propertylist.clear();
-  propertylist[1] = "(lambda (design) 200000000)";
-  propertylist[2] = "(lambda (design) 2)";
-  propertylist[3] = "(lambda (design) 4)";
-  propertylist[4] = "(lambda (design) 2)";
-  propertylist[5] = "(lambda (design) 0)";
-  propertylist[6] = "(lambda (design) 1)";
-  propertylist[7] = "(lambda (design) 1)";
-  comp->setPropertyList(propertylist);
-  ds->addComponent(comp);
-
-  comp = new Component();
-  comp->setCategoryId(1);
-  comp->setName("BattleshipHull");
-  comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
-  comp->setTpclRequirementsFunction(
-        "(lambda (design) "
-	  "(if (= (designType._num-components design) 1) "
-	    "(cons #t \"\") "
-	    "(cons #f \"This is a complete component, nothing else can be included\")))");
-  propertylist.clear();
-  propertylist[1] = "(lambda (design) 100000000)";
-  propertylist[2] = "(lambda (design) 4)";
-  propertylist[3] = "(lambda (design) 6)";
-  propertylist[4] = "(lambda (design) 3)";
-  propertylist[5] = "(lambda (design) 1)";
-  propertylist[7] = "(lambda (design) 1)";
-  comp->setPropertyList(propertylist);
-  ds->addComponent(comp);
 
   
 
@@ -280,6 +143,147 @@ void MiniSec::initGame(){
 
 void MiniSec::createGame(){
   Game* game = Game::getGame();
+  
+    DesignStore *ds = game->getDesignStore();
+    Category * cat = new Category();
+    cat->setName("Ships");
+    cat->setDescription("The Ship design and component category");
+    ds->addCategory(cat);
+    assert(cat->getCategoryId() == 1);
+    
+    Property* prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("Speed");
+    prop->setDisplayName("Speed");
+    prop->setDescription("The number of units the ship can move each turn");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("BuildTime");
+    prop->setDisplayName("Build Time");
+    prop->setDescription("The number of turns to build the ship");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("Amour");
+    prop->setDisplayName("Amour");
+    prop->setDescription("The amount of amour on the ship");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("WeaponWin");
+    prop->setDisplayName("Weapon Strength at Win");
+    prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("WeaponDraw");
+    prop->setDisplayName("Weapon Strength at Draw");
+    prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("Colonise");
+    prop->setDisplayName("Can Colonise Planets");
+    prop->setDescription("Can the ship colonise planets");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    prop = new Property();
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("_num-components");
+    prop->setDisplayName("Number of Conponents");
+    prop->setDescription("The total number of components in the design");
+    prop->setTpclDisplayFunction(
+        "(lambda (design bits)"
+        "(let ((n (apply + bits)))"
+        "(cons n (string-append (number->string n) \" components\"))))");
+        prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    
+    std::map<unsigned int, std::string> propertylist;
+    
+    Component* comp = new Component();
+    comp->setCategoryId(1);
+    comp->setName("ScoutHull");
+    comp->setDescription("The scout hull, fitted out with everything a scout needs");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[1] = "(lambda (design) 300000000)";
+    propertylist[2] = "(lambda (design) 1)";
+    propertylist[3] = "(lambda (design) 2)";
+    propertylist[4] = "(lambda (design) 0)";
+    propertylist[5] = "(lambda (design) 0)";
+    propertylist[7] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    
+    comp = new Component();
+    comp->setCategoryId(1);
+    comp->setName("FrigateHull");
+    comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist.clear();
+    propertylist[1] = "(lambda (design) 200000000)";
+    propertylist[2] = "(lambda (design) 2)";
+    propertylist[3] = "(lambda (design) 4)";
+    propertylist[4] = "(lambda (design) 2)";
+    propertylist[5] = "(lambda (design) 0)";
+    propertylist[6] = "(lambda (design) 1)";
+    propertylist[7] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    
+    comp = new Component();
+    comp->setCategoryId(1);
+    comp->setName("BattleshipHull");
+    comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
+    comp->setTpclRequirementsFunction(
+            "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+                "(cons #t \"\") "
+                "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist.clear();
+    propertylist[1] = "(lambda (design) 100000000)";
+    propertylist[2] = "(lambda (design) 4)";
+    propertylist[3] = "(lambda (design) 6)";
+    propertylist[4] = "(lambda (design) 3)";
+    propertylist[5] = "(lambda (design) 1)";
+    propertylist[7] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+  
+  
   ObjectManager* obman = game->getObjectManager();
 
   IGObject* universe = game->getObjectManager()->createNewObject();

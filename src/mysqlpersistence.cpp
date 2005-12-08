@@ -115,8 +115,9 @@ bool MysqlPersistence::init(){
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
                     "(NULL, 'ordertype', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
                     "(NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
-                    "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), "
-                    "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'component', 0), (NULL, 'property', 0);") != 0){
+                    "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), (NULL, 'category', 0), (NULL, 'design',0), "
+                    "(NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), (NULL, 'component', 0), (NULL, 'componentproperty', 0), "
+                    "(NULL, 'property', 0);") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, " 
@@ -157,7 +158,36 @@ bool MysqlPersistence::init(){
                     "PRIMARY KEY (playerid, objectid));") != 0){
                 throw std::exception();
             }
-               
+            if(mysql_query(conn, "CREATE TABLE category (categoryid INT UNSIGNED NOT NULL PRIMARY KEY, name TEXT NOT NULL, "
+                    "description TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE design (designid INT UNSIGNED NOT NULL PRIMARY KEY, categoryid INT UNSIGNED NOT NULL,"
+                    "name TEXT NOT NULL, description TEXT NOT NULL, owner INT NOT NULL, inuse INT UNSIGNED NOT NULL,"
+                    "numexist INT UNSIGNED NOT NULL, valid TINYINT NOT NULL, feedback TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE designcomponent (designid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
+                    "count INT UNSIGNED NOT NULL, PRIMARY KEY (designid, componentid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE designproperty (designid INT UNSIGNED NOT NULL, propertyid INT UNSIGNED NOT NULL, "
+                    "value DOUBLE  NOT NULL, displaystring TEXT NOT NULL, PRIMARY KEY (designid, propertyid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE component (componentid INT UNSIGNED NOT NULL PRIMARY KEY, categoryid INT UNSIGNED NOT NULL,"
+                    "name TEXT NOT NULL, description TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE componentproperty (componentid INT UNSIGNED NOT NULL, propertyid INT UNSIGNED NOT NULL, "
+                           "tpclvaluefunc TEXT NOT NULL, PRIMARY KEY (componentid, propertyid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE property (propertyid INT UNSIGNED NOT NULL PRIMARY KEY, categoryid INT UNSIGNED NOT NULL,"
+                    "rank INT UNSIGNED NOT NULL, name TEXT NOT NULL, displayname TEXT NOT NULL, description TEXT NOT NULL, "
+                    "tpcldisplayfunc TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
         }catch(std::exception e){
             Logger::getLogger()->error("Mysql creating tables: %s", mysql_error(conn));
             Logger::getLogger()->error("You may need to delete the tables and start again");
@@ -195,19 +225,26 @@ bool MysqlPersistence::init(){
 void MysqlPersistence::shutdown(){
     lock();
     // TEMP HACK
-    mysql_query(conn, "DELETE FROM object;");
-    mysql_query(conn, "DELETE FROM universe;");
-    mysql_query(conn, "DELETE FROM planet;");
-    mysql_query(conn, "DELETE FROM fleet;");
-    mysql_query(conn, "DELETE FROM fleetship;");
-    mysql_query(conn, "DELETE FROM ordertype;");
-    mysql_query(conn, "DELETE FROM orderslot;");
-    mysql_query(conn, "DELETE FROM player;");
-    mysql_query(conn, "DELETE FROM playerdesignvisible;");
-    mysql_query(conn, "DELETE FROM playerdesignusable;");
-    mysql_query(conn, "DELETE FROM playercomponentvisible;");
-    mysql_query(conn, "DELETE FROM playercomponentusable;");
-    mysql_query(conn, "DELETE FROM playerobjectvisible;");
+//     mysql_query(conn, "DELETE FROM object;");
+//     mysql_query(conn, "DELETE FROM universe;");
+//     mysql_query(conn, "DELETE FROM planet;");
+//     mysql_query(conn, "DELETE FROM fleet;");
+//     mysql_query(conn, "DELETE FROM fleetship;");
+//     mysql_query(conn, "DELETE FROM ordertype;");
+//     mysql_query(conn, "DELETE FROM orderslot;");
+//     mysql_query(conn, "DELETE FROM player;");
+//     mysql_query(conn, "DELETE FROM playerdesignvisible;");
+//     mysql_query(conn, "DELETE FROM playerdesignusable;");
+//     mysql_query(conn, "DELETE FROM playercomponentvisible;");
+//     mysql_query(conn, "DELETE FROM playercomponentusable;");
+//     mysql_query(conn, "DELETE FROM playerobjectvisible;");
+//     mysql_query(conn, "DELETE FROM category;");
+//     mysql_query(conn, "DELETE FROM design;");
+//     mysql_query(conn, "DELETE FROM designcomponent;");
+//     mysql_query(conn, "DELETE FROM designproperty;");
+//     mysql_query(conn, "DELETE FROM component;");
+//     mysql_query(conn, "DELETE FROM componentproperty;");
+//     mysql_query(conn, "DELETE FROM property;");
     // end TEMP HACK
     if(conn != NULL){
         mysql_close(conn);
@@ -1113,6 +1150,596 @@ std::set<uint32_t> MysqlPersistence::getPlayerIds(){
     unlock();
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: get playerids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
+}
+
+bool MysqlPersistence::saveCategory(Category* cat){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO category VALUES (" << cat->getCategoryId() << ", '" << cat->getName() << "', '";
+    querybuilder << cat->getDescription() << "', " << cat->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store category %d - %s", cat->getCategoryId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+Category* MysqlPersistence::retrieveCategory(uint32_t catid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM category WHERE categoryid = " << catid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve category %d - %s", catid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve category: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such category %d", catid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Category* cat = new Category();
+    cat->setCategoryId(catid);
+    cat->setName(row[1]);
+    cat->setDescription(row[2]);
+    cat->setModTime(strtoull(row[3], NULL, 10));
+    mysql_free_result(obresult);
+    return cat;
+}
+
+uint32_t MysqlPersistence::getMaxCategoryId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(categoryid) FROM category;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max category id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max categoryid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getCategoryIds(){
+    lock();
+    if(mysql_query(conn, "SELECT categoryid FROM category;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query category ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get categoryids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
+}
+
+bool MysqlPersistence::saveDesign(Design* design){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO design VALUES (" << design->getDesignId() << ", " << design->getCategoryId() << ", '";
+    querybuilder << addslashes(design->getName()) << "', '" << addslashes(design->getDescription()) << "', " << design->getOwner() << ", ";
+    querybuilder << design->getInUse() << ", " << design->getNumExist() << ", " << design->isValid() << ", '";
+    querybuilder << addslashes(design->getFeedback()) << "', " << design->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store design %d - %s", design->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::map<uint32_t, uint32_t> complist = design->getComponents();
+    if(!complist.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO designcomponent VALUES ";
+        for(std::map<uint32_t, uint32_t>::iterator itcurr = complist.begin(); itcurr != complist.end(); ++itcurr){
+            if(itcurr != complist.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << design->getDesignId() << ", " << itcurr->first << ", " << itcurr->second << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store design components %d - %s", design->getDesignId(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    std::map<uint32_t, PropertyValue> proplist = design->getPropertyValues();
+    if(!proplist.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO designproperty VALUES ";
+        for(std::map<uint32_t, PropertyValue>::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
+            if(itcurr != proplist.begin())
+                querybuilder << ", ";
+            PropertyValue pv = itcurr->second;
+            querybuilder << "(" << design->getDesignId() << ", " << itcurr->first << ", " << pv.getValue() << ", '";
+            querybuilder << addslashes(pv.getDisplayString()) << "')";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store design properties %d - %s", design->getDesignId(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+bool MysqlPersistence::updateDesign(Design* design){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE design SET catergoryid=" << design->getCategoryId() << ", name='";
+    querybuilder << addslashes(design->getName()) << "', description='" << addslashes(design->getDescription()) << "', owner=";
+    querybuilder << design->getOwner() << ", inuse=" << design->getInUse() << ", numexist=" << design->getNumExist() << ", valid=";
+    querybuilder << design->isValid() << ", feedback='" << addslashes(design->getFeedback());
+    querybuilder << ", modtime=" << design->getModTime() << " WHERE designid=" << design->getDesignId() << ";";
+    lock();
+    std::string query = querybuilder.str();
+    //std::cout << "Query: " << query << std::endl;
+    if(mysql_query(conn, query.c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not update design %d - %s", design->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM designcomponent WHERE designid=" << design->getDesignId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove design components %d - %s", design->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM designproperty WHERE designid=" << design->getDesignId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove design properties %d - %s", design->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::map<uint32_t, uint32_t> complist = design->getComponents();
+    if(!complist.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO designcomponent VALUES ";
+        for(std::map<uint32_t, uint32_t>::iterator itcurr = complist.begin(); itcurr != complist.end(); ++itcurr){
+            if(itcurr != complist.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << design->getDesignId() << ", " << itcurr->first << ", " << itcurr->second << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store design components %d - %s", design->getDesignId(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    std::map<uint32_t, PropertyValue> proplist = design->getPropertyValues();
+    if(!proplist.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO designproperty VALUES ";
+        for(std::map<uint32_t, PropertyValue>::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
+            if(itcurr != proplist.begin())
+                querybuilder << ", ";
+            PropertyValue pv = itcurr->second;
+            querybuilder << "(" << design->getDesignId() << ", " << itcurr->first << ", " << pv.getValue() << ", '";
+            querybuilder << addslashes(pv.getDisplayString()) << "')";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store design properties %d - %s", design->getDesignId(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+Design* MysqlPersistence::retrieveDesign(uint32_t designid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM design WHERE designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve design %d - %s", designid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve design: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such design %d", designid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Design* design = new Design();
+    design->setDesignId(designid);
+    design->setCategoryId(atoi(row[1]));
+    design->setName(row[2]);
+    design->setDescription(row[3]);
+    design->setOwner(atoi(row[4]));
+    design->setInUse(atoi(row[5]));
+    design->setNumExist(atoi(row[6]));
+
+        
+    querybuilder.str("");
+    querybuilder << "SELECT componentid,count FROM designcomponent WHERE designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve design components %d - %s", designid, mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    MYSQL_RES *compresult = mysql_store_result(conn);
+    if(compresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve design components: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::map<uint32_t, uint32_t> complist;
+    MYSQL_ROW crow;
+    while((crow = mysql_fetch_row(compresult)) != NULL){
+        complist[atoi(crow[0])] = atoi(crow[1]);
+    }
+    design->setComponents(complist);
+    mysql_free_result(compresult);
+    querybuilder.str("");
+    querybuilder << "SELECT propertyid,value,displaystring FROM designproperty WHERE designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve design properties %d - %s", designid, mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    MYSQL_RES *propresult = mysql_store_result(conn);
+    if(propresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve design properties: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::map<uint32_t, PropertyValue> pvlist;
+    MYSQL_ROW prow;
+    while((prow = mysql_fetch_row(propresult)) != NULL){
+        PropertyValue pv;
+        pv.setPropertyId(atoi(prow[0]));
+        pv.setValue(atof(prow[1]));
+        pv.setDisplayString(prow[2]);
+        pvlist[pv.getPropertyId()] = pv;
+    }
+    design->setPropertyValues(pvlist);
+    mysql_free_result(propresult);
+    
+    design->setValid(atoi(row[7]), row[8]);
+    design->setModTime(strtoull(row[9], NULL, 10));
+    
+    mysql_free_result(obresult);
+    
+    return design;
+
+}
+
+uint32_t MysqlPersistence::getMaxDesignId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(designid) FROM design;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max design id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max designid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getDesignIds(){
+    lock();
+    if(mysql_query(conn, "SELECT designid FROM design;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query design ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get designids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
+}
+
+bool MysqlPersistence::saveComponent(Component* comp){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO component VALUES (" << comp->getComponentId() << ", " << comp->getCategoryId();
+    querybuilder<< ", '" << addslashes(comp->getName()) << "', '" << addslashes(comp->getDescription()) << "', '";
+    querybuilder << addslashes(comp->getTpclRequirementsFunction()) << "', " << comp->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store component %d - %s", comp->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::map<uint32_t, std::string> proplist = comp->getPropertyList();
+    if(!proplist.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO componentproperty VALUES ";
+        for(std::map<uint32_t, std::string>::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
+            if(itcurr != proplist.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << comp->getComponentId() << ", " << itcurr->first << ", '" << addslashes(itcurr->second) << "')";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store component properties %d - %s", comp->getComponentId(), mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+Component* MysqlPersistence::retrieveComponent(uint32_t compid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM component WHERE componentid = " << compid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve component %d - %s", compid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve component: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such component %d", compid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Component* comp = new Component();
+    comp->setComponentId(compid);
+    comp->setCategoryId(atoi(row[1]));
+    comp->setName(row[2]);
+    comp->setDescription(row[3]);
+    comp->setTpclRequirementsFunction(row[4]);
+    comp->setModTime(strtoull(row[5], NULL, 10));
+    mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT propertyid,tpclvaluefunc FROM componentproperty WHERE componentid = " << compid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve component properties %d - %s", compid, mysql_error(conn));
+        unlock();
+        delete comp;
+        return NULL;
+    }
+    MYSQL_RES *propresult = mysql_store_result(conn);
+    if(propresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve component properties: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete comp;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::map<uint32_t, std::string> pvlist;
+    while((row = mysql_fetch_row(propresult)) != NULL){
+        pvlist[atoi(row[0])] = row[1];
+    }
+    comp->setPropertyList(pvlist);
+    mysql_free_result(propresult);
+    
+    return comp;
+}
+
+uint32_t MysqlPersistence::getMaxComponentId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(componentid) FROM component;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max component id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max componentid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getComponentIds(){
+    lock();
+    if(mysql_query(conn, "SELECT componentid FROM component;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query component ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get componentids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
+}
+
+bool MysqlPersistence::saveProperty(Property* prop){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO property VALUES (" << prop->getPropertyId() << ", " << prop->getCategoryId() << ", ";
+    querybuilder << prop->getRank() << ", '" << addslashes(prop->getName()) << "', '" << addslashes(prop->getDisplayName());
+    querybuilder << "', '" << addslashes(prop->getDescription()) << "', '" << addslashes(prop->getTpclDisplayFunction()) << "', '";
+    querybuilder << addslashes(prop->getTpclRequirementsFunction()) << "', " << prop->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store Property %d - %s", prop->getPropertyId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+Property* MysqlPersistence::retrieveProperty(uint32_t propid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM property WHERE propertyid = " << propid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve property %d - %s", propid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve property: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such property %d", propid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Property* prop = new Property();
+    prop->setPropertyId(propid);
+    prop->setCategoryId(atoi(row[1]));
+    prop->setRank(atoi(row[2]));
+    prop->setName(row[3]);
+    prop->setDisplayName(row[4]);
+    prop->setDescription(row[5]);
+    prop->setTpclDisplayFunction(row[6]);
+    prop->setTpclRequirementsFunction(row[7]);
+    prop->setModTime(strtoull(row[8], NULL, 10));
+    mysql_free_result(obresult);
+    return prop;
+}
+
+uint32_t MysqlPersistence::getMaxPropertyId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(propertyid) FROM property;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max property id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max propertyid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getPropertyIds(){
+    lock();
+    if(mysql_query(conn, "SELECT propertyid FROM property;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query property ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get propertyids: Could not store result - %s", mysql_error(conn));
         return std::set<uint32_t>();
     }
     MYSQL_ROW max;

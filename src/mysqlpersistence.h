@@ -66,17 +66,26 @@ public:
     virtual uint32_t getMaxPlayerId();
     virtual std::set<uint32_t> getPlayerIds();
 
-//     virtual bool saveCategory(Category* cat);
-//     virtual Category* retriveCategory(uint32_t catid);
-// 
-//     virtual bool saveDesign(Design* design);
-//     virtual Design* retrieveDesign(uint32_t designid);
-// 
-//     virtual bool saveComponent(Component* comp);
-//     virtual Component* retrieveComponent(uint32_t compid);
-// 
-//     virtual bool saveProperty(Property* prop);
-//     virtual Property* retrieveProperty(uint32_t propid);
+    virtual bool saveCategory(Category* cat);
+    virtual Category* retrieveCategory(uint32_t catid);
+    virtual uint32_t getMaxCategoryId();
+    virtual std::set<uint32_t> getCategoryIds();
+
+    virtual bool saveDesign(Design* design);
+    virtual bool updateDesign(Design* design);
+    virtual Design* retrieveDesign(uint32_t designid);
+    virtual uint32_t getMaxDesignId();
+    virtual std::set<uint32_t> getDesignIds();
+
+    virtual bool saveComponent(Component* comp);
+    virtual Component* retrieveComponent(uint32_t compid);
+    virtual uint32_t getMaxComponentId();
+    virtual std::set<uint32_t> getComponentIds();
+
+    virtual bool saveProperty(Property* prop);
+    virtual Property* retrieveProperty(uint32_t propid);
+    virtual uint32_t getMaxPropertyId();
+    virtual std::set<uint32_t> getPropertyIds();
 
     std::string addslashes(const std::string& in) const;
     uint32_t getTableVersion(const std::string& name);
