@@ -100,6 +100,10 @@ bool Player::isVisibleObject(unsigned int objid){
   return visibleObjects.find(objid) != visibleObjects.end();
 }
 
+std::set<uint32_t> Player::getVisibleObjects() const{
+    return visibleObjects;
+}
+
 void Player::addVisibleDesign(unsigned int designid){
   visibleDesigns.insert(designid);
 }
@@ -123,6 +127,10 @@ std::set<unsigned int> Player::getUsableDesigns() const{
   return usableDesigns;
 }
 
+std::set<uint32_t> Player::getVisibleDesigns() const{
+    return visibleDesigns;
+}
+
 void Player::addVisibleComponent(unsigned int compid){
   visibleComponents.insert(compid);
 }
@@ -139,6 +147,14 @@ void Player::removeUsableComponent(unsigned int compid){
 
 bool Player::isUsableComponent(unsigned int compid){
   return (usableComponents.find(compid) != usableComponents.end());
+}
+
+std::set<uint32_t> Player::getVisibleComponents() const{
+    return visibleComponents;
+}
+
+std::set<uint32_t> Player::getUsableComponents() const{
+    return usableComponents;
 }
 
 void Player::postToBoard(Message* msg){
@@ -161,6 +177,10 @@ PlayerConnection *Player::getConnection()
 int Player::getID()
 {
 	return pid;
+}
+
+uint32_t Player::getBoardId() const{
+    return board->getBoardID();
 }
 
 void Player::packFrame(Frame* frame){

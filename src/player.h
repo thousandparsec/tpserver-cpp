@@ -40,17 +40,21 @@ class Player {
 
 	void setVisibleObjects(std::set<unsigned int> vis);
 	bool isVisibleObject(unsigned int objid);
+        std::set<uint32_t> getVisibleObjects() const;
 
 	void addVisibleDesign(unsigned int designid);
 	void addUsableDesign(unsigned int designid);
 	void removeUsableDesign(unsigned int designid);
 	bool isUsableDesign(unsigned int designid) const;
 	std::set<unsigned int> getUsableDesigns() const;
+        std::set<uint32_t> getVisibleDesigns() const;
 
 	void addVisibleComponent(unsigned int compid);
 	void addUsableComponent(unsigned int compid);
 	void removeUsableComponent(unsigned int compid);
 	bool isUsableComponent(unsigned int compid);
+        std::set<uint32_t> getVisibleComponents() const;
+        std::set<uint32_t> getUsableComponents() const;
 
 	void postToBoard(Message* msg);
 
@@ -58,6 +62,7 @@ class Player {
 	std::string getPass() const;
 	PlayerConnection *getConnection();
 	int getID();
+        uint32_t getBoardId() const;
 
 	void packFrame(Frame* frame);
 
