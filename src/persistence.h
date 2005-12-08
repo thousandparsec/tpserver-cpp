@@ -71,7 +71,7 @@ public:
     virtual std::set<uint32_t> getPlayerIds();
 
     virtual bool saveCategory(Category* cat);
-    virtual Category* retriveCategory(uint32_t catid);
+    virtual Category* retrieveCategory(uint32_t catid);
     virtual uint32_t getMaxCategoryId();
     virtual std::set<uint32_t> getCategoryIds();
 

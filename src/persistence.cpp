@@ -141,7 +141,7 @@ bool Persistence::saveCategory(Category* cat){
     return false;
 }
 
-Category* Persistence::retriveCategory(uint32_t catid){
+Category* Persistence::retrieveCategory(uint32_t catid){
     return NULL;
 }
 
