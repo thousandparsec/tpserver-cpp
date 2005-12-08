@@ -85,6 +85,14 @@ bool Persistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
     return false;
 }
 
+std::list<uint32_t> Persistence::retrieveOrderList(uint32_t obid){
+    return std::list<uint32_t>();
+}
+
+std::set<uint32_t> Persistence::retrieveObjectsWithOrders(){
+    return std::set<uint32_t>();
+}
+
 uint32_t Persistence::getMaxOrderId(){
     return 0;
 }

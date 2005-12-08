@@ -31,6 +31,8 @@ class ObjectManager{
     ObjectManager();
     ~ObjectManager();
 
+    void init();
+
     IGObject* createNewObject();
     void addObject(IGObject* obj);
     void discardNewObject(IGObject* obj);

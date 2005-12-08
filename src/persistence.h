@@ -53,6 +53,8 @@ public:
     virtual Order* retrieveOrder(uint32_t ordid);
     virtual bool removeOrder(uint32_t ordid);
     virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);
+    virtual std::list<uint32_t> retrieveOrderList(uint32_t obid);
+    virtual std::set<uint32_t> retrieveObjectsWithOrders();
     virtual uint32_t getMaxOrderId();
 
     virtual bool saveBoard(Board* board);

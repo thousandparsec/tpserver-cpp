@@ -79,6 +79,8 @@ bool Game::load()
         IGObject* universe = objectmanager->getObject(0);
         if(universe != NULL){
             objectmanager->doneWithObject(0);
+            objectmanager->init();
+            ordermanager->init();
         }else{
             Logger::getLogger()->info("Creating Game");
             ruleset->createGame();

@@ -50,6 +50,8 @@ class OrderManager{
 
     void removeAllOrders(uint32_t objectid);
 
+    void init();
+
  private:
   std::map<int, Order*> prototypeStore;
   int nextType;

@@ -585,6 +585,54 @@ bool MysqlPersistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
     return true;
 }
 
+std::list<uint32_t> MysqlPersistence::retrieveOrderList(uint32_t obid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT orderid FROM orderslot WHERE objectid=" << obid <<" ORDER BY slot;";
+    lock();
+    if(mysql_query(conn, "SELECT objectid FROM ordertype") != 0){
+        Logger::getLogger()->error("Mysql: Could not query objects with orders - %s", mysql_error(conn));
+        unlock();
+        return std::list<uint32_t>();
+    }
+    MYSQL_RES *ordresult = mysql_store_result(conn);
+    unlock();
+    if(ordresult == NULL){
+        Logger::getLogger()->error("Mysql: get objects with orders: Could not store result - %s", mysql_error(conn));
+        return std::list<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::list<uint32_t> oolist;
+    while((max = mysql_fetch_row(ordresult)) != NULL){
+        oolist.push_back(atoi(max[0]));
+    }
+    mysql_free_result(ordresult);
+
+    return oolist;
+}
+
+std::set<uint32_t> MysqlPersistence::retrieveObjectsWithOrders(){
+    lock();
+    if(mysql_query(conn, "SELECT objectid FROM ordertype") != 0){
+        Logger::getLogger()->error("Mysql: Could not query objects with orders - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get objects with orders: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> obset;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        obset.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+
+    return obset;
+}
+
 uint32_t MysqlPersistence::getMaxOrderId(){
     lock();
     if(mysql_query(conn, "SELECT MAX(orderid) FROM ordertype;") != 0){
