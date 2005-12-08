@@ -49,10 +49,6 @@ class Game {
 
 	void save();
 
-// 	Player *findPlayer(char *name, char *pass);
-// 	Player* getPlayer(unsigned int id);
-// 	std::set<unsigned int> getPlayerIds() const;
-
         ObjectManager* getObjectManager() const;
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
@@ -92,8 +88,6 @@ class Game {
 
 	bool loaded;
 	bool started;
-	
-	//std::map<unsigned int, Player *> players;
 	
 	Ruleset* ruleset;
 
