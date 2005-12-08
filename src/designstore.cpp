@@ -26,15 +26,15 @@
 #include "game.h"
 #include "player.h"
 #include "playermanager.h"
+#include "persistence.h"
 
 #include "designstore.h"
 
-unsigned int DesignStore::next_designid = 1;
-unsigned int DesignStore::next_componentid = 1;
-unsigned int DesignStore::next_propertyid = 1;
-unsigned int DesignStore::next_categoryid = 1;
-
 DesignStore::DesignStore(){
+    next_designid = 1;
+    next_componentid = 1;
+    next_propertyid = 1;
+    next_categoryid = 1;
 }
 
 DesignStore::~DesignStore(){
@@ -52,40 +52,80 @@ DesignStore::~DesignStore(){
   }
 }
 
+void DesignStore::init(){
+    Persistence* persistence = Game::getGame()->getPersistence();
+    next_designid = persistence->getMaxDesignId() + 1;
+    next_componentid = persistence->getMaxComponentId() + 1;
+    next_propertyid = persistence->getMaxPropertyId() + 1;
+    next_categoryid = persistence->getMaxCategoryId() + 1;
+    std::set<uint32_t> ids = persistence->getCategoryIds();
+    for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+        categories[*itcurr] = NULL;
+    }
+    ids = persistence->getDesignIds();
+    for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+        designs[*itcurr] = NULL;
+    }
+    ids = persistence->getComponentIds();
+    for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+        components[*itcurr] = NULL;
+    }
+    ids = persistence->getPropertyIds();
+    for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+        properties[*itcurr] = NULL;
+    }
+}
+
 Category* DesignStore::getCategory(unsigned int id){
-  std::map<unsigned int, Category*>::iterator pos = categories.find(id);
-  if(pos != categories.end()){
-    return pos->second;
-  }else{
-    return NULL;
-  }
+    std::map<unsigned int, Category*>::iterator pos = categories.find(id);
+    Category* cat = NULL;
+    if(pos != categories.end()){
+        cat = pos->second;
+        if(cat == NULL){
+            cat = Game::getGame()->getPersistence()->retrieveCategory(id);
+            pos->second = cat;
+        }
+    }
+    return cat;
 }
 
 Design* DesignStore::getDesign(unsigned int id){
-  std::map<unsigned int, Design*>::iterator pos = designs.find(id);
-  if(pos != designs.end()){
-    return pos->second;
-  }else{
-    return NULL;
-  }
+    std::map<unsigned int, Design*>::iterator pos = designs.find(id);
+    Design* design = NULL;
+    if(pos != designs.end()){
+        design = pos->second;
+        if(design == NULL){
+            design = Game::getGame()->getPersistence()->retrieveDesign(id);
+            pos->second = design;
+        }
+    }
+    return design;
 }
 
 Component* DesignStore::getComponent(unsigned int id){
-  std::map<unsigned int, Component*>::iterator pos = components.find(id);
-  if(pos != components.end()){
-    return pos->second;
-  }else{
-    return NULL;
-  }
+    std::map<unsigned int, Component*>::iterator pos = components.find(id);
+    Component* comp = NULL;
+    if(pos != components.end()){
+        comp = pos->second;
+        if(comp == NULL){
+            comp = Game::getGame()->getPersistence()->retrieveComponent(id);
+            pos->second = comp;
+        }
+    }
+    return comp;
 }
 
 Property* DesignStore::getProperty(unsigned int id){
-  std::map<unsigned int, Property*>::iterator pos = properties.find(id);
-  if(pos != properties.end()){
-    return pos->second;
-  }else{
-    return NULL;
-  }
+    std::map<unsigned int, Property*>::iterator pos = properties.find(id);
+    Property* prop = NULL;
+    if(pos != properties.end()){
+        prop = pos->second;
+        if(prop == NULL){
+            prop = Game::getGame()->getPersistence()->retrieveProperty(id);
+            pos->second = prop;
+        }
+    }
+    return prop;
 }
 
 
@@ -128,6 +168,7 @@ std::set<unsigned int> DesignStore::getPropertyIds() const{
 void DesignStore::addCategory(Category* c){
   c->setCategoryId(next_categoryid++);
   categories[c->getCategoryId()] = c;
+    Game::getGame()->getPersistence()->saveCategory(c);
 }
 
 bool DesignStore::addDesign(Design* d){
@@ -151,6 +192,7 @@ bool DesignStore::addDesign(Design* d){
     player->addUsableDesign(d->getDesignId());
   }
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
+    Game::getGame()->getPersistence()->saveDesign(d);
   return true;
 }
 
@@ -175,6 +217,7 @@ bool DesignStore::modifyDesign(Design* d){
     player->addUsableDesign(d->getDesignId());
   }
     Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
+    Game::getGame()->getPersistence()->updateDesign(d);
   return rtv;
 }
 
@@ -197,11 +240,13 @@ void DesignStore::addComponent(Component* c){
   pl[p->getPropertyId()] = "(lambda (design) 1)";
   c->setPropertyList(pl);
   components[c->getComponentId()] = c;
+    Game::getGame()->getPersistence()->saveComponent(c);
 }
 
 void DesignStore::addProperty(Property* p){
   p->setPropertyId(next_propertyid++);
   properties[p->getPropertyId()] = p;
+    Game::getGame()->getPersistence()->saveProperty(p);
 }
 
 unsigned int DesignStore::getMaxDesignId() const{
