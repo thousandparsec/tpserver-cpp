@@ -174,6 +174,7 @@ bool DesignStore::modifyDesign(Design* d){
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
   }
+    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
   return rtv;
 }
 
