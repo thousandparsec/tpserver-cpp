@@ -186,7 +186,7 @@ bool DesignStore::addDesign(Design* d){
     }
   d->eval();
   designs[d->getDesignId()] = d;
-  categories[d->getCategoryId()]->doAddDesign(d);
+  getCategory(d->getCategoryId())->doAddDesign(d);
   player->addVisibleDesign(d->getDesignId());
   if(d->isValid()){
     player->addUsableDesign(d->getDesignId());
@@ -204,7 +204,7 @@ bool DesignStore::modifyDesign(Design* d){
   player->removeUsableDesign(d->getDesignId());
   d->eval();
   bool rtv;
-  if(categories[d->getCategoryId()]->doModifyDesign(d)){
+  if(getCategory(d->getCategoryId())->doModifyDesign(d)){
     designs[d->getDesignId()] = d;
     delete current;
     rtv = true;
