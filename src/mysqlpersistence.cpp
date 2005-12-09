@@ -1307,11 +1307,11 @@ bool MysqlPersistence::saveDesign(Design* design){
 
 bool MysqlPersistence::updateDesign(Design* design){
     std::ostringstream querybuilder;
-    querybuilder << "UPDATE design SET catergoryid=" << design->getCategoryId() << ", name='";
+    querybuilder << "UPDATE design SET categoryid=" << design->getCategoryId() << ", name='";
     querybuilder << addslashes(design->getName()) << "', description='" << addslashes(design->getDescription()) << "', owner=";
     querybuilder << design->getOwner() << ", inuse=" << design->getInUse() << ", numexist=" << design->getNumExist() << ", valid=";
     querybuilder << design->isValid() << ", feedback='" << addslashes(design->getFeedback());
-    querybuilder << ", modtime=" << design->getModTime() << " WHERE designid=" << design->getDesignId() << ";";
+    querybuilder << "', modtime=" << design->getModTime() << " WHERE designid=" << design->getDesignId() << ";";
     lock();
     std::string query = querybuilder.str();
     //std::cout << "Query: " << query << std::endl;
