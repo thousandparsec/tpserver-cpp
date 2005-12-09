@@ -110,11 +110,20 @@ std::set<uint32_t> ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t
     std::set <uint32_t> oblist;
 
     for(std::map<uint32_t, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        uint64_t br = itcurr->second->getSize() / 2;
-        uint64_t diff = itcurr->second->getPosition().getDistance(pos); /*- r - br;*/
-        if(diff <=  r + br)
-        oblist.insert(itcurr->first);
-    
+        IGObject* ob = itcurr->second;
+        if(ob == NULL){
+            ob = Game::getGame()->getPersistence()->retrieveObject(itcurr->first);
+            if(ob != NULL){
+                itcurr->second = ob;
+                objmtime[itcurr->first] = ob->getModTime();
+            }
+        }
+        if(ob != NULL){
+            uint64_t br = ob->getSize() / 2;
+            uint64_t diff = ob->getPosition().getDistance(pos); /*- r - br;*/
+            if(diff <=  r + br)
+            oblist.insert(itcurr->first);
+        }
     }
     
     return oblist;
@@ -124,15 +133,24 @@ std::set<uint32_t> ObjectManager::getContainerByPos(const Vector3d & pos){
     std::set<uint32_t> oblist;
 
     for(std::map<uint32_t, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr){
-        if(itcurr->second->getContainerType() >= 1){
-        uint64_t br = itcurr->second->getSize() / 2 + itcurr->second->getSize() % 2;
-        
-        //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-        if(itcurr->second->getPosition().getDistance(pos) <= br)
-            oblist.insert(itcurr->first);
+        IGObject* ob = itcurr->second;
+        if(ob == NULL){
+            ob = Game::getGame()->getPersistence()->retrieveObject(itcurr->first);
+            if(ob != NULL){
+                itcurr->second = ob;
+                objmtime[itcurr->first] = ob->getModTime();
+            }
+        }
+        if(ob != NULL){
+            if(ob->getContainerType() >= 1){
+            uint64_t br = ob->getSize() / 2 + itcurr->second->getSize() % 2;
+            
+            //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
+            if(ob->getPosition().getDistance(pos) <= br)
+                oblist.insert(itcurr->first);
+            }
         }
     }
-    
     return oblist;
 }
 
