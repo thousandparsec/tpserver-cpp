@@ -62,6 +62,11 @@ class Design{
   void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);
   void setValid(bool v, const std::string& f);
 
+    void addUnderConstruction(uint32_t num);
+    void addComplete(uint32_t num);
+    void removeCanceledConstruction(uint32_t num);
+    void removeDestroyed(uint32_t num);
+
  protected:
   unsigned int designid;
   unsigned int catid;

@@ -198,7 +198,7 @@ bool DesignStore::addDesign(Design* d){
 
 bool DesignStore::modifyDesign(Design* d){
   Design* current = designs[d->getDesignId()];
-  if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0)
+  if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   player->removeUsableDesign(d->getDesignId());
@@ -219,6 +219,10 @@ bool DesignStore::modifyDesign(Design* d){
     Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
     Game::getGame()->getPersistence()->updateDesign(d);
   return rtv;
+}
+
+void DesignStore::designCountsUpdated(Design* d){
+    Game::getGame()->getPersistence()->updateDesign(d);
 }
 
 void DesignStore::addComponent(Component* c){

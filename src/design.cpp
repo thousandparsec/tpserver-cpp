@@ -177,3 +177,23 @@ void Design::setValid(bool v, const std::string& f){
   valid = v;
   feedback = f;
 }
+
+void Design::addUnderConstruction(uint32_t num){
+    inuse += num;
+    timestamp = time(NULL);
+}
+
+void Design::addComplete(uint32_t num){
+    exist += num;
+    timestamp = time(NULL);
+}
+
+void Design::removeCanceledConstruction(uint32_t num){
+    inuse -= num;
+    timestamp = time(NULL);
+}
+
+void Design::removeDestroyed(uint32_t num){
+    inuse -= num;
+    timestamp = time(NULL);
+}

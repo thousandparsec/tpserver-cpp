@@ -50,6 +50,7 @@ class DesignStore{
 
   bool addDesign(Design* d);
   bool modifyDesign(Design* d);
+    void designCountsUpdated(Design* d);
 
   void addComponent(Component* c);
   void addProperty(Property* p);

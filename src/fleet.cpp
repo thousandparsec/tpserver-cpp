@@ -118,6 +118,9 @@ bool Fleet::hit(int firepower){
     while(damage > shiphp && ships[shiptype] > 0){
       ships[shiptype]--;
       damage -= shiphp;
+        Design* design = ds->getDesign(shiptype);
+        design->removeDestroyed(1);
+        ds->designCountsUpdated(design);
       change = true;
     }
     if(ships[shiptype] == 0){

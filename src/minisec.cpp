@@ -416,18 +416,18 @@ void MiniSec::onPlayerAdded(Player* player){
   player->addUsableComponent(2);
   player->addUsableComponent(3);
 
-  Design* design = new Design();
-  design->setCategoryId(1);
-  design->setName("Scout");
-  design->setDescription("Scout ship");
-  design->setOwner(player->getID());
+  Design* scout = new Design();
+  scout->setCategoryId(1);
+  scout->setName("Scout");
+  scout->setDescription("Scout ship");
+  scout->setOwner(player->getID());
     std::map<unsigned int, unsigned int> cl;
     cl[1] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
-  unsigned int scoutid = design->getDesignId();
+  scout->setComponents(cl);
+  game->getDesignStore()->addDesign(scout);
+  unsigned int scoutid = scout->getDesignId();
 
-  design = new Design();
+    Design* design = new Design();
   design->setCategoryId(1);
   design->setName("Frigate");
   design->setDescription("Frigate ship");
@@ -502,6 +502,9 @@ void MiniSec::onPlayerAdded(Player* player){
 						    (long long)((rand() % 10000) - 5000),
 						    /*(long long)((rand() % 10000) - 5000)*/ 0));
   ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
+    scout->addUnderConstruction(2);
+    scout->addComplete(2);
+    game->getDesignStore()->designCountsUpdated(scout);
   fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
   fleet->addToParent(star->getID());

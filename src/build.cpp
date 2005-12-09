@@ -45,7 +45,11 @@ Build::Build() : Order()
 
 Build::~Build()
 {
-
+    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+        Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
+        design->removeCanceledConstruction(itcurr->second);
+        Game::getGame()->getDesignStore()->designCountsUpdated(design);
+    }
 }
 
 void Build::createFrame(Frame *f, int objID, int pos)
@@ -105,6 +109,8 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
 
       Design* design = ds->getDesign(type);
       turnstogo += (int)(ceil(number * design->getPropertyValue(2)));
+        design->addUnderConstruction(number);
+        ds->designCountsUpdated(design);
 
     }
   }
@@ -137,6 +143,9 @@ bool Build::doOrder(IGObject *ob)
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
     for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
+        Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
+        design->addComplete(itcurr->second);
+        Game::getGame()->getDesignStore()->designCountsUpdated(design);
     }
     //add fleet to universe
     Game::getGame()->getObjectManager()->addObject(fleet);
