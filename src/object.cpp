@@ -278,6 +278,10 @@ uint32_t IGObject::getNumOrders(int playerid)
   return 0;
 }
 
+uint32_t IGObject::getNumOrders(){
+    return ordernum;
+}
+
 void IGObject::setNumOrders(uint32_t num){
     touchModTime();
     ordernum = num;

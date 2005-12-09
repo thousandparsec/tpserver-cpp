@@ -70,6 +70,7 @@ class IGObject {
 	bool removeContainedObject(unsigned int removeObjectID);
 
 	uint32_t getNumOrders(int playerid);
+        uint32_t getNumOrders();
 
         void setNumOrders(uint32_t num);
 

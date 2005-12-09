@@ -288,7 +288,7 @@ bool MysqlPersistence::updateObject(IGObject* ob){
     querybuilder << addslashes(ob->getName()) << "', parentid=" << ob->getParent() << ", size=";
     querybuilder << ob->getSize() << ", posx=" << ob->getPosition().getX() << ", posy=" << ob->getPosition().getY() << ", posz=";
     querybuilder << ob->getPosition().getZ() << ", velx=" << ob->getVelocity().getX() << ", vely=";
-    querybuilder << ob->getVelocity().getY() << ", velz=" << ob->getVelocity().getZ() << ", orders=" << ob->getNumOrders(-1);
+    querybuilder << ob->getVelocity().getY() << ", velz=" << ob->getVelocity().getZ() << ", orders=" << ob->getNumOrders();
     querybuilder << ", modtime=" << ob->getModTime() << " WHERE objectid=" << ob->getID() << ";";
     lock();
     std::string query = querybuilder.str();
