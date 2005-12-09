@@ -41,6 +41,7 @@
 
 #ifdef HAVE_LIBGNUTLS
 #include "tlssocket.h"
+#include "httpssocket.h"
 #include "playertlsconn.h"
 #endif
 
@@ -111,33 +112,42 @@ void Network::start()
 
 	if(Game::getGame()->isLoaded()){
 	  Logger::getLogger()->info("Starting Network");
-	  
-	  TcpSocket* listensocket = new TcpSocket(Settings::getSettings()->get("listen_addr"), Settings::getSettings()->get("listen_port"));
+	  uint numsocks = 0;
+	  TcpSocket* listensocket = new TcpSocket();
+            listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
 	  if(listensocket->getStatus() != 0){
 	    addConnection(listensocket);
-	    active = true;
+	    numsocks++;
 	  }else{
 	    delete listensocket;
-	    Logger::getLogger()->warning("Not starting network, listen socket couldn't be opened");
+	    Logger::getLogger()->warning("Could not listen on TP (tcp) socket");
 	  }
 #ifdef HAVE_LIBGNUTLS
-            TlsSocket* secsocket = new TlsSocket(Settings::getSettings()->get("secure_addr"), Settings::getSettings()->get("secure_port"));
+            TlsSocket* secsocket = new TlsSocket();
+            secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
              if(secsocket->getStatus() != 0){
                 addConnection(secsocket);
-                active = true;
+                numsocks++;
             }else{
                 delete secsocket;
-                Logger::getLogger()->warning("Not starting sec network, listen socket couldn't be opened");
+                Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
             }
-            if(Settings::getSettings()->get("https") != ""){
-                TlsSocket* secsocket = new TlsSocket(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
+            if(Settings::getSettings()->get("https") == "yes"){
+                HttpsSocket* secsocket = new HttpsSocket();
+                secsocket->openListen(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
                 if(secsocket->getStatus() != 0){
                     addConnection(secsocket);
-                    active = true;
+                    numsocks++;
                 }else{
                     delete secsocket;
-                    Logger::getLogger()->warning("Not starting https network, listen socket couldn't be opened");
+                    Logger::getLogger()->warning("Could not listen on HTTPS (https tunneling) socket");
                 }
+            }else{
+                Logger::getLogger()->info("Not configured to start https socket");
+            }
+            if(numsocks != 0){
+                Logger::getLogger()->info("Started network with %d listeners", numsocks);
+                active = true;
             }
 #endif
 	}else{
@@ -161,24 +171,13 @@ void Network::stop()
 		      removeConnection(pc);
 		      delete pc;
 		    }else{
-		      TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
+                        ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
 		      if(ts != NULL){
 			++itcurr;
 			removeConnection(ts);
 			delete ts;
 		      }else{
-#ifdef HAVE_LIBGNUTLS
-                        TlsSocket* sts = dynamic_cast<TlsSocket*>(itcurr->second);
-                        if(sts != NULL){
-                            ++itcurr;
-                            removeConnection(sts);
-                            delete sts;
-                        }else{
-#endif
-                            ++itcurr;
-#ifdef HAVE_LIBGNUTLS
-                        }
-#endif
+                        ++itcurr;
 		      }
 		    }
 		  }

@@ -23,7 +23,8 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		designstore.cpp ruleset.h minisec.h minisec.cpp \
 		tpscheme.h tpscheme.cpp category.h category.cpp \
 		persistence.h persistence.cpp objectmanager.h \
-		objectmanager.cpp playermanager.h playermanager.cpp
+		objectmanager.cpp playermanager.h playermanager.cpp \
+		listensocket.h listensocket.cpp
 if MZSCHEME
 SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else
@@ -50,7 +51,7 @@ endif
 
 if GNUTLS
 GNUTLSSOURCES = tlsmanager.h tlsmanager.cpp tlssocket.h tlssocket.cpp \
-		playertlsconn.h playertlsconn.cpp
+		playertlsconn.h playertlsconn.cpp httpssocket.h httpssocket.cpp
 else
 GNUTLSSOURCES =
 endif

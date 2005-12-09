@@ -1,6 +1,4 @@
-#ifndef TCPSOCKET_H
-#define TCPSOCKET_H
-/* Server TCP Listen socket connection
+/*  Https listen socket for tpserver-cpp
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -22,18 +20,32 @@
 
 #include <string>
 
-#include "listensocket.h"
-
-class TcpSocket : public ListenSocket {
- public:
-    TcpSocket();
-  virtual ~TcpSocket();
-
-    virtual void openListen(const std::string& address, const std::string& port);
-
-protected:
-    PlayerConnection* acceptConnection(int fd);
-
-};
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
+
+#include "playertlsconn.h"
+#include "tlssocket.h"
+#include "logging.h"
+
+#include "httpssocket.h"
+
+HttpsSocket::HttpsSocket() : TlsSocket(){
+}
+
+HttpsSocket::~HttpsSocket(){
+}
+
+void HttpsSocket::openListen(const std::string& address, const std::string& port){ 
+    if(port.length() == 0){
+        TlsSocket::openListen(address, "443");
+    }else{
+        TlsSocket::openListen(address, port);
+    }
+}
+
+PlayerConnection* HttpsSocket::acceptConnection(int fd){
+    Logger::getLogger()->info("Accepting new https (tp tunneled over https) connection");
+
+    return new PlayerTlsConnection(fd);
+}

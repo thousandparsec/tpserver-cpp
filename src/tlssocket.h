@@ -22,14 +22,17 @@
 
 #include <string>
 
-#include "connection.h"
+#include "listensocket.h"
 
-class TlsSocket : public Connection {
+class TlsSocket : public ListenSocket {
  public:
-  TlsSocket(std::string address, std::string port);
+  TlsSocket();
   virtual ~TlsSocket();
 
-  void process();
+    virtual void openListen(const std::string& address, const std::string& port);
+
+protected:
+    PlayerConnection* acceptConnection(int fd);
 
 };
 

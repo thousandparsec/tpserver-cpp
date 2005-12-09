@@ -1,6 +1,6 @@
-#ifndef TCPSOCKET_H
-#define TCPSOCKET_H
-/* Server TCP Listen socket connection
+#ifndef LISTENSOCKET_H
+#define LISTENSOCKET_H
+/* Server Listen socket connection
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -22,17 +22,21 @@
 
 #include <string>
 
-#include "listensocket.h"
+#include "connection.h"
 
-class TcpSocket : public ListenSocket {
+class PlayerConnection;
+
+class ListenSocket : public Connection {
  public:
-    TcpSocket();
-  virtual ~TcpSocket();
+  ListenSocket();
+  virtual ~ListenSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
 
+  virtual void process();
+
 protected:
-    PlayerConnection* acceptConnection(int fd);
+    virtual PlayerConnection* acceptConnection(int fd) = 0;
 
 };
 
