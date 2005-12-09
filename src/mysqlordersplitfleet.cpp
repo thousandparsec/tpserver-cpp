@@ -68,8 +68,8 @@ bool MysqlOrderSplitFleet::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
         Logger::getLogger()->error("Mysql: retrieve splitfleet ships: Could not store result - %s", mysql_error(conn));
         return false;
     }
-    MYSQL_ROW row = mysql_fetch_row(shipresult);
-    while(row != NULL){
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(shipresult)) != NULL){
         static_cast<SplitFleet*>(ord)->addShips(atoi(row[0]), atoi(row[1]));
     }
     mysql_free_result(shipresult);

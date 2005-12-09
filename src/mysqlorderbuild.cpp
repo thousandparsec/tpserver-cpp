@@ -79,14 +79,14 @@ bool MysqlOrderBuild::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
         Logger::getLogger()->error("Mysql: retrieve build ships: Could not store result - %s", mysql_error(conn));
         return false;
     }
-    MYSQL_ROW row = mysql_fetch_row(shipresult);
-    while(row != NULL){
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(shipresult)) != NULL){
         static_cast<Build*>(ord)->addShips(atoi(row[0]), atoi(row[1]));
     }
     mysql_free_result(shipresult);
     
     querybuilder.str("");
-    querybuilder << "SELECT timetogo FROM build WHERE orderid = " << ordid << ";";
+    querybuilder << "SELECT turnstogo FROM build WHERE orderid = " << ordid << ";";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve build - %s", mysql_error(conn));
         return false;
