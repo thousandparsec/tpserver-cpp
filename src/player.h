@@ -83,7 +83,6 @@ class Player {
 	void processDescribeOrder(Frame * frame);
 	void processGetOrderTypes(Frame * frame);
 	void processProbeOrder(Frame * frame);
-	void processGetTime(Frame * frame);
 	void processGetBoards(Frame * frame);
 	void processGetBoardIds(Frame * frame);
 	void processGetMessages(Frame * frame);

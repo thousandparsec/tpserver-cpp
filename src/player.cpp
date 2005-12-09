@@ -212,9 +212,6 @@ void Player::processIGFrame(Frame * frame)
 	case ft02_Order_Remove:
 		processRemoveOrder(frame);
 		break;
-	case ft02_Time_Remaining_Get:
-		processGetTime(frame);
-		break;
 	case ft02_Board_Get:
 	  processGetBoards(frame);
 	  break;
@@ -807,14 +804,6 @@ void Player::processProbeOrder(Frame * frame){
   Game::getGame()->getObjectManager()->doneWithObject(obid);
   curConnection->sendFrame(of);
   
-}
-
-void Player::processGetTime(Frame * frame){
-  Logger::getLogger()->debug("doing Get Time frame");
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft02_Time_Remaining);
-  of->packInt(Game::getGame()->secondsToEOT());
-  curConnection->sendFrame(of);
 }
 
 void Player::processGetBoards(Frame * frame){

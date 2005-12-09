@@ -155,8 +155,14 @@ void PlayerConnection::login()
 	    Frame *features = createFrame(recvframe);
 	    Network::getNetwork()->createFeaturesFrame(features);
 	    sendFrame(features);
-	  }else{
-	    Logger::getLogger()->warning("In connected state but did not receive login or get features");
+            }else if(recvframe->getType() == ft02_Time_Remaining_Get){
+                Logger::getLogger()->debug("Processing Get Time frame");
+                Frame *time = createFrame(recvframe);
+                time->setType(ft02_Time_Remaining);
+                time->packInt(Game::getGame()->secondsToEOT());
+                sendFrame(time);
+            }else{
+                Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining");
 	    Frame *failframe = createFrame(recvframe);
 	    failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login or get features");
 	    sendFrame(failframe);
@@ -185,6 +191,12 @@ void PlayerConnection::inGameFrame()
 		  pong->setType(ft02_OK);
 		  pong->packString("Keep alive ok, hope you're still there");
 		  sendFrame(pong);
+                }else if(frame->getType() == ft02_Time_Remaining_Get){
+                    Logger::getLogger()->debug("Processing Get Time frame");
+                    Frame *time = createFrame(frame);
+                    time->setType(ft02_Time_Remaining);
+                    time->packInt(Game::getGame()->secondsToEOT());
+                    sendFrame(time);
 		}else{
 		  if(Game::getGame()->isStarted()){
 		    // should pass frame to player to do something with
