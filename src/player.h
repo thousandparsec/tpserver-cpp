@@ -63,6 +63,7 @@ class Player {
 	PlayerConnection *getConnection();
 	int getID();
         uint32_t getBoardId() const;
+        void setBoardId(uint32_t nbi);
 
 	void packFrame(Frame* frame);
 
@@ -109,7 +110,7 @@ class Player {
 	std::string name;
 	std::string passwd;
 	uint32_t pid;
-	Board * board;
+    uint32_t boardid;
 
 	 Player(Player & rhs);
 

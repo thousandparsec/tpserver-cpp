@@ -24,7 +24,8 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		tpscheme.h tpscheme.cpp category.h category.cpp \
 		persistence.h persistence.cpp objectmanager.h \
 		objectmanager.cpp playermanager.h playermanager.cpp \
-		listensocket.h listensocket.cpp
+		listensocket.h listensocket.cpp boardmanager.h \
+		boardmanager.cpp
 if MZSCHEME
 SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else

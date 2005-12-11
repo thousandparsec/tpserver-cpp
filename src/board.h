@@ -21,7 +21,6 @@
  *
  */
 
-#include <list>
 #include <string>
 
 class Message;
@@ -51,8 +50,13 @@ class Board{
 
         long long getModTime() const;
 
+    // for persistence only
+    uint32_t getNumMessages() const;
+    void setNumMessages(uint32_t nnm);
+    void setModTime(uint64_t nmt);
+
  private:
-  std::list<Message*> messages;
+    uint32_t nummsg;
 
   int boardid;
   std::string name;

@@ -113,8 +113,9 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
-                    "(NULL, 'ordertype', 0), (NULL, 'orderslot', 0), (NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messageslot', 0), (NULL, 'player', 0), "
-                    "(NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
+                    "(NULL, 'ordertype', 0), (NULL, 'orderslot', 0), "
+                    "(NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messagereference', 0), (NULL, 'messageslot', 0), "
+                    "(NULL, 'player', 0), (NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
                     "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), (NULL, 'category', 0), (NULL, 'design',0), "
                     "(NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), (NULL, 'component', 0), (NULL, 'componentproperty', 0), "
                     "(NULL, 'property', 0);") != 0){
@@ -133,7 +134,23 @@ bool MysqlPersistence::init(){
                         "orderid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (objectid, slot));") != 0){
                 throw std::exception();
             }
-
+            if(mysql_query(conn, "CREATE TABLE board (boardid INT UNSIGNED NOT NULL PRIMARY KEY, "
+                    "name TEXT NOT NULL, description TEXT NOT NULL, nummessages INT UNSIGNED NOT NULL, "
+                    "modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE message (messageid INT UNSIGNED NOT NULL PRIMARY KEY, subject TEXT NOT NULL, "
+                    "body TEXT NOT NULL, turn INT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE messagereference (messageid INT UNSIGNED NOT NULL, type INT NOT NULL, "
+               "refid INT UNSIGNED NOT NULL, PRIMARY KEY (messageid, type, refid));") != 0){
+                   throw std::exception();
+               }
+            if(mysql_query(conn, "CREATE TABLE messageslot (boardid INT UNSIGNED NOT NULL, slot INT UNSIGNED NOT NULL, "
+                    "messageid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (boardid, slot));") != 0){
+                              throw std::exception();
+            }
             if(mysql_query(conn, "CREATE TABLE player (playerid INT UNSIGNED NOT NULL PRIMARY KEY, name TEXT NOT NULL, "
                     "password TEXT NOT NULL, boardid INT UNSIGNED NOT NULL, UNIQUE (name(255)));") != 0){
                 throw std::exception();
@@ -724,6 +741,295 @@ uint32_t MysqlPersistence::getMaxOrderId(){
     return maxid;
 }
 
+bool MysqlPersistence::saveBoard(Board* board){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO board VALUES (" << board->getBoardID() << ", '" << addslashes(board->getName()) << "', '";
+    querybuilder << addslashes(board->getDescription()) << "', " << board->getNumMessages() << ", ";
+    querybuilder << board->getModTime() <<");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store board %d - %s", board->getBoardID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+bool MysqlPersistence::updateBoard(Board* board){
+    std::ostringstream querybuilder;
+    querybuilder << "UPDATE board SET name='" << addslashes(board->getName()) << "', description='" << addslashes(board->getDescription());
+    querybuilder << "', nummessages=" << board->getNumMessages() << ", modtime=" << board->getModTime();
+    querybuilder << " WHERE boardid=" << board->getBoardID() << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not update board %d - %s", board->getBoardID(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+Board* MysqlPersistence::retrieveBoard(uint32_t boardid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM board WHERE boardid = " << boardid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve board %d - %s", boardid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve board: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such board %d", boardid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    Board* board = new Board();
+    board->setBoardID(boardid);
+    board->setName(row[1]);
+    board->setDescription(row[2]);
+    board->setNumMessages(atoi(row[3]));
+    board->setModTime(strtoull(row[4], NULL, 10));
+    mysql_free_result(obresult);
+    return board;
+}
+
+uint32_t MysqlPersistence::getMaxBoardId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(boardid) FROM board;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max board id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max boardid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getBoardIds(){
+    lock();
+    if(mysql_query(conn, "SELECT boardid FROM board;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query board ids - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get boardids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
+}
+
+bool MysqlPersistence::saveMessage(uint32_t msgid, Message* msg){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO message VALUES (" << msgid << ", '" << addslashes(msg->getSubject()) << "', '";
+    querybuilder << addslashes(msg->getBody()) << "', " << msg->getTurn() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store message %d - %s", msgid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    std::set<std::pair<int32_t, uint32_t> > refs = msg->getReferences();
+    if(!refs.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO messagereference VALUES ";
+        for(std::set<std::pair<int32_t, uint32_t> >::iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
+            if(itcurr != refs.begin())
+                querybuilder << ", ";
+            querybuilder << "(" << msgid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
+        }
+        querybuilder << ";";
+        lock();
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store message references %d - %s", msgid, mysql_error(conn));
+            unlock();
+            return false;
+        }
+        unlock();
+    }
+    return true;
+}
+
+Message* MysqlPersistence::retrieveMessage(uint32_t msgid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM message WHERE messageid = " << msgid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve message %d - %s", msgid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *msgresult = mysql_store_result(conn);
+    if(msgresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve message: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock();
+    MYSQL_ROW row = mysql_fetch_row(msgresult);
+    if(row == NULL){
+        mysql_free_result(msgresult);
+        Logger::getLogger()->error("Mysql: retrieve message: no such message %d - %s", msgid, mysql_error(conn));
+        return NULL;
+    }
+    Message* msg = new Message();
+    msg->setSubject(row[1]);
+    msg->setBody(row[2]);
+    msg->setTurn(atoi(row[3]));
+    mysql_free_result(msgresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT type,refid FROM messagereference WHERE messageid = " << msgid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve message references %d - %s", msgid, mysql_error(conn));
+        unlock();
+        delete msg;
+        return NULL;
+    }
+    msgresult = mysql_store_result(conn);
+    if(msgresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve message references: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete msg;
+        return NULL;
+    }
+    unlock();
+    
+    while((row = mysql_fetch_row(msgresult)) != NULL){
+        msg->addReference(atoi(row[0]), atoi(row[1]));
+    }
+    mysql_free_result(msgresult);
+    
+    return msg;
+}
+
+bool MysqlPersistence::removeMessage(uint32_t msgid){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM message WHERE messageid=" << msgid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove message %d - %s", msgid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "DELETE FROM messagereference WHERE messageid=" << msgid << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove message references %d - %s", msgid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+bool MysqlPersistence::saveMessageList(uint32_t bid, std::list<uint32_t> list){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM messageslot WHERE boardid=" << bid <<";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove messageslots for board %d - %s", bid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    if(!list.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO messageslot VALUES ";
+        uint32_t slotnum = 0;
+        for(std::list<uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
+            if(itcurr != list.begin()){
+                querybuilder << ", ";
+            }
+            querybuilder << "(" << bid << ", " << slotnum << ", " << (*itcurr) << ")";
+            slotnum++;
+        }
+        querybuilder << ";";
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not store messageslots - %s", mysql_error(conn));
+            return false;
+        }
+    }
+    return true;
+}
+
+std::list<uint32_t> MysqlPersistence::retrieveMessageList(uint32_t bid){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT messageid FROM messageslot WHERE boardid=" << bid <<" ORDER BY slot;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not query message list - %s", mysql_error(conn));
+        unlock();
+        return std::list<uint32_t>();
+    }
+    MYSQL_RES *ordresult = mysql_store_result(conn);
+    unlock();
+    if(ordresult == NULL){
+        Logger::getLogger()->error("Mysql: get message list: Could not store result - %s", mysql_error(conn));
+        return std::list<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::list<uint32_t> bmlist;
+    while((max = mysql_fetch_row(ordresult)) != NULL){
+        bmlist.push_back(atoi(max[0]));
+    }
+    mysql_free_result(ordresult);
+
+    return bmlist;
+}
+
+uint32_t MysqlPersistence::getMaxMessageId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(messageid) FROM message;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max message id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max messageid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
 bool MysqlPersistence::savePlayer(Player* player){
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO player VALUES (" << player->getID() << ", '" << addslashes(player->getName()) << "', '";
@@ -994,7 +1300,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     player->setId(playerid);
     player->setName(row[1]);
     player->setPass(row[2]);
-    //Board atoi(row[3]);
+    player->setBoardId(atoi(row[3]));
     mysql_free_result(obresult);
     
     querybuilder.str("");

@@ -30,6 +30,7 @@ class Vector3d;
 class ObjectManager;
 class OrderManager;
 class ObjectDataManager;
+class BoardManager;
 class PlayerManager;
 class CombatStrategy;
 class DesignStore;
@@ -52,6 +53,7 @@ class Game {
         ObjectManager* getObjectManager() const;
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
+        BoardManager* getBoardManager() const;
         PlayerManager* getPlayerManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
@@ -94,6 +96,7 @@ class Game {
         ObjectManager* objectmanager;
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
+        BoardManager* boardmanager;
         PlayerManager* playermanager;
 	CombatStrategy * combatstrategy;
 	DesignStore* designstore;

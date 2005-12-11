@@ -20,17 +20,17 @@
 
 #include "frame.h"
 #include "message.h"
+#include "game.h"
+#include "boardmanager.h"
 
 #include "board.h"
 
 Board::Board(){
   modtime = time(NULL);
+    nummsg = 0;
 }
 
 Board::~Board(){
-  for(std::list<Message*>::iterator itcurr = messages.begin(); itcurr != messages.end(); ++itcurr){
-    delete *itcurr;
-  }
 }
 
 void Board::setBoardID(int i){
@@ -61,25 +61,29 @@ std::string Board::getDescription(){
 }
 
 void Board::addMessage(Message * msg, int pos){
+    bool success = false;
   if(pos == -1){
-    messages.push_back(msg);
+        if(Game::getGame()->getBoardManager()->addMessage(msg, this, nummsg)){
+            success = true;
+        }
   }else{
-    std::list<Message*>::iterator itpos = messages.begin();
-    advance(itpos, pos);
-    messages.insert(itpos, msg);
+        if(Game::getGame()->getBoardManager()->addMessage(msg, this, pos)){
+            success = true;
+        }
   }
-  modtime = time(NULL);
+    if(success){
+        modtime = time(NULL);
+        Game::getGame()->getBoardManager()->updateBoard(boardid);
+    }
 }
 
 bool Board::removeMessage(unsigned int pos){
-  if(pos >= messages.size() || pos < 0){
+  if(pos >= nummsg || pos < 0){
     return false;
   }
-  std::list<Message*>::iterator itpos = messages.begin();
-  advance(itpos, pos);
-  delete (*itpos);
-  messages.erase(itpos);
+    Game::getGame()->getBoardManager()->removeMessage(this, pos);
   modtime = time(NULL);
+    Game::getGame()->getBoardManager()->updateBoard(boardid);
   return true;
 }
 
@@ -88,18 +92,17 @@ void Board::packBoard(Frame * frame){
   frame->packInt(boardid);
   frame->packString(name.c_str());
   frame->packString(description.c_str());
-  frame->packInt(messages.size());
+  frame->packInt(nummsg);
   frame->packInt64(modtime);
 }
 
 void Board::packMessage(Frame * frame, unsigned int msgnum){
-  if(msgnum < messages.size()){
-    frame->setType(ft02_Message);
-    frame->packInt(boardid);
-    frame->packInt(msgnum);
-    std::list<Message*>::iterator itpos = messages.begin();
-    advance(itpos, msgnum);
-    (*itpos)->pack(frame);
+    if(msgnum < nummsg){
+        frame->setType(ft02_Message);
+        frame->packInt(boardid);
+        frame->packInt(msgnum);
+        Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
+        message->pack(frame);
   }else{
     frame->createFailFrame(fec_NonExistant, "No such Message on board");
   }
@@ -107,4 +110,16 @@ void Board::packMessage(Frame * frame, unsigned int msgnum){
 
 long long Board::getModTime() const{
     return modtime;
+}
+
+uint32_t Board::getNumMessages() const{
+    return nummsg;
+}
+
+void Board::setNumMessages(uint32_t nnm){
+    nummsg = nnm;
+}
+
+void Board::setModTime(uint64_t nmt){
+    modtime = nmt;
 }

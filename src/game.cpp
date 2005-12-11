@@ -34,6 +34,7 @@
 #include "objectmanager.h"
 #include "ordermanager.h"
 #include "objectdatamanager.h"
+#include "boardmanager.h"
 #include "playermanager.h"
 #include "ownedobject.h"
 #include "combatstrategy.h"
@@ -82,6 +83,7 @@ bool Game::load()
             objectmanager->doneWithObject(0);
             objectmanager->init();
             ordermanager->init();
+            boardmanager->init();
             playermanager->init();
             designstore->init();
         }else{
@@ -130,6 +132,10 @@ OrderManager* Game::getOrderManager() const{
 
 ObjectDataManager* Game::getObjectDataManager() const{
   return objectdatamanager;
+}
+
+BoardManager* Game::getBoardManager() const{
+    return boardmanager;
 }
 
 PlayerManager* Game::getPlayerManager() const{
@@ -313,6 +319,7 @@ Game::Game()
     objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
+    boardmanager = new BoardManager();
     playermanager = new PlayerManager();
   designstore = new DesignStore();
   combatstrategy = NULL;
@@ -337,6 +344,7 @@ Game::~Game()
     delete objectmanager;
   delete ordermanager;
   delete objectdatamanager;
+    delete boardmanager;
     delete playermanager;
   if(combatstrategy != NULL)
     delete combatstrategy;

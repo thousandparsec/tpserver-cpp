@@ -24,6 +24,9 @@
 #include "ruleset.h"
 #include "objectmanager.h"
 #include "logging.h"
+#include "boardmanager.h"
+#include "board.h"
+#include "message.h"
 
 #include "playermanager.h"
 
@@ -53,6 +56,20 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
 
     if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
         // player can be added
+        
+        //setup board and add to player
+        Board* board = Game::getGame()->getBoardManager()->createNewBoard("Personal board", 
+                "Messages from the System and personal notices board");
+        rtn->setBoardId(board->getBoardID());
+
+        //add welcome message to player's board
+        Message * msg = new Message();
+        msg->setSubject("Welcome");
+        msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
+        msg->addReference(rst_Special, rssv_System);
+        msg->addReference(rst_Player, rtn->getID());
+        board->addMessage(msg, -1);
+        
         players[rtn->getID()] = (rtn);
         Game::getGame()->getPersistence()->savePlayer(rtn);
         

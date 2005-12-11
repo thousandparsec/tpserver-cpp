@@ -33,6 +33,7 @@
 #include "message.h"
 #include "objectmanager.h"
 #include "ordermanager.h"
+#include "boardmanager.h"
 #include "playermanager.h"
 #include "objectdata.h"
 #include "designstore.h"
@@ -49,18 +50,7 @@ Player::Player()
 	curConnection = NULL;
 	pid = 0;
 	currObjSeq = 0;
-
-	board = new Board();
-	board->setBoardID(0);
-	board->setName("Personal board");
-	board->setDescription("System board");
-
-	Message * msg = new Message();
-	msg->setSubject("Welcome");
-	msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
-	msg->addReference(rst_Special, rssv_System);
-	msg->addReference(rst_Player, pid);
-	board->addMessage(msg, -1);
+    boardid = 0;
 }
 
 Player::~Player()
@@ -68,7 +58,6 @@ Player::~Player()
 	if (curConnection != NULL) {
 		curConnection->close();
 	}
-	delete board;
 }
 
 void Player::setName(const std::string& newname)
@@ -158,7 +147,8 @@ std::set<uint32_t> Player::getUsableComponents() const{
 }
 
 void Player::postToBoard(Message* msg){
-  board->addMessage(msg, -1);
+    Board* board = Game::getGame()->getBoardManager()->getBoard(boardid);
+    board->addMessage(msg, -1);
 }
 
 std::string Player::getName() const{
@@ -180,7 +170,11 @@ int Player::getID()
 }
 
 uint32_t Player::getBoardId() const{
-    return board->getBoardID();
+    return boardid;
+}
+
+void Player::setBoardId(uint32_t nbi){
+    boardid = nbi;
 }
 
 void Player::packFrame(Frame* frame){
@@ -828,6 +822,7 @@ void Player::processGetBoards(Frame * frame){
     Frame *of = curConnection->createFrame(frame);
     int boardnum = frame->unpackInt();
     if(boardnum == 0){
+        Board* board = Game::getGame()->getBoardManager()->getBoard(boardid);
       board->packBoard(of);
     }else{
       //boards in the game object
@@ -873,7 +868,7 @@ void Player::processGetBoardIds(Frame * frame){
   of->packInt(0);
   of->packInt(1);
   of->packInt(0); //personal board
-        of->packInt64(board->getModTime());
+  of->packInt64(Game::getGame()->getBoardManager()->getBoard(boardid)->getModTime());
     }
   
   curConnection->sendFrame(of);
@@ -882,7 +877,7 @@ void Player::processGetBoardIds(Frame * frame){
 void Player::processGetMessages(Frame * frame){
   Logger::getLogger()->debug("doing Get Messages frame");
 
-  int boardid = frame->unpackInt();
+  int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
   if(nummsg > 1){
@@ -901,19 +896,18 @@ void Player::processGetMessages(Frame * frame){
   }
 
   Board * currboard;
-  if(boardid == 0){
-    currboard = board;
-  }else{
-    //board in game object
-    currboard = NULL;
-  }
+    //HACK
+    // should depend on what the player should be allowed to see
+    if(lboardid == 0)
+        lboardid = boardid;
+    currboard = Game::getGame()->getBoardManager()->getBoard(lboardid);
 
-  if(board != NULL){
+  if(currboard != NULL){
     for(int i = 0; i < nummsg; i++){
       Frame *of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
 
-      board->packMessage(of, msgnum);
+      currboard->packMessage(of, msgnum);
 
       curConnection->sendFrame(of);
     
@@ -932,16 +926,15 @@ void Player::processPostMessage(Frame * frame){
 
   Frame *of = curConnection->createFrame(frame);
 
-  int boardid = frame->unpackInt();
+  int lboardid = frame->unpackInt();
   int pos = frame->unpackInt();
 
   Board * currboard;
-  if(boardid == 0){
-    currboard = board;
-  }else{
-    //board in game object
-    currboard = NULL;
-  }
+    //HACK
+    // should depend on what the player should be allowed to see
+    if(lboardid == 0)
+        lboardid = boardid;
+    currboard = Game::getGame()->getBoardManager()->getBoard(lboardid);
 
   if(currboard != NULL){
     Message* msg = new Message();
@@ -978,7 +971,7 @@ void Player::processPostMessage(Frame * frame){
 void Player::processRemoveMessages(Frame * frame){
   Logger::getLogger()->debug("doing Remove Messages frame");
 
-  int boardid = frame->unpackInt();
+  int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
   if(nummsg > 1){
@@ -989,19 +982,18 @@ void Player::processRemoveMessages(Frame * frame){
   }
 
   Board * currboard;
-  if(boardid == 0){
-    currboard = board;
-  }else{
-    //board in game object
-    currboard = NULL;
-  }
+    //HACK
+    // should depend on what the player should be allowed to see
+    if(lboardid == 0)
+        lboardid = boardid;
+    currboard = Game::getGame()->getBoardManager()->getBoard(lboardid);
 
-  if(board != NULL){
+  if(currboard != NULL){
     for(int i = 0; i < nummsg; i++){
       Frame *of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
 
-      if(board->removeMessage(msgnum)){
+      if(currboard->removeMessage(msgnum)){
 	of->setType(ft02_OK);
 	of->packString("Message removed");
       }else{
