@@ -78,7 +78,7 @@ void MiniSec::initGame(){
   Game* game = Game::getGame();
   
   
-
+    game->setCombatStrategy(new RSPCombat());
   
 
   ObjectDataManager* obdm = game->getObjectDataManager();
@@ -377,7 +377,7 @@ void MiniSec::createGame(){
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
   
-  game->setCombatStrategy(new RSPCombat());
+
   
 }
 
