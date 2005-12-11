@@ -180,6 +180,8 @@ void Console::readLine(char* line){
         uint32_t tlen = atoi(line+12);
         Game::getGame()->setTurnLength(tlen);
         std::cout << "Setting turn length to " << tlen << " seconds" << std::endl;
+    }else if(strncasecmp(line, "turn number", 11) == 0){
+        std::cout << "The current turn number is " << Game::getGame()->getTurnNumber() << std::endl;
     }else{
       std::cout << line << " function not known" << std::endl;
     }
@@ -321,6 +323,13 @@ char* Console::turnCommandCompleter(const char* text, int state){
               cname = (char*)malloc(7);
               strncpy(cname, "length", 7);
               commstate = 4;
+              break;
+          }
+      case 4:
+          if(strncasecmp(text, "number", strlen(text)) == 0){
+              cname = (char*)malloc(7);
+              strncpy(cname, "number", 7);
+              commstate = 5;
               break;
           }
   default:
