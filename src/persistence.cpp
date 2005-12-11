@@ -117,11 +117,11 @@ std::set<uint32_t> Persistence::getBoardIds(){
     return std::set<uint32_t>();
 }
 
-bool Persistence::saveMessage(Message* msg){
+bool Persistence::saveMessage(uint32_t msgid, Message* msg){
     return false;
 }
 
-Message* Persistence::retrieveMessage(uint32_t msgpid){
+Message* Persistence::retrieveMessage(uint32_t msgid){
     return NULL;
 }
 
