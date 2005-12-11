@@ -87,7 +87,7 @@ bool Colonise::doOrder(IGObject * ob){
     
     if(planet->getOwner() != fleet->getOwner()){
       
-      if(planet->getOwner() != -1){
+      if(planet->getOwner() != 0){
 	//combat
 	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
 	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(planetid));

@@ -24,12 +24,12 @@
 
 OwnedObject::OwnedObject() : ObjectData()
 {
-	playerid = -1;
+	playerid = 0;
 }
 
 void OwnedObject::packExtraData(Frame * frame)
 {
-	frame->packInt(playerid);
+	frame->packInt((playerid == 0) ? 0xffffffff : playerid);
 }
 
 void OwnedObject::setOwner(int player)

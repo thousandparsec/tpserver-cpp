@@ -214,7 +214,7 @@ void Game::doEndOfTurn()
                 if(itaobj->getType() == obT_Fleet || (itaobj->getType() == obT_Planet && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != -1)){
                     for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
                         IGObject* itbobj = objectmanager->getObject(*itb);
-                        if((*ita != *itb) && (itbobj->getType() == obT_Fleet || (itbobj->getType() == obT_Planet && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != -1))){
+                        if((*ita != *itb) && (itbobj->getType() == obT_Fleet || (itbobj->getType() == obT_Planet && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != 0))){
                             if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(itbobj->getObjectData()))->getOwner()){
                                 uint64_t diff = itaobj->getPosition().getDistance(itbobj->getPosition());
                                 if(diff <= itaobj->getSize() / 2 + itbobj->getSize() / 2){
@@ -222,7 +222,7 @@ void Game::doEndOfTurn()
                                     combatstrategy->doCombat();
                                     if(!combatstrategy->isAliveCombatant1()){
                                         if(itaobj->getType() == obT_Planet){
-                                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(-1);
+                                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
                                         }else{
                                             objectmanager->scheduleRemoveObject(*ita);
                                         }
