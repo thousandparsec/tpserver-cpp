@@ -101,8 +101,20 @@ bool Persistence::saveBoard(Board* board){
     return false;
 }
 
+bool Persistence::updateBoard(Board* board){
+    return false;
+}
+
 Board* Persistence::retrieveBoard(uint32_t boardid){
     return NULL;
+}
+
+uint32_t Persistence::getMaxBoardId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getBoardIds(){
+    return std::set<uint32_t>();
 }
 
 bool Persistence::saveMessage(Message* msg){
@@ -113,8 +125,20 @@ Message* Persistence::retrieveMessage(uint32_t msgpid){
     return NULL;
 }
 
-Message* Persistence::retrieveMessage(uint32_t boardid, uint32_t slot){
-    return NULL;
+bool Persistence::removeMessage(uint32_t msgid){
+    return false;
+}
+
+bool Persistence::saveMessageList(uint32_t bid, std::list<uint32_t> list){
+    return false;
+}
+
+std::list<uint32_t> Persistence::retrieveMessageList(uint32_t bid){
+    return std::list<uint32_t>();
+}
+
+uint32_t Persistence::getMaxMessageId(){
+    return 0;
 }
 
 bool Persistence::savePlayer(Player* player){

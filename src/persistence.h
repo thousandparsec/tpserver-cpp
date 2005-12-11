@@ -58,11 +58,17 @@ public:
     virtual uint32_t getMaxOrderId();
 
     virtual bool saveBoard(Board* board);
+    virtual bool updateBoard(Board* board);
     virtual Board* retrieveBoard(uint32_t boardid);
+    virtual uint32_t getMaxBoardId();
+    virtual std::set<uint32_t> getBoardIds();
 
     virtual bool saveMessage(Message* msg);
-    virtual Message* retrieveMessage(uint32_t msgpid);
-    virtual Message* retrieveMessage(uint32_t boardid, uint32_t slot);
+    virtual Message* retrieveMessage(uint32_t msgid);
+    virtual bool removeMessage(uint32_t msgid);
+    virtual bool saveMessageList(uint32_t bid, std::list<uint32_t> list);
+    virtual std::list<uint32_t> retrieveMessageList(uint32_t bid);
+    virtual uint32_t getMaxMessageId();
 
     virtual bool savePlayer(Player* player);
     virtual bool updatePlayer(Player* player);
