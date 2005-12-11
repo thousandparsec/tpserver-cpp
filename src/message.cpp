@@ -31,6 +31,10 @@ int Message::getTurn(){
   return turnnum;
 }
 
+void Message::setTurn(uint32_t nt){
+    turnnum = nt;
+}
+
 void Message::setSubject(const std::string & nsub){
   subject = nsub;
 }
@@ -49,6 +53,10 @@ std::string Message::getBody(){
 
 void Message::addReference(int type, unsigned int value){
   references.insert(std::pair<int, unsigned int>(type, value));
+}
+
+std::set<std::pair<int, unsigned int> > Message::getReferences() const{
+    return references;
 }
 
 void Message::pack(Frame * frame){

@@ -33,6 +33,7 @@ class Message{
   Message();
 
   int getTurn();
+    void setTurn(uint32_t nt);
 
   void setSubject(const std::string &nsub);
   std::string getSubject();
@@ -41,6 +42,7 @@ class Message{
   std::string getBody();
 
   void addReference(int type, unsigned int value);
+    std::set<std::pair<int, unsigned int> > getReferences() const;
 
   void pack(Frame * frame);
 
