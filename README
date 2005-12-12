@@ -17,4 +17,6 @@ mzscheme (www.plt-scheme.org) [LGPL]
    and run ldconfig as root before tpserver-cpp will run.
 
 mysql (www.mysql.com) [GPL]
+MySQL is optional, but is needed for the mysql persistence backend. The client
+side library is required.
  - note: see ./configure --help for options and env vars.

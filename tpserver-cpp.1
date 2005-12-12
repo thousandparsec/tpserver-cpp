@@ -1,4 +1,4 @@
-.TH TPSERVER-CPP 1 "2005-05-24" "Lee Begg" "Thousand Parsec Server"
+.TH TPSERVER-CPP 1 "2005-12-12" "Lee Begg" "Thousand Parsec Server"
 .SH NAME 
 tpserver-cpp \- Thousand Parsec Server in C++
 .SH SYNOPSIS
@@ -7,7 +7,8 @@ tpserver-cpp \- Thousand Parsec Server in C++
 .SH DESCRIPTION
 .B tpserver-cpp
 is the C++ implementation of the Thousand Parsec Server.  It listens for TP clients on tcp port 6923 (by default),
-both IPv4 and IPv6 (if available).
+both IPv4 and IPv6 (if available). If gnutls was configured and the various files provided, a TPS port is opened on tcp
+port 6924.
 .SH OPTIONS
 .IP "\-\-help or \-h"
 Prints help then exits.
@@ -35,7 +36,8 @@ Sets the mysql socket to use (if configured).
 Sets the mysql port to use (if configured).
 
 .SH "CONSOLE COMMANDS"
-The server's console supports several admin functions.
+The server's console supports several admin functions. It has command completion.  See the output of the help
+command for more commands.
 .IP help
 Prints the help for the console.
 .IP "quit or exit"

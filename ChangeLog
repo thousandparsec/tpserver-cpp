@@ -1,3 +1,11 @@
+12 Dec 05 - Lee
+    * Version 0.2.0
+    * Added Persistence Interface, and use it in the various parts of the server.
+    * Added optional MySQL backend for Persistence.
+    * Added optional tps and https secure sockets (using gnutls).
+    * Added more commands to console to make it more usable.
+    * Fixed a number of bugs.
+
 14 Nov 05 - Lee
 	* Version 0.1.2
 	* Full TP03 support
