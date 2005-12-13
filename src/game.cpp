@@ -217,7 +217,7 @@ void Game::doEndOfTurn()
             std::set<unsigned int> cont = ob->getContainedObjects();
             for(std::set<uint32_t>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
                 IGObject* itaobj = objectmanager->getObject(*ita);
-                if(itaobj->getType() == obT_Fleet || (itaobj->getType() == obT_Planet && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != -1)){
+                if(itaobj->getType() == obT_Fleet || (itaobj->getType() == obT_Planet && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != 0)){
                     for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
                         IGObject* itbobj = objectmanager->getObject(*itb);
                         if((*ita != *itb) && (itbobj->getType() == obT_Fleet || (itbobj->getType() == obT_Planet && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != 0))){
@@ -235,7 +235,7 @@ void Game::doEndOfTurn()
                                     }
                                     if(!combatstrategy->isAliveCombatant2()){
                                         if(itbobj->getType() == obT_Planet){
-                                            ((OwnedObject*)(itbobj->getObjectData()))->setOwner(-1);
+                                            ((OwnedObject*)(itbobj->getObjectData()))->setOwner(0);
                                         }else{
                                             objectmanager->scheduleRemoveObject(*itb);
                                         }
@@ -254,6 +254,7 @@ void Game::doEndOfTurn()
         objectmanager->clearRemovedObjects();
 	
 	// to once a turn (right at the end)
+        objects = objectmanager->getAllIds();
 	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
 	  IGObject * ob = objectmanager->getObject(*itcurr);
 	  ob->getObjectData()->doOnceATurn(ob);
