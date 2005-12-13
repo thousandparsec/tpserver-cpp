@@ -40,14 +40,14 @@ void RSPCombat::doCombat(){
     f1 = (Fleet*)(c1->getObjectData());
   }else if(c1->getType() == obT_Planet){
     f1 = new Fleet();
-    f1->addShips(2, 2);
+    f1->addShips(3, 2);
     f1->setOwner(((OwnedObject*)c1->getObjectData())->getOwner());
   }
   if(c2->getType() == obT_Fleet){
     f2 = (Fleet*)(c2->getObjectData());
   }else if(c2->getType() == obT_Planet){
     f2 = new Fleet();
-    f2->addShips(2, 2);
+    f2->addShips(3, 2);
     f2->setOwner(((OwnedObject*)c2->getObjectData())->getOwner());
   }
   if(f1 == NULL || f2 == NULL){
@@ -64,16 +64,13 @@ void RSPCombat::doCombat(){
   msg1->addReference(rst_Player, f2->getOwner());
   msg2->addReference(rst_Object, c2->getID());
   msg2->addReference(rst_Object, c1->getID());
-  msg2->addReference(rst_Object, f1->getOwner());
-
-  Game::getGame()->getPlayerManager()->getPlayer(f1->getOwner())->postToBoard(msg1);
-  Game::getGame()->getPlayerManager()->getPlayer(f2->getOwner())->postToBoard(msg2);
+  msg2->addReference(rst_Player, f1->getOwner());
 
   while(true){
     int r1 = rand() % 3;
     int r2 = rand() % 3;
 
-    int d1, d2;
+    int d1 = 0, d2 = 0;
     
     if(r1 == r2){
       // draw
@@ -101,13 +98,13 @@ void RSPCombat::doCombat(){
     
     std::string body1, body2;
 
-    if(f1->hit(d2)){
+    if(!f1->hit(d2)){
       body1 += "Your fleet was destroyed. ";
       body2 += "You destroyed their fleet. ";
       c1 = NULL;
       tte = true;
     }
-    if(f2->hit(d1)){
+    if(!f2->hit(d1)){
       body2 += "Your fleet was destroyed.";
       body1 += "You destroyed their fleet.";
       c2 = NULL;
@@ -120,5 +117,6 @@ void RSPCombat::doCombat(){
     }
 
   }
-  
+  Game::getGame()->getPlayerManager()->getPlayer(f1->getOwner())->postToBoard(msg1);
+  Game::getGame()->getPlayerManager()->getPlayer(f2->getOwner())->postToBoard(msg2);
 }
