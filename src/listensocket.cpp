@@ -158,19 +158,21 @@ void ListenSocket::process(){
                                                         (struct sockaddr *)&clientaddr, 
                                                         &addrlen);
         if(thenewfd != -1){
-            char clienthost[NI_MAXHOST];
-            char clientname[NI_MAXHOST];
+            char* clienthost = new char[NI_MAXHOST];
+            char* clientname = new char[NI_MAXHOST];
             getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-                        clienthost, sizeof(clienthost),
+                        clienthost, NI_MAXHOST,
                         NULL, 0,
                         NI_NUMERICHOST);
             getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-                        clientname, sizeof(clientname),
+                        clientname, NI_MAXHOST,
                         NULL, 0,
                         0);
             
-            Logger::getLogger()->info("Accepted connection accepted from %s [%s], connection id %d", 
+            Logger::getLogger()->info("Accepted connection from %s [%s], connection id %d", 
                                         clientname, clienthost, thenewfd);
+            delete[] clienthost;
+            delete[] clientname;
             temp = acceptConnection(thenewfd);
         }else{
             Logger::getLogger()->info("Not accepting new connection, accept error.");
