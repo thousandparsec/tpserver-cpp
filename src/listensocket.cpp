@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -82,6 +83,9 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 			  res->ai_protocol);
 
 	  if (!(sockfd < 0)) {
+            fcntl(sockfd, F_SETFL, O_NONBLOCK);
+            int yes = 1;
+            setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
             if (bind(sockfd, res->ai_addr, res->ai_addrlen) == 0)
 	      break;
 	    
@@ -94,6 +98,9 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 	freeaddrinfo(ressave);
 #else
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	fcntl(sockfd, F_SETFL, O_NONBLOCK);
+        int yes = 1;
+        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 #endif
 	if (sockfd == -1){
 		Logger::getLogger()->warning("Could not create Socket");
@@ -142,7 +149,7 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 void ListenSocket::process(){
     Logger::getLogger()->info("Accepting new a connection");
     try{
-        Connection *temp;
+        Connection *temp = NULL;
 #ifdef HAVE_IPV6
         struct sockaddr_storage clientaddr;
         socklen_t addrlen = sizeof(clientaddr);
@@ -150,26 +157,30 @@ void ListenSocket::process(){
         int thenewfd = accept(sockfd, 
                                                         (struct sockaddr *)&clientaddr, 
                                                         &addrlen);
-        char clienthost[NI_MAXHOST];
-        char clientname[NI_MAXHOST];
-        getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-                    clienthost, sizeof(clienthost),
-                    NULL, 0,
-                    NI_NUMERICHOST);
-        getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-                    clientname, sizeof(clientname),
-                    NULL, 0,
-                    0);
-        
-        Logger::getLogger()->info("Accepted connection accepted from %s [%s], connection id %d", 
-                                    clientname, clienthost, temp->getFD());
-        temp = acceptConnection(thenewfd);
-        
+        if(thenewfd != -1){
+            char clienthost[NI_MAXHOST];
+            char clientname[NI_MAXHOST];
+            getnameinfo((struct sockaddr *)&clientaddr, addrlen,
+                        clienthost, sizeof(clienthost),
+                        NULL, 0,
+                        NI_NUMERICHOST);
+            getnameinfo((struct sockaddr *)&clientaddr, addrlen,
+                        clientname, sizeof(clientname),
+                        NULL, 0,
+                        0);
+            
+            Logger::getLogger()->info("Accepted connection accepted from %s [%s], connection id %d", 
+                                        clientname, clienthost, thenewfd);
+            temp = acceptConnection(thenewfd);
+        }else{
+            Logger::getLogger()->info("Not accepting new connection, accept error.");
+        }
 #else
         
         temp = acceptConnection(accept(serverFD, NULL, 0));
 #endif
-        Network::getNetwork()->addConnection(temp);
+        if(temp != NULL)
+            Network::getNetwork()->addConnection(temp);
     }catch(std::exception e){
         Logger::getLogger()->warning("Could not establish connection");
     }
