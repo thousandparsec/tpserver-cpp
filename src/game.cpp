@@ -245,6 +245,28 @@ void Game::doEndOfTurn()
                         }
                         objectmanager->doneWithObject(itbobj->getID());
                     }
+                    
+                    //combat between object and container (ie planet)
+                    if(ob->getType() == obT_Fleet || (ob->getType() == obT_Planet && ((OwnedObject*)(ob->getObjectData()))->getOwner() != 0)){
+                        if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(ob->getObjectData()))->getOwner()){
+                            combatstrategy->setCombatants(itaobj, ob);
+                            combatstrategy->doCombat();
+                            if(!combatstrategy->isAliveCombatant1()){
+                                if(itaobj->getType() == obT_Planet){
+                                    ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                                }else{
+                                    objectmanager->scheduleRemoveObject(*ita);
+                                }
+                            }
+                            if(!combatstrategy->isAliveCombatant2()){
+                                if(ob->getType() == obT_Planet){
+                                    ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
+                                }else{
+                                    objectmanager->scheduleRemoveObject(*itcurr);
+                                }
+                            }
+                        }
+                    }
                 }
                 objectmanager->doneWithObject(itaobj->getID());
             }
