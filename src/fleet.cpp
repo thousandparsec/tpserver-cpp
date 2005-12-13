@@ -96,6 +96,7 @@ int Fleet::firepower(bool draw){
 }
 
 bool Fleet::hit(int firepower){
+    if(firepower != 0){
   damage += firepower;
   bool change = true;
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -113,6 +114,7 @@ bool Fleet::hit(int firepower){
       }
     }
     if(shiphp == 0){
+        touchModTime();
       return false;
     }
     while(damage > shiphp && ships[shiptype] > 0){
@@ -130,6 +132,7 @@ bool Fleet::hit(int firepower){
     
   }
   touchModTime();
+    }
   return true;
 }
 
