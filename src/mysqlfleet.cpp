@@ -63,7 +63,7 @@ bool MysqlFleet::update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob
     std::ostringstream querybuilder;
     Fleet* fleet = (Fleet*)(ob->getObjectData());
     querybuilder << "UPDATE fleet SET owner=" << fleet->getOwner() << ", damage=";
-    querybuilder << fleet->getDamage() << " WHERE objectid=" << ob->getID() << "; ";
+    querybuilder << fleet->getDamage() << " WHERE objectid=" << ob->getID() << ";";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not update fleet - %s", mysql_error(conn));
         return false;
@@ -78,19 +78,21 @@ bool MysqlFleet::update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob
         Logger::getLogger()->error("Mysql: Could not update clear fleetship - %s", mysql_error(conn));
         return false;
     }
-    querybuilder.str("");
-    querybuilder << "INSERT INTO fleetship VALUES ";
     std::map<int,int> ships = fleet->getShips();
-    for(std::map<int,int>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
-        if(itcurr != ships.begin()){
-            querybuilder << ", ";
+    if(!ships.empty()){
+        querybuilder.str("");
+        querybuilder << "INSERT INTO fleetship VALUES ";
+        for(std::map<int,int>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
+            if(itcurr != ships.begin()){
+                querybuilder << ", ";
+            }
+            querybuilder << "(" << ob->getID() << ", " << itcurr->first << ", " << itcurr->second << ")";
         }
-        querybuilder << "(" << ob->getID() << ", " << itcurr->first << ", " << itcurr->second << ")";
-    }
-    querybuilder << ";";
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update fleet ships - %s", mysql_error(conn));
-        return false;
+        querybuilder << ";";
+        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+            Logger::getLogger()->error("Mysql: Could not update fleet ships - %s", mysql_error(conn));
+            return false;
+        }
     }
     return true;
 }
