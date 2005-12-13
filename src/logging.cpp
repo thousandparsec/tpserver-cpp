@@ -50,6 +50,8 @@ void Logger::debug(char *msg, ...)
   if(reallen > 100){
     delete[] fmsg;
     fmsg = new char[reallen + 1];
+    va_end(ap);
+    va_start(ap, msg);
     vsnprintf(fmsg, reallen, msg, ap);
   }
   va_end(ap);
@@ -66,6 +68,8 @@ void Logger::info(char *msg, ...)
   if(reallen > 100){
     delete[] fmsg;
     fmsg = new char[reallen + 1];
+    va_end(ap);
+    va_start(ap, msg);
     vsnprintf(fmsg, reallen, msg, ap);
   }
   va_end(ap);
@@ -82,6 +86,8 @@ void Logger::warning(char *msg, ...)
   if(reallen > 100){
     delete[] fmsg;
     fmsg = new char[reallen + 1];
+    va_end(ap);
+    va_start(ap, msg);
     vsnprintf(fmsg, reallen, msg, ap);
   }
   va_end(ap);
@@ -98,6 +104,8 @@ void Logger::error(char *msg, ...)
   if(reallen > 100){
     delete[] fmsg;
     fmsg = new char[reallen + 1];
+    va_end(ap);
+    va_start(ap, msg);
     vsnprintf(fmsg, reallen, msg, ap);
   }
   va_end(ap);
