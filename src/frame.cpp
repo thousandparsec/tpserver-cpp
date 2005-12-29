@@ -397,10 +397,11 @@ char *Frame::unpackString()
 		memcpy(rtnstr, data + unpackptr, len);
 		rtnstr[len] = '\0';
 		unpackptr += len;
-        return rtnstr;
+        }else if(len == 0){
+            rtnstr = new char[1];
+            rtnstr[0] = '\0';
 	} else {
         Logger::getLogger()->debug("len < 0 or length < upackptr + len, len = %d, length = %d", len, length);
-        return "";
 	}
 	//printf("unpackptr %d\n", unpackptr);
 	return rtnstr;
