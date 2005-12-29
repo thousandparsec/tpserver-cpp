@@ -106,6 +106,12 @@ fi
 
 AC_CHECK_LIB(dl, dlsym,,)
 AC_CHECK_HEADER(scheme.h)
+
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include "scheme.h"
+	#ifndef SCHEME_STRINGP
+	#error
+	#endif]])], AC_DEFINE(HAVE_SCHEME2X,,Define if we have mzscheme 209),)
+
 AC_CHECK_LIB(mzgc, GC_init,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
 AC_CHECK_LIB(mzscheme,scheme_basic_env,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
 

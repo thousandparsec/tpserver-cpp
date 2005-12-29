@@ -136,11 +136,19 @@ void TpMzScheme::evalDesign(Design* d){
 	}
 	formater << "))";
 	temp = scheme_eval_string(formater.str().c_str(), env);
+#ifdef HAVE_SCHEME2X
 	if(!SCHEME_PAIRP(temp) || !SCHEME_NUMBERP(SCHEME_CAR(temp)) || !SCHEME_STRINGP(SCHEME_CDR(temp))){
+#else
+	if(!SCHEME_PAIRP(temp) || !SCHEME_NUMBERP(SCHEME_CAR(temp)) || !SCHEME_CHAR_STRINGP(SCHEME_CDR(temp))){
+#endif
 	  Logger::getLogger()->warning("MzScheme: Return not a pair, or the wrong time in the pair");
 	}else{
 	  propval.setValue(scheme_real_to_double(SCHEME_CAR(temp)));
+#ifdef HAVE_SCHEME2X
 	  propval.setDisplayString(std::string(SCHEME_STR_VAL(SCHEME_CDR(temp)))); 
+#else
+	  propval.setDisplayString(std::string((char*)SCHEME_CHAR_STR_VAL(SCHEME_CDR(temp)))); 
+#endif
 	  localvalues.insert(propval);
 	}
       }
@@ -171,11 +179,19 @@ void TpMzScheme::evalDesign(Design* d){
       
       //for each component in the design
       temp = scheme_eval_string((std::string("(") + ds->getComponent(curval)->getTpclRequirementsFunction() + " design)").c_str(), env);
+#ifdef HAVE_SCHEME2X
       if(!SCHEME_PAIRP(temp) || !SCHEME_STRINGP(SCHEME_CDR(temp))){
+#else
+      if(!SCHEME_PAIRP(temp) || !SCHEME_CHAR_STRINGP(SCHEME_CDR(temp))){
+#endif
 	Logger::getLogger()->warning("MzScheme: (a) Return not a pair, or the wrong time in the pair");
       }else{
 	valid &= SCHEME_TRUEP(SCHEME_CAR(temp));
+#ifdef HAVE_SCHEME2X
 	std::string strtemp = SCHEME_STR_VAL(SCHEME_CDR(temp));
+#else
+	std::string strtemp = (char*)SCHEME_CHAR_STR_VAL(SCHEME_CDR(temp));
+#endif
 	if(strtemp.length() > 0)
 	  feedback += strtemp + " ";
       }
@@ -187,11 +203,19 @@ void TpMzScheme::evalDesign(Design* d){
             for(std::map<unsigned int, std::list<std::string> >::iterator piit = pilist.begin();
                     piit != pilist.end(); ++piit){
                 temp = scheme_eval_string((std::string("(") + ds->getProperty(piit->first)->getTpclRequirementsFunction() + " design)").c_str(), env);
+#ifdef HAVE_SCHEME2X
                 if(!SCHEME_PAIRP(temp) || !SCHEME_STRINGP(SCHEME_CDR(temp))){
+#else
+                if(!SCHEME_PAIRP(temp) || !SCHEME_CHAR_STRINGP(SCHEME_CDR(temp))){
+#endif
                     Logger::getLogger()->warning("MzScheme: (a) Return not a pair, or the wrong time in the pair");
                 }else{
                     valid &= SCHEME_TRUEP(SCHEME_CAR(temp));
+#ifdef HAVE_SCHEME2X
                     std::string strtemp = SCHEME_STR_VAL(SCHEME_CDR(temp));
+#else
+                    std::string strtemp = (char*)SCHEME_CHAR_STR_VAL(SCHEME_CDR(temp));
+#endif
                     if(strtemp.length() > 0)
                         feedback += strtemp + " ";
                 }
