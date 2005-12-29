@@ -285,6 +285,7 @@ Network::Network()
 {
 
   max_fd = 0;
+    FD_ZERO(&master_set);
 
 	halt = false;
 	active = false;
