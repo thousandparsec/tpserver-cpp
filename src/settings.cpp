@@ -269,5 +269,4 @@ void Settings::printHelp(){
 void Settings::setDefaultValues(){
   store["NEVER_START"] = "0";
   store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
-    store["autoadd_players"] = "yes";
 }
