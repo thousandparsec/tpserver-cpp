@@ -1,0 +1,49 @@
+# Boring file regexps:
+\.hi$
+\.o$
+\.o\.cmd$
+# *.ko files aren't boring by default because they might
+# be Korean translations rather than kernel modules.
+# \.ko$
+\.ko\.cmd$
+\.mod\.c$
+(^|/)\.tmp_versions($|/)
+(^|/)CVS($|/)
+(^|/)RCS($|/)
+~$
+#(^|/)\.[^/]
+(^|/)_darcs($|/)
+\.bak$
+\.BAK$
+\.orig$
+(^|/)vssver\.scc$
+\.swp$
+(^|/)MT($|/)
+(^|/)\{arch\}($|/)
+(^|/).arch-ids($|/)
+(^|/),
+\.class$
+\.prof$
+(^|/)\.DS_Store$
+(^|/)BitKeeper($|/)
+(^|/)ChangeSet($|/)
+(^|/)\.svn($|/)
+\.py[co]$
+\#
+\.cvsignore$
+(^|/)Thumbs\.db$
+#tpserver-cpp specific
+(^|/)Makefile$
+(^|/)Makefile\.in$
+(^|/)autom4te\.cache
+(^|/)config\.
+(^|/)configure$
+(^|/)aclocal.m4$
+(^|/)install-sh$
+(^|/)tpserver-cpp\.kateproject$
+(^|/)ltmain\.sh$
+(^|/)missing$
+(^|/)mkinstalldirs$
+(^|/)stamp-h
+(^|/)\.deps($|/)
+src/tpserver-cpp$
