@@ -123,14 +123,18 @@ void Network::start()
 	    Logger::getLogger()->warning("Could not listen on TP (tcp) socket");
 	  }
 #ifdef HAVE_LIBGNUTLS
-            TlsSocket* secsocket = new TlsSocket();
-            secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
-             if(secsocket->getStatus() != 0){
-                addConnection(secsocket);
-                numsocks++;
+            if(Settings::getSettings()->get("tps") == "yes"){
+                TlsSocket* secsocket = new TlsSocket();
+                secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
+                if(secsocket->getStatus() != 0){
+                    addConnection(secsocket);
+                    numsocks++;
+                }else{
+                    delete secsocket;
+                    Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
+                }
             }else{
-                delete secsocket;
-                Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
+                Logger::getLogger()->info("Not configured to start tps socket");
             }
             if(Settings::getSettings()->get("https") == "yes"){
                 HttpsSocket* secsocket = new HttpsSocket();
