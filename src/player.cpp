@@ -178,6 +178,7 @@ void Player::setBoardId(uint32_t nbi){
 }
 
 void Player::packFrame(Frame* frame){
+    frame->setType(ft03_Player);
   frame->packInt(pid);
   frame->packString(name.c_str());
   frame->packString("Human");
