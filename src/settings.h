@@ -41,8 +41,8 @@ class Settings {
 	Settings operator=(Settings & rhs);
 
 	void printHelp();
-    void gripeOnLine( std::string& line, char* complaint);
-	bool readConfFile(std::string fname);
+        void gripeOnLine(const std::string& line, const char* complaint);
+        bool readConfFile(const std::string& fname);
 
 	void setDefaultValues();
 

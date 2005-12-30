@@ -106,24 +106,16 @@ bool Settings::readConfFile(){
   return readConfFile(store["config_file"]);
 }
 
-void Settings::gripeOnLine( std::string& line, char* complaint) {
-    char   cString[100];
-
-    strncpy( cString, line.c_str(), 100);
-
-    Logger::getLogger()->error( "Invalid configuration file line:");
-    Logger::getLogger()->error( cString);
-    Logger::getLogger()->error( complaint);
-
-    return;
+void Settings::gripeOnLine(const std::string& line, const char* complaint) {
+    Logger::getLogger()->error( "Invalid configuration file line, %s: \"%s\"", complaint, line.c_str());
 }
 
 
-bool Settings::readConfFile(std::string fname){
-    std::ifstream  configFile( store["config_file"].c_str());
+bool Settings::readConfFile(const std::string& fname){
+    std::ifstream  configFile( fname.c_str());
     std::string   configString;
     unsigned long      lineCount = 0;
-    const static char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 
     while ( ! configFile.eof() && getline( configFile, configString)) {
         std::string    savedConfigString = configString;
