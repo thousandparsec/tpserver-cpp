@@ -20,6 +20,8 @@
 
 #include <cassert>
 #include <iostream>
+#include <fstream>
+#include <string.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -104,10 +106,118 @@ bool Settings::readConfFile(){
   return readConfFile(store["config_file"]);
 }
 
+void Settings::gripeOnLine( std::string& line, char* complaint) {
+    char   cString[100];
+
+    strncpy( cString, line.c_str(), 100);
+
+    Logger::getLogger()->error( "Invalid configuration file line:");
+    Logger::getLogger()->error( cString);
+    Logger::getLogger()->error( complaint);
+
+    return;
+}
+
+
 bool Settings::readConfFile(std::string fname){
+    std::ifstream  configFile( store["config_file"].c_str());
+    std::string   configString;
+    unsigned long      lineCount = 0;
+    const static char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+
+    while ( ! configFile.eof() && getline( configFile, configString)) {
+        std::string    savedConfigString = configString;
+        std::string    key = "";
+        std::string    value = "";
+        std::string::size_type valuelength = 0;
+        std::string::size_type keylength = 0;
+
+        /* remove leading spaces */
+        configString.erase( 0, configString.find_first_not_of( " 	"));
+
+        /* comment/empty line? */
+        if ( configString == "" || configString[0] == '#') {
+            continue;
+        }
+
+        lineCount++;
+        keylength = configString.find_first_of( " 	=");
+        key = configString.substr( 0, keylength);
+        configString.erase( 0, keylength);
+        if ( key == "") {
+            gripeOnLine( savedConfigString, "empty key");
+            continue;
+        }
+        if ( key.find_first_not_of( validKeyChars) < keylength ||
+             key.find_first_of( "0123456789") == 0) {
+            gripeOnLine( savedConfigString, "invalid characters in key");
+            continue;
+        }
+
+        /* remove whitespace */
+        configString.erase( 0, configString.find_first_not_of( " 	"));
+
+        /* this next character better be an equals sign */
+        if ( configString[0] != '=') {
+            gripeOnLine( savedConfigString, "missing equals");
+            continue;
+        }
+        configString.erase( 0, 1);
+
+        /* remove whitespace... */
+        configString.erase( 0, configString.find_first_not_of( " 	"));
+
+        /* Are we quoted? */
+        if ( configString[0] == '"') {
+            configString.erase( 0, 1);
+            valuelength = configString.find_first_of( "\"");
+            value = configString.substr( 0, valuelength);
+            configString.erase( 0, valuelength + 1);
+
+            /* remove whitespace... */
+            configString.erase( 0, configString.find_first_not_of( " 	"));
+
+            /* What is left ought to be a comment */
+            if ( !configString.empty() && configString[0] != '#') {
+                gripeOnLine( savedConfigString, "extraneous characters");
+            }
+            /* But if it isn't, we just let it pass... */
+        }
+        else if ( configString[0] == '\'') {
+            configString.erase( 0, 1);
+            valuelength = configString.find_first_of( "\'");
+            value = configString.substr( 0, valuelength);
+            configString.erase( 0, valuelength + 1);
+
+            /* remove whitespace... */
+            configString.erase( 0, configString.find_first_not_of( " 	"));
+
+            /* What is left ought to be a comment */
+            if ( !configString.empty() && configString[0] != '#') {
+                gripeOnLine( savedConfigString, "extraneous characters");
+            }
+            /* But if it isn't, we just let it pass... */
+        }
+        else {
+            valuelength = configString.find_first_of( " 	");
+            value = configString.substr( 0, valuelength);
+            configString.erase( 0, valuelength);
+
+            /* remove whitespace... */
+            configString.erase( 0, configString.find_first_not_of( " 	"));
+
+            /* What is left ought to be a comment */
+            if ( !configString.empty() && configString[0] != '#') {
+                gripeOnLine( savedConfigString, "extraneous characters");
+            }
+            /* But if it isn't, we just let it pass... */
+        }
+        store[key] = value;
+    }
 
   Logger::getLogger()->reconfigure();
-  Logger::getLogger()->info("Configuration file %s read", fname.c_str());
+  Logger::getLogger()->info("%d lines from configuration file %s read", lineCount, fname.c_str());
+
   return true;
 }
 
