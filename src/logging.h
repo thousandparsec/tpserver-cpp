@@ -49,6 +49,7 @@ class Logger {
 	void doLogging(int level, char *msg);
 
 	int loglevel;
+        bool colour;
 	
 	static Logger *myInstance;
 

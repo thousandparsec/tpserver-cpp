@@ -52,7 +52,7 @@ void Logger::debug(char *msg, ...)
     fmsg = new char[reallen + 1];
     va_end(ap);
     va_start(ap, msg);
-    vsnprintf(fmsg, reallen, msg, ap);
+    vsnprintf(fmsg, reallen + 1, msg, ap);
   }
   va_end(ap);
   doLogging(0, fmsg);
@@ -70,7 +70,7 @@ void Logger::info(char *msg, ...)
     fmsg = new char[reallen + 1];
     va_end(ap);
     va_start(ap, msg);
-    vsnprintf(fmsg, reallen, msg, ap);
+    vsnprintf(fmsg, reallen + 1, msg, ap);
   }
   va_end(ap);
   doLogging(1, fmsg);
@@ -88,7 +88,7 @@ void Logger::warning(char *msg, ...)
     fmsg = new char[reallen + 1];
     va_end(ap);
     va_start(ap, msg);
-    vsnprintf(fmsg, reallen, msg, ap);
+    vsnprintf(fmsg, reallen + 1, msg, ap);
   }
   va_end(ap);
   doLogging(2, fmsg);
@@ -106,7 +106,7 @@ void Logger::error(char *msg, ...)
     fmsg = new char[reallen + 1];
     va_end(ap);
     va_start(ap, msg);
-    vsnprintf(fmsg, reallen, msg, ap);
+    vsnprintf(fmsg, reallen + 1, msg, ap);
   }
   va_end(ap);
   doLogging(3, fmsg);
@@ -122,6 +122,7 @@ void Logger::flush()
 
 void Logger::reconfigure(){
   loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
+    colour = (Settings::getSettings()->get("log_colour") == "yes");
 }
 
 Logger::Logger()
@@ -144,17 +145,25 @@ void Logger::doLogging(int level, char *msg)
       std::cout << "< Debug > ";
       break;
     case 1:
+        if(colour)
+            std::cout << "\e[32;1m";
       std::cout << "< Info  > ";
       break;
     case 2:
+        if(colour)
+            std::cout << "\e[33;1m";
       std::cout << "<Warning> ";
       break;
     case 3:
+        if(colour)
+            std::cout << "\e[31;1m";
       std::cout << "< Error > ";
       break;
     default:
       std::cout << "<   " << level << "  > ";
     }
+    if(colour)
+        std::cout << "\e[0;m";
     std::cout << msg << std::endl;
   }
 }
