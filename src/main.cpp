@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	myGame->saveAndClose();
                 myPersistence->shutdown();
             }catch(std::exception e){
-                myLogger->debug("Caught exception: %s", e.what());
+                myLogger->debug("Caught exception");
             }
 	myConsole->close();
 
