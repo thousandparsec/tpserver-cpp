@@ -22,6 +22,7 @@
 #include "message.h"
 #include "game.h"
 #include "boardmanager.h"
+#include "logging.h"
 
 #include "board.h"
 
@@ -98,11 +99,17 @@ void Board::packBoard(Frame * frame){
 
 void Board::packMessage(Frame * frame, unsigned int msgnum){
     if(msgnum < nummsg){
-        frame->setType(ft02_Message);
-        frame->packInt(boardid);
-        frame->packInt(msgnum);
         Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
-        message->pack(frame);
+        if(message != NULL){
+            frame->setType(ft02_Message);
+            frame->packInt(boardid);
+            frame->packInt(msgnum);
+            message->pack(frame);
+        }else{
+            frame->createFailFrame(fec_TempUnavailable, "Could not get Message at this time");
+            Logger::getLogger()->warning("Board has messages but persistence didn't get it");
+            Logger::getLogger()->warning("POSSIBLE DATABASE INCONSISTANCE");
+        }
   }else{
     frame->createFailFrame(fec_NonExistant, "No such Message on board");
   }
