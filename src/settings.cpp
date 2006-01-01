@@ -56,39 +56,20 @@ bool Settings::readArgs(int argc, char** argv){
 	}else if(strncmp(argv[i] + 2, "version", 7) == 0){
 	  std::cout << "tpserver-cpp " VERSION << std::endl;
 	  store["NEVER_START"] = "!";
-	}else if(strncmp(argv[i] + 2, "port", 4) == 0){
-	  store["listen_port"] = std::string(argv[++i]);
-	}else if(strncmp(argv[i] + 2, "host" , 4) == 0){
-	  store["listen_addr"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 2, "configure", 9) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 2, "logging", 7) == 0){
 	  store["log_level"] = std::string(argv[++i]);
-#ifdef HAVE_LIBMYSQL
-        }else if(strncmp(argv[i] + 2, "mydb", 4) == 0){
-            store["mysql_db"] = std::string(argv[++i]);
-        }else if(strncmp(argv[i] + 2, "mypass", 6) == 0){
-            store["mysql_pass"] = std::string(argv[++i]);
-        }else if(strncmp(argv[i] + 2, "myuser", 6) == 0){
-            store["mysql_user"] = std::string(argv[++i]);
-        }else if(strncmp(argv[i] + 2, "myhost", 6) == 0){
-            store["mysql_host"] = std::string(argv[++i]);
-        }else if(strncmp(argv[i] + 2, "mysocket", 8) == 0){
-            store["mysql_socket"] = std::string(argv[++i]);
-        }else if(strncmp(argv[i] + 2, "myport", 6) == 0){
-            store["mysql_port"] = std::string(argv[++i]);
-#endif
-	}
+	}else{
+            store[argv[i] + 2] = argv[i + 1];
+            i++;
+        }
 
       }else{
 	//short option
 	if(strncmp(argv[i] + 1, "h", 2) == 0){
 	  printHelp();
 	  store["NEVER_START"] = "!";
-	}else if(strncmp(argv[i] + 1, "P", 2) == 0){
-	  store["listen_port"] = std::string(argv[++i]);
-	}else if(strncmp(argv[i] + 1, "H", 2) == 0){
-	  store["listen_addr"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 1, "C", 2) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 1, "l", 2) == 0){
@@ -255,18 +236,9 @@ void Settings::printHelp(){
   std::cout << " Options:" << std::endl;
   std::cout << "\t-h\t--help\t\tPrint this help then exit" << std::endl;
   std::cout << "\t\t--version\tPrint version then exit" << std::endl;
-  std::cout << "\t-H\t--host\t\tThe host address to listen on (default all)" << std::endl;
-  std::cout << "\t-P\t--port\t\tThe port to listen on (default 6923)" << std::endl;
   std::cout << "\t-C\t--configure\tConfiguration file to read" << std::endl;
   std::cout << "\t-l\t--logging\tSets the logging level (default 0)" << std::endl;
-#ifdef HAVE_LIBMYSQL
-    std::cout << "\t\t--mydb\t\tSets the mysql database to use" << std::endl;
-    std::cout << "\t\t--mypass\tSets the mysql password to use" << std::endl;
-    std::cout << "\t\t--myuser\tSets the mysql user to use" << std::endl;
-    std::cout << "\t\t--myhost\tSets the mysql host to use" << std::endl;
-    std::cout << "\t\t--mysocket\tSets the mysql socket to use" << std::endl;
-    std::cout << "\t\t--myport\tSets the mysql port to use" << std::endl;
-#endif
+  std::cout << "\t\t--<key> <value>\tSets the setting <key> to <value>" << std::endl;
 }
 
 void Settings::setDefaultValues(){

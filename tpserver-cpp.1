@@ -1,4 +1,4 @@
-.TH TPSERVER-CPP 1 "2005-12-12" "Lee Begg" "Thousand Parsec Server"
+.TH TPSERVER-CPP 1 "2006-01-02" "Lee Begg" "Thousand Parsec Server"
 .SH NAME 
 tpserver-cpp \- Thousand Parsec Server in C++
 .SH SYNOPSIS
@@ -14,26 +14,12 @@ port 6924.
 Prints help then exits.
 .IP \-\-version
 Prints the version information then exits.
-.IP \-\-host or \-H
-Sets the host address to listen on.
-.IP \-\-port or \-P
-Sets the port to listen on.
-.IP \-\-configure or \-C
+.IP "\-\-configure or \-C"
 Sets the configuration file to read.
-.IP \-\-logging or \-l
+.IP "\-\-logging or \-l"
 Sets how verbose the logging is, from 0 (debug and up) up to 5 (errors only).
-.IP \-\-myuser
-Sets the mysql user to use (if configured).
-.IP \-\-mypass
-Sets the mysql password to use (if configured).
-.IP \-\-mydb
-Sets the mysql database to use (if configured).
-.IP \-\-myhost
-Sets the mysql host to use (if configured).
-.IP \-\-mysocket
-Sets the mysql socket to use (if configured).
-.IP \-\-myport
-Sets the mysql port to use (if configured).
+.IP "\-\-<key> <value>"
+Sets the setting <key> to the value <value>.
 
 .SH "CONSOLE COMMANDS"
 The server's console supports several admin functions. It has command completion.  See the output of the help
