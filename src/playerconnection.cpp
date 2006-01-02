@@ -120,6 +120,7 @@ void PlayerConnection::login()
                     player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
                 }catch(std::exception e){
                     if (Settings::getSettings()->get("autoadd_players") == "yes") {
+                        Logger::getLogger()->info("Creating new player automatically");
                         player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
                     }
                 }
@@ -132,7 +133,7 @@ void PlayerConnection::login()
 				player->setConnection(this);
 				status = 3;
 			} else {
-				Logger::getLogger()->debug("bad username or password");
+                            Logger::getLogger()->info("Bad username or password");
 				Frame *failframe = createFrame(recvframe);
 				failframe->createFailFrame(fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
 				sendFrame(failframe);
