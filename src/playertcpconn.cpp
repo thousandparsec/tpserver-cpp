@@ -174,10 +174,11 @@ void PlayerTcpConnection::verCheck()
 		return;
 	      }
 	      // Read in the length of the packet and ignore
-	      char *cbuff = new char[lenNum];
+	      char *cbuff = new char[lenNum + 1];
 	      len = read(sockfd, cbuff, lenNum);
+                cbuff[lenNum] = '\0';
 
-	      if(typeNum == 3){
+            if(typeNum == ft02_Connect){
 		
 		Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, cbuff + 4);
 		
