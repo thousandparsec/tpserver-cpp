@@ -93,7 +93,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 op = Game::getGame()->getPersistence()->retrievePlayer(itid->first);
                 players[itid->first] = op;
             }
-            if(op != NULL){
+            if(op != NULL && op != rtn){
                 op->postToBoard(new Message(*msg));
                 //HACK
                 op->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
