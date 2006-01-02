@@ -78,6 +78,29 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         //HACK
         rtn->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
         Game::getGame()->getPersistence()->updatePlayer(rtn);
+        
+        //tell the other players about it
+        msg = new Message();
+        msg->setSubject("New Player");
+        msg->setBody("New player " + name + " has joined the game.");
+        msg->addReference(rst_Special, rssv_System);
+        msg->addReference(rst_Action_Player, rspav_Joined);
+        
+        for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
+                itid != players.end(); ++itid){
+            Player* op = itid->second;
+            if(op == NULL){
+                op = Game::getGame()->getPersistence()->retrievePlayer(itid->first);
+                players[itid->first] = op;
+            }
+            if(op != NULL){
+                op->postToBoard(new Message(*msg));
+                //HACK
+                op->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
+                Game::getGame()->getPersistence()->updatePlayer(op);
+                //end HACK
+            }
+        }
 
     }else{
         // player can not be added

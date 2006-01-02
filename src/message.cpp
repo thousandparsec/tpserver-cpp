@@ -27,6 +27,10 @@ Message::Message(){
   turnnum = Game::getGame()->getTurnNumber();
 }
 
+Message::Message(const Message& rhs) : subject(rhs.subject), body(rhs.body), turnnum(rhs.turnnum),
+        references(rhs.references){
+}
+
 int Message::getTurn(){
   return turnnum;
 }

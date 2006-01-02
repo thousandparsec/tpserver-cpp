@@ -31,6 +31,7 @@ class Message{
 
  public:
   Message();
+    Message(const Message& rhs);
 
   int getTurn();
     void setTurn(uint32_t nt);
