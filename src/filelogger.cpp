@@ -33,12 +33,18 @@ FileLogger::FileLogger()
 {
     logFileSpec = "/var/log/tpserver-cpp.log";
     logStream = new std::ofstream( logFileSpec.c_str(), std::ios_base::out);
+    if(!logStream){
+        throw std::exception();
+    }
 }
 
 FileLogger::FileLogger( std::string  logfile)
 {
     logFileSpec = logfile;
     logStream = new std::ofstream( logFileSpec.c_str(), std::ios_base::out);
+    if(!logStream){
+        throw std::exception();
+    }
 }
 
 FileLogger::~FileLogger()

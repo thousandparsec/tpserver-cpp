@@ -140,26 +140,28 @@ void Logger::reconfigure()
 {
     std::map<std::string, LogSink*>::iterator  pos;
 
-    // Default log level to 1 (in case log_level is not present in config file)
-    loglevel = 1;
-    if ( Settings::getSettings()->get("log_level") == "")
-        loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
+    // Default log level to 0 (in case log_level is not present in config file)
+    loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
 
-    if ( Settings::getSettings()->get("consoleLog") != "") {
-        if ( ! logSinkMap["console"])
+    if (Settings::getSettings()->get("log_console") == "yes") {
+        if (logSinkMap.find("console") == logSinkMap.end())
             logSinkMap["console"] = new ConsoleLogger();
     }
     else {
-        if ( logSinkMap["console"]) {
+        if (logSinkMap.find("console") != logSinkMap.end()) {
             delete logSinkMap["console"];
             logSinkMap.erase("console");
         }
     }
 
-    if ( Settings::getSettings()->get("fileLog") != "") {
+    if (Settings::getSettings()->get("log_file") == "yes" && Settings::getSettings()->get("logfile_name") != ""){
         if ( logSinkMap.find( "file") == logSinkMap.end()) {
-            logSinkMap["file"] = new FileLogger(
-                     Settings::getSettings()->get("fileLog"));
+            try{
+                logSinkMap["file"] = new FileLogger(
+                     Settings::getSettings()->get("logfile_name"));
+            }catch(std::exception e){
+                error("Could not start file log sink, could not open file");
+            }
         }
     }
     else {
@@ -169,7 +171,7 @@ void Logger::reconfigure()
         }
     }
 
-    if ( Settings::getSettings()->get("sysLog") != "") {
+    if ( Settings::getSettings()->get("log_syslog") == "yes") {
         if ( logSinkMap.find( "sys") == logSinkMap.end())
             logSinkMap["sys"] = new SysLogger();
     }
