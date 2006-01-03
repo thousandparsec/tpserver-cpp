@@ -30,14 +30,18 @@
 #include "settings.h"
 
 #include "logging.h"
+#include "filelogger.h"
+#include "syslogger.h"
+#include "consolelogger.h"
 
 Logger *Logger::myInstance = NULL;
 
 Logger *Logger::getLogger()
 {
-	if (myInstance == NULL) {
-		myInstance = new Logger();
+	if ( myInstance == NULL) {
+        myInstance = new Logger();
 	}
+
 	return myInstance;
 }
 
@@ -132,14 +136,58 @@ void Logger::flush()
 	info("Logger stopped");
 }
 
-void Logger::reconfigure(){
-  loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
-    colour = (Settings::getSettings()->get("log_colour") == "yes");
+void Logger::reconfigure()
+{
+    std::map<std::string, LogSink*>::iterator  pos;
+
+    // Default log level to 1 (in case log_level is not present in config file)
+    loglevel = 1;
+    if ( Settings::getSettings()->get("log_level") == "")
+        loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
+
+    if ( Settings::getSettings()->get("consoleLog") != "") {
+        if ( ! logSinkMap["console"])
+            logSinkMap["console"] = new ConsoleLogger();
+    }
+    else {
+        if ( logSinkMap["console"]) {
+            delete logSinkMap["console"];
+            logSinkMap.erase("console");
+        }
+    }
+
+    if ( Settings::getSettings()->get("fileLog") != "") {
+        if ( logSinkMap.find( "file") == logSinkMap.end()) {
+            logSinkMap["file"] = new FileLogger(
+                     Settings::getSettings()->get("fileLog"));
+        }
+    }
+    else {
+        if ( logSinkMap.find( "file") != logSinkMap.end()) {
+            delete logSinkMap["file"];
+            logSinkMap.erase("file");
+        }
+    }
+
+    if ( Settings::getSettings()->get("sysLog") != "") {
+        if ( logSinkMap.find( "sys") == logSinkMap.end())
+            logSinkMap["sys"] = new SysLogger();
+    }
+    else {
+        if ( logSinkMap.find( "sys") != logSinkMap.end()) {
+            delete logSinkMap["sys"];
+            logSinkMap.erase("sys");
+        }
+    }
+
+    for (pos = logSinkMap.begin(); pos != logSinkMap.end(); pos++) {
+        pos->second->reconfigure();
+    }
 }
 
 Logger::Logger()
 {
-  reconfigure();
+    reconfigure();
 	info("Logger started");
 }
 
@@ -151,31 +199,9 @@ Logger::~Logger()
 
 void Logger::doLogging(int level, char *msg)
 {
-  if(level >= loglevel){
-    switch(level){
-    case 0:
-      std::cout << "< Debug > ";
-      break;
-    case 1:
-        if(colour)
-            std::cout << "\e[32;1m";
-      std::cout << "< Info  > ";
-      break;
-    case 2:
-        if(colour)
-            std::cout << "\e[33;1m";
-      std::cout << "<Warning> ";
-      break;
-    case 3:
-        if(colour)
-            std::cout << "\e[31;1m";
-      std::cout << "< Error > ";
-      break;
-    default:
-      std::cout << "<   " << level << "  > ";
+    std::map<std::string, LogSink*>::iterator  pos;
+
+    for (pos = logSinkMap.begin(); pos != logSinkMap.end(); pos++) {
+        pos->second->doLogging( level, msg);
     }
-    if(colour)
-        std::cout << "\e[0;m";
-    std::cout << msg << std::endl;
-  }
 }

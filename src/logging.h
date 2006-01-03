@@ -20,18 +20,21 @@
  *
  */
 
+#include <string>
+#include <map>
+
+#include "logsink.h"
+
 class Logger {
 
-      public:
+ public:
 	static Logger *getLogger();
-	
+
 	void debug(char *msg, ...);
 	void info(char *msg, ...);
 	void warning(char *msg, ...);
 	void error(char *msg, ...);
 
-	
-	
 	//void addLog(Log* newlog);
 	//void removeLog(Log* newlog);
 
@@ -40,19 +43,18 @@ class Logger {
 	void reconfigure();
 
 
-      private:
-	 Logger();
-	~Logger();
-	 Logger(Logger & rhs);
+ private:
+    Logger();
+	virtual ~Logger();
+    Logger(Logger & rhs);
 	Logger operator=(Logger & rhs);
 
-	void doLogging(int level, char *msg);
+	void doLogging( int level, char *msg);
 
+    std::map<std::string, LogSink*>  logSinkMap;
 	int loglevel;
-        bool colour;
-	
-	static Logger *myInstance;
 
+	static Logger *myInstance;
 };
 
 #endif
