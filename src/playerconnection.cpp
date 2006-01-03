@@ -129,7 +129,7 @@ void PlayerConnection::login()
 				okframe->setType(ft02_OK);
 				okframe->packString("Welcome");
 				sendFrame(okframe);
-				Logger::getLogger()->info("Login OK!");
+				Logger::getLogger()->info("Login ok by %s", username);
 				player->setConnection(this);
 				status = 3;
 			} else {
