@@ -57,4 +57,9 @@ class Logger {
 	static Logger *myInstance;
 };
 
+#define debugLog   Logger::getLogger()->debug
+#define infoLog    Logger::getLogger()->info
+#define warningLog Logger::getLogger()->warning
+#define errorLog   Logger::getLogger()->error
+
 #endif
