@@ -44,8 +44,9 @@ int main(int argc, char **argv)
 
   Settings *mySettings = Settings::getSettings();
   mySettings->readArgs(argc, argv);
-  
+
   if(mySettings->get("NEVER_START") != "!"){
+    mySettings->readConfFile();
 
 	Logger *myLogger = Logger::getLogger();
 
@@ -53,8 +54,6 @@ int main(int argc, char **argv)
 	myLogger->info("This is GPL software, please see the COPYING file");
 
         try{
-
-	mySettings->readConfFile();
 
 	Console *myConsole = Console::getConsole();
 	myConsole->open();

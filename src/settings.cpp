@@ -188,9 +188,6 @@ bool Settings::readConfFile(const std::string& fname){
         store[key] = value;
     }
 
-  Logger::getLogger()->reconfigure();
-  Logger::getLogger()->info("%d lines from configuration file %s read", lineCount, fname.c_str());
-
   return true;
 }
 
