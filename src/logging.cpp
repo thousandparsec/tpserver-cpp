@@ -43,74 +43,86 @@ Logger *Logger::getLogger()
 
 void Logger::debug(char *msg, ...)
 {
-  char* fmsg = new char[100];
-  va_list ap;
-  va_start(ap, msg);
-  int reallen = vsnprintf(fmsg, 100, msg, ap);
-  if(reallen > 100){
-    delete[] fmsg;
-    fmsg = new char[reallen + 1];
-    va_end(ap);
-    va_start(ap, msg);
-    vsnprintf(fmsg, reallen + 1, msg, ap);
-  }
-  va_end(ap);
-  doLogging(0, fmsg);
-  delete[] fmsg;
+    if ( loglevel <= 0) {
+        char* fmsg = new char[100];
+
+        va_list ap;
+        va_start(ap, msg);
+        int reallen = vsnprintf(fmsg, 100, msg, ap);
+        if(reallen > 100){
+            delete[] fmsg;
+            fmsg = new char[reallen + 1];
+            va_end(ap);
+            va_start(ap, msg);
+            vsnprintf(fmsg, reallen + 1, msg, ap);
+        }
+        va_end(ap);
+        doLogging(0, fmsg);
+        delete[] fmsg;
+    }
 }
 
 void Logger::info(char *msg, ...)
 {
- char* fmsg = new char[100];
-  va_list ap;
-  va_start(ap, msg);
-  int reallen = vsnprintf(fmsg, 100, msg, ap);
-  if(reallen > 100){
-    delete[] fmsg;
-    fmsg = new char[reallen + 1];
-    va_end(ap);
-    va_start(ap, msg);
-    vsnprintf(fmsg, reallen + 1, msg, ap);
-  }
-  va_end(ap);
-  doLogging(1, fmsg);
-  delete[] fmsg;
+    if ( loglevel <= 1) {
+        char* fmsg = new char[100];
+
+        va_list ap;
+        va_start(ap, msg);
+        int reallen = vsnprintf(fmsg, 100, msg, ap);
+        if(reallen > 100){
+            delete[] fmsg;
+            fmsg = new char[reallen + 1];
+            va_end(ap);
+            va_start(ap, msg);
+            vsnprintf(fmsg, reallen + 1, msg, ap);
+        }
+        va_end(ap);
+        doLogging(1, fmsg);
+        delete[] fmsg;
+    }
 }
 
 void Logger::warning(char *msg, ...)
 {
-  char* fmsg = new char[100];
-  va_list ap;
-  va_start(ap, msg);
-  int reallen = vsnprintf(fmsg, 100, msg, ap);
-  if(reallen > 100){
-    delete[] fmsg;
-    fmsg = new char[reallen + 1];
-    va_end(ap);
-    va_start(ap, msg);
-    vsnprintf(fmsg, reallen + 1, msg, ap);
-  }
-  va_end(ap);
-  doLogging(2, fmsg);
-  delete[] fmsg;
+    if ( loglevel <= 2) {
+        char* fmsg = new char[100];
+
+        va_list ap;
+        va_start(ap, msg);
+        int reallen = vsnprintf(fmsg, 100, msg, ap);
+        if(reallen > 100){
+            delete[] fmsg;
+            fmsg = new char[reallen + 1];
+            va_end(ap);
+            va_start(ap, msg);
+            vsnprintf(fmsg, reallen + 1, msg, ap);
+        }
+        va_end(ap);
+        doLogging(2, fmsg);
+        delete[] fmsg;
+    }
 }
 
 void Logger::error(char *msg, ...)
 {
-  char* fmsg = new char[100];
-  va_list ap;
-  va_start(ap, msg);
-  int reallen = vsnprintf(fmsg, 100, msg, ap);
-  if(reallen > 100){
-    delete[] fmsg;
-    fmsg = new char[reallen + 1];
-    va_end(ap);
-    va_start(ap, msg);
-    vsnprintf(fmsg, reallen + 1, msg, ap);
+  if ( loglevel <= 3) {
+      char* fmsg = new char[100];
+
+      va_list ap;
+      va_start(ap, msg);
+      int reallen = vsnprintf(fmsg, 100, msg, ap);
+      if(reallen > 100){
+          delete[] fmsg;
+          fmsg = new char[reallen + 1];
+          va_end(ap);
+          va_start(ap, msg);
+          vsnprintf(fmsg, reallen + 1, msg, ap);
+      }
+      va_end(ap);
+      doLogging(3, fmsg);
+      delete[] fmsg;
   }
-  va_end(ap);
-  doLogging(3, fmsg);
-  delete[] fmsg;
   //exit(1);
 }
 
