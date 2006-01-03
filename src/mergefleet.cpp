@@ -72,7 +72,17 @@ bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
 
 
 bool MergeFleet::doOrder(IGObject * ob){
-  moveorder->setDest(Game::getGame()->getObjectManager()->getObject(fleetid)->getPosition());
+    IGObject* target = Game::getGame()->getObjectManager()->getObject(fleetid);
+    if(target == NULL){
+        Message * msg = new Message();
+        msg->setSubject("Merge Fleet order canceled");
+        msg->setBody("The target fleet doesn't exist");
+        msg->addReference(rst_Action_Order, rsorav_Canceled);
+        msg->addReference(rst_Object, ob->getID());
+        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+        return true;
+    }
+    moveorder->setDest(target->getPosition());
   Game::getGame()->getObjectManager()->doneWithObject(fleetid);
 
   if(moveorder->doOrder(ob)){
