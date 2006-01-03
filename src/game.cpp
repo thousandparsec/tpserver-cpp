@@ -324,6 +324,10 @@ int Game::getTurnNumber(){
 }
 
 void Game::setTurnLength(unsigned int sec){
+    if(sec == 0){
+        Logger::getLogger()->warning("Tried to set turn length to zero seconds, setting to 1 minute instead.");
+        sec = 60;
+    }
   turnIncrement = sec;
 }
 
