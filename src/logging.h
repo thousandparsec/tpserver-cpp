@@ -23,7 +23,7 @@
 #include <string>
 #include <map>
 
-#include "logsink.h"
+class LogSink;
 
 class Logger {
 

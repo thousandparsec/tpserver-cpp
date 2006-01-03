@@ -23,7 +23,7 @@
 
 class LogSink {
  public:
-    virtual ~LogSink() = 0;
+    virtual ~LogSink(){};
 
     virtual void doLogging( int level, char* msg) const = 0;
     virtual void reconfigure() = 0;

@@ -27,7 +27,7 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		listensocket.h listensocket.cpp boardmanager.h \
 		boardmanager.cpp filelogger.h filelogger.cpp \
 		syslogger.h syslogger.cpp consolelogger.h \
-		consolelogger.cpp logsink.h logsink.cpp
+		consolelogger.cpp logsink.h
 if MZSCHEME
 SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
 else
