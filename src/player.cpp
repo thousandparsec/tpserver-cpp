@@ -1099,12 +1099,16 @@ void Player::processGetPlayer(Frame* frame){
     if(pnum == 0){
       packFrame(of);
     }else{
-        Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
-      if(p != NULL){
-	p->packFrame(of);
-      }else{
-	of->createFailFrame(fec_NonExistant, "Player doesn't exist");
-      }
+        if(pnum != -1){
+            Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
+            if(p != NULL){
+                p->packFrame(of);
+            }else{
+                of->createFailFrame(fec_NonExistant, "Player doesn't exist");
+            }
+        }else{
+            of->createFailFrame(fec_NonExistant, "Player -1 doesn't exist, invalid player id");
+        }
     }
     curConnection->sendFrame(of);
   }
