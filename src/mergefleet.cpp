@@ -43,10 +43,15 @@ MergeFleet::~MergeFleet(){
 
 void MergeFleet::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
-  moveorder->setDest(Game::getGame()->getObjectManager()->getObject(fleetid)->getPosition());
-    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
-  f->packInt(moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID))); // number of turns
-    Game::getGame()->getObjectManager()->doneWithObject(objID);
+    IGObject* target = Game::getGame()->getObjectManager()->getObject(fleetid);
+    if(target != NULL){
+        moveorder->setDest(target->getPosition());
+        Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+         f->packInt(moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID))); // number of turns
+        Game::getGame()->getObjectManager()->doneWithObject(objID);
+    }else{
+        f->packInt(0); // number of turns
+    }
   f->packInt(0); // size of resource list
   f->packInt(fleetid);
 }
@@ -128,8 +133,10 @@ void MergeFleet::setFleetId(uint32_t nfi){
     fleetid = nfi;
 
     IGObject* target = Game::getGame()->getObjectManager()->getObject(fleetid);
-    moveorder->setDest(target->getPosition());
-    Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+    if(target != NULL){
+        moveorder->setDest(target->getPosition());
+        Game::getGame()->getObjectManager()->doneWithObject(fleetid);
+    }
 }
 
 void MergeFleet::describeOrder(Frame * f) const{
