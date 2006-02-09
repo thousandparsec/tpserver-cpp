@@ -192,9 +192,11 @@ void IGObject::updatePosition(){
     }
 
   // recontainerise if necessary
-  if(pos != futurepos && myGame->getObjectManager()->getObject(parentid)->getContainerType() >= 1){
-    //removeFromParent();
+    int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();
     myGame->getObjectManager()->doneWithObject(parentid);
+
+  if(pos != futurepos && containertype >= 1){
+    //removeFromParent();
     std::set<unsigned int> oblist = myGame->getObjectManager()->getContainerByPos(futurepos);
     for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
       Logger::getLogger()->debug("Container object %d", *itcurr);
@@ -214,9 +216,7 @@ void IGObject::updatePosition(){
     }
     pos = futurepos;
     touchModTime();
-  }else{
-    myGame->getObjectManager()->doneWithObject(parentid);
-    }
+  }
 }
 
 void IGObject::setVelocity(const Vector3d & nvel)
