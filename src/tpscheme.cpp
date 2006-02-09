@@ -26,13 +26,21 @@
 #include "tpmzscheme.h"
 #endif
 
+#ifdef HAVE_GUILE
+#include "tpguile.h"
+#endif
+
 #include "tpscheme.h"
 
 TpScheme* TpScheme::getImplemention(){
 #ifdef HAVE_LIBMZSCHEME
   return TpMzScheme::getImplemention();
 #else
+#ifdef HAVE_GUILE
+  return TpGuile::getImplemention();
+#else
 #error No Scheme Interpreter selected, but is required
+#endif
 #endif
 
 }
