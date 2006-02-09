@@ -1,4 +1,8 @@
+## Process this file with automake to produce Makefile.in
+
 bin_PROGRAMS = tpserver-cpp
+EXTRA_PROGRAMS = guile_test
+
 COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp \
 		settings.cpp connection.h console.h \
@@ -28,10 +32,15 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		boardmanager.cpp filelogger.h filelogger.cpp \
 		syslogger.h syslogger.cpp consolelogger.h \
 		consolelogger.cpp logsink.h
-if MZSCHEME
-SCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
+
+
+MZSCHEMESOURCES = tpmzscheme.h tpmzscheme.cpp
+GUILESOURCES = tpguile.h tpguile.cpp
+
+if GUILE
+SCHEMESOURCES = $(GUILESOURCES)
 else
-SCHEMESOURCES =
+SCHEMESOURCES = $(MZSCHEMESOURCES)
 endif
 
 if MYSQL
@@ -62,6 +71,24 @@ endif
 tpserver_cpp_SOURCES = $(COMMONSOURCES) $(SCHEMESOURCES) $(DBSOURCES) $(GNUTLSSOURCES)
 
 tpserver_cpp_LDADD = $(READLINE_LIBS) $(MYSQL_LIBS) $(LIBGNUTLS_LIBS)
+
+guile_test_SOURCES = test/guile_test.cpp tpscheme.h tpscheme.cpp game.h game.cpp \
+	consolelogger.h consolelogger.cpp filelogger.h filelogger.cpp logging.h \
+	logging.cpp logsink.h syslogger.h syslogger.cpp property.h property.cpp \
+	propertyvalue.h propertyvalue.cpp design.h design.cpp designstore.h \
+	designstore.cpp player.h player.cpp playerconnection.h playerconnection.cpp \
+	frame.h frame.cpp connection.h connection.cpp playermanager.h \
+	playermanager.cpp message.h message.cpp settings.h settings.cpp component.h \
+	component.cpp board.h board.cpp boardmanager.h boardmanager.cpp \
+	category.h category.cpp objectmanager.h objectmanager.cpp object.h \
+	object.cpp vector3d.h vector3d.cpp objectdata.h objectdata.cpp \
+	objectdatamanager.h objectdatamanager.cpp ordermanager.h ordermanager.cpp \
+	order.h order.cpp ownedobject.h ownedobject.cpp combatstrategy.h \
+	combatstrategy.cpp net.h net.cpp universe.h universe.cpp listensocket.h \
+	listensocket.cpp tcpsocket.h tcpsocket.cpp playertcpconn.h \
+	playertcpconn.cpp $(SCHEMESOURCES) $(GNUTLSSOURCES)
+
+guile_test_LDADD = $(LIBGNUTLS_LIBS)
 
 data_DATA = designstruct.scm
 EXTRA_DIST = designstruct.scm
