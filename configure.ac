@@ -84,48 +84,95 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 AM_PATH_LIBGNUTLS(, [AC_DEFINE(HAVE_LIBGNUTLS, 1, [Define to 1 if you have the `gnutls' library (-lgnutls).])
         AM_CONDITIONAL(GNUTLS, true)])
 
-dnl PLT MzScheme autoconf test
+
+
+# ===================================================
+# Scheme Interpreter tests
+# ===================================================
+# enable the --with-mzscheme option
 AC_ARG_WITH(mzscheme,
-  AS_HELP_STRING([--with-mzscheme[=prefix]],
-    [Set the prefix to plt mzscheme]
-  ),
-  ,
-  [with_mzscheme="auto"]
-)
+	    AS_HELP_STRING([--with-mzscheme[=path]],[Set the path to plt mzscheme]),
+	    [mzscheme_option="$withval"],
+	    [mzscheme_option="auto"])
+# enable the --with-guile option
+AC_ARG_WITH(guile,
+	    AS_HELP_STRING([--with-guile[=path]],[Enable use of guile, with optional path.]),
+	    [guile_option="$withval"],
+	    [guile_option="auto"])
 
-if test "$with_mzscheme" = "no"; then
-  AC_MSG_ERROR([MzScheme is required, please specific prefix with --with-mzscheme])
+
+# Default to using mzscheme
+scheme_int=mzscheme
+
+# We need a scheme interpreter.  Require either MzScheme or Guile, but not both.
+if test "$mzscheme_option" = "no" -a "$guile_option" = "no"; then
+   AC_MSG_ERROR([Either MzScheme or Guile must be used.  Please specify either mzscheme or guile.])
 fi
-if test "$with_mzscheme" = "auto"; then
-  with_mzscheme=/usr/lib/plt
-fi
-if test -n "$with_mzscheme" && test -d "$with_mzscheme" ; then
-  CPPFLAGS="$CPPFLAGS -I$with_mzscheme/include"
-  LDFLAGS="$LDFLAGS -L$with_mzscheme/lib"
+if test "$mzscheme_option" != "no" -a "$mzscheme_option" != "auto" -a \
+   "$guile_option" != "auto" -a "$guile_option" != "no"; then
+   AC_MSG_ERROR([Can only use either MzScheme or Guile, but not both.])
 fi
 
-AC_CHECK_LIB(dl, dlsym,,)
-AC_CHECK_HEADER(scheme.h)
+if test \( "$mzscheme_option" != "no" -a "$mzscheme_option" != "auto" \) -o \
+   "$guile_option" = "no"; then
+   scheme_int=mzscheme
+fi
 
-AC_MSG_CHECKING(mzscheme version)
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include "scheme.h"
+if test \( "$guile_option" != "no" -a "$guile_option" != "auto" \) -o \
+   "$mzscheme_option" = "no"; then
+   scheme_int=guile
+fi
+
+if test "$scheme_int" = "mzscheme"; then
+   mzscheme_loc=/usr/lib/plt
+   if test -n "$mzscheme_option" && test -d "$mzscheme_option" ; then
+      mzscheme_loc=$mzscheme_option
+      CPPFLAGS="$CPPFLAGS -I$mzscheme_loc/include"
+      LDFLAGS="$LDFLAGS -L$mzscheme_loc/lib"
+   fi
+
+   AC_CHECK_LIB(dl, dlsym,,)
+   AC_CHECK_HEADER(scheme.h)
+   AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+
+   # Test for MZScheme 2.x vs. 3.x
+   AC_MSG_CHECKING(mzscheme version)
+   AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include "scheme.h"
 	#ifndef SCHEME_STRINGP
 	#error
-	#endif]])], 
-    [AC_DEFINE(HAVE_MZSCHEME20X, 1,Define if we have mzscheme 209)
+	#endif]])],
+	[AC_DEFINE(HAVE_MZSCHEME20X, 1,Define if we have mzscheme 209)
         AC_MSG_RESULT(20x)],
-    AC_MSG_RESULT(3xx))
+        AC_MSG_RESULT(3xx))
 
-AC_CHECK_LIB(mzgc, GC_init,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
-AC_CHECK_LIB(mzscheme,scheme_basic_env,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
+   AC_CHECK_LIB(mzgc, GC_init,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
+   AC_CHECK_LIB(mzscheme,scheme_basic_env,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
 
-if test -n "$with_mzscheme"; then
-   AC_MSG_WARN([MzScheme is not nice, please check that $with_mzscheme/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
+   if test -n "$mzscheme_loc"; then
+      AC_MSG_WARN([MzScheme is not nice, please check that $mzscheme_loc/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
+   fi
+
+   AM_CONDITIONAL(MZSCHEME, true)
+   AM_CONDITIONAL(GUILE, false)
+else
+   AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:$PATH)
+   if test "$GUILE_CONFIG" != "no"; then
+      CPPFLAGS="$CPPFLAGS `$GUILE_CONFIG compile`"
+      LDFLAGS="$LDFLAGS `$GUILE_CONFIG link`"
+      GUILE_PASS="true"
+      AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
+   else
+      AC_MSG_ERROR(Cannot find Guile configuration script, required to build with Guile)
+   fi
+
+   AM_CONDITIONAL(GUILE, test x$GUILE_PASS != x)
+   AM_CONDITIONAL(MZSCHEME, false)
 fi
 
-AM_CONDITIONAL(MZSCHEME, true)
 
-
+# ===================================================
+# MySQL tests
+# ===================================================
 dnl MySql autoconf test stolen from BONIC, then hacked, lots
 AC_ARG_WITH(mysql,
   AS_HELP_STRING([--with-mysql],
