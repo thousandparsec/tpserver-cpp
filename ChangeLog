@@ -3,7 +3,7 @@
     * Fixes in network management
     * Fixed logging string length bug
     * Fixed RSP combat so that the combatants don't both disappear always
-    * MzScheme 30x support, Gulie support
+    * MzScheme 30x support, Guile support
     * Parsing config file and command line args changes
     * Colour console with time as well
     * Logging to file and Syslog
