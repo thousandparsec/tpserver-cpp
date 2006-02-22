@@ -1,5 +1,5 @@
 AC_INIT([tpserver-cpp],[0.2.1],[lee@thousandparsec.net])
-AC_CONFIG_SRCDIR(src/main.cpp)
+AC_CONFIG_SRCDIR(tpserver/main.cpp)
 
 AC_CANONICAL_TARGET([])
 
@@ -15,6 +15,7 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AM_PROG_LIBTOOL
 
 AC_LANG_CPLUSPLUS
 AC_REQUIRE_CPP
@@ -85,6 +86,9 @@ AM_PATH_LIBGNUTLS(, [AC_DEFINE(HAVE_LIBGNUTLS, 1, [Define to 1 if you have the `
         AM_CONDITIONAL(GNUTLS, true)])
 
 
+# Always build minisec
+MODULE_LIBS="-L../modules/games/minisec -lminisec"
+
 
 # ===================================================
 # Scheme Interpreter tests
@@ -154,6 +158,7 @@ if test "$scheme_int" = "mzscheme"; then
 
    AM_CONDITIONAL(MZSCHEME, true)
    AM_CONDITIONAL(GUILE, false)
+   MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/mzscheme -ltpmzscheme"
 else
    AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:$PATH)
    if test "$GUILE_CONFIG" != "no"; then
@@ -167,6 +172,7 @@ else
 
    AM_CONDITIONAL(GUILE, test x$GUILE_PASS != x)
    AM_CONDITIONAL(MZSCHEME, false)
+   MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/guile -ltpguile"
 fi
 
 
@@ -210,6 +216,7 @@ else
     else
         AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the `mysql' library (-lmysql).])
         AM_CONDITIONAL(MYSQL, true)
+	MODULE_LIBS="$MODULE_LIBS -L../modules/persistence/mysql -ltpmysql"
     fi
 fi
 
@@ -241,9 +248,19 @@ AC_DEFUN([AC_DEFINE_DIR], [
 
 AC_DEFINE_DIR(DATADIR, datadir, The data directory where datafiles will be stored)
 
+AC_SUBST(MODULE_LIBS)
+
 AC_CONFIG_FILES([
 Makefile
-src/Makefile
+tpserver/Makefile
+modules/Makefile
+modules/games/Makefile
+modules/games/minisec/Makefile
+modules/persistence/Makefile
+modules/persistence/mysql/Makefile
+modules/tpcl/Makefile
+modules/tpcl/guile/Makefile
+modules/tpcl/mzscheme/Makefile
 ]) 
 
 AC_OUTPUT

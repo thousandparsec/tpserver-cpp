@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = modules tpserver
 
 man_MANS = tpserver-cpp.1
 
