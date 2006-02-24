@@ -1,0 +1,2 @@
+SUBDIRS = games persistence tpcl
+
