@@ -242,7 +242,7 @@ TpMzScheme::TpMzScheme(){
   if (scheme_setjmp(scheme_error_buf)) {
     Logger::getLogger()->warning("MzScheme Error");
   } else {
-    scheme_eval_string("(load \"designstruct.scm\")",env);
+      scheme_eval_string("(load \"../modules/tpcl/mzscheme/designstruct.scm\")",env);
         loaded = true;
   }
     if(loaded == false){
