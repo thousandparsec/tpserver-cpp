@@ -49,6 +49,8 @@
 #include <tpserver/category.h>
 #include <tpserver/logging.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/resourcedescription.h>
+#include <tpserver/resourcemanager.h>
 
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -377,11 +379,34 @@ void MiniSec::createGame(){
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
   
-
+    //setup Resources
+    ResourceDescription* res = new ResourceDescription();
+    res->setNameSingular("Ship part");
+    res->setNamePlural("Ship parts");
+    res->setUnitSingular("part");
+    res->setUnitPlural("parts");
+    res->setDescription("Ships parts that can be used to create ships");
+    res->setMass(0);
+    res->setVolume(0);
+    game->getResourceManager()->addResourceDescription(res);
   
 }
 
 void MiniSec::startGame(){
+    
+    if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
+        Logger::getLogger()->info("Setting up resource that had not been setup");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Ship part");
+        res->setNamePlural("Ship parts");
+        res->setUnitSingular("part");
+        res->setUnitPlural("parts");
+        res->setDescription("Ships parts that can be used to create ships");
+        res->setMass(0);
+        res->setVolume(0);
+        Game::getGame()->getResourceManager()->addResourceDescription(res);
+    }
+    
   Game::getGame()->setTurnLength(600);
 }
 
