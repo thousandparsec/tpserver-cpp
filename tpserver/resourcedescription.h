@@ -22,6 +22,8 @@
 
 #include <string>
 
+class Frame;
+
 /**
 	@author Lee Begg <llnz@paradise.net.nz>
 */
@@ -52,6 +54,7 @@ public:
     uint32_t getVolume() const;
     uint64_t getModTime() const;
     
+    void packFrame(Frame* frame) const;
 
 private:
     uint32_t restype;

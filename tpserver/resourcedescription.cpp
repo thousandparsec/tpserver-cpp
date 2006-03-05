@@ -17,6 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include "frame.h"
+
 #include "resourcedescription.h"
 
 ResourceDescription::ResourceDescription()
@@ -98,3 +101,15 @@ uint64_t ResourceDescription::getModTime() const{
     return modtime;
 }
 
+void ResourceDescription::packFrame(Frame* frame) const{
+    frame->setType(ft02_ResDesc);
+    frame->packInt(restype);
+    frame->packString(name_sig.c_str());
+    frame->packString(name_plur.c_str());
+    frame->packString(unit_sig.c_str());
+    frame->packString(unit_plur.c_str());
+    frame->packString(description.c_str());
+    frame->packInt(mass);
+    frame->packInt(volume);
+    frame->packInt64(modtime);
+}
