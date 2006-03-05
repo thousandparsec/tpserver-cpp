@@ -33,6 +33,7 @@
 #include <tpserver/order.h>
 #include <tpserver/board.h>
 #include <tpserver/message.h>
+#include <tpserver/resourcedescription.h>
 #include <tpserver/player.h>
 #include <tpserver/category.h>
 #include <tpserver/design.h>
@@ -118,7 +119,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'player', 0), (NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
                     "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), (NULL, 'category', 0), (NULL, 'design',0), "
                     "(NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), (NULL, 'component', 0), (NULL, 'componentproperty', 0), "
-                    "(NULL, 'property', 0);") != 0){
+                    "(NULL, 'property', 0), (NULL, 'resourcedesc', 0);") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, " 
@@ -205,6 +206,11 @@ bool MysqlPersistence::init(){
                     "tpcldisplayfunc TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
             }
+            if(mysql_query(conn, "CREATE TABLE resourcedesc (resourcetype INT UNSIGNED NOT NULL PRIMARY KEY, name_sig TEXT NOT NULL,"
+                    "name_plur TEXT NOT NULL, unit_sig TEXT NOT NULL, uint_plur TEXT NOT NULL, description TEXT NOT NULL, "
+                    "mass INT UNSIGNED NOT NULL, volume INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                throw std::exception();
+            }
         }catch(std::exception e){
             Logger::getLogger()->error("Mysql creating tables: %s", mysql_error(conn));
             Logger::getLogger()->error("You may need to delete the tables and start again");
@@ -224,8 +230,23 @@ bool MysqlPersistence::init(){
             unlock();
             return false;
         }
-        // Since this is the first release, there are no tables to update.
+        //Possible central table updates
         mysql_free_result(tableversions);
+        
+        try{
+            getTableVersion("resourcedesc");
+        }catch(std::exception e){
+            if(mysql_query(conn, "CREATE TABLE resourcedesc (resourcetype INT UNSIGNED NOT NULL PRIMARY KEY, name_sig TEXT NOT NULL,"
+                    "name_plur TEXT NOT NULL, unit_sig TEXT NOT NULL, uint_plur TEXT NOT NULL, description TEXT NOT NULL, "
+                    "mass INT UNSIGNED NOT NULL, volume INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                Logger::getLogger()->error("Mysql: resourcedesc versions query result error: %s", mysql_error(conn));
+                Logger::getLogger()->error("You may need to delete the tables and start again");
+            }else if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'resourcedesc', 0);") != 0){
+                Logger::getLogger()->error("Mysql: resourcedesc versions update error: %s", mysql_error(conn));
+                Logger::getLogger()->error("You may need to delete the tables and start again");
+            }
+        }
+        
     }
     
     unlock();
@@ -1028,6 +1049,103 @@ uint32_t MysqlPersistence::getMaxMessageId(){
     }
     mysql_free_result(obresult);
     return maxid;
+}
+
+bool MysqlPersistence::saveResource(ResourceDescription* res){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO resourcedesc VALUES (" << res->getResourceType() << ", '" << addslashes(res->getNameSingular()) << "', '";
+    querybuilder << addslashes(res->getNamePlural()) << "', '" << addslashes(res->getUnitSingular()) << "', '";
+    querybuilder << addslashes(res->getUnitPlural()) << "', '" << addslashes(res->getDescription()) << "', ";
+    querybuilder << res->getMass() << ", " << res->getVolume() << ", " << res->getModTime() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store resource %d - %s", res->getResourceType(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    return true;
+}
+
+ResourceDescription* MysqlPersistence::retrieveResource(uint32_t restype){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM resourcedesc WHERE resourcetype = " << restype << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve resource %d - %s", restype, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve resource: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such resource %d", restype);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    ResourceDescription *res = new ResourceDescription();
+    res->setResourceType(restype);
+    res->setNameSingular(row[1]);
+    res->setNamePlural(row[2]);
+    res->setUnitSingular(row[3]);
+    res->setUnitPlural(row[4]);
+    res->setDescription(row[5]);
+    res->setMass(atoi(row[6]));
+    res->setVolume(atoi(row[7]));
+    res->setModTime(strtoull(row[8], NULL, 10));
+    mysql_free_result(obresult);
+    return res;
+}
+
+uint32_t MysqlPersistence::getMaxResourceId(){
+    lock();
+    if(mysql_query(conn, "SELECT MAX(resourcetype) FROM resourcedesc;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query max resource id - %s", mysql_error(conn));
+        unlock();
+        return 0;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get max resourceid: Could not store result - %s", mysql_error(conn));
+        return 0;
+    }
+    MYSQL_ROW max = mysql_fetch_row(obresult);
+    uint32_t maxid = 0;
+    if(max[0] != NULL){
+        maxid = atoi(max[0]);
+    }
+    mysql_free_result(obresult);
+    return maxid;
+}
+
+std::set<uint32_t> MysqlPersistence::getResourceIds(){
+    lock();
+    if(mysql_query(conn, "SELECT resourcetype FROM resourcedesc;") != 0){
+        Logger::getLogger()->error("Mysql: Could not query resourcetypes - %s", mysql_error(conn));
+        unlock();
+        return std::set<uint32_t>();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    unlock();
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: get resourceids: Could not store result - %s", mysql_error(conn));
+        return std::set<uint32_t>();
+    }
+    MYSQL_ROW max;
+    std::set<uint32_t> vis;
+    while((max = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(max[0]));
+    }
+    mysql_free_result(obresult);
+    return vis;
 }
 
 bool MysqlPersistence::savePlayer(Player* player){
