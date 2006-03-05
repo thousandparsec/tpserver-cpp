@@ -23,6 +23,7 @@
 #include "order.h"
 #include "board.h"
 #include "message.h"
+#include "resourcedescription.h"
 #include "player.h"
 #include "category.h"
 #include "design.h"
@@ -139,6 +140,22 @@ std::list<uint32_t> Persistence::retrieveMessageList(uint32_t bid){
 
 uint32_t Persistence::getMaxMessageId(){
     return 0;
+}
+
+bool Persistence::saveResource(ResourceDescription* res){
+    return false;
+}
+
+ResourceDescription* Persistence::retrieveResource(uint32_t restype){
+    return NULL;
+}
+
+uint32_t Persistence::getMaxResourceId(){
+    return 0;
+}
+
+std::set<uint32_t> Persistence::getResourceIds(){
+    return std::set<uint32_t>();
 }
 
 bool Persistence::savePlayer(Player* player){

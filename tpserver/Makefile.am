@@ -27,7 +27,8 @@ COMMONSOURCES = main.cpp connection.cpp console.cpp \
 		listensocket.cpp \
 		boardmanager.cpp filelogger.cpp \
 		syslogger.cpp \
-		consolelogger.cpp 
+		consolelogger.cpp \
+		resourcedescription.cpp resourcemanager.cpp
 
 COMMONHEADERS = connection.h console.h \
 		frame.h game.h logging.h net.h settings.h \
@@ -41,7 +42,8 @@ COMMONHEADERS = connection.h console.h \
 		design.h designstore.h \
 		ruleset.h tpscheme.h category.h persistence.h \
 		objectmanager.h \
-		playermanager.h listensocket.h boardmanager.h
+		playermanager.h listensocket.h boardmanager.h \
+		resourcedescription.h resourcemanager.h
 
 
 if GNUTLS
@@ -55,7 +57,6 @@ endif
 
 tpserver_cpp_SOURCES = $(COMMONSOURCES) $(GNUTLSSOURCES)
 include_HEADERS = $(COMMONHEADERS)
-noinst_HEADERS = playertcpconn.h tcpsocket.h \
-		filelogger.h syslogger.h consolelogger.h logsink.h \
-		$(GNUTLSHEADERS)
+noinst_HEADERS = playertcpconn.h tcpsocket.h 		filelogger.h syslogger.h \
+	consolelogger.h logsink.h 		$(GNUTLSHEADERS)
 tpserver_cpp_LDADD = $(MODULE_LIBS) $(READLINE_LIBS) $(LIBGNUTLS_LIBS)

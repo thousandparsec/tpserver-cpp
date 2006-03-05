@@ -28,6 +28,7 @@ class IGObject;
 class Order;
 class Board;
 class Message;
+class ResourceDescription;
 class Player;
 class Category;
 class Design;
@@ -69,6 +70,11 @@ public:
     virtual bool saveMessageList(uint32_t bid, std::list<uint32_t> list);
     virtual std::list<uint32_t> retrieveMessageList(uint32_t bid);
     virtual uint32_t getMaxMessageId();
+    
+    virtual bool saveResource(ResourceDescription* res);
+    virtual ResourceDescription* retrieveResource(uint32_t restype);
+    virtual uint32_t getMaxResourceId();
+    virtual std::set<uint32_t> getResourceIds();
 
     virtual bool savePlayer(Player* player);
     virtual bool updatePlayer(Player* player);

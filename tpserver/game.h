@@ -31,6 +31,7 @@ class ObjectManager;
 class OrderManager;
 class ObjectDataManager;
 class BoardManager;
+class ResourceManager;
 class PlayerManager;
 class CombatStrategy;
 class DesignStore;
@@ -54,6 +55,7 @@ class Game {
 	OrderManager* getOrderManager() const;
 	ObjectDataManager* getObjectDataManager() const;
         BoardManager* getBoardManager() const;
+        ResourceManager* getResourceManager() const;
         PlayerManager* getPlayerManager() const;
 	
 	CombatStrategy* getCombatStrategy() const;
@@ -97,6 +99,7 @@ class Game {
 	OrderManager * ordermanager;
 	ObjectDataManager * objectdatamanager;
         BoardManager* boardmanager;
+        ResourceManager* resourcemanager;
         PlayerManager* playermanager;
 	CombatStrategy * combatstrategy;
 	DesignStore* designstore;
