@@ -41,6 +41,8 @@
 #include "design.h"
 #include "component.h"
 #include "property.h"
+#include "resourcedescription.h"
+#include "resourcemanager.h"
 
 #include "player.h"
 
@@ -1035,8 +1037,12 @@ void Player::processGetResourceDescription(Frame * frame){
     Frame *of = curConnection->createFrame(frame);
     int rnum = frame->unpackInt();
     
-    //There are no resources defined currently, so always fail.
-    of->createFailFrame(fec_NonExistant, "No Resource Descriptions available");
+        const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
+        if(res != NULL){
+            res->packFrame(of);
+        }else{
+            of->createFailFrame(fec_NonExistant, "No Resource Descriptions available");
+        }
 
     curConnection->sendFrame(of);
   }
@@ -1066,13 +1072,37 @@ void Player::processGetResourceTypes(Frame* frame){
     seqkey = 0;
   }
 
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_ResType_List);
-  of->packInt(seqkey);
-  of->packInt(0);
-  of->packInt(0); // no resource descriptions
- 
-  curConnection->sendFrame(of);
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
+    std::set<uint32_t> idset = Game::getGame()->getResourceManager()->getAllIds();
+    if(snum > idset.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, idset.size());
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > idset.size() - snum){
+      numtoget = idset.size() - snum;
+    }
+    
+    Frame *of = curConnection->createFrame(frame);
+    of->setType(ft03_ResType_List);
+    of->packInt(seqkey);
+    of->packInt(idset.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::set<unsigned int>::iterator itcurr = idset.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+        of->packInt(*itcurr);
+        const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(*itcurr);
+        if(res != NULL){
+            of->packInt64(res->getModTime());
+        }else{
+            of->packInt64(0ll);
+        }
+    }
+    curConnection->sendFrame(of);
 }
 
 void Player::processGetPlayer(Frame* frame){
