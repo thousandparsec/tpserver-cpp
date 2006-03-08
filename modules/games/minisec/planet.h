@@ -20,6 +20,8 @@
  *
  */
 
+#include <map>
+
 #include <tpserver/ownedobject.h>
 
 class Planet:public OwnedObject {
@@ -38,8 +40,14 @@ class Planet:public OwnedObject {
 	
 	ObjectData* clone();
 
-      private:
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+    
+    void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
+    void addResource(uint32_t restype, uint32_t amount);
+    bool removeResource(uint32_t restype, uint32_t amount);
 
+      private:
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources;
 
 };
 

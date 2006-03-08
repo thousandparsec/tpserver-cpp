@@ -32,7 +32,14 @@ Planet::Planet():OwnedObject()
 void Planet::packExtraData(Frame * frame)
 {
 	OwnedObject::packExtraData(frame);
-	frame->packInt(0); // no resources at this time
+    frame->packInt(resources.size());
+    for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = resources.begin();
+            itcurr != resources.end(); ++itcurr){
+        frame->packInt(itcurr->first);
+        frame->packInt(itcurr->second.first);
+        frame->packInt(itcurr->second.second);
+        frame->packInt(0);
+    }
 }
 
 void Planet::doOnceATurn(IGObject * obj)
@@ -62,3 +69,28 @@ ObjectData* Planet::clone(){
   return new Planet();
 }
 
+std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
+    return resources;
+}
+
+void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
+    resources = ress;
+}
+
+void Planet::addResource(uint32_t restype, uint32_t amount){
+    std::pair<uint32_t, uint32_t> respair = resources[restype];
+    respair.first += amount;
+    resources[restype] = respair;
+}
+
+bool Planet::removeResource(uint32_t restype, uint32_t amount){
+    if(resources.find(restype) != resources.end()){
+        if(resources[restype].second >= amount){
+            std::pair<uint32_t, uint32_t> respair = resources[restype];
+            respair.first -= amount;
+            resources[restype] = respair;
+            return true;
+        }
+    }
+    return false;
+}
