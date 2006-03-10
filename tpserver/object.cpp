@@ -162,7 +162,7 @@ void IGObject::setSize(unsigned long long newsize)
 	touchModTime();
 }
 
-void IGObject::setName(char *newname)
+void IGObject::setName(const char *newname)
 {
 	if (name != NULL) {
 		delete[]name;

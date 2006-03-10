@@ -55,7 +55,7 @@ class IGObject {
 	void autoSetID();
 	void setType(unsigned int newtype);
 	void setSize(unsigned long long newsize);
-	void setName(char *newname);
+	void setName(const char *newname);
 	void setPosition(const Vector3d & npos);
 	void setFuturePosition(const Vector3d & npos);
 	void updatePosition();
