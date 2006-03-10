@@ -33,7 +33,9 @@ MysqlOrderBuild::~MysqlOrderBuild(){
 
 bool MysqlOrderBuild::save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO build VALUES (" << ordid << ", " << static_cast<Build*>(ord)->getTimeToGo() << "); ";
+    querybuilder << "INSERT INTO build VALUES (" << ordid << ", " << static_cast<Build*>(ord)->getTimeToGo() 
+            << ", " << static_cast<Build*>(ord)->getRequiredResources() << ", '" 
+            << persistence->addslashes(static_cast<Build*>(ord)->getFleetName()) << "');";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not store build - %s", mysql_error(conn));
         return false;
@@ -58,7 +60,10 @@ bool MysqlOrderBuild::save(MysqlPersistence* persistence, MYSQL* conn, uint32_t 
 
 bool MysqlOrderBuild::update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
-    querybuilder << "UPDATE build SET turnstogo=" << static_cast<Build*>(ord)->getTimeToGo() << " WHERE orderid=" << ordid << "; ";
+    querybuilder << "UPDATE build SET turnstogo=" << static_cast<Build*>(ord)->getTimeToGo() 
+            << ", requiredres=" << static_cast<Build*>(ord)->getRequiredResources()
+            << ", fleetname='" << persistence->addslashes(static_cast<Build*>(ord)->getFleetName())
+            << "' WHERE orderid=" << ordid << "; ";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not update build - %s", mysql_error(conn));
         return false;
@@ -86,7 +91,7 @@ bool MysqlOrderBuild::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
     mysql_free_result(shipresult);
     
     querybuilder.str("");
-    querybuilder << "SELECT turnstogo FROM build WHERE orderid = " << ordid << ";";
+    querybuilder << "SELECT turnstogo,requiredres,fleetname FROM build WHERE orderid = " << ordid << ";";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve build - %s", mysql_error(conn));
         return false;
@@ -103,6 +108,8 @@ bool MysqlOrderBuild::retrieve(MYSQL* conn, uint32_t ordid, Order* ord){
         return false;
     }
     static_cast<Build*>(ord)->setTimeToGo(atoi(row[0]));
+    static_cast<Build*>(ord)->setRequiredResources(atoi(row[1]));
+    static_cast<Build*>(ord)->setFleetName(row[2]);
     mysql_free_result(result);
     return true;
 }
@@ -126,14 +133,29 @@ bool MysqlOrderBuild::remove(MYSQL* conn, uint32_t ordid){
 void MysqlOrderBuild::initialise(MysqlPersistence* persistence, MYSQL* conn){
     try{
         uint32_t ver = persistence->getTableVersion("build");
-        //initial version, no table version problems.
+        if(ver == 0){
+            //add requiredres and fleetname fields
+            if(mysql_query(conn, "ALTER TABLE build ADD requiredres INT UNSIGNED NOT NULL, ADD fleetname TEXT NOT NULL;") != 0){
+                Logger::getLogger()->error("Could not update build table");
+                Logger::getLogger()->error("Possible Database structure out of sync");
+                return;
+            }
+            if(mysql_query(conn, "UPDATE tableversion SET version = 1 WHERE name = 'build';") != 0){
+                Logger::getLogger()->error("Could not update build table version");
+                Logger::getLogger()->error("Possible Database structure out of sync");
+                return;
+            }
+            if(mysql_query(conn, "UPDATE build SET fleetname = 'A Fleet';") != 0){
+                Logger::getLogger()->warning("Could not set default new fleet names, please correct manually");
+            }
+        }
     }catch(std::exception){
         if(mysql_query(conn, "CREATE TABLE build (orderid INT UNSIGNED NOT NULL PRIMARY KEY, "
-                "turnstogo INT UNSIGNED NOT NULL);") != 0){
+                "turnstogo INT UNSIGNED NOT NULL, requiredres INT UNSIGNED NOT NULL, fleetname TEXT NOT NULL);") != 0){
             Logger::getLogger()->debug("Could not send query to create build table");
         }
-        if(mysql_query(conn, "INSERT INTO tableversion VALUES(NULL, 'build', 0);") != 0){
-            Logger::getLogger()->debug("Could not set nop table version");
+        if(mysql_query(conn, "INSERT INTO tableversion VALUES(NULL, 'build', 1);") != 0){
+            Logger::getLogger()->debug("Could not set build table version");
         }
     }
     try{

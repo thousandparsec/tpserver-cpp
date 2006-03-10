@@ -21,6 +21,7 @@
  */
 
 #include <map>
+#include <string>
 
 #include <tpserver/order.h>
 
@@ -36,16 +37,24 @@ class Build : public Order{
 
     uint32_t getTimeToGo() const;
     std::map<uint32_t, uint32_t> getShips() const;
+    uint32_t getRequiredResources() const;
+    std::string getFleetName() const;
 
     void setTimeToGo(uint32_t ttg);
     void addShips(uint32_t designid, uint32_t count);
+    void setRequiredResources(uint32_t spart_res);
+    void setFleetName(const std::string& name);
 
   void describeOrder(Frame *f) const;
   Order* clone() const;
 
  private:
+     void update(IGObject* planet);
+     
   std::map<uint32_t, uint32_t> fleettype;
   uint32_t turnstogo;
+    uint32_t usedshipres;
+    std::string fname;
 };
 
 #endif
