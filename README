@@ -6,9 +6,26 @@ REQUIRES (to build also requires the dev packages)
 ========
 readline (standard with most distributions)
 pthreads (part of libc, standard)
-libgnutls (common in latest distros, optional needed for secure sockets)
+
+
+OPTIONAL
+========
+libgnutls12 (common in latest distros, optional needed for secure sockets) [GPL]
+Version 1.2.0 or higher.
+
+mysql (www.mysql.com) [GPL]
+MySQL is optional, but is needed for the mysql persistence backend. The client
+side library is required.
+ - note: see ./configure --help for options and env vars.
+
+
+OPTIONS (need one or the other)
+=======
 
 mzscheme (www.plt-scheme.org) [LGPL]
+Need to use 
+     ./configure --with-mzscheme
+to build with mzscheme
  - note: you will probably need to pass the directory to the plt
    to configure, and it will generally be /usr/lib/plt (as in 
    debian), therefore, your configure command will be:
@@ -16,7 +33,7 @@ mzscheme (www.plt-scheme.org) [LGPL]
    You may also need to add the lib subdirectory to /etc/ld.so.conf
    and run ldconfig as root before tpserver-cpp will run.
 
-mysql (www.mysql.com) [GPL]
-MySQL is optional, but is needed for the mysql persistence backend. The client
-side library is required.
- - note: see ./configure --help for options and env vars.
+Guile (www.gnu.org/software/guile/) [GPL]
+Should be on most systems already. Use 
+     ./configure --with-guile
+to build with guile.
