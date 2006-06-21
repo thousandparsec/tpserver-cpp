@@ -7,6 +7,7 @@ REQUIRES (to build also requires the dev packages)
 readline (standard with most distributions)
 pthreads (part of libc, standard)
 
+readline will probably be replaced by libtprl soon (when I get around to writing libtprl)
 
 OPTIONAL
 ========
