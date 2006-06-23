@@ -21,6 +21,12 @@
  */
 
 #include <tpserver/connection.h>
+#include <set>
+
+namespace tprl{
+class RLCommand;
+class Console;
+}
 
 class Console : public Connection{
 
@@ -33,20 +39,14 @@ class Console : public Connection{
 
 	void close();
 
-	void readLine(char* line);
-	char** wordCompletion(const char* text, int start, int end);
-	char* commandCompleter(const char* text, int state);
-	char* turnCommandCompleter(const char* text, int state);
-	char* networkCommandCompleter(const char* text, int state);
-        char* settingsCommandCompleter(const char* text, int state);
-
       private:
 	 Console(Console & rhs);
 	Console operator=(Console & rhs);
 	 Console();
 	~Console();
 
-	int commstate;
+        std::set<tprl::RLCommand*> commands;
+        tprl::Console * console;
 
 	static Console *myInstance;
 

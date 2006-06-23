@@ -27,40 +27,15 @@ AC_HEADER_STDC
 AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread library))
 #check headers, functions, etc
 
-#checking for readline
-READLINE_LIBS=
 
-AC_CHECK_LIB(termcap,tgetent, 
-    [READLINE_LIBS="$READLINE_LIBS -ltermcap"],
-    AC_CHECK_LIB(ncurses, tgetent, 
-        [READLINE_LIBS="$READLINE_LIBS -lncurses"],
-        AC_MSG_ERROR([Cannot find tgetent in termcap or ncurses libraries!])
-    )
+PKG_CHECK_MODULES(libtprl, libtprl >= 0.0.0,
+	[
+        CXXFLAGS="$CXXFLAGS $libtprl_CFLAGS"
+        LDFLAGS="$LDFLAGS $libtprl_LIBS"
+	],
+	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
 )
 
-AC_CHECK_HEADERS(termios.h unistd.h signal.h)
-AC_CHECK_LIB(readline,readline,
-    [
-	AC_DEFINE(HAVE_LIBREADLINE, 1, true if we have libreadline)
-	READLINE_LIBS="$READLINE_LIBS -lreadline"
-    ],
-    [
-        AC_MSG_ERROR([Cannot find readline!])
-    ],[ $READLINE_LIBS ]
-)
-
-    
-AC_TRY_COMPILE(
-  [
-    #include <stdio.h>
-    #include <readline/readline.h>
-  ],
-    readline("test > "), 
-    AC_DEFINE(READLINE_CXX_SANE, 1, [Define if readline headers are C++ aware]),
-    AC_MSG_WARN(Readline C++ workaround enabled)
-)
-
-AC_SUBST(READLINE_LIBS)
 
 #check byte order
 AC_C_BIGENDIAN
