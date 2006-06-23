@@ -2,7 +2,10 @@ This is the server for Thousand Parsec.
 More info at
 http://www.thousandparsec.net/tp/
 
-REQUIRES (to build also requires the dev packages)
+Requires a Unix-like environment, because it uses dynamic loading.
+Tested under Linux.
+
+REQUIRES (to build also requires the dev packages/headers)
 ========
 pthreads (part of libc, standard)
 libtprl (replaces/uses readline) (www.thousandparsec.net/tp/) [GPL]
