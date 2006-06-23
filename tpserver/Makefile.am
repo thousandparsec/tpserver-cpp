@@ -36,4 +36,5 @@ include_HEADERS = connection.h console.h \
 	resourcedescription.h resourcemanager.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS)
-tpserver_cpp_LDADD = $(MODULE_LIBS) $(LIBGNUTLS_LIBS)
+tpserver_cpp_LDADD = -ldl $(MODULE_LIBS) $(LIBGNUTLS_LIBS)
+tpserver_cpp_LDFLAGS = -rdynamic
