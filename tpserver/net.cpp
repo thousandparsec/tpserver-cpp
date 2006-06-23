@@ -165,7 +165,6 @@ void Network::stop()
 	if (active) {
 		Logger::getLogger()->info("Stopping Network");
 
-		if(halt){
 		  std::map<int, Connection*>::iterator itcurr = connections.begin();
 		  while (itcurr != connections.end()) {
 		    PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
@@ -185,8 +184,6 @@ void Network::stop()
 		      }
 		    }
 		  }
-
-		}
 
 		active = false;
 
