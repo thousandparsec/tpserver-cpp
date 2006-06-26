@@ -36,6 +36,7 @@
 #include "game.h"
 #include "object.h"
 #include "settings.h"
+#include "pluginmanager.h"
 
 #include "tpserver/console.h"
 
@@ -157,6 +158,32 @@ class SettingsGetCommand : public tprl::RLCommand{
         }
 };
 
+class PluginLoadCommand : public tprl::RLCommand{
+  public:
+    PluginLoadCommand() : tprl::RLCommand(){
+      name = "load";
+      help = "Loads a plugin.";
+    }
+    void action(const std::string& cmdline){
+      if(PluginManager::getPluginManager()->load(cmdline)){
+        std::cout << "Plugin \"" << cmdline << "\" was loaded." << std::endl;
+      }else{
+        std::cout << "Plugin \"" << cmdline << "\" was not loaded." << std::endl;
+      }
+    }
+};
+
+class PluginListCommand : public tprl::RLCommand{
+  public:
+    PluginListCommand() : tprl::RLCommand(){
+      name = "list";
+      help = "Lists the plugins that are loaded.";
+    }
+    void action(const std::string& cmdline){
+      std::cout << "These plugins are loaded: " << PluginManager::getPluginManager()->getLoadedLibraryNames() << std::endl;
+    }
+};
+
 Console *Console::myInstance = NULL;
 
 Console *Console::getConsole()
@@ -219,6 +246,11 @@ Console::Console() : Connection()
     tprl::CommandAlias* alias = new tprl::CommandAlias("exit");
     alias->setTarget(quit);
     commands.insert(alias);
+    
+    cat = new tprl::CommandCategory("plugin", "Plugin management functions");
+    cat->add(new PluginLoadCommand());
+    cat->add(new PluginListCommand());
+    commands.insert(cat);
 
 }
 

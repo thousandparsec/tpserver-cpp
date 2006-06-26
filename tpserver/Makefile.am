@@ -19,7 +19,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 	propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
 	persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 	filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
-	resourcemanager.cpp
+	resourcemanager.cpp pluginmanager.cpp
 include_HEADERS = connection.h console.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
@@ -35,6 +35,6 @@ include_HEADERS = connection.h console.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
-	consolelogger.h logsink.h $(GNUTLSHEADERS)
+	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h
 tpserver_cpp_LDADD = -ldl $(MODULE_LIBS) $(LIBGNUTLS_LIBS)
 tpserver_cpp_LDFLAGS = -rdynamic
