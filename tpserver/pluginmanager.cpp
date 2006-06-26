@@ -47,7 +47,20 @@ PluginManager *PluginManager::getPluginManager(){
 }
 
 void PluginManager::start(){
-  
+  std::string list = Settings::getSettings()->get("autoload_plugins");
+  uint32_t pos_c = 0;
+  uint32_t pos_e;
+  if(list.length() > 0){
+    while(pos_c != list.npos){
+      pos_e = list.find(",", pos_c);
+      load(list.substr(pos_c, pos_e));
+      pos_c = pos_e;
+    }
+  }else{
+    Logger::getLogger()->info("No automatically loaded plugins were defined in the "
+        "configuation, add \"autoload_plugins = <comma list of plugins>\" to conf "
+        "to have them loaded.");
+  }
 }
 
 void PluginManager::stop(){
@@ -89,6 +102,16 @@ bool PluginManager::load(const std::string& libname){
 }
 
 std::string PluginManager::getLoadedLibraryNames() const{
-  return "";
+  std::string list;
+  bool firsttime = true;
+  for(std::map<std::string, void*>::const_iterator itcurr = libs.begin(); itcurr != libs.end(); ++itcurr){
+    if(!firsttime){
+      list.append(",");
+    }else{
+      firsttime = false;
+    }
+    list.append(itcurr->first);
+  }
+  return list;
 }
 
