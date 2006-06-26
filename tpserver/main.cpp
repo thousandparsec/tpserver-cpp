@@ -31,6 +31,7 @@
 #include "game.h"
 #include "net.h"
 #include "settings.h"
+#include "pluginmanager.h"
 #include "persistence.h"
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -59,6 +60,9 @@ int main(int argc, char **argv)
 	myConsole->open();
 
 	Game *myGame = Game::getGame();
+
+          PluginManager* myPlugins = PluginManager::getPluginManager();
+          myPlugins->start();
 
             try{
                 Persistence* myPersistence = 
@@ -93,6 +97,9 @@ int main(int argc, char **argv)
             }catch(std::exception e){
                 myLogger->debug("Caught exception");
             }
+
+          myPlugins->stop();
+
 	myConsole->close();
 
         }catch(std::exception e){
