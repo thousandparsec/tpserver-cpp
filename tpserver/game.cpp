@@ -380,6 +380,7 @@ Game::Game()
   combatstrategy = NULL;
   ruleset = NULL;
     persistence = NULL;
+  tpscheme = NULL;
   loaded = false;
   started = false;
 
