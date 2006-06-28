@@ -1,6 +1,6 @@
 /*  Game controller for tpserver-cpp
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "designstore.h"
 #include "ruleset.h"
 #include "persistence.h"
+#include "tpscheme.h"
 
 #include "game.h"
 
@@ -168,6 +169,26 @@ Persistence* Game::getPersistence() const{
 
 void Game::setPersistence(Persistence* p){
     persistence = p;
+}
+
+TpScheme* Game::getTpScheme() const{
+  return tpscheme;
+}
+
+/*!Sets the implementation of TpScheme to use.
+
+  If there is an implementation set already, it is not replaced and
+  false is returned.
+
+  \param imp The TpScheme implementation to use
+  \returns True if set, false if not set
+    
+ */
+bool Game::setTpScheme(TpScheme* imp){
+  if(tpscheme != NULL)
+    return false;
+  tpscheme = imp;
+  return true;
 }
 
 bool Game::isLoaded() const{
@@ -396,3 +417,5 @@ Game Game::operator=(Game & rhs)
   assert(0);
   return *this;
 }
+
+

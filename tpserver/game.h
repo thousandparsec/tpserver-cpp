@@ -2,7 +2,7 @@
 #define GAME_H
 /*  Game class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ class CombatStrategy;
 class DesignStore;
 class Ruleset;
 class Persistence;
+class TpScheme;
 
 class Game {
 
@@ -66,6 +67,9 @@ class Game {
         Persistence* getPersistence() const;
         void setPersistence(Persistence* p);
 
+    bool setTpScheme(TpScheme* imp);
+    TpScheme* getTpScheme() const;
+  
 	bool isLoaded() const;
 	bool isStarted() const;
 
@@ -84,6 +88,7 @@ class Game {
 	Game(Game & rhs);
 	~Game();
 	Game operator=(Game & rhs);
+
 	
 	static Game *myInstance;
 	
@@ -104,6 +109,7 @@ class Game {
 	CombatStrategy * combatstrategy;
 	DesignStore* designstore;
         Persistence* persistence;
+        TpScheme* tpscheme;
 
 };
 

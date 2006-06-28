@@ -1,6 +1,6 @@
 /*  Main method for tpserver-cpp
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,14 @@
 #include <modules/persistence/mysql/mysqlpersistence.h>
 #endif
 
+#ifdef HAVE_LIBMZSCHEME
+#include <modules/tpcl/mzscheme/tpmzscheme.h>
+#endif
+
+#ifdef HAVE_GUILE
+#include <modules/tpcl/guile/tpguile.h>
+#endif
+
 #include <modules/games/minisec/minisec.h>
 
 
@@ -65,6 +73,17 @@ int main(int argc, char **argv)
           myPlugins->start();
 
             try{
+
+#ifdef HAVE_LIBMZSCHEME
+              myGame->setTpScheme(new TpMzScheme());
+#else
+#if HAVE_GUILE
+              myGame->setTpScheme(new TpGuile());
+#else
+#error No scheme implementation present and one is required. Not dynamically loaded yet
+#endif
+#endif
+
                 Persistence* myPersistence = 
 #ifdef HAVE_LIBMYSQL
                     new MysqlPersistence();

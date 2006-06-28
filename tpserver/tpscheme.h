@@ -2,7 +2,7 @@
 #define TPSCHEME_H
 /*  TP Scheme interpreter base class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@ class Design;
 
 class TpScheme{
  public:
-  static TpScheme* getImplemention();
-
         virtual ~TpScheme();
 
   virtual void evalDesign(Design* d) = 0;

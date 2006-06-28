@@ -1,6 +1,6 @@
 /*  Design class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "frame.h"
 #include "tpscheme.h"
+#include "game.h"
 
 #include "design.h"
 
@@ -165,7 +166,7 @@ void Design::eval(){
   feedback = "";
 
   // start calc
-  TpScheme* scheme_intr = TpScheme::getImplemention();
+  TpScheme* scheme_intr = Game::getGame()->getTpScheme();
   scheme_intr->evalDesign(this);
 }
 

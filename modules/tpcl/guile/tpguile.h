@@ -2,7 +2,7 @@
 #define TPGUILE_H
 /*  TP Guile interpreter class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ typedef struct Scheme_Env Scheme_Env;
 
 class TpGuile : public TpScheme{
  public:
-  static TpGuile* getImplemention();
+  TpGuile();
 
         virtual ~TpGuile();
   virtual void evalDesign(Design* d);
@@ -59,10 +59,6 @@ class TpGuile : public TpScheme{
                        std::map<unsigned int, PropertyValue> & propertyvalues);
 
 
- private:
-  TpGuile();
-
-  static TpGuile* instance;
 };
 
 #endif
