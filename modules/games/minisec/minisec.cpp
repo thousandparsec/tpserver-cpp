@@ -68,6 +68,12 @@
 
 #include "minisec.h"
 
+extern "C" {
+  bool tp_init(){
+    return Game::getGame()->setRuleset(new MiniSec());
+  }
+}
+
 MiniSec::MiniSec(){
 
 }
