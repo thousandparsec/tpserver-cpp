@@ -23,11 +23,10 @@ side library is required.
 
 OPTIONS (need one or the other)
 =======
+The configuration will try to locate these packages and will give an error if
+neither is found. Both can be present and will be built.
 
 mzscheme (www.plt-scheme.org) [LGPL]
-Need to use 
-     ./configure --with-mzscheme
-to build with mzscheme
  - note: you will probably need to pass the directory to the plt
    to configure, and it will generally be /usr/lib/plt (as in 
    debian), therefore, your configure command will be:
@@ -36,6 +35,4 @@ to build with mzscheme
    and run ldconfig as root before tpserver-cpp will run.
 
 Guile (www.gnu.org/software/guile/) [GPL]
-Should be on most systems already. Use 
-     ./configure --with-guile
-to build with guile.
+Should be on most systems already.

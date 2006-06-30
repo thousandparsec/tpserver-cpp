@@ -27,6 +27,7 @@ AC_HEADER_STDC
 AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread library))
 #check headers, functions, etc
 
+AC_CHECK_LIB(dl, dlsym,,)
 
 PKG_CHECK_MODULES(libtprl, libtprl >= 0.0.0,
 	[
@@ -68,11 +69,13 @@ MODULE_LIBS="-L../modules/games/minisec -lminisec"
 # ===================================================
 # Scheme Interpreter tests
 # ===================================================
+
 # enable the --with-mzscheme option
 AC_ARG_WITH(mzscheme,
 	    AS_HELP_STRING([--with-mzscheme[=path]],[Set the path to plt mzscheme]),
 	    [mzscheme_option="$withval"],
 	    [mzscheme_option="auto"])
+
 # enable the --with-guile option
 AC_ARG_WITH(guile,
 	    AS_HELP_STRING([--with-guile[=path]],[Enable use of guile, with optional path.]),
@@ -80,37 +83,15 @@ AC_ARG_WITH(guile,
 	    [guile_option="auto"])
 
 
-# Default to using mzscheme
-scheme_int=mzscheme
 
-# We need a scheme interpreter.  Require either MzScheme or Guile, but not both.
-if test "$mzscheme_option" = "no" -a "$guile_option" = "no"; then
-   AC_MSG_ERROR([Either MzScheme or Guile must be used.  Please specify either mzscheme or guile.])
-fi
-if test "$mzscheme_option" != "no" -a "$mzscheme_option" != "auto" -a \
-   "$guile_option" != "auto" -a "$guile_option" != "no"; then
-   AC_MSG_ERROR([Can only use either MzScheme or Guile, but not both.])
-fi
-
-if test \( "$mzscheme_option" != "no" -a "$mzscheme_option" != "auto" \) -o \
-   "$guile_option" = "no"; then
-   scheme_int=mzscheme
-fi
-
-if test \( "$guile_option" != "no" -a "$guile_option" != "auto" \) -o \
-   "$mzscheme_option" = "no"; then
-   scheme_int=guile
-fi
-
-if test "$scheme_int" = "mzscheme"; then
+if test "$mzscheme_option" != "no"; then
    mzscheme_loc=/usr/lib/plt
    if test -n "$mzscheme_option" && test -d "$mzscheme_option" ; then
       mzscheme_loc=$mzscheme_option
-      CPPFLAGS="$CPPFLAGS -I$mzscheme_loc/include"
-      LDFLAGS="$LDFLAGS -L$mzscheme_loc/lib"
    fi
+   CPPFLAGS="$CPPFLAGS -I$mzscheme_loc/include"
+   LDFLAGS="$LDFLAGS -L$mzscheme_loc/lib"
 
-   AC_CHECK_LIB(dl, dlsym,,)
    AC_CHECK_HEADER(scheme.h)
    AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
 
@@ -124,30 +105,45 @@ if test "$scheme_int" = "mzscheme"; then
         AC_MSG_RESULT(20x)],
         AC_MSG_RESULT(3xx))
 
-   AC_CHECK_LIB(mzgc, GC_init,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
-   AC_CHECK_LIB(mzscheme,scheme_basic_env,,AC_MSG_ERROR(Can not find MzScheme library, required to build))
+   AC_CHECK_LIB(mzgc, GC_init,,)
+   AC_CHECK_LIB(mzscheme,scheme_basic_env,[
+      AC_MSG_RESULT(yes)
 
-   if test -n "$mzscheme_loc"; then
-      AC_MSG_WARN([MzScheme is not nice, please check that $mzscheme_loc/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
-   fi
+      if test -n "$mzscheme_loc"; then
+        AC_MSG_WARN([MzScheme is not nice, please check that $mzscheme_loc/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
+      fi
 
-   AM_CONDITIONAL(MZSCHEME, true)
-   AM_CONDITIONAL(GUILE, false)
-   MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/mzscheme -ltpmzscheme"
+      AM_CONDITIONAL(MZSCHEME, true)
+      mzscheme="yes"
+      MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/mzscheme -ltpmzscheme"
+   ],[
+      AM_CONDITIONAL(MZSCHEME, false)
+   ])
 else
+  AM_CONDITIONAL(MZSCHEME, false)
+fi
+
+if test "$guile_option" != "no"; then
    AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:$PATH)
    if test "$GUILE_CONFIG" != "no"; then
       CPPFLAGS="$CPPFLAGS `$GUILE_CONFIG compile`"
       LDFLAGS="$LDFLAGS `$GUILE_CONFIG link`"
-      GUILE_PASS="true"
       AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
+      AM_CONDITIONAL(GUILE, true)
+      guile_use="yes"
+      MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/guile -ltpguile"
    else
-      AC_MSG_ERROR(Cannot find Guile configuration script, required to build with Guile)
+      AC_MSG_WARN(Cannot find Guile configuration script, not building Guile module)
+      AM_CONDITIONAL(GUILE, false)
    fi
 
-   AM_CONDITIONAL(GUILE, test x$GUILE_PASS != x)
-   AM_CONDITIONAL(MZSCHEME, false)
-   MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/guile -ltpguile"
+else
+  AM_CONDITIONAL(GUILE, false)
+fi
+
+# We need a scheme interpreter.  Require either MzScheme or Guile.
+if test "$mzscheme_use" != "yes" -a "$guile_use" != "yes"; then
+   AC_MSG_ERROR([Either MzScheme or Guile must be used.  Please install mzscheme or guile. See ./configure --help if one is already installed.])
 fi
 
 

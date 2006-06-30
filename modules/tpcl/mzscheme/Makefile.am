@@ -10,5 +10,6 @@ endif
 
 
 libtpmzscheme_la_SOURCES = tpmzscheme.h tpmzscheme.cpp
+libtpmzscheme_la_LIBADD = -lmzscheme
 
 EXTRA_DIST = designstruct.scm
