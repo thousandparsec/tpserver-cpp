@@ -65,7 +65,7 @@ class Game {
 	DesignStore* getDesignStore() const;
 
         Persistence* getPersistence() const;
-        void setPersistence(Persistence* p);
+        bool setPersistence(Persistence* p);
 
     bool setTpScheme(TpScheme* imp);
     TpScheme* getTpScheme() const;

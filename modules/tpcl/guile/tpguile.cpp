@@ -43,6 +43,11 @@
 
 #include "tpguile.h"
 
+extern "C" {
+  bool tp_init(){
+    return Game::getGame()->setTpScheme(new TpGuile());
+  }
+}
 
 TpGuile::~TpGuile(){
 }

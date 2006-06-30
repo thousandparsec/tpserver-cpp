@@ -167,8 +167,13 @@ Persistence* Game::getPersistence() const{
     return persistence;
 }
 
-void Game::setPersistence(Persistence* p){
+bool Game::setPersistence(Persistence* p){
+  if(!loaded){
+    delete persistence;
     persistence = p;
+  }else{
+    Logger::getLogger()->error("Could not set new Persistence method.");
+  }
 }
 
 TpScheme* Game::getTpScheme() const{
@@ -379,7 +384,7 @@ Game::Game()
   designstore = new DesignStore();
   combatstrategy = NULL;
   ruleset = NULL;
-    persistence = NULL;
+  persistence = new Persistence();
   tpscheme = NULL;
   loaded = false;
   started = false;
