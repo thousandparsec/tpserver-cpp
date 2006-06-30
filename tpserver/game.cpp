@@ -171,8 +171,10 @@ bool Game::setPersistence(Persistence* p){
   if(!loaded){
     delete persistence;
     persistence = p;
+    return true;
   }else{
-    Logger::getLogger()->error("Could not set new Persistence method.");
+    Logger::getLogger()->warning("Could not set new Persistence method.");
+    return false;
   }
 }
 
