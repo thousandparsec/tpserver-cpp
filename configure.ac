@@ -218,6 +218,7 @@ AC_DEFUN([AC_DEFINE_DIR], [
 ])
 
 AC_DEFINE_DIR(DATADIR, datadir, The data directory where datafiles will be stored)
+AC_DEFINE_DIR(LIBDIR, libdir, The library directory where the modules are stored)
 
 AC_SUBST(MODULE_LIBS)
 

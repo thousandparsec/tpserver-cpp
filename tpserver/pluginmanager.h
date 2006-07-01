@@ -41,6 +41,10 @@ class PluginManager
     bool load(const std::string& libname);
     std::string getLoadedLibraryNames() const;
     
+    bool loadRuleset(const std::string& name);
+    bool loadPersistence(const std::string& name);
+    bool loadTpScheme(const std::string& name);
+    
     
   private:
     PluginManager();

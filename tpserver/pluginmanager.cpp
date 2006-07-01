@@ -20,6 +20,14 @@
 
 #include <dlfcn.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#ifndef LIBDIR
+#define LIBDIR "/usr/local/lib"
+#endif
+#endif
+
 #include "logging.h"
 #include "settings.h"
 
@@ -48,8 +56,8 @@ PluginManager *PluginManager::getPluginManager(){
 
 void PluginManager::start(){
   std::string list = Settings::getSettings()->get("autoload_plugins");
-  uint32_t pos_c = 0;
-  uint32_t pos_e;
+  size_t pos_c = 0;
+  size_t pos_e;
   if(list.length() > 0){
     while(pos_c != list.npos){
       pos_e = list.find(",", pos_c);
@@ -115,3 +123,23 @@ std::string PluginManager::getLoadedLibraryNames() const{
   return list;
 }
 
+bool PluginManager::loadRuleset(const std::string& name){
+  if(name.find("/") == name.npos)
+    return load(std::string(LIBDIR "/tpserver-cpp/ruleset/lib").append(name) + ".so");
+  else
+    return load(name);
+}
+
+bool PluginManager::loadPersistence(const std::string& name){
+  if(name.find("/") == name.npos)
+    return load(std::string(LIBDIR "/tpserver-cpp/persistence/lib").append(name) + ".so");
+  else
+    return load(name);
+}
+
+bool PluginManager::loadTpScheme(const std::string& name){
+  if(name.find("/") == name.npos)
+    return load(std::string(LIBDIR "/tpserver-cpp/tpscheme/lib").append(name) + "*.so");
+  else
+    return load(name);
+}
