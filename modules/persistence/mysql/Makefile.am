@@ -22,3 +22,4 @@ else
 lib_LTLIBRARIES =
 endif
 
+EXTRA_DIST = sample.conf
