@@ -73,7 +73,7 @@ Ruleset* Game::getRuleset() const{
 
 bool Game::load()
 {
-  if(!loaded && ruleset != NULL){
+  if(!loaded && ruleset != NULL && tpscheme != NULL){
     Logger::getLogger()->info("Loading Game");  
 
     ruleset->initGame();
@@ -97,7 +97,15 @@ bool Game::load()
     loaded = true;
     return true;
   }else{
-    Logger::getLogger()->warning("Game already loaded");
+    if(loaded){
+      Logger::getLogger()->warning("Game already loaded");
+    }
+    if(ruleset == NULL){
+      Logger::getLogger()->warning("Game not loaded, no ruleset set");
+    }
+    if(tpscheme == NULL){
+      Logger::getLogger()->warning("Game not loaded, no TpScheme implementation set");
+    }
     return false;
   }
 
