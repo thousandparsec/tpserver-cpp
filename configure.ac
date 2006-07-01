@@ -114,9 +114,9 @@ if test "$mzscheme_option" != "no"; then
       fi
 
       AM_CONDITIONAL(MZSCHEME, true)
-      mzscheme="yes"
-      MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/mzscheme -ltpmzscheme"
+      mzscheme_use="yes"
    ],[
+      AC_MSG_RESULT(no, not going to build MzScheme module)
       AM_CONDITIONAL(MZSCHEME, false)
    ])
 else
@@ -131,7 +131,6 @@ if test "$guile_option" != "no"; then
       AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
       AM_CONDITIONAL(GUILE, true)
       guile_use="yes"
-      MODULE_LIBS="$MODULE_LIBS -L../modules/tpcl/guile -ltpguile"
    else
       AC_MSG_WARN(Cannot find Guile configuration script, not building Guile module)
       AM_CONDITIONAL(GUILE, false)

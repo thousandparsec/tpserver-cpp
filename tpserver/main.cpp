@@ -37,14 +37,6 @@
 #include <modules/persistence/mysql/mysqlpersistence.h>
 #endif
 
-#ifdef HAVE_LIBMZSCHEME
-#include <modules/tpcl/mzscheme/tpmzscheme.h>
-#endif
-
-#ifdef HAVE_GUILE
-#include <modules/tpcl/guile/tpguile.h>
-#endif
-
 #include <modules/games/minisec/minisec.h>
 
 
@@ -72,17 +64,30 @@ int main(int argc, char **argv)
           PluginManager* myPlugins = PluginManager::getPluginManager();
           myPlugins->start();
 
-            try{
+          try{
 
-#ifdef HAVE_LIBMZSCHEME
-              myGame->setTpScheme(new TpMzScheme());
-#else
-#if HAVE_GUILE
-              myGame->setTpScheme(new TpGuile());
-#else
-#error No scheme implementation present and one is required. Not dynamically loaded yet
-#endif
-#endif
+            std::string tpschemename = mySettings->get("tpscheme");
+            if(tpschemename == "auto" || tpschemename == ""){
+              
+              //Temp. should be able to do better than this.
+              if(myPlugins->loadTpScheme("tpguile")){
+                myLogger->info("Loaded TpScheme tpguile");
+              }else{
+                myLogger->warning("Did not load TpScheme \"tpguile\", trying tpmzscheme");
+                if(myPlugins->loadTpScheme("tpmzscheme")){
+                  myLogger->info("Loaded TpScheme tpmzscheme");
+                }else{
+                  myLogger->warning("Did not load TpScheme \"tpmzscheme\"");
+                }
+              }
+            }else{
+              myLogger->info("Loading TpScheme %s", tpschemename.c_str());
+              if(myPlugins->loadTpScheme(tpschemename)){
+                myLogger->info("Loaded TpScheme %s", tpschemename.c_str());
+              }else{
+                myLogger->warning("Did not load TpScheme \"%s\"", tpschemename.c_str());
+              }
+            }
 
                 Persistence* myPersistence = 
 #ifdef HAVE_LIBMYSQL
