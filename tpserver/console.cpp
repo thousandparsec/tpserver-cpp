@@ -184,6 +184,73 @@ class PluginListCommand : public tprl::RLCommand{
     }
 };
 
+class GameRulesetCommand : public tprl::RLCommand{
+  public:
+    GameRulesetCommand() : tprl::RLCommand(){
+      name = "ruleset";
+      help = "Sets the ruleset to be used by ther server.";
+    }
+    void action(const std::string& cmdline){
+      if(PluginManager::getPluginManager()->loadRuleset(cmdline)){
+        std::cout << "Ruleset \"" << cmdline << "\" was loaded." << std::endl;
+      }else{
+        std::cout << "Ruleset \"" << cmdline << "\" was not loaded." << std::endl;
+      }
+    }
+};
+
+class GameTpschemeCommand : public tprl::RLCommand{
+  public:
+    GameTpschemeCommand() : tprl::RLCommand(){
+      name = "tpscheme";
+      help = "Sets the tpscheme implementation to be used by ther server.";
+    }
+    void action(const std::string& cmdline){
+      if(PluginManager::getPluginManager()->loadTpScheme(cmdline)){
+        std::cout << "TpScheme implementation \"" << cmdline << "\" was loaded." << std::endl;
+      }else{
+        std::cout << "TpScheme implementation \"" << cmdline << "\" was not loaded." << std::endl;
+      }
+    }
+};
+
+class GamePersistenceCommand : public tprl::RLCommand{
+  public:
+    GamePersistenceCommand() : tprl::RLCommand(){
+      name = "persistence";
+      help = "Sets the persistence method to be used by ther server.";
+    }
+    void action(const std::string& cmdline){
+      if(PluginManager::getPluginManager()->loadPersistence(cmdline)){
+        std::cout << "Persistence method \"" << cmdline << "\" was loaded." << std::endl;
+      }else{
+        std::cout << "Persistence method \"" << cmdline << "\" was not loaded." << std::endl;
+      }
+    }
+};
+
+class GameLoadCommand : public tprl::RLCommand{
+  public:
+    GameLoadCommand() : tprl::RLCommand(){
+      name = "load";
+      help = "Loads the initial data for the game.";
+    }
+    void action(const std::string& cmdline){
+      Game::getGame()->load();
+    }
+};
+
+class GameStartCommand : public tprl::RLCommand{
+  public:
+    GameStartCommand() : tprl::RLCommand(){
+      name = "start";
+      help = "Starts the game and the end of turn timer.";
+    }
+    void action(const std::string& cmdline){
+      Game::getGame()->start();
+    }
+};
+
 Console *Console::myInstance = NULL;
 
 Console *Console::getConsole()
@@ -252,6 +319,14 @@ Console::Console() : Connection()
     cat->add(new PluginListCommand());
     commands.insert(cat);
 
+    cat = new tprl::CommandCategory("game", "Game setup and status functions");
+    cat->add(new GameRulesetCommand());
+    cat->add(new GamePersistenceCommand());
+    cat->add(new GameTpschemeCommand());
+    cat->add(new GameLoadCommand());
+    cat->add(new GameStartCommand());
+    commands.insert(cat);
+    
 }
 
 Console::~Console()
