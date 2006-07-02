@@ -102,20 +102,34 @@ int main(int argc, char **argv)
                 myLogger->warning("Did not load ruleset \"%s\"", rulesetname.c_str());
               }
             }
+
+
+            if(mySettings->get("game_load") == "yes"){
+              myGame->load();
+            }
+
+            if(mySettings->get("game_start") == "yes"){
+              myGame->start();
+            }
+
+            Network *myNetwork = Network::getNetwork();
+
+            if(mySettings->get("network_start") == "yes"){
+              myNetwork->start();
+            }
+
+
+            myNetwork->masterLoop();
+
+            if(myNetwork->isStarted()){
+              myNetwork->stop();
+            }
+
+
+            if(myGame->isLoaded()){
+              myGame->saveAndClose();
+            }
             
-	//hack temp code
-	myGame->load();
-	myGame->start();
-
-	Network *myNetwork = Network::getNetwork();
-	//temp code - should be removed when console is working fully
-	myNetwork->start();
-	//temp code end
-
-	myNetwork->masterLoop();
-
-	myNetwork->stop();
-	myGame->saveAndClose();
             }catch(std::exception e){
                 myLogger->debug("Caught exception");
             }

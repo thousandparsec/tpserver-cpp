@@ -43,6 +43,8 @@ class Network {
 	void start();
 
 	void stop();
+        
+        bool isStarted() const;
 
 	void sendToAll(Frame * frame);
 

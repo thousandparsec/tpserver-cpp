@@ -192,6 +192,10 @@ void Network::stop()
 	}
 }
 
+bool Network::isStarted() const{
+  return active;
+}
+
 void Network::sendToAll(Frame * frame){
   std::map < int, Connection * >::iterator itcurr;
   char* data = frame->getData();
