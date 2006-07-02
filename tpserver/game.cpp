@@ -76,6 +76,13 @@ bool Game::load()
   if(!loaded && ruleset != NULL && tpscheme != NULL){
     Logger::getLogger()->info("Loading Game");  
 
+    if(persistence->init()){
+      Logger::getLogger()->debug("Persistence initialised");
+    }else{
+      Logger::getLogger()->error("Problem initialising Persistence, game not loaded.");
+      return false;
+    }
+
     ruleset->initGame();
 
     //if nothing loaded from database
@@ -379,7 +386,12 @@ void Game::saveAndClose()
 	//remove and delete players
 
 	//remove and delete objects
-
+        
+        //shutdown the persistence method.
+        if(loaded){
+          persistence->shutdown();
+        }
+        
 	Logger::getLogger()->info("Game saved & closed");
 }
 

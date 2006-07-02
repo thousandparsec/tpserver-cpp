@@ -32,12 +32,6 @@
 #include "net.h"
 #include "settings.h"
 #include "pluginmanager.h"
-#include "persistence.h"
-#ifdef HAVE_LIBMYSQL
-#include <modules/persistence/mysql/mysqlpersistence.h>
-#endif
-
-#include <modules/games/minisec/minisec.h>
 
 
 int main(int argc, char **argv)
@@ -89,22 +83,27 @@ int main(int argc, char **argv)
               }
             }
 
-                Persistence* myPersistence = 
-#ifdef HAVE_LIBMYSQL
-                    new MysqlPersistence();
-#else
-                    new Persistence();
-#endif
-                if(myPersistence->init()){
-                    myLogger->debug("Persistence initialised");
-                }else{
-                    myLogger->error("Problem initialising Persistence");
-                    throw std::exception();
-                }
-                myGame->setPersistence(myPersistence);
+            std::string persistencename = mySettings->get("persistence");
+            if(persistencename != ""){
+              myLogger->info("Loading persistence method %s", persistencename.c_str());
+              if(myPlugins->loadPersistence(persistencename)){
+                myLogger->info("Loaded persistence method %s", persistencename.c_str());
+              }else{
+                myLogger->warning("Did not load persistence method \"%s\"", persistencename.c_str());
+              }
+            }
 
+            std::string rulesetname = mySettings->get("ruleset");
+            if(rulesetname != ""){
+              myLogger->info("Loading ruleset %s", rulesetname.c_str());
+              if(myPlugins->loadRuleset(rulesetname)){
+                myLogger->info("Loaded ruleset %s", rulesetname.c_str());
+              }else{
+                myLogger->warning("Did not load ruleset \"%s\"", rulesetname.c_str());
+              }
+            }
+            
 	//hack temp code
-	myGame->setRuleset(new MiniSec());
 	myGame->load();
 	myGame->start();
 
@@ -117,7 +116,6 @@ int main(int argc, char **argv)
 
 	myNetwork->stop();
 	myGame->saveAndClose();
-                myPersistence->shutdown();
             }catch(std::exception e){
                 myLogger->debug("Caught exception");
             }

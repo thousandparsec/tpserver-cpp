@@ -55,15 +55,15 @@
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
 #include <modules/persistence/mysql/mysqluniverse.h>
-#include <modules/persistence/mysql/mysqlemptyobject.h>
-#include <modules/persistence/mysql/mysqlplanet.h>
-#include <modules/persistence/mysql/mysqlfleet.h>
+#include "mysqlemptyobject.h"
+#include "mysqlplanet.h"
+#include "mysqlfleet.h"
 #include <modules/persistence/mysql/mysqlordernop.h>
-#include <modules/persistence/mysql/mysqlordermove.h>
-#include <modules/persistence/mysql/mysqlorderbuild.h>
-#include <modules/persistence/mysql/mysqlordercolonise.h>
-#include <modules/persistence/mysql/mysqlordersplitfleet.h>
-#include <modules/persistence/mysql/mysqlordermergefleet.h>
+#include "mysqlordermove.h"
+#include "mysqlorderbuild.h"
+#include "mysqlordercolonise.h"
+#include "mysqlordersplitfleet.h"
+#include "mysqlordermergefleet.h"
 #endif
 
 #include "minisec.h"

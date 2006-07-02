@@ -62,8 +62,6 @@ AM_PATH_LIBGNUTLS(1.2.0, [AC_DEFINE(HAVE_LIBGNUTLS, 1, [Define to 1 if you have 
         AM_CONDITIONAL(GNUTLS, true)], AM_CONDITIONAL(GNUTLS, false))
 
 
-# Always build minisec
-MODULE_LIBS="-L../modules/games/minisec -lminisec"
 
 
 # ===================================================
@@ -186,7 +184,6 @@ else
     else
         AC_DEFINE(HAVE_LIBMYSQL, 1, [Define to 1 if you have the `mysql' library (-lmysql).])
         AM_CONDITIONAL(MYSQL, true)
-	MODULE_LIBS="$MODULE_LIBS -L../modules/persistence/mysql -ltpmysql"
     fi
 fi
 
@@ -219,7 +216,7 @@ AC_DEFUN([AC_DEFINE_DIR], [
 AC_DEFINE_DIR(DATADIR, datadir, The data directory where datafiles will be stored)
 AC_DEFINE_DIR(LIBDIR, libdir, The library directory where the modules are stored)
 
-AC_SUBST(MODULE_LIBS)
+#AC_SUBST(MODULE_LIBS)
 
 AC_CONFIG_FILES([
 Makefile

@@ -1,6 +1,6 @@
-#ifndef MYSQLORDERMOVE_H
-#define MYSQLORDERMOVE_H
-/*  MysqlOrderMove class
+#ifndef MYSQLORDERMERGEFLEET_H
+#define MYSQLORDERMERGEFLEET_H
+/*  MysqlOrderMergeFleet class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -22,15 +22,15 @@
 
 #include <stdint.h>
 
-#include "mysqlordertype.h"
+#include <modules/persistence/mysql/mysqlordertype.h>
 
 typedef struct st_mysql MYSQL;
 class MysqlPersistence;
 class Order;
 
-class MysqlOrderMove : public MysqlOrderType{
+class MysqlOrderMergeFleet : public MysqlOrderType{
 public:
-    virtual ~MysqlOrderMove();
+    virtual ~MysqlOrderMergeFleet();
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
     virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);

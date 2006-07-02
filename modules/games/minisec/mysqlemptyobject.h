@@ -1,6 +1,6 @@
-#ifndef MYSQLORDERBUILD_H
-#define MYSQLORDERBUILD_H
-/*  MysqlOrderBuild class
+#ifndef MYSQLEMPTYOBJECT_H
+#define MYSQLEMPTYOBJECT_H
+/*  MysqlEmptyObject class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -20,22 +20,16 @@
  *
  */
 
-#include <stdint.h>
+#include <modules/persistence/mysql/mysqlobjecttype.h>
 
-#include "mysqlordertype.h"
-
-typedef struct st_mysql MYSQL;
-class MysqlPersistence;
-class Order;
-
-class MysqlOrderBuild : public MysqlOrderType{
+class MysqlEmptyObject : public MysqlObjectType{
 public:
-    virtual ~MysqlOrderBuild();
+    virtual ~MysqlEmptyObject();
 
-    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
-    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
-    virtual bool retrieve(MYSQL* conn, uint32_t ordid, Order* ord);
-    virtual bool remove(MYSQL* conn, uint32_t ordid);
+    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
+    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
+    virtual bool retrieve(MYSQL* conn, IGObject* ob);
+    virtual bool remove(MYSQL* conn, uint32_t obid);
     
     virtual void initialise(MysqlPersistence* persistence, MYSQL* conn);
 

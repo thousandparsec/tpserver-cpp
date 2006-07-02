@@ -20,7 +20,7 @@
  *
  */
 
-#include "mysqlobjecttype.h"
+#include <modules/persistence/mysql/mysqlobjecttype.h>
 
 class MysqlPlanet : public MysqlObjectType{
 public:

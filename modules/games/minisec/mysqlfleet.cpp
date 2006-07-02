@@ -23,7 +23,7 @@
 
 #include <sstream>
 
-#include "mysqlpersistence.h"
+#include <modules/persistence/mysql/mysqlpersistence.h>
 #include <tpserver/logging.h>
 #include <tpserver/object.h>
 #include <modules/games/minisec/fleet.h>

@@ -1,6 +1,6 @@
-#ifndef MYSQLORDERCOLONISE_H
-#define MYSQLORDERCOLONISE_H
-/*  MysqlOrderColonise class
+#ifndef MYSQLORDERBUILD_H
+#define MYSQLORDERBUILD_H
+/*  MysqlOrderBuild class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -22,15 +22,15 @@
 
 #include <stdint.h>
 
-#include "mysqlordertype.h"
+#include <modules/persistence/mysql/mysqlordertype.h>
 
 typedef struct st_mysql MYSQL;
 class MysqlPersistence;
 class Order;
 
-class MysqlOrderColonise : public MysqlOrderType{
+class MysqlOrderBuild : public MysqlOrderType{
 public:
-    virtual ~MysqlOrderColonise();
+    virtual ~MysqlOrderBuild();
 
     virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
     virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);

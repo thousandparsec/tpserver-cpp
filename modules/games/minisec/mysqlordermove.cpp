@@ -25,7 +25,7 @@
 
 #include <modules/games/minisec/move.h>
 #include <tpserver/logging.h>
-#include "mysqlpersistence.h"
+#include <modules/persistence/mysql/mysqlpersistence.h>
 
 #include "mysqlordermove.h"
 

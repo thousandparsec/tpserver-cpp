@@ -1,6 +1,6 @@
-#ifndef MYSQLFLEET_H
-#define MYSQLFLEET_H
-/*  MysqlFleet class
+#ifndef MYSQLORDERCOLONISE_H
+#define MYSQLORDERCOLONISE_H
+/*  MysqlOrderColonise class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -20,16 +20,22 @@
  *
  */
 
-#include "mysqlobjecttype.h"
+#include <stdint.h>
 
-class MysqlFleet : public MysqlObjectType{
+#include <modules/persistence/mysql/mysqlordertype.h>
+
+typedef struct st_mysql MYSQL;
+class MysqlPersistence;
+class Order;
+
+class MysqlOrderColonise : public MysqlOrderType{
 public:
-    virtual ~MysqlFleet();
+    virtual ~MysqlOrderColonise();
 
-    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
-    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
-    virtual bool retrieve(MYSQL* conn, IGObject* ob);
-    virtual bool remove(MYSQL* conn, uint32_t obid);
+    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
+    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, uint32_t ordid, Order* ord);
+    virtual bool retrieve(MYSQL* conn, uint32_t ordid, Order* ord);
+    virtual bool remove(MYSQL* conn, uint32_t ordid);
     
     virtual void initialise(MysqlPersistence* persistence, MYSQL* conn);
 

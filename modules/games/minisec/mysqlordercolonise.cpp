@@ -24,7 +24,7 @@
 
 #include <modules/games/minisec/colonise.h>
 #include <tpserver/logging.h>
-#include "mysqlpersistence.h"
+#include <modules/persistence/mysql/mysqlpersistence.h>
 
 #include "mysqlordercolonise.h"
 
