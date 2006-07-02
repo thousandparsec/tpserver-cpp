@@ -2,11 +2,12 @@
 
 
 if GUILE
-lib_LTLIBRARIES = libtpguile.la
+tpschemelib_LTLIBRARIES = libtpguile.la
 else
-lib_LTLIBRARIES = 
+tpschemelib_LTLIBRARIES = 
 endif
 
-
+tpschemelibdir = $(libdir)/tpserver/tpscheme
 libtpguile_la_SOURCES = tpguile.h tpguile.cpp
+libtpguile_la_LDFLAGS = -module
 

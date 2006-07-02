@@ -20,7 +20,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 	persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 	filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 	resourcemanager.cpp pluginmanager.cpp
-include_HEADERS = connection.h console.h \
+headersdir = $(includedir)/tpserver
+headers_HEADERS = connection.h console.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h objectdata.h universe.h ownedobject.h \
