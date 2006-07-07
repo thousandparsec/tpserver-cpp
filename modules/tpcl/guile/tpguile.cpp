@@ -414,8 +414,9 @@ void TpGuile::evalDesign( Design* d)
 
 
 TpGuile::TpGuile() {
-    std::string  designTypeDefFile = "../modules/tpcl/guile/guile.scm";
+    std::string  designTypeDefFile = "guile.scm";
 
     scm_init_guile();
+    scm_c_eval_string("(set! %load-path (cons \"" DATADIR "/tpserver/\" (cons\"modules/tpcl/guile/\" (cons \"../modules/tpcl/guile/\" %load-path ))))");
     scm_c_primitive_load_path( designTypeDefFile.c_str());
 }
