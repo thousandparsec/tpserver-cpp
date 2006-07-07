@@ -139,7 +139,7 @@ bool PluginManager::loadPersistence(const std::string& name){
 
 bool PluginManager::loadTpScheme(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name) + "*.so");
+    return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name) + ".so");
   else
     return load(name);
 }
