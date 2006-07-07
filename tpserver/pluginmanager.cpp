@@ -125,21 +125,21 @@ std::string PluginManager::getLoadedLibraryNames() const{
 
 bool PluginManager::loadRuleset(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver-cpp/ruleset/lib").append(name) + ".so");
+    return load(std::string(LIBDIR "/tpserver/ruleset/lib").append(name) + ".so");
   else
     return load(name);
 }
 
 bool PluginManager::loadPersistence(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver-cpp/persistence/lib").append(name) + ".so");
+    return load(std::string(LIBDIR "/tpserver/persistence/lib").append(name) + ".so");
   else
     return load(name);
 }
 
 bool PluginManager::loadTpScheme(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver-cpp/tpscheme/lib").append(name) + "*.so");
+    return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name) + "*.so");
   else
     return load(name);
 }
