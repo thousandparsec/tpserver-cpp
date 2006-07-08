@@ -1,3 +1,16 @@
+08 Jul 06 - Lee
+    * Version 0.3.0
+    * New directory structure
+    * Split out modules into libraries (persistence, ruleset and tpscheme)
+    * Added resource descriptions and use them for ship parts under construction in minisec
+    * Using libtprl for readline console
+    * PluginManager for managing dynamically loaded modules
+    * Dynamic loading modules
+    * Console commands for setting up games
+    * Settings for setting up game and starting automatically
+    * Fixed install so that it works
+    * Other fixes
+
 19 Feb 06 - Lee
     * Version 0.2.1
     * Fixes in network management

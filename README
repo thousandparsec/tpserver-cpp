@@ -13,7 +13,7 @@ libtprl (replaces/uses readline) (www.thousandparsec.net/tp/) [GPL]
 OPTIONAL
 ========
 libgnutls12 (common in latest distros, optional needed for secure sockets) [GPL]
-Version 1.2.0 or higher.
+Version 1.2.10 or higher.
 
 mysql (www.mysql.com) [GPL]
 MySQL is optional, but is needed for the mysql persistence backend. The client
