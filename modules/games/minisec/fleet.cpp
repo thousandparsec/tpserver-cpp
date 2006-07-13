@@ -76,7 +76,7 @@ long long Fleet::maxSpeed(){
   DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-    speed = fmin(speed, ds->getDesign(itcurr->first)->getPropertyValue(1));
+        speed = fmin(speed, ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("Speed")));
   }
   return (long long)(floor(speed));
 }
@@ -87,9 +87,9 @@ int Fleet::firepower(bool draw){
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     if(draw){
-      fp += ds->getDesign(itcurr->first)->getPropertyValue(5) * itcurr->second;
+      fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")) * itcurr->second;
     }else{
-      fp += ds->getDesign(itcurr->first)->getPropertyValue(4) * itcurr->second;
+      fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")) * itcurr->second;
     }
   }
   return (int) (floor(fp));
@@ -108,9 +108,9 @@ bool Fleet::hit(int firepower){
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
       Design *design = ds->getDesign(itcurr->first);
-      if(shiphp < (int)design->getPropertyValue(3)){
+      if(shiphp < (int)design->getPropertyValue(ds->getPropertyByName("Armour"))){
 	shiptype = itcurr->first;
-	shiphp = (int)design->getPropertyValue(3);
+        shiphp = (int)design->getPropertyValue(ds->getPropertyByName("Armour"));
       }
     }
     if(shiphp == 0){
@@ -179,7 +179,7 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
     DesignStore* ds = Game::getGame()->getDesignStore();
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-      if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 1.0){
+        if(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
 	colonise = true;
 	break;
       }
@@ -205,7 +205,7 @@ bool Fleet::checkAllowedOrder(int ot, int playerid){
   DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
-    if(ds->getDesign(itcurr->first)->getPropertyValue(6) == 1.0){
+        if(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
       colonise = true;
       break;
     }

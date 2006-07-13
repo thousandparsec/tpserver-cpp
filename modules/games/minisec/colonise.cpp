@@ -98,12 +98,14 @@ bool Colonise::doOrder(IGObject * ob){
       int shiptype = 0;
       int shiphp = 2000000;
       std::map<int, int> ships = fleet->getShips();
+      unsigned int colonisePropID = ds->getPropertyByName( "Colonise");
+      unsigned int armorPropID = ds->getPropertyByName( "Armour");
       for(std::map<int, int>::iterator itcurr = ships.begin();
 	  itcurr != ships.end(); ++itcurr){
 	Design *design = ds->getDesign(itcurr->first);
-	if(design->getPropertyValue(6) != 0.0 && shiphp > (int)design->getPropertyValue(3)){
+	if(design->getPropertyValue(colonisePropID) != 0.0 && shiphp > (int)design->getPropertyValue(armorPropID)){
 	  shiptype = itcurr->first;
-	  shiphp = (int)design->getPropertyValue(3);
+	  shiphp = (int)design->getPropertyValue(armorPropID);
 	}
       }
       

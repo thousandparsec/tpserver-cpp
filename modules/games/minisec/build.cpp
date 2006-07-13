@@ -117,7 +117,9 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
-
+  
+  unsigned int bldTmPropID = ds->getPropertyByName( "BuildTime");
+  
   for(int i = f->unpackInt(); i > 0; i--){
     uint32_t type = f->unpackInt();
     uint32_t number = f->unpackInt(); // number to build
@@ -126,7 +128,7 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
       fleettype[type] = number;
 
       Design* design = ds->getDesign(type);
-      usedshipres += (int)(ceil(number * design->getPropertyValue(2)));
+      usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
         design->addUnderConstruction(number);
         ds->designCountsUpdated(design);
 
