@@ -168,6 +168,7 @@ std::set<unsigned int> DesignStore::getPropertyIds() const{
 void DesignStore::addCategory(Category* c){
   c->setCategoryId(next_categoryid++);
   categories[c->getCategoryId()] = c;
+  categoryIndex[c->getName()] = c->getCategoryId();
     Game::getGame()->getPersistence()->saveCategory(c);
 }
 
@@ -250,7 +251,16 @@ void DesignStore::addComponent(Component* c){
 void DesignStore::addProperty(Property* p){
   p->setPropertyId(next_propertyid++);
   properties[p->getPropertyId()] = p;
+  propertyIndex[p->getName()] = p->getPropertyId();
     Game::getGame()->getPersistence()->saveProperty(p);
+}
+
+unsigned int DesignStore::getCategoryByName(const std::string& name){
+  return categoryIndex[name];
+}
+
+unsigned int DesignStore::getPropertyByName(const std::string& name){
+  return propertyIndex[name];
 }
 
 unsigned int DesignStore::getMaxDesignId() const{

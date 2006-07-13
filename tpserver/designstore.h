@@ -54,6 +54,9 @@ class DesignStore{
 
   void addComponent(Component* c);
   void addProperty(Property* p);
+  
+  unsigned int getCategoryByName(const std::string& name);
+  unsigned int getPropertyByName(const std::string& name);
 
   unsigned int getMaxDesignId() const;
   unsigned int getMaxComponentId() const;
@@ -65,9 +68,11 @@ class DesignStore{
   uint32_t next_propertyid;
   uint32_t next_categoryid;
   std::map<unsigned int, Category*> categories;
+  std::map<std::string,unsigned int>  categoryIndex;
   std::map<unsigned int, Design*> designs;
   std::map<unsigned int, Component*> components;
   std::map<unsigned int, Property*> properties;
+  std::map<std::string,unsigned int>  propertyIndex;
   
 };
 
