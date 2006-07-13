@@ -1,4 +1,4 @@
-/*  Rock-Sissor-Paper combat
+/*  Rock-Scissor-Paper combat
  *
  *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
