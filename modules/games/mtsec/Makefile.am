@@ -21,11 +21,11 @@ libmtsec_la_SOURCES = planet.cpp fleet.cpp \
 		move.cpp build.cpp \
 		colonise.cpp \
 		splitfleet.cpp mergefleet.cpp \
-		rspcombat.cpp mtsec.cpp \
+		avacombat.cpp mtsec.cpp \
 		${MYSQL_MTSEC_SOURCE}
 
 libmtsec_la_LDFLAGS = -module
 
 noinst_HEADERS = planet.h fleet.h move.h build.h colonise.h splitfleet.h mergefleet.h \
-		rspcombat.h mtsec.h
+		avacombat.h mtsec.h
 

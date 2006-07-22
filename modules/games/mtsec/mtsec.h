@@ -1,6 +1,6 @@
-#ifndef MINISEC_H
-#define MINISEC_H
-/*  MiniSec rulesset class
+#ifndef MTSEC_H
+#define MTSEC_H
+/*  MtSec rulesset class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -22,10 +22,10 @@
 
 #include <tpserver/ruleset.h>
 
-class MiniSec : public Ruleset{
+class MtSec : public Ruleset{
  public:
-  MiniSec();
-  virtual ~MiniSec();
+  MtSec();
+  virtual ~MtSec();
 
   void initGame();
   void createGame();

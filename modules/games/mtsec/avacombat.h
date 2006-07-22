@@ -1,5 +1,5 @@
-#ifndef RSPCOMBAT_H
-#define RSPCOMBAT_H
+#ifndef AVACOMBAT_H
+#define AVACOMBAT_H
 /*  Rock Scissors Paper combat strategy
  *
  *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
@@ -22,10 +22,10 @@
 
 #include <tpserver/combatstrategy.h>
 
-class RSPCombat : public CombatStrategy{
+class AVACombat : public CombatStrategy{
  public:
-  RSPCombat();
-  virtual ~RSPCombat();
+  AVACombat();
+  virtual ~AVACombat();
 
   void doCombat();
 

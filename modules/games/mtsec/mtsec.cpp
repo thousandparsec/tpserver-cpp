@@ -1,4 +1,4 @@
-/*  MiniSec ruleset
+/*  MtSec ruleset
  *
  *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
@@ -34,7 +34,7 @@
 #include "fleet.h"
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/player.h>
-#include "rspcombat.h"
+#include "avacombat.h"
 #include <tpserver/designstore.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/nop.h>
@@ -66,28 +66,28 @@
 #include "mysqlordermergefleet.h"
 #endif
 
-#include "minisec.h"
+#include "mtsec.h"
 
 extern "C" {
   bool tp_init(){
-    return Game::getGame()->setRuleset(new MiniSec());
+    return Game::getGame()->setRuleset(new MtSec());
   }
 }
 
-MiniSec::MiniSec(){
+MtSec::MtSec(){
 
 }
 
-MiniSec::~MiniSec(){
+MtSec::~MtSec(){
 
 }
 
-void MiniSec::initGame(){
+void MtSec::initGame(){
   Game* game = Game::getGame();
-  
-  
-    game->setCombatStrategy(new RSPCombat());
-  
+
+
+    game->setCombatStrategy(new AVACombat());
+
 
   ObjectDataManager* obdm = game->getObjectDataManager();
   obdm->addNewObjectType(new Universe());
@@ -149,7 +149,7 @@ void MiniSec::initGame(){
 #endif
 }
 
-void MiniSec::createGame(){
+void MtSec::createGame(){
   Game* game = Game::getGame();
   
     DesignStore *ds = game->getDesignStore();
@@ -398,7 +398,7 @@ void MiniSec::createGame(){
   
 }
 
-void MiniSec::startGame(){
+void MtSec::startGame(){
     
     if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
         Logger::getLogger()->info("Setting up resource that had not been setup");
@@ -416,7 +416,7 @@ void MiniSec::startGame(){
   Game::getGame()->setTurnLength(600);
 }
 
-void MiniSec::doOnceATurn(){
+void MtSec::doOnceATurn(){
   Game* game = Game::getGame();
   std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
     std::set<uint32_t> players = game->getPlayerManager()->getAllIds();
@@ -426,15 +426,15 @@ void MiniSec::doOnceATurn(){
     }
 }
 
-bool MiniSec::onAddPlayer(Player* player){
+bool MtSec::onAddPlayer(Player* player){
   
   return true;
 }
 
-void MiniSec::onPlayerAdded(Player* player){
+void MtSec::onPlayerAdded(Player* player){
   Game *game = Game::getGame();
 
-  Logger::getLogger()->debug("MiniSec::onPlayerAdded");
+  Logger::getLogger()->debug("MtSec::onPlayerAdded");
 
   player->setVisibleObjects(game->getObjectManager()->getAllIds());
 

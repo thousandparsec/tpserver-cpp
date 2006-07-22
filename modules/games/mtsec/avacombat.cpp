@@ -1,5 +1,4 @@
-/*  Rock-Scissor-Paper combat
- *
+/*
  *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,15 +25,15 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 
-#include "rspcombat.h"
+#include "avacombat.h"
 
-RSPCombat::RSPCombat() : CombatStrategy(){
+AVACombat::AVACombat() : CombatStrategy(){
 }
 
-RSPCombat::~RSPCombat(){
+AVACombat::~AVACombat(){
 }
 
-void RSPCombat::doCombat(){
+void AVACombat::doCombat(){
   Fleet * f1, *f2;
   if(c1->getType() == obT_Fleet){
     f1 = (Fleet*)(c1->getObjectData());
@@ -71,7 +70,7 @@ void RSPCombat::doCombat(){
     int r2 = rand() % 3;
 
     int d1 = 0, d2 = 0;
-    
+
     if(r1 == r2){
       // draw
       d1 = f1->firepower(true);
@@ -95,7 +94,7 @@ void RSPCombat::doCombat(){
     }
 
     bool tte = false;
-    
+
     std::string body1, body2;
 
     if(!f1->hit(d2)){

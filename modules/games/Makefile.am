@@ -1,2 +1,2 @@
-SUBDIRS = minisec
+SUBDIRS = mtsec minisec
 

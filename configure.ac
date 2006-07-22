@@ -224,6 +224,7 @@ tpserver/Makefile
 modules/Makefile
 modules/games/Makefile
 modules/games/minisec/Makefile
+modules/games/mtsec/Makefile
 modules/persistence/Makefile
 modules/persistence/mysql/Makefile
 modules/tpcl/Makefile
