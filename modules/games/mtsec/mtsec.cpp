@@ -53,17 +53,17 @@
 #include "tpserver/playermanager.h"
 
 #ifdef HAVE_LIBMYSQL
-#include "tpserver/mysqlpersistence.h"
-#include "tpserver/mysqluniverse.h"
-#include "tpserver/mysqlemptyobject.h"
-#include "tpserver/mysqlplanet.h"
-#include "tpserver/mysqlfleet.h"
-#include "tpserver/mysqlordernop.h"
-#include "tpserver/mysqlordermove.h"
-#include "tpserver/mysqlorderbuild.h"
-#include "tpserver/mysqlordercolonise.h"
-#include "tpserver/mysqlordersplitfleet.h"
-#include "tpserver/mysqlordermergefleet.h"
+#include "modules/persistence/mysql/mysqlpersistence.h"
+#include "modules/persistence/mysql/mysqluniverse.h"
+#include "mysqlemptyobject.h"
+#include "mysqlplanet.h"
+#include "mysqlfleet.h"
+#include "modules/persistence/mysql/mysqlordernop.h"
+#include "mysqlordermove.h"
+#include "mysqlorderbuild.h"
+#include "mysqlordercolonise.h"
+#include "mysqlordersplitfleet.h"
+#include "mysqlordermergefleet.h"
 #endif
 
 #include "mtsec.h"
