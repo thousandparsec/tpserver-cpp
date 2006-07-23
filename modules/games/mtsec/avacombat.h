@@ -1,8 +1,8 @@
 #ifndef AVACOMBAT_H
 #define AVACOMBAT_H
-/*  Rock Scissors Paper combat strategy
+/*  AVA combat strategy
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,13 +22,18 @@
 
 #include <tpserver/combatstrategy.h>
 
-class AVACombat : public CombatStrategy{
+class Fleet;
+class Message;
+
+class AVACombat : public CombatStrategy {
  public:
   AVACombat();
   virtual ~AVACombat();
 
   void doCombat();
 
+ protected:
+  bool doCombatRound( Fleet*, Message*, Fleet*, Message*);
 
 };
 

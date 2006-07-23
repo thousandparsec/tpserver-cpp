@@ -1,4 +1,6 @@
 /*
+ *  AVA Combat
+ *
  *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,13 +19,13 @@
  *
  */
 
-#include <tpserver/object.h>
+#include "tpserver/object.h"
 #include "fleet.h"
-#include <tpserver/objectdatamanager.h>
-#include <tpserver/message.h>
-#include <tpserver/game.h>
-#include <tpserver/player.h>
-#include <tpserver/playermanager.h>
+#include "tpserver/objectdatamanager.h"
+#include "tpserver/message.h"
+#include "tpserver/game.h"
+#include "tpserver/player.h"
+#include "tpserver/playermanager.h"
 
 #include "avacombat.h"
 
@@ -33,89 +35,122 @@ AVACombat::AVACombat() : CombatStrategy(){
 AVACombat::~AVACombat(){
 }
 
-void AVACombat::doCombat(){
-  Fleet * f1, *f2;
-  if(c1->getType() == obT_Fleet){
-    f1 = (Fleet*)(c1->getObjectData());
-  }else if(c1->getType() == obT_Planet){
-    f1 = new Fleet();
-    f1->addShips(3, 2);
-    f1->setOwner(((OwnedObject*)c1->getObjectData())->getOwner());
-  }
-  if(c2->getType() == obT_Fleet){
-    f2 = (Fleet*)(c2->getObjectData());
-  }else if(c2->getType() == obT_Planet){
-    f2 = new Fleet();
-    f2->addShips(3, 2);
-    f2->setOwner(((OwnedObject*)c2->getObjectData())->getOwner());
-  }
-  if(f1 == NULL || f2 == NULL){
-    return;
-  }
 
-  Message *msg1, *msg2;
-  msg1 = new Message();
-  msg2 = new Message();
-  msg1->setSubject("Combat");
-  msg2->setSubject("Combat");
-  msg1->addReference(rst_Object, c1->getID());
-  msg1->addReference(rst_Object, c2->getID());
-  msg1->addReference(rst_Player, f2->getOwner());
-  msg2->addReference(rst_Object, c2->getID());
-  msg2->addReference(rst_Object, c1->getID());
-  msg2->addReference(rst_Player, f1->getOwner());
-
-  while(true){
-    int r1 = rand() % 3;
-    int r2 = rand() % 3;
-
-    int d1 = 0, d2 = 0;
-
-    if(r1 == r2){
-      // draw
-      d1 = f1->firepower(true);
-      d2 = f2->firepower(true);
-    }else if(r1 == r2 + 1 || r1 + 2 == r2){
-      // f1 won
-      d1 = f1->firepower(false);
-      if(d1 == 0){
-	msg1->setBody("Your fleet escaped");
-	msg2->setBody("Their fleet escaped");
-	break;
-      }
-    }else{
-      // f2 won
-      d2 = f2->firepower(false);
-      if(d2 == 0){
-	msg1->setBody("Their fleet escaped");
-	msg2->setBody("Your fleet escaped");
-	break;
-      }
-    }
+// This routine handles one combat round.
+// fleet1 and fleet2 are the combatants.
+// msg1 is sent to the owner of fleet1,
+// msg2 is sent to the owner of fleet2.
+//
+// Assume that 'number of missiles/torpedoes a ship can carry'
+// really means 'number of missiles/torpedoes a ship can fire in one round'.
+// Ships have an infinite amount of ammunition.
+//
+// Further assume that everyone fires his/her full load,
+// then all the damage is done.  No 'this ship was destroyed
+// in this round, so it can't fire any missiles'.
+//
+// I keep (for now) the policy of always targetting the largest
+// ship.
+//
+// Likelihood of (correct) impact is 100% for missiles, and
+// (1-dodge likelihood) for torpedoes.
+//
+// How about armor as a recurring damage absorber?  Like
+// 20HP of damage hitting a ship that has 5HP of armor
+// results in only 15HP of damage to that ship.  The next
+// round, another 15HP of damage hits the ship, resulting
+// in another 10HP of damage.  The armor itself is not
+// damaged until the ship is destroyed.
+//
+// Keep the same damage effects?  Ships are at full
+// capacity until they are destroyed?
+//
+// All that being said, I decreased the damage the two sides
+// do to each other by a random 0-39% because I wanted some
+// randomness involved.
+bool AVACombat::doCombatRound( Fleet*   fleet1,
+                               Message* msg1,
+                               Fleet*   fleet2,
+                               Message* msg2)
+{
+    int r1 = ( rand() % 40) + 60;
+    int r2 = ( rand() % 40) + 60;
+    unsigned int damage1 = ( fleet1->firepower( false) * r1) / 100;
+    unsigned int damage2 = ( fleet2->firepower( false) * r2) / 100;
 
     bool tte = false;
 
     std::string body1, body2;
 
-    if(!f1->hit(d2)){
-      body1 += "Your fleet was destroyed. ";
-      body2 += "You destroyed their fleet. ";
-      c1 = NULL;
-      tte = true;
+    if ( ! fleet1->hit( damage2)) {
+        body1 += "Your fleet was destroyed. ";
+        body2 += "You destroyed their fleet. ";
+        c1 = NULL;
+        tte = true;
+    };
+    if ( ! fleet2->hit( damage1)) {
+        body2 += "Your fleet was destroyed.";
+        body1 += "You destroyed their fleet.";
+        c2 = NULL;
+        tte = true;
     }
-    if(!f2->hit(d1)){
-      body2 += "Your fleet was destroyed.";
-      body1 += "You destroyed their fleet.";
-      c2 = NULL;
-      tte = true;
-    }
-    if(tte){
-      msg1->setBody(body1);
-      msg2->setBody(body2);
-      break;
+    if ( tte) {
+        msg1->setBody( body1);
+        msg2->setBody( body2);
     }
 
-  }
-  Game::getGame()->getPlayerManager()->getPlayer(f1->getOwner())->postToBoard(msg1);
-  Game::getGame()->getPlayerManager()->getPlayer(f2->getOwner())->postToBoard(msg2);
+    return tte;
 }
+
+
+// Combat always takes place between two fleets.  If one combatant
+// or the other is actually a planet, the planet simulated by two
+// battleships.
+void AVACombat::doCombat()
+{
+    Fleet * f1, *f2;
+
+    // If one combatant or the other is actually a planet,
+    // simulate this with two battleships.
+    if ( c1->getType() == obT_Fleet) {
+        f1 = ( Fleet*) ( c1->getObjectData());
+    }
+    else if ( c1->getType() == obT_Planet) {
+        f1 = new Fleet();
+        f1->addShips( 3, 2);
+        f1->setOwner( ( ( OwnedObject*) c1->getObjectData())->getOwner());
+    }
+    if ( c2->getType() == obT_Fleet) {
+        f2 = ( Fleet*) ( c2->getObjectData());
+    }
+    else if ( c2->getType() == obT_Planet) {
+        f2 = new Fleet();
+        f2->addShips( 3, 2);
+        f2->setOwner( ( ( OwnedObject*) c2->getObjectData())->getOwner());
+    }
+    if ( f1 == NULL || f2 == NULL) {
+        return;
+    }
+
+    Message *msg1, *msg2;
+    msg1 = new Message();
+    msg2 = new Message();
+    msg1->setSubject( "Combat");
+    msg2->setSubject( "Combat");
+    msg1->addReference( rst_Object, c1->getID());
+    msg1->addReference( rst_Object, c2->getID());
+    msg1->addReference( rst_Player, f2->getOwner());
+    msg2->addReference( rst_Object, c2->getID());
+    msg2->addReference( rst_Object, c1->getID());
+    msg2->addReference( rst_Player, f1->getOwner());
+
+    while ( doCombatRound( f1, msg1, f2, msg2)) {
+        ;
+    }
+
+    Game::getGame()->getPlayerManager()->getPlayer( f1->getOwner())->postToBoard( msg1);
+    Game::getGame()->getPlayerManager()->getPlayer( f2->getOwner())->postToBoard( msg2);
+
+    return;
+}
+
