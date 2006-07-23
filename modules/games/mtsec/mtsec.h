@@ -1,6 +1,6 @@
 #ifndef MTSEC_H
 #define MTSEC_H
-/*  MtSec rulesset class
+/*  MTSec rulesset class
  *
  *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
  *
@@ -20,12 +20,12 @@
  *
  */
 
-#include <tpserver/ruleset.h>
+#include "tpserver/ruleset.h"
 
-class MtSec : public Ruleset{
+class MTSec : public Ruleset{
  public:
-  MtSec();
-  virtual ~MtSec();
+  MTSec();
+  virtual ~MTSec();
 
   void initGame();
   void createGame();
@@ -33,6 +33,72 @@ class MtSec : public Ruleset{
   void doOnceATurn();
   bool onAddPlayer(Player* player);
   void onPlayerAdded(Player* player);
+  unsigned int getIDForProp( const std::string& propName);
+  unsigned int getIDForComp( const std::string& compName);
+
+ protected:
+  // Property definition methods
+  void createSpeedProp();
+  void createAmmoCostProp();
+  void createAmmoExplosivenessProp();
+  void createAmmoSizeProp();
+  void createFirepowerProp();
+  void createMissileCostProp();
+  void createMissileFirepowerProp();
+  void createMissileSizeProp();
+  void createHitPointsProp();
+  void createHPProp();
+  void createBuildTimeProp();
+  void createArmorProp();
+  void createColoniseProp();
+  void createNumAmmoProp();
+  void createNumBayTypesProp();
+  void createNumHullsProp();
+
+
+  // Component definition methods
+  void createScoutHullComp();
+  void createBattleScoutHullComp();
+  void createCeriumAmmoComp();
+  void createCerium3AmmoComp();
+  void createCerium6AmmoComp();
+  void createCerium12AmmoComp();
+  void createUraniumAmmoComp();
+  void createAntiparticleAmmoComp();
+  void createAntimatterAmmoComp();
+  void createThoriumAmmoComp();
+  void createAlphaMissileBayComp();
+  void createBetaMissileBayComp();
+  void createGammaMissileBayComp();
+  void createDeltaMissileBayComp();
+
+
+  // Design definition methods
+  Design* createScoutDesign( Player* owner);
+  Design* createBattleScoutDesign( Player* owner);
+
+
+  // Object creation methods
+  IGObject* createSiriusSystem( IGObject* mw_galaxy);
+  IGObject* createStarSystem( IGObject* mw_galaxy);
+  IGObject* createSolSystem( IGObject *mw_galaxy);
+  IGObject* createAlphaCentauriSystem( IGObject* mw_galaxy);
+
+  void createProperties();
+  void createComponents();
+  void createTechTree();
+
+  IGObject* createEmptyFleet( Player*     owner,
+                              IGObject*   star,
+                              std::string fleetName);
+  void makeNewPlayerFleet( Player* player, IGObject* star);
+  IGObject* makePlayerHomePlanet( Player* player, IGObject* star);
+  IGObject* makeNewPlayerStarSystem( Player* player);
+  void setNewPlayerTech( Player* player);
+
+ private:
+  std::map<std::string,unsigned int>  propertyIndex;
+  std::map<std::string,unsigned int>  componentIndex;
 
 };
 

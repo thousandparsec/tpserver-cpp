@@ -1,4 +1,4 @@
-/*  MtSec ruleset
+/*  MTSec ruleset
  *
  *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
  *
@@ -19,82 +19,101 @@
  */
 
 #include <cassert>
+#include <stdlib.h>
+#include <sstream>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <tpserver/game.h>
-#include <tpserver/object.h>
-#include <tpserver/objectmanager.h>
-#include <tpserver/ownedobject.h>
-#include <tpserver/universe.h>
-#include <tpserver/emptyobject.h>
+#include "tpserver/game.h"
+#include "tpserver/object.h"
+#include "tpserver/objectmanager.h"
+#include "tpserver/ownedobject.h"
+#include "tpserver/universe.h"
+#include "tpserver/emptyobject.h"
 #include "planet.h"
 #include "fleet.h"
-#include <tpserver/objectdatamanager.h>
-#include <tpserver/player.h>
+#include "tpserver/objectdatamanager.h"
+#include "tpserver/player.h"
 #include "avacombat.h"
-#include <tpserver/designstore.h>
-#include <tpserver/ordermanager.h>
-#include <tpserver/nop.h>
+#include "tpserver/designstore.h"
+#include "tpserver/ordermanager.h"
+#include "tpserver/nop.h"
 #include "move.h"
 #include "build.h"
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
-#include <tpserver/property.h>
-#include <tpserver/component.h>
-#include <tpserver/design.h>
-#include <tpserver/category.h>
-#include <tpserver/logging.h>
-#include <tpserver/playermanager.h>
-#include <tpserver/resourcedescription.h>
-#include <tpserver/resourcemanager.h>
+#include "tpserver/property.h"
+#include "tpserver/component.h"
+#include "tpserver/design.h"
+#include "tpserver/category.h"
+#include "tpserver/logging.h"
+#include "tpserver/playermanager.h"
 
 #ifdef HAVE_LIBMYSQL
-#include <modules/persistence/mysql/mysqlpersistence.h>
-#include <modules/persistence/mysql/mysqluniverse.h>
-#include "mysqlemptyobject.h"
-#include "mysqlplanet.h"
-#include "mysqlfleet.h"
-#include <modules/persistence/mysql/mysqlordernop.h>
-#include "mysqlordermove.h"
-#include "mysqlorderbuild.h"
-#include "mysqlordercolonise.h"
-#include "mysqlordersplitfleet.h"
-#include "mysqlordermergefleet.h"
+#include "tpserver/mysqlpersistence.h"
+#include "tpserver/mysqluniverse.h"
+#include "tpserver/mysqlemptyobject.h"
+#include "tpserver/mysqlplanet.h"
+#include "tpserver/mysqlfleet.h"
+#include "tpserver/mysqlordernop.h"
+#include "tpserver/mysqlordermove.h"
+#include "tpserver/mysqlorderbuild.h"
+#include "tpserver/mysqlordercolonise.h"
+#include "tpserver/mysqlordersplitfleet.h"
+#include "tpserver/mysqlordermergefleet.h"
 #endif
 
 #include "mtsec.h"
 
+static char const * const systemNames[] = {
+    "Barnard's Star",  "Gielgud",             "Ventana",
+    "Aleph Prime",     "Ventil",              "Sagitaria",
+    "Drifter",         "Ptelemicus",          "Centanis",
+    "Mendelis",        "Cassious' Shadow",    "Llentim",
+    "Redoubt",         "Kelper",              "Cemara",
+    "Cilantarius",     "Kya",                 "Lanternis",
+    "Illatis",         "Rintim",              "Uvaharim",
+    "Plaetais",        "Denderis",            "Desiderata",
+    "Illuntara",       "Ivemteris",           "Wetcher",
+    "Monanara",        "Clesasia",            "RumRunner",
+    "Last Chance",     "Kiuper Shadow",       "NGC 42059",
+    "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
+    "Atlantis",        "Draconis",            "Muir's Gold",
+    "Fools Errand",    "Wrenganis",           "Humph",
+    "Byzantis",        "Torontis",            "Radiant Pool"};
+
+
 extern "C" {
   bool tp_init(){
-    return Game::getGame()->setRuleset(new MtSec());
+    return Game::getGame()->setRuleset(new MTSec());
   }
 }
 
-MtSec::MtSec(){
+
+MTSec::MTSec() {
 
 }
 
-MtSec::~MtSec(){
+
+MTSec::~MTSec() {
 
 }
 
-void MtSec::initGame(){
-  Game* game = Game::getGame();
 
+void MTSec::initGame() {
+    Game* game = Game::getGame();
 
-    game->setCombatStrategy(new AVACombat());
+    game->setCombatStrategy( new AVACombat());
 
-
-  ObjectDataManager* obdm = game->getObjectDataManager();
-  obdm->addNewObjectType(new Universe());
-  obdm->addNewObjectType(new EmptyObject());
-  obdm->addNewObjectType(new EmptyObject());
-  obdm->addNewObjectType(new Planet());
-  obdm->addNewObjectType(new Fleet());
+    ObjectDataManager* obdm = game->getObjectDataManager();
+    obdm->addNewObjectType( new Universe());
+    obdm->addNewObjectType( new EmptyObject());
+    obdm->addNewObjectType( new EmptyObject());
+    obdm->addNewObjectType( new Planet());
+    obdm->addNewObjectType( new Fleet());
 
 #ifdef HAVE_LIBMYSQL
     MysqlPersistence* database = dynamic_cast<MysqlPersistence*>(game->getPersistence());
@@ -117,13 +136,13 @@ void MtSec::initGame(){
     }
 #endif
 
-  OrderManager* ordm = game->getOrderManager();
-  ordm->addOrderType(new Nop());
-  ordm->addOrderType(new Move());
-  ordm->addOrderType(new Build());
-  ordm->addOrderType(new Colonise());
-  ordm->addOrderType(new SplitFleet());
-  ordm->addOrderType(new MergeFleet());
+    OrderManager* ordm = game->getOrderManager();
+    ordm->addOrderType(new Nop());
+    ordm->addOrderType(new Move());
+    ordm->addOrderType(new Build());
+    ordm->addOrderType(new Colonise());
+    ordm->addOrderType(new SplitFleet());
+    ordm->addOrderType(new MergeFleet());
 
 #ifdef HAVE_LIBMYSQL
     if(database != NULL){
@@ -149,17 +168,44 @@ void MtSec::initGame(){
 #endif
 }
 
-void MtSec::createGame(){
-  Game* game = Game::getGame();
-  
-    DesignStore *ds = game->getDesignStore();
-    Category * cat = new Category();
-    cat->setName("Ships");
-    cat->setDescription("The Ship design and component category");
-    ds->addCategory(cat);
-    assert(cat->getCategoryId() == 1);
-    
+
+unsigned int MTSec::getIDForProp( const std::string& propName) {
+    return propertyIndex[propName];
+}
+
+
+unsigned int MTSec::getIDForComp( const std::string& compName) {
+    return componentIndex[compName];
+}
+
+
+#if 0
+// Dependencies
+"AmmoCost"          Ammo  0
+"AmmoExplosiveness" Ammo  0
+"AmmoSize"          Ammo  0
+"Armor"             Hull  0
+"BuildTime"         Hull  0
+"Firepower"         Hull  2 => MissileSize, MissileFirepower
+"HitPoints"         Hull  0
+"MissileCost"       Bay   1 => AmmoSize, AmmoCost
+"MissileFirepower"  Bay   1 => AmmoSize, AmmoExplosiveness
+"MissileSize"       Bay   0
+"Speed"             Hull  0
+"StartingHitPoints" Hull  0
+"num-ammo"          Ammo  0
+"num-baytypes"      Bay   0
+"num-hulls"         Hull  0
+//    Needed by other things:
+"Colonise"          Needed by Fleet::checkAllowedOrder();
+#endif
+
+
+void MTSec::createSpeedProp()
+{
     Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
     prop->setName("Speed");
@@ -168,48 +214,226 @@ void MtSec::createGame(){
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    prop = new Property();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createAmmoCostProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("AmmoCost");
+    prop->setDisplayName("Explosive Unit Cost");
+    prop->setDescription("The relative expensiveness of the explosive");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" credits\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createAmmoExplosivenessProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("AmmoExplosiveness");
+    prop->setDisplayName("Unit Explosive Punch");
+    prop->setDescription("The explosiveness of a unit of the explosive used in the weapons of the ship");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" hit points\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createAmmoSizeProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("AmmoSize");
+    prop->setDisplayName("Explosive Density");
+    prop->setDescription("The relative size of a unit of the explosive used in the weapons of the ship");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createFirepowerProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(2);
+    prop->setName("Firepower");
+    prop->setDisplayName("Firepower");
+    prop->setDescription("How much damage the weapons of the ship can do in a single round");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" hit points\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createMissileCostProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(1);
+    prop->setName("MissileCost");
+    prop->setDisplayName("MissileCost");
+    prop->setDescription("The relative cost of a missile");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createMissileFirepowerProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(1);
+    prop->setName("MissileFirepower");
+    prop->setDisplayName("Missile Firepower");
+    prop->setDescription("How much damage a missile can do");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" hit points\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createMissileSizeProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(1);
+    prop->setName("MissileSize");
+    prop->setDisplayName("MissileSize");
+    prop->setDescription("The relative size of a missile");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createHitPointsProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("StartingHitPoints");
+    prop->setDisplayName("Initial Hit Points");
+    prop->setDescription("How much damage the ship can take before being destroyed");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" hit points\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createBuildTimeProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
     prop->setName("BuildTime");
     prop->setDisplayName("Build Time");
-    prop->setDescription("The number of turns to build the ship");
+    prop->setDescription("The number of turns to build this");
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    prop = new Property();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createArmorProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
-    prop->setName("Amour");
-    prop->setDisplayName("Amour");
-    prop->setDescription("The amount of amour on the ship");
+    prop->setName("Armor");
+    prop->setDisplayName("Armor");
+    prop->setDescription("The amount of armor on the ship");
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    prop = new Property();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createHPProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
-    prop->setName("WeaponWin");
-    prop->setDisplayName("Weapon Strength at Win");
-    prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
+    prop->setName("HitPoints");
+    prop->setDisplayName("Hit Points");
+    prop->setDescription("The number of HP this ship has");
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryId(1);
-    prop->setRank(0);
-    prop->setName("WeaponDraw");
-    prop->setDisplayName("Weapon Strength at Draw");
-    prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createColoniseProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
     prop->setName("Colonise");
@@ -218,328 +442,1025 @@ void MtSec::createGame(){
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    prop = new Property();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createNumAmmoProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     prop->setCategoryId(1);
     prop->setRank(0);
-    prop->setName("_num-components");
-    prop->setDisplayName("Number of Conponents");
-    prop->setDescription("The total number of components in the design");
+    prop->setName("num-ammo");
+    prop->setDisplayName("Number of missile and torpedo warhead types");
+    prop->setDescription("The number of missile and torpedo warhead types in the design");
     prop->setTpclDisplayFunction(
         "(lambda (design bits)"
         "(let ((n (apply + bits)))"
-        "(cons n (string-append (number->string n) \" components\"))))");
+        "(cons n (string-append (number->string n) \" explosive types\"))))");
         prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
-    
-    std::map<unsigned int, std::string> propertylist;
-    
-    Component* comp = new Component();
-    comp->setCategoryId(1);
-    comp->setName("ScoutHull");
-    comp->setDescription("The scout hull, fitted out with everything a scout needs");
-    comp->setTpclRequirementsFunction(
-        "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-            "(cons #t \"\") "
-            "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist[1] = "(lambda (design) 300000000)";
-    propertylist[2] = "(lambda (design) 1)";
-    propertylist[3] = "(lambda (design) 2)";
-    propertylist[4] = "(lambda (design) 0)";
-    propertylist[5] = "(lambda (design) 0)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-    
-    comp = new Component();
-    comp->setCategoryId(1);
-    comp->setName("FrigateHull");
-    comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
-    comp->setTpclRequirementsFunction(
-        "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-            "(cons #t \"\") "
-            "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist.clear();
-    propertylist[1] = "(lambda (design) 200000000)";
-    propertylist[2] = "(lambda (design) 2)";
-    propertylist[3] = "(lambda (design) 4)";
-    propertylist[4] = "(lambda (design) 2)";
-    propertylist[5] = "(lambda (design) 0)";
-    propertylist[6] = "(lambda (design) 1)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-    
-    comp = new Component();
-    comp->setCategoryId(1);
-    comp->setName("BattleshipHull");
-    comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
-    comp->setTpclRequirementsFunction(
-            "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-                "(cons #t \"\") "
-                "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist.clear();
-    propertylist[1] = "(lambda (design) 100000000)";
-    propertylist[2] = "(lambda (design) 4)";
-    propertylist[3] = "(lambda (design) 6)";
-    propertylist[4] = "(lambda (design) 3)";
-    propertylist[5] = "(lambda (design) 1)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-  
-  
-  ObjectManager* obman = game->getObjectManager();
+    propertyIndex[prop->getName()] = prop->getPropertyId();
 
-  IGObject* universe = game->getObjectManager()->createNewObject();
-  universe->setType(obT_Universe);
-  universe->setSize(100000000000ll);
-  universe->setName("The Universe");
-  universe->setPosition(Vector3d(0ll, 0ll, 0ll));
-  universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  obman->addObject(universe);
-  
-  //add contained objects
-  IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
-  mw_galaxy->setSize(10000000000ll);
-  mw_galaxy->setType(obT_Galaxy);
-  mw_galaxy->setName("Milky Way Galaxy");
-  mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
-  mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  mw_galaxy->addToParent(universe->getID());
-  obman->addObject(mw_galaxy);
-  
-  // star system 1
-  IGObject *sol = game->getObjectManager()->createNewObject();
-  sol->setSize(1400000ll);
-  sol->setType(obT_Star_System);
-  sol->setName("Sol/Terra System");
-  sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
-  sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  sol->addToParent(mw_galaxy->getID());
-  obman->addObject(sol);
-
-  // star system 2
-  IGObject *ac = game->getObjectManager()->createNewObject();
-  ac->setSize(800000ll);
-  ac->setType(obT_Star_System);
-  ac->setName("Alpha Centauri System");
-  ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
-  ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  ac->addToParent(mw_galaxy->getID());
-  obman->addObject(ac);
-  
-  // star system 3
-  IGObject *sirius = game->getObjectManager()->createNewObject();
-  sirius->setSize(2000000ll);
-  sirius->setType(obT_Star_System);
-  sirius->setName("Sirius System");
-  sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
-  sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  sirius->addToParent(mw_galaxy->getID());
-  obman->addObject(sirius);
-
-  
-  // now for some planets
-  
-  IGObject *earth = game->getObjectManager()->createNewObject();
-  earth->setSize(2);
-  earth->setType(obT_Planet);
-  earth->setName("Earth/Terra");
-  earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
-  earth->addToParent(sol->getID());
-  obman->addObject(earth);
-  
-  IGObject *venus = game->getObjectManager()->createNewObject();
-  venus->setSize(2);
-  venus->setType(obT_Planet);
-  venus->setName("Venus");
-  venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
-  venus->addToParent(sol->getID());
-  obman->addObject(venus);
-  
-  IGObject *mars = game->getObjectManager()->createNewObject();
-  mars->setSize(1);
-  mars->setType(obT_Planet);
-  mars->setName("Mars");
-  mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
-  mars->addToParent(sol->getID());
-  obman->addObject(mars);
-  
-  IGObject *acprime = game->getObjectManager()->createNewObject();
-  acprime->setSize(2);
-  acprime->setType(obT_Planet);
-  acprime->setName("Alpha Centauri Prime");
-  acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
-  acprime->addToParent(ac->getID());
-  obman->addObject(acprime);
-  
-  IGObject *s1 = game->getObjectManager()->createNewObject();
-  s1->setSize(2);
-  s1->setType(obT_Planet);
-  s1->setName("Sirius 1");
-  s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
-  s1->addToParent(sirius->getID());
-  obman->addObject(s1);
-  
-    //setup Resources
-    ResourceDescription* res = new ResourceDescription();
-    res->setNameSingular("Ship part");
-    res->setNamePlural("Ship parts");
-    res->setUnitSingular("part");
-    res->setUnitPlural("parts");
-    res->setDescription("Ships parts that can be used to create ships");
-    res->setMass(0);
-    res->setVolume(0);
-    game->getResourceManager()->addResourceDescription(res);
-  
+    return;
 }
 
-void MtSec::startGame(){
-    
-    if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
-        Logger::getLogger()->info("Setting up resource that had not been setup");
-        ResourceDescription* res = new ResourceDescription();
-        res->setNameSingular("Ship part");
-        res->setNamePlural("Ship parts");
-        res->setUnitSingular("part");
-        res->setUnitPlural("parts");
-        res->setDescription("Ships parts that can be used to create ships");
-        res->setMass(0);
-        res->setVolume(0);
-        Game::getGame()->getResourceManager()->addResourceDescription(res);
+
+void MTSec::createNumBayTypesProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("num-baytypes");
+    prop->setDisplayName("Number of missile or torpedo types");
+    prop->setDescription("The number of missile or torpedo types in the design");
+    prop->setTpclDisplayFunction(
+        "(lambda (design bits)"
+        "(let ((n (apply + bits)))"
+        "(cons n (string-append (number->string n) \" types\"))))");
+        prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createNumHullsProp()
+{
+    Property* prop = new Property();
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    prop->setCategoryId(1);
+    prop->setRank(0);
+    prop->setName("num-hulls");
+    prop->setDisplayName("Number of hulls");
+    prop->setDescription("The number of hulls in the design");
+    prop->setTpclDisplayFunction(
+        "(lambda (design bits)"
+        "(let ((n (apply + bits)))"
+        "(cons n (string-append (number->string n) \" hull\"))))");
+        prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+    propertyIndex[prop->getName()] = prop->getPropertyId();
+
+    return;
+}
+
+
+void MTSec::createScoutHullComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "ScoutHull");
+    comp->setDescription( "The scout hull, fitted out with everything a scout needs");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) (* 100 1000000))";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 2)";
+    propertylist[propertyIndex["_num-components"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createBattleScoutHullComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "BattleScoutHull");
+    comp->setDescription( "The battle scout hull");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-hulls design) 1) "
+                "(if (< (designType.num-baytypes design) 2) "
+                    "(cons #t \"\") "
+                    "(cons #f \"A ship can only have one type of missile bay\")) "
+                "(cons #f \"A ship can only use one hull!\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) (* 75 1000000))";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 5)";
+    // To determine the total firepower of the ship, we multiply the
+    // firepower of an individual missile bay by how many missile bays
+    // the ship has.
+    // To determine how many missile bays the ship can have, we divide
+    // the ship size by the missile size.
+    propertylist[propertyIndex["Firepower"]] = "(lambda (design) "
+        "(* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)))";
+    propertylist[propertyIndex["HitPoints"]] = "(lambda (design) 100)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-hulls"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createCerium3AmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "Cerium3Explosives");
+    comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 3)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 8)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 14)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createCerium6AmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "Cerium6Explosives");
+    comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 6)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 11)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 36)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createCerium12AmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "Cerium12Explosives");
+    comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 12)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 55)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 156)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createUraniumAmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "UraniumExplosives");
+    comp->setDescription( "Most basic nuclear explosive");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 4)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 1)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 4)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createAntiparticleAmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "AntiparticleExplosives");
+    comp->setDescription( "An extremely expensive but hugely explosive particle and anit-particle explosive");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 0.8)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 16)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 64)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createAntimatterAmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "AntimatterExplosives");
+    comp->setDescription( "An even more extremely expensive but insanely explosive antimatter-matter explosive");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 0.8)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 16)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 64)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createThoriumAmmoComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "ThoriumExplosives");
+    comp->setDescription( "A significantly cheaper but less explosive nuclear explosive");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["AmmoSize"]] = "(lambda (design) 4)";
+    propertylist[propertyIndex["AmmoExplosiveness"]] = "(lambda (design) 0.5)";
+    // Ammo cost is (cost/size) * size.
+    // This is for one 'unit' of explosive - if a missile can fit two units,
+    // the cost for the missile bay is twice the AmmoCost property
+    propertylist[propertyIndex["AmmoCost"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createAlphaMissileBayComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "AlphaMissileBay");
+    comp->setDescription( "An alpha missile bay, capable of firing one alpha missile per combat round");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+                "(if (< (designType.AmmoSize design) 4) "
+                    "(cons #t \"\") "
+                    "(cons #f \"Explosive is too large for alpha missiles\")) "
+                "(cons #f \"Missiles can only handle one type of explosive\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["MissileSize"]] = "(lambda (design) 3)";
+    // To get the missile's firepower, we multiply the explosiveness of
+    // the material by how much material can fit in the warhead.
+    // How much material can fit in the warhead is the missile size divided
+    // by the ammo size.
+    propertylist[propertyIndex["MissileFirepower"]] = "(lambda (design) "
+        "(* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))";
+    // Missile bay Cost is ammo cost times how much material can fit in the warhead
+    propertylist[propertyIndex["MissileCost"]] = "(lambda (design) "
+        "(* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoCost design)))";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createBetaMissileBayComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "BetaMissileBay");
+    comp->setDescription( "A beta missile bay, capable of firing one beta missile per combat round");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+                "(if (< (designType.AmmoSize design) 7) "
+                    "(cons #t \"\") "
+                    "(cons #f \"Explosive is too large for beta missiles\")) "
+                "(cons #f \"Missiles can only handle one type of explosive\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["MissileSize"]] = "(lambda (design) 6)";
+    // To get the missile's firepower, we multiply the explosiveness of
+    // the material by how much material can fit in the warhead.
+    // How much material can fit in the warhead is the missile size divided
+    // by the ammo size.
+    propertylist[propertyIndex["MissileFirepower"]] = "(lambda (design) "
+        "(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))";
+    // Missile bay Cost is ammo cost times how much material can fit in the warhead
+    propertylist[propertyIndex["MissileCost"]] = "(lambda (design) "
+        "(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoCost design)))";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createGammaMissileBayComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "GammaMissileBay");
+    comp->setDescription( "A gamma missile bay, capable of firing one gamma missile per combat round");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+                "(if (< (designType.AmmoSize design) 9) "
+                    "(cons #t \"\") "
+                    "(cons #f \"Explosive is too large for gamma missiles\")) "
+                "(cons #f \"Missiles can only handle one type of explosive\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["MissileSize"]] = "(lambda (design) 8)";
+    // To get the missile's firepower, we multiply the explosiveness of
+    // the material by how much material can fit in the warhead.
+    // How much material can fit in the warhead is the missile size divided
+    // by the ammo size.
+    propertylist[propertyIndex["MissileFirepower"]] = "(lambda (design) "
+        "(* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))";
+    // Missile bay Cost is ammo cost times how much material can fit in the warhead
+    propertylist[propertyIndex["MissileCost"]] = "(lambda (design) "
+        "(* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoCost design)))";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createDeltaMissileBayComp()
+{
+    std::map<unsigned int, std::string> propertylist;
+    DesignStore *ds = Game::getGame()->getDesignStore();
+    Component* comp = new Component();
+
+    comp->setCategoryId(1);
+    comp->setName( "DeltaMissileBay");
+    comp->setDescription( "A delta missile bay, capable of firing one delta missile per combat round");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType.num-ammo design) 1) "
+                "(if (< (designType.AmmoSize design) 13) "
+                    "(cons #t \"\") "
+                    "(cons #f \"Explosive is too large for gamma missiles\")) "
+                "(cons #f \"Missiles can only handle one type of explosive\")))");
+    propertylist[propertyIndex["Speed"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["BuildTime"]] = "(lambda (design) 1)";
+    propertylist[propertyIndex["Colonise"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["Armor"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["MissileSize"]] = "(lambda (design) 12)";
+    // To get the missile's firepower, we multiply the explosiveness of
+    // the material by how much material can fit in the warhead.
+    // How much material can fit in the warhead is the missile size divided
+    // by the ammo size.
+    propertylist[propertyIndex["MissileFirepower"]] = "(lambda (design) "
+        "(* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))";
+    // Missile bay Cost is ammo cost times how much material can fit in the warhead
+    propertylist[propertyIndex["MissileCost"]] = "(lambda (design) "
+        "(* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design)))";
+    propertylist[propertyIndex["StartingHitPoints"]] = "(lambda (design) 0)";
+    propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
+    comp->setPropertyList(propertylist);
+    ds->addComponent(comp);
+    componentIndex[comp->getName()] = comp->getComponentId();
+
+    return;
+}
+
+
+void MTSec::createProperties()
+{
+    Logger::getLogger()->debug( "Enter MTSec::createProperties");
+
+    createSpeedProp();
+    createAmmoCostProp();
+    createAmmoExplosivenessProp();
+    createAmmoSizeProp();
+    createFirepowerProp();
+    createMissileCostProp();
+    createMissileFirepowerProp();
+    createMissileSizeProp();
+    createHitPointsProp();
+    createHPProp();
+    createBuildTimeProp();
+    createArmorProp();
+    createColoniseProp();
+    createNumAmmoProp();
+    createNumBayTypesProp();
+    createNumHullsProp();
+
+    Logger::getLogger()->debug( "Exit MTSec::createProperties");
+
+    return;
+}
+
+
+void MTSec::createComponents()
+{
+    Logger::getLogger()->debug( "Enter MTSec::createComponents");
+
+    createScoutHullComp();
+    createBattleScoutHullComp();
+    createCerium3AmmoComp();
+    createCerium6AmmoComp();
+    createCerium12AmmoComp();
+    createUraniumAmmoComp();
+    createAntiparticleAmmoComp();
+    createAntimatterAmmoComp();
+    createThoriumAmmoComp();
+    createAlphaMissileBayComp();
+    createBetaMissileBayComp();
+    createGammaMissileBayComp();
+    createDeltaMissileBayComp();
+
+    Logger::getLogger()->debug( "Exit MTSec::createComponents");
+
+    return;
+}
+
+
+void MTSec::createTechTree()
+{
+    Logger::getLogger()->debug( "Enter MTSec::createTechTree");
+
+    createProperties();
+    createComponents();
+
+    Logger::getLogger()->debug( "Exit MTSec::createTechTree");
+
+    return;
+}
+
+
+// Create the Alpha Centauri star system
+IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
+{
+    Game*          game = Game::getGame();
+    ObjectManager* obman = game->getObjectManager();
+    IGObject*      ac = game->getObjectManager()->createNewObject();
+    IGObject*      acprime = game->getObjectManager()->createNewObject();
+
+    ac->setSize(800000ll);
+    ac->setType(obT_Star_System);
+    ac->setName("Alpha Centauri System");
+    ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
+    ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    ac->addToParent(mw_galaxy->getID());
+    obman->addObject(ac);
+
+    acprime->setSize(2);
+    acprime->setType(obT_Planet);
+    acprime->setName("Alpha Centauri Prime");
+    acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
+    acprime->addToParent(ac->getID());
+    obman->addObject(acprime);
+
+    return ac;
+}
+
+
+// Create the Sirius star system
+IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
+{
+    Game*          game = Game::getGame();
+    ObjectManager* obman = game->getObjectManager();
+    IGObject*      sirius = game->getObjectManager()->createNewObject();
+    IGObject*      s1 = game->getObjectManager()->createNewObject();
+
+    sirius->setSize(2000000ll);
+    sirius->setType(obT_Star_System);
+    sirius->setName("Sirius System");
+    sirius->setPosition(Vector3d(-250000000ll, -3800000000ll, 0ll));
+    sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    sirius->addToParent(mw_galaxy->getID());
+    obman->addObject(sirius);
+
+    s1->setSize(2);
+    s1->setType(obT_Planet);
+    s1->setName("Sirius 1");
+    s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
+    s1->addToParent(sirius->getID());
+    obman->addObject(s1);
+
+    return sirius;
+}
+
+
+// Returns a random number between 1 and 'max'
+static unsigned int myRandom( unsigned int  max)
+{
+    return 1 + ( unsigned int) ( ( ( double) max * rand()) / ( RAND_MAX + 1.0));
+}
+
+
+// Create a random star system
+IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
+{
+    Logger::getLogger()->debug( "Entering MTSec::createStarSystem");
+    Game*          game = Game::getGame();
+    ObjectManager* obman = game->getObjectManager();
+    IGObject*      star = game->getObjectManager()->createNewObject();
+    unsigned int   nplanets = 0;
+    std::ostringstream     formatter;
+
+    star->setSize(1400000ll);
+    star->setType( obT_Star_System);
+    unsigned int   thx = myRandom(45);
+    star->setName(systemNames[thx-1]);
+    star->setPosition( Vector3d( myRandom(8000) * 1000000ll - 4000000000ll,
+                                 myRandom(8000) * 1000000ll - 4000000000ll,
+                                 0ll));
+    star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
+    star->addToParent( mw_galaxy->getID());
+    obman->addObject( star);
+
+    // Create a variable number of planets for each star system
+    while ( nplanets < 5 && myRandom(10) < 6) {
+        IGObject*  planet = game->getObjectManager()->createNewObject();
+        formatter.str("");
+        formatter << star->getName() << " " << nplanets;
+
+        planet->setSize( 2);
+        planet->setType( obT_Planet);
+        planet->setName( formatter.str().c_str());
+        planet->setPosition( star->getPosition() + Vector3d( nplanets * 40000ll,
+                                                             nplanets * -35000ll,
+                                                             0ll));
+        planet->addToParent( star->getID());
+        obman->addObject( planet);
+        nplanets++;
     }
-    
+
+    Logger::getLogger()->debug( "Exiting MTSec::createStarSystem");
+    return star;
+}
+
+
+// Create the Sol star system
+IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
+{
+    Game*          game = Game::getGame();
+    ObjectManager* obman = game->getObjectManager();
+    IGObject*      sol = game->getObjectManager()->createNewObject();
+    IGObject*      earth = game->getObjectManager()->createNewObject();
+    IGObject*      venus = game->getObjectManager()->createNewObject();
+    IGObject*      mars = game->getObjectManager()->createNewObject();
+
+    sol->setSize(1400000ll);
+    sol->setType(obT_Star_System);
+    sol->setName("Sol/Terra System");
+    sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+    sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    sol->addToParent(mw_galaxy->getID());
+    obman->addObject(sol);
+
+    earth->setSize(2);
+    earth->setType(obT_Planet);
+    earth->setName("Earth/Terra");
+    earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+    earth->addToParent(sol->getID());
+    obman->addObject(earth);
+
+    venus->setSize(2);
+    venus->setType(obT_Planet);
+    venus->setName("Venus");
+    venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
+    venus->addToParent(sol->getID());
+    obman->addObject(venus);
+
+    mars->setSize(1);
+    mars->setType(obT_Planet);
+    mars->setName("Mars");
+    mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
+    mars->addToParent(sol->getID());
+    obman->addObject(mars);
+
+    return sol;
+}
+
+
+void MTSec::createGame()
+{
+    Logger::getLogger()->debug( "Enter MTSec::createGame");
+    Game*        game = Game::getGame();
+    DesignStore* ds = game->getDesignStore();
+    unsigned int counter;
+    Category*    cat = new Category();
+    cat->setName("Ships");
+    cat->setDescription("The Ship design and component category");
+    ds->addCategory(cat);
+    assert(cat->getCategoryId() == 1);
+
+    createTechTree();
+
+    ObjectManager* obman = game->getObjectManager();
+
+    IGObject* universe = game->getObjectManager()->createNewObject();
+    universe->setType(obT_Universe);
+    universe->setSize(100000000000ll);
+    universe->setName("The Universe");
+    universe->setPosition(Vector3d(0ll, 0ll, 0ll));
+    universe->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    obman->addObject(universe);
+
+    //add contained objects
+    IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
+    mw_galaxy->setSize(10000000000ll);
+    mw_galaxy->setType(obT_Galaxy);
+    mw_galaxy->setName("Milky Way Galaxy");
+    mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
+    mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    mw_galaxy->addToParent(universe->getID());
+    obman->addObject(mw_galaxy);
+
+    // Some initial star systems...
+    createSolSystem( mw_galaxy);
+    createAlphaCentauriSystem( mw_galaxy);
+    createSiriusSystem( mw_galaxy);
+    for ( counter = 0; counter < 45; counter++) {
+        createStarSystem( mw_galaxy);
+    }
+
+    Logger::getLogger()->debug( "Exit MTSec::createGame");
+
+    return;
+}
+
+
+void MTSec::startGame()
+{
   Game::getGame()->setTurnLength(600);
 }
 
-void MtSec::doOnceATurn(){
-  Game* game = Game::getGame();
-  std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
+
+// Make sure each player can see all objects each turn.
+// This covers any new objects that have been created during the previous
+// turn.
+void MTSec::doOnceATurn()
+{
+    Game* game = Game::getGame();
+    std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
     std::set<uint32_t> players = game->getPlayerManager()->getAllIds();
-    for(std::set<uint32_t>::iterator itplayer = players.begin(); 
-            itplayer != players.end(); ++itplayer){
+
+    for ( std::set<uint32_t>::iterator itplayer = players.begin();
+          itplayer != players.end(); ++itplayer) {
         game->getPlayerManager()->getPlayer(*itplayer)->setVisibleObjects(vis);
     }
 }
 
-bool MtSec::onAddPlayer(Player* player){
-  
+
+bool MTSec::onAddPlayer(Player* player)
+{
   return true;
 }
 
-void MtSec::onPlayerAdded(Player* player){
-  Game *game = Game::getGame();
 
-  Logger::getLogger()->debug("MtSec::onPlayerAdded");
+Design* MTSec::createScoutDesign( Player* owner)
+{
+    Game *game = Game::getGame();
+    Design* scout = new Design();
+    std::map<unsigned int, unsigned int> componentList;
 
-  player->setVisibleObjects(game->getObjectManager()->getAllIds());
+    scout->setCategoryId(1);
+    scout->setName( "Scout");
+    scout->setDescription("Scout ship");
+    scout->setOwner( owner->getID());
+    componentList[componentIndex["ScoutHull"]] = 1;
+    scout->setComponents(componentList);
+    game->getDesignStore()->addDesign(scout);
 
-  player->addVisibleComponent(1);
-  player->addVisibleComponent(2);
-  player->addVisibleComponent(3);
+    return scout;
+}
 
-  //temporarily add the components as usable to get the designs done
-  player->addUsableComponent(1);
-  player->addUsableComponent(2);
-  player->addUsableComponent(3);
 
-  Design* scout = new Design();
-  scout->setCategoryId(1);
-  scout->setName("Scout");
-  scout->setDescription("Scout ship");
-  scout->setOwner(player->getID());
-    std::map<unsigned int, unsigned int> cl;
-    cl[1] = 1;
-  scout->setComponents(cl);
-  game->getDesignStore()->addDesign(scout);
-  unsigned int scoutid = scout->getDesignId();
+Design* MTSec::createBattleScoutDesign( Player* owner)
+{
+    Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
+    Game *game = Game::getGame();
+    Design* scout = new Design();
+    std::map<unsigned int, unsigned int> componentList;
 
-    Design* design = new Design();
-  design->setCategoryId(1);
-  design->setName("Frigate");
-  design->setDescription("Frigate ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[2] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
+    scout->setCategoryId(1);
+    scout->setName( "BattleScout");
+    scout->setDescription("Battle Scout ship");
+    scout->setOwner( owner->getID());
+    componentList[componentIndex["BattleScoutHull"]] = 1;
+    componentList[componentIndex["AlphaMissileBay"]] = 1;
+    componentList[componentIndex["Cerium3Explosives"]] = 1;
+    scout->setComponents(componentList);
+    game->getDesignStore()->addDesign(scout);
 
-  design = new Design();
-  design->setCategoryId(1);
-  design->setName("Battleship");
-  design->setDescription("Battleship ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[3] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
+    Logger::getLogger()->debug( "Exit MTSec::createBattleScoutDesign");
+    return scout;
+}
 
-  //remove temporarily added usable components
-  player->removeUsableComponent(1);
-  player->removeUsableComponent(2);
-  player->removeUsableComponent(3);
 
-  const char* name = player->getName().c_str();
-  IGObject *star = game->getObjectManager()->createNewObject();
-  star->setSize(2000000ll);
-  star->setType(obT_Star_System);
-  char* temp = new char[strlen(name) + 13];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " Star System", 12);
-  temp[strlen(name) + 12] = '\0';
-  star->setName(temp);
-  delete[] temp;
-  star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
-			     (long long)(((rand() % 1000) - 500) * 10000000),
-			     /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
-  star->setVelocity(Vector3d(0ll, 0ll, 0ll));
-  
-  star->addToParent(1);
-  game->getObjectManager()->addObject(star);
-  
-  IGObject *planet = game->getObjectManager()->createNewObject();
-  planet->setSize(2);
-  planet->setType(obT_Planet);
-  temp = new char[strlen(name) + 8];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " Planet", 7);
-  temp[strlen(name) + 7] = '\0';
-  planet->setName(temp);
-  delete[] temp;
-  ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
-  planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-						     (long long)((rand() % 10000) - 5000),
-						     /*(long long)((rand() % 10000) - 5000)*/ 0));
-  planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-  
-  planet->addToParent(star->getID());
-  game->getObjectManager()->addObject(planet);
-  
-  IGObject *fleet = game->getObjectManager()->createNewObject();
-  fleet->setSize(2);
-  fleet->setType(obT_Fleet);
-  temp = new char[strlen(name) + 13];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " First Fleet", 12);
-  temp[strlen(name) + 12] = '\0';
-  fleet->setName(temp);
-  delete[] temp;
-  ((OwnedObject*)(fleet->getObjectData()))->setOwner(player->getID());
-  fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-						    (long long)((rand() % 10000) - 5000),
-						    /*(long long)((rand() % 10000) - 5000)*/ 0));
-  ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
+IGObject* MTSec::createEmptyFleet( Player*     owner,
+                                   IGObject*   star,
+                                   std::string fleetName)
+{
+    Game *game = Game::getGame();
+    IGObject *fleet = game->getObjectManager()->createNewObject();
+    Vector3d  offset = Vector3d( ( long long) ( ( rand() % 10000) - 5000),
+                                 ( long long) ( ( rand() % 10000) - 5000),
+                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
+
+    fleet->setSize( 2);
+    fleet->setType( obT_Fleet);
+    fleet->setName( fleetName.c_str());
+    ((OwnedObject*)(fleet->getObjectData()))->setOwner(owner->getID());
+
+    // Place the fleet in orbit around the given star
+    fleet->setPosition( star->getPosition() + offset);
+    fleet->setVelocity( Vector3d(0LL, 0ll, 0ll));
+
+    fleet->addToParent( star->getID());
+
+    return fleet;
+}
+
+
+// A new player's initial fleet always consists of two battle scouts.
+//
+// The designs for the scouts are one-offs, as far as the player
+// is concerned.  S/he is unable to produce any more ships like
+// them, although they could create another design that functions
+// similarly.
+//
+void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
+{
+    Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerFleet");
+    Game *game = Game::getGame();
+    std::string fleetName = player->getName().substr( 0,11) + " Fleet 1";
+    IGObject*   fleet = createEmptyFleet( player, star, fleetName);
+
+    //temporarily add the components as usable to get the designs done
+    player->addUsableComponent( componentIndex["ScoutHull"]);
+    player->addUsableComponent( componentIndex["BattleScoutHull"]);
+    player->addUsableComponent( componentIndex["AlphaMissileBay"]);
+    player->addUsableComponent( componentIndex["Cerium3Explosives"]);
+    // player->addUsableComponent( componentIndex["BattleshipHull"]);
+
+    Design* scout = createBattleScoutDesign( player);
+
+    //remove temporarily added usable components
+    player->removeUsableComponent( componentIndex["ScoutHull"]);
+    player->removeUsableComponent( componentIndex["BattleScoutHull"]);
+    player->removeUsableComponent( componentIndex["AlphaMissileBay"]);
+    player->removeUsableComponent( componentIndex["Cerium3Explosives"]);
+    // player->removeUsableComponent( componentIndex["BattleshipHull"]);
+
+    // Start this fleet off with two battle scout ships
+    ((Fleet*)(fleet->getObjectData()))->addShips( scout->getDesignId(), 2);
     scout->addUnderConstruction(2);
     scout->addComplete(2);
-    game->getDesignStore()->designCountsUpdated(scout);
-  fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-  
-  fleet->addToParent(star->getID());
-  game->getObjectManager()->addObject(fleet);
+    game->getDesignStore()->designCountsUpdated( scout);
 
-    game->getPlayerManager()->updatePlayer(player->getID());
+    game->getObjectManager()->addObject( fleet);
+
+    Logger::getLogger()->debug( "Exit MTSec::makeNewPlayerFleet");
+    return;
+}
+
+
+// Create a new player's home planet, orbiting around
+// the given star.
+IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
+{
+    Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
+    Game *    game = Game::getGame();
+    IGObject* planet = game->getObjectManager()->createNewObject();
+    Vector3d  offset = Vector3d( ( long long) ( ( rand() % 10000) - 5000),
+                                 ( long long) ( ( rand() % 10000) - 5000),
+                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
+    std::string planetName = player->getName() + " Planet";
+
+    planet->setSize( 2);
+    planet->setType( obT_Planet);
+    planet->setName( planetName.c_str());
+    ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
+    planet->setPosition( star->getPosition() + offset);
+    planet->setVelocity( Vector3d( 0LL, 0ll, 0ll));
+
+    planet->addToParent( star->getID());
+    game->getObjectManager()->addObject(planet);
+
+    Logger::getLogger()->debug( "Exit MTSec::makePlayerHomePlanet");
+    return planet;
+}
+
+
+// Create a 'home star system' for a new player
+//
+// These 'home systems' always consist of exactly one planet.
+//
+IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
+{
+    Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
+    Game *    game = Game::getGame();
+    IGObject* star = game->getObjectManager()->createNewObject();
+    Vector3d  location = Vector3d( ( long long) ( ( ( rand() % 1000) - 500) * 10000000),
+                                   ( long long) ( ( ( rand() % 1000) - 500) * 10000000),
+                                   /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
+    std::string starName = player->getName() + " Star System";
+
+    star->setSize( 2000000ll);
+    star->setType( obT_Star_System);
+    star->setName( starName.c_str());
+    star->setPosition( location);
+    star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
+
+    star->addToParent(1);
+    game->getObjectManager()->addObject( star);
+
+    makePlayerHomePlanet( player, star);
+
+    Logger::getLogger()->debug( "Exit MTSec::makeNewPlayerStarSystem");
+    return star;
+}
+
+
+// This routine sets a new player's initial tech level.
+// New players can make any hull, see all stars.  This
+// doesn't leave anything for them to research.
+void MTSec::setNewPlayerTech( Player* player)
+{
+    Logger::getLogger()->debug( "Enter MTSec::setNewPlayerTech");
+    Game *game = Game::getGame();
+
+    player->setVisibleObjects( game->getObjectManager()->getAllIds());
+
+    player->addVisibleComponent( componentIndex["ScoutHull"]);
+    player->addVisibleComponent( componentIndex["BattleScoutHull"]);
+    // player->addVisibleComponent( componentIndex["BattleshipHull"]);
+
+    Logger::getLogger()->debug( "Exit MTSec::setNewPlayerTech");
+    return;
+}
+
+
+// New players start with their own star systems, and an
+// initial fleet consisting of two scout ships.
+//
+void MTSec::onPlayerAdded(Player* player)
+{
+    Logger::getLogger()->debug( "Enter MTSec::onPlayerAdded");
+
+    IGObject* star = makeNewPlayerStarSystem( player);
+
+    setNewPlayerTech( player);
+    makeNewPlayerFleet( player, star);
+    Game::getGame()->getPlayerManager()->updatePlayer( player->getID());
+
+    Logger::getLogger()->debug( "Exit MTSec::onPlayerAdded");
+    return;
 }

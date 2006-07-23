@@ -116,10 +116,10 @@ unsigned int Fleet::getLargestShipType()
     for ( std::map<int, int>::iterator itcurr = ships.begin();
           itcurr != ships.end(); ++itcurr) {
         Design *design = ds->getDesign( itcurr->first);
-        if ( shiphp < ( unsigned int) design->getPropertyValue( ds->getPropertyByName("Amour")) &&
+        if ( shiphp < ( unsigned int) design->getPropertyValue( ds->getPropertyByName("Armor")) &&
              itcurr->second > 0) {
             shiptype = itcurr->first;
-            shiphp = ( int) design->getPropertyValue( ds->getPropertyByName("Amour"));
+            shiphp = ( int) design->getPropertyValue( ds->getPropertyByName("Armor"));
         }
     }
 
@@ -162,7 +162,7 @@ bool Fleet::hit( unsigned int firepower)
 
         if ( shiptype != 0) {
             Design *design = ds->getDesign( shiptype);
-            unsigned int armor = floor( design->getPropertyValue( ds->getPropertyByName("Amour")));
+            unsigned int armor = floor( design->getPropertyValue( ds->getPropertyByName("Armor")));
 
             // If the ship has armor, use it
             if ( firepower > armor) {
