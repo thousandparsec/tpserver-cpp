@@ -36,8 +36,8 @@ class Fleet:public OwnedObject {
 	int totalShips() const;
 
 	long long maxSpeed();
-	int firepower(bool draw);
-	bool hit(int firepower);
+	unsigned int firepower( bool draw);
+	bool hit( unsigned int firepower);
 
         int getDamage() const;
         void setDamage(int nd);
@@ -54,9 +54,13 @@ class Fleet:public OwnedObject {
 
 	ObjectData* clone();
 
+ protected:
+    unsigned int getLargestShipType();
+    void shipDestroyed( unsigned int type);
+
       private:
 	std::map<int, int> ships;
-	int damage;
+	unsigned int damage;
 
 };
 

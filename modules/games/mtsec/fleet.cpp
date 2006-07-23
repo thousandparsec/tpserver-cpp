@@ -29,12 +29,13 @@
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
+#include <tpserver/logging.h>
 
 #include "fleet.h"
 
 Fleet::Fleet():OwnedObject()
 {
-  damage = 0;
+    damage = 0;
 }
 
 Fleet::~Fleet(){
@@ -81,12 +82,20 @@ long long Fleet::maxSpeed(){
   return (long long)(floor(speed));
 }
 
-int Fleet::firepower(bool draw){
+
+// This routine returns the amount of damage this fleet does when
+// attacking another fleet, in units of hit points.
+//
+// This is simply a summation of the damage that each ship in
+// the fleet can do, as indicated by the firepower
+// property value in the ship's design.
+unsigned int Fleet::firepower( bool draw) {
   double fp = 0;
   DesignStore* ds = Game::getGame()->getDesignStore();
-  for(std::map<int, int>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-    if(draw){
+
+  for ( std::map<int, int>::iterator itcurr = ships.begin();
+        itcurr != ships.end(); ++itcurr) {
+    if ( draw) {
       fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")) * itcurr->second;
     }else{
       fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")) * itcurr->second;
@@ -95,46 +104,87 @@ int Fleet::firepower(bool draw){
   return (int) (floor(fp));
 }
 
-bool Fleet::hit(int firepower){
-    if(firepower != 0){
-  damage += firepower;
-  bool change = true;
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  while(change){
-    change = false;
-    //find largest ship (by HP (prop 3))
-    int shiptype = 0;
-    int shiphp = 0;
-    for(std::map<int, int>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-      Design *design = ds->getDesign(itcurr->first);
-      if(shiphp < (int)design->getPropertyValue(ds->getPropertyByName("Armour"))){
-	shiptype = itcurr->first;
-        shiphp = (int)design->getPropertyValue(ds->getPropertyByName("Armour"));
-      }
+
+// Return the design ID of the ship design in the fleet
+// that has the most hit points
+unsigned int Fleet::getLargestShipType()
+{
+    DesignStore* ds = Game::getGame()->getDesignStore();
+    unsigned int shiptype = 0;
+    unsigned int shiphp = 0;
+
+    for ( std::map<int, int>::iterator itcurr = ships.begin();
+          itcurr != ships.end(); ++itcurr) {
+        Design *design = ds->getDesign( itcurr->first);
+        if ( shiphp < ( unsigned int) design->getPropertyValue( ds->getPropertyByName("Amour")) &&
+             itcurr->second > 0) {
+            shiptype = itcurr->first;
+            shiphp = ( int) design->getPropertyValue( ds->getPropertyByName("Amour"));
+        }
     }
-    if(shiphp == 0){
-        touchModTime();
-      return false;
-    }
-    while(damage > shiphp && ships[shiptype] > 0){
-      ships[shiptype]--;
-      damage -= shiphp;
-        Design* design = ds->getDesign(shiptype);
-        design->removeDestroyed(1);
-        ds->designCountsUpdated(design);
-      change = true;
-    }
-    if(ships[shiptype] == 0){
-      ships.erase(shiptype);
-      change = true;
-    }
-    
-  }
-  touchModTime();
-    }
-  return true;
+
+    return shiptype;
 }
+
+
+// Destroy one ship of the given design.
+void Fleet::shipDestroyed( unsigned int designID)
+{
+    DesignStore* ds = Game::getGame()->getDesignStore();
+    Design* design = ds->getDesign(designID);
+
+    ships[designID]--;
+    design->removeDestroyed( 1);
+    ds->designCountsUpdated( design);
+    if ( ships[designID] == 0) {
+        ships.erase( designID);
+    }
+
+    return;
+}
+
+
+// The fleet was damaged.  Damage done to this fleet is given
+// in firepower, in units of hit points.  This is added to any
+// existing damage (from previous hits), then any effects on
+// the fleet are determined.  If the cumulative damage is greater
+// than the hit points of the largest ship, that ship is considered
+// destroyed.
+//
+// The return value from this routine is true if there are any
+// ships left in the fleet after the damage is taken into account,
+// false otherwise.
+bool Fleet::hit( unsigned int firepower)
+{
+    if ( firepower != 0) {
+        DesignStore* ds = Game::getGame()->getDesignStore();
+        unsigned int shiptype = getLargestShipType();
+
+        if ( shiptype != 0) {
+            Design *design = ds->getDesign( shiptype);
+            unsigned int armor = floor( design->getPropertyValue( ds->getPropertyByName("Amour")));
+
+            // If the ship has armor, use it
+            if ( firepower > armor) {
+                firepower -= armor;
+                damage += firepower;
+
+                if ( damage > design->getPropertyValue( ds->getPropertyByName("HitPoints"))) {
+                    shipDestroyed( shiptype);
+                    damage = 0;
+                }
+            }
+            else {
+                // firepower expended itself on the armor, no damage
+            }
+        }
+
+        touchModTime();
+    }
+
+    return ( ships.size() > 0);
+}
+
 
 int Fleet::getDamage() const{
     return damage;
