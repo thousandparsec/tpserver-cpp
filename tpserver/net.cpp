@@ -34,15 +34,15 @@
 #include "logging.h"
 #include "settings.h"
 #include "connection.h"
-#include "playertcpconn.h"
+#include "playerconnection.h"
 #include "tcpsocket.h"
 #include "game.h"
 #include "frame.h"
+#include "httpsocket.h"
 
 #ifdef HAVE_LIBGNUTLS
 #include "tlssocket.h"
 #include "httpssocket.h"
-#include "playertlsconn.h"
 #endif
 
 #include "net.h"
@@ -122,6 +122,19 @@ void Network::start()
 	    delete listensocket;
 	    Logger::getLogger()->warning("Could not listen on TP (tcp) socket");
 	  }
+          if(Settings::getSettings()->get("http") == "yes"){
+            HttpSocket* httpsocket = new HttpSocket();
+            httpsocket->openListen(Settings::getSettings()->get("http_addr"), Settings::getSettings()->get("http_port"));
+            if(httpsocket->getStatus() != 0){
+              addConnection(httpsocket);
+              numsocks++;
+            }else{
+              delete httpsocket;
+              Logger::getLogger()->warning("Could not listen on HTTP (http tunneling) socket");
+            }
+          }else{
+            Logger::getLogger()->info("Not configured to start http socket");
+          }
 #ifdef HAVE_LIBGNUTLS
             if(Settings::getSettings()->get("tps") == "yes"){
                 TlsSocket* secsocket = new TlsSocket();
@@ -149,11 +162,12 @@ void Network::start()
             }else{
                 Logger::getLogger()->info("Not configured to start https socket");
             }
+#endif
             if(numsocks != 0){
                 Logger::getLogger()->info("Started network with %d listeners", numsocks);
                 active = true;
             }
-#endif
+
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
