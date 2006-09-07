@@ -187,6 +187,18 @@ void PlayerHttpConnection::verCheck()
           }
           delete[] buff;
           return;
+        }else if(len == 4 && memcmp(buff, "GET ", 4) == 0){
+          delete[] buff;
+          buff = new char[1024];
+          len = read(sockfd, buff, 1024);
+          std::string url = std::string(buff, strchr(buff, ' ')- buff);
+          Logger::getLogger()->debug("Http GET url: %s", url.c_str());
+          std::string response = "HTTP/1.0 200 OK\r\n";
+          response += "Cache-Control: no-cache\r\n";
+          response += "Pragma: no-cache\r\n\r\n";
+          response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
+          send(sockfd, response.c_str(), response.length(), 0);
+          close();
         }
 	Logger::getLogger()->warning("Client did not talk any variant of TPprotocol");
 	// send "I don't understand" message
