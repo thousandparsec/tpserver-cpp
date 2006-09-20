@@ -27,6 +27,15 @@
 class Connection;
 class Frame;
 
+enum FeatureIDs {
+  fid_sec_conn_this = 1,
+  fid_sec_conn_other = 2,
+  fid_http_this = 3,
+  fid_http_other = 4,
+  fid_keep_alive = 5,
+  fid_serverside_property = 6
+};
+
 class Network {
 
       public:
@@ -34,6 +43,8 @@ class Network {
 
 	// Feature frames
 	void createFeaturesFrame(Frame * frame);
+        void addFeature(int featid, int value);
+        void removeFeature(int featid);
 
 	//stuff
 
@@ -72,6 +83,7 @@ class Network {
 
 	 std::map < int, Connection * >connections;
 
+         std::map<int,int> features;
 
 };
 

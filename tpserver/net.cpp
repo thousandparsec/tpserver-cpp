@@ -64,13 +64,22 @@ Network *Network::getNetwork()
 void Network::createFeaturesFrame(Frame* frame){
   if(frame->getVersion() >= fv0_3){
     frame->setType(ft03_Features);
-    frame->packInt(1); //one optional features at this time.
-    frame->packInt(5); // Keep Alive (ping frames)
-                       //  TODO make consts or enums
+    frame->packInt(features.size());
+    for(std::map<int,int>::iterator itcurr = features.begin(); itcurr != features.end(); ++itcurr){
+      frame->packInt(itcurr->first);
+    }
   }else{
     Logger::getLogger()->warning("Tryed to create a Features frame for protocol version less than 3");
     frame->createFailFrame(fec_FrameError, "Unknown request for features (not in current protocol)");
   }
+}
+
+void Network::addFeature(int featid, int value){
+  features[featid] = value;
+}
+
+void Network::removeFeature(int featid){
+  features.erase(featid);
 }
 
 void Network::addConnection(Connection* conn)
@@ -128,6 +137,7 @@ void Network::start()
             if(httpsocket->getStatus() != 0){
               addConnection(httpsocket);
               numsocks++;
+              addFeature(fid_http_other, atoi(Settings::getSettings()->get("http_port").c_str()));
             }else{
               delete httpsocket;
               Logger::getLogger()->warning("Could not listen on HTTP (http tunneling) socket");
@@ -142,6 +152,7 @@ void Network::start()
                 if(secsocket->getStatus() != 0){
                     addConnection(secsocket);
                     numsocks++;
+                    addFeature(fid_sec_conn_other, atoi(Settings::getSettings()->get("tps_port").c_str()));
                 }else{
                     delete secsocket;
                     Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
@@ -198,7 +209,8 @@ void Network::stop()
 		      }
 		    }
 		  }
-
+                  removeFeature(fid_sec_conn_other);
+                  removeFeature(fid_http_other);
 		active = false;
 
 	} else {
@@ -308,6 +320,8 @@ Network::Network()
 
 	halt = false;
 	active = false;
+  features[fid_keep_alive] = 0;
+  features[fid_serverside_property] = 0;
 }
 
 
