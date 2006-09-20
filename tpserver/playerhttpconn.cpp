@@ -176,7 +176,7 @@ void PlayerHttpConnection::verCheck()
           std::string url = std::string(buff+1, strchr(buff+1, ' ')- buff - 1);
           Logger::getLogger()->debug("Http url: %s", url.c_str());
           std::string response = "HTTP/1.0 200 OK\r\n";
-          response += "Cache-Control: no-cache\r\n";
+          response += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
           response += "Pragma: no-cache\r\n\r\n";
           if(url == "/"){
             response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
