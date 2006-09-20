@@ -194,7 +194,7 @@ void PlayerHttpConnection::verCheck()
           std::string url = std::string(buff, strchr(buff, ' ')- buff);
           Logger::getLogger()->debug("Http GET url: %s", url.c_str());
           std::string response = "HTTP/1.0 200 OK\r\n";
-          response += "Cache-Control: no-cache\r\n";
+          response += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
           response += "Pragma: no-cache\r\n\r\n";
           response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
           send(sockfd, response.c_str(), response.length(), 0);
