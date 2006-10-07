@@ -96,6 +96,7 @@ typedef enum {
 	ft03_Property = 59,
 	ft03_PropertyIds_Get = 60,
 	ft03_PropertyIds_List = 61,
+        ft03_Account = 62,
 	ft03_Max,
 
 

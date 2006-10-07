@@ -156,16 +156,48 @@ void PlayerConnection::login()
 	    Frame *features = createFrame(recvframe);
 	    Network::getNetwork()->createFeaturesFrame(features);
 	    sendFrame(features);
-            }else if(recvframe->getType() == ft02_Time_Remaining_Get){
+          }else if(recvframe->getType() == ft02_Time_Remaining_Get){
                 Logger::getLogger()->debug("Processing Get Time frame");
                 Frame *time = createFrame(recvframe);
                 time->setType(ft02_Time_Remaining);
                 time->packInt(Game::getGame()->secondsToEOT());
                 sendFrame(time);
-            }else{
+          }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
+              char *username = recvframe->unpackString();
+              char *password = recvframe->unpackString();
+              // also email address and comment strings
+              if (username != NULL && password != NULL) {
+                  Logger::getLogger()->info("Creating new player");
+                  player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+                  if(player != NULL){
+                      Frame *okframe = createFrame(recvframe);
+                      okframe->setType(ft02_OK);
+                      okframe->packString("Welcome");
+                      sendFrame(okframe);
+                      Logger::getLogger()->info("Login ok by %s", username);
+                      player->setConnection(this);
+                      status = 3;
+                  }else{
+                      Logger::getLogger()->info("Bad username or password in account creation");
+                      Frame *failframe = createFrame(recvframe);
+                      failframe->createFailFrame(fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
+                      sendFrame(failframe);
+                  }
+              }else{
+                Logger::getLogger()->debug("username or password == NULL in account frame");
+                Frame *failframe = createFrame(recvframe);
+                failframe->createFailFrame(fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
+                sendFrame(failframe);
+                close();
+              }
+              if (username != NULL)
+                      delete[] username;
+              if (password != NULL)
+                      delete[] password;
+          }else{
                 Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining");
 	    Frame *failframe = createFrame(recvframe);
-	    failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login or get features");
+	    failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
 	    sendFrame(failframe);
 	  }
 	}
