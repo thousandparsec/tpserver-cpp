@@ -36,3 +36,4 @@ mzscheme (www.plt-scheme.org) [LGPL]
 
 Guile (www.gnu.org/software/guile/) [GPL]
 Should be on most systems already.
+Version 1.6 or higher.

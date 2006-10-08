@@ -124,11 +124,21 @@ fi
 if test "$guile_option" != "no"; then
    AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:$PATH)
    if test "$GUILE_CONFIG" != "no"; then
-      CPPFLAGS="$CPPFLAGS `$GUILE_CONFIG compile`"
-      LDFLAGS="$LDFLAGS `$GUILE_CONFIG link`"
-      AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
-      AM_CONDITIONAL(GUILE, true)
-      guile_use="yes"
+      dnl autoconf Guile version test adapted from SWIG test in xapian-bindings
+      v=`$GUILE_CONFIG --version 2>&1|sed 's/^guile-config - Guile version \([[0-9\.]]*\).*/\1/p;d'`
+      case $v in
+      [1.6.*|1.[789].*|2.*]) 
+        CPPFLAGS="$CPPFLAGS `$GUILE_CONFIG compile`"
+        LDFLAGS="$LDFLAGS `$GUILE_CONFIG link`"
+        AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
+        AM_CONDITIONAL(GUILE, true)
+        guile_use="yes"
+        ;;
+      *)
+        AC_MSG_WARN([guile >= 1.6.* required (you have $v)]) 
+        AM_CONDITIONAL(GUILE, false)
+        ;;
+      esac
    else
       AC_MSG_WARN(Cannot find Guile configuration script, not building Guile module)
       AM_CONDITIONAL(GUILE, false)
