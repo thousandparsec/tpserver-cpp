@@ -18,7 +18,6 @@
  *
  */
 
-#include <scheme.h>
 #include <sstream>
 #include <algorithm>
 #include <vector>
@@ -29,6 +28,14 @@
 #ifndef DATADIR
 #define DATADIR "/usr/local/share"
 #endif
+#endif
+
+#ifdef HAVE_SCHEME_H
+#include <scheme.h>
+#endif
+
+#ifdef HAVE_PLT_SCHEME_H
+#include <plt/scheme.h>
 #endif
 
 #include <tpserver/design.h>

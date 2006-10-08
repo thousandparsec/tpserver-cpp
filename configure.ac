@@ -90,33 +90,43 @@ if test "$mzscheme_option" != "no"; then
    CPPFLAGS="$CPPFLAGS -I$mzscheme_loc/include"
    LDFLAGS="$LDFLAGS -L$mzscheme_loc/lib"
 
-   AC_CHECK_HEADER(scheme.h)
-   AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+   AC_CHECK_HEADER(scheme.h, AC_DEFINE(HAVE_SCHEME_H, 1, [Define to 1 if scheme.h is present]))
+   AC_CHECK_HEADER(plt/scheme.h, AC_DEFINE(HAVE_PLT_SCHEME_H, 1, [Define to 1 if plt/scheme.h is present]))
+   if test -n "ac_cv_header_scheme_h" && test -n "ac_cv_header_plt_scheme_h" ; then
 
-   # Test for MZScheme 2.x vs. 3.x
-   AC_MSG_CHECKING(mzscheme version)
-   AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include "scheme.h"
-	#ifndef SCHEME_STRINGP
-	#error
-	#endif]])],
-	[AC_DEFINE(HAVE_MZSCHEME20X, 1,Define if we have mzscheme 209)
-        AC_MSG_RESULT(20x)],
-        AC_MSG_RESULT(3xx))
-
-   AC_CHECK_LIB(mzgc, GC_init,,)
-   AC_CHECK_LIB(mzscheme,scheme_basic_env,[
-      AC_MSG_RESULT(yes)
-
-      if test -n "$mzscheme_loc"; then
-        AC_MSG_WARN([MzScheme is not nice, please check that $mzscheme_loc/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
-      fi
-
-      AM_CONDITIONAL(MZSCHEME, true)
-      mzscheme_use="yes"
-   ],[
-      AC_MSG_RESULT(no, not going to build MzScheme module)
+      AC_CHECK_LIB(mzgc, GC_init,,)
+      AC_CHECK_LIB(mzscheme,scheme_basic_env,[
+          AC_MSG_RESULT(yes)
+          AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+    
+          # Test for MZScheme 2.x vs. 3.x
+          AC_MSG_CHECKING(mzscheme version)
+          AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+              #ifdef HAVE_SCHEME_H
+              #include "scheme.h"
+              #else
+              #include "plt/scheme.h"
+              #endif
+              #ifndef SCHEME_STRINGP
+              #error
+              #endif]])],
+              [AC_DEFINE(HAVE_MZSCHEME20X, 1,Define if we have mzscheme 209)
+              AC_MSG_RESULT(20x)],
+              AC_MSG_RESULT(3xx))
+    
+          if test -n "$mzscheme_loc"; then
+            AC_MSG_WARN([MzScheme is not nice, please check that $mzscheme_loc/lib is in /etc/ld.so.conf or TPServer-cpp WILL NOT RUN])
+          fi
+    
+          AM_CONDITIONAL(MZSCHEME, true)
+          mzscheme_use="yes"
+      ],[
+          AC_MSG_RESULT(no, not going to build MzScheme module)
+          AM_CONDITIONAL(MZSCHEME, false)
+      ])
+    else
       AM_CONDITIONAL(MZSCHEME, false)
-   ])
+    fi
 else
   AM_CONDITIONAL(MZSCHEME, false)
 fi
