@@ -182,6 +182,14 @@ void Network::start()
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
+
+        //set if account registration is allowed.
+        if(Settings::getSettings()->get("add_players") == "yes"){
+          addFeature(fid_account_register, 0);
+        }else{
+          removeFeature(fid_account_register);
+        }
+
 }
 
 

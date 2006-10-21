@@ -33,7 +33,8 @@ enum FeatureIDs {
   fid_http_this = 3,
   fid_http_other = 4,
   fid_keep_alive = 5,
-  fid_serverside_property = 6
+  fid_serverside_property = 6,
+  fid_account_register = 1000
 };
 
 class Network {
