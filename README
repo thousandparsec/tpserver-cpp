@@ -37,3 +37,17 @@ mzscheme (www.plt-scheme.org) [LGPL]
 Guile (www.gnu.org/software/guile/) [GPL]
 Should be on most systems already.
 Version 1.6 or higher.
+
+
+
+SETTINGS/CONF FILE
+==================
+By default the settings are taken from
+    /etc/tpserver-cpp/tpserver.conf
+but this can be overridden by adding these command line args
+    -C /dir/to/settingsfile.conf
+or
+    --configure /dir/to/settingsfile.conf
+or
+    --config_file /dir/to/settingsfile.conf
+All settings can set on the console once the server is running.
