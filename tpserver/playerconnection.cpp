@@ -174,9 +174,9 @@ void PlayerConnection::login()
                     if(player != NULL){
                         Frame *okframe = createFrame(recvframe);
                         okframe->setType(ft02_OK);
-                        okframe->packString("Welcome");
+                        okframe->packString("Account created and logged in.");
                         sendFrame(okframe);
-                        Logger::getLogger()->info("Login ok by %s", username);
+                        Logger::getLogger()->info("Account created ok for %s", username);
                         player->setConnection(this);
                         status = 3;
                     }else{
