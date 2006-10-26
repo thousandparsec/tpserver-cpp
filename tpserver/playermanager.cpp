@@ -49,12 +49,19 @@ void PlayerManager::init(){
 
 Player* PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
     Player *rtn = NULL;
-    rtn = new Player();
-    rtn->setId(nextid++);
-    rtn->setName(name.c_str());
-    rtn->setPass(pass.c_str());
 
-    if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
+    try{
+      Player* real = findPlayer(name, pass);
+
+    }catch(std::exception e){
+
+
+      rtn = new Player();
+      rtn->setId(nextid++);
+      rtn->setName(name.c_str());
+      rtn->setPass(pass.c_str());
+
+      if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
         // player can be added
         
         //setup board and add to player
@@ -102,11 +109,13 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
             }
         }
 
-    }else{
-        // player can not be added
-        delete rtn;
-        rtn = NULL;
-        nextid--;
+      }else{
+          // player can not be added
+          delete rtn;
+          rtn = NULL;
+          nextid--;
+      }
+    
     }
     return rtn;
 }
