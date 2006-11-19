@@ -35,6 +35,7 @@ void Universe::packExtraData(Frame * frame)
 void Universe::doOnceATurn(IGObject * obj)
 {
 	++yearNum;
+        touchModTime();
 }
 
 int Universe::getContainerType(){
