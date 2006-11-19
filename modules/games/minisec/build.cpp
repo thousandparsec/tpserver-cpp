@@ -65,7 +65,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
         update(planet);
 
     // number of turns
-    uint32_t res_current = static_cast<Planet*>(planet->getObjectData())->getResources().find(1)->first;
+    uint32_t res_current = static_cast<Planet*>(planet->getObjectData())->getResources().find(1)->second.first;
     Game::getGame()->getObjectManager()->doneWithObject(objID);
     if(pos != 0){
         f->packInt(usedshipres);
@@ -152,7 +152,7 @@ bool Build::doOrder(IGObject *ob)
     planet->addResource(1, 1);
   
 
-    if(planet->getResources().find(1)->first >= usedshipres){
+    if(planet->getResources().find(1)->second.first >= usedshipres){
         int ownerid = planet->getOwner();
         if(ownerid == 0){
             //currently not owned by anyone, just forget about it
