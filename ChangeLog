@@ -1,3 +1,13 @@
+21 Nov 06 - Lee
+    * Version 0.3.1
+    * Some refactoring to remove magic numbers for Properties
+    * HTTP tunneling socket (experiemental)
+    * Account frame handling and feature id list improvements
+    * Configure test changes for mzscheme and guile
+    * Fixed bug not updating modtime of universe object every turn
+    * Fixed bug build orders not working
+    * Added start of MTSec support, not working yet
+
 08 Jul 06 - Lee
     * Version 0.3.0
     * New directory structure
