@@ -151,6 +151,8 @@ bool Build::doOrder(IGObject *ob)
     Planet* planet = static_cast<Planet*>(ob->getObjectData());
     planet->addResource(1, 1);
   
+    if(usedshipres == 0)
+      return true;
 
     if(planet->getResources().find(1)->second.first >= usedshipres){
         int ownerid = planet->getOwner();
