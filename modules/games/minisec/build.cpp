@@ -67,7 +67,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
     // number of turns
     uint32_t res_current = static_cast<Planet*>(planet->getObjectData())->getResources().find(1)->second.first;
     Game::getGame()->getObjectManager()->doneWithObject(objID);
-    if(pos != 0){
+    if(pos != 0 || usedshipres == 0){
         f->packInt(usedshipres);
     }else{
         f->packInt(MAX(1, usedshipres - res_current));
