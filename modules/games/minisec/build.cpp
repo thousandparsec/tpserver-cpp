@@ -153,18 +153,19 @@ bool Build::doOrder(IGObject *ob)
         update(ob);
     
     Planet* planet = static_cast<Planet*>(ob->getObjectData());
-    planet->addResource(1, 1);
   
     if(usedshipres == 0)
       return true;
 
-    if(planet->getResources().find(1)->second.first >= usedshipres){
-        int ownerid = planet->getOwner();
-        if(ownerid == 0){
-            //currently not owned by anyone, just forget about it
-            return true;
-        }
-        planet->removeResource(1, usedshipres);
+    int ownerid = planet->getOwner();
+    if(ownerid == 0){
+        //currently not owned by anyone, just forget about it
+        return true;
+    }
+    
+    planet->addResource(1, 1);
+    
+  if(planet->removeResource(1, usedshipres)){
     //create fleet
     
     IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
