@@ -70,7 +70,11 @@ void Build::createFrame(Frame *f, int objID, int pos)
     if(pos != 0 || usedshipres == 0){
         f->packInt(usedshipres);
     }else{
-        f->packInt(MAX(1, usedshipres - res_current));
+      if(usedshipres <= res_current){
+        f->packInt(1);
+      }else{
+        f->packInt(usedshipres - res_current);
+      }
     }
 
   f->packInt(1); // size of resource list
