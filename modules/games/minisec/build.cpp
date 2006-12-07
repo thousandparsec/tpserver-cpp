@@ -65,8 +65,14 @@ void Build::createFrame(Frame *f, int objID, int pos)
         update(planet);
 
     // number of turns
-    uint32_t res_current = static_cast<Planet*>(planet->getObjectData())->getResources().find(1)->second.first;
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources = static_cast<Planet*>(planet->getObjectData())->getResources();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
+    uint32_t res_current;
+    if(resources.find(1) != resources.end()){
+      res_current = resources.find(1)->second.first;
+    }else{
+      res_current = 0;
+    }
     if(pos != 0 || usedshipres == 0){
         f->packInt(usedshipres);
     }else{
