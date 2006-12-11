@@ -27,6 +27,7 @@
 #include "boardmanager.h"
 #include "board.h"
 #include "message.h"
+#include "designstore.h"
 
 #include "playermanager.h"
 
@@ -104,6 +105,10 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 op->postToBoard(new Message(*msg));
                 //HACK
                 op->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
+                std::set<uint32_t> designs = Game::getGame()->getDesignStore()->getDesignIds();
+                for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
+                  op->addVisibleDesign(*desid);
+                }
                 Game::getGame()->getPersistence()->updatePlayer(op);
                 //end HACK
             }
