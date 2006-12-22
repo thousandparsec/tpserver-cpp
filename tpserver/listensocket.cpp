@@ -107,10 +107,14 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
             status = 0;
             return;
         }
+        
+        //record the port for history
+        portnum = atoi(port.c_str());
+        
 #ifndef HAVE_IPV6
 	struct sockaddr_in myAddr;
 	myAddr.sin_family = AF_INET;
-	myAddr.sin_port = htons(atoi(port.c_str()));
+	myAddr.sin_port = htons(portnum);
         if(c_addr != NULL){
             struct hostent *he = gethostbyname(c_addr);
             if(he == NULL){
@@ -187,4 +191,8 @@ void ListenSocket::process(){
         Logger::getLogger()->warning("Could not establish connection");
     }
 
+}
+
+uint16_t ListenSocket::getPort() const{
+  return portnum;
 }

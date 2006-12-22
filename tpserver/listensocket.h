@@ -34,9 +34,14 @@ class ListenSocket : public Connection {
     virtual void openListen(const std::string& address, const std::string& port);
 
   virtual void process();
+  
+  uint16_t getPort() const;
 
 protected:
     virtual PlayerConnection* acceptConnection(int fd) = 0;
+    
+private:
+  uint16_t portnum;
 
 };
 
