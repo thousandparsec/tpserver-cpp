@@ -65,12 +65,15 @@ class Network {
 
 	void masterLoop();
 	void stopMainLoop();
+        
 
       private:
 	 Network();
 	~Network();
 	 Network(Network & rhs);
 	Network operator=(Network & rhs);
+
+        void addAccountSettingChanged(const std::string &item, const std::string &value);
 
 	static Network *myInstance;
 

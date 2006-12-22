@@ -33,6 +33,7 @@
 
 #include "logging.h"
 #include "settings.h"
+#include "settingscallback.h"
 #include "connection.h"
 #include "playerconnection.h"
 #include "tcpsocket.h"
@@ -372,6 +373,7 @@ Network::Network()
   features[fid_keep_alive] = 0;
   features[fid_serverside_property] = 0;
   avahi = NULL;
+  Settings::getSettings()->setCallback("add_players", SettingsCallback(this, &Network::addAccountSettingChanged));
 }
 
 
@@ -393,4 +395,13 @@ Network Network::operator=(Network & rhs)
   // please don't call me
   assert(0);
   return *this;
+}
+
+void Network::addAccountSettingChanged(const std::string &item, const std::string &value){
+  Logger::getLogger()->debug("In addAccountSettingChanged, working");
+  if(value == "yes"){
+    addFeature(fid_account_register, 0);
+  }else{
+    removeFeature(fid_account_register);
+  }
 }
