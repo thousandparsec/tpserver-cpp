@@ -68,17 +68,30 @@ class SettingsCallback{
     
     SettingsCallback(const SettingsCallback& rhs){
       impl = rhs.impl;
-      impl->ref++;
+      if(impl != NULL)
+        impl->ref++;
     }
     
-    SettingsCallback(){};
+    SettingsCallback(): impl(NULL) {};
     
     ~SettingsCallback(){
-      impl->ref--;
-      if(impl->ref == 0)
-        delete impl;
+      if(impl != NULL){
+        impl->ref--;
+        if(impl->ref == 0)
+          delete impl;
+      }
     }
     
+    SettingsCallback operator=(const SettingsCallback & rhs){
+      if(impl != NULL){
+        impl->ref--;
+        if(impl->ref == 0)
+          delete impl;
+      }
+      impl = rhs.impl;
+      impl->ref++;
+      return *this;
+    }
     
     void call(const std::string & name, const std::string & value){
       impl->call(name, value);
