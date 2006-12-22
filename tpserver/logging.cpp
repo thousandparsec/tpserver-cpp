@@ -1,6 +1,6 @@
 /*  Logging for tpserver-cpp
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2006  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #endif
 
 #include "settings.h"
+#include "settingscallback.h"
 
 #include "logging.h"
 #include "filelogger.h"
@@ -136,7 +137,7 @@ void Logger::flush()
 	info("Logger stopped");
 }
 
-void Logger::reconfigure()
+void Logger::reconfigure(const std::string & item, const std::string & value)
 {
     std::map<std::string, LogSink*>::iterator  pos;
 
@@ -189,8 +190,12 @@ void Logger::reconfigure()
 
 Logger::Logger()
 {
-    reconfigure();
+    reconfigure("","");
 	info("Logger started");
+  Settings::getSettings()->setCallback("log_level", SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_console", SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_syslog", SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_file", SettingsCallback(this, &Logger::reconfigure));
 }
 
 Logger::~Logger()

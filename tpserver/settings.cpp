@@ -195,9 +195,9 @@ bool Settings::readConfFile(const std::string& fname){
 
 void Settings::set(std::string item, std::string value){
   store[item] = value;
-    if(item.find("log_") == 0){
-        Logger::getLogger()->reconfigure();
-    }
+  if(callbacks.find(item) != callbacks.end()){
+     callbacks[item].call(item, value);
+  }
 }
 
 
