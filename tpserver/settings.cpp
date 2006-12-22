@@ -207,6 +207,14 @@ std::string Settings::get(std::string item){
   return itcurr->second;
 }
 
+void Settings::setCallback(std::string item, SettingsCallback cb){
+  callbacks[item] = cb;
+}
+
+void Settings::removeCallback(std::string item){
+  callbacks.erase(item);
+}
+
 Settings::Settings()
 {
 

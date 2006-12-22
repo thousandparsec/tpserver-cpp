@@ -23,6 +23,8 @@
 #include <string>
 #include <map>
 
+#include "settingscallback.h"
+
 class Settings {
 
       public:
@@ -33,6 +35,9 @@ class Settings {
 
 	void set(std::string item, std::string value);
 	std::string get(std::string item);
+        
+        void setCallback(std::string item, SettingsCallback cb);
+        void removeCallback(std::string item);
 
       private:
 	 Settings();
@@ -48,6 +53,7 @@ class Settings {
 
 	// settings storage
 	std::map<std::string, std::string> store;
+        std::map<std::string, SettingsCallback> callbacks;
 
 	static Settings *myInstance;
 
