@@ -31,6 +31,8 @@
 
 #include "logging.h"
 
+#include "settingscallback.h"
+
 #include "settings.h"
 
 Settings *Settings::myInstance = NULL;

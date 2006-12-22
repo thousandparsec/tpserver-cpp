@@ -23,7 +23,7 @@
 #include <string>
 #include <map>
 
-#include "settingscallback.h"
+class SettingsCallback;
 
 class Settings {
 
