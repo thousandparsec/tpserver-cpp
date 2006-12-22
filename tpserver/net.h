@@ -26,6 +26,7 @@
 
 class Connection;
 class Frame;
+class Avahi;
 
 enum FeatureIDs {
   fid_sec_conn_this = 1,
@@ -85,6 +86,10 @@ class Network {
 	 std::map < int, Connection * >connections;
 
          std::map<int,int> features;
+         
+#ifdef HAVE_AVAHI
+         Avahi* avahi;
+#endif
 
 };
 

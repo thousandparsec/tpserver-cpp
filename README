@@ -20,6 +20,9 @@ MySQL is optional, but is needed for the mysql persistence backend. The client
 side library is required.
  - note: see ./configure --help for options and env vars.
 
+Avahi (avahi.org) [LGPL]
+Version 0.6.0 or higher
+Needed for zeroconf/mDNS support
 
 OPTIONS (need one or the other)
 =======

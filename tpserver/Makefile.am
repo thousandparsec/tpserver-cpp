@@ -11,15 +11,23 @@ GNUTLSSOURCES =
 GNUTLSHEADERS =
 endif
 
+if AVAHI
+AVAHISOURCES = avahi.cpp
+AVAHIHEADERS = avahi.h
+else
+AVAHISOURCES =
+AVAHIHEADERS =
+endif
+
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
-	frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
-	order.cpp objectdata.cpp universe.cpp ownedobject.cpp emptyobject.cpp nop.cpp \
-	vector3d.cpp board.cpp message.cpp ordermanager.cpp objectdatamanager.cpp \
-	combatstrategy.cpp playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
-	propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
-	persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
-	filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
-	resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp
+		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
+		order.cpp objectdata.cpp universe.cpp ownedobject.cpp emptyobject.cpp nop.cpp \
+		vector3d.cpp board.cpp message.cpp ordermanager.cpp objectdatamanager.cpp \
+		combatstrategy.cpp playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
+		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
+		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
+		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
+		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp $(AVAHISOURCES)
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
 	frame.h game.h logging.h net.h settings.h \
@@ -36,7 +44,7 @@ headers_HEADERS = connection.h console.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
-		consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
-	playerhttpconn.h
+	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
+	playerhttpconn.h $(AVAHIHEADERS)
 tpserver_cpp_LDADD = -ldl $(LIBGNUTLS_LIBS)
 tpserver_cpp_LDFLAGS = -rdynamic

@@ -37,6 +37,16 @@ PKG_CHECK_MODULES(libtprl, libtprl >= 0.0.0,
 	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
 )
 
+PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
+    [
+    CXXFLAGS="$CXXFLAGS $avahiclient_CFLAGS"
+    LDFLAGS="$LDFLAGS $avahiclient_LIBS"
+    AC_DEFINE(HAVE_AVAHI, 1, true if avahi is available)
+    AM_CONDITIONAL(AVAHI, true)
+    ],[
+    AM_CONDITIONAL(AVAHI, false)
+    ]
+)
 
 #check byte order
 AC_C_BIGENDIAN

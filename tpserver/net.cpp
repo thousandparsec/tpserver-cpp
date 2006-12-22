@@ -45,6 +45,10 @@
 #include "httpssocket.h"
 #endif
 
+#ifdef HAVE_AVAHI
+#include "avahi.h"
+#endif
+
 #include "net.h"
 
 
@@ -121,12 +125,26 @@ void Network::start()
 
 	if(Game::getGame()->isLoaded()){
 	  Logger::getLogger()->info("Starting Network");
+          
+#ifdef HAVE_AVAHI
+          //start avahi
+          try{
+            avahi = new Avahi();
+          }catch(std::exception e){
+            avahi = NULL;
+          }
+#endif
+          
 	  uint numsocks = 0;
 	  TcpSocket* listensocket = new TcpSocket();
             listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
 	  if(listensocket->getStatus() != 0){
 	    addConnection(listensocket);
 	    numsocks++;
+#ifdef HAVE_AVAHI
+            if(avahi != NULL)
+              avahi->addService("tp", listensocket->getPort());
+#endif
 	  }else{
 	    delete listensocket;
 	    Logger::getLogger()->warning("Could not listen on TP (tcp) socket");
@@ -138,6 +156,10 @@ void Network::start()
               addConnection(httpsocket);
               numsocks++;
               addFeature(fid_http_other, atoi(Settings::getSettings()->get("http_port").c_str()));
+#ifdef HAVE_AVAHI
+              if(avahi != NULL)
+                avahi->addService("tphttp", httpsocket->getPort());
+#endif
             }else{
               delete httpsocket;
               Logger::getLogger()->warning("Could not listen on HTTP (http tunneling) socket");
@@ -153,6 +175,10 @@ void Network::start()
                     addConnection(secsocket);
                     numsocks++;
                     addFeature(fid_sec_conn_other, atoi(Settings::getSettings()->get("tps_port").c_str()));
+#ifdef HAVE_AVAHI
+                    if(avahi != NULL)
+                      avahi->addService("tps", secsocket->getPort());
+#endif
                 }else{
                     delete secsocket;
                     Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
@@ -166,6 +192,10 @@ void Network::start()
                 if(secsocket->getStatus() != 0){
                     addConnection(secsocket);
                     numsocks++;
+#ifdef HAVE_AVAHI
+                    if(avahi != NULL)
+                      avahi->addService("tphttps", secsocket->getPort());
+#endif
                 }else{
                     delete secsocket;
                     Logger::getLogger()->warning("Could not listen on HTTPS (https tunneling) socket");
@@ -219,6 +249,11 @@ void Network::stop()
 		  }
                   removeFeature(fid_sec_conn_other);
                   removeFeature(fid_http_other);
+#ifdef HAVE_AVAHI
+                  if(avahi != NULL)
+                    delete avahi;
+                  avahi = NULL;
+#endif
 		active = false;
 
 	} else {
@@ -279,6 +314,12 @@ void Network::masterLoop()
 			}
 
 		}
+                
+#ifdef HAVE_AVAHI
+                if(avahi != NULL){
+                  avahi->poll();
+                }
+#endif
 
 		if(netstat != active && active == false){
 		  std::map<int, Connection*>::iterator itcurr = connections.begin();
@@ -330,11 +371,15 @@ Network::Network()
 	active = false;
   features[fid_keep_alive] = 0;
   features[fid_serverside_property] = 0;
+  avahi = NULL;
 }
 
 
 Network::~Network()
 {
+  if(avahi != NULL)
+    delete avahi;
+  
 }
 
 
