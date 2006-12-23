@@ -38,6 +38,10 @@
 #endif
 
 #include "logging.h"
+#include "settings.h"
+#include "settingscallback.h"
+#include "game.h"
+#include "ruleset.h"
 
 #include "avahi.h"
 
@@ -122,7 +126,15 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
 
 Avahi::Avahi() : services(), simple_poll(NULL), group(NULL), client(NULL), name(NULL){
   
-  name = avahi_strdup("Tpserver-cpp");
+  std::string tname = Settings::getSettings()->get("server_name");
+  if(tname.empty())
+    tname = "Tpserver-cpp";
+  tname.append(" [");
+  tname.append(Game::getGame()->getRuleset()->getName());
+  tname.append("]");
+  name = avahi_strdup(tname.c_str());
+  
+  Settings::getSettings()->setCallback("server_name", SettingsCallback(this, &Avahi::nameChanged));
   
   /* Allocate main loop object */
   if (!(simple_poll = avahi_simple_poll_new())) {
@@ -190,7 +202,9 @@ void Avahi::createServices(){
       itcurr != services.end(); ++itcurr){
         std::string servicename = std::string("_") + itcurr->first + "._tcp";
     // after the port, there is a NULL terminated list of strings for the TXT field
-    if ((ret = avahi_entry_group_add_service(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "version=" VERSION, NULL)) < 0) {
+    if ((ret = avahi_entry_group_add_service(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
+         (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "version=" VERSION,
+         "server=tpserver-cpp", NULL)) < 0) {
         fprintf(stderr, "Failed to add %s service: %s\n", servicename.c_str(), avahi_strerror(ret));
         goto fail;
     }
@@ -208,4 +222,16 @@ void Avahi::createServices(){
 
 fail:
   avahi_simple_poll_quit(simple_poll);
+}
+
+void Avahi::nameChanged(const std::string& item, const std::string& value){
+  std::string tname = Settings::getSettings()->get("server_name");
+  if(tname.empty())
+    tname = "Tpserver-cpp";
+  tname.append(" [");
+  tname.append(Game::getGame()->getRuleset()->getName());
+  tname.append("]");
+  avahi_free(name);
+  name = avahi_strdup(tname.c_str());
+  createServices();
 }
