@@ -103,6 +103,10 @@ MTSec::~MTSec() {
 }
 
 
+std::string MTSec::getName(){
+  return "MTSec";
+}
+
 void MTSec::initGame() {
     Game* game = Game::getGame();
 

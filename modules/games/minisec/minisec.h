@@ -27,6 +27,7 @@ class MiniSec : public Ruleset{
   MiniSec();
   virtual ~MiniSec();
 
+  std::string getName();
   void initGame();
   void createGame();
   void startGame();

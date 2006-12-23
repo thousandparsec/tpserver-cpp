@@ -27,6 +27,7 @@ class MTSec : public Ruleset{
   MTSec();
   virtual ~MTSec();
 
+  std::string getName();
   void initGame();
   void createGame();
   void startGame();

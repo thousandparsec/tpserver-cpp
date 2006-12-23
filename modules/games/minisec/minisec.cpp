@@ -82,6 +82,10 @@ MiniSec::~MiniSec(){
 
 }
 
+std::string MiniSec::getName(){
+  return "MiniSec";
+}
+
 void MiniSec::initGame(){
   Game* game = Game::getGame();
   
