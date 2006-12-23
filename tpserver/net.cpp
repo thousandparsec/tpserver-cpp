@@ -372,16 +372,19 @@ Network::Network()
 	active = false;
   features[fid_keep_alive] = 0;
   features[fid_serverside_property] = 0;
+#ifdef HAVE_AVAHI
   avahi = NULL;
+#endif
   Settings::getSettings()->setCallback("add_players", SettingsCallback(this, &Network::addAccountSettingChanged));
 }
 
 
 Network::~Network()
 {
+#ifdef HAVE_AVAHI
   if(avahi != NULL)
     delete avahi;
-  
+#endif
 }
 
 
