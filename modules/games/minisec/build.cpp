@@ -122,8 +122,17 @@ void Build::createFrame(Frame *f, int objID, int pos)
 bool Build::inputFrame(Frame *f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns
-  f->unpackInt(); // size of resource list (should be zero) TODO
-  f->unpackInt(); // selectable list (should be zero) TODO
+  int ressize = f->unpackInt(); // size of resource list (should be zero)
+  for(int i = 0; i < ressize; i++){
+    f->unpackInt(); //The resource id
+    f->unpackInt(); //The amount of the resource
+  }
+  int selsize = f->unpackInt(); // selectable list (should be zero)
+  for(int i = 0; i < selsize; i++){
+    f->unpackInt();
+    delete[] (f->unpackString());
+    f->unpackInt(); 
+  }
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
