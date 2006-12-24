@@ -61,8 +61,11 @@ void Nop::createFrame(Frame * f, int objID, int pos)
 bool Nop::inputFrame(Frame * f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns (read only, ignore client value)
-  // TODO fix below in case the client sends a list greated than zero
-  f->unpackInt(); // resource list (read only, ignore client value)
+  int ressize = f->unpackInt(); // size of resource list (should be zero)
+  for(int i = 0; i < ressize; i++){
+    f->unpackInt(); //The resource id
+    f->unpackInt(); //The amount of the resource
+  }
 	waitTime = f->unpackInt();
 	
 	return (waitTime >= 0);
