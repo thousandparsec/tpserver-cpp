@@ -1262,8 +1262,16 @@ void Player::processAddDesign(Frame* frame){
   Design* design = new Design();
   frame->unpackInt(); //designid, don't take, overwrite
   frame->unpackInt64(); //timestamp, discard
-  frame->unpackInt(); //num of categories, had better be 1
-  design->setCategoryId(frame->unpackInt());
+  int numcats = frame->unpackInt(); //num of categories, had better be 1
+  if(numcats >= 1){
+    design->setCategoryId(frame->unpackInt());
+    numcats--;
+  }else{
+    design->setCategoryId(1); //TODO should check against components
+  }
+  for(int i = 0; i < numcats; i++){
+    frame->unpackInt();
+  }
   design->setName(std::string(frame->unpackString()));
   design->setDescription(std::string(frame->unpackString()));
   frame->unpackInt(); //number in use, (client) read only
@@ -1299,8 +1307,16 @@ void Player::processModifyDesign(Frame* frame){
   Design* design = new Design();
   design->setDesignId(frame->unpackInt());
   frame->unpackInt64(); //timestamp, discard
-  frame->unpackInt(); //num of categories, had better be 1
-  design->setCategoryId(frame->unpackInt());
+  int numcats = frame->unpackInt(); //num of categories, had better be 1
+  if(numcats >= 1){
+    design->setCategoryId(frame->unpackInt());
+    numcats--;
+  }else{
+    design->setCategoryId(1); //TODO should check against components
+  }
+  for(int i = 0; i < numcats; i++){
+    frame->unpackInt();
+  }
   design->setName(std::string(frame->unpackString()));
   design->setDescription(std::string(frame->unpackString()));
   frame->unpackInt(); //number in use, (client) read only
