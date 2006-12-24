@@ -20,6 +20,8 @@
  *
  */
 
+#include <stdint.h>
+
 // inbuilt orders only
 typedef enum {
 	odT_Invalid = -1,
@@ -57,6 +59,7 @@ class Order {
 
 	int getType() const;
 	void setType(int ntype);
+        uint64_t getDescriptionModTime() const;
 
 	virtual void createFrame(Frame * f, int objID, int pos);
 	virtual bool inputFrame(Frame * f, unsigned int playerid);
@@ -68,7 +71,7 @@ class Order {
 
       protected:
 	 int type;
-	 long long descmodtime;
+	 uint64_t descmodtime;
 
 };
 

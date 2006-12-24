@@ -100,7 +100,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   advance(itcurr, start);
   for(unsigned int i = 0; i < num; i++){
     of->packInt(itcurr->first);
-    of->packInt64(0LL); //TODO mod time
+    of->packInt64(itcurr->second->getDescriptionModTime());
     ++itcurr;
   }
 
