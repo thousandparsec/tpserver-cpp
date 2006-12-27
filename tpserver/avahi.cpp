@@ -187,7 +187,9 @@ void Avahi::removeAll(){
 
 void Avahi::createServices(){
   int ret;
-
+  
+  std::string rulesetname = std::string("ruleset=") + Game::getGame()->getRuleset()->getName();
+  
   /* If this is the first time we're called, let's create a new entry group */
   if (!group)
     if (!(group = avahi_entry_group_new(client, entry_group_callback, this))) {
@@ -203,8 +205,11 @@ void Avahi::createServices(){
         std::string servicename = std::string("_") + itcurr->first + "._tcp";
     // after the port, there is a NULL terminated list of strings for the TXT field
     if ((ret = avahi_entry_group_add_service(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
-         (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "version=" VERSION,
-         "server=tpserver-cpp", NULL)) < 0) {
+         (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "server-version=" VERSION,
+         "server-type=tpserver-cpp", 
+         "tpproto=0.3,0.2",
+         rulesetname.c_str(),
+         NULL)) < 0) {
         fprintf(stderr, "Failed to add %s service: %s\n", servicename.c_str(), avahi_strerror(ret));
         goto fail;
     }
