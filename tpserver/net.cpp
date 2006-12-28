@@ -309,6 +309,7 @@ void Network::masterLoop()
 				  Logger::getLogger()->info("Closed connection %d", (*itcurr).second->getFD());
 				  Connection* conn = itcurr->second;
 				  removeConnection(conn);
+                                  delete conn;
                                     //use select again, don't check rest of list as it has changed.
                                     break;
 				}
