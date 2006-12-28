@@ -40,6 +40,7 @@
 #endif
 #endif
 
+#include "advertiser.h"
 #include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
@@ -127,7 +128,7 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
     }
 }
 
-Avahi::Avahi() : services(), simple_poll(NULL), group(NULL), client(NULL), name(NULL){
+Avahi::Avahi(Advertiser* ad) : Publisher(ad), simple_poll(NULL), group(NULL), client(NULL), name(NULL){
   
   std::string tname = Settings::getSettings()->get("server_name");
   if(tname.empty())
@@ -172,25 +173,14 @@ void Avahi::poll(){
   avahi_simple_poll_iterate(simple_poll, 0);
 }
 
-void Avahi::addService(const std::string &name, uint16_t port){
-  services[name] = port;
-  createServices();
-}
-
-void Avahi::removeService(const std::string &name){
+void Avahi::update(){
   
-  services.erase(name);
   createServices();
-}
-
-void Avahi::removeAll(){
-  
-  services.clear();
 }
 
 void Avahi::createServices(){
   int ret;
-  
+  std::map<std::string, uint16_t> services = advertiser->getServices();
   std::string rulesetname = std::string("rule=") + Game::getGame()->getRuleset()->getName();
   std::string rulesetversion = std::string("rulever=") + Game::getGame()->getRuleset()->getVersion();
   std::ostringstream formater;

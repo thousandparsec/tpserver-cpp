@@ -1,4 +1,4 @@
-/*  Avahi mDNS-SD abstraction for tpserver-cpp
+/*  Advertiser registration/publishing abstraction for tpserver-cpp
  *
  *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
  *
@@ -17,45 +17,41 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef AVAHI_H
-#define AVAHI_H
+#ifndef ADVERTISER_H
+#define ADVERTISER_H
 
 #include <map>
+#include <set>
 #include <string>
-#include <avahi-client/client.h>
 
-#include "publisher.h"
-
-struct AvahiSimplePoll;
-struct AvahiEntryGroup;
-//struct AvahiClientState;
+class Publisher;
 
 /**
-Avahi mDNS-SD implementation for tpserver-cpp
+Abstraction for registration and publishing of services provided
  
 	@author Lee Begg <llnz@paradise.net.nz>
 */
-class Avahi : public Publisher{
+class Advertiser{
 public:
-  Avahi(Advertiser* ad);
+  Advertiser();
 
-  virtual ~Avahi();
+  ~Advertiser();
   
+  void addService(const std::string &name, uint16_t port);
+  void removeService(const std::string &name);
+  void removeAll();
+  
+  std::map<std::string, uint16_t> getServices();
+  
+  void publish();
   void poll();
-  void update();
-
-  //callbacks
-  friend void client_callback(AvahiClient *c, AvahiClientState state, void * userdata);
-  friend void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, void *userdata);
+  void unpublish();
 
 private:
-  void createServices();
-  void nameChanged(const std::string &item, const std::string &value);
+  void updatePublishers();
   
-  AvahiSimplePoll *simple_poll;
-  AvahiEntryGroup *group;
-  AvahiClient *client;
-  char* name;
+  std::map<std::string, uint16_t> services;
+  std::set<Publisher*> publishers;
 
 };
 
