@@ -107,6 +107,10 @@ std::string MTSec::getName(){
   return "MTSec";
 }
 
+std::string MTSec::getVersion(){
+  return "0.0";
+}
+
 void MTSec::initGame() {
     Game* game = Game::getGame();
 
