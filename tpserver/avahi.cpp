@@ -203,7 +203,7 @@ void Avahi::createServices(){
     // after the port, there is a NULL terminated list of strings for the TXT field
     if ((ret = avahi_entry_group_add_service(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
          (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "server=" VERSION,
-         "servtype=tpserver-cpp", 
+         "sertype=tpserver-cpp", 
          "tp=0.3,0.2",
          rulesetname.c_str(),
          rulesetversion.c_str(),
