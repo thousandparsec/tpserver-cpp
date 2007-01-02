@@ -271,6 +271,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
 			Frame *failframe = createFrame();
 			failframe->createFailFrame(fec_ProtocolError, "Protocol Error");	// TODO - should be a const or enum, protocol error
 			sendFrame(failframe);
+                        Logger::getLogger()->error("Read only %d bytes of %d bytes of header", len, hlen);
 		} else {
 			Logger::getLogger()->info("Client disconnected");
 		}
