@@ -28,7 +28,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp \
-		$(AVAHISOURCES) advertiser.cpp
+		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
@@ -47,6 +47,7 @@ headers_HEADERS = connection.h console.h \
 	resourcedescription.h resourcemanager.h settingscallback.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
-	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h
+	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
+	metaserverconnection.h
 tpserver_cpp_LDADD = -ldl $(LIBGNUTLS_LIBS)
 tpserver_cpp_LDFLAGS = -rdynamic

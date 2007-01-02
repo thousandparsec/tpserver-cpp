@@ -30,12 +30,13 @@
 #ifdef HAVE_AVAHI
 #include "avahi.h"
 #endif
-
+#include "metaserverpublisher.h"
 
 #include "advertiser.h"
 
 
 Advertiser::Advertiser() : services(), publishers(){
+  publishers.insert(new MetaserverPublisher(this));
 }
 
 
