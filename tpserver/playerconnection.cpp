@@ -1,6 +1,6 @@
 /*  Player Connection object
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -116,6 +116,10 @@ void PlayerConnection::login()
             char *password = recvframe->unpackString();
             if (username != NULL && password != NULL) {
                 //authenicate
+              char* atsign = strstr(username, "@");
+              if(atsign != NULL){
+                (*atsign) = '\0'; //chop the at sign and game name off.
+              }
                 try{
                     player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
                 }catch(std::exception e){
@@ -169,6 +173,10 @@ void PlayerConnection::login()
                 char *password = recvframe->unpackString();
                 // also email address and comment strings
                 if (username != NULL && password != NULL) {
+                  char* atsign = strstr(username, "@");
+                  if(atsign != NULL){
+                    (*atsign) = '\0'; //chop the at sign and game name off.
+                  }
                     Logger::getLogger()->info("Creating new player");
                     player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
                     if(player != NULL){
