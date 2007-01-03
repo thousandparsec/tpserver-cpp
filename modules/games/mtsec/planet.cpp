@@ -85,7 +85,7 @@ void Planet::addResource(uint32_t restype, uint32_t amount){
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){
     if(resources.find(restype) != resources.end()){
-        if(resources[restype].second >= amount){
+        if(resources[restype].first >= amount){
             std::pair<uint32_t, uint32_t> respair = resources[restype];
             respair.first -= amount;
             resources[restype] = respair;

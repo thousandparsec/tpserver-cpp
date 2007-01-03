@@ -76,8 +76,11 @@ void Move::createFrame(Frame * f, int objID, int pos)
 bool Move::inputFrame(Frame * f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns
-  f->unpackInt(); // size of resource list, should be zero
-  // TODO: fix in case size of list is not zero
+  int ressize = f->unpackInt(); // size of resource list (should be zero)
+  for(int i = 0; i < ressize; i++){
+    f->unpackInt(); //The resource id
+    f->unpackInt(); //The amount of the resource
+  }
   dest.unpack(f);
   
   return true;

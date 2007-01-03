@@ -65,12 +65,22 @@ void Build::createFrame(Frame *f, int objID, int pos)
         update(planet);
 
     // number of turns
-    uint32_t res_current = static_cast<Planet*>(planet->getObjectData())->getResources().find(1)->first;
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources = static_cast<Planet*>(planet->getObjectData())->getResources();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
-    if(pos != 0){
+    uint32_t res_current;
+    if(resources.find(1) != resources.end()){
+      res_current = resources.find(1)->second.first;
+    }else{
+      res_current = 0;
+    }
+    if(pos != 0 || usedshipres == 0){
         f->packInt(usedshipres);
     }else{
-        f->packInt(MAX(1, usedshipres - res_current));
+      if(usedshipres <= res_current){
+        f->packInt(1);
+      }else{
+        f->packInt(usedshipres - res_current);
+      }
     }
 
   f->packInt(1); // size of resource list
@@ -112,8 +122,17 @@ void Build::createFrame(Frame *f, int objID, int pos)
 bool Build::inputFrame(Frame *f, unsigned int playerid)
 {
   f->unpackInt(); // number of turns
-  f->unpackInt(); // size of resource list (should be zero) TODO
-  f->unpackInt(); // selectable list (should be zero) TODO
+  int ressize = f->unpackInt(); // size of resource list (should be zero)
+  for(int i = 0; i < ressize; i++){
+    f->unpackInt(); //The resource id
+    f->unpackInt(); //The amount of the resource
+  }
+  int selsize = f->unpackInt(); // selectable list (should be zero)
+  for(int i = 0; i < selsize; i++){
+    f->unpackInt();
+    delete[] (f->unpackString());
+    f->unpackInt(); 
+  }
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -149,16 +168,19 @@ bool Build::doOrder(IGObject *ob)
         update(ob);
     
     Planet* planet = static_cast<Planet*>(ob->getObjectData());
-    planet->addResource(1, 1);
   
+    if(usedshipres == 0)
+      return true;
 
-    if(planet->getResources().find(1)->first >= usedshipres){
-        int ownerid = planet->getOwner();
-        if(ownerid == 0){
-            //currently not owned by anyone, just forget about it
-            return true;
-        }
-        planet->removeResource(1, usedshipres);
+    int ownerid = planet->getOwner();
+    if(ownerid == 0){
+        //currently not owned by anyone, just forget about it
+        return true;
+    }
+    
+    planet->addResource(1, 1);
+    
+  if(planet->removeResource(1, usedshipres)){
     //create fleet
     
     IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
