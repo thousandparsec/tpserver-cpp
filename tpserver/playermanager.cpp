@@ -196,3 +196,7 @@ std::set<uint32_t> PlayerManager::getAllIds(){
     }
     return vis;
 }
+
+uint32_t PlayerManager::getNumPlayers() const{
+  return players.size();
+}

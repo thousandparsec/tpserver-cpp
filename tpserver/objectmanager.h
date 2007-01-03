@@ -47,6 +47,8 @@ class ObjectManager{
     std::set<uint32_t> getContainerByPos(const Vector3d & pos);
     
     std::set<uint32_t> getAllIds();
+    
+    uint32_t getNumObjects() const;
 
  private:
     std::map<uint32_t, IGObject *> objects;

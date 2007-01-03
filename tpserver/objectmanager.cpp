@@ -163,3 +163,7 @@ std::set<uint32_t> ObjectManager::getAllIds(){
 
     return vis;
 }
+
+uint32_t ObjectManager::getNumObjects() const{
+  return objects.size();
+}

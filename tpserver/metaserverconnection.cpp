@@ -49,6 +49,8 @@
 #include "game.h"
 #include "ruleset.h"
 #include "settings.h"
+#include "playermanager.h"
+#include "objectmanager.h"
 
 #include "metaserverconnection.h"
 
@@ -239,6 +241,8 @@ bool MetaserverConnection::sendUpdate(){
   formater << "&rule=" << Game::getGame()->getRuleset()->getName();
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
+  formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
+  formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
   if(!(settings->get("admin_email").empty())){
     formater << "&admin=" << settings->get("admin_email");
   }

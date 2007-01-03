@@ -41,6 +41,8 @@ public:
     void updatePlayer(uint32_t id);
 
     std::set<uint32_t> getAllIds();
+    
+    uint32_t getNumPlayers() const;
 
 private:
     std::map<uint32_t, Player*> players;

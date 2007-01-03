@@ -46,6 +46,8 @@
 #include "settingscallback.h"
 #include "game.h"
 #include "ruleset.h"
+#include "objectmanager.h"
+#include "playermanager.h"
 
 #include "avahi.h"
 
@@ -186,6 +188,12 @@ void Avahi::createServices(){
   std::ostringstream formater;
   formater << "turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
   std::string turntime = formater.str();
+  formater.str(std::string());
+  formater << "objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
+  std::string objects = formater.str();
+  formater.str(std::string());
+  formater << "plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
+  std::string players = formater.str();
   
   /* If this is the first time we're called, let's create a new entry group */
   if (!group)
@@ -208,6 +216,8 @@ void Avahi::createServices(){
          rulesetname.c_str(),
          rulesetversion.c_str(),
          turntime.c_str(),
+         objects.c_str(),
+         players.c_str(),
          NULL)) < 0) {
         fprintf(stderr, "Failed to add %s service: %s\n", servicename.c_str(), avahi_strerror(ret));
         goto fail;
