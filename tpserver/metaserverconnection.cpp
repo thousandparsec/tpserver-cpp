@@ -65,9 +65,11 @@ MetaserverConnection::~MetaserverConnection(){
 bool MetaserverConnection::sendUpdate(){
 
   status = 1;
+  
+  Settings* settings = Settings::getSettings();
 
-  std::string host = Settings::getSettings()->get("metaserver_address");
-  std::string port = Settings::getSettings()->get("metaserver_port");
+  std::string host = settings->get("metaserver_address");
+  std::string port = settings->get("metaserver_port");
   
   if(host.length() == 0){
     host = "metaserver.thousandparsec.net";
@@ -214,14 +216,14 @@ bool MetaserverConnection::sendUpdate(){
   
 #endif
   
-  if(Settings::getSettings()->get("metaserver_fake_ip") != ""){
-    localip = Settings::getSettings()->get("metaserver_fake_ip");
+  if(settings->get("metaserver_fake_ip") != ""){
+    localip = settings->get("metaserver_fake_ip");
   }
-  if(Settings::getSettings()->get("metaserver_fake_dns") != ""){
-    localname = Settings::getSettings()->get("metaserver_fake_dns");
+  if(settings->get("metaserver_fake_dns") != ""){
+    localname = settings->get("metaserver_fake_dns");
   }
 
-  std::string tname = Settings::getSettings()->get("server_name");
+  std::string tname = settings->get("server_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
   
@@ -237,6 +239,16 @@ bool MetaserverConnection::sendUpdate(){
   formater << "&rule=" << Game::getGame()->getRuleset()->getName();
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
+  if(!(settings->get("admin_email").empty())){
+    formater << "&admin=" << settings->get("admin_email");
+  }
+  if(!(settings->get("game_comment").empty())){
+    std::string comment = settings->get("game_comment");
+    while((pos = comment.find(' ')) != comment.npos){
+      comment.replace(pos,1, "%20");
+    }
+    formater << "&cmt=" << comment;
+  }
   
   int servicenumber = 0;
   std::map<std::string, uint16_t> services = advertiser->getServices();
@@ -256,6 +268,8 @@ bool MetaserverConnection::sendUpdate(){
   Logger::getLogger()->debug("Sending update info to metaserver");
   
   std::string request = formater.str();
+  std::cout << "This is the metaserver update request" << std::endl;
+  std::cout << request << std::endl;
   
   send(sockfd, request.c_str(), request.length(), 0);
   
