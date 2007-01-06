@@ -29,7 +29,7 @@ public:
   SpaceCoordParam();
   virtual ~SpaceCoordParam();
 
-  virtual void packOrderFrame(Frame * f, uint32_t objID, uint32_t playerid);
+  virtual void packOrderFrame(Frame * f, uint32_t objID);
   virtual bool unpackFrame(Frame * f, unsigned int playerid);
 
   virtual OrderParameter *clone() const;

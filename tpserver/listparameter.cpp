@@ -33,9 +33,9 @@ ListParameter::~ListParameter(){
 }
 
 
-void ListParameter::packOrderFrame(Frame * f, uint32_t objID, uint32_t playerid){
+void ListParameter::packOrderFrame(Frame * f, uint32_t objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options 
-      = optionscallback.call(objID, playerid);
+      = optionscallback.call(objID);
   f->packInt(options.size());
   for(std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator itcurr = options.begin();
       itcurr != options.end(); ++itcurr){

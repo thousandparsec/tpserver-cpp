@@ -33,7 +33,7 @@ ObjectParameter::~ObjectParameter(){
 }
 
 
-void ObjectParameter::packOrderFrame(Frame * f, uint32_t objID, uint32_t playerid){
+void ObjectParameter::packOrderFrame(Frame * f, uint32_t objID){
   f->packInt(object);
 }
 

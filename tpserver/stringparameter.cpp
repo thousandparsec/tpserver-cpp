@@ -33,7 +33,7 @@ StringParameter::~StringParameter(){
 }
 
 
-void StringParameter::packOrderFrame(Frame * f, uint32_t objID, uint32_t playerid){
+void StringParameter::packOrderFrame(Frame * f, uint32_t objID){
   f->packString(string.c_str());
 }
 

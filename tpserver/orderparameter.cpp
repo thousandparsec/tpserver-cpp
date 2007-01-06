@@ -45,6 +45,14 @@ std::string OrderParameter::getDescription() const{
   return description;
 }
 
+void OrderParameter::setName(const std::string& nn){
+  name = nn;
+}
+
+void OrderParameter::setDescription(const std::string& nd){
+  description = nd;
+}
+
 void OrderParameter::packOrderDescFrame(Frame * f) const{
 
   f->packString(name.c_str());

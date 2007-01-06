@@ -34,7 +34,7 @@ SpaceCoordParam::~SpaceCoordParam(){
 }
 
 
-void SpaceCoordParam::packOrderFrame(Frame * f, uint32_t objID, uint32_t playerid){
+void SpaceCoordParam::packOrderFrame(Frame * f, uint32_t objID){
   position.pack(f);
 }
 
