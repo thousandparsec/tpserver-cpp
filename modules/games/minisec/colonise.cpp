@@ -1,6 +1,6 @@
 /*  Colonise order
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,51 +33,55 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/objectparameter.h>
 
 #include "colonise.h"
 
 Colonise::Colonise() : Order(){
-  type = odT_Colonise;
   moveorder = new Move();
+  
+  name = "Colonise";
+  description = "Attempt to colonise a planet";
+  
+  object = new ObjectParameter();
+  object->setName("planet");
+  object->setDescription("The target planet to be colonised");
+  parameters.push_back(object);
 }
 
 Colonise::~Colonise(){
   delete moveorder;
+  delete object;
 }
 
 void Colonise::createFrame(Frame * f, int objID, int pos){
+  turns = moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID)); // number of turns
+  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  
   Order::createFrame(f, objID, pos);
-  f->packInt(moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID))); // number of turns
-    Game::getGame()->getObjectManager()->doneWithObject(objID);
-  f->packInt(0); // size of resource list
-  f->packInt(planetid);
   
 }
 
 bool Colonise::inputFrame(Frame * f, unsigned int playerid){
-  f->unpackInt(); // number of turns
-  int ressize = f->unpackInt(); // size of resource list (should be zero)
-  for(int i = 0; i < ressize; i++){
-    f->unpackInt(); //The resource id
-    f->unpackInt(); //The amount of the resource
-  }
-  planetid = f->unpackInt();
+  
+  if(!(Order::inputFrame(f, playerid)))
+    return false;
 
-  IGObject* target = Game::getGame()->getObjectManager()->getObject(planetid);
+  IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
 
-  if(target == NULL || (planetid != 0 && target->getType() != 3)){
+  if(target == NULL || (object->getObjectId() != 0 && target->getType() != 3)){
     Logger::getLogger()->debug("Player trying to colonise something that is not a planet");
-    Game::getGame()->getObjectManager()->doneWithObject(planetid);
+    Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
     return false;
   }
   moveorder->setDest(target->getPosition());
-  Game::getGame()->getObjectManager()->doneWithObject(planetid);
+  Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
   return true;
 }
 
 bool Colonise::doOrder(IGObject * ob){
   //if not close, move
-  if(planetid == 0)
+  if(object->getObjectId() == 0)
     return true;
 
   if(moveorder->doOrder(ob)){
@@ -86,14 +90,14 @@ bool Colonise::doOrder(IGObject * ob){
     msg->addReference(rst_Object, ob->getID());
 
     Fleet *fleet = (Fleet*)ob->getObjectData();
-    Planet *planet = (Planet*)(Game::getGame()->getObjectManager()->getObject(planetid)->getObjectData());
+    Planet *planet = (Planet*)(Game::getGame()->getObjectManager()->getObject(object->getObjectId())->getObjectData());
     
     if(planet->getOwner() != fleet->getOwner()){
       
       if(planet->getOwner() != 0){
 	//combat
 	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
-	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(planetid));
+	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(object->getObjectId()));
 	combat->doCombat();
       }
 
@@ -120,7 +124,7 @@ bool Colonise::doOrder(IGObject * ob){
 	msg->setSubject("Colonised planet");
 	msg->setBody("You have colonised a planet!");
 	msg->addReference(rst_Action_Order, rsorav_Completion);
-	msg->addReference(rst_Object, planetid);
+	msg->addReference(rst_Object, object->getObjectId());
 
       }else{
 	msg->setSubject("Colonisation failed");
@@ -139,7 +143,7 @@ bool Colonise::doOrder(IGObject * ob){
     }
     
     Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->postToBoard(msg);
-    Game::getGame()->getObjectManager()->doneWithObject(planetid);
+    Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
     return true;
   }else{
     return false;
@@ -147,29 +151,11 @@ bool Colonise::doOrder(IGObject * ob){
 }
 
 uint32_t Colonise::getPlanetId() const{
-    return planetid;
-}
-
-void Colonise::setPlanetId(uint32_t npi){
-    planetid = npi;
-
-    IGObject* target = Game::getGame()->getObjectManager()->getObject(planetid);
-    moveorder->setDest(target->getPosition());
-    Game::getGame()->getObjectManager()->doneWithObject(planetid);
-}
-
-void Colonise::describeOrder(Frame * f) const{
-  Order::describeOrder(f);
-  f->packString("Colonise");
-  f->packString("Attempt to colonise a planet");
-  f->packInt(1);
-  f->packString("planet");
-  f->packInt(opT_Object_ID);
-  f->packString("The target planet to be colonised");
-  f->packInt64(descmodtime);
-  
+    return object->getObjectId();
 }
 
 Order* Colonise::clone() const{
-  return new Colonise();
+  Colonise* nc = new Colonise();
+  nc->type = type;
+  return nc;
 }

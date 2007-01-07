@@ -2,7 +2,7 @@
 #define SPLITFLEET_H
 /*  SplitFleet order
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,25 +22,20 @@
 
 #include <tpserver/order.h>
 #include <map>
+class ListParameter;
 
 class SplitFleet : public Order{
  public:
   SplitFleet();
   virtual ~SplitFleet();
-
-  void createFrame(Frame * f, int objID, int pos);
-  bool inputFrame(Frame * f, unsigned int playerid);
   
   bool doOrder(IGObject * ob);
-  
-    std::map<uint32_t, uint32_t> getShips() const;
-    void addShips(uint32_t designid, uint32_t count);
 
-  void describeOrder(Frame * f) const;
   Order* clone() const;
   
  private:
-  std::map<uint32_t, uint32_t> ships;
+  ListParameter* shiplist;
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions(int objID);
 
 };
 

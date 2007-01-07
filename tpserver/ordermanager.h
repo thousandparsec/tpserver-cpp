@@ -2,7 +2,7 @@
 #define ORDERMANAGER_H
 /*  OrderManager class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <map>
 #include <set>
 #include <list>
+#include <string>
 
 class Order;
 class Frame;
@@ -36,6 +37,7 @@ class OrderManager{
   bool checkOrderType(int type);
   void describeOrder(int ordertype, Frame * f);
   void addOrderType(Order* prototype);
+  uint32_t getOrderTypeByName(const std::string &name);
   void doGetOrderTypes(Frame * frame, Frame * result);
 
   Order* createOrder(int ot);
@@ -54,6 +56,7 @@ class OrderManager{
 
  private:
   std::map<int, Order*> prototypeStore;
+  std::map<std::string, uint32_t> typeNames;
   int nextType;
 
   unsigned int seqkey;

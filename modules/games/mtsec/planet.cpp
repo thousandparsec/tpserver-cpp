@@ -1,6 +1,6 @@
 /*  Planet objects
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 #include <tpserver/frame.h>
 #include <tpserver/order.h>
+#include <tpserver/ordermanager.h>
+#include <tpserver/game.h>
 
 #include "planet.h"
 
@@ -50,15 +52,17 @@ void Planet::doOnceATurn(IGObject * obj)
 void Planet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
     frame->packInt(2);
-    frame->packInt(odT_Build);
-    frame->packInt(odT_Nop);
+    OrderManager * om = Game::getGame()->getOrderManager();
+    frame->packInt(om->getOrderTypeByName("Build"));
+    frame->packInt(om->getOrderTypeByName("No Operation"));
   }else{
     frame->packInt(0);
   }
 }
 
 bool Planet::checkAllowedOrder(int ot, int playerid){
-  return (playerid == getOwner() && (ot == odT_Build || ot == odT_Nop));
+  OrderManager * om = Game::getGame()->getOrderManager();
+  return (playerid == getOwner() && (ot == om->getOrderTypeByName("Build") || ot == om->getOrderTypeByName("No Operation")));
 }
 
 int Planet::getContainerType(){

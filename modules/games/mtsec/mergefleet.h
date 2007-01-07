@@ -2,7 +2,7 @@
 #define MERGEFLEET_H
 /*  Merge Fleet order
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <tpserver/order.h>
 
 class Move;
+class ObjectParameter;
 
 class MergeFleet : public Order{
  public:
@@ -34,14 +35,11 @@ class MergeFleet : public Order{
   
   bool doOrder(IGObject * ob);
   
-    uint32_t getFleetId() const;
-    void setFleetId(uint32_t nfi);
 
-  void describeOrder(Frame * f) const;
   Order* clone() const;
 
  private:
-  int fleetid;
+  ObjectParameter* object;
   Move * moveorder;
 
 };

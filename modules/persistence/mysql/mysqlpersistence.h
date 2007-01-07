@@ -2,7 +2,7 @@
 #define MYSQLPERSISTENCE_H
 /*  Mysql Persistence class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,11 @@
 
 typedef struct st_mysql MYSQL;
 class MysqlObjectType;
-class MysqlOrderType;
+class SpaceCoordParam;
+class ObjectParameter;
+class ListParameter;
+class StringParameter;
+class TimeParameter;
 
 class MysqlPersistence : public Persistence{
 public:
@@ -102,14 +106,29 @@ public:
     uint32_t getTableVersion(const std::string& name);
     
     void addObjectType(MysqlObjectType* ot);
-    void addOrderType(MysqlOrderType* ot);
 
 private:
+  
+  bool updateSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
+  bool retrieveSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
+  bool removeSpaceCoordParam(uint32_t ordid, uint32_t pos);
+  bool updateListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
+  bool retrieveListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
+  bool removeListParameter(uint32_t ordid, uint32_t pos);
+  bool updateObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob);
+  bool retrieveObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob);
+  bool removeObjectParameter(uint32_t ordid, uint32_t pos);
+  bool updateStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
+  bool retrieveStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
+  bool removeStringParameter(uint32_t ordid, uint32_t pos);
+  bool updateTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp);
+  bool retrieveTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp);
+  bool removeTimeParameter(uint32_t ordid, uint32_t pos);
+  
     void lock();
     void unlock();
     MYSQL *conn;
     std::map<uint32_t, MysqlObjectType*> objecttypes;
-    std::map<uint32_t, MysqlOrderType*> ordertypes;
 
 };
 

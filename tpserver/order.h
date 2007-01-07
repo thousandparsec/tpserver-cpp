@@ -2,7 +2,7 @@
 #define ORDER_H
 /*  Order base class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,35 +21,13 @@
  */
 
 #include <stdint.h>
-
-// inbuilt orders only
-typedef enum {
-	odT_Invalid = -1,
-	odT_Nop = 0,
-	odT_Move = 1,
-	odT_Build = 2,
-	odT_Colonise = 3,
-	odT_Fleet_Split = 4,
-	odT_Fleet_Merge = 5,
-	odT_Max
-} OrderType;
-
-typedef enum {
-	opT_Invalid = -1,
-	opT_Space_Coord_Abs = 0,
-	opT_Time = 1,
-	opT_Object_ID = 2,
-	opT_Player_ID = 3,
-	opT_Space_Coord_Rel = 4,
-	opT_Range = 5,
-	opT_List = 6,
-	opT_String = 7,
-
-	opT_Max
-} OrderParamType;
+#include <list>
+#include <map>
+#include <string>
 
 class Frame;
 class IGObject;
+class OrderParameter;
 
 class Order {
 
@@ -59,6 +37,12 @@ class Order {
 
 	int getType() const;
 	void setType(int ntype);
+        std::string getName() const;
+        uint32_t getTurns() const;
+        void setTurns(uint32_t nturns);
+        std::map<uint32_t, uint32_t> getResources() const;
+        void addResource(uint32_t resid, uint32_t amount);
+        std::list<OrderParameter*> getParameters() const;
         uint64_t getDescriptionModTime() const;
 
 	virtual void createFrame(Frame * f, int objID, int pos);
@@ -66,12 +50,17 @@ class Order {
 
 	virtual bool doOrder(IGObject * ob) = 0;
 
-	virtual void describeOrder(Frame * f) const;
+	void describeOrder(Frame * f) const;
 	virtual Order *clone() const = 0;
 
       protected:
-	 int type;
+	 uint32_t type;
 	 uint64_t descmodtime;
+         std::string name;
+         std::string description;
+         uint32_t turns;
+         std::map<uint32_t, uint32_t> resources;
+         std::list<OrderParameter*> parameters;
 
 };
 

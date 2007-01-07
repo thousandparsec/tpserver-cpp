@@ -1,6 +1,6 @@
 /*  MTSec ruleset
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -152,28 +152,6 @@ void MTSec::initGame() {
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
 
-#ifdef HAVE_LIBMYSQL
-    if(database != NULL){
-        MysqlOrderNop* nop = new MysqlOrderNop();
-        nop->setType(0);
-        database->addOrderType(nop);
-        MysqlOrderMove* move = new MysqlOrderMove();
-        move->setType(1);
-        database->addOrderType(move);
-        MysqlOrderBuild* build = new MysqlOrderBuild();
-        build->setType(2);
-        database->addOrderType(build);
-        MysqlOrderColonise* colonise = new MysqlOrderColonise();
-        colonise->setType(3);
-        database->addOrderType(colonise);
-        MysqlOrderSplitFleet* sf = new MysqlOrderSplitFleet();
-        sf->setType(4);
-        database->addOrderType(sf);
-        MysqlOrderMergeFleet* mf = new MysqlOrderMergeFleet();
-        mf->setType(5);
-        database->addOrderType(mf);
-    }
-#endif
 }
 
 

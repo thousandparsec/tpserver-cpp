@@ -1,6 +1,6 @@
 /*  SplitFleet order
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,64 +30,43 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/listparameter.h>
 
 #include "splitfleet.h"
 
 SplitFleet::SplitFleet() : Order(){
-  type = odT_Fleet_Split;
+  name = "SplitFleet";
+  description = "Split the fleet into two";
+  
+  shiplist = new ListParameter();
+  shiplist->setName("ships");
+  shiplist->setDescription("The ships to be transferred");
+  shiplist->setListOptionsCallback(ListOptionCallback(this, &SplitFleet::generateListOptions));
+  parameters.push_back(shiplist);
+  
+  turns = 1;
 }
 
-SplitFleet::~SplitFleet(){}
+SplitFleet::~SplitFleet(){
+  delete shiplist;
+}
 
-void SplitFleet::createFrame(Frame * f, int objID, int pos){
-  Order::createFrame(f, objID, pos);
-  f->packInt(1); // number of turns
-  f->packInt(0); // size of resource list
+std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(int objID){
+  std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
   Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData());
 
   std::map<int, int> sotf = of->getShips();
+  Game::getGame()->getObjectManager()->doneWithObject(objID);
 
-  f->packInt(sotf.size());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   for(std::map<int, int>::const_iterator itcurr = sotf.begin();
       itcurr != sotf.end(); ++itcurr){
-    f->packInt(itcurr->first);
-    f->packString(ds->getDesign(itcurr->first)->getName().c_str());
-    f->packInt(itcurr->second);
-  }
- 
-  f->packInt(ships.size());
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
-    f->packInt(itcurr->first);
-    f->packInt(itcurr->second);
-  }
-  Game::getGame()->getObjectManager()->doneWithObject(objID);
-}
-
-bool SplitFleet::inputFrame(Frame * f, unsigned int playerid){
-  f->unpackInt(); // number of turns
-  int ressize = f->unpackInt(); // size of resource list (should be zero)
-  for(int i = 0; i < ressize; i++){
-    f->unpackInt(); //The resource id
-    f->unpackInt(); //The amount of the resource
-  }
-  int selsize = f->unpackInt(); // selectable list (should be zero)
-  for(int i = 0; i < selsize; i++){
-    f->unpackInt();
-    delete[] (f->unpackString());
-    f->unpackInt(); 
+    options[itcurr->first] = std::pair<std::string, uint32_t>(ds->getDesign(itcurr->first)->getName(), itcurr->second);
   }
 
-  for(int i = f->unpackInt(); i > 0; i--){
-    int type = f->unpackInt();
-    int number = f->unpackInt(); // number to shift
-    
-    ships[type] = number;
-  }
-
-  return true;
+  return options;
 }
 
 bool SplitFleet::doOrder(IGObject * ob){
@@ -105,6 +84,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   Fleet* nf = (Fleet*)(nfleet->getObjectData());
   nf->setOwner(of->getOwner());
   nfleet->setPosition(ob->getPosition());
+  std::map<uint32_t, uint32_t> ships = shiplist->getList();
   for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
     if(of->removeShips(scurr->first, scurr->second)){
       nf->addShips(scurr->first, scurr->second);
@@ -143,25 +123,8 @@ bool SplitFleet::doOrder(IGObject * ob){
   return true;
 }
 
-std::map<uint32_t, uint32_t> SplitFleet::getShips() const{
-    return ships;
-}
-
-void SplitFleet::addShips(uint32_t designid, uint32_t count){
-    ships[designid] = count;
-}
-
-void SplitFleet::describeOrder(Frame * f) const{
-  Order::describeOrder(f);
-  f->packString("SplitFleet");
-  f->packString("Split the fleet into two");
-  f->packInt(1);
-  f->packString("ships");
-  f->packInt(opT_List);
-  f->packString("The ships to be transferred");
-  f->packInt64(descmodtime);
-}
-
 Order* SplitFleet::clone() const{
-  return new SplitFleet();
+  SplitFleet * nsf = new SplitFleet();
+  nsf->type = type;
+  return nsf;
 }

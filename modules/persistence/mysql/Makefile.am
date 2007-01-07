@@ -10,9 +10,7 @@ endif
 
 libtpmysql_la_SOURCES = mysqlpersistence.h mysqlpersistence.cpp \
 		mysqlobjecttype.h mysqlobjecttype.cpp \
-		mysqluniverse.h mysqluniverse.cpp \
-		mysqlordertype.h mysqlordertype.cpp \
-		mysqlordernop.h mysqlordernop.cpp
+		mysqluniverse.h mysqluniverse.cpp
 
 libtpmysql_la_LIBADD = $(MYSQL_LIBS)
 libtpmysql_la_LDFLAGS = -module

@@ -1,6 +1,6 @@
 /*  Move order
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,32 +28,39 @@
 #include "fleet.h"
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/spacecoordparam.h>
 
 #include "move.h"
 
 Move::Move() : Order()
 {
-	type = odT_Move;
+  name = "Move";
+  description = "Move to a given position absolute in space";
+  
+  coords = new SpaceCoordParam();
+  coords->setName("pos");
+  coords->setDescription("The position in space to move to");
+  parameters.push_back(coords);
 }
 
 Move::~Move()
 {
-
+  delete coords;
 }
 
 Vector3d Move::getDest() const
 {
-	return dest;
+	return coords->getPosition();
 }
 
 
 void Move::setDest(const Vector3d & ndest)
 {
-  dest = ndest;
+  coords->setPosition(ndest);
 }
 
 int Move::getETA(IGObject *ob) const{
-  unsigned long long distance = dest.getDistance(ob->getPosition());
+  unsigned long long distance = coords->getPosition().getDistance(ob->getPosition());
   unsigned long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
   
   return (int)(distance / max_speed) + 1;
@@ -61,32 +68,19 @@ int Move::getETA(IGObject *ob) const{
 
 void Move::createFrame(Frame * f, int objID, int pos)
 {
-	Order::createFrame(f, objID, pos);
-
-	unsigned long long distance = dest.getDistance(Game::getGame()->getObjectManager()->getObject(objID)->getPosition());
-	unsigned long max_speed = ((Fleet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->maxSpeed();
-        Game::getGame()->getObjectManager()->doneWithObject(objID);
-	
-	f->packInt((int)(distance / max_speed) + 1); // number of turns
-	f->packInt(0); // size of resource list
-	dest.pack(f);
-	
+  turns = getETA(Game::getGame()->getObjectManager()->getObject(objID));
+  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  
+  Order::createFrame(f, objID, pos);	
 }
 
 bool Move::inputFrame(Frame * f, unsigned int playerid)
 {
-  f->unpackInt(); // number of turns
-  int ressize = f->unpackInt(); // size of resource list (should be zero)
-  for(int i = 0; i < ressize; i++){
-    f->unpackInt(); //The resource id
-    f->unpackInt(); //The amount of the resource
-  }
-  dest.unpack(f);
-  
-  return true;
+  return Order::inputFrame(f, playerid);
 }
 
 bool Move::doOrder(IGObject * ob){
+  Vector3d dest = coords->getPosition();
   unsigned long long distance = dest.getDistance(ob->getPosition());
   unsigned long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
 
@@ -117,18 +111,8 @@ bool Move::doOrder(IGObject * ob){
   }
 }
 
-void Move::describeOrder(Frame * f) const
-{
-  Order::describeOrder(f);
-  f->packString("Move");
-  f->packString("Move to a given position absolute in space");
-  f->packInt(1);
-  f->packString("pos");
-  f->packInt(opT_Space_Coord_Abs);
-  f->packString("The position in space to move to");
-  f->packInt64(descmodtime);
-}
-
 Order* Move::clone() const{
-  return new Move();
+  Move *nm = new Move();
+  nm->type = type;
+  return nm;
 }

@@ -1,6 +1,6 @@
 /*  Nop order
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,54 +26,46 @@
 #include "message.h"
 #include "ownedobject.h"
 #include "playermanager.h"
+#include "timeparameter.h"
 
 #include "nop.h"
 
 Nop::Nop() : Order()
 {
-	type = odT_Nop;
+  name = "No Operation";
+  description = "Object does nothing for a given number of turns";
+  
+  timeparam = new TimeParameter();
+  timeparam->setMax(1000);
+  timeparam->setName("wait");
+  timeparam->setDescription("The number of turns to wait");
+  parameters.push_back(timeparam);
+
 }
 
 Nop::~Nop()
 {
-
-}
-
-int Nop::getTime()
-{
-	return waitTime;
-}
-
-void Nop::setTime(int time)
-{
-	waitTime = time;
+  delete timeparam;
 }
 
 void Nop::createFrame(Frame * f, int objID, int pos)
 {
-	Order::createFrame(f, objID, pos);
-	f->packInt(waitTime);
-	f->packInt(0);
-	f->packInt(waitTime);
-	f->packInt(1000);
+  turns = timeparam->getTime();
+  Order::createFrame(f, objID, pos);
 }
 
 bool Nop::inputFrame(Frame * f, unsigned int playerid)
 {
-  f->unpackInt(); // number of turns (read only, ignore client value)
-  int ressize = f->unpackInt(); // size of resource list (should be zero)
-  for(int i = 0; i < ressize; i++){
-    f->unpackInt(); //The resource id
-    f->unpackInt(); //The amount of the resource
-  }
-	waitTime = f->unpackInt();
-	
-	return (waitTime >= 0);
+  bool rtv = Order::inputFrame(f, playerid);
+  turns = timeparam->getTime();
+
+  return rtv;
 }
 
 bool Nop::doOrder(IGObject * ob){
-  waitTime--;
-  if(waitTime <= 0){
+  turns--;
+  timeparam->setTime(timeparam->getTime() - 1);
+  if(timeparam->getTime() <= 0){
     
     Message * msg = new Message();
     msg->setSubject("NOp order complete");
@@ -88,18 +80,8 @@ bool Nop::doOrder(IGObject * ob){
   }
 }
 
-void Nop::describeOrder(Frame * f) const
-{
-  Order::describeOrder(f);
-  f->packString("No Operation");
-  f->packString("Object does nothing for a given number of turns");
-  f->packInt(1);
-  f->packString("wait");
-  f->packInt(opT_Time);
-  f->packString("The number of turns to wait");
-  f->packInt64(descmodtime);
-}
-
 Order* Nop::clone() const{
-  return new Nop();
+  Nop* nn = new Nop();
+  nn->type = type;
+  return nn;
 }

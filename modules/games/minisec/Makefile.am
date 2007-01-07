@@ -5,11 +5,6 @@ rulesetlib_LTLIBRARIES = libminisec.la
 if MYSQL
 MYSQL_MINISEC_SOURCE = mysqlemptyobject.h mysqlemptyobject.cpp \
 	mysqlfleet.h mysqlfleet.cpp \
-	mysqlorderbuild.h mysqlorderbuild.cpp \
-	mysqlordercolonise.h mysqlordercolonise.cpp \
-	mysqlordermergefleet.h mysqlordermergefleet.cpp \
-	mysqlordermove.h mysqlordermove.cpp \
-	mysqlordersplitfleet.h mysqlordersplitfleet.cpp \
 	mysqlplanet.h mysqlplanet.cpp
 else
 MYSQL_MINISEC_SOURCE = 

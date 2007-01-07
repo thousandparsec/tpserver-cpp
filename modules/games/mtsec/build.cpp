@@ -1,6 +1,6 @@
 /*  Build object for BuildFleet orders
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/listparameter.h>
+#include <tpserver/stringparameter.h>
 
 #include "planet.h"
 
@@ -40,98 +42,87 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
-Build::Build() : Order(), fleettype(), fname()
+Build::Build() : Order()
 {
-  type = odT_Build;
-  turnstogo = 0;
-    usedshipres = 0;
+  name = "BuildFleet";
+  description = "Build a fleet";
+  
+  fleetlist = new ListParameter();
+  fleetlist->setName("ships");
+  fleetlist->setDescription("The type of ship to build");
+  fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
+  parameters.push_back(fleetlist);
+  
+  fleetname = new StringParameter();
+  fleetname->setName("name");
+  fleetname->setDescription("The name of the new fleet being built");
+  fleetname->setMax(1024);
+  parameters.push_back(fleetname);
 }
 
 Build::~Build()
 {
-    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
-        Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
-        design->removeCanceledConstruction(itcurr->second);
-        Game::getGame()->getDesignStore()->designCountsUpdated(design);
-    }
+    delete fleetlist;
+    delete fleetname;
 }
 
 void Build::createFrame(Frame *f, int objID, int pos)
 {
+  IGObject * planet = Game::getGame()->getObjectManager()->getObject(objID);
+  
+  // number of turns
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectData())->getResources();
+  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  uint32_t res_current;
+  if(presources.find(1) != presources.end()){
+    res_current = presources.find(1)->second.first;
+  }else{
+    res_current = 0;
+  }
+  uint32_t usedshipres = resources[1];
+  if(pos != 0 || usedshipres == 0){
+      turns = usedshipres;
+  }else{
+    if(usedshipres <= res_current){
+      turns = 1;
+    }else{
+      turns = usedshipres - res_current;
+    }
+  }
+  
+  
   Order::createFrame(f, objID, pos);
 
-  IGObject * planet = Game::getGame()->getObjectManager()->getObject(objID);
-    if(turnstogo != 0)
-        update(planet);
+}
 
-    // number of turns
-    std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources = static_cast<Planet*>(planet->getObjectData())->getResources();
-    Game::getGame()->getObjectManager()->doneWithObject(objID);
-    uint32_t res_current;
-    if(resources.find(1) != resources.end()){
-      res_current = resources.find(1)->second.first;
-    }else{
-      res_current = 0;
-    }
-    if(pos != 0 || usedshipres == 0){
-        f->packInt(usedshipres);
-    }else{
-      if(usedshipres <= res_current){
-        f->packInt(1);
-      }else{
-        f->packInt(usedshipres - res_current);
-      }
-    }
-
-  f->packInt(1); // size of resource list
-  f->packInt(1); // ship part resources
-  f->packInt(usedshipres);
-
+std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
+  std::map<uint32_t, std::pair<std::string, uint32_t> > options;
+  
   std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<Design*> usable;
-    for(std::set<uint>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
-        Design* design = ds->getDesign(*itcurr);
-        if(design->getCategoryId() == 1){
-            usable.insert(design);
-        }
-    }
-  
-  f->packInt(usable.size());
-    Logger::getLogger()->debug("There are %d designs in the usable list", usable.size());
+  for(std::set<uint>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
+      Design* design = ds->getDesign(*itcurr);
+      if(design->getCategoryId() == 1){
+          usable.insert(design);
+      }
+  }
 
   for(std::set<Design*>::iterator itcurr = usable.begin();
       itcurr != usable.end(); ++itcurr){
     Design * design = (*itcurr);
-    f->packInt(design->getDesignId());
-    f->packString(design->getName().c_str());
-    f->packInt(100);
+    options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
-
-  f->packInt(fleettype.size());
-  for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
-    f->packInt(itcurr->first);
-    f->packInt(itcurr->second);
-  }
-    f->packInt(1024);
-    f->packString(fname.c_str());
+  
+  return options;
 }
 
 bool Build::inputFrame(Frame *f, unsigned int playerid)
 {
-  f->unpackInt(); // number of turns
-  int ressize = f->unpackInt(); // size of resource list (should be zero)
-  for(int i = 0; i < ressize; i++){
-    f->unpackInt(); //The resource id
-    f->unpackInt(); //The amount of the resource
-  }
-  int selsize = f->unpackInt(); // selectable list (should be zero)
-  for(int i = 0; i < selsize; i++){
-    f->unpackInt();
-    delete[] (f->unpackString());
-    f->unpackInt(); 
+  if(!Order::inputFrame(f, playerid)){
+    return false;
   }
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
@@ -139,13 +130,16 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   
   unsigned int bldTmPropID = ds->getPropertyByName( "BuildTime");
   
-  for(int i = f->unpackInt(); i > 0; i--){
-    uint32_t type = f->unpackInt();
-    uint32_t number = f->unpackInt(); // number to build
+  std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
+  uint32_t usedshipres = 0;
+  
+  for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
+     itcurr != fleettype.end(); ++itcurr){
+    uint32_t type = itcurr->first;
+    uint32_t number = itcurr->second; // number to build
     
     if(player->isUsableDesign(type) && number > 0){
-      fleettype[type] = number;
-
+      
       Design* design = ds->getDesign(type);
       usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
         design->addUnderConstruction(number);
@@ -153,32 +147,32 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
 
     }
   }
-    f->unpackInt();
-    fname = f->unpackString();
-    if(fname.length() == 0){
-        fname = "A Fleet";
-    }
+  
+  resources[1] = usedshipres;
+  
+  if(fleetname->getString().length() == 0){
+      fleetname->setString("A Fleet");
+  }
   return true;
 }
 
 bool Build::doOrder(IGObject *ob)
 {
-    
-    if(turnstogo != 0)
-        update(ob);
-    
-    Planet* planet = static_cast<Planet*>(ob->getObjectData());
   
-    if(usedshipres == 0)
-      return true;
+  Planet* planet = static_cast<Planet*>(ob->getObjectData());
 
-    int ownerid = planet->getOwner();
-    if(ownerid == 0){
-        //currently not owned by anyone, just forget about it
-        return true;
-    }
-    
-    planet->addResource(1, 1);
+  uint32_t usedshipres = resources[1];
+  
+  if(usedshipres == 0)
+    return true;
+
+  int ownerid = planet->getOwner();
+  if(ownerid == 0){
+      //currently not owned by anyone, just forget about it
+      return true;
+  }
+  
+  planet->addResource(1, 1);
     
   if(planet->removeResource(1, usedshipres)){
     //create fleet
@@ -191,13 +185,14 @@ bool Build::doOrder(IGObject *ob)
 
     fleet->setSize(2);
     fleet->setType(4);
-    fleet->setName(fname.c_str());
+    fleet->setName(fleetname->getString().c_str());
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
     fleet->setPosition(ob->getPosition());
     fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     //set ship type
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
     for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
         Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
@@ -209,7 +204,7 @@ bool Build::doOrder(IGObject *ob)
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
-    msg->setBody(std::string("The construction of your new fleet \"") + fname + "\" is complete");
+    msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, fleet->getID());
     msg->addReference(rst_Object, ob->getID());
@@ -221,66 +216,10 @@ bool Build::doOrder(IGObject *ob)
   return false;
 }
 
- uint32_t Build::getTimeToGo() const{
-    return turnstogo;
-}
-
-std::map<uint32_t, uint32_t> Build::getShips() const{
-    return fleettype;
-}
-
-uint32_t Build::getRequiredResources() const{
-    return usedshipres;
-}
-
-std::string Build::getFleetName() const{
-    return fname;
-}
-
-void Build::setTimeToGo(uint32_t ttg){
-    turnstogo = ttg;
-}
-
-void Build::addShips(uint32_t designid, uint32_t count){
-    fleettype[designid] = count;
-}
-
-void Build::setRequiredResources(uint32_t spart_res){
-    usedshipres = spart_res;
-}
-
-void Build::setFleetName(const std::string& name){
-    fname = name;
-}
-
-void Build::describeOrder(Frame *f) const
-{
-  Order::describeOrder(f);
-  f->packString("BuildFleet");
-  f->packString("Build something");
-    f->packInt(2); // num params
-  f->packString("ships");
-  f->packInt(6);
-  f->packString("The type of ship to build");
-    f->packString("name");
-    f->packInt(opT_String);
-    f->packString("The name of the new fleet being built");
-  f->packInt64(descmodtime);
-
-}
 
 Order* Build::clone() const{
-  return new Build();
-  // should probably copy the type field of Order
+  Build* nb = new Build();
+  nb->type = type;
+  return nb;
 }
 
-void Build::update(IGObject* planet){
-    DesignStore *ds = Game::getGame()->getDesignStore();
-    for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
-            itcurr != fleettype.end(); ++itcurr){
-        Design* design = ds->getDesign(itcurr->first);
-        usedshipres += (int)(ceil(itcurr->second * design->getPropertyValue(2)));
-    }
-    static_cast<Planet*>(planet->getObjectData())->addResource(1, MIN(0, usedshipres - MAX(0, turnstogo)));
-    turnstogo = 0;
-}

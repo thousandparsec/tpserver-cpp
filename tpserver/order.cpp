@@ -1,6 +1,6 @@
 /*  Order baseclass
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <time.h>
 
 #include "frame.h"
+#include "orderparameter.h"
 
 #include "order.h"
 
@@ -44,6 +45,30 @@ void Order::setType(int ntype){
   type = ntype;
 }
 
+std::string Order::getName() const{
+  return name;
+}
+
+uint32_t Order::getTurns() const{
+  return turns;
+}
+
+void Order::setTurns(uint32_t nturns){
+  turns = nturns;
+}
+
+std::map<uint32_t, uint32_t> Order::getResources() const{
+  return resources;
+}
+
+void Order::addResource(uint32_t resid, uint32_t amount){
+  resources[resid] = amount;
+}
+
+std::list<OrderParameter*> Order::getParameters() const{
+  return parameters;
+}
+
 void Order::createFrame(Frame * f, int objID, int pos)
 {
 
@@ -51,12 +76,34 @@ void Order::createFrame(Frame * f, int objID, int pos)
   f->packInt(objID);
   f->packInt(pos);
   f->packInt(type);
-  
+  f->packInt(turns);
+  f->packInt(resources.size());
+  for(std::map<uint32_t,uint32_t>::iterator itcurr = resources.begin(); itcurr != resources.end();
+      ++itcurr){
+    f->packInt(itcurr->first);
+    f->packInt(itcurr->second);
+  }
+  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+      ++itcurr){
+    (*itcurr)->packOrderFrame(f, objID);
+  }
 }
 
 bool Order::inputFrame(Frame * f, unsigned int playerid)
 {
-  return true;
+  //ready passed object, position, and type.
+  f->unpackInt(); // turns, read only
+  int ressize = f->unpackInt(); // size of resource list (should be zero)
+  for(int i = 0; i < ressize; i++){
+    f->unpackInt(); //The resource id
+    f->unpackInt(); //The amount of the resource
+  }
+  bool rtv = true;
+  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+      ++itcurr){
+    rtv = rtv && (*itcurr)->unpackFrame(f, playerid);
+  }
+  return rtv;
 }
 
 
@@ -64,6 +111,14 @@ void Order::describeOrder(Frame * f) const
 {
   f->setType(ft02_OrderDesc);
   f->packInt(type);
+  f->packString(name.c_str());
+  f->packString(description.c_str());
+  f->packInt(parameters.size());
+  for(std::list<OrderParameter*>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
+      ++itcurr){
+    (*itcurr)->packOrderDescFrame(f);
+  }
+  f->packInt64(descmodtime);
 }
 
 uint64_t Order::getDescriptionModTime() const{

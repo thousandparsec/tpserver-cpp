@@ -2,7 +2,7 @@
 #define MOVE_H
 /*  Move Order
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include <tpserver/order.h>
 #include <tpserver/vector3d.h>
+class SpaceCoordParam;
 
 class Move : public Order{
       public:
@@ -38,11 +39,10 @@ class Move : public Order{
 
 	bool doOrder(IGObject * ob);
 
-	void describeOrder(Frame * f) const;
 	Order* clone() const;
 
       private:
-	Vector3d dest;
+	SpaceCoordParam* coords;
 
 
 };

@@ -1,6 +1,6 @@
 /*  OrderManager for managing Order objects
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,15 @@ Order* OrderManager::createOrder(int ot){
 void OrderManager::addOrderType(Order* prototype){
   prototype->setType(nextType);
   prototypeStore[nextType++] = prototype;
+  typeNames[prototype->getName()] = prototype->getType();
   seqkey++;
+}
+
+uint32_t OrderManager::getOrderTypeByName(const std::string& name){
+  if(typeNames.find(name) == typeNames.end()){
+    return 0xffffffff;
+  }else
+    return typeNames[name];
 }
 
 void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){

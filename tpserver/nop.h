@@ -2,7 +2,7 @@
 #define NOP_H
 /*  Nop order
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,24 +23,22 @@
 //class Order;
 #include <tpserver/order.h>
 
+class TimeParameter;
+
 class Nop:public Order {
       public:
 	Nop();
 	virtual ~Nop();
-
-	int getTime();
-	void setTime(int time);
 
 	void createFrame(Frame * f, int objID, int pos);
 	bool inputFrame(Frame * f, unsigned int playerid);
 
 	bool doOrder(IGObject * ob);
 
-	void describeOrder(Frame * f) const;
 	Order* clone() const;
 
-      private:
-	int waitTime;
+  private:
+    TimeParameter* timeparam;
 
 };
 

@@ -1,6 +1,6 @@
 /*  Fleet object
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
+#include <tpserver/ordermanager.h>
 
 #include "fleet.h"
 
@@ -184,16 +185,17 @@ void Fleet::packAllowedOrders(Frame * frame, int playerid){
 	break;
       }
     }
+    OrderManager * om = Game::getGame()->getOrderManager();
     if(colonise){
       frame->packInt(5);
-      frame->packInt(odT_Colonise);
+      frame->packInt(om->getOrderTypeByName("Colonise"));
     }else{
       frame->packInt(4);
     }
-    frame->packInt(odT_Move);
-    frame->packInt(odT_Nop);
-    frame->packInt(odT_Fleet_Split);
-    frame->packInt(odT_Fleet_Merge);
+    frame->packInt(om->getOrderTypeByName("Move"));
+    frame->packInt(om->getOrderTypeByName("No Operation"));
+    frame->packInt(om->getOrderTypeByName("SplitFleet"));
+    frame->packInt(om->getOrderTypeByName("MergeFleet"));
     
   }else{
     frame->packInt(0);
@@ -210,7 +212,8 @@ bool Fleet::checkAllowedOrder(int ot, int playerid){
       break;
     }
   }
-  return (playerid == getOwner() && (ot == odT_Move || ot == odT_Nop || ot == odT_Fleet_Split || ot == odT_Fleet_Merge || (colonise && ot == odT_Colonise)));
+  OrderManager * om = Game::getGame()->getOrderManager();
+  return (playerid == getOwner() && (ot == om->getOrderTypeByName("Move") || ot == om->getOrderTypeByName("No Operation") || ot == om->getOrderTypeByName("SplitFleet") || ot == om->getOrderTypeByName("MergeFleet") || (colonise && ot == om->getOrderTypeByName("Colonise"))));
 }
 
 int Fleet::getContainerType(){
