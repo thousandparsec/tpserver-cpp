@@ -1091,7 +1091,7 @@ bool MysqlPersistence::updateStringParameter(uint32_t ordid, uint32_t pos, Strin
 
 bool MysqlPersistence::retrieveStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT thestring FROM orderparamsdtring WHERE orderid = " << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT thestring FROM orderparamstring WHERE orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
       Logger::getLogger()->error("Mysql: Could not retrieve StringParameter %d,%d - %s", ordid, pos, mysql_error(conn));
