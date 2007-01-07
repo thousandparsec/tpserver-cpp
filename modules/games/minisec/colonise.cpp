@@ -84,6 +84,19 @@ bool Colonise::doOrder(IGObject * ob){
   if(object->getObjectId() == 0)
     return true;
 
+  IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
+  if(target == NULL){
+    Message * msg = new Message();
+    msg->setSubject("Colonise order canceled");
+    msg->setBody("The target planet doesn't exist");
+    msg->addReference(rst_Action_Order, rsorav_Canceled);
+    msg->addReference(rst_Object, ob->getID());
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    return true;
+  }
+  moveorder->setDest(target->getPosition());
+  Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
+  
   if(moveorder->doOrder(ob)){
 
     Message * msg = new Message();
