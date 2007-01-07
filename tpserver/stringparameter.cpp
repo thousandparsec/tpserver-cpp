@@ -34,10 +34,12 @@ StringParameter::~StringParameter(){
 
 
 void StringParameter::packOrderFrame(Frame * f, uint32_t objID){
+  f->packInt(max);
   f->packString(string.c_str());
 }
 
 bool StringParameter::unpackFrame(Frame *f, unsigned int playerid){
+  f->unpackInt();
   string = std::string(f->unpackString());
   return true;
 }
