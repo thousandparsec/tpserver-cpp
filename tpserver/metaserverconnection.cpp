@@ -3,7 +3,7 @@
  * This connection is a little odd, because it is a client connection
  * to the metaserver, not a server connection of this server.
  *
- *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -265,7 +265,7 @@ bool MetaserverConnection::sendUpdate(){
     servicenumber++;
   }
 
-  formater << " HTTP/1.0\r\nUser-agent: tpserver-cpp" VERSION "\r\n";
+  formater << " HTTP/1.0\r\nUser-agent: tpserver-cpp/" VERSION "\r\n";
   formater << "Host: " << host << "\r\n";
   formater << "\r\n";
   
