@@ -1,6 +1,6 @@
 /*  DesignStore class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ void DesignStore::init(){
     }
     ids = persistence->getPropertyIds();
     for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
-        properties[*itcurr] = NULL;
+      properties[*itcurr] = persistence->retrieveProperty(*itcurr);
+      propertyIndex[properties[*itcurr]->getName()] = (*itcurr);
     }
 }
 
@@ -123,6 +124,7 @@ Property* DesignStore::getProperty(unsigned int id){
         if(prop == NULL){
             prop = Game::getGame()->getPersistence()->retrieveProperty(id);
             pos->second = prop;
+            propertyIndex[prop->getName()] = prop->getPropertyId();
         }
     }
     return prop;
