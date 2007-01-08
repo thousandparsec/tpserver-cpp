@@ -55,6 +55,10 @@ Colonise::~Colonise(){
 }
 
 void Colonise::createFrame(Frame * f, int objID, int pos){
+  
+  IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
+  moveorder->setDest(target->getPosition());
+  Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
   turns = moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID)); // number of turns
   Game::getGame()->getObjectManager()->doneWithObject(objID);
   
