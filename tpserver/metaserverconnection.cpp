@@ -184,10 +184,10 @@ bool MetaserverConnection::sendUpdate(){
   
   if(laddr.ss_family == AF_INET6){
     inet_ntop(AF_INET6, &(((sockaddr_in6*)(&laddr))->sin6_addr), straddr,
-              sizeof(straddr));
+              INET6_ADDRSTRLEN);
   }else{
     inet_ntop(AF_INET, &(((sockaddr_in*)(&laddr))->sin_addr), straddr,
-              sizeof(straddr));
+              INET6_ADDRSTRLEN);
   }
 
   getnameinfo((struct sockaddr *)&laddr, lalen,
