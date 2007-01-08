@@ -31,19 +31,27 @@
 #include "advertiser.h"
 // #include "logging.h"
 #include "settings.h"
-// #include "settingscallback.h"
+#include "settingscallback.h"
 #include "net.h"
 #include "metaserverconnection.h"
 
 #include "metaserverpublisher.h"
 
 MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), key(){
-  
+  Settings* settings = Settings::getSettings();
+  settings->setCallback("metaserver_fake_ip", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
+  settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
+  settings->setCallback("metaserver_address", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
+  settings->setCallback("metaserver_port", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
 }
 
 
 MetaserverPublisher::~MetaserverPublisher(){
- 
+  Settings* settings = Settings::getSettings();
+  settings->removeCallback("metaserver_fake_ip");
+  settings->removeCallback("metaserver_fake_dns");
+  settings->removeCallback("metaserver_address");
+  settings->removeCallback("metaserver_port");
 }
 
 void MetaserverPublisher::poll(){
@@ -70,4 +78,8 @@ void MetaserverPublisher::update(){
 
 std::string MetaserverPublisher::getKey(){
   return key;
+}
+
+void MetaserverPublisher::metaserverSettingChanged(const std::string& skey, const std::string& value){
+  needtoupdate = true;
 }
