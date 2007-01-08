@@ -53,7 +53,7 @@ void Planet::packAllowedOrders(Frame * frame, int playerid){
   if(playerid == getOwner()){
     frame->packInt(2);
     OrderManager * om = Game::getGame()->getOrderManager();
-    frame->packInt(om->getOrderTypeByName("Build"));
+    frame->packInt(om->getOrderTypeByName("BuildFleet"));
     frame->packInt(om->getOrderTypeByName("No Operation"));
   }else{
     frame->packInt(0);
@@ -62,7 +62,7 @@ void Planet::packAllowedOrders(Frame * frame, int playerid){
 
 bool Planet::checkAllowedOrder(int ot, int playerid){
   OrderManager * om = Game::getGame()->getOrderManager();
-  return (playerid == getOwner() && (ot == om->getOrderTypeByName("Build") || ot == om->getOrderTypeByName("No Operation")));
+  return (playerid == getOwner() && (ot == om->getOrderTypeByName("BuildFleet") || ot == om->getOrderTypeByName("No Operation")));
 }
 
 int Planet::getContainerType(){
