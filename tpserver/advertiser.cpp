@@ -36,7 +36,6 @@
 
 
 Advertiser::Advertiser() : services(), publishers(){
-  publishers.insert(new MetaserverPublisher(this));
 }
 
 
@@ -52,7 +51,7 @@ void Advertiser::publish(){
     // do nothing, maybe warn of no mdns-sd
   }
 #endif
-  
+  publishers.insert(new MetaserverPublisher(this));
   updatePublishers();
 }
 
