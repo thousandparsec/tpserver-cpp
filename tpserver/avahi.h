@@ -50,7 +50,6 @@ public:
 
 private:
   void createServices();
-  void nameChanged(const std::string &item, const std::string &value);
   
   AvahiSimplePoll *simple_poll;
   AvahiEntryGroup *group;

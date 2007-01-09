@@ -140,8 +140,6 @@ Avahi::Avahi(Advertiser* ad) : Publisher(ad), simple_poll(NULL), group(NULL), cl
   tname.append("]");
   name = avahi_strdup(tname.c_str());
   
-  Settings::getSettings()->setCallback("server_name", SettingsCallback(this, &Avahi::nameChanged));
-  
   /* Allocate main loop object */
   if (!(simple_poll = avahi_simple_poll_new())) {
         Logger::getLogger()->warning("Could not create poll object for avahi");
@@ -176,7 +174,14 @@ void Avahi::poll(){
 }
 
 void Avahi::update(){
-  
+  std::string tname = Settings::getSettings()->get("server_name");
+  if(tname.empty())
+    tname = "Tpserver-cpp";
+  tname.append(" [");
+  tname.append(Game::getGame()->getRuleset()->getName());
+  tname.append("]");
+  avahi_free(name);
+  name = avahi_strdup(tname.c_str());
   createServices();
 }
 
@@ -236,16 +241,4 @@ void Avahi::createServices(){
 
 fail:
   avahi_simple_poll_quit(simple_poll);
-}
-
-void Avahi::nameChanged(const std::string& item, const std::string& value){
-  std::string tname = Settings::getSettings()->get("server_name");
-  if(tname.empty())
-    tname = "Tpserver-cpp";
-  tname.append(" [");
-  tname.append(Game::getGame()->getRuleset()->getName());
-  tname.append("]");
-  avahi_free(name);
-  name = avahi_strdup(tname.c_str());
-  createServices();
 }

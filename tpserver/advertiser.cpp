@@ -23,8 +23,8 @@
 #endif
 
 // #include "logging.h"
-// #include "settings.h"
-// #include "settingscallback.h"
+#include "settings.h"
+#include "settingscallback.h"
 #include "publisher.h"
 
 #ifdef HAVE_AVAHI
@@ -36,11 +36,19 @@
 
 
 Advertiser::Advertiser() : services(), publishers(){
+  Settings* settings = Settings::getSettings();
+  settings->setCallback("server_name", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("admin_email", SettingsCallback(this, &Advertiser::settingChanged));
 }
 
 
 Advertiser::~Advertiser(){
   unpublish();
+  Settings* settings = Settings::getSettings();
+  settings->removeCallback("server_name");
+  settings->removeCallback("game_comment");
+  settings->removeCallback("admin_email");
 }
 
 void Advertiser::publish(){
@@ -91,4 +99,8 @@ void Advertiser::updatePublishers(){
   for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
     (*itcurr)->update();
   }
+}
+
+void Advertiser::settingChanged(const std::string& skey, const std::string& value){
+  updatePublishers();
 }
