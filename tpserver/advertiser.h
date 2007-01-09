@@ -47,9 +47,9 @@ public:
   void poll();
   void unpublish();
 
-private:
   void updatePublishers();
-  
+
+private:
   std::map<std::string, uint16_t> services;
   std::set<Publisher*> publishers;
 
