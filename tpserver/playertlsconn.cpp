@@ -80,7 +80,7 @@ PlayerTlsConnection::~PlayerTlsConnection()
 	if (status != 0) {
 		close();
 	}
-    TlsManager::getInstance()->reference();
+    TlsManager::getInstance()->dereference();
 }
 
 
