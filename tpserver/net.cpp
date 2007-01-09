@@ -323,6 +323,7 @@ void Network::masterLoop()
 
 		if(Game::getGame()->secondsToEOT() <= 0){
 		  Game::getGame()->doEndOfTurn();
+                  advertiser->updatePublishers();
 		}
 
 
