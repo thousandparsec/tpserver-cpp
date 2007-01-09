@@ -37,6 +37,11 @@ class PlayerTcpConnection : public PlayerConnection {
   void verCheck();
   bool readFrame(Frame * recvframe);
   
+ private:
+  char* rheaderbuff;
+  char* rdatabuff;
+  uint32_t rbuffused;
+  
 };
 
 #endif

@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -40,13 +41,13 @@
 
 #include "playertcpconn.h"
 
-PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection()
+PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0)
 {
 
 }
 
 
-PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd)
+PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0)
 {
 
 }
@@ -56,6 +57,10 @@ PlayerTcpConnection::~PlayerTcpConnection()
 	if (status != 0) {
 		close();
 	}
+        if(rheaderbuff != NULL)
+          delete[] rheaderbuff;
+        if(rdatabuff != NULL)
+          delete[] rdatabuff;
 }
 
 
@@ -227,57 +232,95 @@ void PlayerTcpConnection::verCheck()
 
 bool PlayerTcpConnection::readFrame(Frame * recvframe)
 {
-	bool rtn;
-	
-	int hlen = recvframe->getHeaderLength();	
-	char *headerbuff = new char[hlen];
-	int len = read(sockfd, headerbuff, hlen);
-	
-	if (len == hlen) {
-		if ( (len = recvframe->setHeader(headerbuff)) != -1 ) {
-				
-		  Logger::getLogger()->debug("Data Length: %d", len);
-		  
-				
-			char *data = new char[len];
-			int dlen = read(sockfd, data, len);
-			
-			if (len != dlen) {
-				//have to think about this.... what do we do?
-				Logger::getLogger()->debug("Read data not the length needed");
-			}
-			
-			recvframe->setData(data, dlen);
-			delete[] data;
-
-			//sanity check
-			if(version != recvframe->getVersion()){
-			  Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
-			}
-
-			rtn = true;
-		} else {
-			Logger::getLogger()->debug("Incorrect header");
-			// protocol error
-			Frame *failframe = createFrame();
-			failframe->createFailFrame(fec_ProtocolError, "Protocol Error");	// TODO - should be a const or enum, protocol error
-			sendFrame(failframe);
-			close();
-			rtn = false;
-		}
-	} else {
-		Logger::getLogger()->debug("Did not read header");
-		if (len > 0) {
-			Frame *failframe = createFrame();
-			failframe->createFailFrame(fec_ProtocolError, "Protocol Error");	// TODO - should be a const or enum, protocol error
-			sendFrame(failframe);
-                        Logger::getLogger()->error("Read only %d bytes of %d bytes of header", len, hlen);
-		} else {
-			Logger::getLogger()->info("Client disconnected");
-		}
-		close();
-		rtn = false;
-	}
-	delete[] headerbuff;
-	return rtn;
+  bool rtn = true;
+  
+  uint32_t hlen = recvframe->getHeaderLength();
+  
+  if(rheaderbuff == NULL){
+    rbuffused = 0;
+    rheaderbuff = new char[hlen];
+  }
+  
+  if(rdatabuff == NULL && rbuffused != hlen){
+    uint32_t len = recv(sockfd, rheaderbuff+rbuffused, hlen - rbuffused, 0);
+    if(len == 0){
+      Logger::getLogger()->info("Client disconnected");
+      close();
+      rtn = false;
+    }else if(len > 0){
+      rbuffused += len;
+      if(rbuffused != hlen){
+        Logger::getLogger()->debug("Read header not the length needed, delaying read");
+        rtn = false;
+      }
+    }else{
+      if(errno != EAGAIN && errno != EWOULDBLOCK){
+        Logger::getLogger()->warning("Socket error");
+        close();
+      }
+      rtn = false;
+    }
+  }
+  
+  uint32_t datalen;
+  
+  if(rtn && ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL)){
+    int32_t signeddatalen;
+    if ( (signeddatalen = recvframe->setHeader(rheaderbuff)) != -1 ) {
+      datalen = signeddatalen;
+      //sanity check
+      if(version != recvframe->getVersion()){
+        Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
+      }
+    }else{
+      Logger::getLogger()->debug("Incorrect header");
+      // protocol error
+      Frame *failframe = createFrame();
+      failframe->createFailFrame(fec_ProtocolError, "Protocol Error");
+      sendFrame(failframe);
+      close();
+      rtn = false;
+    }
+  }
+  
+  if(rtn && datalen != 0){
+  
+    if(rdatabuff == NULL && rbuffused == hlen){
+      rbuffused = 0;
+      rdatabuff = new char[datalen];
+    }
+    
+    if(rbuffused != datalen){
+      uint32_t len = recv(sockfd, rdatabuff+rbuffused, datalen - rbuffused, 0);
+      if(len == 0){
+        Logger::getLogger()->info("Client disconnected");
+        close();
+        rtn = false;
+      }else if(len > 0){
+        rbuffused += len;
+        if(rbuffused != datalen){
+          Logger::getLogger()->debug("Read data not the length needed, delaying read");
+          rtn = false;
+        }
+      }else{
+        if(errno != EAGAIN && errno != EWOULDBLOCK){
+          Logger::getLogger()->warning("Socket error");
+          close();
+        }
+        rtn = false;
+      }
+    }
+    
+    if(rtn && rbuffused == datalen){
+      recvframe->setData(rdatabuff, datalen);
+      delete[] rheaderbuff;
+      delete[] rdatabuff;
+      rheaderbuff = NULL;
+      rdatabuff = NULL;
+    }
+  }else if(rtn){
+    delete[] rheaderbuff;
+    rheaderbuff = NULL;
+  }
+  return rtn;
 }
