@@ -52,6 +52,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
+#include <tpserver/settings.h>
 
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -385,7 +386,15 @@ void MiniSec::createGame(){
   obman->addObject(s1);
   
   //create random systems
-  for (uint32_t counter = (rand() % 20); counter < 45; counter++) {
+  uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
+  uint32_t max_systems = atoi(Settings::getSettings()->get("minisec_max_systems").c_str());
+  uint32_t num_systems;
+  if(min_systems == max_systems){
+    num_systems = min_systems;
+  }else{
+    num_systems =  (rand() % (max_systems - min_systems)) + min_systems;
+  }
+  for (uint32_t counter = 0; counter < num_systems; counter++) {
         createStarSystem( mw_galaxy);
     }
   
@@ -570,7 +579,13 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
     obman->addObject( star);
 
     // Create a variable number of planets for each star system
-    nplanets = (rand() % 5) + 5;
+    uint maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
+    uint minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
+    if(minplanets == maxplanets){
+      nplanets = minplanets;
+    }else{
+      nplanets = (rand() % (maxplanets - minplanets)) + minplanets;
+    }
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
