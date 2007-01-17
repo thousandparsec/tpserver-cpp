@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -61,6 +62,24 @@
 #endif
 
 #include "minisec.h"
+
+static char const * const systemNames[] = {
+    "Barnard's Star",  "Gielgud",             "Ventana",
+    "Aleph Prime",     "Ventil",              "Sagitaria",
+    "Drifter",         "Ptelemicus",          "Centanis",
+    "Mendelis",        "Cassious' Shadow",    "Llentim",
+    "Redoubt",         "Kelper",              "Cemara",
+    "Cilantarius",     "Kya",                 "Lanternis",
+    "Illatis",         "Rintim",              "Uvaharim",
+    "Plaetais",        "Denderis",            "Desiderata",
+    "Illuntara",       "Ivemteris",           "Wetcher",
+    "Monanara",        "Clesasia",            "RumRunner",
+    "Last Chance",     "Kiuper Shadow",       "NGC 42059",
+    "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
+    "Atlantis",        "Draconis",            "Muir's Gold",
+    "Fools Errand",    "Wrenganis",           "Humph",
+    "Byzantis",        "Torontis",            "Radiant Pool"};
+
 
 extern "C" {
   bool tp_init(){
@@ -365,6 +384,11 @@ void MiniSec::createGame(){
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
   
+  //create random systems
+  for (uint32_t counter = (rand() % 20); counter < 45; counter++) {
+        createStarSystem( mw_galaxy);
+    }
+  
     //setup Resources
     ResourceDescription* res = new ResourceDescription();
     res->setNameSingular("Ship part");
@@ -522,4 +546,46 @@ void MiniSec::onPlayerAdded(Player* player){
   game->getObjectManager()->addObject(fleet);
 
     game->getPlayerManager()->updatePlayer(player->getID());
+}
+
+// Create a random star system
+IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
+{
+    Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
+    Game*          game = Game::getGame();
+    ObjectManager* obman = game->getObjectManager();
+    IGObject*      star = game->getObjectManager()->createNewObject();
+    unsigned int   nplanets = 0;
+    std::ostringstream     formatter;
+
+    star->setSize(1400000ll);
+    star->setType( obT_Star_System);
+    unsigned int   thx = rand() % 45 +  1;
+    star->setName(systemNames[thx-1]);
+    star->setPosition( Vector3d( (rand() % 8000) * 1000000ll - 4000000000ll,
+                                 (rand() % 8000) * 1000000ll - 4000000000ll,
+                                 0ll));
+    star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
+    star->addToParent( mw_galaxy->getID());
+    obman->addObject( star);
+
+    // Create a variable number of planets for each star system
+    nplanets = (rand() % 5) + 5;
+    for(uint i = 1; i <= nplanets; i++){
+        IGObject*  planet = game->getObjectManager()->createNewObject();
+        formatter.str("");
+        formatter << star->getName() << " " << i;
+
+        planet->setSize( 2);
+        planet->setType( obT_Planet);
+        planet->setName( formatter.str().c_str());
+        planet->setPosition( star->getPosition() + Vector3d( i * 40000ll,
+                                                             i * -35000ll,
+                                                             0ll));
+        planet->addToParent( star->getID());
+        obman->addObject( planet);
+    }
+
+    Logger::getLogger()->debug( "Exiting MiniSec::createStarSystem");
+    return star;
 }

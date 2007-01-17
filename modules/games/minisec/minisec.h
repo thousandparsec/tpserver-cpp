@@ -36,6 +36,9 @@ class MiniSec : public Ruleset{
   bool onAddPlayer(Player* player);
   void onPlayerAdded(Player* player);
 
+private:
+  IGObject* createStarSystem( IGObject* mw_galaxy);
+
 };
 
 #endif
