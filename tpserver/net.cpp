@@ -189,6 +189,8 @@ void Network::start()
                 active = true;
             }
 
+            advertiser->publish();
+
 	}else{
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
@@ -199,8 +201,6 @@ void Network::start()
         }else{
           removeFeature(fid_account_register);
         }
-
-        advertiser->publish();
 
 }
 
