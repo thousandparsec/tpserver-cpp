@@ -8,7 +8,7 @@ else
 tpschemelib_LTLIBRARIES = 
 endif
 
-tpdatadir = $(datadir)/tpserver
+tpdatadir = $(datadir)/tpserver/tpscheme/mzscheme
 
 tpschemelibdir = $(libdir)/tpserver/tpscheme
 libtpmzscheme_la_SOURCES = tpmzscheme.h tpmzscheme.cpp

@@ -255,7 +255,7 @@ TpMzScheme::TpMzScheme(){
         if (scheme_setjmp(scheme_error_buf)) {
             Logger::getLogger()->warning("MzScheme Error");
         } else {
-            scheme_eval_string("(load \"" DATADIR "/designstruct.scm\")", env);
+            scheme_eval_string("(load \"" DATADIR "/tpserver/tpscheme/mzscheme/designstruct.scm\")", env);
             loaded = true;
         }
     }
