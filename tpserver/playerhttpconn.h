@@ -20,16 +20,18 @@
  *
  */
 
+#include <string>
+
 #include "playertcpconn.h"
 
 class PlayerHttpConnection : public PlayerTcpConnection {
  public:
-  PlayerHttpConnection();
   PlayerHttpConnection(int fd);
   virtual ~PlayerHttpConnection();
   
  protected:
-  void verCheck();
+  int32_t verCheckLastChance();
+  std::string httpbuff;
   
 };
 
