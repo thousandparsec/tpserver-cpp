@@ -110,7 +110,7 @@ void PlayerTcpConnection::verCheck(){
   }
   
   if(rdatabuff == NULL && rbuffused < 4){
-    uint32_t len = recv(sockfd, rheaderbuff+rbuffused, 4, 0);
+    int32_t len = recv(sockfd, rheaderbuff+rbuffused, 4, 0);
     if(len == 0){
       Logger::getLogger()->info("Client disconnected");
       close();
@@ -131,6 +131,7 @@ void PlayerTcpConnection::verCheck(){
   }
   if(rtn && rdatabuff == NULL && rbuffused >= 4){
     if(rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P'){
+      //assume we have TP procotol
       if(rheaderbuff[2] == '0'){
         if(rheaderbuff[3] <= '1'){
           Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
@@ -207,15 +208,31 @@ void PlayerTcpConnection::verCheck(){
         }
       }
     }else{
-      Logger::getLogger()->warning("Client did not talk any variant of TPprotocol");
-      // send "I don't understand" message
-      send(sockfd, "You are not running the correct protocol\n", 41, 0);
-      close();
-      rtn = false;
+      int32_t lastchance = verCheckLastChance();
+      if(lastchance == 1){
+        // last chance passed, try checking for frames again
+        delete[] rheaderbuff;
+        rheaderbuff = NULL;
+      }else if(lastchance == -2){
+        //waiting for more data
+        rtn = false;
+      }else{
+        Logger::getLogger()->warning("Client did not talk any variant of TPprotocol");
+        if(lastchance != 0){
+          // send "I don't understand" message
+          send(sockfd, "You are not running the correct protocol\n", 41, 0);
+          close();
+        }
+        rtn = false;
+      }
     }
   }else{
     rtn = false;
   }
+}
+
+int32_t PlayerTcpConnection::verCheckLastChance(){
+  return -1;
 }
 
 bool PlayerTcpConnection::readFrame(Frame * recvframe)
@@ -230,7 +247,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
   }
   
   if(rdatabuff == NULL && rbuffused != hlen){
-    uint32_t len = recv(sockfd, rheaderbuff+rbuffused, hlen - rbuffused, 0);
+    int32_t len = recv(sockfd, rheaderbuff+rbuffused, hlen - rbuffused, 0);
     if(len == 0){
       Logger::getLogger()->info("Client disconnected");
       close();
@@ -279,7 +296,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     }
     
     if(rbuffused != datalen){
-      uint32_t len = recv(sockfd, rdatabuff+rbuffused, datalen - rbuffused, 0);
+      int32_t len = recv(sockfd, rdatabuff+rbuffused, datalen - rbuffused, 0);
       if(len == 0){
         Logger::getLogger()->info("Client disconnected");
         close();

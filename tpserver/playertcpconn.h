@@ -35,9 +35,10 @@ class PlayerTcpConnection : public PlayerConnection {
   
  protected:
   void verCheck();
+  virtual int32_t verCheckLastChance();
+  
   bool readFrame(Frame * recvframe);
   
- private:
   char* rheaderbuff;
   char* rdatabuff;
   uint32_t rbuffused;
