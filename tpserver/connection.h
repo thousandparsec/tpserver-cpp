@@ -2,7 +2,7 @@
 #define CONNECTION_H
 /*  Connection base class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ class Connection {
   int getFD();
   
   virtual void process() = 0;
+  virtual void processWrite();
   int getStatus();
   
  protected:

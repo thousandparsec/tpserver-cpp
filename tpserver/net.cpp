@@ -115,6 +115,10 @@ void Network::removeConnection(Connection* conn)
   }
 }
 
+void Network::addToWriteQueue(Connection* conn){
+  writequeue[conn->getFD()] = conn;
+}
+
 void Network::start()
 {
 	if (active == true) {
@@ -276,8 +280,25 @@ void Network::masterLoop()
 		cur_set = master_set;
 		tv.tv_sec = 0;
 		tv.tv_usec = 100000;
+                fd_set write_set;
+                FD_ZERO(&write_set);
+                for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();
+                    itcurr != writequeue.end(); ++itcurr){
+                  FD_SET(itcurr->first, &write_set);
+                }
 
-		if (select(max_fd + 1, &cur_set, NULL, NULL, &tv) != 0) {
+		if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) != 0) {
+                  
+                  for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();
+                      itcurr != writequeue.end(); ++itcurr){
+                    if(FD_ISSET(itcurr->first, &write_set)){
+                      Connection* conn = itcurr->second;
+                      writequeue.erase(itcurr);
+                      conn->processWrite();
+                      //use select again, don't check rest of list as it has changed.
+                      break;
+                    }
+                  }
 
 			std::map < int, Connection * >::iterator itcurr;
 			for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {

@@ -2,7 +2,7 @@
 #define NET_H
 /*  Network Abstraction class
  *
- *  Copyright (C) 2004-2005, 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ class Network {
 
 	void addConnection(Connection* conn);
 	void removeConnection(Connection* conn);
+        void addToWriteQueue(Connection* conn);
 
 	void start();
 
@@ -87,6 +88,7 @@ class Network {
 	bool halt;
 
 	 std::map < int, Connection * >connections;
+         std::map<int, Connection*> writequeue;
 
          std::map<int,int> features;
          
