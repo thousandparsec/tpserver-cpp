@@ -41,13 +41,13 @@
 
 #include "playertcpconn.h"
 
-PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue()
+PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue(), sendandclose(false)
 {
 
 }
 
 
-PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue()
+PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue(), sendandclose(false)
 {
 
 }
@@ -63,11 +63,16 @@ PlayerTcpConnection::~PlayerTcpConnection()
           delete[] rdatabuff;
         if(sbuff != NULL)
           delete[] sbuff;
+        while(!sendqueue.empty()){
+          delete sendqueue.front();
+          sendqueue.pop();
+        }
 }
 
 
 void PlayerTcpConnection::close()
 {
+  if(sendqueue.empty()){
 	Logger::getLogger()->debug("Closing connection");
 	if (player != NULL) {
 		player->setConnection(NULL);
@@ -75,6 +80,9 @@ void PlayerTcpConnection::close()
 	}
 	::close(sockfd);
 	status = 0;
+  }else{
+    sendandclose = true;
+  }
 }
 
 void PlayerTcpConnection::sendFrame(Frame * frame)
@@ -86,9 +94,11 @@ void PlayerTcpConnection::sendFrame(Frame * frame)
   if(version == fv0_2 && frame->getType() >= ft02_Max){
     Logger::getLogger()->error("Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
   }else{
-    sendqueue.push(frame);
-    
-    processWrite();
+    if(!sendandclose){
+      sendqueue.push(frame);
+      
+      processWrite();
+    }
   }
 }
 
@@ -125,6 +135,8 @@ void PlayerTcpConnection::processWrite(){
   }
   if(!sendqueue.empty()){
     Network::getNetwork()->addToWriteQueue(this);
+  }else if(sendandclose){
+    close();
   }
 }
 
@@ -166,8 +178,7 @@ void PlayerTcpConnection::verCheck(){
       if(rheaderbuff[2] == '0'){
         if(rheaderbuff[3] <= '1'){
           Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
-          send(sockfd, "You are not running the right version of TP, please upgrade\n", 60, 0);
-          close();
+          sendDataAndClose("You are not running the right version of TP, please upgrade\n", 60);
           rtn = false;
         }else if(rheaderbuff[3] > '3'){
           //might be future version of protocol, just disconnect now
@@ -188,17 +199,23 @@ void PlayerTcpConnection::verCheck(){
         }
       }else{
         //might be future version of protocol, just disconnect now
-        Frame *f = new Frame(fv0_3);
-        f->setSequence(0);
-        f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
-        sendFrame(f);
-
+        Logger::getLogger()->warning("Unknown protocol version");
+        
         //stay connected just in case they try again with a lower version
         // have to empty the receive queue though.
         char* buff = new char[1024];
         uint32_t len = recv(sockfd, buff, 1024, 0);
         Logger::getLogger()->debug("Read an extra %d bytes from the socket, into buffer of 1024", len);
         delete[] buff;
+        
+        Frame *f = new Frame(fv0_3);
+        f->setSequence(0);
+        f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
+        sendFrame(f);
+
+        delete[] rheaderbuff;
+        rheaderbuff = NULL;
+        rbuffused = 0;
         rtn = false;
       }
       
@@ -251,8 +268,7 @@ void PlayerTcpConnection::verCheck(){
         Logger::getLogger()->warning("Client did not talk any variant of TPprotocol");
         if(lastchance != 0){
           // send "I don't understand" message
-          send(sockfd, "You are not running the correct protocol\n", 41, 0);
-          close();
+          sendDataAndClose("You are not running the correct protocol\n", 41);
         }
         rtn = false;
       }
@@ -268,7 +284,10 @@ int32_t PlayerTcpConnection::verCheckLastChance(){
 
 bool PlayerTcpConnection::readFrame(Frame * recvframe)
 {
-  bool rtn = true;
+  bool rtn = !sendandclose;
+  
+  if (!rtn)
+    return rtn;
   
   uint32_t hlen = recvframe->getHeaderLength();
   
@@ -359,4 +378,23 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     rheaderbuff = NULL;
   }
   return rtn;
+}
+
+void PlayerTcpConnection::sendDataAndClose(const char* data, uint32_t size){
+  sendData(data, size);
+  sendandclose = true;
+  if(sendqueue.empty())
+    close();
+}
+
+void PlayerTcpConnection::sendData(const char* data, uint32_t size){
+  while(!sendqueue.empty()){
+    delete sendqueue.front();
+    sendqueue.pop();
+  }
+  sbuff = new char[size];
+  memcpy(sbuff, data, size);
+  sbuffsize = size;
+  sbuffused = 0;
+  sendFrame(new Frame(fv0_3));
 }

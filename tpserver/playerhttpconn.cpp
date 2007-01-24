@@ -92,12 +92,12 @@ int32_t PlayerHttpConnection::verCheckLastChance()
       response += "Pragma: no-cache\r\n\r\n";
       if(rheaderbuff[0] == 'G' || url == "/"){
         response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
-        send(sockfd, response.c_str(), response.length(), 0);
-        close();
+        sendDataAndClose(response.c_str(), response.length());
         rtn = 1;
       }else{
-        send(sockfd, response.c_str(), response.length(), 0);
+        sendData(response.c_str(), response.length());
         rtn = 1;
+        httpbuff.clear();
       }
     }
   }

@@ -42,6 +42,9 @@ class PlayerTcpConnection : public PlayerConnection {
   
   bool readFrame(Frame * recvframe);
   
+  void sendData(const char* data, uint32_t size);
+  void sendDataAndClose(const char* data, uint32_t size);
+  
   char* rheaderbuff;
   char* rdatabuff;
   uint32_t rbuffused;
@@ -50,6 +53,8 @@ class PlayerTcpConnection : public PlayerConnection {
   uint32_t sbuffused;
   uint32_t sbuffsize;
   std::queue<Frame*> sendqueue;
+  
+  bool sendandclose;
   
 };
 
