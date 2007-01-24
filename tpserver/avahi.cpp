@@ -188,17 +188,35 @@ void Avahi::update(){
 void Avahi::createServices(){
   int ret;
   std::map<std::string, uint16_t> services = advertiser->getServices();
-  std::string rulesetname = std::string("rule=") + Game::getGame()->getRuleset()->getName();
-  std::string rulesetversion = std::string("rulever=") + Game::getGame()->getRuleset()->getVersion();
-  std::ostringstream formater;
-  formater << "turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
-  std::string turntime = formater.str();
-  formater.str(std::string());
-  formater << "objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
-  std::string objects = formater.str();
-  formater.str(std::string());
-  formater << "plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
-  std::string players = formater.str();
+  
+  // Don't export tphttp and tphttps unless they are the only ones
+  std::map<std::string, uint16_t> nservices = services;
+  nservices.erase("tphttp");
+  nservices.erase("tphttps");
+  if(!nservices.empty()){
+    services = nservices;
+  }
+  
+  AvahiStringList * txtfields = avahi_string_list_new(
+      "server=" VERSION,
+      "sertype=tpserver-cpp", 
+      "tp=0.3,0.2",
+      NULL);
+  txtfields = avahi_string_list_add(txtfields, (std::string("rule=") + Game::getGame()->getRuleset()->getName()).c_str());
+  txtfields = avahi_string_list_add(txtfields,(std::string("rulever=") + Game::getGame()->getRuleset()->getVersion()).c_str());
+  txtfields = avahi_string_list_add_printf(txtfields, "turn=%ld", Game::getGame()->secondsToEOT() + time(NULL));
+  txtfields = avahi_string_list_add_printf(txtfields, "objs=%d", Game::getGame()->getObjectManager()->getNumObjects());
+  txtfields = avahi_string_list_add_printf(txtfields, "plys=%d", Game::getGame()->getPlayerManager()->getNumPlayers());
+  
+  Settings* settings = Settings::getSettings();
+  
+  if(!(settings->get("admin_email").empty())){
+    txtfields = avahi_string_list_add(txtfields, (std::string("admin=") + settings->get("admin_email")).c_str());
+  }
+  if(!(settings->get("game_comment").empty())){
+    std::string comment = settings->get("game_comment");
+    txtfields = avahi_string_list_add(txtfields, (std::string("cmt=") + comment).c_str());
+  }
   
   /* If this is the first time we're called, let's create a new entry group */
   if (!group)
@@ -214,21 +232,14 @@ void Avahi::createServices(){
       itcurr != services.end(); ++itcurr){
         std::string servicename = std::string("_") + itcurr->first + "._tcp";
     // after the port, there is a NULL terminated list of strings for the TXT field
-    if ((ret = avahi_entry_group_add_service(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
-         (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, "server=" VERSION,
-         "sertype=tpserver-cpp", 
-         "tp=0.3,0.2",
-         rulesetname.c_str(),
-         rulesetversion.c_str(),
-         turntime.c_str(),
-         objects.c_str(),
-         players.c_str(),
-         NULL)) < 0) {
+    if ((ret = avahi_entry_group_add_service_strlst(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
+         (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, txtfields)) < 0) {
         fprintf(stderr, "Failed to add %s service: %s\n", servicename.c_str(), avahi_strerror(ret));
         goto fail;
     }
   }
 
+  avahi_string_list_free(txtfields);
   
   
   /* Tell the server to register the service */
