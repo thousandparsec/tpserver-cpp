@@ -38,6 +38,7 @@
 PlayerConnection::PlayerConnection() : Connection()
 {
 	player = NULL;
+        version = fv0_3;
 }
 
 
@@ -46,6 +47,7 @@ PlayerConnection::PlayerConnection(int fd) : Connection()
 	sockfd = fd;
 	status = 1;
 	player = NULL;
+        version = fv0_3;
 }
 
 PlayerConnection::~PlayerConnection()
