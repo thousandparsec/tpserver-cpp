@@ -382,9 +382,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
 
 void PlayerTcpConnection::sendDataAndClose(const char* data, uint32_t size){
   sendData(data, size);
-  sendandclose = true;
-  if(sendqueue.empty())
-    close();
+  close();
 }
 
 void PlayerTcpConnection::sendData(const char* data, uint32_t size){
