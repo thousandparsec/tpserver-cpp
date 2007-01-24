@@ -58,12 +58,6 @@
 #include "mysqlemptyobject.h"
 #include "mysqlplanet.h"
 #include "mysqlfleet.h"
-#include "modules/persistence/mysql/mysqlordernop.h"
-#include "mysqlordermove.h"
-#include "mysqlorderbuild.h"
-#include "mysqlordercolonise.h"
-#include "mysqlordersplitfleet.h"
-#include "mysqlordermergefleet.h"
 #endif
 
 #include "mtsec.h"
