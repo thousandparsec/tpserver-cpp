@@ -24,6 +24,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -49,7 +50,7 @@ PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NUL
 
 PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue(), sendandclose(false)
 {
-
+  fcntl(sockfd, F_SETFL, O_NONBLOCK);
 }
 
 PlayerTcpConnection::~PlayerTcpConnection()
