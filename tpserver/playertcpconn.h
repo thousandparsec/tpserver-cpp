@@ -20,6 +20,8 @@
  *
  */
 
+#include <queue>
+
 #include "playerconnection.h"
 
 class PlayerTcpConnection : public PlayerConnection {
@@ -32,6 +34,7 @@ class PlayerTcpConnection : public PlayerConnection {
 
   void close();
   void sendFrame(Frame * frame);
+  void processWrite();
   
  protected:
   void verCheck();
@@ -42,6 +45,11 @@ class PlayerTcpConnection : public PlayerConnection {
   char* rheaderbuff;
   char* rdatabuff;
   uint32_t rbuffused;
+  
+  char* sbuff;
+  uint32_t sbuffused;
+  uint32_t sbuffsize;
+  std::queue<Frame*> sendqueue;
   
 };
 

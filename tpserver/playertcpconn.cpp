@@ -41,13 +41,13 @@
 
 #include "playertcpconn.h"
 
-PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0)
+PlayerTcpConnection::PlayerTcpConnection() : PlayerConnection(), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue()
 {
 
 }
 
 
-PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0)
+PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue()
 {
 
 }
@@ -61,6 +61,8 @@ PlayerTcpConnection::~PlayerTcpConnection()
           delete[] rheaderbuff;
         if(rdatabuff != NULL)
           delete[] rdatabuff;
+        if(sbuff != NULL)
+          delete[] sbuff;
 }
 
 
@@ -84,18 +86,47 @@ void PlayerTcpConnection::sendFrame(Frame * frame)
   if(version == fv0_2 && frame->getType() >= ft02_Max){
     Logger::getLogger()->error("Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
   }else{
-	char *packet = frame->getPacket();
-	if (packet != NULL) {
-		int len = frame->getLength();
-		send(sockfd, packet, len, 0);
-		delete[] packet;
-	} else {
-		Logger::getLogger()->warning("Could not get packet from frame to send");
-	}
-	delete frame;
+    sendqueue.push(frame);
+    
+    processWrite();
   }
 }
 
+void PlayerTcpConnection::processWrite(){
+  bool ok = !sendqueue.empty();
+  while(ok){
+    if(sbuff == NULL){
+      sbuff = sendqueue.front()->getPacket();
+      sbuffused = 0;
+      sbuffsize = sendqueue.front()->getLength();
+    }
+    if(sbuff != NULL){
+      int len = send(sockfd, sbuff+sbuffused, sbuffsize - sbuffused, 0);
+      if(len > 0){
+        sbuffused += len;
+        if(sbuffused == sbuffsize){
+          delete[] sbuff;
+          sbuff = NULL;
+          sendqueue.pop();
+          ok = !sendqueue.empty();
+        }
+      }else{
+        ok = false;
+        if(errno != EAGAIN && errno != EWOULDBLOCK){
+          Logger::getLogger()->error("Socket error writing");
+          close();
+        }
+      }
+    }else{
+      Logger::getLogger()->error("Could not get packet from frame to send");
+      sendqueue.pop();
+      ok = false;
+    }
+  }
+  if(!sendqueue.empty()){
+    Network::getNetwork()->addToWriteQueue(this);
+  }
+}
 
 
 void PlayerTcpConnection::verCheck(){
