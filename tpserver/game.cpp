@@ -43,6 +43,7 @@
 #include "ruleset.h"
 #include "persistence.h"
 #include "tpscheme.h"
+#include "settings.h"
 
 #include "game.h"
 
@@ -123,6 +124,11 @@ bool Game::start(){
     Logger::getLogger()->info("Starting Game");
 
     ruleset->startGame();
+    
+    uint32_t tl = atoi(Settings::getSettings()->get("turn_length").c_str());
+    if(tl != 0){
+      setTurnLength(tl);
+    }
 
     resetEOTTimer();
 
