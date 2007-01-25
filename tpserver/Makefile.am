@@ -53,5 +53,6 @@ noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
 	metaserverconnection.h
-tpserver_cpp_LDADD = -ldl $(LIBGNUTLS_LIBS)
+tpserver_cpp_LDADD = -ldl @libgnutls_LIBS@ @libtprl_LIBS@ @avahiclient_LIBS@
+AM_CXXFLAGS = @libgnutls_CFLAGS@ @libtprl_CFLAGS@ @avahiclient_CFLAGS@
 tpserver_cpp_LDFLAGS = -rdynamic

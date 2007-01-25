@@ -20,6 +20,8 @@ libmtsec_la_SOURCES = planet.cpp fleet.cpp \
 		${MYSQL_MTSEC_SOURCE}
 
 libmtsec_la_LDFLAGS = -module
+AM_CXXFLAGS = @MYSQL_CFLAGS@
+libmtsec_la_LIBADD = @MYSQL_LIBS@
 
 noinst_HEADERS = planet.h fleet.h move.h build.h colonise.h splitfleet.h mergefleet.h \
 		avacombat.h mtsec.h

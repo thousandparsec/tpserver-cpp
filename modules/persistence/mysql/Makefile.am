@@ -12,7 +12,8 @@ libtpmysql_la_SOURCES = mysqlpersistence.h mysqlpersistence.cpp \
 		mysqlobjecttype.h mysqlobjecttype.cpp \
 		mysqluniverse.h mysqluniverse.cpp
 
-libtpmysql_la_LIBADD = $(MYSQL_LIBS)
+libtpmysql_la_LIBADD = @MYSQL_LIBS@
 libtpmysql_la_LDFLAGS = -module
+AM_CXXFLAGS = @MYSQL_CFLAGS@
 
 EXTRA_DIST = sample.conf
