@@ -713,7 +713,22 @@ void Player::processDescribeOrder(Frame * frame)
 {
 	Logger::getLogger()->debug("doing describe order frame");
 
+        if(frame->getDataLength() < 4){
+          Frame *of = curConnection->createFrame(frame);
+          of->createFailFrame(fec_FrameError, "Invalid frame");
+          curConnection->sendFrame(of);
+          return;
+        }
+        
 	int numdesc = frame->unpackInt();
+        
+        if(frame->getDataLength() < 4 + 4 * numdesc){
+          Frame *of = curConnection->createFrame(frame);
+          of->createFailFrame(fec_FrameError, "Invalid frame");
+          curConnection->sendFrame(of);
+          return;
+        }
+        
 	if(numdesc > 1){
 	  Frame *seq = curConnection->createFrame(frame);
 	  seq->setType(ft02_Sequence);
@@ -770,6 +785,13 @@ void Player::processProbeOrder(Frame * frame){
     return;
   }
 
+  if(frame->getDataLength() < 8){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int obid = frame->unpackInt();
   IGObject* theobject = Game::getGame()->getObjectManager()->getObject(obid);
   if(theobject == NULL){
@@ -806,7 +828,7 @@ void Player::processProbeOrder(Frame * frame){
 void Player::processGetBoards(Frame * frame){
   Logger::getLogger()->debug("doing Get Boards frame");
   
-  if(frame->getDataLength() < 8){
+  if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
@@ -814,13 +836,15 @@ void Player::processGetBoards(Frame * frame){
   }
   
   int numboards = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4*numboards){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numboards > 1){
-    if(frame->getDataLength() < 4 + 4*numboards){
-      Frame *of = curConnection->createFrame(frame);
-      of->createFailFrame(fec_FrameError, "Invalid frame");
-      curConnection->sendFrame(of);
-      return;
-    }
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
     seq->packInt(numboards);
@@ -893,9 +917,23 @@ void Player::processGetBoardIds(Frame * frame){
 void Player::processGetMessages(Frame * frame){
   Logger::getLogger()->debug("doing Get Messages frame");
 
+  if(frame->getDataLength() < 8){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
+  if(frame->getDataLength() < 8 + 4 * nummsg){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(nummsg > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -942,6 +980,13 @@ void Player::processPostMessage(Frame * frame){
 
   Frame *of = curConnection->createFrame(frame);
 
+  if(frame->getDataLength() < 28){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int lboardid = frame->unpackInt();
   int pos = frame->unpackInt();
 
@@ -987,9 +1032,22 @@ void Player::processPostMessage(Frame * frame){
 void Player::processRemoveMessages(Frame * frame){
   Logger::getLogger()->debug("doing Remove Messages frame");
 
+  if(frame->getDataLength() < 8){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
+  if(frame->getDataLength() < 8 + 4 * nummsg){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
   if(nummsg > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1031,7 +1089,22 @@ void Player::processRemoveMessages(Frame * frame){
 void Player::processGetResourceDescription(Frame * frame){
   Logger::getLogger()->debug("doing Get Resource Description frame");
   
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numress = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4* numress){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numress > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1121,7 +1194,22 @@ void Player::processGetResourceTypes(Frame* frame){
 void Player::processGetPlayer(Frame* frame){
   Logger::getLogger()->debug("doing Get Player frame");
   
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numplayers = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4 * numplayers){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numplayers > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1160,7 +1248,22 @@ void Player::processGetPlayer(Frame* frame){
 void Player::processGetCategory(Frame* frame){
   Logger::getLogger()->debug("doing Get Category frame");
 
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numcats = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4 * numcats){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numcats > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1241,7 +1344,22 @@ void Player::processGetDesign(Frame* frame){
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numdesigns = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4 * numdesigns){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numdesigns > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1272,6 +1390,13 @@ void Player::processGetDesign(Frame* frame){
 void Player::processAddDesign(Frame* frame){
   Logger::getLogger()->debug("doing Add Design frame");
 
+  if(frame->getDataLength() < 40){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   Design* design = new Design();
   frame->unpackInt(); //designid, don't take, overwrite
   frame->unpackInt64(); //timestamp, discard
@@ -1317,6 +1442,13 @@ void Player::processAddDesign(Frame* frame){
 void Player::processModifyDesign(Frame* frame){
   Logger::getLogger()->debug("doing Modify Design frame");
 
+  if(frame->getDataLength() < 40){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   Design* design = new Design();
   design->setDesignId(frame->unpackInt());
   frame->unpackInt64(); //timestamp, discard
@@ -1411,7 +1543,22 @@ void Player::processGetComponent(Frame* frame){
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numcomps = frame->unpackInt();
+  
+  if(frame->getDataLength() < 4 + 4 * numcomps){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numcomps > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
@@ -1490,7 +1637,22 @@ void Player::processGetProperty(Frame* frame){
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
+  if(frame->getDataLength() < 4){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numprops = frame->unpackInt();
+  
+    if(frame->getDataLength() < 4 + 4 * numprops){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   if(numprops > 1){
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
