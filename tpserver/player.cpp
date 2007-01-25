@@ -806,8 +806,21 @@ void Player::processProbeOrder(Frame * frame){
 void Player::processGetBoards(Frame * frame){
   Logger::getLogger()->debug("doing Get Boards frame");
   
+  if(frame->getDataLength() < 8){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
   int numboards = frame->unpackInt();
   if(numboards > 1){
+    if(frame->getDataLength() < 4 + 4*numboards){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_FrameError, "Invalid frame");
+      curConnection->sendFrame(of);
+      return;
+    }
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
     seq->packInt(numboards);
