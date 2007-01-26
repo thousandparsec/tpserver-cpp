@@ -1,6 +1,6 @@
 /*  Game controller for tpserver-cpp
  *
- *  Copyright (C) 2003-2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "persistence.h"
 #include "tpscheme.h"
 #include "settings.h"
+#include "timercallback.h"
 
 #include "game.h"
 
@@ -348,24 +349,31 @@ void Game::doEndOfTurn()
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;
+        delete timer;
+        timer = NULL;
         if(secondsToEOT() <= 0)
             resetEOTTimer();
+        else
+          setEOTTimer();
 
 	// send frame to all connections that the end of turn has finished
 	frame = new Frame(fv0_2);
 	frame->setType(ft02_Time_Remaining);
 	frame->packInt(secondsToEOT());
 	Network::getNetwork()->sendToAll(frame);
+        Network::getNetwork()->doneEOT();
 
 	Logger::getLogger()->info("End Of Turn finished");
     }else{
         Logger::getLogger()->info("End Of Turn not run because game not started");
         turnTime += turnIncrement;
+        setEOTTimer();
     }
 }
 
 void Game::resetEOTTimer(){
   turnTime = time(NULL) + turnIncrement;
+  setEOTTimer();
 }
 
 int Game::secondsToEOT(){
@@ -418,6 +426,7 @@ Game::Game()
   started = false;
 
   turnIncrement = 86400; //24 hours
+  timer = NULL;
   resetEOTTimer();
   //this is a good place to seed the PNRG
   srand((getpid() + time(NULL)) % RAND_MAX);
@@ -443,6 +452,10 @@ Game::~Game()
   delete designstore;
     if(persistence != NULL)
         delete persistence;
+  if(timer != NULL){
+    timer->setValid(false);
+    delete timer;
+  }
 }
 
 Game Game::operator=(Game & rhs)
@@ -452,4 +465,11 @@ Game Game::operator=(Game & rhs)
   return *this;
 }
 
-
+void Game::setEOTTimer(){
+  if(timer != NULL){
+    timer->setValid(false);
+    delete timer;
+  }
+  timer = new TimerCallback(this, &Game::doEndOfTurn, turnTime - time(NULL));
+  Network::getNetwork()->addTimer(*timer);
+}

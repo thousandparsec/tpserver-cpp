@@ -1,6 +1,6 @@
 /*  Metaserver Publisher for tpserver-cpp
  *
- *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 #include "publisher.h"
 
+class TimerCallback;
 
 /**
 Metaserver Publisher for tpserver-cpp
@@ -37,17 +38,19 @@ public:
 
   virtual ~MetaserverPublisher();
   
-  void poll();
   void update();
 
   std::string getKey();
   
 
 private:
+  void poll();
+  void setTimer();
   void metaserverSettingChanged(const std::string& skey, const std::string& value);
   uint64_t lastpublishtime;
   bool needtoupdate;
   std::string key;
+  TimerCallback* timer;
 
 };
 

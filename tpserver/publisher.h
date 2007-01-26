@@ -1,6 +1,6 @@
 /*  Registration publisher abstraction for tpserver-cpp
  *
- *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ public:
 
   virtual ~Publisher(){};
   
-  virtual void poll() = 0;
   virtual void update() = 0;
   
 protected:

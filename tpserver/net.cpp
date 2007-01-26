@@ -273,6 +273,10 @@ void Network::sendToAll(Frame * frame){
   delete frame;
 }
 
+void Network::doneEOT(){
+  advertiser->updatePublishers();
+}
+
 void Network::masterLoop()
 {
 	struct timeval tv;
@@ -340,7 +344,7 @@ void Network::masterLoop()
 
 		}
 
-                advertiser->poll();
+                //advertiser->poll();
 
 		if(netstat != active && active == false){
 		  std::map<int, Connection*>::iterator itcurr = connections.begin();
@@ -363,11 +367,6 @@ void Network::masterLoop()
 		    }
 		  }
 		  Logger::getLogger()->debug("Network really stopped");
-		}
-
-		if(Game::getGame()->secondsToEOT() <= 0){
-		  Game::getGame()->doEndOfTurn();
-                  advertiser->updatePublishers();
 		}
 
 

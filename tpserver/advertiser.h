@@ -44,7 +44,6 @@ public:
   std::map<std::string, uint16_t> getServices();
   
   void publish();
-  void poll();
   void unpublish();
 
   void updatePublishers();

@@ -48,6 +48,8 @@
 #include "ruleset.h"
 #include "objectmanager.h"
 #include "playermanager.h"
+#include "net.h"
+#include "timercallback.h"
 
 #include "avahi.h"
 
@@ -140,6 +142,9 @@ Avahi::Avahi(Advertiser* ad) : Publisher(ad), simple_poll(NULL), group(NULL), cl
   tname.append("]");
   name = avahi_strdup(tname.c_str());
   
+  timer = new TimerCallback(this, &Avahi::poll, 5);
+  Network::getNetwork()->addTimer(*timer);
+  
   /* Allocate main loop object */
   if (!(simple_poll = avahi_simple_poll_new())) {
         Logger::getLogger()->warning("Could not create poll object for avahi");
@@ -167,10 +172,15 @@ Avahi::~Avahi(){
 
   if (simple_poll)
       avahi_simple_poll_free(simple_poll);
+  
+  delete timer;
 }
 
 void Avahi::poll(){
   avahi_simple_poll_iterate(simple_poll, 0);
+  delete timer;
+  timer = new TimerCallback(this, &Avahi::poll, 5);
+  Network::getNetwork()->addTimer(*timer);
 }
 
 void Avahi::update(){

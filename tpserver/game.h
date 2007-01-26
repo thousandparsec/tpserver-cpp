@@ -2,7 +2,7 @@
 #define GAME_H
 /*  Game class
  *
- *  Copyright (C) 2004-2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ class DesignStore;
 class Ruleset;
 class Persistence;
 class TpScheme;
+class TimerCallback;
 
 class Game {
 
@@ -89,11 +90,13 @@ class Game {
 	~Game();
 	Game operator=(Game & rhs);
 
+        void setEOTTimer();
 	
 	static Game *myInstance;
 	
 	int turnTime;
 	int turnIncrement;
+        TimerCallback* timer;
 
 	bool loaded;
 	bool started;

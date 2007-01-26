@@ -63,12 +63,6 @@ void Advertiser::publish(){
   updatePublishers();
 }
 
-void Advertiser::poll(){
-  for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-    (*itcurr)->poll();
-  }
-}
-
 void Advertiser::unpublish(){
   for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
     delete (*itcurr);
