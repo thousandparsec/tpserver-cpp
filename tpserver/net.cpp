@@ -296,8 +296,8 @@ void Network::masterLoop()
                     callback.call();
                 }
                 if(timers.empty()){
-                  tv.tv_sec = 0;
-                  tv.tv_usec = 100000;
+                  tv.tv_sec = 60;
+                  tv.tv_usec = 0;
                 }else{
                   tv.tv_sec = (timers.top().getExpireTime() - time(NULL)) - 1;
                   if(tv.tv_sec <= 0){
