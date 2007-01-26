@@ -286,9 +286,10 @@ void Network::masterLoop()
 		cur_set = master_set;
                 
                 while(!timers.empty() && (timers.top().getExpireTime() <= time(NULL) || !(timers.top().isValid()))){
-                  if(timers.top().isValid())
-                    timers.top().call();
+                  TimerCallback callback = timers.top();
                   timers.pop();
+                  if(callback.isValid())
+                    callback.call();
                 }
                 if(timers.empty()){
                   tv.tv_sec = 0;

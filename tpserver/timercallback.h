@@ -66,8 +66,9 @@ class TimerCallback{
   public:
   template <typename OBJ_PTR, typename MEM_PTR>
     TimerCallback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr, uint64_t sec)
-        : impl (new TimerCallbackImpl<OBJ_PTR,MEM_PTR> (objPtr, mem_ptr)), expiretime(sec + time(NULL)) {
+        : impl (new TimerCallbackImpl<OBJ_PTR,MEM_PTR> (objPtr, mem_ptr)) {
       impl->ref++;
+      expiretime = sec + time(NULL);
     }
     
     TimerCallback(const TimerCallback& rhs){
@@ -108,6 +109,7 @@ class TimerCallback{
       }
       impl = rhs.impl;
       impl->ref++;
+      expiretime = rhs.expiretime;
       return *this;
     }
     
