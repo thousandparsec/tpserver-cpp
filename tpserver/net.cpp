@@ -18,6 +18,7 @@
  *
  */
 
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -41,6 +42,7 @@
 #include "frame.h"
 #include "httpsocket.h"
 #include "advertiser.h"
+#include "timercallback.h"
 
 #ifdef HAVE_LIBGNUTLS
 #include "tlssocket.h"
@@ -117,6 +119,10 @@ void Network::removeConnection(Connection* conn)
 
 void Network::addToWriteQueue(Connection* conn){
   writequeue[conn->getFD()] = conn;
+}
+
+void Network::addTimer(TimerCallback callback){
+  timers.push(callback);
 }
 
 void Network::start()
@@ -278,8 +284,24 @@ void Network::masterLoop()
 	  bool netstat = active;
 
 		cur_set = master_set;
-		tv.tv_sec = 0;
-		tv.tv_usec = 100000;
+                
+                while(!timers.empty() && (timers.top().getExpireTime() <= time(NULL) || !(timers.top().isValid()))){
+                  if(timers.top().isValid())
+                    timers.top().call();
+                  timers.pop();
+                }
+                if(timers.empty()){
+                  tv.tv_sec = 0;
+                  tv.tv_usec = 100000;
+                }else{
+                  tv.tv_sec = (timers.top().getExpireTime() - time(NULL)) - 1;
+                  if(tv.tv_sec <= 0){
+                    tv.tv_sec = 0;
+                    tv.tv_usec = 200000;
+                  }else{
+                    tv.tv_usec = 0;
+                  }
+                }
                 fd_set write_set;
                 FD_ZERO(&write_set);
                 for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();

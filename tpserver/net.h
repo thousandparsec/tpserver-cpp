@@ -22,11 +22,14 @@
 
 //#include <pthread.h>
 #include <map>
-#include <sys/select.h>
+#include <queue>
+#include <functional>
 
 class Connection;
 class Frame;
 class Advertiser;
+
+class TimerCallback;
 
 enum FeatureIDs {
   fid_sec_conn_this = 1,
@@ -53,6 +56,9 @@ class Network {
 	void addConnection(Connection* conn);
 	void removeConnection(Connection* conn);
         void addToWriteQueue(Connection* conn);
+        
+        void addTimer(TimerCallback callback);
+        bool removeTimer(TimerCallback callback);
 
 	void start();
 
@@ -89,6 +95,8 @@ class Network {
 
 	 std::map < int, Connection * >connections;
          std::map<int, Connection*> writequeue;
+         
+         std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
 
          std::map<int,int> features;
          

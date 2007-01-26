@@ -48,7 +48,7 @@ headers_HEADERS = connection.h console.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h settingscallback.h \
 	orderparameter.h spacecoordparam.h timeparameter.h objectparameter.h stringparameter.h \
-	listparameter.h
+	listparameter.h timercallback.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
