@@ -287,8 +287,6 @@ void Network::masterLoop()
 		//sleep(1);
 	  bool netstat = active;
 
-		cur_set = master_set;
-                
                 while(!timers.empty() && (timers.top().getExpireTime() <= time(NULL) || !(timers.top().isValid()))){
                   TimerCallback callback = timers.top();
                   timers.pop();
@@ -313,6 +311,8 @@ void Network::masterLoop()
                     itcurr != writequeue.end(); ++itcurr){
                   FD_SET(itcurr->first, &write_set);
                 }
+
+                cur_set = master_set;
 
 		if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) != 0) {
                   
