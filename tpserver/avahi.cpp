@@ -23,7 +23,7 @@
 #include <avahi-client/publish.h>
 #include <avahi-common/alternative.h>
 
-#include <avahi-common/simple-watch.h>
+#include <avahi-common/watch.h>
 #include <avahi-common/malloc.h>
 #include <avahi-common/error.h>
 
@@ -50,6 +50,8 @@
 #include "playermanager.h"
 #include "net.h"
 #include "timercallback.h"
+#include "net.h"
+#include "connection.h"
 
 #include "avahi.h"
 
@@ -84,7 +86,7 @@ void client_callback(AvahiClient *c, AvahiClientState state, void * userdata) {
         case AVAHI_CLIENT_FAILURE:
             
             fprintf(stderr, "Client failure: %s\n", avahi_strerror(avahi_client_errno(c)));
-            avahi_simple_poll_quit(avahi->simple_poll);
+//            avahi_simple_poll_quit(avahi->simple_poll);
             
             break;
 
@@ -123,7 +125,7 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
         case AVAHI_ENTRY_GROUP_FAILURE :
 
             /* Some kind of failure happened while we were registering our services */
-            avahi_simple_poll_quit(avahi->simple_poll);
+//            avahi_simple_poll_quit(avahi->simple_poll);
             break;
 
         case AVAHI_ENTRY_GROUP_UNCOMMITED:
@@ -132,7 +134,134 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
     }
 }
 
-Avahi::Avahi(Advertiser* ad) : Publisher(ad), simple_poll(NULL), group(NULL), client(NULL), name(NULL){
+// declarations for avahipoll api
+class AvahiWatch : public Connection{
+ public:
+  AvahiWatch(int fd, AvahiWatchCallback cb, void* ud): Connection(), callback(cb), watchedEvents(), happenedEvents(), userdata(ud){
+    sockfd = fd;
+    status = 1;
+    Network::getNetwork()->addConnection(this);
+  }
+  
+  ~AvahiWatch(){
+    Network::getNetwork()->removeConnection(this);
+  }
+  
+  void process(){
+    if(watchedEvents == AVAHI_WATCH_IN){
+      happenedEvents = AVAHI_WATCH_IN;
+      callback(this, sockfd, happenedEvents, userdata);
+    }
+  }
+  
+  void processWrite(){
+    if(watchedEvents == AVAHI_WATCH_OUT){
+      happenedEvents = AVAHI_WATCH_OUT;
+      callback(this, sockfd, happenedEvents, userdata);
+      Network::getNetwork()->addToWriteQueue(this);
+    }
+  }
+  
+  void update(AvahiWatchEvent e){
+    watchedEvents = e;
+    happenedEvents = (AvahiWatchEvent)0;
+    if(watchedEvents == AVAHI_WATCH_OUT){
+      Network::getNetwork()->addToWriteQueue(this);
+    }
+    if(watchedEvents == AVAHI_WATCH_ERR || watchedEvents == AVAHI_WATCH_HUP){
+      Logger::getLogger()->debug("AvahiWatch update withe ERR or HUP event set %x", watchedEvents);
+    }
+    Logger::getLogger()->debug("AvahiWatch event mask %x", watchedEvents);
+  }
+  
+  AvahiWatchEvent getEvents(){
+    return happenedEvents;
+  }
+  
+  private:
+    AvahiWatchCallback callback;
+    AvahiWatchEvent watchedEvents;
+    AvahiWatchEvent happenedEvents;
+    void* userdata;
+};
+
+class AvahiTimeout{
+  public:
+    AvahiTimeout(AvahiTimeoutCallback cb, void* ud):  timer(NULL), callback(cb), userdata(ud){
+    }
+    
+    ~AvahiTimeout(){
+      if(timer != NULL){
+        timer->setValid(false);
+        delete timer;
+      }
+    }
+    
+    void setTimer(uint64_t sec){
+      if(timer != NULL){
+        timer->setValid(false);
+        delete timer;
+      }
+      timer = new TimerCallback(this, &AvahiTimeout::timeout, sec);
+      Network::getNetwork()->addTimer(*timer);
+    }
+    
+    void disableTimer(){
+      if(timer != NULL){
+        timer->setValid(false);
+        delete timer;
+      }
+      timer = NULL;
+    }
+    
+    void timeout(){
+      callback(this, userdata);
+    }
+    
+  private:
+    TimerCallback* timer;
+    AvahiTimeoutCallback callback;
+    void* userdata;
+};
+
+AvahiWatch* watch_new(const AvahiPoll* api, int fd, AvahiWatchEvent e, AvahiWatchCallback callback, void *userdata){
+  AvahiWatch* watch = new AvahiWatch(fd, callback, userdata);
+  watch->update(e);
+  return watch;
+}
+
+void watch_update(AvahiWatch* w, AvahiWatchEvent event){
+  w->update(event);
+}
+
+AvahiWatchEvent watch_get_events(AvahiWatch *w){
+  return w->getEvents();
+}
+
+void watch_free(AvahiWatch *w){
+  delete w;
+}
+
+AvahiTimeout* timeout_new(const AvahiPoll* api, const struct timeval* tv, AvahiTimeoutCallback callback, void* userdata){
+  AvahiTimeout* t = new AvahiTimeout(callback, userdata);
+  if(tv != NULL)
+    t->setTimer(tv->tv_sec - time(NULL));
+  return t;
+}
+
+void timeout_update(AvahiTimeout* t, const struct timeval* tv){
+  if(tv != NULL){
+    t->setTimer(tv->tv_sec - time(NULL));
+  }else{
+    t->disableTimer();
+  }
+}
+
+void timeout_free(AvahiTimeout *t){
+  delete t;
+}
+
+Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL){
   
   std::string tname = Settings::getSettings()->get("server_name");
   if(tname.empty())
@@ -142,24 +271,24 @@ Avahi::Avahi(Advertiser* ad) : Publisher(ad), simple_poll(NULL), group(NULL), cl
   tname.append("]");
   name = avahi_strdup(tname.c_str());
   
-  timer = new TimerCallback(this, &Avahi::poll, 5);
-  Network::getNetwork()->addTimer(*timer);
-  
-  /* Allocate main loop object */
-  if (!(simple_poll = avahi_simple_poll_new())) {
-        Logger::getLogger()->warning("Could not create poll object for avahi");
-        throw std::exception();
-  }
+  pollapi = new AvahiPoll();
+  pollapi->userdata = this;
+  pollapi->watch_new = watch_new;
+  pollapi->watch_update = watch_update;
+  pollapi->watch_get_events = watch_get_events;
+  pollapi->watch_free = watch_free;
+  pollapi->timeout_new = timeout_new;
+  pollapi->timeout_update = timeout_update;
+  pollapi->timeout_free = timeout_free;
   
   int error;
   
    /* Allocate a new client */
-  client = avahi_client_new(avahi_simple_poll_get(simple_poll), (AvahiClientFlags)0, client_callback, this, &error);
+  client = avahi_client_new(pollapi, (AvahiClientFlags)0, client_callback, this, &error);
   
   /* Check wether creating the client object succeeded */
   if (!client) {
       Logger::getLogger()->warning("Failed to create client: %s", avahi_strerror(error));
-      avahi_simple_poll_free(simple_poll);
       throw std::exception();
   }
 
@@ -170,17 +299,9 @@ Avahi::~Avahi(){
   if (client)
         avahi_client_free(client);
 
-  if (simple_poll)
-      avahi_simple_poll_free(simple_poll);
+  if (pollapi)
+      delete pollapi;
   
-  delete timer;
-}
-
-void Avahi::poll(){
-  avahi_simple_poll_iterate(simple_poll, 0);
-  delete timer;
-  timer = new TimerCallback(this, &Avahi::poll, 5);
-  Network::getNetwork()->addTimer(*timer);
 }
 
 void Avahi::update(){
@@ -261,5 +382,6 @@ void Avahi::createServices(){
   return;
 
 fail:
-  avahi_simple_poll_quit(simple_poll);
+//  avahi_simple_poll_quit(simple_poll);
+    ;
 }

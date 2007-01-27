@@ -26,11 +26,7 @@
 
 #include "publisher.h"
 
-struct AvahiSimplePoll;
 struct AvahiEntryGroup;
-//struct AvahiClientState;
-
-class TimerCallback;
 
 /**
 Avahi mDNS-SD implementation for tpserver-cpp
@@ -51,13 +47,11 @@ public:
 
 private:
   void createServices();
-  void poll();
   
-  AvahiSimplePoll *simple_poll;
+  AvahiPoll *pollapi;
   AvahiEntryGroup *group;
   AvahiClient *client;
   char* name;
-  TimerCallback * timer;
 
 };
 
