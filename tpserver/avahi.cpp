@@ -85,7 +85,7 @@ void client_callback(AvahiClient *c, AvahiClientState state, void * userdata) {
             
         case AVAHI_CLIENT_FAILURE:
             
-            fprintf(stderr, "Client failure: %s\n", avahi_strerror(avahi_client_errno(c)));
+            Logger::getLogger()->warning("Client failure: %s", avahi_strerror(avahi_client_errno(c)));
 //            avahi_simple_poll_quit(avahi->simple_poll);
             
             break;
@@ -104,7 +104,7 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
     switch (state) {
         case AVAHI_ENTRY_GROUP_ESTABLISHED :
             /* The entry group has been established successfully */
-            fprintf(stderr, "Service '%s' successfully established.\n", avahi->name);
+            Logger::getLogger()->debug("Service '%s' successfully established.", avahi->name);
             break;
 
             case AVAHI_ENTRY_GROUP_COLLISION : {
@@ -115,7 +115,7 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
                 avahi_free(avahi->name);
                 avahi->name = n;
             
-                fprintf(stderr, "Service name collision, renaming service to '%s'\n", avahi->name);
+                Logger::getLogger()->warning("Service name collision, renaming service to '%s'", avahi->name);
             
                 /* And recreate the services */
                 avahi->createServices();
@@ -352,11 +352,11 @@ void Avahi::createServices(){
   /* If this is the first time we're called, let's create a new entry group */
   if (!group)
     if (!(group = avahi_entry_group_new(client, entry_group_callback, this))) {
-      fprintf(stderr, "avahi_entry_group_new() failed: %s\n", avahi_strerror(avahi_client_errno(client)));
+      Logger::getLogger()->warning("avahi_entry_group_new() failed: %s", avahi_strerror(avahi_client_errno(client)));
       goto fail;
     }
   
-  fprintf(stderr, "Adding service '%s'\n", name);
+  Logger::getLogger()->debug("Adding service '%s'", name);
   avahi_entry_group_reset(group);
   
   for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
@@ -365,7 +365,7 @@ void Avahi::createServices(){
     // after the port, there is a NULL terminated list of strings for the TXT field
     if ((ret = avahi_entry_group_add_service_strlst(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
          (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, txtfields)) < 0) {
-        fprintf(stderr, "Failed to add %s service: %s\n", servicename.c_str(), avahi_strerror(ret));
+        Logger::getLogger()->warning("Failed to add %s service: %s", servicename.c_str(), avahi_strerror(ret));
         goto fail;
     }
   }
@@ -375,7 +375,7 @@ void Avahi::createServices(){
   
   /* Tell the server to register the service */
   if (!avahi_entry_group_is_empty(group) && (ret = avahi_entry_group_commit(group)) < 0) {
-      fprintf(stderr, "Failed to commit entry_group: %s\n", avahi_strerror(ret));
+      Logger::getLogger()->warning("Failed to commit entry_group: %s", avahi_strerror(ret));
       goto fail;
   }
 
