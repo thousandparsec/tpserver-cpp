@@ -1,3 +1,30 @@
+31 Jan 07 - Lee
+    * Version 0.4.0
+    * Fixed corner cases in Build orders
+    * Fixed resource removal in planet for when build orders use resources
+    * Hacked to make all designs visible to all players
+    * Keep the port numbers used in listen sockets
+    * Avahi mDNS-SD support
+    * SettingCallback for when settings changed
+    * Used SettingsCallback for logging reconfiguring
+    * Used SettingsCallback when add_players setting is changed
+    * Added settings for server_name, game_command, admin_email and others
+    * Fixed all read-only field assumptions
+    * Added Advertiser class to handle Publishers which send out the info about the game
+    * Added Metaserver support.
+    * Parameterised Orders to use OrderParameter classes
+    * Removed Ordertype Persistence classes and used the Parameters instead
+    * Fixed TlsManager lack of dereferencing
+    * Made tp and http player connections non-blocking
+    * Added (one-shot) select on write (needed for non-blocking)
+    * Random system generation in Minisec (taken from MTSec)
+    * Only export to mdns-sd tp and tps sockets, unless there are neither of them
+    * TimerCallback for timers, used to set timeout on select loop
+    * tpserver-cpp no longer wakes up every 100ms, now only as needed
+    * Very basic defaults when no commandline is given
+    * Checking for undersized frames finished
+    * Implemented AvahiPoll API to greatly improve preformance
+
 21 Nov 06 - Lee
     * Version 0.3.1
     * Some refactoring to remove magic numbers for Properties

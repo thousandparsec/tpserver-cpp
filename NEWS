@@ -1,3 +1,7 @@
+31/01/07 - Lee
+ - Released 0.4.0 (Non-blocking tp & http, Avahi and Metaserver support, Order parameterisation,
+     Timer and Settings Callbacks)
+
 21/11/06 - Lee
  - Released 0.3.1 (Account reg, HTTP socket, bug fixes, start of MTSec)
 
