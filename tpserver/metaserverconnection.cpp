@@ -93,8 +93,7 @@ bool MetaserverConnection::sendUpdate(){
   int n = getaddrinfo(host.c_str(), port.c_str(), &hints, &res);
   
   if (n < 0) {
-    fprintf(stderr, "getaddrinfo error:: [%s]\n", gai_strerror(n));
-    Logger::getLogger()->error("Metaserver: Could not getaddrinfo");
+    Logger::getLogger()->error("Metaserver: Could not getaddrinfo, %s", gai_strerror(n));
     return false;
   }
   
