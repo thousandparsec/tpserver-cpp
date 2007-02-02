@@ -52,6 +52,7 @@ private:
   void settingChanged(const std::string& skey, const std::string& value);
   std::map<std::string, uint16_t> services;
   std::set<Publisher*> publishers;
+  bool publishing;
 
 };
 

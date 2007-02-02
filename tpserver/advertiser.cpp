@@ -35,11 +35,12 @@
 #include "advertiser.h"
 
 
-Advertiser::Advertiser() : services(), publishers(){
+Advertiser::Advertiser() : services(), publishers(), publishing(false){
   Settings* settings = Settings::getSettings();
   settings->setCallback("server_name", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("admin_email", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("metaserver_disable", SettingsCallback(this, &Advertiser::settingChanged));
 }
 
 
@@ -49,6 +50,7 @@ Advertiser::~Advertiser(){
   settings->removeCallback("server_name");
   settings->removeCallback("game_comment");
   settings->removeCallback("admin_email");
+  settings->removeCallback("metaserver_disable");
 }
 
 void Advertiser::publish(){
@@ -59,11 +61,15 @@ void Advertiser::publish(){
     // do nothing, maybe warn of no mdns-sd
   }
 #endif
-  publishers.insert(new MetaserverPublisher(this));
+  if(Settings::getSettings()->get("metaserver_disable") != "yes"){
+    publishers.insert(new MetaserverPublisher(this));
+  }
+  publishing = true;
   updatePublishers();
 }
 
 void Advertiser::unpublish(){
+  publishing = false;
   for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
     delete (*itcurr);
   }
@@ -90,11 +96,38 @@ std::map<std::string, uint16_t> Advertiser::getServices(){
 }
 
 void Advertiser::updatePublishers(){
-  for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-    (*itcurr)->update();
+  if(publishing){
+    for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
+      (*itcurr)->update();
+    }
   }
 }
 
 void Advertiser::settingChanged(const std::string& skey, const std::string& value){
-  updatePublishers();
+  if(skey == "metaserver_disable"){
+    if(publishing){
+      if(value == "yes"){
+        for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
+          if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
+            delete (*itcurr);
+            publishers.erase(itcurr);
+            break;
+          }
+        }
+      }else{
+        bool found = false;
+        for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
+          if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
+            found = true;
+            break;
+          }
+        }
+        if(!found){
+          publishers.insert(new MetaserverPublisher(this));
+        }
+      }
+    }
+  }else{
+    updatePublishers();
+  }
 }
