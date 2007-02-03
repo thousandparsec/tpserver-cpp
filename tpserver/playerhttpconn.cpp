@@ -62,7 +62,7 @@ int32_t PlayerHttpConnection::verCheckLastChance()
     bool found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
     if(!found){
       char* buff = new char[1024];
-      int32_t len = recv(sockfd,buff, 1024, 0);
+      int32_t len = underlyingRead(buff, 1024);
       if(len == 0){
         Logger::getLogger()->info("Client disconnected");
         close();
@@ -71,7 +71,7 @@ int32_t PlayerHttpConnection::verCheckLastChance()
         httpbuff.append(buff, len);
         found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
       }else{
-        if(errno != EAGAIN && errno != EWOULDBLOCK){
+        if(len != -2){
           Logger::getLogger()->warning("Socket error");
           close();
           rtn = 0;

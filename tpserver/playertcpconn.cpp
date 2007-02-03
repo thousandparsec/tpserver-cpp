@@ -112,7 +112,7 @@ void PlayerTcpConnection::processWrite(){
       sbuffsize = sendqueue.front()->getLength();
     }
     if(sbuff != NULL){
-      int len = send(sockfd, sbuff+sbuffused, sbuffsize - sbuffused, 0);
+      int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
       if(len > 0){
         sbuffused += len;
         if(sbuffused == sbuffsize){
@@ -123,7 +123,7 @@ void PlayerTcpConnection::processWrite(){
         }
       }else{
         ok = false;
-        if(errno != EAGAIN && errno != EWOULDBLOCK){
+        if(len != -2){
           Logger::getLogger()->error("Socket error writing");
           close();
         }
@@ -145,6 +145,24 @@ void PlayerTcpConnection::processWrite(){
 void PlayerTcpConnection::verCheck(){
 
   bool rtn = true;
+  
+  int32_t precheck = verCheckPreChecks();
+  if(precheck != 1){
+    rtn = false;
+    if(precheck != -2){
+      // if not non-block wait
+      if(precheck == 0){
+        Logger::getLogger()->info("Client disconnected in pre-check");
+        close();
+      }else{
+        Logger::getLogger()->info("Error in pre-check, disconnecting");
+        close();
+      }
+    }
+  }
+  if(!rtn)
+    return;
+  
   Frame *recvframe = new Frame(fv0_3);
   uint32_t hlen = recvframe->getHeaderLength();
   
@@ -154,7 +172,7 @@ void PlayerTcpConnection::verCheck(){
   }
   
   if(rdatabuff == NULL && rbuffused < 4){
-    int32_t len = recv(sockfd, rheaderbuff+rbuffused, 4, 0);
+    int32_t len = underlyingRead(rheaderbuff+rbuffused, 4 - rbuffused);
     if(len == 0){
       Logger::getLogger()->info("Client disconnected");
       close();
@@ -166,7 +184,7 @@ void PlayerTcpConnection::verCheck(){
         rtn = false;
       }
     }else{
-      if(errno != EAGAIN && errno != EWOULDBLOCK){
+      if(len != -2){
         Logger::getLogger()->warning("Socket error");
         close();
       }
@@ -191,7 +209,7 @@ void PlayerTcpConnection::verCheck(){
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
           char* buff = new char[1024];
-          uint32_t len = recv(sockfd, buff, 1024, 0);
+          int32_t len = underlyingRead(buff, 1024);
           Logger::getLogger()->debug("Read an extra %d bytes from the socket, into buffer of 1024", len);
           delete[] buff;
           rtn = false;
@@ -205,7 +223,7 @@ void PlayerTcpConnection::verCheck(){
         //stay connected just in case they try again with a lower version
         // have to empty the receive queue though.
         char* buff = new char[1024];
-        uint32_t len = recv(sockfd, buff, 1024, 0);
+        int32_t len = underlyingRead(buff, 1024);
         Logger::getLogger()->debug("Read an extra %d bytes from the socket, into buffer of 1024", len);
         delete[] buff;
         
@@ -279,6 +297,10 @@ void PlayerTcpConnection::verCheck(){
   }
 }
 
+int32_t PlayerTcpConnection::verCheckPreChecks(){
+  return 1;
+}
+
 int32_t PlayerTcpConnection::verCheckLastChance(){
   return -1;
 }
@@ -298,7 +320,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
   }
   
   if(rdatabuff == NULL && rbuffused != hlen){
-    int32_t len = recv(sockfd, rheaderbuff+rbuffused, hlen - rbuffused, 0);
+    int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
     if(len == 0){
       Logger::getLogger()->info("Client disconnected");
       close();
@@ -310,7 +332,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
         rtn = false;
       }
     }else{
-      if(errno != EAGAIN && errno != EWOULDBLOCK){
+      if(len != -2){
         Logger::getLogger()->warning("Socket error");
         close();
       }
@@ -347,7 +369,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     }
     
     if(rbuffused != datalen){
-      int32_t len = recv(sockfd, rdatabuff+rbuffused, datalen - rbuffused, 0);
+      int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
       if(len == 0){
         Logger::getLogger()->info("Client disconnected");
         close();
@@ -359,7 +381,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
           rtn = false;
         }
       }else{
-        if(errno != EAGAIN && errno != EWOULDBLOCK){
+        if(len != -2){
           Logger::getLogger()->warning("Socket error");
           close();
         }
@@ -396,4 +418,28 @@ void PlayerTcpConnection::sendData(const char* data, uint32_t size){
   sbuffsize = size;
   sbuffused = 0;
   sendFrame(new Frame(fv0_3));
+}
+
+int32_t PlayerTcpConnection::underlyingRead(char* buff, uint32_t size){
+  int32_t len = recv(sockfd, buff, size, 0);
+  if(len < 0){
+    if(errno != EAGAIN && errno != EWOULDBLOCK){
+      len = -2;
+    }else{
+      len = -1;
+    }
+  }
+  return len;
+}
+
+int32_t PlayerTcpConnection::underlyingWrite(const char* buff, uint32_t size){
+  int len = send(sockfd, buff, size, 0);
+  if(len < 0){
+    if(errno != EAGAIN && errno != EWOULDBLOCK){
+      len = -2;
+    }else{
+      len = -1;
+    }
+  }
+  return len;
 }
