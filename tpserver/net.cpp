@@ -314,7 +314,7 @@ void Network::masterLoop()
 
                 cur_set = master_set;
 
-		if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) != 0) {
+		if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) > 0) {
                   
                   for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();
                       itcurr != writequeue.end(); ++itcurr){

@@ -19,6 +19,7 @@
  */
 
 #include <iostream>
+#include <signal.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -33,10 +34,14 @@
 #include "settings.h"
 #include "pluginmanager.h"
 
+void sigIntHandler(int sig){
+  Network::getNetwork()->stopMainLoop();
+}
 
 int main(int argc, char **argv)
 {
-
+  signal(SIGINT, sigIntHandler);
+  signal(SIGTERM, sigIntHandler);
   Settings *mySettings = Settings::getSettings();
   mySettings->readArgs(argc, argv);
 
