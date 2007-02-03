@@ -408,19 +408,41 @@ void MiniSec::createGame(){
     res->setMass(0);
     res->setVolume(0);
     game->getResourceManager()->addResourceDescription(res);
+    
+    res = new ResourceDescription();
+    res->setNameSingular("Home Planet");
+    res->setNamePlural("Home Planets");
+    res->setUnitSingular("unit");
+    res->setUnitPlural("units");
+    res->setDescription("The home planet for a race.");
+    res->setMass(0);
+    res->setVolume(0);
+    game->getResourceManager()->addResourceDescription(res);
   
 }
 
 void MiniSec::startGame(){
     
     if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
-        Logger::getLogger()->info("Setting up resource that had not been setup");
+        Logger::getLogger()->info("Setting up ship part resource that had not been setup");
         ResourceDescription* res = new ResourceDescription();
         res->setNameSingular("Ship part");
         res->setNamePlural("Ship parts");
         res->setUnitSingular("part");
         res->setUnitPlural("parts");
         res->setDescription("Ships parts that can be used to create ships");
+        res->setMass(0);
+        res->setVolume(0);
+        Game::getGame()->getResourceManager()->addResourceDescription(res);
+    }
+    if(Game::getGame()->getResourceManager()->getResourceDescription(2) == NULL){
+      Logger::getLogger()->info("Setting up home planet resource that had not been setup");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Home Planet");
+        res->setNamePlural("Home Planets");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("The home planet for a race.");
         res->setMass(0);
         res->setVolume(0);
         Game::getGame()->getResourceManager()->addResourceDescription(res);
@@ -524,6 +546,7 @@ void MiniSec::onPlayerAdded(Player* player){
   planet->setName(temp);
   delete[] temp;
   ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
+  ((Planet*)(planet->getObjectData()))->addResource(2, 1);
   planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
 						     (long long)((rand() % 10000) - 5000),
 						     /*(long long)((rand() % 10000) - 5000)*/ 0));
