@@ -2,7 +2,7 @@
 #define PLAYERTLSCONN_H
 /*  Player TLS Connection class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,26 +22,23 @@
 
 typedef struct gnutls_session_int* gnutls_session_t;
 
-#include "playerconnection.h"
+#include "playertcpconn.h"
 
-class PlayerTlsConnection : public PlayerConnection {
+class PlayerTlsConnection : public PlayerTcpConnection {
  public:
-  PlayerTlsConnection();
   PlayerTlsConnection(int fd);
   virtual ~PlayerTlsConnection();
-  
-  void setFD(int fd);
 
   void close();
-  void sendFrame(Frame * frame);
   
  protected:
-  void verCheck();
-  bool readFrame(Frame * recvframe);
+  int32_t verCheckPreChecks();
+  int32_t underlyingRead(char* buff, uint32_t size);
+  int32_t underlyingWrite(const char* buff, uint32_t size);
 
 private:
     gnutls_session_t session;
-  
+  bool handshakecomplete;
 };
 
 #endif
