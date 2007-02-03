@@ -191,7 +191,7 @@ void PlayerTcpConnection::verCheck(){
       rtn = false;
     }
   }
-  if(rtn && rdatabuff == NULL && rbuffused >= 4){
+  if(rtn && ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL)){
     if(rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P'){
       //assume we have TP procotol
       if(rheaderbuff[2] == '0'){
@@ -214,7 +214,10 @@ void PlayerTcpConnection::verCheck(){
           delete[] buff;
           rtn = false;
         }else{
-          version = (FrameVersion)atoi(rheaderbuff+2);
+          char ver[] = {'\0','\0','\0'};
+          memcpy(ver, rheaderbuff+2 , 2);
+          int nversion = atoi(ver);
+          version = (FrameVersion)nversion;
         }
       }else{
         //might be future version of protocol, just disconnect now
@@ -271,6 +274,7 @@ void PlayerTcpConnection::verCheck(){
             sendFrame(fe);
           }
         }else{
+          Logger::getLogger()->debug("verCheck, did not get whole frame");
           rtn = false;
         }
       }
