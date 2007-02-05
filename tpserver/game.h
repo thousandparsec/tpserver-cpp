@@ -39,6 +39,7 @@ class Ruleset;
 class Persistence;
 class TpScheme;
 class TimerCallback;
+class Random;
 
 class Game {
 
@@ -70,6 +71,8 @@ class Game {
 
     bool setTpScheme(TpScheme* imp);
     TpScheme* getTpScheme() const;
+    
+    Random* getRandom() const;
   
 	bool isLoaded() const;
 	bool isStarted() const;
@@ -113,6 +116,7 @@ class Game {
 	DesignStore* designstore;
         Persistence* persistence;
         TpScheme* tpscheme;
+        Random* random;
 
 };
 

@@ -45,6 +45,7 @@
 #include "tpscheme.h"
 #include "settings.h"
 #include "timercallback.h"
+#include "prng.h"
 
 #include "game.h"
 
@@ -218,6 +219,10 @@ bool Game::setTpScheme(TpScheme* imp){
     return false;
   tpscheme = imp;
   return true;
+}
+
+Random* Game::getRandom() const{
+  return random;
 }
 
 bool Game::isLoaded() const{
@@ -421,6 +426,7 @@ Game::Game()
   combatstrategy = NULL;
   ruleset = NULL;
   persistence = new Persistence();
+  random = new Random();
   tpscheme = NULL;
   loaded = false;
   started = false;
@@ -430,6 +436,7 @@ Game::Game()
   resetEOTTimer();
   //this is a good place to seed the PNRG
   srand((getpid() + time(NULL)) % RAND_MAX);
+  random->seed(getpid() + time(NULL));
 }
 
 Game::Game(Game & rhs)
@@ -456,6 +463,7 @@ Game::~Game()
     timer->setValid(false);
     delete timer;
   }
+  delete random;
 }
 
 Game Game::operator=(Game & rhs)
