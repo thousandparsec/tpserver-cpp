@@ -25,6 +25,7 @@
 #include <tpserver/game.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/prng.h>
 
 #include "rspcombat.h"
 
@@ -67,8 +68,8 @@ void RSPCombat::doCombat(){
   msg2->addReference(rst_Player, f1->getOwner());
 
   while(true){
-    int r1 = rand() % 3;
-    int r2 = rand() % 3;
+    int r1 = Game::getGame()->getRandom()->getInRange(0, 2);
+    int r2 = Game::getGame()->getRandom()->getInRange(0, 2);
 
     int d1 = 0, d2 = 0;
     

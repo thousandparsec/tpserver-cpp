@@ -53,6 +53,7 @@
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/settings.h>
+#include <tpserver/prng.h>
 
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -392,7 +393,7 @@ void MiniSec::createGame(){
   if(min_systems == max_systems){
     num_systems = min_systems;
   }else{
-    num_systems =  (rand() % (max_systems - min_systems)) + min_systems;
+    num_systems =  game->getRandom()->getInRange(min_systems ,max_systems);
   }
   for (uint32_t counter = 0; counter < num_systems; counter++) {
         createStarSystem( mw_galaxy);
@@ -528,8 +529,8 @@ void MiniSec::onPlayerAdded(Player* player){
   temp[strlen(name) + 12] = '\0';
   star->setName(temp);
   delete[] temp;
-  star->setPosition(Vector3d((long long)(((rand() % 1000) - 500) * 10000000),
-			     (long long)(((rand() % 1000) - 500) * 10000000),
+  star->setPosition(Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
+			     (long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
 			     /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
   star->setVelocity(Vector3d(0ll, 0ll, 0ll));
   
@@ -547,8 +548,8 @@ void MiniSec::onPlayerAdded(Player* player){
   delete[] temp;
   ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
   ((Planet*)(planet->getObjectData()))->addResource(2, 1);
-  planet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-						     (long long)((rand() % 10000) - 5000),
+  planet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)),
+						     (long long)(game->getRandom()->getInRange(-5000, 5000)),
 						     /*(long long)((rand() % 10000) - 5000)*/ 0));
   planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
@@ -565,8 +566,8 @@ void MiniSec::onPlayerAdded(Player* player){
   fleet->setName(temp);
   delete[] temp;
   ((OwnedObject*)(fleet->getObjectData()))->setOwner(player->getID());
-  fleet->setPosition(star->getPosition() + Vector3d((long long)((rand() % 10000) - 5000),
-						    (long long)((rand() % 10000) - 5000),
+  fleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)),
+						    (long long)(game->getRandom()->getInRange(-5000, 5000)),
 						    /*(long long)((rand() % 10000) - 5000)*/ 0));
   ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
     scout->addUnderConstruction(2);
@@ -594,8 +595,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
     star->setType( obT_Star_System);
     unsigned int   thx = rand() % 45 +  1;
     star->setName(systemNames[thx-1]);
-    star->setPosition( Vector3d( (rand() % 8000) * 1000000ll - 4000000000ll,
-                                 (rand() % 8000) * 1000000ll - 4000000000ll,
+    star->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+                                 game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  0ll));
     star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
     star->addToParent( mw_galaxy->getID());
@@ -607,7 +608,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
     if(minplanets == maxplanets){
       nplanets = minplanets;
     }else{
-      nplanets = (rand() % (maxplanets - minplanets)) + minplanets;
+      nplanets = game->getRandom()->getInRange(minplanets, maxplanets);
     }
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
