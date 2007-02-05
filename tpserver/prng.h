@@ -48,25 +48,30 @@
 #ifndef PRNG_H
 #define PRNG_H
 
+#include <stdint.h>
+
 class Random{
   public:
     Random();
     ~Random();
     
     /* initializes mt[N] with a seed */
-    void seed(unsigned long s);
+    void seed(uint32_t s);
     
     /* initialize by an array with array-length */
     /* init_key is the array for initializing keys */
     /* key_length is its length */
     /* slight change for C++, 2004/2/26 */
-    void seed(unsigned long init_key[], int key_length);
+    void seed(uint32_t init_key[], uint32_t key_length);
     
     /* generates a random number on [0,0xffffffff]-interval */
-    unsigned long getInt32(void);
+    uint32_t getInt32(void);
     
     /* generates a random number on [0,0x7fffffff]-interval */
-    long getInt31(void);
+    int32_t getInt31(void);
+    
+    uint32_t getInRange(uint32_t min, uint32_t max);
+    int32_t getInRange(int32_t min, int32_t max);
     
     /* These real versions are due to Isaku Wada, 2002/01/09 added */
     /* generates a random number on [0,1]-real-interval */
@@ -83,8 +88,8 @@ class Random{
     
   private:
 
-    unsigned long mt[624]; /* the array for the state vector  */
-    int mti; /* mti==N+1 means mt[N] is not initialized */
+    uint32_t mt[624]; /* the array for the state vector  */
+    uint32_t mti; /* mti==N+1 means mt[N] is not initialized */
 
 
 };

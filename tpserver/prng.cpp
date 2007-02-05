@@ -66,7 +66,7 @@ Random::~Random(){
 
 
 /* initializes mt[N] with a seed */
-void Random::seed(unsigned long s)
+void Random::seed(uint32_t s)
 {
     mt[0]= s & 0xffffffffUL;
     for (mti=1; mti<N; mti++) {
@@ -85,9 +85,9 @@ void Random::seed(unsigned long s)
 /* init_key is the array for initializing keys */
 /* key_length is its length */
 /* slight change for C++, 2004/2/26 */
-void Random::seed(unsigned long init_key[], int key_length)
+void Random::seed(uint32_t init_key[], uint32_t key_length)
 {
-    int i, j, k;
+    uint32_t i, j, k;
     seed(19650218UL);
     i=1; j=0;
     k = (N>key_length ? N : key_length);
@@ -111,7 +111,7 @@ void Random::seed(unsigned long init_key[], int key_length)
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
-unsigned long Random::getInt32(void)
+uint32_t Random::getInt32(void)
 {
     unsigned long y;
     static unsigned long mag01[2]={0x0UL, MATRIX_A};
@@ -149,9 +149,17 @@ unsigned long Random::getInt32(void)
 }
 
 /* generates a random number on [0,0x7fffffff]-interval */
-long Random::getInt31(void)
+int32_t Random::getInt31(void)
 {
     return (long)(getInt32()>>1);
+}
+
+uint32_t Random::getInRange(uint32_t min, uint32_t max){
+  return (uint32_t)(getInt32() * (max - min) / 0xffffffffUL + min);
+}
+
+int32_t Random::getInRange(int32_t min, int32_t max){
+  return (int32_t)(getInt32() * (max - min) / 0xffffffffUL + min);
 }
 
 /* generates a random number on [0,1]-real-interval */
