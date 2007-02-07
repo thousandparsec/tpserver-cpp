@@ -51,6 +51,7 @@
 #include "tpserver/category.h"
 #include "tpserver/logging.h"
 #include "tpserver/playermanager.h"
+#include "tpserver/prng.h"
 
 #ifdef HAVE_LIBMYSQL
 #include "modules/persistence/mysql/mysqlpersistence.h"
@@ -1078,7 +1079,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
 // Returns a random number between 1 and 'max'
 static unsigned int myRandom( unsigned int  max)
 {
-    return 1 + ( unsigned int) ( ( ( double) max * rand()) / ( RAND_MAX + 1.0));
+    return Game::getGame()->getRandom()->getInRange(1U, max);
 }
 
 
@@ -1290,8 +1291,8 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
 {
     Game *game = Game::getGame();
     IGObject *fleet = game->getObjectManager()->createNewObject();
-    Vector3d  offset = Vector3d( ( long long) ( ( rand() % 10000) - 5000),
-                                 ( long long) ( ( rand() % 10000) - 5000),
+    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
 
     fleet->setSize( 2);
@@ -1359,8 +1360,8 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
     Game *    game = Game::getGame();
     IGObject* planet = game->getObjectManager()->createNewObject();
-    Vector3d  offset = Vector3d( ( long long) ( ( rand() % 10000) - 5000),
-                                 ( long long) ( ( rand() % 10000) - 5000),
+    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
     std::string planetName = player->getName() + " Planet";
 
@@ -1388,8 +1389,8 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
     Game *    game = Game::getGame();
     IGObject* star = game->getObjectManager()->createNewObject();
-    Vector3d  location = Vector3d( ( long long) ( ( ( rand() % 1000) - 500) * 10000000),
-                                   ( long long) ( ( ( rand() % 1000) - 500) * 10000000),
+    Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
+                                   ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
     std::string starName = player->getName() + " Star System";
 

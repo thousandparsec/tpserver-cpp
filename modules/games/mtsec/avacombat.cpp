@@ -26,6 +26,7 @@
 #include "tpserver/game.h"
 #include "tpserver/player.h"
 #include "tpserver/playermanager.h"
+#include "tpserver/prng.h"
 
 #include "avacombat.h"
 
@@ -73,8 +74,9 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                                Fleet*   fleet2,
                                Message* msg2)
 {
-    int r1 = ( rand() % 40) + 60;
-    int r2 = ( rand() % 40) + 60;
+    Random* rand = Game::getGame()->getRandom();
+    int r1 = rand->getInRange(0U, 40U) + 60;
+    int r2 = rand->getInRange(0U, 40U) + 60;
     unsigned int damage1 = ( fleet1->firepower( false) * r1) / 100;
     unsigned int damage2 = ( fleet2->firepower( false) * r2) / 100;
 
