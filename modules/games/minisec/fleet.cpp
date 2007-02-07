@@ -82,58 +82,59 @@ long long Fleet::maxSpeed(){
   return (long long)(floor(speed));
 }
 
-int Fleet::firepower(bool draw){
-  double fp = 0;
+std::list<int> Fleet::firepower(bool draw){
+  std::list<int> fp;
   DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     if(draw){
-      fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")) * itcurr->second;
+      int attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")));
+      for(int i = 0; i < itcurr->second; i++){
+        fp.push_back(attnum);
+      }
     }else{
-      fp += ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")) * itcurr->second;
+       int attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")));
+       for(int i = 0; i < itcurr->second; i++){
+         fp.push_back(attnum);
+       }
     }
   }
-  return (int) (floor(fp));
+  return fp;
 }
 
-bool Fleet::hit(int firepower){
-    if(firepower != 0){
-  damage += firepower;
-  bool change = true;
+bool Fleet::hit(std::list<int> firepower){
   DesignStore* ds = Game::getGame()->getDesignStore();
-  while(change){
-    change = false;
-    //find largest ship (by HP (prop 3))
+  for(std::list<int>::iterator shot = firepower.begin(); shot != firepower.end(); ++shot){
     int shiptype = 0;
     int shiphp = 0;
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
       Design *design = ds->getDesign(itcurr->first);
       if(shiphp < (int)design->getPropertyValue(ds->getPropertyByName("Armour"))){
-	shiptype = itcurr->first;
+        shiptype = itcurr->first;
         shiphp = (int)design->getPropertyValue(ds->getPropertyByName("Armour"));
       }
     }
     if(shiphp == 0){
-        touchModTime();
+      touchModTime();
       return false;
     }
-    while(damage > shiphp && ships[shiptype] > 0){
+    //get the current damage
+    int ldam = damage / ships[shiptype];
+    if(ldam + (*shot) >= shiphp){
       ships[shiptype]--;
-      damage -= shiphp;
-        Design* design = ds->getDesign(shiptype);
-        design->removeDestroyed(1);
-        ds->designCountsUpdated(design);
-      change = true;
+      damage -= ldam;
+      Design* design = ds->getDesign(shiptype);
+      design->removeDestroyed(1);
+      ds->designCountsUpdated(design);
+    }else{
+      damage += (*shot);
     }
     if(ships[shiptype] == 0){
       ships.erase(shiptype);
-      change = true;
     }
-    
   }
   touchModTime();
-    }
   return true;
 }
 

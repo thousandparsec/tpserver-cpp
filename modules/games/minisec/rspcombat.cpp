@@ -26,6 +26,7 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/prng.h>
+#include "planet.h"
 
 #include "rspcombat.h"
 
@@ -42,6 +43,10 @@ void RSPCombat::doCombat(){
   }else if(c1->getType() == obT_Planet){
     f1 = new Fleet();
     f1->addShips(3, 2);
+    if(((Planet*)(c1->getObjectData()))->getResource(2) == 1){
+      //two more for home planets
+      f1->addShips(3, 2);
+    }
     f1->setOwner(((OwnedObject*)c1->getObjectData())->getOwner());
   }
   if(c2->getType() == obT_Fleet){
@@ -49,6 +54,10 @@ void RSPCombat::doCombat(){
   }else if(c2->getType() == obT_Planet){
     f2 = new Fleet();
     f2->addShips(3, 2);
+    if(((Planet*)(c2->getObjectData()))->getResource(2) == 1){
+      //two more for home planets
+      f2->addShips(3, 2);
+    }
     f2->setOwner(((OwnedObject*)c2->getObjectData())->getOwner());
   }
   if(f1 == NULL || f2 == NULL){
@@ -67,11 +76,13 @@ void RSPCombat::doCombat(){
   msg2->addReference(rst_Object, c1->getID());
   msg2->addReference(rst_Player, f1->getOwner());
 
+  Random* random = Game::getGame()->getRandom();
+  
   while(true){
-    int r1 = Game::getGame()->getRandom()->getInRange(0, 2);
-    int r2 = Game::getGame()->getRandom()->getInRange(0, 2);
+    int r1 = random->getInRange(0, 2);
+    int r2 = random->getInRange(0, 2);
 
-    int d1 = 0, d2 = 0;
+    std::list<int> d1, d2;
     
     if(r1 == r2){
       // draw
@@ -80,7 +91,12 @@ void RSPCombat::doCombat(){
     }else if(r1 == r2 + 1 || r1 + 2 == r2){
       // f1 won
       d1 = f1->firepower(false);
-      if(d1 == 0){
+      int nscout = 0;
+      for(std::list<int>::iterator itcurr = d1.begin(); itcurr != d1.end(); ++itcurr){
+        if((*itcurr) == 0)
+          nscout++;
+      }
+      if(nscout == d1.size() || random->getReal1() < ((double)((double)nscout / (double)(d1.size()))) ){
 	msg1->setBody("Your fleet escaped");
 	msg2->setBody("Their fleet escaped");
 	break;
@@ -88,7 +104,12 @@ void RSPCombat::doCombat(){
     }else{
       // f2 won
       d2 = f2->firepower(false);
-      if(d2 == 0){
+      int nscout = 0;
+      for(std::list<int>::iterator itcurr = d2.begin(); itcurr != d2.end(); ++itcurr){
+        if((*itcurr) == 0)
+          nscout++;
+      }
+      if(nscout == d2.size() || random->getReal1() < ((double)((double)nscout / (double)(d2.size()))) ){
 	msg1->setBody("Their fleet escaped");
 	msg2->setBody("Your fleet escaped");
 	break;

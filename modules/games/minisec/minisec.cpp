@@ -102,7 +102,7 @@ std::string MiniSec::getName(){
 }
 
 std::string MiniSec::getVersion(){
-  return "0.1";
+  return "0.2";
 }
 
 void MiniSec::initGame(){
@@ -244,7 +244,7 @@ void MiniSec::createGame(){
             "(if (= (designType._num-components design) 1) "
             "(cons #t \"\") "
             "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist[1] = "(lambda (design) 300000000)";
+    propertylist[1] = "(lambda (design) 500000000)";
     propertylist[2] = "(lambda (design) 1)";
     propertylist[3] = "(lambda (design) 2)";
     propertylist[4] = "(lambda (design) 0)";
@@ -283,7 +283,7 @@ void MiniSec::createGame(){
                 "(cons #t \"\") "
                 "(cons #f \"This is a complete component, nothing else can be included\")))");
     propertylist.clear();
-    propertylist[1] = "(lambda (design) 100000000)";
+    propertylist[1] = "(lambda (design) 300000000)";
     propertylist[2] = "(lambda (design) 4)";
     propertylist[3] = "(lambda (design) 6)";
     propertylist[4] = "(lambda (design) 3)";

@@ -77,6 +77,13 @@ std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
     return resources;
 }
 
+uint32_t Planet::getResource(uint32_t restype) const{
+  if(resources.find(restype) != resources.end()){
+    return resources.find(restype)->first;
+  }
+  return 0;
+}
+
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
     resources = ress;
 }

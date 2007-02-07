@@ -21,6 +21,7 @@
  */
 
 #include <map>
+#include <list>
 
 #include <tpserver/ownedobject.h>
 
@@ -36,8 +37,8 @@ class Fleet:public OwnedObject {
 	int totalShips() const;
 
 	long long maxSpeed();
-	int firepower(bool draw);
-	bool hit(int firepower);
+	std::list<int> firepower(bool draw);
+	bool hit(std::list<int> firepower);
 
         int getDamage() const;
         void setDamage(int nd);
