@@ -123,12 +123,20 @@ void RSPCombat::doCombat(){
     if(!f1->hit(d2)){
       body1 += "Your fleet was destroyed. ";
       body2 += "You destroyed their fleet. ";
+      //remove home planet resource if planet lost combat
+      if(c1->getType() == obT_Planet){
+        ((Planet*)(c1->getObjectData()))->removeResource(2, 1);
+      }
       c1 = NULL;
       tte = true;
     }
     if(!f2->hit(d1)){
       body2 += "Your fleet was destroyed.";
       body1 += "You destroyed their fleet.";
+      //remove home planet resource if planet lost combat
+      if(c2->getType() == obT_Planet){
+        ((Planet*)(c2->getObjectData()))->removeResource(2, 1);
+      }
       c2 = NULL;
       tte = true;
     }
