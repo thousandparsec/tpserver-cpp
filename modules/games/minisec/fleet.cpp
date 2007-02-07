@@ -133,8 +133,8 @@ bool Fleet::hit(std::list<int> firepower){
     if(ships[shiptype] == 0){
       ships.erase(shiptype);
     }
+    touchModTime();
   }
-  touchModTime();
   return true;
 }
 
