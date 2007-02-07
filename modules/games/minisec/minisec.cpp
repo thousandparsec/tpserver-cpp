@@ -395,9 +395,14 @@ void MiniSec::createGame(){
   }else{
     num_systems =  game->getRandom()->getInRange(min_systems ,max_systems);
   }
+  uint32_t total_planets = atoi(Settings::getSettings()->get("minisec_total_planets").c_str());
+  if(total_planets == 0)
+    total_planets = 0x0fffffff;
   for (uint32_t counter = 0; counter < num_systems; counter++) {
-        createStarSystem( mw_galaxy);
-    }
+    createStarSystem( mw_galaxy, total_planets);
+    if(total_planets <= 0)
+      break;
+  }
   
     //setup Resources
     ResourceDescription* res = new ResourceDescription();
@@ -582,7 +587,7 @@ void MiniSec::onPlayerAdded(Player* player){
 }
 
 // Create a random star system
-IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
+IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
 {
     Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
     Game*          game = Game::getGame();
@@ -610,6 +615,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
     }else{
       nplanets = game->getRandom()->getInRange(minplanets, maxplanets);
     }
+    if(max_planets < nplanets)
+      nplanets == max_planets;
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
@@ -623,6 +630,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy)
                                                              0ll));
         planet->addToParent( star->getID());
         obman->addObject( planet);
+        max_planets--;
     }
 
     Logger::getLogger()->debug( "Exiting MiniSec::createStarSystem");

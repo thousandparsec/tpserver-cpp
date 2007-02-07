@@ -37,7 +37,7 @@ class MiniSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
 private:
-  IGObject* createStarSystem( IGObject* mw_galaxy);
+  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets);
 
 };
 
