@@ -616,7 +616,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
       nplanets = game->getRandom()->getInRange(minplanets, maxplanets);
     }
     if(max_planets < nplanets)
-      nplanets == max_planets;
+      nplanets = max_planets;
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
