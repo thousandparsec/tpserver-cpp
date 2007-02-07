@@ -435,7 +435,6 @@ Game::Game()
   timer = NULL;
   resetEOTTimer();
   //this is a good place to seed the PNRG
-  srand((getpid() + time(NULL)) % RAND_MAX);
   random->seed(getpid() + time(NULL));
 }
 
