@@ -94,6 +94,7 @@ bool MetaserverConnection::sendUpdate(){
   
   if (n < 0) {
     Logger::getLogger()->error("Metaserver: Could not getaddrinfo, %s", gai_strerror(n));
+    status = 0;
     return false;
   }
   
@@ -137,6 +138,7 @@ bool MetaserverConnection::sendUpdate(){
   } else if ((sin.sin_port = htons((u_short)atoi(port.c_str())))==0) {
     fprintf(stderr, "ipv4_only_connect:: could not get service=[%s]\n",
             service);
+    status = 0;
     return false;
   }
   
@@ -146,11 +148,13 @@ bool MetaserverConnection::sendUpdate(){
   } else if ( (sin.sin_addr.s_addr = inet_addr(host.c_str())) == 
               INADDR_NONE) {
     fprintf(stderr, "ipv4_only_connect:: could not get host=[%s]\n", hostname);
+    status = 0;
     return false;
   }
   
   if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {  
     fprintf(stderr, "ipv4_only_connect:: could not open socket\n");
+    status = 0;
     return false;
   }
   
@@ -159,6 +163,7 @@ bool MetaserverConnection::sendUpdate(){
 //         setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   if (connect(sockfd,(struct sockaddr *)&sin, sizeof(sin)) < 0) {
     fprintf(stderr, "ipv4_only_connect:: could not connect to host=[%s]\n", hostname);
+    status = 0;
     return false;
   }
 
