@@ -52,6 +52,8 @@
 #include "tpserver/logging.h"
 #include "tpserver/playermanager.h"
 #include "tpserver/prng.h"
+#include <tpserver/resourcedescription.h>
+#include <tpserver/resourcemanager.h>
 
 #ifdef HAVE_LIBMYSQL
 #include "modules/persistence/mysql/mysqlpersistence.h"
@@ -1169,6 +1171,102 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 }
 
 
+void MTSec::createResources(){
+  ResourceManager* resman = Game::getGame()->getResourceManager();
+  
+  ResourceDescription* res = new ResourceDescription();
+  res->setNameSingular("Ship part");
+  res->setNamePlural("Ship parts");
+  res->setUnitSingular("part");
+  res->setUnitPlural("parts");
+  res->setDescription("Ships parts that can be used to create ships");
+  res->setMass(0);
+  res->setVolume(0);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Home Planet");
+  res->setNamePlural("Home Planets");
+  res->setUnitSingular("unit");
+  res->setUnitPlural("units");
+  res->setDescription("The home planet for a race.");
+  res->setMass(0);
+  res->setVolume(0);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Uranium");
+  res->setNamePlural("Uranium");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Raw Uranium Ore.");
+  res->setMass(1);
+  res->setVolume(4);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Thorium");
+  res->setNamePlural("Thorium");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Raw Thorium Ore.");
+  res->setMass(1);
+  res->setVolume(4);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Cerium");
+  res->setNamePlural("Cerium");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Raw Cerium Ore.");
+  res->setMass(1);
+  res->setVolume(3);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Enriched Uranium");
+  res->setNamePlural("Enriched Uranium");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Enriched Uranium Ore.");
+  res->setMass(1);
+  res->setVolume(2);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Massivium");
+  res->setNamePlural("Massivium");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Raw Massivium Ore.");
+  res->setMass(1);
+  res->setVolume(12);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Antiparticle");
+  res->setNamePlural("Antiparticle");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Antiparticles in magnetic containment.");
+  res->setMass(1);
+  res->setVolume(1);
+  resman->addResourceDescription(res);
+  
+  res = new ResourceDescription();
+  res->setNameSingular("Antimatter");
+  res->setNamePlural("Antimatter");
+  res->setUnitSingular("kt");
+  res->setUnitPlural("kt");
+  res->setDescription("Antimatter in magnetic containment.");
+  res->setMass(1);
+  res->setVolume(1);
+  resman->addResourceDescription(res);
+  
+}
+
+
 void MTSec::createGame()
 {
     Logger::getLogger()->debug( "Enter MTSec::createGame");
@@ -1182,6 +1280,7 @@ void MTSec::createGame()
     assert(cat->getCategoryId() == 1);
 
     createTechTree();
+    createResources();
 
     ObjectManager* obman = game->getObjectManager();
 

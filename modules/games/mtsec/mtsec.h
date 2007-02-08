@@ -89,6 +89,8 @@ class MTSec : public Ruleset{
   void createProperties();
   void createComponents();
   void createTechTree();
+  
+  void createResources();
 
   IGObject* createEmptyFleet( Player*     owner,
                               IGObject*   star,
