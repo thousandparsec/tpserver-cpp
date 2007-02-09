@@ -1,6 +1,6 @@
 /*  Logging for tpserver-cpp
  *
- *  Copyright (C) 2003-2005, 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -181,10 +181,6 @@ void Logger::reconfigure(const std::string & item, const std::string & value)
             delete logSinkMap["sys"];
             logSinkMap.erase("sys");
         }
-    }
-
-    for (pos = logSinkMap.begin(); pos != logSinkMap.end(); pos++) {
-        pos->second->reconfigure();
     }
 }
 
