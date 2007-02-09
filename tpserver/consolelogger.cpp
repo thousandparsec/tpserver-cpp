@@ -1,6 +1,6 @@
 /*  Logging for tpserver-cpp
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,16 +28,21 @@
 
 #include "consolelogger.h"
 #include "settings.h"
+#include "settingscallback.h"
+#include "console.h"
 
 ConsoleLogger::ConsoleLogger()
 {
+  Settings::getSettings()->setCallback("log_colour", SettingsCallback(this, &ConsoleLogger::reconfigure));
+  reconfigure("", "");
 }
 
 ConsoleLogger::~ConsoleLogger()
 {
+  Settings::getSettings()->removeCallback("log_colour");
 }
 
-void ConsoleLogger::reconfigure()
+void ConsoleLogger::reconfigure(const std::string& key, const std::string& value)
 {
     colour = (Settings::getSettings()->get("log_colour") == "yes");
 }
@@ -68,5 +73,6 @@ void ConsoleLogger::doLogging( int level, char* msg) const
     else
         levelStr << " <  " << level << "  > ";
 
-    std::cout << timeStr << levelStr.str() << msg << std::endl;
+    std::cout << "\r" << timeStr << levelStr.str() << msg << std::endl;
+    Console::getConsole()->redisplay();
 }

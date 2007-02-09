@@ -2,7 +2,7 @@
 #define CONSOLELOGGER_H
 /*  Logger class for logging to the console
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
  *
  */
 
+#include <string>
+
 #include "logsink.h"
 
 class ConsoleLogger : public LogSink {
@@ -28,9 +30,9 @@ class ConsoleLogger : public LogSink {
     virtual ~ConsoleLogger();
 
     virtual void doLogging( int level, char* msg) const;
-    virtual void reconfigure();
 
  private:
+    void reconfigure(const std::string& key, const std::string& value);
     bool colour;
 
 };
