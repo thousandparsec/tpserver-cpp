@@ -8,7 +8,7 @@ Tested under Linux.
 REQUIRES (to build also requires the dev packages/headers)
 ========
 pthreads (part of libc, standard)
-libtprl (replaces/uses readline) (www.thousandparsec.net/tp/) [GPL]
+libtprl 0.1.2 or later (replaces/uses readline) (www.thousandparsec.net/tp/) [GPL]
 
 OPTIONAL
 ========

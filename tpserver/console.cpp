@@ -1,6 +1,6 @@
 /*  Server terminal console for server
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -262,16 +262,23 @@ Console *Console::getConsole()
 
 void Console::open(){
   Network::getNetwork()->addConnection(this);
+  Logger::getLogger()->info("Console opened");
   if(console == NULL)
     console = tprl::Console::getConsole();
+  console->setCatchSignals(false);
   console->setUseHistory(true);
   console->setCommandSet(&commands);
+  console->setPrompt("tpserver-cpp> ");
   console->readLine_nb_start();
   Logger::getLogger()->info("Console ready");
 }
 
 void Console::process(){
   console->readLine_nb_inputReady();
+}
+
+void Console::redisplay(){
+  console->redrawLineForced();
 }
 
 void Console::close()
@@ -284,7 +291,6 @@ void Console::close()
 
 Console::Console() : Connection()
 {
-	Logger::getLogger()->info("Console opened");
 	status = 1;
 	sockfd = 2;
         console = NULL;

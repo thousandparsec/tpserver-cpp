@@ -29,7 +29,7 @@ AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread li
 
 AC_CHECK_LIB(dl, dlsym,,)
 
-PKG_CHECK_MODULES(libtprl, libtprl >= 0.0.0,
+PKG_CHECK_MODULES(libtprl, libtprl >= 0.1.2,
 	,
 	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
 )
