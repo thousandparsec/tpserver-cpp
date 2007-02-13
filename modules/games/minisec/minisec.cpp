@@ -315,7 +315,7 @@ void MiniSec::createGame(){
   
   // star system 1
   IGObject *sol = game->getObjectManager()->createNewObject();
-  sol->setSize(1400000ll);
+  sol->setSize(60000ll);
   sol->setType(obT_Star_System);
   sol->setName("Sol/Terra System");
   sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
@@ -325,7 +325,7 @@ void MiniSec::createGame(){
 
   // star system 2
   IGObject *ac = game->getObjectManager()->createNewObject();
-  ac->setSize(800000ll);
+  ac->setSize(90000ll);
   ac->setType(obT_Star_System);
   ac->setName("Alpha Centauri System");
   ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
@@ -335,7 +335,7 @@ void MiniSec::createGame(){
   
   // star system 3
   IGObject *sirius = game->getObjectManager()->createNewObject();
-  sirius->setSize(2000000ll);
+  sirius->setSize(60000ll);
   sirius->setType(obT_Star_System);
   sirius->setName("Sirius System");
   sirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
@@ -526,7 +526,7 @@ void MiniSec::onPlayerAdded(Player* player){
 
   const char* name = player->getName().c_str();
   IGObject *star = game->getObjectManager()->createNewObject();
-  star->setSize(2000000ll);
+  star->setSize(60000ll);
   star->setType(obT_Star_System);
   char* temp = new char[strlen(name) + 13];
   strncpy(temp, name, strlen(name));
@@ -553,8 +553,8 @@ void MiniSec::onPlayerAdded(Player* player){
   delete[] temp;
   ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
   ((Planet*)(planet->getObjectData()))->addResource(2, 1);
-  planet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)),
-						     (long long)(game->getRandom()->getInRange(-5000, 5000)),
+  planet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
+						     (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
 						     /*(long long)((rand() % 10000) - 5000)*/ 0));
   planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
   
@@ -571,8 +571,8 @@ void MiniSec::onPlayerAdded(Player* player){
   fleet->setName(temp);
   delete[] temp;
   ((OwnedObject*)(fleet->getObjectData()))->setOwner(player->getID());
-  fleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)),
-						    (long long)(game->getRandom()->getInRange(-5000, 5000)),
+  fleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+						    (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
 						    /*(long long)((rand() % 10000) - 5000)*/ 0));
   ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
     scout->addUnderConstruction(2);
@@ -596,17 +596,6 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
 
-    star->setSize(1400000ll);
-    star->setType( obT_Star_System);
-    unsigned int   thx = rand() % 45 +  1;
-    star->setName(systemNames[thx-1]);
-    star->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
-                                 game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
-                                 0ll));
-    star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
-    star->addToParent( mw_galaxy->getID());
-    obman->addObject( star);
-
     // Create a variable number of planets for each star system
     uint maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
     uint minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
@@ -617,6 +606,18 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
     }
     if(max_planets < nplanets)
       nplanets = max_planets;
+
+    star->setSize(nplanets * 60000ll);
+    star->setType( obT_Star_System);
+    unsigned int   thx = rand() % 45 +  1;
+    star->setName(systemNames[thx-1]);
+    star->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+                                 game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+                                 0ll));
+    star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
+    star->addToParent( mw_galaxy->getID());
+    obman->addObject( star);
+
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
