@@ -54,3 +54,28 @@ or
 or
     --config_file /dir/to/settingsfile.conf
 All settings can set on the console once the server is running.
+
+
+SETTING UP SECURE SOCKETS
+=========================
+These instructions are for a self-signed certificate.
+
+First, create private key (priv.pem):
+certtool -p --outfile priv.pem
+
+Second, create public (encrypting, tls web server?) self-signed cert 
+(cert.pem):
+certtool -s --load-privkey priv.pem --outfile cert.pem
+
+In config or set on console:
+x509_cert_file = cert.pem
+x509_key_file = priv.pem
+x509_tls = yes
+tps = yes
+https = yes
+https_port = 8088 #or whatever
+
+
+For certificates signed by a different authority, you will need the
+certificate(s) of the signer and set x509_trust_file to point to that
+file.
