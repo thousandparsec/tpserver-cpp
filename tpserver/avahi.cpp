@@ -266,9 +266,6 @@ Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client
   std::string tname = Settings::getSettings()->get("server_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
-  tname.append(" [");
-  tname.append(Game::getGame()->getRuleset()->getName());
-  tname.append("]");
   name = avahi_strdup(tname.c_str());
   
   pollapi = new AvahiPoll();
@@ -308,9 +305,6 @@ void Avahi::update(){
   std::string tname = Settings::getSettings()->get("server_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
-  tname.append(" [");
-  tname.append(Game::getGame()->getRuleset()->getName());
-  tname.append("]");
   avahi_free(name);
   name = avahi_strdup(tname.c_str());
   createServices();
