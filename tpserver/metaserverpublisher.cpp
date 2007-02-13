@@ -86,7 +86,7 @@ std::string MetaserverPublisher::getKey(){
 }
 
 void MetaserverPublisher::metaserverSettingChanged(const std::string& skey, const std::string& value){
-  needtoupdate = true;
+  update();
 }
 
 void MetaserverPublisher::setTimer(){
