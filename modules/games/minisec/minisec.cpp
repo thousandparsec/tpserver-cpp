@@ -526,7 +526,7 @@ void MiniSec::onPlayerAdded(Player* player){
 
   const char* name = player->getName().c_str();
   IGObject *star = game->getObjectManager()->createNewObject();
-  star->setSize(60000ll);
+  star->setSize(80000ll);
   star->setType(obT_Star_System);
   char* temp = new char[strlen(name) + 13];
   strncpy(temp, name, strlen(name));
