@@ -49,6 +49,9 @@ void Fleet::addShips(int type, int number){
 bool Fleet::removeShips(int type, int number){
   if(ships[type] >= number){
     ships[type] -= number;
+    if(ships[type] == 0){
+      ships.erase(type);
+    }
     touchModTime();
     return true;
   }
