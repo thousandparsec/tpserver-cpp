@@ -155,11 +155,11 @@ int32_t Random::getInt31(void)
 }
 
 uint32_t Random::getInRange(uint32_t min, uint32_t max){
-  return (uint32_t)(getReal1() * (double)(max - min) + min);
+  return (uint32_t)(getReal2() * (double)(max - min + 1) + min);
 }
 
 int32_t Random::getInRange(int32_t min, int32_t max){
-  return (int32_t)(getReal1() * (double)(max - min) + min);
+  return (int32_t)(getReal2() * (double)(max - min + 1) + min);
 }
 
 /* generates a random number on [0,1]-real-interval */
