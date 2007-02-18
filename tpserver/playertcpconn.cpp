@@ -428,6 +428,7 @@ int32_t PlayerTcpConnection::underlyingRead(char* buff, uint32_t size){
   int32_t len = recv(sockfd, buff, size, 0);
   if(len < 0){
     if(errno != EAGAIN && errno != EWOULDBLOCK){
+      Logger::getLogger()->error("underlying read, tcp, error is: %s", strerror(errno));
       len = -1;
     }else{
       len = -2;
