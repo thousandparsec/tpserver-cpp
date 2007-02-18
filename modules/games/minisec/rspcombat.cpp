@@ -27,6 +27,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/prng.h>
 #include "planet.h"
+#include <tpserver/logging.h>
 
 #include "rspcombat.h"
 
@@ -78,9 +79,12 @@ void RSPCombat::doCombat(){
 
   Random* random = Game::getGame()->getRandom();
   
+  Logger::getLogger()->debug("Combat start");
+  
   while(true){
     int r1 = random->getInRange(0, 2);
     int r2 = random->getInRange(0, 2);
+    Logger::getLogger()->debug("Combat r1 %d, r2 %d", r1, r2);
 
     std::list<int> d1, d2;
     
@@ -91,6 +95,8 @@ void RSPCombat::doCombat(){
     }else if(r1 == r2 + 1 || r1 + 2 == r2){
       // f1 won
       d1 = f1->firepower(false);
+      if(d1.empty())
+        Logger::getLogger()->debug("Empty shot list from fleet 1");
       int nscout = 0;
       for(std::list<int>::iterator itcurr = d1.begin(); itcurr != d1.end(); ++itcurr){
         if((*itcurr) == 0)
@@ -104,6 +110,8 @@ void RSPCombat::doCombat(){
     }else{
       // f2 won
       d2 = f2->firepower(false);
+      if(d2.empty())
+        Logger::getLogger()->debug("Empty shot list from fleet 2");
       int nscout = 0;
       for(std::list<int>::iterator itcurr = d2.begin(); itcurr != d2.end(); ++itcurr){
         if((*itcurr) == 0)
@@ -120,6 +128,8 @@ void RSPCombat::doCombat(){
     
     std::string body1, body2;
 
+    Logger::getLogger()->debug("f1 hit by %d shots from d2", d2.size());
+    
     if(!f1->hit(d2)){
       body1 += "Your fleet was destroyed. ";
       body2 += "You destroyed their fleet. ";
@@ -130,6 +140,9 @@ void RSPCombat::doCombat(){
       c1 = NULL;
       tte = true;
     }
+    
+    Logger::getLogger()->debug("f2 hit by %d shots from d1", d1.size());
+    
     if(!f2->hit(d1)){
       body2 += "Your fleet was destroyed.";
       body1 += "You destroyed their fleet.";
