@@ -90,16 +90,14 @@ std::list<int> Fleet::firepower(bool draw){
   DesignStore* ds = Game::getGame()->getDesignStore();
   for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
+    int attnum;
     if(draw){
-      int attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")));
-      for(int i = 0; i < itcurr->second; i++){
-        fp.push_back(attnum);
-      }
+      attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponDraw")));
     }else{
-       int attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")));
-       for(int i = 0; i < itcurr->second; i++){
-         fp.push_back(attnum);
-       }
+      attnum = (int)(ds->getDesign(itcurr->first)->getPropertyValue(ds->getPropertyByName("WeaponWin")));
+    }
+    for(int i = 0; i < itcurr->second; i++){
+      fp.push_back(attnum);
     }
   }
   return fp;
@@ -110,12 +108,18 @@ bool Fleet::hit(std::list<int> firepower){
   for(std::list<int>::iterator shot = firepower.begin(); shot != firepower.end(); ++shot){
     int shiptype = 0;
     int shiphp = 0;
+    
+    uint32_t armourprop = ds->getPropertyByName("Armour");
+    if(armourprop == 0){
+      armourprop = ds->getPropertyByName("Amour");
+    }
+    
     for(std::map<int, int>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
       Design *design = ds->getDesign(itcurr->first);
-      if(shiphp < (int)design->getPropertyValue(ds->getPropertyByName("Armour"))){
+      if(shiphp < (int)design->getPropertyValue(armourprop)){
         shiptype = itcurr->first;
-        shiphp = (int)design->getPropertyValue(ds->getPropertyByName("Armour"));
+        shiphp = (int)design->getPropertyValue(armourprop);
       }
     }
     if(shiphp == 0){

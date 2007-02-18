@@ -183,8 +183,8 @@ void MiniSec::createGame(){
     prop = new Property();
     prop->setCategoryId(1);
     prop->setRank(0);
-    prop->setName("Amour");
-    prop->setDisplayName("Amour");
+    prop->setName("Armour");
+    prop->setDisplayName("Armour");
     prop->setDescription("The amount of amour on the ship");
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
