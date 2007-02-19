@@ -144,11 +144,6 @@ Player* PlayerManager::findPlayer(const std::string &name, const std::string &pa
     //look for current/known players
     Player *rtn = NULL;
 
-    // hack HACK!!
-    if (name == "guest" && pass == "guest")
-        return rtn;
-    // end of hack HACK!!
-
     std::map<unsigned int, Player*>::iterator itcurr;
 
     for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
