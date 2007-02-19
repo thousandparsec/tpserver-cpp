@@ -54,6 +54,13 @@
 
 #include "metaserverconnection.h"
 
+#ifndef NI_MAXHOST
+#define NI_MAXHOST 1025
+#endif
+#ifndef NI_MAXSERV
+#define NI_MAXSERV 32
+#endif 
+
 MetaserverConnection::MetaserverConnection(Advertiser* ad, MetaserverPublisher* pub) : Connection(), advertiser(ad), publisher(pub){
 
 }
@@ -122,8 +129,7 @@ bool MetaserverConnection::sendUpdate(){
   freeaddrinfo(ressave);
 #else
     
-    // IPv4 only
-  
+  // IPv4 only  
   struct sockaddr_in sin;
   struct hostent *phe;
   struct servent *pse;
@@ -137,7 +143,7 @@ bool MetaserverConnection::sendUpdate(){
     
   } else if ((sin.sin_port = htons((u_short)atoi(port.c_str())))==0) {
     fprintf(stderr, "ipv4_only_connect:: could not get service=[%s]\n",
-            service);
+            port.c_str());
     status = 0;
     return false;
   }
@@ -147,7 +153,7 @@ bool MetaserverConnection::sendUpdate(){
     
   } else if ( (sin.sin_addr.s_addr = inet_addr(host.c_str())) == 
               INADDR_NONE) {
-    fprintf(stderr, "ipv4_only_connect:: could not get host=[%s]\n", hostname);
+    fprintf(stderr, "ipv4_only_connect:: could not get host=[%s]\n", host.c_str());
     status = 0;
     return false;
   }
@@ -162,7 +168,7 @@ bool MetaserverConnection::sendUpdate(){
 //         int yes = 1;
 //         setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   if (connect(sockfd,(struct sockaddr *)&sin, sizeof(sin)) < 0) {
-    fprintf(stderr, "ipv4_only_connect:: could not connect to host=[%s]\n", hostname);
+    fprintf(stderr, "ipv4_only_connect:: could not connect to host=[%s]\n", host.c_str());
     status = 0;
     return false;
   }
@@ -207,13 +213,13 @@ bool MetaserverConnection::sendUpdate(){
 #else
   
   sockaddr_in laddr;
-  unsigned int lalen = sizeof(laddr);
+  socklen_t lalen = sizeof(laddr);
   
   char* myname = new char[NI_MAXHOST];
   char* myip;
   
   gethostname(myname, NI_MAXHOST);
-  getsocketname(sockfd, (sockaddr*)(&laddr), &lalen);
+  getsockname(sockfd, (sockaddr*)(&laddr), &lalen);
   myip = inet_ntoa(laddr.sin_addr);
   
   localname = myname;

@@ -183,7 +183,7 @@ void ListenSocket::process(){
         }
 #else
         
-        temp = acceptConnection(accept(serverFD, NULL, 0));
+        temp = acceptConnection(accept(sockfd, NULL, 0));
 #endif
         if(temp != NULL)
             Network::getNetwork()->addConnection(temp);
