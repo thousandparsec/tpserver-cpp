@@ -354,6 +354,7 @@ void Game::doEndOfTurn()
 
 	// increment the time to the next turn
 	turnTime += turnIncrement;
+        timer->setValid(false);
         delete timer;
         timer = NULL;
         if(secondsToEOT() <= 0)
