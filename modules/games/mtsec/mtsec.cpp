@@ -84,6 +84,7 @@ static char const * const systemNames[] = {
 
 
 extern "C" {
+  #define tp_init libmtsec_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setRuleset(new MTSec());
   }

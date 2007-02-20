@@ -55,6 +55,7 @@
 #include "tpguile.h"
 
 extern "C" {
+  #define tp_init libtpguile_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setTpScheme(new TpGuile());
   }

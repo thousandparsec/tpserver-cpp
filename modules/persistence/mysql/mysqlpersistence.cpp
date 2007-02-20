@@ -50,6 +50,7 @@
 #include "mysqlpersistence.h"
 
 extern "C" {
+  #define tp_init libtpmysql_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setPersistence(new MysqlPersistence());
   }

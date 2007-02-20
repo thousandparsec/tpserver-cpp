@@ -18,7 +18,7 @@
  *
  */
 
-#include <dlfcn.h>
+#include <ltdl.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -45,6 +45,7 @@ PluginManager::~PluginManager(){
   if(!(libs.empty())){
     stop();
   }
+
 }
 
 
@@ -55,6 +56,8 @@ PluginManager *PluginManager::getPluginManager(){
 }
 
 void PluginManager::start(){
+  Logger* log = Logger::getLogger();
+
   std::string list = Settings::getSettings()->get("autoload_plugins");
   size_t pos_c = 0;
   size_t pos_e;
@@ -65,34 +68,49 @@ void PluginManager::start(){
       pos_c = pos_e;
     }
   }else{
-    Logger::getLogger()->info("No automatically loaded plugins were defined in the "
+    log->info("No automatically loaded plugins were defined in the "
         "configuation, add \"autoload_plugins = <comma list of plugins>\" to conf "
         "to have them loaded.");
   }
+
+  /* Initalise the ltdl module. */
+  LTDL_SET_PRELOADED_SYMBOLS();
+  if(lt_dlinit() != 0){
+    // FIXME: Should raise an error here.!
+    log->error("Failed to load initalise the loader %s", lt_dlerror());
+	stop();
+  }
+
+  /* Need to load ourselves before we can load other modules. */
+  lt_dlhandle nlib = lt_dlopen(NULL);
+  if(nlib == NULL){
+    log->error("Failed to load ourselves because %s.", lt_dlerror());
+	stop();
+  }
+
 }
 
 void PluginManager::stop(){
   for(std::map<std::string, void*>::iterator itcurr = libs.begin(); itcurr != libs.end(); ++itcurr){
-    dlclose(itcurr->second);
+    lt_dlclose((lt_dlhandle)itcurr->second);
   }
   libs.clear();
 }
 
 bool PluginManager::load(const std::string& libname){
   Logger* log = Logger::getLogger();
-  dlerror(); // clear errors
-  void* nlib = dlopen(libname.c_str(), RTLD_NOW | RTLD_GLOBAL);
+
+  lt_dlhandle nlib = lt_dlopenext(libname.c_str());
   if(nlib == NULL){
-    log->error("Failed to load plugin \"%s\": \"%s\"", libname.c_str(), dlerror());
+    log->error("Failed to load plugin \"%s\": \"%s\" %p", libname.c_str(), lt_dlerror(), nlib);
     return false;
   }else{
     log->debug("Loaded plugin \"%s\" sucessfully", libname.c_str());
-    dlerror(); // clear errors
     tpinit_function init;
-    *(void **) (&init)= dlsym(nlib, "tp_init");
+    *(void **) (&init)= lt_dlsym(nlib, "tp_init");
     if(init == NULL){
-      log->error("Failed to initialise plugin \"%s\": \"%s\"", libname.c_str(), dlerror());
-      dlclose(nlib);
+      log->error("Failed to initialise plugin \"%s\": \"%s\"", libname.c_str(), lt_dlerror());
+      lt_dlclose(nlib);
       return false;
     }else{
       log->debug("Initialisation function for plugin \"%s\" found", libname.c_str());
@@ -101,7 +119,7 @@ bool PluginManager::load(const std::string& libname){
         libs[libname] = nlib;
       }else{
         log->error("Could not initialise plugin \"%s\"", libname.c_str());
-        dlclose(nlib);
+        lt_dlclose(nlib);
         return false;
       }
     }
@@ -125,21 +143,21 @@ std::string PluginManager::getLoadedLibraryNames() const{
 
 bool PluginManager::loadRuleset(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver/ruleset/lib").append(name) + ".so");
+    return load(std::string(LIBDIR "/tpserver/ruleset/lib").append(name));
   else
     return load(name);
 }
 
 bool PluginManager::loadPersistence(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver/persistence/lib").append(name) + ".so");
+    return load(std::string(LIBDIR "/tpserver/persistence/lib").append(name));
   else
     return load(name);
 }
 
 bool PluginManager::loadTpScheme(const std::string& name){
   if(name.find("/") == name.npos)
-    return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name) + ".so");
+    return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name));
   else
     return load(name);
 }

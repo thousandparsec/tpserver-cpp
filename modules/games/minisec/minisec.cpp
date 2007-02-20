@@ -82,8 +82,8 @@ static char const * const systemNames[] = {
     "Fools Errand",    "Wrenganis",           "Humph",
     "Byzantis",        "Torontis",            "Radiant Pool"};
 
-
 extern "C" {
+  #define tp_init libminisec_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setRuleset(new MiniSec());
   }

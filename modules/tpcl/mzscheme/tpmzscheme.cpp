@@ -49,6 +49,7 @@
 #include "tpmzscheme.h"
 
 extern "C" {
+  #define tp_init libtpmzscheme_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setTpScheme(new TpMzScheme());
   }
