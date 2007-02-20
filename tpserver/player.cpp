@@ -591,6 +591,14 @@ void Player::processGetOrder(Frame * frame)
   } else {
   	Logger::getLogger()->debug("Got single orders, returning one object");
   }
+  
+  if(num_orders == 0){
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "No orders to get");
+    curConnection->sendFrame(of);
+    
+    return;
+  }
 
   for(int i = 0; i < num_orders; i++){
     Frame *of = curConnection->createFrame(frame);
