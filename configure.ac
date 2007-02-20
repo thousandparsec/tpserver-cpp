@@ -175,7 +175,15 @@ if test "$guile_option" != "no"; then
       dnl autoconf Guile version test adapted from SWIG test in xapian-bindings
       v=`$GUILE_CONFIG --version 2>&1|sed 's/^guile-config - Guile version \([[0-9\.]]*\).*/\1/p;d'`
       case $v in
-      [1.6.*|1.[789].*|2.*]) 
+      [1.6.*])
+        GUILE_CFLAGS="`$GUILE_CONFIG compile`"
+        GUILE_LIBS="`$GUILE_CONFIG link`"
+        AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
+        AC_DEFINE(HAVE_GUILE1_6, 1, [Defined to 1 if the guile version is 1.6])
+        AM_CONDITIONAL(GUILE, true)
+        guile_use="yes"
+        ;;
+      [1.[789].*|2.*]) 
         GUILE_CFLAGS="`$GUILE_CONFIG compile`"
         GUILE_LIBS="`$GUILE_CONFIG link`"
         AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])

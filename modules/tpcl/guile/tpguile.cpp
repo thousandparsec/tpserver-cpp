@@ -33,6 +33,16 @@
 #endif
 #endif
 
+#ifdef HAVE_GUILE1_6
+#define scm_from_int scm_int2num
+#define scm_to_double scm_num2double
+#define scm_from_double scm_double2num
+#define scm_pair_p SCM_CONSP
+#define scm_string_p SCM_STRINGP
+#define scm_to_locale_stringn gh_scm2newstr
+#define scm_is_false SCM_FALSEP
+#endif
+
 #include <tpserver/design.h>
 #include <tpserver/logging.h>
 #include <tpserver/designstore.h>
@@ -135,8 +145,8 @@ void TpGuile::setDesignPropertyValue( const PropertyValue & pv)
 {
     scm_call_3( scm_variable_ref( scm_c_lookup( "struct-set!")),
                 scm_variable_ref( scm_c_lookup( "design")),
-                scm_int2num( pv.getPropertyId() + 1),
-                scm_double2num( pv.getValue()));
+                scm_from_int( pv.getPropertyId() + 1),
+                scm_from_double( pv.getValue()));
 }
 
 
@@ -145,8 +155,8 @@ void TpGuile::setDesignComponentCount( const unsigned int count)
 {
     scm_call_3( scm_variable_ref( scm_c_lookup( "struct-set!")),
                 scm_variable_ref( scm_c_lookup( "design")),
-                scm_int2num( 0),
-                scm_int2num( count));
+                scm_from_int( 0),
+                scm_from_int( count));
 }
 
 
@@ -185,7 +195,7 @@ double TpGuile::evalCompProperty( std::string lambdaStr)
         Logger::getLogger()->warning( "Guile: Return not a number");
     }
     else {
-        result = scm_num2double( temp, 1, "evalCompProperty");
+        result = scm_to_double( temp, 1, "evalCompProperty");
     }
 
     return result;
@@ -220,7 +230,7 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
         SCM     s_element;
         SCM     s_element_list;
 
-        s_element = scm_double2num( evalCompProperty(*lambdaIter));
+        s_element = scm_from_double( evalCompProperty(*lambdaIter));
         s_element_list = scm_list_1( s_element);
         s_total_list = scm_append( scm_list_2( s_total_list, s_element_list));
     }
@@ -232,15 +242,15 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
                        s_total_list);
 
     // Place the result of the call to propertyCalculate in a PropertyValue structure.
-    if ( ! SCM_CONSP( temp) ||
+    if ( ! scm_pair_p( temp) ||
          ! SCM_NUMBERP( SCM_CAR( temp)) ||
-         ! SCM_STRINGP( SCM_CDR( temp))) {
+         ! scm_string_p( SCM_CDR( temp))) {
         Logger::getLogger()->warning( "Guile: Return not a pair, or the wrong type in the pair");
     }
     else {
         propval.setPropertyId( p->getPropertyId());
-        propval.setDisplayString( std::string( gh_scm2newstr( SCM_CDR( temp), &length)));
-        propval.setValue( scm_num2double( SCM_CAR( temp), 1, "getPropertyValue"));
+        propval.setDisplayString( std::string( scm_to_locale_stringn( SCM_CDR( temp), &length)));
+        propval.setValue( scm_to_double( SCM_CAR( temp), 1, "getPropertyValue"));
     }
 
     return propval;
@@ -304,13 +314,13 @@ bool TpGuile::evalRequirementFtn( std::string function, std::string & why)
     SCM         temp = scm_c_eval_string( schStr.c_str());
     size_t      length;
 
-    if ( ! SCM_CONSP( temp) ||
-         ! SCM_STRINGP( SCM_CDR( temp))) {
+    if ( ! scm_pair_p( temp) ||
+         ! scm_string_p( SCM_CDR( temp))) {
         Logger::getLogger()->warning( "Guile: (a) Return not a pair, or the wrong type in the pair");
     }
     else {
-        valid = ! SCM_FALSEP( SCM_CAR( temp));
-        why = gh_scm2newstr( SCM_CDR( temp), &length);
+        valid = ! scm_is_false( SCM_CAR( temp));
+        why = scm_to_locale_stringn( SCM_CDR( temp), &length);
     }
 
     return valid;
