@@ -1,6 +1,6 @@
 /*  Tp Guile Interpreter class
  *
- *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 #include <libguile.h>
-#include <guile/gh.h>
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -34,8 +34,9 @@
 #endif
 
 #ifdef HAVE_GUILE1_6
+#include <guile/gh.h>
 #define scm_from_int scm_int2num
-#define scm_to_double scm_num2double
+#define scm_to_double(X) scm_num2dbl(X , NULL)
 #define scm_from_double scm_double2num
 #define scm_pair_p SCM_CONSP
 #define scm_string_p SCM_STRINGP
@@ -195,7 +196,7 @@ double TpGuile::evalCompProperty( std::string lambdaStr)
         Logger::getLogger()->warning( "Guile: Return not a number");
     }
     else {
-        result = scm_to_double( temp, 1, "evalCompProperty");
+        result = scm_to_double( temp );
     }
 
     return result;
@@ -250,7 +251,7 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
     else {
         propval.setPropertyId( p->getPropertyId());
         propval.setDisplayString( std::string( scm_to_locale_stringn( SCM_CDR( temp), &length)));
-        propval.setValue( scm_to_double( SCM_CAR( temp), 1, "getPropertyValue"));
+        propval.setValue( scm_to_double( SCM_CAR( temp) ) );
     }
 
     return propval;
