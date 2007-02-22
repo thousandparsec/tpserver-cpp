@@ -386,11 +386,7 @@ void MiniSec::createGame(){
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
   
-  std::set<const char*> sys_names;
-  
-  for(size_t i = 0; i < sizeof(systemNames) / sizeof(systemNames[0]); i++){
-    sys_names.insert(systemNames[i]);
-  }
+  std::set<const char*> sys_names(systemNames, systemNames + (sizeof(systemNames) / sizeof(systemNames[0])));
   
   //create random systems
   uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
