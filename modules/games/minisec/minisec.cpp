@@ -617,7 +617,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
 
     star->setSize(nplanets * 60000ll);
     star->setType( obT_Star_System);
-    unsigned int   thx = rand() % (sizeof(systemNames) / sizeof(systemNames[0])) +  1;
+    unsigned int   thx = game->getRandom()->getInRange(0, systemnames.size());
     std::set<const char*>::iterator name = systemnames.begin();
     advance(name, thx);
     if(name == systemnames.end())
