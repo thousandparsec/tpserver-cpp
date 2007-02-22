@@ -47,18 +47,16 @@ bool OrderManager::checkOrderType(int type){
 }
 
 void OrderManager::describeOrder(int ordertype, Frame * f){
-  Order* prototype = prototypeStore[ordertype];
-  if(prototype != NULL){
-    prototype->describeOrder(f);
+  if(prototypeStore.find(ordertype) != prototypeStore.end()){
+    prototypeStore[ordertype]->describeOrder(f);
   }else{
     f->createFailFrame(fec_NonExistant, "Order type does not exist");
   }
 }
 
 Order* OrderManager::createOrder(int ot){
-  Order* prototype = prototypeStore[ot];
-  if(prototype != NULL){
-    return prototype->clone();
+  if(prototypeStore.find(ot) != prototypeStore.end()){
+    return prototypeStore[ot]->clone();
   }
   return NULL;
 }
