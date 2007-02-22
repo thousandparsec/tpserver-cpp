@@ -100,7 +100,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
     num_remain = prototypeStore.size() - start - num;
   }
 
-  of->setType(ft03_ObjectIds_List);
+  of->setType(ft03_OrderTypes_List);
   of->packInt(lseqkey);
   of->packInt(num_remain);
   of->packInt(num);
