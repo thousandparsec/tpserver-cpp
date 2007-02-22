@@ -609,7 +609,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
 
     star->setSize(nplanets * 60000ll);
     star->setType( obT_Star_System);
-    unsigned int   thx = rand() % 45 +  1;
+    unsigned int   thx = rand() % (sizeof(systemNames) / sizeof(systemNames[0])) +  1;
     star->setName(systemNames[thx-1]);
     star->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
