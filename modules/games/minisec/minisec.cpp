@@ -386,6 +386,12 @@ void MiniSec::createGame(){
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
   
+  std::set<const char*> sys_names;
+  
+  for(size_t i = 0; i < sizeof(systemNames) / sizeof(systemNames[0]); i++){
+    sys_names.insert(systemNames[i]);
+  }
+  
   //create random systems
   uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
   uint32_t max_systems = atoi(Settings::getSettings()->get("minisec_max_systems").c_str());
@@ -395,11 +401,13 @@ void MiniSec::createGame(){
   }else{
     num_systems =  game->getRandom()->getInRange(min_systems ,max_systems);
   }
+  if(num_systems > sys_names.size()) 
+    num_systems = sys_names.size();
   uint32_t total_planets = atoi(Settings::getSettings()->get("minisec_total_planets").c_str());
   if(total_planets == 0)
     total_planets = 0x0fffffff;
   for (uint32_t counter = 0; counter < num_systems; counter++) {
-    createStarSystem( mw_galaxy, total_planets);
+    createStarSystem( mw_galaxy, total_planets, sys_names);
     if(total_planets <= 0)
       break;
   }
@@ -587,7 +595,7 @@ void MiniSec::onPlayerAdded(Player* player){
 }
 
 // Create a random star system
-IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
+IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames)
 {
     Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
     Game*          game = Game::getGame();
@@ -610,7 +618,12 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets)
     star->setSize(nplanets * 60000ll);
     star->setType( obT_Star_System);
     unsigned int   thx = rand() % (sizeof(systemNames) / sizeof(systemNames[0])) +  1;
-    star->setName(systemNames[thx-1]);
+    std::set<const char*>::iterator name = systemnames.begin();
+    advance(name, thx);
+    if(name == systemnames.end())
+      name = systemnames.begin();
+    star->setName(*name);
+    systemnames.erase(name);
     star->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  0ll));

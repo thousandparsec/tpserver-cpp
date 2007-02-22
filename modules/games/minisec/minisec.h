@@ -2,7 +2,7 @@
 #define MINISEC_H
 /*  MiniSec rulesset class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include <set>
 
 #include <tpserver/ruleset.h>
 
@@ -37,7 +39,7 @@ class MiniSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
 private:
-  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets);
+  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames);
 
 };
 
