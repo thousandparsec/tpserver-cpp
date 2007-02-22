@@ -98,21 +98,28 @@ void MetaserverPublisher::metaserverSettingChanged(const std::string& skey, cons
 }
 
 void MetaserverPublisher::setTimer(){
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
-  }
-  uint64_t seconds = lastpublishtime;
+  
+  uint64_t nextupdatetime = lastpublishtime;
   if(needtoupdate){
-    seconds += 120;
+    nextupdatetime += 120;
   }else{
     uint32_t updatetimer = atoi(Settings::getSettings()->get("metaserver_interval").c_str());
     if(updatetimer == 0) updatetimer = 360;
     if(updatetimer < 120) updatetimer = 120;
     if(updatetimer > 600) updatetimer = 600;
-    seconds += updatetimer;
+    nextupdatetime += updatetimer;
   }
-  seconds -= time(NULL);
+  uint64_t seconds = nextupdatetime - time(NULL);
+  
+  if(timer != NULL){
+    if(timer->getExpireTime() == nextupdatetime){
+      //timer doesn't need updating, don't touch it
+      return;
+    }
+    timer->setValid(false);
+    delete timer;
+  }
+  
   timer = new TimerCallback(this, &MetaserverPublisher::poll, seconds);
   Network::getNetwork()->addTimer(*timer);
 }
