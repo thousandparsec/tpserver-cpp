@@ -29,7 +29,7 @@
 #endif
 
 #include "advertiser.h"
-// #include "logging.h"
+#include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
 #include "net.h"
@@ -38,7 +38,7 @@
 
 #include "metaserverpublisher.h"
 
-MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), key(), timer(NULL){
+MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), key(), timer(NULL), errorcount(0){
   Settings* settings = Settings::getSettings();
   settings->setCallback("metaserver_fake_ip", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
   settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
@@ -68,9 +68,17 @@ void MetaserverPublisher::poll(){
     Network::getNetwork()->addConnection(msc);
     lastpublishtime = time(NULL);
     needtoupdate = false;
+    errorcount = 0;
   }else{
-    lastpublishtime = time(NULL) - 60; //wait a minute before trying again
+    errorcount++;
     needtoupdate = true;
+    if(errorcount < 5){
+      lastpublishtime = time(NULL) - 60; //wait a minute before trying again
+    }else{
+      errorcount = 0;
+      lastpublishtime = time(NULL) + 600; //wait 12 minutes before trying again
+      Logger::getLogger()->warning("Not trying metaserver for 12 minutes");
+    }
     delete msc;
   }
   setTimer();

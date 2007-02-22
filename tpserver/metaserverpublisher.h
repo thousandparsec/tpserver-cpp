@@ -51,6 +51,7 @@ private:
   bool needtoupdate;
   std::string key;
   TimerCallback* timer;
+  int errorcount;
 
 };
 
