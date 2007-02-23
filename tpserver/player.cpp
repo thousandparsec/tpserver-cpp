@@ -819,8 +819,11 @@ void Player::processProbeOrder(Frame * frame){
     of->createFailFrame(fec_NonExistant, "No such order type");
   }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), pid)){
     
-    ord->inputFrame(frame, pid);
-    ord->createFrame(of, obid, pos);
+    if(ord->inputFrame(frame, pid)){
+      ord->createFrame(of, obid, pos);
+    }else{
+      of->createFailFrame(fec_FrameError, "Order not correct format");
+    }
     
   }else{
     
