@@ -38,8 +38,12 @@ void ObjectParameter::packOrderFrame(Frame * f, uint32_t objID){
 }
 
 bool ObjectParameter::unpackFrame(Frame *f, unsigned int playerid){
-  object = f->unpackInt();
-  return true;
+  if(f->getDataLength() - f->getUnpackOffset() >= 4){
+    object = f->unpackInt();
+    return true;
+  }else{
+    return false;
+  }
 }
 
 OrderParameter *ObjectParameter::clone() const{

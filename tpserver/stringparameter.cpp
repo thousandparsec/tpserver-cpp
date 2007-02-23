@@ -39,9 +39,16 @@ void StringParameter::packOrderFrame(Frame * f, uint32_t objID){
 }
 
 bool StringParameter::unpackFrame(Frame *f, unsigned int playerid){
+  if(f->getDataLength() - f->getUnpackOffset() < 8)
+    return false;
   f->unpackInt();
-  string = std::string(f->unpackString());
-  return true;
+  char* ts = f->unpackString();
+  if(ts != NULL){
+    string = std::string(ts);
+    return true;
+  }else{
+    return false;
+  }
 }
 
 OrderParameter *StringParameter::clone() const{

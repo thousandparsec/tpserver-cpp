@@ -40,6 +40,8 @@ void TimeParameter::packOrderFrame(Frame * f, uint32_t objID){
 }
 
 bool TimeParameter::unpackFrame(Frame *f, unsigned int playerid){
+  if(f->getDataLength() - f->getUnpackOffset() < 8)
+    return false;
   turns = f->unpackInt();
   f->unpackInt(); //read only max turns
   return true;

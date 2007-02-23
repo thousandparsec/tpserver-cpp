@@ -39,6 +39,8 @@ void SpaceCoordParam::packOrderFrame(Frame * f, uint32_t objID){
 }
 
 bool SpaceCoordParam::unpackFrame(Frame *f, unsigned int playerid){
+  if(f->getDataLength() - f->getUnpackOffset() < 24)
+    return false;
   position.unpack(f);
   return true;
 }
