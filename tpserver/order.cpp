@@ -92,8 +92,12 @@ void Order::createFrame(Frame * f, int objID, int pos)
 bool Order::inputFrame(Frame * f, unsigned int playerid)
 {
   //ready passed object, position, and type.
+  if(f->getDataLength() - f->getUnpackOffset() < 8)
+    return false;
   f->unpackInt(); // turns, read only
   int ressize = f->unpackInt(); // size of resource list (should be zero)
+  if(f->getDataLength() - f->getUnpackOffset() < 8 * ressize)
+    return false;
   for(int i = 0; i < ressize; i++){
     f->unpackInt(); //The resource id
     f->unpackInt(); //The amount of the resource
