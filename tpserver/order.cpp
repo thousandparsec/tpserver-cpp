@@ -26,7 +26,7 @@
 
 #include "order.h"
 
-Order::Order()
+Order::Order(): type(0), name(), description(), turns(0), resources(), parameters()
 {
   descmodtime = time(NULL);
 }
@@ -92,11 +92,11 @@ void Order::createFrame(Frame * f, int objID, int pos)
 bool Order::inputFrame(Frame * f, unsigned int playerid)
 {
   //ready passed object, position, and type.
-  if(f->getDataLength() - f->getUnpackOffset() < 8)
+  if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt(); // turns, read only
   int ressize = f->unpackInt(); // size of resource list (should be zero)
-  if(f->getDataLength() - f->getUnpackOffset() < 8 * ressize)
+  if(!f->isEnoughRemaining(8 * ressize))
     return false;
   for(int i = 0; i < ressize; i++){
     f->unpackInt(); //The resource id
@@ -106,6 +106,8 @@ bool Order::inputFrame(Frame * f, unsigned int playerid)
   for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     rtv = rtv && (*itcurr)->unpackFrame(f, playerid);
+    if(!rtv)
+      break;
   }
   return rtv;
 }
