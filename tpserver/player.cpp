@@ -647,12 +647,16 @@ void Player::processAddOrder(Frame * frame)
 				of->createFailFrame(fec_NonExistant, "No such order type");
 			} else {
 				
-                            if (ord->inputFrame(frame, pid) && Game::getGame()->getOrderManager()->addOrder(ord, o, pos, pid)) {
+                            if (ord->inputFrame(frame, pid)){
+                              if(Game::getGame()->getOrderManager()->addOrder(ord, o, pos, pid)) {
 				    of->setType(ft02_OK);
 					of->packString("Order Added");
 				} else {
 					of->createFailFrame(fec_TempUnavailable, "Could not add order");
 				}
+                            }else{
+                              of->createFailFrame(fec_FrameError, "Could not add order, could not unpack frame");
+                            }
 			}
                 Game::getGame()->getObjectManager()->doneWithObject(objectID);
 		}
