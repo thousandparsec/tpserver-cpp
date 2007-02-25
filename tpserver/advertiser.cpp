@@ -22,10 +22,12 @@
 #include "config.h"
 #endif
 
-// #include "logging.h"
+#include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
 #include "publisher.h"
+#include "timercallback.h"
+#include "net.h"
 
 #ifdef HAVE_AVAHI
 #include "avahi.h"
@@ -35,7 +37,7 @@
 #include "advertiser.h"
 
 
-Advertiser::Advertiser() : services(), publishers(), publishing(false){
+Advertiser::Advertiser() : services(), publishers(), publishing(false), metaserver_warning(NULL){
   Settings* settings = Settings::getSettings();
   settings->setCallback("server_name", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
@@ -63,6 +65,12 @@ void Advertiser::publish(){
 #endif
   if(Settings::getSettings()->get("metaserver_enable") == "yes"){
     publishers.insert(new MetaserverPublisher(this));
+  }else{
+    Logger::getLogger()->warning("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
+    if(Settings::getSettings()->get("metaserver_enable") != "no"){
+      metaserver_warning = new TimerCallback(this, &Advertiser::metaserverWarning, 600);
+      Network::getNetwork()->addTimer(*metaserver_warning);
+    }
   }
   publishing = true;
   updatePublishers();
@@ -70,6 +78,11 @@ void Advertiser::publish(){
 
 void Advertiser::unpublish(){
   publishing = false;
+  if(metaserver_warning != NULL){
+    metaserver_warning->setValid(false);
+    delete metaserver_warning;
+    metaserver_warning = NULL;
+  }
   for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
     delete (*itcurr);
   }
@@ -115,6 +128,11 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
           }
         }
       }else{
+        if(metaserver_warning != NULL){
+          metaserver_warning->setValid(false);
+          delete metaserver_warning;
+          metaserver_warning = NULL;
+        }
         bool found = false;
         for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
           if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
@@ -130,4 +148,11 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
   }else{
     updatePublishers();
   }
+}
+
+void Advertiser::metaserverWarning(){
+  Logger::getLogger()->warning("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
+  delete metaserver_warning;
+  metaserver_warning = new TimerCallback(this, &Advertiser::metaserverWarning, 600);
+  Network::getNetwork()->addTimer(*metaserver_warning);
 }
