@@ -62,7 +62,7 @@ bool ListParameter::unpackFrame(Frame *f, unsigned int playerid){
     char* name = f->unpackString();
     if(name != NULL)
       delete[] name;
-    if(f->getDataLength() - f->getUnpackOffset() < 8 + (selsize - i + 1) * 3)
+    if(f->getDataLength() - f->getUnpackOffset() < 8 + (selsize - i + 1) * 12)
       return false;
     f->unpackInt(); 
   }
