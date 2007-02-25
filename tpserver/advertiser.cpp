@@ -40,7 +40,7 @@ Advertiser::Advertiser() : services(), publishers(), publishing(false){
   settings->setCallback("server_name", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("admin_email", SettingsCallback(this, &Advertiser::settingChanged));
-  settings->setCallback("metaserver_disable", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("metaserver_enable", SettingsCallback(this, &Advertiser::settingChanged));
 }
 
 
@@ -50,7 +50,7 @@ Advertiser::~Advertiser(){
   settings->removeCallback("server_name");
   settings->removeCallback("game_comment");
   settings->removeCallback("admin_email");
-  settings->removeCallback("metaserver_disable");
+  settings->removeCallback("metaserver_enable");
 }
 
 void Advertiser::publish(){
@@ -61,7 +61,7 @@ void Advertiser::publish(){
     // do nothing, maybe warn of no mdns-sd
   }
 #endif
-  if(Settings::getSettings()->get("metaserver_disable") != "yes"){
+  if(Settings::getSettings()->get("metaserver_enable") == "yes"){
     publishers.insert(new MetaserverPublisher(this));
   }
   publishing = true;
@@ -104,9 +104,9 @@ void Advertiser::updatePublishers(){
 }
 
 void Advertiser::settingChanged(const std::string& skey, const std::string& value){
-  if(skey == "metaserver_disable"){
+  if(skey == "metaserver_enable"){
     if(publishing){
-      if(value == "yes"){
+      if(value != "yes"){
         for(std::set<Publisher*>::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
           if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
             delete (*itcurr);
