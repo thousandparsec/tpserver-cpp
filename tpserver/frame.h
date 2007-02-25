@@ -2,7 +2,7 @@
 #define FRAME_H
 /*  TP protocol Frame class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include <stdint.h>
 
 typedef enum {
 	fv0_1 = 1,
@@ -155,6 +157,7 @@ class Frame {
 		bool packInt8(char val);
 		bool packData(unsigned int len, char* bdata);
 
+                bool isEnoughRemaining(int32_t size) const;
 		// uses these functions with care
 		int getUnpackOffset() const;
 		bool setUnpackOffset(int newoffset);

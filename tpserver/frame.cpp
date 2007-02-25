@@ -1,6 +1,6 @@
 /*  Frame class, the network packets for the TP procotol
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -362,6 +362,11 @@ bool Frame::packData(unsigned int len, char* bdata){
     return false;
   }
   return true;
+}
+
+bool Frame::isEnoughRemaining(int32_t size) const{
+  Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
+  return (length - unpackptr) >= size;
 }
 
 int Frame::getUnpackOffset() const
