@@ -68,7 +68,7 @@ void ConsoleLogger::doLogging( int level, char* msg) const
             levelStr << colourStrings[level];
         levelStr << levelStrings[level];
         if ( colour)
-            levelStr << "\e[0;m";
+            levelStr << "\e[0m";
     }
     else
         levelStr << " <  " << level << "  > ";
