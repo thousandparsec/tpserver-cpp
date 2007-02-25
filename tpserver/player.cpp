@@ -822,7 +822,8 @@ void Player::processProbeOrder(Frame * frame){
     if(ord->inputFrame(frame, pid)){
       ord->createFrame(of, obid, pos);
     }else{
-      of->createFailFrame(fec_FrameError, "Order not correct format");
+      of->createFailFrame(fec_FrameError, "Order could not be unpacked correctly, invalid order");
+      Logger::getLogger()->debug("Probe Order, could not unpack order");
     }
     
   }else{
