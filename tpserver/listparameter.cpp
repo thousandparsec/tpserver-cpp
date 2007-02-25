@@ -52,25 +52,25 @@ void ListParameter::packOrderFrame(Frame * f, uint32_t objID){
 }
 
 bool ListParameter::unpackFrame(Frame *f, unsigned int playerid){
-  if(f->getDataLength() - f->getUnpackOffset() < 8)
+  if(!f->isEnoughRemaining(8))
     return false;
   int selsize = f->unpackInt(); // selectable list (should be zero)
-  if(f->getDataLength() - f->getUnpackOffset() < 4 + selsize * 12)
+  if(!f->isEnoughRemaining(4 + selsize * 12))
     return false;
   for(int i = 0; i < selsize; i++){
     f->unpackInt();
     char* name = f->unpackString();
     if(name != NULL)
       delete[] name;
-    if(f->getDataLength() - f->getUnpackOffset() < 8 + (selsize - i + 1) * 12)
+    if(!f->isEnoughRemaining(8 + (selsize - i + 1) * 12))
       return false;
     f->unpackInt(); 
   }
   
   int listsize = f->unpackInt();
-  if(f->getDataLength() - f->getUnpackOffset() < listsize * 8)
+  if(!f->isEnoughRemaining(listsize * 8))
     return false;
-  for(int i = f->unpackInt(); i > 0; i--){
+  for(int i = listsize; i > 0; i--){
     uint32_t key = f->unpackInt();
     uint32_t value = f->unpackInt();
     list[key] = value;
