@@ -18,7 +18,7 @@ AC_PROG_MAKE_SET
 
 dnl Enable building of the convenience library
 dnl and set LIBLTDL accordingly
-AC_LIBLTDL_INSTALLABLE
+AC_LIBLTDL_CONVENIENCE
 dnl Substitute LTDLINCL and LIBLTDL in the Makefiles
 AC_SUBST(LTDLINCL)
 AC_SUBST(LIBLTDL)

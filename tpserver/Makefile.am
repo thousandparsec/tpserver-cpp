@@ -53,8 +53,13 @@ noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
 	metaserverconnection.h
+
+INCLUDES = $(LTDLINCL)
+
 # FIXME: the dlopens should be dependent on what is configured to run.
-tpserver_cpp_LDADD = -lltdl @libgnutls_LIBS@ @libtprl_LIBS@ @avahiclient_LIBS@ "-dlopen" ../modules/games/minisec/.libs/libminisec.la "-dlopen" ../modules/tpcl/guile/.libs/libtpguile.la 
-tpserver_cpp_DEPENDENCIES = 
+tpserver_cpp_LDADD = @libgnutls_LIBS@ @libtprl_LIBS@ @avahiclient_LIBS@ $(LIBLTDL) "-dlopen" self
+tpserver_cpp_DEPENDENCIES = $(LIBLTDL) 
 AM_CXXFLAGS = @libgnutls_CFLAGS@ @libtprl_CFLAGS@ @avahiclient_CFLAGS@
 tpserver_cpp_LDFLAGS = -export-dynamic 
+
+

@@ -1,4 +1,4 @@
-SUBDIRS = modules tpserver
+SUBDIRS = libltdl modules tpserver
 
 man_MANS = tpserver-cpp.1
 
