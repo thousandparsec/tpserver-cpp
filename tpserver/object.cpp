@@ -181,19 +181,27 @@ void IGObject::setPosition(const Vector3d & npos)
 }
 
 void IGObject::setFuturePosition(const Vector3d & npos){
+  setFuturePosition(npos, false);
+}
+
+void IGObject::setFuturePosition(const Vector3d & npos, bool isend){
   futurepos = npos;
 }
 
 void IGObject::updatePosition(){
-    Vector3d nvel = futurepos - pos;
+  Vector3d nvel = futurepos - pos;
+  if (futureposIsEnd) {
     if(nvel != vel){
-        vel = nvel;
-        touchModTime();
+      vel = nvel;
+      touchModTime();
     }
+  } else {
+    vel.setAll(0, 0, 0);
+  }
 
   // recontainerise if necessary
-    int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();
-    myGame->getObjectManager()->doneWithObject(parentid);
+  int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();
+  myGame->getObjectManager()->doneWithObject(parentid);
 
   if(pos != futurepos && containertype >= 1){
     //removeFromParent();

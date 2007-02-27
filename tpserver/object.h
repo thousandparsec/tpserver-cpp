@@ -58,6 +58,7 @@ class IGObject {
 	void setName(const char *newname);
 	void setPosition(const Vector3d & npos);
 	void setFuturePosition(const Vector3d & npos);
+	void setFuturePosition(const Vector3d & npos, bool isend);
 	void updatePosition();
 	void setVelocity(const Vector3d & nvel);
 	
@@ -95,7 +96,11 @@ class IGObject {
 	unsigned long long size;
 	char *name;
 	Vector3d pos;
+
+	// Where the object will be next turn
 	Vector3d futurepos;
+	bool futureposIsEnd; // Is the future position the destination
+
 	Vector3d vel;
 	
 	unsigned int parentid;

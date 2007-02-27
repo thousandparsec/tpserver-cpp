@@ -88,7 +88,7 @@ bool Move::doOrder(IGObject * ob){
 
   if(distance < max_speed){
   
-    ob->setFuturePosition(dest);
+    ob->setFuturePosition(dest, true);
     
     Message * msg = new Message();
     msg->setSubject("Move order complete");
