@@ -38,16 +38,16 @@ class Design{
   unsigned int getDesignId() const;
   unsigned int getCategoryId() const;
   std::string getName() const;
-    std::string getDescription() const;
+  std::string getDescription() const;
   unsigned int getOwner() const;
   std::map<unsigned int, unsigned int> getComponents() const;
   unsigned int getNumExist() const;
-    uint32_t getInUse() const;
+  uint32_t getInUse() const;
   bool isValid() const;
-    std::string getFeedback() const;
+  std::string getFeedback() const;
   double getPropertyValue(unsigned int propid) const;
-    std::map<uint32_t, PropertyValue> getPropertyValues() const;
-    uint64_t getModTime() const;
+  std::map<uint32_t, PropertyValue> getPropertyValues() const;
+  uint64_t getModTime() const;
 
   void setDesignId(unsigned int id);
   void setCategoryId(unsigned int id);
@@ -55,18 +55,18 @@ class Design{
   void setDescription(const std::string& d);
   void setOwner(unsigned int o);
   void setComponents(std::map<unsigned int, unsigned int> cl);
-    void setInUse(uint32_t niu);
-    void setNumExist(uint32_t nne);
-    void setModTime(uint64_t nmt);
+  void setInUse(uint32_t niu);
+  void setNumExist(uint32_t nne);
+  void setModTime(uint64_t nmt);
 
   void eval();
   void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);
   void setValid(bool v, const std::string& f);
 
-    void addUnderConstruction(uint32_t num);
-    void addComplete(uint32_t num);
-    void removeCanceledConstruction(uint32_t num);
-    void removeDestroyed(uint32_t num);
+  void addUnderConstruction(uint32_t num);
+  void addComplete(uint32_t num);
+  void removeCanceledConstruction(uint32_t num);
+  void removeDestroyed(uint32_t num);
 
  protected:
   unsigned int designid;
