@@ -2,7 +2,7 @@
 #define PLAYERCONNECTION_H
 /*  Player Connection class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include <stdint.h>
 
 class Player;
 
@@ -55,7 +57,7 @@ class PlayerConnection: public Connection {
   Player *player;
   
   FrameVersion version;
-  
+  uint64_t lastpingtime;
 };
 
 #endif

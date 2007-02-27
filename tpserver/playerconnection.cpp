@@ -20,6 +20,7 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -35,19 +36,17 @@
 
 #include "playerconnection.h"
 
-PlayerConnection::PlayerConnection() : Connection()
+PlayerConnection::PlayerConnection() : Connection(), player(NULL), version(fv0_3)
 {
-	player = NULL;
-        version = fv0_3;
+  lastpingtime = time(NULL);
 }
 
 
-PlayerConnection::PlayerConnection(int fd) : Connection()
+PlayerConnection::PlayerConnection(int fd) : Connection(), player(NULL), version(fv0_3)
 {
-	sockfd = fd;
-	status = 1;
-	player = NULL;
-        version = fv0_3;
+  sockfd = fd;
+  status = 1;
+  lastpingtime = time(NULL);
 }
 
 PlayerConnection::~PlayerConnection()
@@ -225,45 +224,50 @@ void PlayerConnection::login()
 
 void PlayerConnection::inGameFrame()
 {
-	Frame *frame = createFrame();
-	if (readFrame(frame)) {
-		
-		if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
-		  Logger::getLogger()->debug("Processing Get Features frame");
-		  Frame *features = createFrame(frame);
-		  Network::getNetwork()->createFeaturesFrame(features);
-		  sendFrame(features);
-		}else if(version >= fv0_3 && frame->getType() == ft03_Ping){
-		  Logger::getLogger()->debug("Processing Ping frame");
-		  // check for the time of the last frame, ignore this if
-		  //  less than 60 seconds ago.
-		  //TODO last frame check
-		  Frame *pong = createFrame(frame);
-		  pong->setType(ft02_OK);
-		  pong->packString("Keep alive ok, hope you're still there");
-		  sendFrame(pong);
-                }else if(frame->getType() == ft02_Time_Remaining_Get){
-                    Logger::getLogger()->debug("Processing Get Time frame");
-                    Frame *time = createFrame(frame);
-                    time->setType(ft02_Time_Remaining);
-                    time->packInt(Game::getGame()->secondsToEOT());
-                    sendFrame(time);
-		}else{
-		  if(Game::getGame()->isStarted()){
-		    // should pass frame to player to do something with
-		    Logger::getLogger()->debug("inGameFrame");
-		    player->processIGFrame(frame);
-		  }else{
-		    Frame *gns = createFrame(frame);
-		    gns->createFailFrame(fec_TempUnavailable, "Game has not yet started, please wait");
-		    sendFrame(gns);
-		    delete frame;
-		  }
-		}
-	} else {
-		Logger::getLogger()->debug("noFrame :(");
-		// client closed
-		delete frame;
-	}
+  Frame *frame = createFrame();
+  if (readFrame(frame)) {
+    
+    if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
+      Logger::getLogger()->debug("Processing Get Features frame");
+      Frame *features = createFrame(frame);
+      Network::getNetwork()->createFeaturesFrame(features);
+      sendFrame(features);
+    }else if(version >= fv0_3 && frame->getType() == ft03_Ping){
+      Logger::getLogger()->debug("Processing Ping frame");
+      // check for the time of the last frame, ignore this if
+      //  less than 60 seconds ago.
+      if(lastpingtime < time(NULL) - 60){
+        lastpingtime = time(NULL);
+        Frame *pong = createFrame(frame);
+        pong->setType(ft02_OK);
+        pong->packString("Keep alive ok, hope you're still there");
+        sendFrame(pong);
+        Logger::getLogger()->debug("Did ping for client %d", sockfd);
+      }else{
+        Logger::getLogger()->warning("Client %d tried to ping within 60 seconds of the last ping", sockfd);
+      }
+    }else if(frame->getType() == ft02_Time_Remaining_Get){
+      Logger::getLogger()->debug("Processing Get Time frame");
+      Frame *time = createFrame(frame);
+      time->setType(ft02_Time_Remaining);
+      time->packInt(Game::getGame()->secondsToEOT());
+      sendFrame(time);
+    }else{
+      if(Game::getGame()->isStarted()){
+        // should pass frame to player to do something with
+        Logger::getLogger()->debug("inGameFrame");
+        player->processIGFrame(frame);
+      }else{
+        Frame *gns = createFrame(frame);
+        gns->createFailFrame(fec_TempUnavailable, "Game has not yet started, please wait");
+        sendFrame(gns);
+        delete frame;
+      }
+    }
+  } else {
+    Logger::getLogger()->debug("noFrame :(");
+    // client closed
+    delete frame;
+  }
 }
 
