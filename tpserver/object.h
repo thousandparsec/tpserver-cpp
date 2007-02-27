@@ -23,6 +23,7 @@
 #include <list>
 #include <set>
 #include <map>
+#include <stdint.h>
 
 // must try to fix this
 
