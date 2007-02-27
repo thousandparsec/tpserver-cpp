@@ -2,7 +2,7 @@
 #define OBJECT_H
 /*  In Game Object class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,8 +57,7 @@ class IGObject {
 	void setSize(unsigned long long newsize);
 	void setName(const char *newname);
 	void setPosition(const Vector3d & npos);
-	void setFuturePosition(const Vector3d & npos);
-	void setFuturePosition(const Vector3d & npos, bool isend);
+	void setFuturePosition(const Vector3d & npos, bool isend = false);
 	void updatePosition();
 	void setVelocity(const Vector3d & nvel);
 	

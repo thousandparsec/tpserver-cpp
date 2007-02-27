@@ -1,6 +1,6 @@
 /*  In Game Objects in the game universe
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -179,10 +179,6 @@ void IGObject::setPosition(const Vector3d & npos)
 	futurepos = npos;
 	futureposIsEnd = true;
 	touchModTime();
-}
-
-void IGObject::setFuturePosition(const Vector3d & npos){
-  setFuturePosition(npos, false);
 }
 
 void IGObject::setFuturePosition(const Vector3d & npos, bool isend){
