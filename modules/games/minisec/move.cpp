@@ -63,7 +63,9 @@ int Move::getETA(IGObject *ob) const{
   unsigned long long distance = coords->getPosition().getDistance(ob->getPosition());
   unsigned long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
   
-  return (int)(distance / max_speed) + 1;
+  if(distance == 0) 
+    return 1;
+  return (int)((distance - 1) / max_speed) + 1;
 }
 
 void Move::createFrame(Frame * f, int objID, int pos)
@@ -86,7 +88,7 @@ bool Move::doOrder(IGObject * ob){
 
   Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
 	ob->getID(), distance, max_speed, distance/max_speed);
-  if(distance < max_speed){
+  if(distance <= max_speed){
     Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Is arriving at [%lld, %lld, %lld] ", 
       ob->getID(), dest.getX(), dest.getY(), dest.getZ());
   
