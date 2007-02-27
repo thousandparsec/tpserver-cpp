@@ -84,9 +84,11 @@ bool Move::doOrder(IGObject * ob){
   unsigned long long distance = dest.getDistance(ob->getPosition());
   unsigned long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
 
-  Logger::getLogger()->debug("Moving %lld at %lld speed", distance, max_speed);
-
+  Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
+	ob->getID(), distance, max_speed, distance/max_speed);
   if(distance < max_speed){
+    Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Is arriving at [%lld, %lld, %lld] ", 
+      ob->getID(), dest.getX(), dest.getY(), dest.getZ());
   
     ob->setFuturePosition(dest, true);
     
@@ -100,12 +102,12 @@ bool Move::doOrder(IGObject * ob){
     return true;
 
   }else{
-    
     Vector3d velo = (dest - ob->getPosition()).makeLength(max_speed);
+    Vector3d arriveat = ob->getPosition()+velo;
+    Logger::getLogger()->debug("Move->doOrder(%d): Velocity is [%lld, %lld, %lld] (will arrive at [%lld, %lld, %lld])", 
+      ob->getID(), velo.getX(), velo.getY(), velo.getZ(), arriveat.getX(), arriveat.getY(), arriveat.getZ());
 
-    Logger::getLogger()->debug("velo [%lld, %lld, %lld]", velo.getX(), velo.getY(), velo.getZ());
-
-    ob->setFuturePosition(ob->getPosition() + velo);
+    ob->setFuturePosition(arriveat);
 
     return false;
   }

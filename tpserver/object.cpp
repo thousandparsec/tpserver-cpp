@@ -177,6 +177,7 @@ void IGObject::setPosition(const Vector3d & npos)
 {
 	pos = npos;
 	futurepos = npos;
+	futureposIsEnd = true;
 	touchModTime();
 }
 
@@ -186,11 +187,15 @@ void IGObject::setFuturePosition(const Vector3d & npos){
 
 void IGObject::setFuturePosition(const Vector3d & npos, bool isend){
   futurepos = npos;
+  futureposIsEnd = isend;
 }
 
 void IGObject::updatePosition(){
+  Logger::getLogger()->debug("Object(%d)->updatePosition(): Moving object to [%lld, %lld, %lld] (which is the destination? %s)",
+	getID(), futurepos.getX(), futurepos.getY(), futurepos.getZ(), (futureposIsEnd ? "Yes": "No")); 
+
   Vector3d nvel = futurepos - pos;
-  if (futureposIsEnd) {
+  if (!futureposIsEnd) {
     if(nvel != vel){
       vel = nvel;
       touchModTime();
@@ -198,6 +203,9 @@ void IGObject::updatePosition(){
   } else {
     vel.setAll(0, 0, 0);
   }
+
+  Logger::getLogger()->debug("Object(%d)->updatePosition(): Velocity is now [%lld, %lld, %lld]",
+	getID(), vel.getX(), vel.getY(), vel.getZ()); 
 
   // recontainerise if necessary
   int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();

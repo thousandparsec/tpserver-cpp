@@ -19,6 +19,7 @@
  */
 
 #include <math.h>
+#include <cassert>
 
 #include "frame.h"
 
@@ -83,6 +84,7 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
 Vector3d Vector3d::makeLength(long long length) const{
   Vector3d rtn;
   double len = sqrt(((double)x * (double)x) + ((double)y * (double)y) + ((double)z * (double)z));
+  assert(len > 0);
   rtn.x = (long long)((double)x * (double)length / len);
   rtn.y = (long long)((double)y * (double)length / len);
   rtn.z = (long long)((double)z * (double)length / len);
