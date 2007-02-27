@@ -2,7 +2,7 @@
 #define CATEGORY_H
 /*  Category class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <stdint.h>
 
 class Frame;
 class Design;
@@ -33,7 +34,7 @@ class Category{
   unsigned int getCategoryId() const;
   std::string getName() const;
   std::string getDescription() const;
-    uint64_t getModTime() const;
+  uint64_t getModTime() const;
   void packFrame(Frame* frame) const;
 
   virtual bool doAddDesign(Design* d);
@@ -42,13 +43,13 @@ class Category{
   void setCategoryId(unsigned int c);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
-    void setModTime(uint64_t nmt);
+  void setModTime(uint64_t nmt);
 
  protected:
   unsigned int catid;
   std::string name;
   std::string desc;
-    uint64_t modtime;
+  uint64_t modtime;
 
 };
 

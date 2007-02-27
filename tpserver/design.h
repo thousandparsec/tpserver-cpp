@@ -22,6 +22,7 @@
 
 #include <string>
 #include <map>
+#include <stdint.h>
 
 #include <tpserver/propertyvalue.h>
 
