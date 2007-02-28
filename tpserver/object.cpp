@@ -213,14 +213,18 @@ void IGObject::updatePosition(){
     for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
       Logger::getLogger()->debug("Container object %d", *itcurr);
       //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-      if(*itcurr != id && myGame->getObjectManager()->getObject(*itcurr)->size >= size){
-        if(*itcurr != parentid){
-            removeFromParent();
-            addToParent(*itcurr);
+      if(*itcurr != id){
+        IGObject* testedobject = myGame->getObjectManager()->getObject(*itcurr);
+        if(testedobject->size >= size){
+          if(*itcurr != parentid){
+              removeFromParent();
+              addToParent(*itcurr);
+          }
+          myGame->getObjectManager()->doneWithObject(*itcurr);
+          break;
         }
-	break;
-      }
         myGame->getObjectManager()->doneWithObject(*itcurr);
+      }
     }
     if(parentid == 0){
         removeFromParent();
