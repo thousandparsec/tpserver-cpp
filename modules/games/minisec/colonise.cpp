@@ -90,19 +90,28 @@ bool Colonise::doOrder(IGObject * ob){
 
   IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
   if(target == NULL){
+    Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target was not valid.", ob->getID());
+
     Message * msg = new Message();
     msg->setSubject("Colonise order canceled");
     msg->setBody("The target planet doesn't exist");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
     Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+
     return true;
   }
+  Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target id is %d", 
+    ob->getID(), target->getID());
+  Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Current position is [%lld, %lld, %lld]", 
+    ob->getID(), ob->getPosition().getX(), ob->getPosition().getY(), ob->getPosition().getZ());
+  Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target position is [%lld, %lld, %lld]", 
+    ob->getID(), target->getPosition().getX(), target->getPosition().getY(), target->getPosition().getZ());
+
   moveorder->setDest(target->getPosition());
   Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
   
   if(moveorder->doOrder(ob)){
-
     Message * msg = new Message();
     msg->addReference(rst_Object, ob->getID());
 
@@ -110,8 +119,11 @@ bool Colonise::doOrder(IGObject * ob){
     Planet *planet = (Planet*)(Game::getGame()->getObjectManager()->getObject(object->getObjectId())->getObjectData());
     
     if(planet->getOwner() != fleet->getOwner()){
-      
+
       if(planet->getOwner() != 0){
+        Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Need to preform combat!?", 
+          ob->getID());
+      
 	//combat
 	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
 	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(object->getObjectId()));
@@ -133,6 +145,8 @@ bool Colonise::doOrder(IGObject * ob){
 	}
       }
       
+      Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): shiptype %d", 
+        ob->getID(), shiptype);
       if(shiptype != 0){
 	planet->setOwner(fleet->getOwner());
 	
@@ -154,6 +168,9 @@ bool Colonise::doOrder(IGObject * ob){
       }
       
     }else{
+      Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Was already owned by the player!", 
+        ob->getID());
+
       msg->setSubject("Colonisation failed");
       msg->setBody("You already own the planet you tried to colonise");
       msg->addReference(rst_Action_Order, rsorav_Canceled);
