@@ -1,3 +1,35 @@
+01 Mar 07 - Lee
+    * Version 0.4.1
+    * Metaserver setting for turning on sending updates
+    * Signal Handler for exiting cleanly
+    * PlayerTlsConnection using PlayerTcpConnection, gaining non-blocking support
+    * Added Mersenne Twister (mt19937), for PRNG
+    * Home Planet resource in minisec
+    * Resources for MTSec added
+    * Updated console to libtprl 0.1.2, added prompt and fixed bugs, and redisplaying line
+    * Removed reconfigure method for LogSinks, use SettingCallbacks instead
+    * Made sizes of star systems fit closer in minisec
+    * Fixed removing ships from fleets in minisec
+    * Fixed spelling on property name in Minisec
+    * Invalid the Game turn timer incase run from the console in EOT processing
+    * Removed guest/guest refuse hack
+    * Added support for guile 1.8 (thanks JLP for testing)
+    * Fixed mini-ipv6 MetaserverConnection (thanks mithro)
+    * Made sure getOrder returns at least one frame
+    * Metaserver update doesn't try for 12 minutes after 5 connection errors (bug from nash)
+    * Minisec universe generation doesn't re-use star system names (bug from nash)
+    * Fixed GetOrderType_List frame type (bug from nash)
+    * No longer crashes on unknown order type (bug from nash)
+    * Proper length remaining checking in order and orderparameter unpacking (bug from nash)
+    * Fixed terminal color reseting (bug from nash)
+    * Warnings when metaserver updates are disabled
+    * Port from dlopen to libltdl (thanks mithro)
+    * Include libltdl in tree because Debian and Ubuntu (thanks mithro)
+    * Velocity is now where it should be next turn (thanks mithro)
+    * ETA calcuation for Move orders in Minisec fixed (bug from nash)
+    * Added Ping limiting code
+    * Logging added (thanks mithro) and some reformating
+
 31 Jan 07 - Lee
     * Version 0.4.0
     * Fixed corner cases in Build orders
