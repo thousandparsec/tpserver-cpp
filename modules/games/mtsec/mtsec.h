@@ -35,8 +35,6 @@ class MTSec : public Ruleset{
   void doOnceATurn();
   bool onAddPlayer(Player* player);
   void onPlayerAdded(Player* player);
-  unsigned int getIDForProp( const std::string& propName);
-  unsigned int getIDForComp( const std::string& compName);
 
  protected:
   // Property definition methods
@@ -102,7 +100,7 @@ class MTSec : public Ruleset{
 
  private:
   std::map<std::string,unsigned int>  propertyIndex;
-  std::map<std::string,unsigned int>  componentIndex;
+  uint32_t compMax;
 
 };
 

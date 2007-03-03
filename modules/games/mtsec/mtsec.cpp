@@ -150,16 +150,7 @@ void MTSec::initGame() {
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
 
-}
-
-
-unsigned int MTSec::getIDForProp( const std::string& propName) {
-    return propertyIndex[propName];
-}
-
-
-unsigned int MTSec::getIDForComp( const std::string& compName) {
-    return componentIndex[compName];
+    compMax = 13;
 }
 
 
@@ -519,7 +510,6 @@ void MTSec::createScoutHullComp()
     propertylist[propertyIndex["_num-components"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -557,7 +547,6 @@ void MTSec::createBattleScoutHullComp()
     propertylist[propertyIndex["num-hulls"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -591,7 +580,6 @@ void MTSec::createCerium3AmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -625,7 +613,6 @@ void MTSec::createCerium6AmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -659,7 +646,6 @@ void MTSec::createCerium12AmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -693,7 +679,6 @@ void MTSec::createUraniumAmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -727,7 +712,6 @@ void MTSec::createAntiparticleAmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -761,7 +745,6 @@ void MTSec::createAntimatterAmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -795,7 +778,6 @@ void MTSec::createThoriumAmmoComp()
     propertylist[propertyIndex["num-ammo"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -835,7 +817,6 @@ void MTSec::createAlphaMissileBayComp()
     propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -875,7 +856,6 @@ void MTSec::createBetaMissileBayComp()
     propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -915,7 +895,6 @@ void MTSec::createGammaMissileBayComp()
     propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -955,7 +934,6 @@ void MTSec::createDeltaMissileBayComp()
     propertylist[propertyIndex["num-baytypes"]] = "(lambda (design) 1)";
     comp->setPropertyList(propertylist);
     ds->addComponent(comp);
-    componentIndex[comp->getName()] = comp->getComponentId();
 
     return;
 }
@@ -1030,6 +1008,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
+    ResourceManager* resman = game->getResourceManager();
     IGObject*      ac = game->getObjectManager()->createNewObject();
     IGObject*      acprime = game->getObjectManager()->createNewObject();
 
@@ -1045,6 +1024,15 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     acprime->setType(obT_Planet);
     acprime->setName("Alpha Centauri Prime");
     acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(acprime->getObjectData()))->setResources(ress);
     acprime->addToParent(ac->getID());
     obman->addObject(acprime);
 
@@ -1057,6 +1045,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
+    ResourceManager* resman = game->getResourceManager();
     IGObject*      sirius = game->getObjectManager()->createNewObject();
     IGObject*      s1 = game->getObjectManager()->createNewObject();
 
@@ -1072,6 +1061,15 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     s1->setType(obT_Planet);
     s1->setName("Sirius 1");
     s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(s1->getObjectData()))->setResources(ress);
     s1->addToParent(sirius->getID());
     obman->addObject(s1);
 
@@ -1119,6 +1117,19 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         planet->setPosition( star->getPosition() + Vector3d( nplanets * 40000ll,
                                                              nplanets * -35000ll,
                                                              0ll));
+
+        ResourceManager* resman = game->getResourceManager();
+        std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+        ress[resman->getResourceDescription("Home Planet")->getResourceType()] =  std::pair<uint32_t, uint32_t>(1, 0);
+        ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+        ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+        ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+        ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+        ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+        ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+        ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+        ((Planet*)(planet->getObjectData()))->setResources(ress);
+
         planet->addToParent( star->getID());
         obman->addObject( planet);
         nplanets++;
@@ -1134,11 +1145,13 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
+    ResourceManager* resman = game->getResourceManager();
     IGObject*      sol = game->getObjectManager()->createNewObject();
     IGObject*      earth = game->getObjectManager()->createNewObject();
     IGObject*      venus = game->getObjectManager()->createNewObject();
     IGObject*      mars = game->getObjectManager()->createNewObject();
-
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    
     sol->setSize(1400000ll);
     sol->setType(obT_Star_System);
     sol->setName("Sol/Terra System");
@@ -1151,20 +1164,48 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     earth->setType(obT_Planet);
     earth->setName("Earth/Terra");
     earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(earth->getObjectData()))->setResources(ress);
     earth->addToParent(sol->getID());
     obman->addObject(earth);
+
+    ress.clear();
 
     venus->setSize(2);
     venus->setType(obT_Planet);
     venus->setName("Venus");
     venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(venus->getObjectData()))->setResources(ress);
     venus->addToParent(sol->getID());
     obman->addObject(venus);
+
+    ress.clear();
 
     mars->setSize(1);
     mars->setType(obT_Planet);
     mars->setName("Mars");
     mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(mars->getObjectData()))->setResources(ress);
     mars->addToParent(sol->getID());
     obman->addObject(mars);
 
@@ -1311,6 +1352,8 @@ void MTSec::createGame()
         createStarSystem( mw_galaxy);
     }
 
+    propertyIndex.clear();
+    
     Logger::getLogger()->debug( "Exit MTSec::createGame");
 
     return;
@@ -1355,7 +1398,7 @@ Design* MTSec::createScoutDesign( Player* owner)
     scout->setName( "Scout");
     scout->setDescription("Scout ship");
     scout->setOwner( owner->getID());
-    componentList[componentIndex["ScoutHull"]] = 1;
+    componentList[1] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
 
@@ -1374,9 +1417,9 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
     scout->setName( "BattleScout");
     scout->setDescription("Battle Scout ship");
     scout->setOwner( owner->getID());
-    componentList[componentIndex["BattleScoutHull"]] = 1;
-    componentList[componentIndex["AlphaMissileBay"]] = 1;
-    componentList[componentIndex["Cerium3Explosives"]] = 1;
+    componentList[2] = 1;
+    componentList[10] = 1;
+    componentList[3] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
 
@@ -1424,21 +1467,7 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     std::string fleetName = player->getName().substr( 0,11) + " Fleet 1";
     IGObject*   fleet = createEmptyFleet( player, star, fleetName);
 
-    //temporarily add the components as usable to get the designs done
-    player->addUsableComponent( componentIndex["ScoutHull"]);
-    player->addUsableComponent( componentIndex["BattleScoutHull"]);
-    player->addUsableComponent( componentIndex["AlphaMissileBay"]);
-    player->addUsableComponent( componentIndex["Cerium3Explosives"]);
-    // player->addUsableComponent( componentIndex["BattleshipHull"]);
-
     Design* scout = createBattleScoutDesign( player);
-
-    //remove temporarily added usable components
-    player->removeUsableComponent( componentIndex["ScoutHull"]);
-    player->removeUsableComponent( componentIndex["BattleScoutHull"]);
-    player->removeUsableComponent( componentIndex["AlphaMissileBay"]);
-    player->removeUsableComponent( componentIndex["Cerium3Explosives"]);
-    // player->removeUsableComponent( componentIndex["BattleshipHull"]);
 
     // Start this fleet off with two battle scout ships
     ((Fleet*)(fleet->getObjectData()))->addShips( scout->getDesignId(), 2);
@@ -1471,6 +1500,18 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
     planet->setPosition( star->getPosition() + offset);
     planet->setVelocity( Vector3d( 0LL, 0ll, 0ll));
+
+    ResourceManager* resman = game->getResourceManager();
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    ress[resman->getResourceDescription("Home Planet")->getResourceType()] =  std::pair<uint32_t, uint32_t>(1, 0);
+    ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Thorium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(20, 100));
+    ress[resman->getResourceDescription("Massivium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+    ress[resman->getResourceDescription("Enriched Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(7, 70));
+    ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
+    ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
+    ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
+    ((Planet*)(planet->getObjectData()))->setResources(ress);
 
     planet->addToParent( star->getID());
     game->getObjectManager()->addObject(planet);
@@ -1520,9 +1561,10 @@ void MTSec::setNewPlayerTech( Player* player)
 
     player->setVisibleObjects( game->getObjectManager()->getAllIds());
 
-    player->addVisibleComponent( componentIndex["ScoutHull"]);
-    player->addVisibleComponent( componentIndex["BattleScoutHull"]);
-    // player->addVisibleComponent( componentIndex["BattleshipHull"]);
+    for(uint32_t itcurr = 1; itcurr <= compMax; ++itcurr){
+      player->addVisibleComponent(itcurr);
+      player->addUsableComponent(itcurr);
+    }
 
     Logger::getLogger()->debug( "Exit MTSec::setNewPlayerTech");
     return;
