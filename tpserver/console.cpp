@@ -37,6 +37,7 @@
 #include "object.h"
 #include "settings.h"
 #include "pluginmanager.h"
+#include "ruleset.h"
 
 #include "tpserver/console.h"
 
@@ -251,6 +252,32 @@ class GameStartCommand : public tprl::RLCommand{
     }
 };
 
+class StatusCommand : public tprl::RLCommand{
+  public:
+    StatusCommand() : tprl::RLCommand(){
+      name = "status";
+      help = "Prints the key info about the server and game.";
+    }
+    void action(const std::string& cmdline){
+      std::cout << "Server: tpserver-cpp" << std::endl;
+      std::cout << "Version: " VERSION << std::endl;
+      std::cout << "Persistence available: " << ((Game::getGame()->getPersistence() != NULL) ? "yes" : "no") << std::endl;
+      Ruleset* rules = Game::getGame()->getRuleset();
+      std::cout << "Ruleset Loaded: " << ((rules != NULL) ? "yes" : "no") << std::endl;
+      if(rules != NULL){
+        std::cout << "Ruleset Name: " << rules->getName() << std::endl;
+        std::cout << "Ruleset Version: " << rules->getVersion() << std:: endl;
+      }
+      std::cout << "Game Loaded: " << ((Game::getGame()->isLoaded()) ? "yes" : "no") << std::endl;
+      std::cout << "Game Started: " << ((Game::getGame()->isStarted()) ? "yes" : "no") << std::endl;
+      if(Game::getGame()->isStarted()){
+        std::cout << "Time to next turn: " << Game::getGame()->secondsToEOT() << std::endl;
+        std::cout << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
+      }
+      std::cout << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
+    }
+};
+
 Console *Console::myInstance = NULL;
 
 Console *Console::getConsole()
@@ -333,6 +360,8 @@ Console::Console() : Connection()
     cat->add(new GameStartCommand());
     commands.insert(cat);
     
+    tprl::RLCommand* status = new StatusCommand();
+    commands.insert(status);
 }
 
 Console::~Console()
