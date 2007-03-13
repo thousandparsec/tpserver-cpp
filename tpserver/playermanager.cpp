@@ -84,6 +84,10 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         Game::getGame()->getRuleset()->onPlayerAdded(rtn);
         
         //HACK
+        std::set<uint32_t> designs = Game::getGame()->getDesignStore()->getDesignIds();
+        for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
+          rtn->addVisibleDesign(*desid);
+        }
         rtn->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
         Game::getGame()->getPersistence()->updatePlayer(rtn);
         
@@ -105,7 +109,6 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 op->postToBoard(new Message(*msg));
                 //HACK
                 op->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
-                std::set<uint32_t> designs = Game::getGame()->getDesignStore()->getDesignIds();
                 for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
                   op->addVisibleDesign(*desid);
                 }
