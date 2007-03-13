@@ -46,7 +46,15 @@ int main(int argc, char **argv)
   mySettings->readArgs(argc, argv);
 
   if(mySettings->get("NEVER_START") != "!"){
-    mySettings->readConfFile();
+    if(!mySettings->readConfFile()){
+      std::string savedloglevel = mySettings->get("log_level");
+      std::string savedlogconsole = mySettings->get("log_console");
+      mySettings->set("log_level", "3");
+      mySettings->set("log_console", "yes");
+      Logger::getLogger()->error("Could not read config file");
+      mySettings->set("log_level", savedloglevel);
+      mySettings->set("log_console", savedlogconsole);
+    }
 
 	Logger *myLogger = Logger::getLogger();
 

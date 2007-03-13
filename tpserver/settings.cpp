@@ -103,6 +103,9 @@ void Settings::gripeOnLine(const std::string& line, const char* complaint) {
 
 bool Settings::readConfFile(const std::string& fname){
     std::ifstream  configFile( fname.c_str());
+    if(!configFile){
+      return false;
+    }
     std::string   configString;
     unsigned long      lineCount = 0;
     const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
@@ -258,5 +261,5 @@ void Settings::printHelp(){
 void Settings::setDefaultValues(){
   store["NEVER_START"] = "0";
   store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
-    store["logfile_name"] = "/var/log/tpserver-cpp.log";
+  store["logfile_name"] = "/var/log/tpserver-cpp.log";
 }
