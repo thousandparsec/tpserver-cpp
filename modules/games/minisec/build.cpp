@@ -138,14 +138,19 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
     
-    if(player->isUsableDesign(type) && number > 0){
+    if(player->isUsableDesign(type) && number >= 0){
       
       Design* design = ds->getDesign(type);
       usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
         design->addUnderConstruction(number);
         ds->designCountsUpdated(design);
 
+    }else{
+      return false;
     }
+  }
+  if(usedshipres == 0 && !fleettype.empty()){
+    return false;
   }
   
   resources[1] = usedshipres;
