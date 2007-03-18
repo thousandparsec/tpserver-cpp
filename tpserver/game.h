@@ -23,6 +23,7 @@
 #include <list>
 #include <map>
 #include <set>
+#include <stdint.h>
 
 class Player;
 class IGObject;
@@ -83,6 +84,7 @@ class Game {
 
 	int secondsToEOT();
 	void setTurnLength(unsigned int sec);
+        uint32_t getTurnLength();
 
 	void saveAndClose();
 

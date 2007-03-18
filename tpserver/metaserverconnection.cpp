@@ -235,7 +235,7 @@ bool MetaserverConnection::sendUpdate(){
     localname = settings->get("metaserver_fake_dns");
   }
 
-  std::string tname = settings->get("server_name");
+  std::string tname = settings->get("game_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
   
@@ -247,12 +247,14 @@ bool MetaserverConnection::sendUpdate(){
   std::ostringstream formater;
   formater << "GET /?action=update&sertype=tpserver-cpp&server=" VERSION;
   formater << "&tp=0.3,0.2&key=" << publisher->getKey();
-  formater << "&name=" << tname;
+  formater << "&ln=" << tname;
   formater << "&rule=" << Game::getGame()->getRuleset()->getName();
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
-  formater << "&turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
+  formater << "&next=" << (Game::getGame()->secondsToEOT() + time(NULL));
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
   formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
+  formater << "&turn=" << (Game::getGame()->getTurnNumber());
+  formater << "&prd=" << (Game::getGame()->getTurnLength());
   if(!(settings->get("admin_email").empty())){
     formater << "&admin=" << settings->get("admin_email");
   }
@@ -262,6 +264,12 @@ bool MetaserverConnection::sendUpdate(){
       comment.replace(pos,1, "%20");
     }
     formater << "&cmt=" << comment;
+  }
+  formater << "&sn=";
+  if(!(settings->get("game_shortname").empty())){
+    formater << settings->get("game_shortname");
+  }else{
+    formater << "tp";
   }
   
   int servicenumber = 0;

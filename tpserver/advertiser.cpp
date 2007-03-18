@@ -39,7 +39,8 @@
 
 Advertiser::Advertiser() : services(), publishers(), publishing(false), metaserver_warning(NULL){
   Settings* settings = Settings::getSettings();
-  settings->setCallback("server_name", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("game_name", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("game_shortname", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("admin_email", SettingsCallback(this, &Advertiser::settingChanged));
   settings->setCallback("metaserver_enable", SettingsCallback(this, &Advertiser::settingChanged));
@@ -49,7 +50,8 @@ Advertiser::Advertiser() : services(), publishers(), publishing(false), metaserv
 Advertiser::~Advertiser(){
   unpublish();
   Settings* settings = Settings::getSettings();
-  settings->removeCallback("server_name");
+  settings->removeCallback("game_name");
+  settings->removeCallback("game_shortname");
   settings->removeCallback("game_comment");
   settings->removeCallback("admin_email");
   settings->removeCallback("metaserver_enable");

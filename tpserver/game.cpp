@@ -400,6 +400,10 @@ void Game::setTurnLength(unsigned int sec){
   turnIncrement = sec;
 }
 
+uint32_t Game::getTurnLength(){
+  return turnIncrement;
+}
+
 void Game::saveAndClose()
 {
 	save();

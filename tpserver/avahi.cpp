@@ -263,7 +263,7 @@ void timeout_free(AvahiTimeout *t){
 
 Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL){
   
-  std::string tname = Settings::getSettings()->get("server_name");
+  std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
   name = avahi_strdup(tname.c_str());
@@ -302,7 +302,7 @@ Avahi::~Avahi(){
 }
 
 void Avahi::update(){
-  std::string tname = Settings::getSettings()->get("server_name");
+  std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
   avahi_free(name);
@@ -329,9 +329,11 @@ void Avahi::createServices(){
       NULL);
   txtfields = avahi_string_list_add(txtfields, (std::string("rule=") + Game::getGame()->getRuleset()->getName()).c_str());
   txtfields = avahi_string_list_add(txtfields,(std::string("rulever=") + Game::getGame()->getRuleset()->getVersion()).c_str());
-  txtfields = avahi_string_list_add_printf(txtfields, "turn=%ld", Game::getGame()->secondsToEOT() + time(NULL));
+  txtfields = avahi_string_list_add_printf(txtfields, "next=%ld", Game::getGame()->secondsToEOT() + time(NULL));
   txtfields = avahi_string_list_add_printf(txtfields, "objs=%d", Game::getGame()->getObjectManager()->getNumObjects());
   txtfields = avahi_string_list_add_printf(txtfields, "plys=%d", Game::getGame()->getPlayerManager()->getNumPlayers());
+  txtfields = avahi_string_list_add_printf(txtfields, "turn=%d", Game::getGame()->getTurnNumber());
+  txtfields = avahi_string_list_add_printf(txtfields, "prd=%d", Game::getGame()->getTurnLength());
   
   Settings* settings = Settings::getSettings();
   
@@ -341,6 +343,12 @@ void Avahi::createServices(){
   if(!(settings->get("game_comment").empty())){
     std::string comment = settings->get("game_comment");
     txtfields = avahi_string_list_add(txtfields, (std::string("cmt=") + comment).c_str());
+  }
+  if(!(settings->get("game_shortname").empty())){
+    std::string shortname = settings->get("game_shortname");
+    txtfields = avahi_string_list_add(txtfields, (std::string("sn=") + shortname).c_str());
+  }else{
+    txtfields = avahi_string_list_add(txtfields, "sn=tp");
   }
   
   /* If this is the first time we're called, let's create a new entry group */
