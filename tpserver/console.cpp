@@ -272,6 +272,7 @@ class StatusCommand : public tprl::RLCommand{
       std::cout << "Game Started: " << ((Game::getGame()->isStarted()) ? "yes" : "no") << std::endl;
       if(Game::getGame()->isStarted()){
         std::cout << "Time to next turn: " << Game::getGame()->secondsToEOT() << std::endl;
+        std::cout << "Turn length: " << Game::getGame()->getTurnLength() << " seconds" << std::endl;
         std::cout << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
       }
       std::cout << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
