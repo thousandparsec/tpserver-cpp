@@ -54,6 +54,7 @@
 #include <tpserver/resourcemanager.h>
 #include <tpserver/settings.h>
 #include <tpserver/prng.h>
+#include <tpserver/playermanager.h>
 
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -429,6 +430,8 @@ void MiniSec::createGame(){
     res->setVolume(0);
     game->getResourceManager()->addResourceDescription(res);
   
+    game->getPlayerManager()->createNewPlayer("guest", "guest");
+    
 }
 
 void MiniSec::startGame(){
@@ -528,66 +531,70 @@ void MiniSec::onPlayerAdded(Player* player){
   player->removeUsableComponent(2);
   player->removeUsableComponent(3);
 
-  const char* name = player->getName().c_str();
-  IGObject *star = game->getObjectManager()->createNewObject();
-  star->setSize(80000ll);
-  star->setType(obT_Star_System);
-  char* temp = new char[strlen(name) + 13];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " Star System", 12);
-  temp[strlen(name) + 12] = '\0';
-  star->setName(temp);
-  delete[] temp;
-  star->setPosition(Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
-			     (long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
-			     /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
-  star->setVelocity(Vector3d(0ll, 0ll, 0ll));
+  if(player->getName() != "guest"){
   
-  star->addToParent(1);
-  game->getObjectManager()->addObject(star);
-  
-  IGObject *planet = game->getObjectManager()->createNewObject();
-  planet->setSize(2);
-  planet->setType(obT_Planet);
-  temp = new char[strlen(name) + 8];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " Planet", 7);
-  temp[strlen(name) + 7] = '\0';
-  planet->setName(temp);
-  delete[] temp;
-  ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
-  ((Planet*)(planet->getObjectData()))->addResource(2, 1);
-  planet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
-						     (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
-						     /*(long long)((rand() % 10000) - 5000)*/ 0));
-  planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-  
-  planet->addToParent(star->getID());
-  game->getObjectManager()->addObject(planet);
-  
-  IGObject *fleet = game->getObjectManager()->createNewObject();
-  fleet->setSize(2);
-  fleet->setType(obT_Fleet);
-  temp = new char[strlen(name) + 13];
-  strncpy(temp, name, strlen(name));
-  strncpy(temp + strlen(name), " First Fleet", 12);
-  temp[strlen(name) + 12] = '\0';
-  fleet->setName(temp);
-  delete[] temp;
-  ((OwnedObject*)(fleet->getObjectData()))->setOwner(player->getID());
-  fleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
-						    (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
-						    /*(long long)((rand() % 10000) - 5000)*/ 0));
-  ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
-    scout->addUnderConstruction(2);
-    scout->addComplete(2);
-    game->getDesignStore()->designCountsUpdated(scout);
-  fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-  
-  fleet->addToParent(star->getID());
-  game->getObjectManager()->addObject(fleet);
+    const char* name = player->getName().c_str();
+    IGObject *star = game->getObjectManager()->createNewObject();
+    star->setSize(80000ll);
+    star->setType(obT_Star_System);
+    char* temp = new char[strlen(name) + 13];
+    strncpy(temp, name, strlen(name));
+    strncpy(temp + strlen(name), " Star System", 12);
+    temp[strlen(name) + 12] = '\0';
+    star->setName(temp);
+    delete[] temp;
+    star->setPosition(Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
+                              (long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
+                              /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
+    star->setVelocity(Vector3d(0ll, 0ll, 0ll));
+    
+    star->addToParent(1);
+    game->getObjectManager()->addObject(star);
+    
+    IGObject *planet = game->getObjectManager()->createNewObject();
+    planet->setSize(2);
+    planet->setType(obT_Planet);
+    temp = new char[strlen(name) + 8];
+    strncpy(temp, name, strlen(name));
+    strncpy(temp + strlen(name), " Planet", 7);
+    temp[strlen(name) + 7] = '\0';
+    planet->setName(temp);
+    delete[] temp;
+    ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
+    ((Planet*)(planet->getObjectData()))->addResource(2, 1);
+    planet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
+                                                      (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    planet->setVelocity(Vector3d(0LL, 0ll, 0ll));
+    
+    planet->addToParent(star->getID());
+    game->getObjectManager()->addObject(planet);
+    
+    IGObject *fleet = game->getObjectManager()->createNewObject();
+    fleet->setSize(2);
+    fleet->setType(obT_Fleet);
+    temp = new char[strlen(name) + 13];
+    strncpy(temp, name, strlen(name));
+    strncpy(temp + strlen(name), " First Fleet", 12);
+    temp[strlen(name) + 12] = '\0';
+    fleet->setName(temp);
+    delete[] temp;
+    ((OwnedObject*)(fleet->getObjectData()))->setOwner(player->getID());
+    fleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+                                                      (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    ((Fleet*)(fleet->getObjectData()))->addShips(scoutid, 2);
+      scout->addUnderConstruction(2);
+      scout->addComplete(2);
+      game->getDesignStore()->designCountsUpdated(scout);
+    fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
+    
+    fleet->addToParent(star->getID());
+    game->getObjectManager()->addObject(fleet);
 
-    game->getPlayerManager()->updatePlayer(player->getID());
+  }
+
+  game->getPlayerManager()->updatePlayer(player->getID());
 }
 
 // Create a random star system
