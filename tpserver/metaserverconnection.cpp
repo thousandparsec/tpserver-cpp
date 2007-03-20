@@ -306,7 +306,7 @@ void MetaserverConnection::process(){
   char* buffer = new char[1024];
   int rlen = recv(sockfd, buffer, 1024, 0);
   
-  if(rlen == 0){
+  if(rlen <= 0){
     Logger::getLogger()->debug("Metaserver disconnected");
     close(sockfd);
     status = 0;
