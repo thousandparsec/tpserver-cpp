@@ -142,7 +142,10 @@ bool Fleet::hit(std::list<int> firepower){
     }
     touchModTime();
   }
-  return true;
+  if(totalShips() == 0)
+    return false;
+  else
+    return true;
 }
 
 int Fleet::getDamage() const{
