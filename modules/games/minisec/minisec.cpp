@@ -531,7 +531,7 @@ void MiniSec::onPlayerAdded(Player* player){
   player->removeUsableComponent(2);
   player->removeUsableComponent(3);
 
-  if(player->getName() != "guest"){
+  if(std::string(player->getName()) != "guest"){
   
     const char* name = player->getName().c_str();
     IGObject *star = game->getObjectManager()->createNewObject();
