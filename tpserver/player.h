@@ -24,107 +24,68 @@
 #include <string>
 #include <stdint.h>
 
-class PlayerConnection;
 class Frame;
-class Board;
 class Message;
 
 class Player {
-      public:
-	Player();
-	~Player();
+public:
+  Player();
+  ~Player();
 
-	void setName(const std::string& newname);
-	void setPass(const std::string& newpass);
-	void setConnection(PlayerConnection * newcon);
-        void setId(uint32_t newid);
+  void setName(const std::string& newname);
+  void setPass(const std::string& newpass);
+  void setId(uint32_t newid);
 
-	void setVisibleObjects(std::set<unsigned int> vis);
-	bool isVisibleObject(unsigned int objid);
-        std::set<uint32_t> getVisibleObjects() const;
+  void setVisibleObjects(std::set<unsigned int> vis);
+  bool isVisibleObject(unsigned int objid);
+  std::set<uint32_t> getVisibleObjects() const;
 
-	void addVisibleDesign(unsigned int designid);
-	void addUsableDesign(unsigned int designid);
-	void removeUsableDesign(unsigned int designid);
-	bool isUsableDesign(unsigned int designid) const;
-	std::set<unsigned int> getUsableDesigns() const;
-        std::set<uint32_t> getVisibleDesigns() const;
+  void addVisibleDesign(unsigned int designid);
+  void addUsableDesign(unsigned int designid);
+  void removeUsableDesign(unsigned int designid);
+  bool isUsableDesign(unsigned int designid) const;
+  std::set<unsigned int> getUsableDesigns() const;
+  std::set<uint32_t> getVisibleDesigns() const;
 
-	void addVisibleComponent(unsigned int compid);
-	void addUsableComponent(unsigned int compid);
-	void removeUsableComponent(unsigned int compid);
-	bool isUsableComponent(unsigned int compid);
-        std::set<uint32_t> getVisibleComponents() const;
-        std::set<uint32_t> getUsableComponents() const;
+  void addVisibleComponent(unsigned int compid);
+  void addUsableComponent(unsigned int compid);
+  void removeUsableComponent(unsigned int compid);
+  bool isUsableComponent(unsigned int compid);
+  std::set<uint32_t> getVisibleComponents() const;
+  std::set<uint32_t> getUsableComponents() const;
 
-	void postToBoard(Message* msg);
+  void postToBoard(Message* msg);
 
-	std::string getName() const;
-	std::string getPass() const;
-	PlayerConnection *getConnection();
-	int getID();
-        uint32_t getBoardId() const;
-        void setBoardId(uint32_t nbi);
+  std::string getName() const;
+  std::string getPass() const;
+  uint32_t getID();
+  uint32_t getBoardId() const;
+  void setBoardId(uint32_t nbi);
 
-	void packFrame(Frame* frame);
+  uint32_t getObjectSequenceKey() const;
 
-	void processIGFrame(Frame * frame);
+  void packFrame(Frame* frame);
 
-      private:
 
-	void processPermDisabled(Frame * frame);
+private:
 
-	void processGetObjectById(Frame * frame);
-	void processGetObjectByPos(Frame * frame);
-	void processGetObjectIds(Frame * frame);
-	void processGetObjectIdsByPos(Frame * frame);
-	void processGetObjectIdsByContainer(Frame * frame);
-	void processGetOrder(Frame * frame);
-	void processAddOrder(Frame * frame);
-	void processRemoveOrder(Frame * frame);
-	void processDescribeOrder(Frame * frame);
-	void processGetOrderTypes(Frame * frame);
-	void processProbeOrder(Frame * frame);
-	void processGetBoards(Frame * frame);
-	void processGetBoardIds(Frame * frame);
-	void processGetMessages(Frame * frame);
-	void processPostMessage(Frame * frame);
-	void processRemoveMessages(Frame * frame);
+  std::string name;
+  std::string passwd;
+  uint32_t pid;
+  uint32_t boardid;
 
-	void processGetResourceDescription(Frame * frame);
-	void processGetResourceTypes(Frame* frame);
+  Player(Player & rhs);
 
-	void processGetPlayer(Frame* frame);
+  Player operator=(Player & rhs);
 
-	void processGetCategory(Frame* frame);
-	void processGetCategoryIds(Frame* frame);
-	void processGetDesign(Frame* frame);
-	void processAddDesign(Frame* frame);
-	void processModifyDesign(Frame* frame);
-	void processGetDesignIds(Frame* frame);
-	void processGetComponent(Frame* frame);
-	void processGetComponentIds(Frame* frame);
-	void processGetProperty(Frame* frame);
-	void processGetPropertyIds(Frame* frame);
+  std::set<unsigned int> visibleObjects;
+  unsigned int currObjSeq;
 
-	PlayerConnection *curConnection;
-	std::string name;
-	std::string passwd;
-	uint32_t pid;
-    uint32_t boardid;
+  std::set<unsigned int> visibleDesigns;
+  std::set<unsigned int> usableDesigns;
 
-	 Player(Player & rhs);
-
-	Player operator=(Player & rhs);
-
-	std::set<unsigned int> visibleObjects;
-	unsigned int currObjSeq;
-
-	std::set<unsigned int> visibleDesigns;
-	std::set<unsigned int> usableDesigns;
-
-	std::set<unsigned int> visibleComponents;
-	std::set<unsigned int> usableComponents;
+  std::set<unsigned int> visibleComponents;
+  std::set<unsigned int> usableComponents;
 
 };
 

@@ -74,13 +74,9 @@ PlayerTcpConnection::~PlayerTcpConnection()
 void PlayerTcpConnection::close()
 {
   if(sendqueue.empty()){
-	Logger::getLogger()->debug("Closing connection");
-	if (player != NULL) {
-		player->setConnection(NULL);
-		player = NULL;
-	}
-	::close(sockfd);
-	status = 0;
+    Logger::getLogger()->debug("Closing connection");
+    ::close(sockfd);
+    status = 0;
   }else{
     sendandclose = true;
   }

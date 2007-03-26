@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-class Player;
+class PlayerAgent;
 
 #include <tpserver/frame.h>
 
@@ -54,7 +54,7 @@ class PlayerConnection: public Connection {
   
   virtual bool readFrame(Frame * recvframe) = 0;
   
-  Player *player;
+  PlayerAgent *playeragent;
   
   FrameVersion version;
   uint64_t lastpingtime;
