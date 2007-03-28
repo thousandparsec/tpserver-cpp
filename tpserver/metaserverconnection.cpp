@@ -247,13 +247,10 @@ bool MetaserverConnection::sendUpdate(){
   std::ostringstream formater;
   formater << "GET /?action=update&sertype=tpserver-cpp&server=" VERSION;
   formater << "&tp=0.3,0.2&key=" << publisher->getKey();
-  formater << "&ln=" << tname;
   formater << "&rule=" << Game::getGame()->getRuleset()->getName();
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
-  formater << "&next=" << (Game::getGame()->secondsToEOT() + time(NULL));
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
   formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
-  formater << "&turn=" << (Game::getGame()->getTurnNumber());
   formater << "&prd=" << (Game::getGame()->getTurnLength());
   if(!(settings->get("admin_email").empty())){
     formater << "&admin=" << settings->get("admin_email");
@@ -265,11 +262,20 @@ bool MetaserverConnection::sendUpdate(){
     }
     formater << "&cmt=" << comment;
   }
-  formater << "&sn=";
-  if(!(settings->get("game_shortname").empty())){
-    formater << settings->get("game_shortname");
+  
+  if(settings->get("metaserver_params_version") == "3"){
+    formater << "&name=" << tname;
+    formater << "&turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
   }else{
-    formater << "tp";
+    formater << "&ln=" << tname;
+    formater << "&sn=";
+    if(!(settings->get("game_shortname").empty())){
+      formater << settings->get("game_shortname");
+    }else{
+      formater << "tp";
+    }
+    formater << "&next=" << (Game::getGame()->secondsToEOT() + time(NULL));
+    formater << "&turn=" << (Game::getGame()->getTurnNumber());
   }
   
   int servicenumber = 0;
