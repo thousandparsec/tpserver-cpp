@@ -17,11 +17,12 @@ libminisec_la_SOURCES = planet.cpp fleet.cpp \
 		colonise.cpp \
 		splitfleet.cpp mergefleet.cpp \
 		rspcombat.cpp minisec.cpp \
+		minisecturn.cpp \
 		${MYSQL_MINISEC_SOURCE}
 		
 libminisec_la_LDFLAGS = -module
 AM_CXXFLAGS = @MYSQL_CFLAGS@
 
 noinst_HEADERS = planet.h fleet.h move.h build.h colonise.h splitfleet.h mergefleet.h \
-		rspcombat.h minisec.h 
+		rspcombat.h minisec.h minisecturn.h
 

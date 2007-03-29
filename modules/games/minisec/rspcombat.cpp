@@ -31,10 +31,25 @@
 
 #include "rspcombat.h"
 
-RSPCombat::RSPCombat() : CombatStrategy(){
+RSPCombat::RSPCombat(){
+  c1 = NULL;
+  c2 = NULL;
 }
 
 RSPCombat::~RSPCombat(){
+}
+
+void RSPCombat::setCombatants(IGObject *a, IGObject *b){
+  c1 = a;
+  c2 = b;
+}
+
+bool RSPCombat::isAliveCombatant1(){
+  return (c1 != NULL);
+}
+
+bool RSPCombat::isAliveCombatant2(){
+  return (c2 != NULL);
 }
 
 void RSPCombat::doCombat(){

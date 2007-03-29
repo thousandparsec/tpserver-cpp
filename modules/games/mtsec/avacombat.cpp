@@ -30,12 +30,26 @@
 
 #include "avacombat.h"
 
-AVACombat::AVACombat() : CombatStrategy(){
+AVACombat::AVACombat(){
+  c1 = NULL;
+  c2 = NULL;
 }
 
 AVACombat::~AVACombat(){
 }
 
+void AVACombat::setCombatants(IGObject *a, IGObject *b){
+  c1 = a;
+  c2 = b;
+}
+
+bool AVACombat::isAliveCombatant1(){
+  return (c1 != NULL);
+}
+
+bool AVACombat::isAliveCombatant2(){
+  return (c2 != NULL);
+}
 
 // This routine handles one combat round.
 // fleet1 and fleet2 are the combatants.

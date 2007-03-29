@@ -29,7 +29,7 @@
 #include "planet.h"
 #include <tpserver/player.h>
 #include "move.h"
-#include <tpserver/combatstrategy.h>
+#include "rspcombat.h"
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
@@ -125,9 +125,10 @@ bool Colonise::doOrder(IGObject * ob){
           ob->getID());
       
 	//combat
-	CombatStrategy * combat = Game::getGame()->getCombatStrategy();
+	RSPCombat * combat = new RSPCombat();
 	combat->setCombatants(ob, Game::getGame()->getObjectManager()->getObject(object->getObjectId()));
 	combat->doCombat();
+        delete combat;
       }
 
       DesignStore* ds = Game::getGame()->getDesignStore();

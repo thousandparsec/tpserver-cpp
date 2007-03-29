@@ -1,6 +1,8 @@
-/*  CombatStrategy base class
+#ifndef MINISECTURN_H
+#define MINISECTURN_H
+/*  MinisecTurn class, the end of turn process for minisec
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,27 +20,23 @@
  *
  */
 
-#include "object.h"
+#include <stdint.h>
 
-#include "combatstrategy.h"
+#include <tpserver/turnprocess.h>
 
-CombatStrategy::CombatStrategy(){
-  c1 = NULL;
-  c2 = NULL;
-}
+class MinisecTurn : public TurnProcess{
+  public:
+    MinisecTurn();
+    virtual ~MinisecTurn();
+    
+    virtual void doTurn();
+  
+    void setFleetType(uint32_t ft);
+    void setPlanetType(uint32_t pt);
+    
+  private:
+    uint32_t planettype;
+    uint32_t fleettype;
+};
 
-CombatStrategy::~CombatStrategy(){
-}
-
-void CombatStrategy::setCombatants(IGObject *a, IGObject *b){
-  c1 = a;
-  c2 = b;
-}
-
-bool CombatStrategy::isAliveCombatant1(){
-  return (c1 != NULL);
-}
-
-bool CombatStrategy::isAliveCombatant2(){
-  return (c2 != NULL);
-}
+#endif

@@ -1,8 +1,8 @@
-#ifndef RSPCOMBAT_H
-#define RSPCOMBAT_H
-/*  Rock Scissors Paper combat strategy
+#ifndef TURNPROCESS_H
+#define TURNPROCESS_H
+/*  TurnProcess class, abstracts the processing at the end of turn
  *
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,21 +20,13 @@
  *
  */
 
-class IGObject;
-
-class RSPCombat{
- public:
-  RSPCombat();
-  ~RSPCombat();
-
-  void setCombatants(IGObject * a, IGObject * b);
-  bool isAliveCombatant1();
-  bool isAliveCombatant2();
-  void doCombat();
-
- protected:
-  IGObject *c1, *c2;
-
+class TurnProcess{
+  public:
+    TurnProcess();
+    virtual ~TurnProcess();
+    
+    virtual void doTurn() = 0;
+  
 };
 
 #endif

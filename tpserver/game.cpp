@@ -38,7 +38,6 @@
 #include "resourcemanager.h"
 #include "playermanager.h"
 #include "ownedobject.h"
-#include "combatstrategy.h"
 #include "designstore.h"
 #include "ruleset.h"
 #include "persistence.h"
@@ -46,6 +45,7 @@
 #include "settings.h"
 #include "timercallback.h"
 #include "prng.h"
+#include "turnprocess.h"
 
 #include "game.h"
 
@@ -172,14 +172,10 @@ PlayerManager* Game::getPlayerManager() const{
     return playermanager;
 }
 
-CombatStrategy* Game::getCombatStrategy() const{
-  return combatstrategy;
-}
-
-void Game::setCombatStrategy(CombatStrategy* cs){
-  if(combatstrategy != NULL)
-    delete combatstrategy;
-  combatstrategy = cs;
+void Game::setTurnProcess(TurnProcess* tp){
+  if(turnprocess != NULL)
+    delete turnprocess;
+  turnprocess = tp;
 }
 
 DesignStore* Game::getDesignStore() const{
@@ -233,148 +229,42 @@ bool Game::isStarted() const{
   return (loaded && started);
 }
 
-void Game::doEndOfTurn()
-{
-    if(loaded && started){
-        Logger::getLogger()->info("End Of Turn started");
+void Game::doEndOfTurn(){
+  if(loaded && started){
+    Logger::getLogger()->info("End Of Turn started");
 
-        // send frame to all connections that the end of turn has started
-        Frame * frame = new Frame(fv0_2);
-        frame->setType(ft02_Time_Remaining);
-        frame->packInt(0);
-        Network::getNetwork()->sendToAll(frame);
+    // send frame to all connections that the end of turn has started
+    Frame * frame = new Frame(fv0_2);
+    frame->setType(ft02_Time_Remaining);
+    frame->packInt(0);
+    Network::getNetwork()->sendToAll(frame);
 
-	// DO END OF TURN STUFF HERE
-	std::set<uint32_t>::iterator itcurr;
+    // DO END OF TURN STUFF HERE
+    turnprocess->doTurn();
 
-        //do orders
-        std::set<uint32_t> objects = ordermanager->getObjectsWithOrders();
-	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = objectmanager->getObject(*itcurr);
-            Order * currOrder = ordermanager->getFirstOrder(ob);
-            if(currOrder != NULL){
-                if(currOrder->doOrder(ob)){
-                ordermanager->removeFirstOrder(ob);
-                }else{
-                    ordermanager->updateFirstOrder(ob);
-                }
-            }
-            objectmanager->doneWithObject(ob->getID());
-	}
+    // increment the time to the next turn
+    turnTime += turnIncrement;
+    timer->setValid(false);
+    delete timer;
+    timer = NULL;
+    if(secondsToEOT() <= 0)
+      resetEOTTimer();
+    else
+      setEOTTimer();
 
-	objectmanager->clearRemovedObjects();
+    // send frame to all connections that the end of turn has finished
+    frame = new Frame(fv0_2);
+    frame->setType(ft02_Time_Remaining);
+    frame->packInt(secondsToEOT());
+    Network::getNetwork()->sendToAll(frame);
+    Network::getNetwork()->doneEOT();
 
-	// update positions and velocities
-        objects = objectmanager->getAllIds();
-	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = objectmanager->getObject(*itcurr);
-            ob->updatePosition();
-            objectmanager->doneWithObject(ob->getID());
-        }
-
-	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = objectmanager->getObject(*itcurr);
-            //ob->updatePosition();
-            std::set<unsigned int> cont = ob->getContainedObjects();
-            for(std::set<uint32_t>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
-                IGObject* itaobj = objectmanager->getObject(*ita);
-                if(itaobj->getType() == obT_Fleet || (itaobj->getType() == obT_Planet && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != 0)){
-                    for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
-                        IGObject* itbobj = objectmanager->getObject(*itb);
-                        if((*ita != *itb) && (itbobj->getType() == obT_Fleet || (itbobj->getType() == obT_Planet && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != 0))){
-                            if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(itbobj->getObjectData()))->getOwner()){
-                                uint64_t diff = itaobj->getPosition().getDistance(itbobj->getPosition());
-                                if(diff <= itaobj->getSize() / 2 + itbobj->getSize() / 2){
-                                    combatstrategy->setCombatants(itaobj, itbobj);
-                                    combatstrategy->doCombat();
-                                    if(!combatstrategy->isAliveCombatant1()){
-                                        if(itaobj->getType() == obT_Planet){
-                                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
-                                        }else{
-                                            objectmanager->scheduleRemoveObject(*ita);
-                                        }
-                                    }
-                                    if(!combatstrategy->isAliveCombatant2()){
-                                        if(itbobj->getType() == obT_Planet){
-                                            ((OwnedObject*)(itbobj->getObjectData()))->setOwner(0);
-                                        }else{
-                                            objectmanager->scheduleRemoveObject(*itb);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        objectmanager->doneWithObject(itbobj->getID());
-                    }
-                    
-                    //combat between object and container (ie planet)
-                    if(ob->getType() == obT_Fleet || (ob->getType() == obT_Planet && ((OwnedObject*)(ob->getObjectData()))->getOwner() != 0)){
-                        if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(ob->getObjectData()))->getOwner()){
-                            combatstrategy->setCombatants(itaobj, ob);
-                            combatstrategy->doCombat();
-                            if(!combatstrategy->isAliveCombatant1()){
-                                if(itaobj->getType() == obT_Planet){
-                                    ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
-                                }else{
-                                    objectmanager->scheduleRemoveObject(*ita);
-                                }
-                            }
-                            if(!combatstrategy->isAliveCombatant2()){
-                                if(ob->getType() == obT_Planet){
-                                    ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
-                                }else{
-                                    objectmanager->scheduleRemoveObject(*itcurr);
-                                }
-                            }
-                        }
-                    }
-                }
-                objectmanager->doneWithObject(itaobj->getID());
-            }
-            objectmanager->doneWithObject(ob->getID());
-        }
-
-        objectmanager->clearRemovedObjects();
-	
-	// to once a turn (right at the end)
-        objects = objectmanager->getAllIds();
-	for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-	  IGObject * ob = objectmanager->getObject(*itcurr);
-	  ob->getObjectData()->doOnceATurn(ob);
-	  objectmanager->doneWithObject(ob->getID());
-	}
-
-	// find the objects that are visible to each player
-	std::set<uint32_t> vis = objectmanager->getAllIds();
-        std::set<uint32_t> players = playermanager->getAllIds();
-	for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-            playermanager->getPlayer(*itplayer)->setVisibleObjects(vis);
-	}
-        playermanager->updateAll();
-
-	// increment the time to the next turn
-	turnTime += turnIncrement;
-        timer->setValid(false);
-        delete timer;
-        timer = NULL;
-        if(secondsToEOT() <= 0)
-            resetEOTTimer();
-        else
-          setEOTTimer();
-
-	// send frame to all connections that the end of turn has finished
-	frame = new Frame(fv0_2);
-	frame->setType(ft02_Time_Remaining);
-	frame->packInt(secondsToEOT());
-	Network::getNetwork()->sendToAll(frame);
-        Network::getNetwork()->doneEOT();
-
-	Logger::getLogger()->info("End Of Turn finished");
-    }else{
-        Logger::getLogger()->info("End Of Turn not run because game not started");
-        turnTime += turnIncrement;
-        setEOTTimer();
-    }
+    Logger::getLogger()->info("End Of Turn finished");
+  }else{
+    Logger::getLogger()->info("End Of Turn not run because game not started");
+    turnTime += turnIncrement;
+    setEOTTimer();
+  }
 }
 
 void Game::resetEOTTimer(){
@@ -428,7 +318,7 @@ Game::Game()
     resourcemanager = new ResourceManager();
     playermanager = new PlayerManager();
   designstore = new DesignStore();
-  combatstrategy = NULL;
+  turnprocess = NULL;
   ruleset = NULL;
   persistence = new Persistence();
   random = new Random();
@@ -456,8 +346,8 @@ Game::~Game()
     delete boardmanager;
     delete resourcemanager;
     delete playermanager;
-  if(combatstrategy != NULL)
-    delete combatstrategy;
+  if(turnprocess != NULL)
+    delete turnprocess;
   if(ruleset != NULL)
     delete ruleset;
   delete designstore;

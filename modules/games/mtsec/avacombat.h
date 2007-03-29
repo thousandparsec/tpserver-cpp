@@ -2,7 +2,7 @@
 #define AVACOMBAT_H
 /*  AVA combat strategy
  *
- *  Copyright (C) 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,20 +20,23 @@
  *
  */
 
-#include <tpserver/combatstrategy.h>
-
+class IGObject;
 class Fleet;
 class Message;
 
-class AVACombat : public CombatStrategy {
+class AVACombat{
  public:
   AVACombat();
-  virtual ~AVACombat();
+  ~AVACombat();
 
+  void setCombatants(IGObject * a, IGObject * b);
+  bool isAliveCombatant1();
+  bool isAliveCombatant2();
   void doCombat();
 
  protected:
   bool doCombatRound( Fleet*, Message*, Fleet*, Message*);
+  IGObject *c1, *c2;
 
 };
 

@@ -34,7 +34,7 @@ class ObjectDataManager;
 class BoardManager;
 class ResourceManager;
 class PlayerManager;
-class CombatStrategy;
+class TurnProcess;
 class DesignStore;
 class Ruleset;
 class Persistence;
@@ -44,81 +44,80 @@ class Random;
 
 class Game {
 
-      public:
-	static Game *getGame();
+  public:
+    static Game *getGame();
 
-	bool setRuleset(Ruleset* rs);
-	Ruleset* getRuleset() const;
+    bool setRuleset(Ruleset* rs);
+    Ruleset* getRuleset() const;
 
-	bool load();
-	bool start();
+    bool load();
+    bool start();
 
-	void save();
+    void save();
 
-        ObjectManager* getObjectManager() const;
-	OrderManager* getOrderManager() const;
-	ObjectDataManager* getObjectDataManager() const;
-        BoardManager* getBoardManager() const;
-        ResourceManager* getResourceManager() const;
-        PlayerManager* getPlayerManager() const;
-	
-	CombatStrategy* getCombatStrategy() const;
-	void setCombatStrategy(CombatStrategy* cs);
+    ObjectManager* getObjectManager() const;
+    OrderManager* getOrderManager() const;
+    ObjectDataManager* getObjectDataManager() const;
+    BoardManager* getBoardManager() const;
+    ResourceManager* getResourceManager() const;
+    PlayerManager* getPlayerManager() const;
+    
+    void setTurnProcess(TurnProcess* tp);
 
-	DesignStore* getDesignStore() const;
+    DesignStore* getDesignStore() const;
 
-        Persistence* getPersistence() const;
-        bool setPersistence(Persistence* p);
+    Persistence* getPersistence() const;
+    bool setPersistence(Persistence* p);
 
     bool setTpScheme(TpScheme* imp);
     TpScheme* getTpScheme() const;
     
     Random* getRandom() const;
   
-	bool isLoaded() const;
-	bool isStarted() const;
+    bool isLoaded() const;
+    bool isStarted() const;
 
-	void doEndOfTurn();
-	void resetEOTTimer();
-	int getTurnNumber();
+    void doEndOfTurn();
+    void resetEOTTimer();
+    int getTurnNumber();
 
-	int secondsToEOT();
-	void setTurnLength(unsigned int sec);
-        uint32_t getTurnLength();
+    int secondsToEOT();
+    void setTurnLength(unsigned int sec);
+    uint32_t getTurnLength();
 
-	void saveAndClose();
+    void saveAndClose();
 
 
-      private:
-	Game();
-	Game(Game & rhs);
-	~Game();
-	Game operator=(Game & rhs);
+  private:
+    Game();
+    Game(Game & rhs);
+    ~Game();
+    Game operator=(Game & rhs);
 
-        void setEOTTimer();
-	
-	static Game *myInstance;
-	
-	int turnTime;
-	int turnIncrement;
-        TimerCallback* timer;
+    void setEOTTimer();
+    
+    static Game *myInstance;
+    
+    int turnTime;
+    int turnIncrement;
+    TimerCallback* timer;
 
-	bool loaded;
-	bool started;
-	
-	Ruleset* ruleset;
+    bool loaded;
+    bool started;
+    
+    Ruleset* ruleset;
 
-        ObjectManager* objectmanager;
-	OrderManager * ordermanager;
-	ObjectDataManager * objectdatamanager;
-        BoardManager* boardmanager;
-        ResourceManager* resourcemanager;
-        PlayerManager* playermanager;
-	CombatStrategy * combatstrategy;
-	DesignStore* designstore;
-        Persistence* persistence;
-        TpScheme* tpscheme;
-        Random* random;
+    ObjectManager* objectmanager;
+    OrderManager * ordermanager;
+    ObjectDataManager * objectdatamanager;
+    BoardManager* boardmanager;
+    ResourceManager* resourcemanager;
+    PlayerManager* playermanager;
+    TurnProcess * turnprocess;
+    DesignStore* designstore;
+    Persistence* persistence;
+    TpScheme* tpscheme;
+    Random* random;
 
 };
 

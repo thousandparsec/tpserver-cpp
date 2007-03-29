@@ -1,8 +1,8 @@
-#ifndef COMBATSTRATEGY_H
-#define COMBATSTRATEGY_H
-/*  CombatStrategy Base class
+#ifndef MTSECTURN_H
+#define MTSECTURN_H
+/*  MTSecTurn class, the end of turn process for MTSec
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,22 +20,23 @@
  *
  */
 
-class IGObject;
+#include <stdint.h>
 
-class CombatStrategy{
- public:
-  CombatStrategy();
-  virtual ~CombatStrategy();
+#include <tpserver/turnprocess.h>
 
-  void setCombatants(IGObject * a, IGObject * b);
-  bool isAliveCombatant1();
-  bool isAliveCombatant2();
-
-  virtual void doCombat() = 0;
-
- protected:
-  IGObject *c1, *c2;
+class MTSecTurn : public TurnProcess{
+  public:
+    MTSecTurn();
+    virtual ~MTSecTurn();
+    
+    virtual void doTurn();
   
+    void setFleetType(uint32_t ft);
+    void setPlanetType(uint32_t pt);
+    
+  private:
+    uint32_t planettype;
+    uint32_t fleettype;
 };
 
 #endif

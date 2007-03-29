@@ -55,6 +55,7 @@
 #include <tpserver/settings.h>
 #include <tpserver/prng.h>
 #include <tpserver/playermanager.h>
+#include "minisecturn.h"
 
 #ifdef HAVE_LIBMYSQL
 #include <modules/persistence/mysql/mysqlpersistence.h>
@@ -109,16 +110,19 @@ std::string MiniSec::getVersion(){
 void MiniSec::initGame(){
   Game* game = Game::getGame();
   
-  
-    game->setCombatStrategy(new RSPCombat());
+  MinisecTurn* turn = new MinisecTurn();
+  game->setTurnProcess(turn);
   
 
   ObjectDataManager* obdm = game->getObjectDataManager();
   obdm->addNewObjectType(new Universe());
   obdm->addNewObjectType(new EmptyObject());
   obdm->addNewObjectType(new EmptyObject());
-  obdm->addNewObjectType(new Planet());
-  obdm->addNewObjectType(new Fleet());
+  uint32_t pt = obdm->addNewObjectType(new Planet());
+  uint32_t ft = obdm->addNewObjectType(new Fleet());
+  
+  turn->setPlanetType(pt);
+  turn->setFleetType(ft);
 
 #ifdef HAVE_LIBMYSQL
     MysqlPersistence* database = dynamic_cast<MysqlPersistence*>(game->getPersistence());
@@ -133,10 +137,10 @@ void MiniSec::initGame(){
         emt->setType(2);
         database->addObjectType(emt);
         MysqlPlanet* plnt = new MysqlPlanet();
-        plnt->setType(3);
+        plnt->setType(pt);
         database->addObjectType(plnt);
         MysqlFleet* flt = new MysqlFleet();
-        flt->setType(4);
+        flt->setType(ft);
         database->addObjectType(flt);
     }
 #endif

@@ -23,14 +23,14 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp objectdata.cpp universe.cpp ownedobject.cpp emptyobject.cpp nop.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objectdatamanager.cpp \
-		combatstrategy.cpp playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
+		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
 		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp \
 		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp \
 		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectparameter.cpp \
-		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp
+		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp turnprocess.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
@@ -39,7 +39,7 @@ headers_HEADERS = connection.h console.h \
 	order.h objectdata.h universe.h ownedobject.h \
 	emptyobject.h nop.h \
 	vector3d.h board.h message.h ordermanager.h \
-	objectdatamanager.h combatstrategy.h \
+	objectdatamanager.h \
 	playerconnection.h \
 	refsys.h property.h propertyvalue.h component.h \
 	design.h designstore.h \
@@ -48,7 +48,7 @@ headers_HEADERS = connection.h console.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h settingscallback.h \
 	orderparameter.h spacecoordparam.h timeparameter.h objectparameter.h stringparameter.h \
-	listparameter.h timercallback.h prng.h playeragent.h
+	listparameter.h timercallback.h prng.h playeragent.h turnprocess.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
