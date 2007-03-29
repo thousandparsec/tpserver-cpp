@@ -58,6 +58,7 @@ class PlayerConnection: public Connection {
   
   FrameVersion version;
   uint64_t lastpingtime;
+  bool paddingfilter;
 };
 
 #endif

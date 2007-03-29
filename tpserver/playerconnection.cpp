@@ -37,12 +37,12 @@
 
 #include "playerconnection.h"
 
-PlayerConnection::PlayerConnection() : Connection(), playeragent(NULL), version(fv0_3){
+PlayerConnection::PlayerConnection() : Connection(), playeragent(NULL), version(fv0_3), paddingfilter(false){
   lastpingtime = time(NULL);
 }
 
 
-PlayerConnection::PlayerConnection(int fd) : Connection(), playeragent(NULL), version(fv0_3){
+PlayerConnection::PlayerConnection(int fd) : Connection(), playeragent(NULL), version(fv0_3), paddingfilter(false){
   sockfd = fd;
   status = 1;
   lastpingtime = time(NULL);
@@ -101,6 +101,7 @@ Frame* PlayerConnection::createFrame(Frame* oldframe)
     newframe = new Frame(version);
     newframe->setSequence(0);
   }
+  newframe->enablePaddingStrings(paddingfilter);
   return newframe;
 }
 
