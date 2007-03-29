@@ -157,7 +157,7 @@ class Frame {
     
     //string padding
     bool isPaddingStrings() const;
-    void enablePaddingString(bool on);
+    void enablePaddingStrings(bool on);
     
     bool packString(const char *str);
     //bool packString(std::string str);

@@ -303,7 +303,7 @@ bool Frame::isPaddingStrings() const{
   return padstrings;
 }
 
-void Frame::enablePaddingString(bool on){
+void Frame::enablePaddingStrings(bool on){
   padstrings = on;
 }
 
