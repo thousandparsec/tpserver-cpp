@@ -215,6 +215,23 @@ void PlayerTcpConnection::verCheck(){
           int nversion = atoi(ver);
           version = (FrameVersion)nversion;
         }
+      }else if(rheaderbuff[2] >= 4 && rheaderbuff[2] < '0'){
+        //tp04 and later
+        version = (FrameVersion)rheaderbuff[2];
+        if(version > fv0_4){
+          Frame *f = new Frame(fv0_4);
+          f->setSequence(0);
+          f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
+          sendFrame(f);
+          
+          //stay connected just in case they try again with a lower version
+          // have to empty the receive queue though.
+          char* buff = new char[1024];
+          int32_t len = underlyingRead(buff, 1024);
+          Logger::getLogger()->debug("Read an extra %d bytes from the socket, into buffer of 1024", len);
+          delete[] buff;
+          rtn = false;
+        }
       }else{
         //might be future version of protocol, just disconnect now
         Logger::getLogger()->warning("Unknown protocol version");
