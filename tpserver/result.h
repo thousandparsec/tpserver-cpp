@@ -25,8 +25,44 @@
 #define Success() Result(true, "")
 #define Failure(msg) Result(false, msg)
 
+/**
+ * Result abc() {..}
+ * 
+ * if (abc())
+ *   ...
+ *  
+ * The result however also includes a string. This can be accessed by casting to a
+ * string, so the following works
+ * 
+ * Result r = abc();
+ * printf("%s", (const char*)r);
+ * 
+ * You often want to do the following,
+ * 
+ * Result abc() {...}
+ * 
+ * Result r = abc();
+ * if (!r)
+ *   printf("%s", (const char*)r);
+ * 
+ * It can also be added to a stl string,
+ *
+ * Result r = abc();
+ * std::string s = std::string("Testing");
+ *
+ * r+s // This works
+ *
+ */
 class Result {
  public:
+  /** 
+   * There are also to convience macros, these allow you to quickly return
+   * success for failure. 
+   * Success()
+   *  Result(true, "")
+   * Failure(msg)
+   *  Result(false, msg)
+   */
   Result(bool b, std::string message) {
     r = b;
     msg = std::string (message);
