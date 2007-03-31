@@ -22,6 +22,7 @@
 
 //class Order;
 #include <tpserver/order.h>
+#include <tpserver/result.h>
 
 class TimeParameter;
 
@@ -31,7 +32,7 @@ class Nop:public Order {
 	virtual ~Nop();
 
 	void createFrame(Frame * f, int objID, int pos);
-	bool inputFrame(Frame * f, unsigned int playerid);
+	Result inputFrame(Frame * f, unsigned int playerid);
 
 	bool doOrder(IGObject * ob);
 

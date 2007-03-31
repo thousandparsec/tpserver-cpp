@@ -177,7 +177,7 @@ class Frame {
     char unpackInt8();
     void unpackData(unsigned int len, char* bdata);
   
-    void createFailFrame(FrameErrorCode code, char *reason);
+    void createFailFrame(FrameErrorCode code, const char *reason);
   
   private:
     FrameVersion version;

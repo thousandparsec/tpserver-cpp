@@ -18,6 +18,7 @@
  *
  */
 
+#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
@@ -59,22 +60,23 @@ void MergeFleet::createFrame(Frame * f, int objID, int pos){
   Order::createFrame(f, objID, pos);
 }
 
-bool MergeFleet::inputFrame(Frame * f, unsigned int playerid){
+Result MergeFleet::inputFrame(Frame * f, unsigned int playerid){
+  Result r = Order::inputFrame(f, playerid);
+  if(!r){
+    return r;
+  }
   
-  if(!(Order::inputFrame(f, playerid)))
-    return false;
-
   IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
 
   if(target == NULL || (object->getObjectId() != 0 && ((target->getType() != 4)
     || ((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid))){
     Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
     Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-    return false;
+    return Failure("Player tried to merge fleet with something that is not a fleet");
   }
   moveorder->setDest(target->getPosition());
   Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-  return true;
+  return Success();
   
 }
 

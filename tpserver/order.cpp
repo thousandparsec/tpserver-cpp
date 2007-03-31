@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "result.h"
 #include "frame.h"
 #include "orderparameter.h"
 
@@ -89,15 +90,16 @@ void Order::createFrame(Frame * f, int objID, int pos)
   }
 }
 
-bool Order::inputFrame(Frame * f, unsigned int playerid)
+Result Order::inputFrame(Frame * f, unsigned int playerid)
 {
   //ready passed object, position, and type.
   if(!f->isEnoughRemaining(8))
-    return false;
+    return Failure("Not 8 bytes remaining to read.");
+
   f->unpackInt(); // turns, read only
   int ressize = f->unpackInt(); // size of resource list (should be zero)
   if(!f->isEnoughRemaining(8 * ressize))
-    return false;
+    return Failure("Not enough bytes remaining.");
   for(int i = 0; i < ressize; i++){
     f->unpackInt(); //The resource id
     f->unpackInt(); //The amount of the resource
@@ -109,7 +111,11 @@ bool Order::inputFrame(Frame * f, unsigned int playerid)
     if(!rtv)
       break;
   }
-  return rtv;
+  if (rtv) {
+    return Success();
+  } else {
+	return Failure("Unable to unpack Frame.");
+  }
 }
 
 

@@ -540,16 +540,17 @@ void PlayerAgent::processAddOrder(Frame * frame)
       if (ord == NULL) {
         of->createFailFrame(fec_NonExistant, "No such order type");
       } else {
-              
-        if (ord->inputFrame(frame, player->getID())){
+        Result r = ord->inputFrame(frame, player->getID());
+        if (r){
           if(Game::getGame()->getOrderManager()->addOrder(ord, o, pos, player->getID())) {
             of->setType(ft02_OK);
             of->packString("Order Added");
           } else {
-            of->createFailFrame(fec_TempUnavailable, "Could not add order");
+            of->createFailFrame(fec_TempUnavailable, "Order Manager failure.");
           }
         }else{
-          of->createFailFrame(fec_FrameError, "Could not add order, could not unpack frame");
+		  // FIXME: This isn't always a FrameError really...
+          of->createFailFrame(fec_FrameError, (std::string("Could not add order, ") + r).c_str());
         }
       }
       Game::getGame()->getObjectManager()->doneWithObject(objectID);

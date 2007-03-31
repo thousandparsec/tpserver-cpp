@@ -20,6 +20,7 @@
  *
  */
 
+#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/vector3d.h>
 class SpaceCoordParam;
@@ -35,7 +36,7 @@ class Move : public Order{
 	int getETA(IGObject* ob) const;
 
 	void createFrame(Frame * f, int objID, int pos);
-	bool inputFrame(Frame * f, unsigned int playerid);
+	Result inputFrame(Frame * f, unsigned int playerid);
 
 	bool doOrder(IGObject * ob);
 

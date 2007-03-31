@@ -21,6 +21,7 @@
  */
 
 #include <tpserver/order.h>
+#include <tpserver/result.h>
 
 class Move;
 class ObjectParameter;
@@ -31,7 +32,7 @@ class MergeFleet : public Order{
   virtual ~MergeFleet();
 
   void createFrame(Frame * f, int objID, int pos);
-  bool inputFrame(Frame * f, unsigned int playerid);
+  Result inputFrame(Frame * f, unsigned int playerid);
   
   bool doOrder(IGObject * ob);
   

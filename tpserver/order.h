@@ -25,6 +25,8 @@
 #include <map>
 #include <string>
 
+#include "result.h"
+
 class Frame;
 class IGObject;
 class OrderParameter;
@@ -46,7 +48,7 @@ class Order {
         uint64_t getDescriptionModTime() const;
 
 	virtual void createFrame(Frame * f, int objID, int pos);
-	virtual bool inputFrame(Frame * f, unsigned int playerid);
+	virtual Result inputFrame(Frame * f, unsigned int playerid);
 
 	virtual bool doOrder(IGObject * ob) = 0;
 

@@ -512,7 +512,7 @@ void Frame::unpackData(unsigned int len, char* bdata){
   }
 }
 
-void Frame::createFailFrame(FrameErrorCode code, char *reason)
+void Frame::createFailFrame(FrameErrorCode code, const char *reason)
 {
   
     setType(ft02_Fail);

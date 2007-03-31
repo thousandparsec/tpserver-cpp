@@ -54,9 +54,9 @@ void Nop::createFrame(Frame * f, int objID, int pos)
   Order::createFrame(f, objID, pos);
 }
 
-bool Nop::inputFrame(Frame * f, unsigned int playerid)
+Result Nop::inputFrame(Frame * f, unsigned int playerid)
 {
-  bool rtv = Order::inputFrame(f, playerid);
+  Result rtv = Order::inputFrame(f, playerid);
   turns = timeparam->getTime();
 
   return rtv;

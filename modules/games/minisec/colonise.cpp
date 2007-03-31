@@ -18,6 +18,7 @@
  *
  */
 
+#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
@@ -66,21 +67,20 @@ void Colonise::createFrame(Frame * f, int objID, int pos){
   
 }
 
-bool Colonise::inputFrame(Frame * f, unsigned int playerid){
-  
-  if(!(Order::inputFrame(f, playerid)))
-    return false;
+Result Colonise::inputFrame(Frame * f, unsigned int playerid){
+  Result r = Order::inputFrame(f, playerid);
+  if(!r) return r;
 
   IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
 
   if(target == NULL || (object->getObjectId() != 0 && target->getType() != 3)){
     Logger::getLogger()->debug("Player trying to colonise something that is not a planet");
     Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-    return false;
+    return Failure("Player trying to colonise something that is not a planet.");
   }
   moveorder->setDest(target->getPosition());
   Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-  return true;
+  return Success();
 }
 
 bool Colonise::doOrder(IGObject * ob){

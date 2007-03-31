@@ -20,6 +20,7 @@
 
 #include <math.h>
 
+#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -119,11 +120,10 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
   return options;
 }
 
-bool Build::inputFrame(Frame *f, unsigned int playerid)
+Result Build::inputFrame(Frame *f, unsigned int playerid)
 {
-  if(!Order::inputFrame(f, playerid)){
-    return false;
-  }
+  Result r = Order::inputFrame(f, playerid);
+  if(!r) return r;
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -153,7 +153,7 @@ bool Build::inputFrame(Frame *f, unsigned int playerid)
   if(fleetname->getString().length() == 0){
       fleetname->setString("A Fleet");
   }
-  return true;
+  return Success();
 }
 
 bool Build::doOrder(IGObject *ob)
