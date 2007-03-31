@@ -26,6 +26,7 @@
 #define Failure(msg) Result(false, msg)
 
 /**
+ * \brief Results class for passing the result of something.
  * Result abc() {..}
  * 
  * if (abc())
@@ -55,7 +56,8 @@
  */
 class Result {
  public:
-  /** 
+  /**
+   * \brief Creates a Result object from bool and string.
    * There are also to convience macros, these allow you to quickly return
    * success for failure. 
    * Success()
