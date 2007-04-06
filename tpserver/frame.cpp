@@ -345,6 +345,36 @@ bool Frame::packString(const char *str)
   return true;
 }
 
+bool Frame::packString(const std::string &str){
+  int slen = str.length();
+  if(!(packInt(slen))){
+    throw new std::exception();
+  }
+  char *temp = (char *) realloc(data, length + slen + 3);
+  if (temp != NULL) {
+    data = temp;
+    temp += length;
+    
+    // Actual string
+    memcpy(temp, str.c_str(), slen);
+    temp += slen;
+    
+    length += slen;
+    
+    if(padstrings){
+      int pad = length % 4;
+      if(pad != 0){
+        for(int i = 0; i < 4-pad; i++){
+          *temp = '\0';
+          temp++;
+        }
+      }
+    }
+  }else{
+    throw new std::exception();
+  }
+  return true;
+}
 
 
 bool Frame::packInt(int val)
@@ -481,6 +511,28 @@ char *Frame::unpackString()
 	}
 	//printf("unpackptr %d\n", unpackptr);
 	return rtnstr;
+}
+
+std::string Frame::unpackStdString(){
+  uint32_t len = unpackInt();
+  if(unpackptr + len > length){
+    throw new std::exception();
+  }
+  char cstr[len+1];
+
+  memcpy(cstr, data + unpackptr, len);
+  cstr[len] = '\0';
+  unpackptr += len;
+  if(padstrings){
+    int pad = unpackptr % 4;
+    if(pad != 0){
+      if(unpackptr + (4 - pad) > length){
+        throw new std::exception();
+      }
+      unpackptr += 4-pad;
+    }
+  }
+  return std::string(cstr);
 }
 
 long long Frame::unpackInt64()

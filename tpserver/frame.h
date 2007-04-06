@@ -21,6 +21,7 @@
  */
 
 #include <stdint.h>
+#include <string>
 
 typedef enum {
   fv0_1 = 1,
@@ -160,7 +161,7 @@ class Frame {
     void enablePaddingStrings(bool on);
     
     bool packString(const char *str);
-    //bool packString(std::string str);
+    bool packString(const std::string &str);
     bool packInt(int val);
     bool packInt64(long long val);
     bool packInt8(char val);
@@ -173,6 +174,7 @@ class Frame {
   
     int unpackInt();
     char *unpackString();
+    std::string unpackStdString();
     long long unpackInt64();
     char unpackInt8();
     void unpackData(unsigned int len, char* bdata);
