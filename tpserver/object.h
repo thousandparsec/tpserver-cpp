@@ -24,6 +24,7 @@
 #include <set>
 #include <map>
 #include <stdint.h>
+#include <string>
 
 // must try to fix this
 
@@ -39,15 +40,14 @@ class IGObject {
 
       public:
 	IGObject();
-	IGObject(IGObject & rhs);
+	
 	~IGObject();
 
-	IGObject operator=(IGObject & rhs);
 
 	unsigned int getID();
 	unsigned int getType();
 	unsigned long long getSize();
-	char *getName();
+	std::string getName();
 	Vector3d getPosition();
 	Vector3d getVelocity();
 	unsigned int getParent();
@@ -56,7 +56,7 @@ class IGObject {
 	void autoSetID();
 	void setType(unsigned int newtype);
 	void setSize(unsigned long long newsize);
-	void setName(const char *newname);
+	void setName(const std::string &newname);
 	void setPosition(const Vector3d & npos);
 	void setFuturePosition(const Vector3d & npos, bool isend = false);
 	void updatePosition();
@@ -90,11 +90,14 @@ class IGObject {
 	static Game *myGame;
 
       private:
+        IGObject(IGObject & rhs);
+        IGObject operator=(IGObject & rhs);
 
 	unsigned int id;
 	unsigned int type;
 	unsigned long long size;
-	char *name;
+	std::string name;
+        std::string description;
 	Vector3d pos;
 
 	// Where the object will be next turn

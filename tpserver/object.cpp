@@ -34,11 +34,10 @@
 
 Game *IGObject::myGame = NULL;
 
-IGObject::IGObject()
+IGObject::IGObject() : name(), description()
 {
 	id = 0xffffffff;
 	parentid = 0;
-	name = NULL;
 	if (myGame == NULL) {
 		myGame = Game::getGame();
 	}
@@ -46,37 +45,13 @@ IGObject::IGObject()
     ordernum = 0;
 }
 
-IGObject::IGObject(IGObject & rhs)
-{
-	if (rhs.name != NULL) {
-		int len = strlen(rhs.name) + 1;
-		if (name != NULL)
-			delete[]name;
-		name = new char[len];
-		strncpy(name, rhs.name, len);
-	} else {
-		name = NULL;
-	}
-	Logger::getLogger()->warning("Object Copy Constructor: copying Object ID");
-	id = rhs.id;
-	type = rhs.type;
-	size = rhs.size;
-	pos = rhs.pos;
-	vel = rhs.vel;
-
-	parentid = rhs.parentid;
-
-	children.clear();
-	//children = rhs.children;
-	touchModTime();
+IGObject::IGObject(IGObject & rhs){
+  Logger::getLogger()->warning("Object Copy Constructor: copying Object ID");
 }
 
 IGObject::~IGObject()
 {
 	children.clear();
-	if (name != NULL) {
-		delete[]name;
-	}
 	if(myObjectData != NULL){
 	  delete myObjectData;
 	}
@@ -104,15 +79,8 @@ unsigned long long IGObject::getSize()
 	return size;
 }
 
-char *IGObject::getName()
-{
-	char *rtn = NULL;
-	if (name != NULL) {
-		int len = strlen(name) + 1;
-		rtn = new char[len];
-		strncpy(rtn, name, len);
-	}
-	return rtn;
+std::string IGObject::getName(){
+  return name;
 }
 
 Vector3d IGObject::getPosition()
@@ -162,15 +130,9 @@ void IGObject::setSize(unsigned long long newsize)
 	touchModTime();
 }
 
-void IGObject::setName(const char *newname)
-{
-	if (name != NULL) {
-		delete[]name;
-	}
-	int len = strlen(newname) + 1;
-	name = new char[len];
-	strncpy(name, newname, len);
-	touchModTime();
+void IGObject::setName(const std::string &newname){
+  name = newname;
+  touchModTime();
 }
 
 void IGObject::setPosition(const Vector3d & npos)
@@ -311,9 +273,15 @@ void IGObject::createFrame(Frame * frame, int playerid)
   frame->packInt(id);
   frame->packInt(type);
   frame->packString(name);
-  frame->packInt64(size);
-  pos.pack(frame);
-  vel.pack(frame);
+  if(frame->getVersion() >= fv0_4){
+    frame->packString(description);
+    frame->packInt(parentid);
+  }else{
+    //pre tp04
+    frame->packInt64(size);
+    pos.pack(frame);
+    vel.pack(frame);
+  }
  
   std::set<unsigned int> temp = children;
   std::set < unsigned int >::iterator itcurr, itend;
@@ -337,28 +305,32 @@ void IGObject::createFrame(Frame * frame, int playerid)
     frame->packInt(*itcurr);
   }
 
-  int templength = frame->getDataLength();
-
-  myObjectData->packAllowedOrders(frame, playerid);
-
-  if(frame->getDataLength() - templength > 4){
-    frame->packInt(ordernum);
+  if(frame->getVersion() <= fv0_3){
+    int templength = frame->getDataLength();
+  
+    myObjectData->packAllowedOrders(frame, playerid);
+  
+    if(frame->getDataLength() - templength > 4){
+      frame->packInt(ordernum);
+    }else{
+      frame->packInt(0);
+    }
+  }
+  if(frame->getVersion() >= fv0_3){
+    frame->packInt64(myObjectData->getModTime());
+    frame->packInt(0);
+    frame->packInt(0);
+    if(frame->getVersion() >= fv0_4){
+      frame->packInt(0);
+      frame->packInt(0);
+    }
   }else{
     frame->packInt(0);
+    frame->packInt(0);
+    frame->packInt(0);
+    frame->packInt(0);
   }
-
   
-  if(frame->getVersion() > fv0_1){
-    if(frame->getVersion() < fv0_3){
-      frame->packInt(0);
-      frame->packInt(0);
-    }else{
-      frame->packInt64(myObjectData->getModTime());
-    }
-    frame->packInt(0);
-    frame->packInt(0);
-  }
-
   if(myObjectData != NULL){
     myObjectData->packExtraData(frame);
   }
