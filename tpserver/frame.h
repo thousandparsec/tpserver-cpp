@@ -105,12 +105,12 @@ typedef enum {
   // Version 4 frame types follow
   ft04_TurnFinished = 63,
   ft04_Filters_Set = 64,
-  ft04_Games_Get = 65,
-  ft04_Games = 66,
+  ft04_GameInfo_Get = 65,
+  ft04_GameInfo = 66,
   ft04_ObjectDesc_Get = 67,
   ft04_ObjectDesc = 68,
   ft04_ObjectTypes_Get = 69,
-  ft04_ObjectTypes = 70,
+  ft04_ObjectTypes_List = 70,
   ft04_Object_Modify = 71,
   ft04_Max,
 
