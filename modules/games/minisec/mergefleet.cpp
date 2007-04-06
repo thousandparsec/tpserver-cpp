@@ -30,7 +30,7 @@
 #include <tpserver/player.h>
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/objectparameter.h>
+#include <tpserver/objectorderparameter.h>
 
 #include "mergefleet.h"
 
@@ -40,7 +40,7 @@ MergeFleet::MergeFleet() : Order(){
   name = "MergeFleet";
   description = "Merge this fleet into another one";
   
-  object = new ObjectParameter();
+  object = new ObjectOrderParameter();
   object->setName("fleet");
   object->setDescription("The fleet to be merged into");
   parameters.push_back(object);

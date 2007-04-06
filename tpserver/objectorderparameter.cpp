@@ -1,4 +1,4 @@
-/*  ObjectParameter baseclass
+/*  ObjectOrderParameter baseclass
  *
  *  Copyright (C) 2007 Lee Begg and the Thousand Parsec Project
  *
@@ -22,22 +22,22 @@
 
 #include "frame.h"
 
-#include "objectparameter.h"
+#include "objectorderparameter.h"
 
-ObjectParameter::ObjectParameter() : OrderParameter(), object(0){
+ObjectOrderParameter::ObjectOrderParameter() : OrderParameter(), object(0){
   type = opT_Object_ID;
 }
 
-ObjectParameter::~ObjectParameter(){
+ObjectOrderParameter::~ObjectOrderParameter(){
 
 }
 
 
-void ObjectParameter::packOrderFrame(Frame * f, uint32_t objID){
+void ObjectOrderParameter::packOrderFrame(Frame * f, uint32_t objID){
   f->packInt(object);
 }
 
-bool ObjectParameter::unpackFrame(Frame *f, unsigned int playerid){
+bool ObjectOrderParameter::unpackFrame(Frame *f, unsigned int playerid){
   if(f->isEnoughRemaining(4)){
     object = f->unpackInt();
     return true;
@@ -46,15 +46,15 @@ bool ObjectParameter::unpackFrame(Frame *f, unsigned int playerid){
   }
 }
 
-OrderParameter *ObjectParameter::clone() const{
-  return new ObjectParameter();
+OrderParameter *ObjectOrderParameter::clone() const{
+  return new ObjectOrderParameter();
 }
 
-uint32_t ObjectParameter::getObjectId() const{
+uint32_t ObjectOrderParameter::getObjectId() const{
   return object;
 }
 
-void ObjectParameter::setObjectId(uint32_t id){
+void ObjectOrderParameter::setObjectId(uint32_t id){
   object = id;
 }
 

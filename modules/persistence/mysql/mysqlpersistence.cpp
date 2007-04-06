@@ -33,7 +33,7 @@
 #include <tpserver/order.h>
 #include <tpserver/orderparameter.h>
 #include <tpserver/listparameter.h>
-#include <tpserver/objectparameter.h>
+#include <tpserver/objectorderparameter.h>
 #include <tpserver/spacecoordparam.h>
 #include <tpserver/stringparameter.h>
 #include <tpserver/timeparameter.h>
@@ -617,7 +617,7 @@ bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
           updateTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          updateObjectParameter(ordid, parampos, static_cast<ObjectParameter*>(*itcurr));
+          updateObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
           updateListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
@@ -686,7 +686,7 @@ bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
           updateTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          updateObjectParameter(ordid, parampos, static_cast<ObjectParameter*>(*itcurr));
+          updateObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
           updateListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
@@ -768,7 +768,7 @@ Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
           retrieveTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          retrieveObjectParameter(ordid, parampos, static_cast<ObjectParameter*>(*itcurr));
+          retrieveObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
           retrieveListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
@@ -845,7 +845,7 @@ bool MysqlPersistence::removeOrder(uint32_t ordid){
           removeTimeParameter(ordid, parampos);
           break;
         case opT_Object_ID:
-          removeObjectParameter(ordid, parampos);
+          removeObjectOrderParameter(ordid, parampos);
           break;
         case opT_List:
           removeListParameter(ordid, parampos);
@@ -1001,12 +1001,12 @@ bool MysqlPersistence::removeListParameter(uint32_t ordid, uint32_t pos){
   return true;
 }
 
-bool MysqlPersistence::updateObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob){
+bool MysqlPersistence::updateObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
   std::ostringstream querybuilder;
   querybuilder << "DELETE FROM orderparamobject WHERE orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update ObjectParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1016,7 +1016,7 @@ bool MysqlPersistence::updateObjectParameter(uint32_t ordid, uint32_t pos, Objec
   querybuilder << ob->getObjectId() << ");";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update ObjectParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1024,18 +1024,18 @@ bool MysqlPersistence::updateObjectParameter(uint32_t ordid, uint32_t pos, Objec
   return true;
 }
 
-bool MysqlPersistence::retrieveObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob){
+bool MysqlPersistence::retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
   std::ostringstream querybuilder;
   querybuilder << "SELECT objectid FROM orderparamobject WHERE orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve ObjectParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   MYSQL_RES *ordresult = mysql_store_result(conn);
   if(ordresult == NULL){
-      Logger::getLogger()->error("Mysql: retrieve ObjectParameter: Could not store result - %s", mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve ObjectOrderParameter: Could not store result - %s", mysql_error(conn));
       unlock();
       return false;
   }
@@ -1043,7 +1043,7 @@ bool MysqlPersistence::retrieveObjectParameter(uint32_t ordid, uint32_t pos, Obj
   MYSQL_ROW row = mysql_fetch_row(ordresult);
   if(row == NULL){
       mysql_free_result(ordresult);
-      Logger::getLogger()->error("Mysql: retrieve ObjectParameter: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve ObjectOrderParameter: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
       return false;
   }
   
@@ -1054,12 +1054,12 @@ bool MysqlPersistence::retrieveObjectParameter(uint32_t ordid, uint32_t pos, Obj
   return true;
 }
 
-bool MysqlPersistence::removeObjectParameter(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeObjectOrderParameter(uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
   querybuilder << "DELETE FROM orderparamobject WHERE orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove ObjectParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }

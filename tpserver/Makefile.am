@@ -29,7 +29,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp \
 		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp \
-		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectparameter.cpp \
+		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectorderparameter.cpp \
 		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp turnprocess.cpp
 		
 headersdir = $(includedir)/tpserver
@@ -47,7 +47,7 @@ headers_HEADERS = connection.h console.h \
 	objectmanager.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h settingscallback.h \
-	orderparameter.h spacecoordparam.h timeparameter.h objectparameter.h stringparameter.h \
+	orderparameter.h spacecoordparam.h timeparameter.h objectorderparameter.h stringparameter.h \
 	listparameter.h timercallback.h prng.h playeragent.h turnprocess.h result.h 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \

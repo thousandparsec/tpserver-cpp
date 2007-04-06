@@ -24,7 +24,7 @@
 #include <tpserver/result.h>
 
 class Move;
-class ObjectParameter;
+class ObjectOrderParameter;
 
 class MergeFleet : public Order{
  public:
@@ -40,7 +40,7 @@ class MergeFleet : public Order{
   Order* clone() const;
 
  private:
-  ObjectParameter* object;
+  ObjectOrderParameter* object;
   Move * moveorder;
 
 };

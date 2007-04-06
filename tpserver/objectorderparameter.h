@@ -1,6 +1,6 @@
-#ifndef OBJECTPARAMETER_H
-#define OBJECTPARAMETER_H
-/*  ObjectParameter class
+#ifndef OBJECTORDERPARAMETER_H
+#define OBJECTORDERPARAMETER_H
+/*  ObjectOrderParameter class
  *
  *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
  *
@@ -22,11 +22,11 @@
 
 #include <tpserver/orderparameter.h>
 
-class ObjectParameter : public OrderParameter{
+class ObjectOrderParameter : public OrderParameter{
 
 public:
-  ObjectParameter();
-  virtual ~ObjectParameter();
+  ObjectOrderParameter();
+  virtual ~ObjectOrderParameter();
 
   virtual void packOrderFrame(Frame * f, uint32_t objID);
   virtual bool unpackFrame(Frame * f, unsigned int playerid);

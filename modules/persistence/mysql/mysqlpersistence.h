@@ -28,7 +28,7 @@
 typedef struct st_mysql MYSQL;
 class MysqlObjectType;
 class SpaceCoordParam;
-class ObjectParameter;
+class ObjectOrderParameter;
 class ListParameter;
 class StringParameter;
 class TimeParameter;
@@ -115,9 +115,9 @@ private:
   bool updateListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
   bool retrieveListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
   bool removeListParameter(uint32_t ordid, uint32_t pos);
-  bool updateObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob);
-  bool retrieveObjectParameter(uint32_t ordid, uint32_t pos, ObjectParameter* ob);
-  bool removeObjectParameter(uint32_t ordid, uint32_t pos);
+  bool updateObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
+  bool retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
+  bool removeObjectOrderParameter(uint32_t ordid, uint32_t pos);
   bool updateStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
   bool retrieveStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
   bool removeStringParameter(uint32_t ordid, uint32_t pos);

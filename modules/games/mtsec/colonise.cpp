@@ -34,7 +34,7 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/objectparameter.h>
+#include <tpserver/objectorderparameter.h>
 
 #include "colonise.h"
 
@@ -44,7 +44,7 @@ Colonise::Colonise() : Order(){
   name = "Colonise";
   description = "Attempt to colonise a planet";
   
-  object = new ObjectParameter();
+  object = new ObjectOrderParameter();
   object->setName("planet");
   object->setDescription("The target planet to be colonised");
   parameters.push_back(object);

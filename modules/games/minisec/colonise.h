@@ -24,7 +24,7 @@
 #include <tpserver/order.h>
 
 class Move;
-class ObjectParameter;
+class ObjectOrderParameter;
 
 class Colonise : public Order {
  public:
@@ -41,7 +41,7 @@ class Colonise : public Order {
   Order* clone() const;
 
  private:
-  ObjectParameter* object;
+  ObjectOrderParameter* object;
   Move* moveorder;
 
 
