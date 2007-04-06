@@ -2,7 +2,7 @@
 #define RULESET_H
 /*  Ruleset class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ class Ruleset{
   virtual void initGame() = 0;
   virtual void createGame() = 0;
   virtual void startGame() = 0;
-  virtual void doOnceATurn() = 0;
   virtual bool onAddPlayer(Player* player) = 0;
   virtual void onPlayerAdded(Player* player) = 0;
   

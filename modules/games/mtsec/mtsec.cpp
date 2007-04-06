@@ -1372,21 +1372,6 @@ void MTSec::startGame()
 }
 
 
-// Make sure each player can see all objects each turn.
-// This covers any new objects that have been created during the previous
-// turn.
-void MTSec::doOnceATurn()
-{
-    Game* game = Game::getGame();
-    std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
-    std::set<uint32_t> players = game->getPlayerManager()->getAllIds();
-
-    for ( std::set<uint32_t>::iterator itplayer = players.begin();
-          itplayer != players.end(); ++itplayer) {
-        game->getPlayerManager()->getPlayer(*itplayer)->setVisibleObjects(vis);
-    }
-}
-
 
 bool MTSec::onAddPlayer(Player* player)
 {

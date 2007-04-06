@@ -468,16 +468,6 @@ void MiniSec::startGame(){
   Game::getGame()->setTurnLength(600);
 }
 
-void MiniSec::doOnceATurn(){
-  Game* game = Game::getGame();
-  std::set<unsigned int> vis = game->getObjectManager()->getAllIds();
-    std::set<uint32_t> players = game->getPlayerManager()->getAllIds();
-    for(std::set<uint32_t>::iterator itplayer = players.begin(); 
-            itplayer != players.end(); ++itplayer){
-        game->getPlayerManager()->getPlayer(*itplayer)->setVisibleObjects(vis);
-    }
-}
-
 bool MiniSec::onAddPlayer(Player* player){
   
   return true;
