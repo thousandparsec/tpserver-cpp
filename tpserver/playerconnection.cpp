@@ -213,6 +213,11 @@ void PlayerConnection::login(){
         failframe->createFailFrame(fec_PermissionDenied, "Account creation Disabled, talk to game admin");
         sendFrame(failframe);
       }
+    }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
+      Logger::getLogger()->debug("Processing get GameInfo frame");
+      Frame *game = createFrame(recvframe);
+      Game::getGame()->packGameInfoFrame(game);
+      sendFrame(game);
     }else{
       Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining");
       Frame *failframe = createFrame(recvframe);
@@ -254,6 +259,11 @@ void PlayerConnection::inGameFrame()
       time->setType(ft02_Time_Remaining);
       time->packInt(Game::getGame()->secondsToEOT());
       sendFrame(time);
+    }else if(version >= fv0_4 && frame->getType() == ft04_GameInfo_Get){
+      Logger::getLogger()->debug("Processing get GameInfo frame");
+      Frame *game = createFrame(frame);
+      Game::getGame()->packGameInfoFrame(game);
+      sendFrame(game);
     }else{
       if(Game::getGame()->isStarted()){
         // should pass frame to player to do something with

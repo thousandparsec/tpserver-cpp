@@ -41,6 +41,7 @@ class Persistence;
 class TpScheme;
 class TimerCallback;
 class Random;
+class Frame;
 
 class Game {
 
@@ -87,6 +88,7 @@ class Game {
 
     void saveAndClose();
 
+    void packGameInfoFrame(Frame* frame);
 
   private:
     Game();

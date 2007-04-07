@@ -68,6 +68,8 @@ class Network {
 
 	void sendToAll(Frame * frame);
         void doneEOT();
+        
+        Advertiser* getAdvertiser() const;
 
 	// don't you even think about calling these functions
 

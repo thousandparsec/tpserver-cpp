@@ -277,6 +277,10 @@ void Network::doneEOT(){
   advertiser->updatePublishers();
 }
 
+Advertiser* Network::getAdvertiser() const{
+  return advertiser;
+}
+
 void Network::masterLoop()
 {
 	struct timeval tv;

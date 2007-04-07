@@ -23,6 +23,14 @@
 #include <ctime>
 #include <cassert>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#ifndef VERSION
+#define VERSION "0.0.0"
+#endif
+#endif
+
 #include "logging.h"
 #include "player.h"
 #include "object.h"
@@ -46,6 +54,7 @@
 #include "timercallback.h"
 #include "prng.h"
 #include "turnprocess.h"
+#include "advertiser.h"
 
 #include "game.h"
 
@@ -307,6 +316,106 @@ void Game::saveAndClose()
         }
         
 	Logger::getLogger()->info("Game saved & closed");
+}
+
+void Game::packGameInfoFrame(Frame* frame){
+  frame->setType(ft04_GameInfo);
+  Settings* settings = Settings::getSettings();
+  Advertiser* advertiser = Network::getNetwork()->getAdvertiser();
+  if(settings->get("game_shortname").empty()){
+    frame->packString("tp");
+  }else{
+    frame->packString(settings->get("game_shortname"));
+  }
+  frame->packString("");
+  frame->packInt(2);
+  frame->packString("0.3");
+  frame->packString("0.4");
+  frame->packString(VERSION);
+  frame->packString("tpserver-cpp");
+  if(ruleset != NULL){
+    frame->packString(ruleset->getName());
+    frame->packString(ruleset->getVersion());
+  }else{
+    frame->packString("");
+    frame->packString("");
+  }
+  std::map<std::string, uint16_t> services = advertiser->getServices();
+  frame->packInt(services.size());
+  for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
+      itcurr != services.end(); ++itcurr){
+    frame->packString(itcurr->first);
+    if(settings->get("metaserver_fake_dns") != ""){
+      frame->packString(settings->get("metaserver_fake_dns"));
+    }else{
+      frame->packString(""); //TODO get dns automatically
+    }
+    if(settings->get("metaserver_fake_ip") != ""){
+      frame->packString(settings->get("metaserver_fake_ip"));
+    }else{
+      frame->packString(""); //TODO get ip address automatically
+    }
+    frame->packInt(itcurr->second);
+  }
+  std::map<uint32_t, std::pair<std::string, uint32_t> > optionalparams;
+  if(!settings->get("admin_email").empty()){
+    optionalparams[4] = std::pair<std::string, uint32_t>(settings->get("admin_email"), 0);
+  }
+  if(!settings->get("game_comment").empty()){
+    optionalparams[5] = std::pair<std::string, uint32_t>(settings->get("game_comment"), 0);
+  }
+  //number of optional params
+  frame->packInt(7 + optionalparams.size());
+  
+  frame->packInt(8);
+  if(settings->get("game_shortname").empty()){
+    frame->packString("tp");
+  }else{
+    frame->packString(settings->get("game_shortname"));
+  }
+  frame->packInt(0);
+  
+  frame->packInt(7);
+  if(settings->get("game_longname").empty()){
+    frame->packString("Tpserver-cpp");
+  }else{
+    frame->packString(settings->get("game_longname"));
+  }
+  frame->packInt(0);
+  
+  frame->packInt(1);
+  frame->packString("");
+  frame->packInt(playermanager->getNumPlayers());
+  
+  frame->packInt(3);
+  frame->packString("");
+  frame->packInt(objectmanager->getNumObjects());
+  
+  frame->packInt(6);
+  frame->packString("");
+  frame->packInt(turnTime);
+  
+  frame->packInt(9);
+  frame->packString("");
+  frame->packInt(getTurnNumber());
+  
+  frame->packInt(10);
+  frame->packString("");
+  frame->packInt(turnIncrement);
+  
+  for(std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator itcurr = optionalparams.begin();
+      itcurr != optionalparams.end(); ++itcurr){
+    frame->packInt(itcurr->first);
+    frame->packString(itcurr->second.first);
+    frame->packInt(itcurr->second.second);
+  }
+  
+  if(!settings->get("game_media_base").empty()){
+    frame->packString(settings->get("game_media_base"));
+  }else{
+    frame->packString("http://darcs.thousandparsec.net/repos/media/");
+  }
+  
 }
 
 Game::Game()
