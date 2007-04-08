@@ -32,7 +32,7 @@ typedef enum {
 	obpT_Order_Queue = 4,
 	obpT_Resource_List = 5,
 	obpT_Reference = 6,
-	obpT_Reference_Quanity_List = 7,
+	obpT_Reference_Quantity_List = 7,
         obpT_Integer = 8,
         obpT_Size = 9,
         obpT_Media = 10,
