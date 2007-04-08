@@ -56,7 +56,7 @@ headers_HEADERS = connection.h console.h \
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
-	metaserverconnection.h sizeobjectparam.h
+	metaserverconnection.h
 
 INCLUDES = $(LTDLINCL)
 
