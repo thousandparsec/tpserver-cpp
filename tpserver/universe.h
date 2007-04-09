@@ -2,7 +2,7 @@
 #define UNIVERSE_H
 /*  Universe ObjectData class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@
 
 #include <tpserver/objectdata.h>
 
+class IntegerObjectParam;
+class Position3dObjectParam;
+
 class Universe:public ObjectData {
       public:
 	Universe();
@@ -38,7 +41,8 @@ class Universe:public ObjectData {
 	int getYear();
 
       private:
-	int yearNum;
+	Position3dObjectParam * pos;
+        IntegerObjectParam * year;
 
 };
 

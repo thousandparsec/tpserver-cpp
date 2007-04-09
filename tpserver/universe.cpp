@@ -1,6 +1,6 @@
 /*  Universe object
  *
- *  Copyright (C) 2003-2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,23 +19,43 @@
  */
 
 #include "frame.h"
+#include "position3dobjectparam.h"
+#include "integerobjectparam.h"
+#include "objectparametergroup.h"
 
 #include "universe.h"
 
-Universe::Universe()
-{
-	yearNum = 0;
+Universe::Universe() : ObjectData(){
+  year = new IntegerObjectParam();
+  year->setName("Year");
+  year->setDescription("The Age of the universe");
+  pos = new Position3dObjectParam();
+  pos->setName("Position");
+  pos->setDescription("The position of the universe");
+  ObjectParameterGroup *group = new ObjectParameterGroup();
+  group->setGroupId(1);
+  group->setName("Positional");
+  group->setDescription("Describes the position");
+  group->addParameter(pos);
+  paramgroups.push_back(group);
+  group = new ObjectParameterGroup();
+  group->setGroupId(2);
+  group->setName("Informational");
+  group->setDescription("Information about the universe");
+  group->addParameter(year);
+  paramgroups.push_back(group);
+  nametype = "Universe";
+  typedesc = "The Universe";
+  touchModTime();
 }
 
-void Universe::packExtraData(Frame * frame)
-{
-	frame->packInt(yearNum);
+void Universe::packExtraData(Frame * frame){
+  frame->packInt(year->getValue());
 }
 
-void Universe::doOnceATurn(IGObject * obj)
-{
-	++yearNum;
-        touchModTime();
+void Universe::doOnceATurn(IGObject * obj){
+  year->setValue(year->getValue() + 1);
+  touchModTime();
 }
 
 int Universe::getContainerType(){
@@ -46,12 +66,10 @@ ObjectData* Universe::clone(){
   return new Universe();
 }
 
-void Universe::setYear(int year)
-{
-	yearNum = year;
+void Universe::setYear(int nyear){
+  year->setValue(nyear);
 }
 
-int Universe::getYear()
-{
-	return yearNum;
+int Universe::getYear(){
+  return year->getValue();
 }
