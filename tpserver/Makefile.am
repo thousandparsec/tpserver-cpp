@@ -33,7 +33,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp turnprocess.cpp \
 		objectparameter.cpp objectparametergroup.cpp position3dobjectparam.cpp \
 		velocity3dobjectparam.cpp sizeobjectparam.cpp integerobjectparam.cpp \
-		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp
+		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp \
+		orderqueueobjectparam.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
@@ -54,7 +55,8 @@ headers_HEADERS = connection.h console.h \
 	listparameter.h timercallback.h prng.h playeragent.h turnprocess.h result.h \
 	objectparameter.h objectparametergroup.h position3dobjectparam.h \
 	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h \
-	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h
+	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
+	orderqueueobjectparam.h
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
