@@ -2,7 +2,7 @@
 #define OBJECTDATA_H
 /*  ObjectData base class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,18 +21,27 @@
  */
 
 #include <stdint.h>
+#include <list>
 
 class Game;
 class Frame;
 class IGObject;
+class ObjectParameter;
+class ObjectParameterGroup;
 
 class ObjectData {
 
       public:
 	ObjectData();
-	virtual ~ObjectData(){};
+	virtual ~ObjectData();
 
 	virtual void packExtraData(Frame * frame) = 0;
+        void packObjectParameters(Frame* frame, uint32_t playerid);
+        bool unpackModifyObject(Frame* frame, uint32_t playerid);
+        
+        void packObjectDescFrame(Frame* frame);
+        
+        ObjectParameter* getParameterByType(uint32_t ptype);
 
 	virtual void doOnceATurn(IGObject * obj) = 0;
 
@@ -50,7 +59,7 @@ class ObjectData {
         void setModTime(uint64_t time);
 
       protected:
-
+        std::list<ObjectParameterGroup*> paramgroups;
 
       private:
 	long long modtime;

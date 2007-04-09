@@ -1,6 +1,6 @@
 /*  OwnedObject baseclass for ObjectData classes that are owned by players
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,35 @@
  */
 
 #include "frame.h"
+#include "objectparametergroup.h"
+#include "refsys.h"
+#include "referenceobjectparam.h"
 
 #include "ownedobject.h"
 
-OwnedObject::OwnedObject() : ObjectData()
-{
-	playerid = 0;
+OwnedObject::OwnedObject() : ObjectData(){
+  playerref = new ReferenceObjectParam();
+  playerref->setName("Owner");
+  playerref->setDescription("The owner of this object");
+  playerref->setReferenceType(rst_Player);
+  ObjectParameterGroup * group = new ObjectParameterGroup();
+  group->setGroupId(1);
+  group->setName("Ownership");
+  group->setDescription("The ownership of this object");
+  group->addParameter(playerref);
+  paramgroups.push_back(group);
+  touchModTime();
 }
 
-void OwnedObject::packExtraData(Frame * frame)
-{
-	frame->packInt((playerid == 0) ? 0xffffffff : playerid);
+void OwnedObject::packExtraData(Frame * frame){
+  frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
 }
 
-void OwnedObject::setOwner(int player)
-{
-	playerid = player;
-	touchModTime();
+void OwnedObject::setOwner(int player){
+  playerref->setReferencedId(player);
+  touchModTime();
 }
 
-int OwnedObject::getOwner()
-{
-	return playerid;
+int OwnedObject::getOwner(){
+  return playerref->getReferencedId();
 }

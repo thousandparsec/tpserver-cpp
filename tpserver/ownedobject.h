@@ -2,7 +2,7 @@
 #define OWNEDOBJECT_H
 /*  OwnedObject base class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 
 #include <tpserver/objectdata.h>
 
+class ReferenceObjectParam;
+
 class OwnedObject:public ObjectData {
       public:
 	OwnedObject();
@@ -32,7 +34,7 @@ class OwnedObject:public ObjectData {
 	int getOwner();
 
       private:
-	int playerid;
+        ReferenceObjectParam * playerref;
 
 };
 

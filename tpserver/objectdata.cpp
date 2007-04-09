@@ -1,6 +1,6 @@
 /*  ObjectData base class
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,11 +22,60 @@
 
 #include "frame.h"
 #include "order.h"
+#include "objectparameter.h"
+#include "objectparametergroup.h"
 
 #include "objectdata.h"
 
 ObjectData::ObjectData(){
   touchModTime();
+}
+
+ObjectData::~ObjectData(){
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    delete (*itcurr);
+  }
+}
+
+void ObjectData::packObjectParameters(Frame* frame, uint32_t playerid){
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    (*itcurr)->packObjectFrame(frame, playerid);
+  }
+}
+
+bool ObjectData::unpackModifyObject(Frame* frame, uint32_t playerid){
+  bool rtn = true;
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    rtn = rtn & (*itcurr)->unpackModifyObjectFrame(frame, playerid);
+    if(!rtn)
+      break;
+  }
+  return rtn;
+}
+
+void ObjectData::packObjectDescFrame(Frame* frame){
+  frame->packInt(paramgroups.size());
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    (*itcurr)->packObjectDescFrame(frame);
+  }
+}
+
+ObjectParameter* ObjectData::getParameterByType(uint32_t ptype){
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    std::list<ObjectParameter*> params = (*itcurr)->getParameters();
+    for(std::list<ObjectParameter*>::iterator opitcurr = params.begin(); opitcurr != params.end();
+        ++opitcurr){
+      if((*opitcurr)->getType() == ptype){
+        return (*opitcurr);
+      }
+    }
+  }
+  return NULL;
 }
 
 void ObjectData::packAllowedOrders(Frame * frame, int playerid){
