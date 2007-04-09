@@ -1,5 +1,5 @@
 #ifndef OBJECTPARAMETER_H
-#define OBJCETPARAMETER_H
+#define OBJECTPARAMETER_H
 /*  ObjectParameter base class
  *
  *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
