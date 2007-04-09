@@ -48,7 +48,7 @@ void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
   }
 }
 
-void packObjectDescFrame(Frame * f){
+void OrderQueueObjectParam::packObjectDescFrame(Frame * f){
   f->packInt(1000); // max order slots.
 }
 
