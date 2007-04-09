@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <list>
+#include <string>
 
 class Game;
 class Frame;
@@ -60,6 +61,8 @@ class ObjectData {
 
       protected:
         std::list<ObjectParameterGroup*> paramgroups;
+        std::string nametype;
+        std::string typedesc;
 
       private:
 	long long modtime;

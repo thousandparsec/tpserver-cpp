@@ -57,6 +57,9 @@ bool ObjectData::unpackModifyObject(Frame* frame, uint32_t playerid){
 }
 
 void ObjectData::packObjectDescFrame(Frame* frame){
+  frame->packString(nametype);
+  frame->packString(typedesc);
+  frame->packInt64(modtime);
   frame->packInt(paramgroups.size());
   for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
