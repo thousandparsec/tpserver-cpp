@@ -34,7 +34,9 @@ enum RefSysType{
   rst_Board = 4,
   rst_Message = 5,
   rst_ResouceType = 6,
-  rst_Player = 7
+  rst_Player = 7,
+  rst_Category = 8,
+  rst_Design = 9,
 };
 
 enum RefSysSpecialValue{
