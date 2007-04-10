@@ -22,6 +22,7 @@
 #include "position3dobjectparam.h"
 #include "integerobjectparam.h"
 #include "objectparametergroup.h"
+#include "sizeobjectparam.h"
 
 #include "universe.h"
 
@@ -37,6 +38,11 @@ Universe::Universe() : ObjectData(){
   group->setName("Positional");
   group->setDescription("Describes the position");
   group->addParameter(pos);
+  SizeObjectParam * size = new SizeObjectParam();
+  size->setName("Size");
+  size->setDescription("The diameter of the universe");
+  size->setSize(0xffffffffffffffffULL);
+  group->addParameter(size);
   paramgroups.push_back(group);
   group = new ObjectParameterGroup();
   group->setGroupId(2);
