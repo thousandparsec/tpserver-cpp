@@ -62,7 +62,7 @@ void Move::setDest(const Vector3d & ndest)
 
 int Move::getETA(IGObject *ob) const{
   unsigned long long distance = coords->getPosition().getDistance(ob->getPosition());
-  unsigned long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  unsigned long max_speed = 3000000;
   
   return (int)(distance / max_speed) + 1;
 }
@@ -83,7 +83,7 @@ Result Move::inputFrame(Frame * f, unsigned int playerid)
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
   unsigned long long distance = dest.getDistance(ob->getPosition());
-  unsigned long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  unsigned long long max_speed = 3000000;
 
   Logger::getLogger()->debug("Moving %lld at %lld speed", distance, max_speed);
 

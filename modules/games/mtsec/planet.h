@@ -2,7 +2,7 @@
 #define PLANET_H
 /*  Planet ObjectData class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
 
 #include <tpserver/ownedobject.h>
 
+class ResourceListObjectParam;
+class OrderQueueObjectParam;
+
 class Planet:public OwnedObject {
       public:
 	Planet();
@@ -41,13 +44,15 @@ class Planet:public OwnedObject {
 	ObjectData* clone();
 
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+    uint32_t getResource(uint32_t restype) const;
     
     void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
     void addResource(uint32_t restype, uint32_t amount);
     bool removeResource(uint32_t restype, uint32_t amount);
 
       private:
-    std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources;
+    ResourceListObjectParam* resources;
+    OrderQueueObjectParam * orderqueue;
 
 };
 

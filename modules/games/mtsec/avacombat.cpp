@@ -91,20 +91,20 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     Random* rand = Game::getGame()->getRandom();
     int r1 = rand->getInRange(0U, 40U) + 60;
     int r2 = rand->getInRange(0U, 40U) + 60;
-    unsigned int damage1 = ( fleet1->firepower( false) * r1) / 100;
-    unsigned int damage2 = ( fleet2->firepower( false) * r2) / 100;
+    unsigned int damage1 = ( 2 * r1) / 100;
+    unsigned int damage2 = ( 2 * r2) / 100;
 
     bool tte = false;
 
     std::string body1, body2;
 
-    if ( ! fleet1->hit( damage2)) {
+    if ( ! false) {
         body1 += "Your fleet was destroyed. ";
         body2 += "You destroyed their fleet. ";
         c1 = NULL;
         tte = true;
     };
-    if ( ! fleet2->hit( damage1)) {
+    if ( ! false) {
         body2 += "Your fleet was destroyed.";
         body1 += "You destroyed their fleet.";
         c2 = NULL;
