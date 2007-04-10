@@ -116,8 +116,14 @@ void MiniSec::initGame(){
 
   ObjectDataManager* obdm = game->getObjectDataManager();
   obdm->addNewObjectType(new Universe());
-  obdm->addNewObjectType(new EmptyObject());
-  obdm->addNewObjectType(new EmptyObject());
+  EmptyObject * eo = new EmptyObject();
+  eo->setTypeName("Galaxy");
+  eo->setTypeDescription("The Galaxy Object type");
+  obdm->addNewObjectType(eo);
+  eo = new EmptyObject();
+  eo->setTypeName("Star System");
+  eo->setTypeDescription("The Star System Object type");
+  obdm->addNewObjectType(eo);
   uint32_t pt = obdm->addNewObjectType(new Planet());
   uint32_t ft = obdm->addNewObjectType(new Fleet());
   
