@@ -2,7 +2,7 @@
 #define FLEET_H
 /*  Fleet Object class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@
 #include <list>
 
 #include <tpserver/ownedobject.h>
+
+class RefQuantityListObjectParam;
+class IntegerObjectParam;
+class OrderQueueObjectParam;
 
 class Fleet:public OwnedObject {
       public:
@@ -56,8 +60,9 @@ class Fleet:public OwnedObject {
 	ObjectData* clone();
 
       private:
-	std::map<int, int> ships;
-	int damage;
+	RefQuantityListObjectParam * shiplist;
+	IntegerObjectParam * damage;
+        OrderQueueObjectParam * orderqueue;
 
 };
 
