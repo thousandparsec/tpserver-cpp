@@ -2,7 +2,7 @@
 #define EMPTYOBJECT_H
 /*  Empty Object ObjectData class
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
  *
  */
 
+#include <string>
+
 #include <tpserver/objectdata.h>
 
 class EmptyObject:public ObjectData {
@@ -31,6 +33,9 @@ class EmptyObject:public ObjectData {
 	int getContainerType();
 
 	ObjectData* clone();
+        
+        void setTypeName(const std::string& n);
+        void setTypeDescription(const std::string& d);
 
 };
 

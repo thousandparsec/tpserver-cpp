@@ -18,9 +18,26 @@
  *
  */
 
+#include "objectparametergroup.h"
+#include "position3dobjectparam.h"
+#include "sizeobjectparam.h"
+
 #include "emptyobject.h"
 
 EmptyObject::EmptyObject() : ObjectData(){
+  Position3dObjectParam* pos = new Position3dObjectParam();
+  pos->setName("Position");
+  pos->setDescription("The position of the object");
+  ObjectParameterGroup *group = new ObjectParameterGroup();
+  group->setGroupId(1);
+  group->setName("Positional");
+  group->setDescription("Describes the position");
+  group->addParameter(pos);
+  SizeObjectParam * size = new SizeObjectParam();
+  size->setName("Size");
+  size->setDescription("The diameter of the object");
+  group->addParameter(size);
+  paramgroups.push_back(group);
 }
 
 void EmptyObject::packExtraData(Frame * frame)
@@ -34,9 +51,20 @@ void EmptyObject::doOnceATurn(IGObject * obj)
 }
 
 ObjectData* EmptyObject::clone(){
-  return new EmptyObject();
+  EmptyObject* eo = new EmptyObject();
+  eo->nametype = nametype;
+  eo->typedesc = typedesc;
+  return eo;
 }
 
 int EmptyObject::getContainerType(){
   return 1;
+}
+
+void EmptyObject::setTypeName(const std::string& n){
+  nametype = n;
+}
+
+void EmptyObject::setTypeDescription(const std::string& d){
+  typedesc = d;
 }
