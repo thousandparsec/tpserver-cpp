@@ -95,22 +95,18 @@ class IGObject {
 
 	unsigned int id;
 	unsigned int type;
-	unsigned long long size;
 	std::string name;
         std::string description;
-	Vector3d pos;
 
 	// Where the object will be next turn
 	Vector3d futurepos;
 	bool futureposIsEnd; // Is the future position the destination
-
-	Vector3d vel;
+;
 	
 	unsigned int parentid;
 
 	 std::set < unsigned int >children;
 
-	 uint32_t ordernum;
 
 	 ObjectData *myObjectData;
 

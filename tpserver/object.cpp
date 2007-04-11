@@ -29,6 +29,10 @@
 #include "objectdatamanager.h"
 #include "playermanager.h"
 #include "player.h"
+#include "position3dobjectparam.h"
+#include "velocity3dobjectparam.h"
+#include "sizeobjectparam.h"
+#include "orderqueueobjectparam.h"
 
 #include "object.h"
 
@@ -42,7 +46,6 @@ IGObject::IGObject() : name(), description()
 		myGame = Game::getGame();
 	}
 	myObjectData = NULL;
-    ordernum = 0;
 }
 
 IGObject::IGObject(IGObject & rhs){
@@ -74,23 +77,35 @@ unsigned int IGObject::getType()
 	return type;
 }
 
-unsigned long long IGObject::getSize()
-{
-	return size;
+unsigned long long IGObject::getSize(){
+  if(myObjectData != NULL){
+    SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(myObjectData->getParameterByType(obpT_Size));
+    if(size != NULL)
+      return size->getSize();
+  }
+  return 0;
 }
 
 std::string IGObject::getName(){
   return name;
 }
 
-Vector3d IGObject::getPosition()
-{
-	return pos;
+Vector3d IGObject::getPosition(){
+  if(myObjectData != NULL){
+    Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(myObjectData->getParameterByType(obpT_Position_3D));
+    if(pos != NULL)
+      return pos->getPosition();
+  }
+  return Vector3d(0,0,0);
 }
 
-Vector3d IGObject::getVelocity()
-{
-	return vel;
+Vector3d IGObject::getVelocity(){
+  if(myObjectData != NULL){
+    Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(myObjectData->getParameterByType(obpT_Velocity));
+    if(vel != NULL)
+      return vel->getVelocity();
+  }
+  return Vector3d(0,0,0);
 }
 
 
@@ -124,10 +139,12 @@ void IGObject::setType(unsigned int newtype)
 	touchModTime();
 }
 
-void IGObject::setSize(unsigned long long newsize)
-{
-	size = newsize;
-	touchModTime();
+void IGObject::setSize(unsigned long long newsize){
+  if(myObjectData != NULL){
+    SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(myObjectData->getParameterByType(obpT_Size));
+    if(size != NULL)
+      size->setSize(newsize);
+  }
 }
 
 void IGObject::setName(const std::string &newname){
@@ -135,12 +152,16 @@ void IGObject::setName(const std::string &newname){
   touchModTime();
 }
 
-void IGObject::setPosition(const Vector3d & npos)
-{
-	pos = npos;
-	futurepos = npos;
-	futureposIsEnd = true;
-	touchModTime();
+void IGObject::setPosition(const Vector3d & npos){
+  if(myObjectData != NULL){
+    Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(myObjectData->getParameterByType(obpT_Position_3D));
+    if(pos != NULL){
+      pos->setPosition(npos);
+      futurepos = npos;
+      futureposIsEnd = true;
+      touchModTime();
+    }
+  }
 }
 
 void IGObject::setFuturePosition(const Vector3d & npos, bool isend){
@@ -152,55 +173,64 @@ void IGObject::updatePosition(){
   Logger::getLogger()->debug("Object(%d)->updatePosition(): Moving object to [%lld, %lld, %lld] (which is the destination? %s)",
 	getID(), futurepos.getX(), futurepos.getY(), futurepos.getZ(), (futureposIsEnd ? "Yes": "No")); 
 
-  Vector3d nvel = futurepos - pos;
-  if (!futureposIsEnd) {
-    if(nvel != vel){
-      vel = nvel;
-      touchModTime();
+  Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(myObjectData->getParameterByType(obpT_Position_3D));
+  Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(myObjectData->getParameterByType(obpT_Velocity));
+  if(pos != NULL && vel != NULL){
+    
+    Vector3d nvel = futurepos - pos->getPosition();
+    if (!futureposIsEnd) {
+      if(nvel != vel->getVelocity()){
+        vel->setVelocity(nvel);
+        touchModTime();
+      }
+    } else {
+      vel->setVelocity(Vector3d(0, 0, 0));
     }
-  } else {
-    vel.setAll(0, 0, 0);
-  }
-
-  Logger::getLogger()->debug("Object(%d)->updatePosition(): Velocity is now [%lld, %lld, %lld]",
-	getID(), vel.getX(), vel.getY(), vel.getZ()); 
-
-  // recontainerise if necessary
-  int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();
-  myGame->getObjectManager()->doneWithObject(parentid);
-
-  if(pos != futurepos && containertype >= 1){
-    //removeFromParent();
-    std::set<unsigned int> oblist = myGame->getObjectManager()->getContainerByPos(futurepos);
-    for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
-      Logger::getLogger()->debug("Container object %d", *itcurr);
-      //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
-      if(*itcurr != id){
-        IGObject* testedobject = myGame->getObjectManager()->getObject(*itcurr);
-        if(testedobject->size >= size){
-          if(*itcurr != parentid){
-              removeFromParent();
-              addToParent(*itcurr);
+  
+    Logger::getLogger()->debug("Object(%d)->updatePosition(): Velocity is now [%lld, %lld, %lld]",
+          getID(), vel->getVelocity().getX(), vel->getVelocity().getY(), vel->getVelocity().getZ()); 
+  
+    // recontainerise if necessary
+    int containertype = myGame->getObjectManager()->getObject(parentid)->getContainerType();
+    myGame->getObjectManager()->doneWithObject(parentid);
+  
+    if(pos->getPosition() != futurepos && containertype >= 1){
+      //removeFromParent();
+      std::set<unsigned int> oblist = myGame->getObjectManager()->getContainerByPos(futurepos);
+      for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
+        Logger::getLogger()->debug("Container object %d", *itcurr);
+        //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+        if(*itcurr != id){
+          IGObject* testedobject = myGame->getObjectManager()->getObject(*itcurr);
+          if(testedobject->getSize() >= getSize()){
+            if(*itcurr != parentid){
+                removeFromParent();
+                addToParent(*itcurr);
+            }
+            myGame->getObjectManager()->doneWithObject(*itcurr);
+            break;
           }
           myGame->getObjectManager()->doneWithObject(*itcurr);
-          break;
         }
-        myGame->getObjectManager()->doneWithObject(*itcurr);
       }
+      if(parentid == 0){
+          removeFromParent();
+          addToParent(0);
+      }
+      pos->setPosition(futurepos);
+      touchModTime();
     }
-    if(parentid == 0){
-        removeFromParent();
-        addToParent(0);
-    }
-    pos = futurepos;
-    touchModTime();
   }
 }
 
-void IGObject::setVelocity(const Vector3d & nvel)
-{
-	vel = nvel;
-	touchModTime();
+void IGObject::setVelocity(const Vector3d & nvel){
+  if(myObjectData != NULL){
+    Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(myObjectData->getParameterByType(obpT_Velocity));
+    if(vel != NULL){
+      vel->setVelocity(nvel);
+      touchModTime();
+    }
+  }
 }
 
 void IGObject::addToParent(uint32_t pid){
@@ -251,18 +281,29 @@ uint32_t IGObject::getNumOrders(int playerid)
 {
     //check if nop order (order type 0) is allowed
   if(myObjectData->checkAllowedOrder(0, playerid)){
-    return ordernum;
+    return getNumOrders();
   }
   return 0;
 }
 
 uint32_t IGObject::getNumOrders(){
-    return ordernum;
+  if(myObjectData != NULL){
+    OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(myObjectData->getParameterByType(obpT_Order_Queue));
+    if(oq != NULL){
+      return oq->getNumOrders();
+    }
+  }
+  return 0;
 }
 
 void IGObject::setNumOrders(uint32_t num){
-    touchModTime();
-    ordernum = num;
+  if(myObjectData != NULL){
+    OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(myObjectData->getParameterByType(obpT_Order_Queue));
+    if(oq != NULL){
+      oq->setNumOrders(num);
+      touchModTime();
+    }
+  }
     Logger::getLogger()->debug("IGObject::setNumOrders");
 }
 
@@ -278,9 +319,36 @@ void IGObject::createFrame(Frame * frame, int playerid)
     frame->packInt(parentid);
   }else{
     //pre tp04
-    frame->packInt64(size);
-    pos.pack(frame);
-    vel.pack(frame);
+    if(myObjectData != NULL){
+      SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(myObjectData->getParameterByType(obpT_Size));
+      if(size != NULL){
+       frame->packInt64(size->getSize());
+      }else{
+        frame->packInt64(0);
+      }
+    }else{
+      frame->packInt64(0);
+    }
+    if(myObjectData != NULL){
+      Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(myObjectData->getParameterByType(obpT_Position_3D));
+      if(pos != NULL){
+        pos->getPosition().pack(frame);
+      }else{
+        Vector3d(0,0,0).pack(frame);
+      }
+    }else{
+      Vector3d(0,0,0).pack(frame);
+    }
+    if(myObjectData != NULL){
+      Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(myObjectData->getParameterByType(obpT_Velocity));
+      if(vel != NULL){
+        vel->getVelocity().pack(frame);
+      }else{
+        Vector3d(0,0,0).pack(frame);
+      }
+    }else{
+      Vector3d(0,0,0).pack(frame);
+    }
   }
  
   std::set<unsigned int> temp = children;
@@ -311,7 +379,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
     myObjectData->packAllowedOrders(frame, playerid);
   
     if(frame->getDataLength() - templength > 4){
-      frame->packInt(ordernum);
+      frame->packInt(getNumOrders(playerid));
     }else{
       frame->packInt(0);
     }
@@ -330,9 +398,12 @@ void IGObject::createFrame(Frame * frame, int playerid)
     frame->packInt(0);
     frame->packInt(0);
   }
-  
-  if(myObjectData != NULL){
-    myObjectData->packExtraData(frame);
+  if(frame->getVersion() >= fv0_4){
+    myObjectData->packObjectParameters(frame, playerid);
+  }else{
+    if(myObjectData != NULL){
+      myObjectData->packExtraData(frame);
+    }
   }
 
 }
