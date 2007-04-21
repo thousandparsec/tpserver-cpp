@@ -432,3 +432,8 @@ void IGObject::setModTime(uint64_t time){
     if(myObjectData != NULL)
         myObjectData->setModTime(time);
 }
+
+void IGObject::signalRemoval(){
+  if(myObjectData != NULL)
+    myObjectData->signalRemoval();
+}

@@ -85,6 +85,9 @@ class IGObject {
         // Only Persistence classes should call these
         void setParent(uint32_t pid);
         void setModTime(uint64_t time);
+        
+        // Only the OrderManager should call this
+        void signalRemoval();
 
       protected:
 	static Game *myGame;

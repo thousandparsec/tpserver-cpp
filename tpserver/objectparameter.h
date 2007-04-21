@@ -59,6 +59,7 @@ class ObjectParameter {
         virtual void packObjectDescFrame(Frame* f) const;
 	virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid) = 0;
 
+        virtual void signalRemoval();
 
 	virtual ObjectParameter *clone() const = 0;
 

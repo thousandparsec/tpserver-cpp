@@ -58,6 +58,8 @@ class ObjectData {
 	long long getModTime() const;
         //persistence only
         void setModTime(uint64_t time);
+        //object only
+        void signalRemoval();
 
       protected:
         std::list<ObjectParameterGroup*> paramgroups;

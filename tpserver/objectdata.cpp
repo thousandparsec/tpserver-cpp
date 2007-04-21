@@ -100,3 +100,10 @@ long long ObjectData::getModTime() const{
 void ObjectData::setModTime(uint64_t time){
     modtime = time;
 }
+
+void ObjectData::signalRemoval(){
+  for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+      ++itcurr){
+    (*itcurr)->signalRemoval();
+  }
+}

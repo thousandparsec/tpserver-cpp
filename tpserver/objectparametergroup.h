@@ -50,6 +50,8 @@ class ObjectParameterGroup {
 	void packObjectFrame(Frame * f, uint32_t playerid);
         void packObjectDescFrame(Frame* f) const;
 	bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
+        
+        void signalRemoval();
 
 
       protected:

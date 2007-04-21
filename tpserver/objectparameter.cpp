@@ -60,3 +60,5 @@ void ObjectParameter::packObjectDescFrame(Frame * f) const{
   
 }
 
+void ObjectParameter::signalRemoval(){
+}

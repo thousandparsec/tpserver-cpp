@@ -106,3 +106,10 @@ bool ObjectParameterGroup::unpackModifyObjectFrame(Frame * f, unsigned int playe
   }
   return rtn;
 }
+
+void ObjectParameterGroup::signalRemoval(){
+  for(std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
+      itcurr != parameters.end(); ++itcurr){
+    (*itcurr)->signalRemoval();
+  }
+}
