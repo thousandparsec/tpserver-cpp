@@ -71,7 +71,7 @@ bool Persistence::saveOrderQueue(const OrderQueue* oq){
   return false;
 }
 
-OrderQueue* Persistence::getOrderQueue(uint32_t oqid){
+OrderQueue* Persistence::retrieveOrderQueue(uint32_t oqid){
   return NULL;
 }
 
