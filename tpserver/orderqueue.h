@@ -38,6 +38,7 @@ class OrderQueue{
   
   void addOwner(uint32_t playerid);
   void removeOwner(uint32_t playerid);
+  bool isOwner(uint32_t playerid) const;
   std::set<uint32_t> getOwner() const;
   
   bool checkOrderType(uint32_t type, uint32_t playerid) const;

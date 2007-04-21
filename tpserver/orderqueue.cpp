@@ -52,12 +52,16 @@ void OrderQueue::removeOwner(uint32_t playerid){
   owner.erase(playerid);
 }
 
+bool OrderQueue::isOwner(uint32_t playerid) const{
+  return owner.find(playerid) != owner.end();
+}
+
 std::set<uint32_t> OrderQueue::getOwner() const{
   return owner;
 }
 
 bool OrderQueue::checkOrderType(uint32_t type, uint32_t playerid) const{
-  if(owner.find(playerid) != owner.end()){
+  if(isOwner(playerid)){
     return allowedtypes.find(type) != allowedtypes.end();
   }
   return false;
@@ -102,7 +106,7 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
 }
 
 Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
-  if(owner.find(playerid) != owner.end()){
+  if(isOwner(playerid)){
     if (pos >= orderlist.size()) {
       return Failure("Order slot to remove is passed end of order slots.");
     }
@@ -129,7 +133,7 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
 }
 
 Order* OrderQueue::getOrder(uint32_t pos, uint32_t playerid){
-  if(owner.find(playerid) != owner.end()){
+  if(isOwner(playerid)){
     if (pos >= orderlist.size()) {
       return NULL;
     }
