@@ -20,6 +20,7 @@
  */
 
 #include "object.h"
+#include "orderqueue.h"
 #include "order.h"
 #include "board.h"
 #include "message.h"
@@ -65,6 +66,35 @@ uint32_t Persistence::getMaxObjectId(){
 std::set<uint32_t> Persistence::getObjectIds(){
     return std::set<uint32_t>();
 }
+
+bool Persistence::saveOrderQueue(const OrderQueue* oq){
+  return false;
+}
+
+OrderQueue* Persistence::getOrderQueue(uint32_t oqid){
+  return NULL;
+}
+
+bool Persistence::removeOrderQueue(uint32_t oqid){
+  return false;
+}
+
+bool Persistence::saveOrder(uint32_t queueid, uint32_t ordid, Order* ord){
+    return false;
+}
+
+bool Persistence::updateOrder(uint32_t queueid, uint32_t ordid, Order* ord){
+    return false;
+}
+
+Order* Persistence::retrieveOrder(uint32_t queueid, uint32_t ordid){
+    return NULL;
+}
+
+bool Persistence::removeOrder(uint32_t queueid, uint32_t ordid){
+    return false;
+}
+
 
 bool Persistence::saveOrder(uint32_t ordid, Order* ord){
     return false;

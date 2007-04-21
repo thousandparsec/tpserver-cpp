@@ -26,6 +26,7 @@
 
 class IGObject;
 class Order;
+class OrderQueue;
 class Board;
 class Message;
 class ResourceDescription;
@@ -49,6 +50,15 @@ public:
     virtual uint32_t getMaxObjectId();
     virtual std::set<uint32_t> getObjectIds();
 
+    virtual bool saveOrderQueue(const OrderQueue* oq);
+    virtual OrderQueue* getOrderQueue(uint32_t oqid);
+    virtual bool removeOrderQueue(uint32_t oqid);
+    
+    virtual bool saveOrder(uint32_t queueid, uint32_t ordid, Order* ord);
+    virtual bool updateOrder(uint32_t queueid, uint32_t ordid, Order* ord);
+    virtual Order* retrieveOrder(uint32_t queueid, uint32_t ordid);
+    virtual bool removeOrder(uint32_t queueid, uint32_t ordid);
+    
     virtual bool saveOrder(uint32_t ordid, Order* ord);
     virtual bool updateOrder(uint32_t ordid, Order* ord);
     virtual Order* retrieveOrder(uint32_t ordid);
