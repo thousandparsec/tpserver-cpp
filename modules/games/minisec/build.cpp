@@ -209,7 +209,7 @@ bool Build::doOrder(IGObject *ob)
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
-    msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete");
+    msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete.");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, fleet->getID());
     msg->addReference(rst_Object, ob->getID());

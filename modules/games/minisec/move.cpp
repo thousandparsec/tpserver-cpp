@@ -90,16 +90,20 @@ bool Move::doOrder(IGObject * ob){
   Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
 	ob->getID(), distance, max_speed, distance/max_speed);
   if(distance <= max_speed){
+    uint32_t parentid;
+
     Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Is arriving at [%lld, %lld, %lld] ", 
       ob->getID(), dest.getX(), dest.getY(), dest.getZ());
   
     ob->setFuturePosition(dest, true);
-    
+    parentid = ob->getParent();
+
     Message * msg = new Message();
     msg->setSubject("Move order complete");
-    msg->setBody("The move order is complete on this object");
+    msg->setBody("The fleet '" +  ob->getName() + "' has reached it's destination.");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
+    msg->addReference(rst_Object, parentid); /* It's parent */
     Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
 
     return true;
