@@ -46,6 +46,7 @@ class OrderQueue{
   std::set<uint32_t> getAllowedOrderTypes() const;
   void addAllowedOrderType(uint32_t type);
   void removeAllowedOrderType(uint32_t type);
+  void setAllowedOrderTypes(const std::set<uint32_t>& ao);
 
   uint32_t getNumberOrders() const;
   

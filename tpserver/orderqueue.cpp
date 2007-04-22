@@ -79,6 +79,10 @@ void OrderQueue::removeAllowedOrderType(uint32_t type){
   allowedtypes.erase(type);
 }
 
+void OrderQueue::setAllowedOrderTypes(const std::set<uint32_t>& ao){
+  allowedtypes = ao;
+}
+
 uint32_t OrderQueue::getNumberOrders() const{
   return orderlist.size();
 }
