@@ -183,8 +183,8 @@ bool Build::doOrder(IGObject *ob)
     //add fleet to container
     fleet->addToParent(ob->getID());
 
-    fleet->setSize(2);
     fleet->setType(4);
+    fleet->setSize(2);
     fleet->setName(fleetname->getString().c_str());
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
     fleet->setPosition(ob->getPosition());

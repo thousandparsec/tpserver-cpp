@@ -1024,16 +1024,16 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     IGObject*      ac = game->getObjectManager()->createNewObject();
     IGObject*      acprime = game->getObjectManager()->createNewObject();
 
-    ac->setSize(800000ll);
     ac->setType(obT_Star_System);
+    ac->setSize(800000ll);
     ac->setName("Alpha Centauri System");
     ac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
     ac->setVelocity(Vector3d(0ll, 0ll, 0ll));
     ac->addToParent(mw_galaxy->getID());
     obman->addObject(ac);
 
-    acprime->setSize(2);
     acprime->setType(obT_Planet);
+    acprime->setSize(2);
     acprime->setName("Alpha Centauri Prime");
     acprime->setPosition(ac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
@@ -1061,16 +1061,16 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     IGObject*      sirius = game->getObjectManager()->createNewObject();
     IGObject*      s1 = game->getObjectManager()->createNewObject();
 
-    sirius->setSize(2000000ll);
     sirius->setType(obT_Star_System);
+    sirius->setSize(2000000ll);
     sirius->setName("Sirius System");
     sirius->setPosition(Vector3d(-250000000ll, -3800000000ll, 0ll));
     sirius->setVelocity(Vector3d(0ll, 0ll, 0ll));
     sirius->addToParent(mw_galaxy->getID());
     obman->addObject(sirius);
 
-    s1->setSize(2);
     s1->setType(obT_Planet);
+    s1->setSize(2);
     s1->setName("Sirius 1");
     s1->setPosition(sirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
@@ -1106,8 +1106,8 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
 
-    star->setSize(1400000ll);
     star->setType( obT_Star_System);
+    star->setSize(1400000ll);
     unsigned int   thx = myRandom(45);
     star->setName(systemNames[thx-1]);
     star->setPosition( Vector3d( myRandom(8000) * 1000000ll - 4000000000ll,
@@ -1123,8 +1123,8 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         formatter.str("");
         formatter << star->getName() << " " << nplanets;
 
-        planet->setSize( 2);
         planet->setType( obT_Planet);
+        planet->setSize( 2);
         planet->setName( formatter.str().c_str());
         planet->setPosition( star->getPosition() + Vector3d( nplanets * 40000ll,
                                                              nplanets * -35000ll,
@@ -1164,16 +1164,16 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     IGObject*      mars = game->getObjectManager()->createNewObject();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
     
-    sol->setSize(1400000ll);
     sol->setType(obT_Star_System);
+    sol->setSize(1400000ll);
     sol->setName("Sol/Terra System");
     sol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
     sol->setVelocity(Vector3d(0ll, 0ll, 0ll));
     sol->addToParent(mw_galaxy->getID());
     obman->addObject(sol);
 
-    earth->setSize(2);
     earth->setType(obT_Planet);
+    earth->setSize(2);
     earth->setName("Earth/Terra");
     earth->setPosition(sol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
     ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
@@ -1189,8 +1189,8 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 
     ress.clear();
 
-    venus->setSize(2);
     venus->setType(obT_Planet);
+    venus->setSize(2);
     venus->setName("Venus");
     venus->setPosition(sol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
     ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
@@ -1206,8 +1206,8 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 
     ress.clear();
 
-    mars->setSize(1);
     mars->setType(obT_Planet);
+    mars->setSize(1);
     mars->setName("Mars");
     mars->setPosition(sol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
     ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
@@ -1348,8 +1348,8 @@ void MTSec::createGame()
 
     //add contained objects
     IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
-    mw_galaxy->setSize(10000000000ll);
     mw_galaxy->setType(obT_Galaxy);
+    mw_galaxy->setSize(10000000000ll);
     mw_galaxy->setName("Milky Way Galaxy");
     mw_galaxy->setPosition(Vector3d(0ll, -6000ll, 0ll));
     mw_galaxy->setVelocity(Vector3d(0ll, 0ll, 0ll));
@@ -1435,8 +1435,8 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
 
-    fleet->setSize( 2);
     fleet->setType( obT_Fleet);
+    fleet->setSize( 2);
     fleet->setName( fleetName.c_str());
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(owner->getID());
 
@@ -1491,8 +1491,8 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
     std::string planetName = player->getName() + " Planet";
 
-    planet->setSize( 2);
     planet->setType( obT_Planet);
+    planet->setSize( 2);
     planet->setName( planetName.c_str());
     ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
     planet->setPosition( star->getPosition() + offset);
@@ -1532,8 +1532,8 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
                                    /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
     std::string starName = player->getName() + " Star System";
 
-    star->setSize( 2000000ll);
     star->setType( obT_Star_System);
+    star->setSize( 2000000ll);
     star->setName( starName.c_str());
     star->setPosition( location);
     star->setVelocity( Vector3d( 0ll, 0ll, 0ll));
