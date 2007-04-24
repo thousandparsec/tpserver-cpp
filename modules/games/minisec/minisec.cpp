@@ -59,14 +59,6 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include "minisecturn.h"
 
-#ifdef HAVE_LIBMYSQL
-#include <modules/persistence/mysql/mysqlpersistence.h>
-#include <modules/persistence/mysql/mysqluniverse.h>
-#include "mysqlemptyobject.h"
-#include "mysqlplanet.h"
-#include "mysqlfleet.h"
-#endif
-
 #include "minisec.h"
 
 static char const * const systemNames[] = {
@@ -131,27 +123,6 @@ void MiniSec::initGame(){
   
   turn->setPlanetType(pt);
   turn->setFleetType(ft);
-
-#ifdef HAVE_LIBMYSQL
-    MysqlPersistence* database = dynamic_cast<MysqlPersistence*>(game->getPersistence());
-    if(database != NULL){
-        MysqlUniverse* uni = new MysqlUniverse();
-        uni->setType(0);
-        database->addObjectType(uni);
-        MysqlEmptyObject* emt = new MysqlEmptyObject();
-        emt->setType(1);
-        database->addObjectType(emt);
-        emt = new MysqlEmptyObject();
-        emt->setType(2);
-        database->addObjectType(emt);
-        MysqlPlanet* plnt = new MysqlPlanet();
-        plnt->setType(pt);
-        database->addObjectType(plnt);
-        MysqlFleet* flt = new MysqlFleet();
-        flt->setType(ft);
-        database->addObjectType(flt);
-    }
-#endif
 
   OrderManager* ordm = game->getOrderManager();
   ordm->addOrderType(new Nop());
