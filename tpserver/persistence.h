@@ -2,7 +2,7 @@
 #define PERSISTENCE_H
 /*  Persistence class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,20 +53,14 @@ public:
     virtual bool saveOrderQueue(const OrderQueue* oq);
     virtual OrderQueue* retrieveOrderQueue(uint32_t oqid);
     virtual bool removeOrderQueue(uint32_t oqid);
+    virtual std::set<uint32_t> getOrderQueueIds();
+    virtual uint32_t getMaxOrderQueueId();
     
     virtual bool saveOrder(uint32_t queueid, uint32_t ordid, Order* ord);
     virtual bool updateOrder(uint32_t queueid, uint32_t ordid, Order* ord);
     virtual Order* retrieveOrder(uint32_t queueid, uint32_t ordid);
     virtual bool removeOrder(uint32_t queueid, uint32_t ordid);
     
-    virtual bool saveOrder(uint32_t ordid, Order* ord);
-    virtual bool updateOrder(uint32_t ordid, Order* ord);
-    virtual Order* retrieveOrder(uint32_t ordid);
-    virtual bool removeOrder(uint32_t ordid);
-    virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);
-    virtual std::list<uint32_t> retrieveOrderList(uint32_t obid);
-    virtual std::set<uint32_t> retrieveObjectsWithOrders();
-    virtual uint32_t getMaxOrderId();
 
     virtual bool saveBoard(Board* board);
     virtual bool updateBoard(Board* board);

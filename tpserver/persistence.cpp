@@ -1,7 +1,7 @@
 /*  Persistence Interface
  * All methods return false or NULL, except init().
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -79,6 +79,14 @@ bool Persistence::removeOrderQueue(uint32_t oqid){
   return false;
 }
 
+std::set<uint32_t> Persistence::getOrderQueueIds(){
+  return std::set<uint32_t>();
+}
+
+uint32_t Persistence::getMaxOrderQueueId(){
+  return 0;
+}
+
 bool Persistence::saveOrder(uint32_t queueid, uint32_t ordid, Order* ord){
     return false;
 }
@@ -95,38 +103,6 @@ bool Persistence::removeOrder(uint32_t queueid, uint32_t ordid){
     return false;
 }
 
-
-bool Persistence::saveOrder(uint32_t ordid, Order* ord){
-    return false;
-}
-
-bool Persistence::updateOrder(uint32_t ordid, Order* ord){
-    return false;
-}
-
-Order* Persistence::retrieveOrder(uint32_t ordid){
-    return NULL;
-}
-
-bool Persistence::removeOrder(uint32_t ordid){
-    return false;
-}
-
-bool Persistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
-    return false;
-}
-
-std::list<uint32_t> Persistence::retrieveOrderList(uint32_t obid){
-    return std::list<uint32_t>();
-}
-
-std::set<uint32_t> Persistence::retrieveObjectsWithOrders(){
-    return std::set<uint32_t>();
-}
-
-uint32_t Persistence::getMaxOrderId(){
-    return 0;
-}
 
 bool Persistence::saveBoard(Board* board){
     return false;
