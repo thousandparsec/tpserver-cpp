@@ -35,6 +35,9 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/listparameter.h>
 #include <tpserver/stringparameter.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/ordermanager.h>
 
 #include "planet.h"
 
@@ -138,7 +141,7 @@ Result Build::inputFrame(Frame *f, unsigned int playerid)
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
     
-    if(player->isUsableDesign(type) && number > 0){
+    if(player->isUsableDesign(type) && number >= 0){
       
       Design* design = ds->getDesign(type);
       usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
@@ -192,6 +195,15 @@ bool Build::doOrder(IGObject *ob)
     
     //set ship type
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    
+    OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(fleet->getID());
+    fleetoq->addOwner(ownerid);
+    Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    thefleet->setDefaultOrderTypes();
+    
     std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
     for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);

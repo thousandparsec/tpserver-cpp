@@ -31,6 +31,8 @@ class Planet:public OwnedObject {
       public:
 	Planet();
 
+        void setDefaultOrderTypes();
+        
 	void packExtraData(Frame * frame);
 
 	void doOnceATurn(IGObject * obj);

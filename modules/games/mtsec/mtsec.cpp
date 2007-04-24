@@ -54,6 +54,8 @@
 #include "tpserver/prng.h"
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
 #include "mtsecturn.h"
 
 #ifdef HAVE_LIBMYSQL
@@ -1045,6 +1047,15 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(acprime->getObjectData()))->setResources(ress);
+    
+    OrderQueue *planetoq = new OrderQueue();
+    planetoq->setQueueId(acprime->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(acprime->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(acprime->getObjectData()))->setDefaultOrderTypes();
+    
     acprime->addToParent(ac->getID());
     obman->addObject(acprime);
 
@@ -1082,6 +1093,15 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(s1->getObjectData()))->setResources(ress);
+    
+    OrderQueue *planetoq = new OrderQueue();
+    planetoq->setQueueId(s1->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(s1->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(s1->getObjectData()))->setDefaultOrderTypes();
+    
     s1->addToParent(sirius->getID());
     obman->addObject(s1);
 
@@ -1141,6 +1161,14 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
         ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
         ((Planet*)(planet->getObjectData()))->setResources(ress);
+        
+        OrderQueue *planetoq = new OrderQueue();
+        planetoq->setQueueId(planet->getID());
+        planetoq->addOwner(0);
+        game->getOrderManager()->addOrderQueue(planetoq);
+        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getObjectData()->getParameterByType(obpT_Order_Queue));
+        oqop->setQueueId(planetoq->getQueueId());
+        ((Planet*)(planet->getObjectData()))->setDefaultOrderTypes();
 
         planet->addToParent( star->getID());
         obman->addObject( planet);
@@ -1184,6 +1212,15 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(earth->getObjectData()))->setResources(ress);
+    
+    OrderQueue *planetoq = new OrderQueue();
+    planetoq->setQueueId(earth->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(earth->getObjectData()))->setDefaultOrderTypes();
+    
     earth->addToParent(sol->getID());
     obman->addObject(earth);
 
@@ -1201,6 +1238,15 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(venus->getObjectData()))->setResources(ress);
+    
+    planetoq = new OrderQueue();
+    planetoq->setQueueId(venus->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    oqop = static_cast<OrderQueueObjectParam*>(venus->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(venus->getObjectData()))->setDefaultOrderTypes();
+    
     venus->addToParent(sol->getID());
     obman->addObject(venus);
 
@@ -1218,6 +1264,15 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(mars->getObjectData()))->setResources(ress);
+    
+    planetoq = new OrderQueue();
+    planetoq->setQueueId(mars->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    oqop = static_cast<OrderQueueObjectParam*>(mars->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(mars->getObjectData()))->setDefaultOrderTypes();
+    
     mars->addToParent(sol->getID());
     obman->addObject(mars);
 
@@ -1431,11 +1486,13 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
 {
     Game *game = Game::getGame();
     IGObject *fleet = game->getObjectManager()->createNewObject();
+
+    fleet->setType( obT_Fleet);
+    
     Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
-
-    fleet->setType( obT_Fleet);
+    
     fleet->setSize( 2);
     fleet->setName( fleetName.c_str());
     ((OwnedObject*)(fleet->getObjectData()))->setOwner(owner->getID());
@@ -1443,6 +1500,14 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
     // Place the fleet in orbit around the given star
     fleet->setPosition( star->getPosition() + offset);
     fleet->setVelocity( Vector3d(0LL, 0ll, 0ll));
+    
+    OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(fleet->getID());
+    fleetoq->addOwner(owner->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    ((Fleet*)(fleet->getObjectData()))->setDefaultOrderTypes();
 
     fleet->addToParent( star->getID());
 
@@ -1486,12 +1551,13 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
     Game *    game = Game::getGame();
     IGObject* planet = game->getObjectManager()->createNewObject();
-    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
+    
     std::string planetName = player->getName() + " Planet";
 
     planet->setType( obT_Planet);
+    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
     planet->setSize( 2);
     planet->setName( planetName.c_str());
     ((OwnedObject*)(planet->getObjectData()))->setOwner(player->getID());
@@ -1509,6 +1575,14 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ((Planet*)(planet->getObjectData()))->setResources(ress);
+    
+    OrderQueue *planetoq = new OrderQueue();
+    planetoq->setQueueId(planet->getID());
+    planetoq->addOwner(0);
+    game->getOrderManager()->addOrderQueue(planetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getObjectData()->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    ((Planet*)(planet->getObjectData()))->setDefaultOrderTypes();
 
     planet->addToParent( star->getID());
     game->getObjectManager()->addObject(planet);
@@ -1527,12 +1601,13 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
     Game *    game = Game::getGame();
     IGObject* star = game->getObjectManager()->createNewObject();
-    Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
-                                   ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
-                                   /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
+    
     std::string starName = player->getName() + " Star System";
 
     star->setType( obT_Star_System);
+    Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
+                                   ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
+                                   /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
     star->setSize( 2000000ll);
     star->setName( starName.c_str());
     star->setPosition( location);

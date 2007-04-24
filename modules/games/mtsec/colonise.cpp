@@ -35,6 +35,9 @@
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/objectorderparameter.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/ordermanager.h>
 
 #include "colonise.h"
 
@@ -135,7 +138,12 @@ bool Colonise::doOrder(IGObject * ob){
       }
       
       if(shiptype != 0){
+        uint32_t oldowner = planet->getOwner();
 	planet->setOwner(fleet->getOwner());
+        uint32_t queueid = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue))->getQueueId();
+        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+        queue->removeOwner(oldowner);
+        queue->addOwner(fleet->getOwner());
 	
 	fleet->removeShips(shiptype, 1);
 	

@@ -53,11 +53,7 @@ Planet::Planet():OwnedObject(){
   orderqueue = new OrderQueueObjectParam();
   orderqueue->setName("Order Queue");
   orderqueue->setDescription("The queue of orders for this planet");
-  OrderManager * om = Game::getGame()->getOrderManager();
-  std::set<uint32_t> allowedlist;
-  allowedlist.insert(om->getOrderTypeByName("BuildFleet"));
-  allowedlist.insert(om->getOrderTypeByName("No Operation"));
-  orderqueue->setAllowedOrders(allowedlist);
+  
   group->addParameter(orderqueue);
   paramgroups.push_back(group);
   
@@ -75,6 +71,13 @@ Planet::Planet():OwnedObject(){
   typedesc = "A planet object";
 }
 
+void Planet::setDefaultOrderTypes(){
+  OrderManager * om = Game::getGame()->getOrderManager();
+  std::set<uint32_t> allowedlist;
+  allowedlist.insert(om->getOrderTypeByName("BuildFleet"));
+  allowedlist.insert(om->getOrderTypeByName("No Operation"));
+  orderqueue->setAllowedOrders(allowedlist);
+}
 
 void Planet::packExtraData(Frame * frame){
   OwnedObject::packExtraData(frame);
