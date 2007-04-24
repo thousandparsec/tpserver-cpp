@@ -27,6 +27,7 @@
 
 class Order;
 class Frame;
+class OrderQueue;
 
 class OrderManager{
  public:
@@ -41,16 +42,21 @@ class OrderManager{
   void doGetOrderTypes(Frame * frame, Frame * result);
 
   Order* createOrder(int ot);
-    bool addOrder(Order* ord, IGObject* obj, uint32_t pos, uint32_t playerid);
-    bool removeOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
-    Order* getOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
-    Order * getFirstOrder(IGObject* obj);
-    void removeFirstOrder(IGObject* obj);
-    void updateFirstOrder(IGObject* obj);
-
-    std::set<uint32_t> getObjectsWithOrders();
-
-    void removeAllOrders(uint32_t objectid);
+  
+  bool addOrderQueue(OrderQueue* oq);
+  bool removeOrderQueue(uint32_t oqid);
+  OrderQueue* getOrderQueue(uint32_t oqid);
+  
+//     bool addOrder(Order* ord, IGObject* obj, uint32_t pos, uint32_t playerid);
+//     bool removeOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
+//     Order* getOrder(IGObject* obj, uint32_t pos, uint32_t playerid);
+//     Order * getFirstOrder(IGObject* obj);
+//     void removeFirstOrder(IGObject* obj);
+//     void updateFirstOrder(IGObject* obj);
+// 
+//     std::set<uint32_t> getObjectsWithOrders();
+// 
+//     void removeAllOrders(uint32_t objectid);
 
     void init();
 
@@ -61,9 +67,7 @@ class OrderManager{
 
   unsigned int seqkey;
 
-    std::map<uint32_t, std::list<uint32_t> > objectorders;
-    std::map<uint32_t, Order*> ordercache;
-    uint32_t nextOrderId;
+    std::map<uint32_t, OrderQueue*> orderqueues;
 
 };
 

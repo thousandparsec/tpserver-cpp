@@ -69,12 +69,6 @@ Fleet::Fleet():OwnedObject(){
   orderqueue->setName("Order Queue");
   orderqueue->setDescription("The queue of orders for this fleet");
   OrderManager * om = Game::getGame()->getOrderManager();
-  std::set<uint32_t> allowedlist;
-  allowedlist.insert(om->getOrderTypeByName("No Operation"));
-  allowedlist.insert(om->getOrderTypeByName("Move"));
-  allowedlist.insert(om->getOrderTypeByName("SplitFleet"));
-  allowedlist.insert(om->getOrderTypeByName("MergeFleet"));
-  orderqueue->setAllowedOrders(allowedlist);
   group->addParameter(orderqueue);
   paramgroups.push_back(group);
   
@@ -98,6 +92,16 @@ Fleet::Fleet():OwnedObject(){
 }
 
 Fleet::~Fleet(){
+}
+
+void Fleet::setDefaultOrderTypes(){
+  OrderManager * om = Game::getGame()->getOrderManager();
+  std::set<uint32_t> allowedlist;
+  allowedlist.insert(om->getOrderTypeByName("No Operation"));
+  allowedlist.insert(om->getOrderTypeByName("Move"));
+  allowedlist.insert(om->getOrderTypeByName("SplitFleet"));
+  allowedlist.insert(om->getOrderTypeByName("MergeFleet"));
+  orderqueue->setAllowedOrders(allowedlist);
 }
 
 void Fleet::addShips(int type, int number){

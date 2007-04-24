@@ -19,6 +19,9 @@
  */
 
 #include "frame.h"
+#include "game.h"
+#include "ordermanager.h"
+#include "orderqueue.h"
 
 #include "orderqueueobjectparam.h"
 
@@ -32,17 +35,20 @@ OrderQueueObjectParam::~OrderQueueObjectParam(){
 
 
 void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
-  f->packInt(queueid);
   if(playerid == owner){
-    f->packInt(numorders);
+    f->packInt(queueid);
+    OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+    f->packInt(orderqueue->getNumberOrders());
     // order types
-    f->packInt(ordertypes.size());
-    for(std::set<uint32_t>::iterator itcurr = ordertypes.begin(); itcurr != ordertypes.end();
+    std::set<uint32_t> allowedtypes = orderqueue->getAllowedOrderTypes();
+    f->packInt(allowedtypes.size());
+    for(std::set<uint32_t>::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
         ++itcurr){
       f->packInt(*itcurr);
     }
     
   }else{
+    f->packInt(0);
     f->packInt(0);
     f->packInt(0);
   }
@@ -67,6 +73,10 @@ bool OrderQueueObjectParam::unpackModifyObjectFrame(Frame *f, unsigned int playe
   return true;
 }
 
+void OrderQueueObjectParam::signalRemoval(){
+  Game::getGame()->getOrderManager()->getOrderQueue(queueid)->removeAllOrders();
+}
+
 ObjectParameter* OrderQueueObjectParam::clone() const{
   return new OrderQueueObjectParam();
 }
@@ -80,25 +90,24 @@ uint32_t OrderQueueObjectParam::getQueueId() const{
 }
 
 uint32_t OrderQueueObjectParam::getNumOrders() const{
-  return numorders;
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+  return orderqueue->getNumberOrders();
 }
 
-void OrderQueueObjectParam::setNumOrders(uint32_t no){
-  numorders = no;
-}
-
-uint32_t OrderQueueObjectParam::getOwner() const{
-  return owner;
-}
-
-void OrderQueueObjectParam::setOwner(uint32_t no){
-  owner = no;
-}
+// uint32_t OrderQueueObjectParam::getOwner() const{
+//   return owner;
+// }
+// 
+// void OrderQueueObjectParam::setOwner(uint32_t no){
+//   owner = no;
+// }
 
 std::set<uint32_t> OrderQueueObjectParam::getAllowedOrders() const{
-  return ordertypes;
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+  return orderqueue->getAllowedOrderTypes();
 }
 
 void OrderQueueObjectParam::setAllowedOrders(std::set<uint32_t> ao){
-  ordertypes = ao;
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+  orderqueue->setAllowedOrderTypes(ao);
 }

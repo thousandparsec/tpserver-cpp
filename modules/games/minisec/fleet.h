@@ -34,6 +34,7 @@ class Fleet:public OwnedObject {
 	Fleet();
 	virtual ~Fleet();
 
+        void setDefaultOrderTypes();
 	void addShips(int type, int number);
 	bool removeShips(int type, int number);
 	int numShips(int type);

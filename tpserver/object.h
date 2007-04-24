@@ -73,8 +73,6 @@ class IGObject {
 	uint32_t getNumOrders(int playerid);
         uint32_t getNumOrders();
 
-        void setNumOrders(uint32_t num);
-
 	void createFrame(Frame * frame, int playerid);
 
 	ObjectData* getObjectData();

@@ -31,6 +31,10 @@
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/listparameter.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/ordermanager.h>
+
 
 #include "splitfleet.h"
 
@@ -84,6 +88,15 @@ bool SplitFleet::doOrder(IGObject * ob){
   Fleet* nf = (Fleet*)(nfleet->getObjectData());
   nf->setOwner(of->getOwner());
   nfleet->setPosition(ob->getPosition());
+  
+  OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(nfleet->getID());
+    fleetoq->addOwner(nf->getOwner());
+    Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nf->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    nf->setDefaultOrderTypes();
+  
   std::map<uint32_t, uint32_t> ships = shiplist->getList();
   for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
     if(of->removeShips(scurr->first, scurr->second)){

@@ -61,6 +61,7 @@ void ObjectManager::discardNewObject(IGObject* obj){
     if(obj->getID() == nextid - 1){
         nextid = obj->getID();
     }
+    obj->signalRemoval();
     delete obj;
 }
 
@@ -97,7 +98,6 @@ void ObjectManager::scheduleRemoveObject(uint32_t id){
 void ObjectManager::clearRemovedObjects(){
     for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
-        Game::getGame()->getOrderManager()->removeAllOrders(*itrm);
         objects[*itrm]->signalRemoval();
         Game::getGame()->getPersistence()->removeObject(*itrm);
         delete objects[*itrm];

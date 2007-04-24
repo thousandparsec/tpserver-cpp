@@ -35,16 +35,17 @@ public:
   virtual void packObjectDescFrame(Frame * f);
   virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
 
+  virtual void signalRemoval();
+  
   virtual ObjectParameter *clone() const;
   
   uint32_t getQueueId() const;
   void setQueueId(uint32_t ob);
   
   uint32_t getNumOrders() const;
-  void setNumOrders(uint32_t no);
   
-  uint32_t getOwner() const;
-  void setOwner(uint32_t no);
+//   uint32_t getOwner() const;
+//   void setOwner(uint32_t no);
   
   std::set<uint32_t> getAllowedOrders() const;
   void setAllowedOrders(std::set<uint32_t> ao);

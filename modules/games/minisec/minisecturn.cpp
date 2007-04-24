@@ -26,6 +26,14 @@
 #include <tpserver/object.h>
 #include <tpserver/ownedobject.h>
 #include <tpserver/player.h>
+#include <tpserver/objectdatamanager.h>
+#include <tpserver/objectdata.h>
+#include <tpserver/objectparameter.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/ordermanager.h>
 
 #include "rspcombat.h"
 
@@ -49,18 +57,26 @@ void MinisecTurn::doTurn(){
   PlayerManager* playermanager = game->getPlayerManager();
 
   //do orders
-  std::set<uint32_t> objects = ordermanager->getObjectsWithOrders();
+  std::set<uint32_t> objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-      IGObject * ob = objectmanager->getObject(*itcurr);
-      Order * currOrder = ordermanager->getFirstOrder(ob);
-      if(currOrder != NULL){
-          if(currOrder->doOrder(ob)){
-          ordermanager->removeFirstOrder(ob);
-          }else{
-              ordermanager->updateFirstOrder(ob);
+    IGObject * ob = objectmanager->getObject(*itcurr);
+    if(ob->getType() == planettype || ob->getType() == fleettype){
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+      if(oqop != NULL){
+        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+        if(orderqueue != NULL){
+          Order * currOrder = orderqueue->getFirstOrder();
+          if(currOrder != NULL){
+            if(currOrder->doOrder(ob)){
+              orderqueue->removeFirstOrder();
+            }else{
+              orderqueue->updateFirstOrder();
+            }
           }
+        }
       }
-      objectmanager->doneWithObject(ob->getID());
+    }
+    objectmanager->doneWithObject(ob->getID());
   }
 
   objectmanager->clearRemovedObjects();
@@ -90,14 +106,24 @@ void MinisecTurn::doTurn(){
                               combatstrategy->doCombat();
                               if(!combatstrategy->isAliveCombatant1()){
                                   if(itaobj->getType() == planettype){
-                                      ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                                    uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
+                                    ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                                    uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                                    OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                                    queue->removeOwner(oldowner);
+                                    queue->removeAllOrders();
                                   }else{
                                       objectmanager->scheduleRemoveObject(*ita);
                                   }
                               }
                               if(!combatstrategy->isAliveCombatant2()){
                                   if(itbobj->getType() == planettype){
+                                      uint32_t oldowner = ((OwnedObject*)(itbobj->getObjectData()))->getOwner();
                                       ((OwnedObject*)(itbobj->getObjectData()))->setOwner(0);
+                                      uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                                      OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                                      queue->removeOwner(oldowner);
+                                      queue->removeAllOrders();
                                   }else{
                                       objectmanager->scheduleRemoveObject(*itb);
                                   }
@@ -115,14 +141,24 @@ void MinisecTurn::doTurn(){
                       combatstrategy->doCombat();
                       if(!combatstrategy->isAliveCombatant1()){
                           if(itaobj->getType() == planettype){
-                              ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                            uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
+                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                            queue->removeOwner(oldowner);
+                            queue->removeAllOrders();
                           }else{
                               objectmanager->scheduleRemoveObject(*ita);
                           }
                       }
                       if(!combatstrategy->isAliveCombatant2()){
                           if(ob->getType() == planettype){
-                              ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
+                            uint32_t oldowner = ((OwnedObject*)(ob->getObjectData()))->getOwner();
+                            ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
+                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                            queue->removeOwner(oldowner);
+                            queue->removeAllOrders();
                           }else{
                               objectmanager->scheduleRemoveObject(*itcurr);
                           }

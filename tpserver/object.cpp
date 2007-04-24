@@ -296,17 +296,6 @@ uint32_t IGObject::getNumOrders(){
   return 0;
 }
 
-void IGObject::setNumOrders(uint32_t num){
-  if(myObjectData != NULL){
-    OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(myObjectData->getParameterByType(obpT_Order_Queue));
-    if(oq != NULL){
-      oq->setNumOrders(num);
-      touchModTime();
-    }
-  }
-    Logger::getLogger()->debug("IGObject::setNumOrders");
-}
-
 void IGObject::createFrame(Frame * frame, int playerid)
 {
   

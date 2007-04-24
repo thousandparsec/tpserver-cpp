@@ -27,6 +27,7 @@
 #include "logging.h"
 #include "game.h"
 #include "object.h"
+#include "orderqueue.h"
 #include "order.h"
 #include "vector3d.h"
 #include "board.h"
@@ -440,8 +441,7 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processGetOrder(Frame * frame)
-{
+void PlayerAgent::processGetOrder(Frame * frame){
   Logger::getLogger()->debug("Doing get order frame");
   
   if(frame->getDataLength() < 12){
@@ -451,19 +451,11 @@ void PlayerAgent::processGetOrder(Frame * frame)
     return;
   }
  
-  int objectID = frame->unpackInt();
-  std::set<uint32_t> visibleObjects = player->getVisibleObjects();
-  if(visibleObjects.find(objectID) == visibleObjects.end()){
+  int orderqueueid = frame->unpackInt();
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No such object");
-    curConnection->sendFrame(of);
-    return;
-  }
-
-  IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
-  if (o == NULL) {
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No such object");
+    of->createFailFrame(fec_NonExistant, "No such Order Queue");
     curConnection->sendFrame(of);
     return;
   }
@@ -471,19 +463,19 @@ void PlayerAgent::processGetOrder(Frame * frame)
   int num_orders = frame->unpackInt();
   if(frame->getDataLength() != 8 + 4 * num_orders){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, frame too short");
     curConnection->sendFrame(of);
     return;
   }
 
   if(num_orders > 1) {
-  	Logger::getLogger()->debug("Got multiple orders, returning a sequence");
+    Logger::getLogger()->debug("Got multiple orders, returning a sequence");
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
     seq->packInt(num_orders);
     curConnection->sendFrame(seq);
   } else {
-  	Logger::getLogger()->debug("Got single orders, returning one object");
+    Logger::getLogger()->debug("Got single orders, returning one object");
   }
   
   if(num_orders == 0){
@@ -498,13 +490,12 @@ void PlayerAgent::processGetOrder(Frame * frame)
     Frame *of = curConnection->createFrame(frame);
 
     int ordpos = frame->unpackInt();
-    Order *ord = Game::getGame()->getOrderManager()->getOrder(o, ordpos, player->getID());
+    Order *ord = orderqueue->getOrder(ordpos, player->getID());
     if (ord != NULL) {
-      ord->createFrame(of, objectID, ordpos);
+      ord->createFrame(of, orderqueueid, ordpos);
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not get Order");
     }
-    Game::getGame()->getObjectManager()->doneWithObject(objectID);
     curConnection->sendFrame(of);
   }
   
@@ -512,57 +503,50 @@ void PlayerAgent::processGetOrder(Frame * frame)
 }
 
 
-void PlayerAgent::processAddOrder(Frame * frame)
-{
+void PlayerAgent::processAddOrder(Frame * frame){
   Logger::getLogger()->debug("doing add order frame");
   Frame *of = curConnection->createFrame(frame);
   if (frame->getDataLength() >= 8) {
 
-    // See if we have a valid object number
-    unsigned int objectID = frame->unpackInt();
-    std::set<uint32_t> visibleObjects = player->getVisibleObjects();
-    if(visibleObjects.find(objectID) == visibleObjects.end()){
-      of->createFailFrame(fec_NonExistant, "No such object");
+    // See if we have a valid orderqueue id
+    
+    int orderqueueid = frame->unpackInt();
+    OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+    if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Order Queue");
       curConnection->sendFrame(of);
       return;
     }
+    
+    // Order Slot
+    int pos = frame->unpackInt();
 
-    IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
-    if (o == NULL) {
-            of->createFailFrame(fec_NonExistant, "No such object");
-            
+    // See if we have a valid order
+    Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
+    if (ord == NULL) {
+      of->createFailFrame(fec_NonExistant, "No such order type");
     } else {
-      // Order Slot
-      int pos = frame->unpackInt();
-
-      // See if we have a valid order
-      Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
-      if (ord == NULL) {
-        of->createFailFrame(fec_NonExistant, "No such order type");
-      } else {
-        Result r = ord->inputFrame(frame, player->getID());
-        if (r){
-          if(Game::getGame()->getOrderManager()->addOrder(ord, o, pos, player->getID())) {
-            of->setType(ft02_OK);
-            of->packString("Order Added");
-          } else {
-            of->createFailFrame(fec_TempUnavailable, "Order Manager failure.");
-          }
-        }else{
-		  // FIXME: This isn't always a FrameError really...
-          of->createFailFrame(fec_FrameError, (std::string("Could not add order, ") + r).c_str());
+      Result r = ord->inputFrame(frame, player->getID());
+      if (r){
+        if(orderqueue->addOrder(ord, pos, player->getID())) {
+          of->setType(ft02_OK);
+          of->packString("Order Added");
+        } else {
+          of->createFailFrame(fec_TempUnavailable, "OrderQueue failure.");
         }
+      }else{
+                // FIXME: This isn't always a FrameError really...
+        of->createFailFrame(fec_FrameError, (std::string("Could not add order, ") + r).c_str());
       }
-      Game::getGame()->getObjectManager()->doneWithObject(objectID);
     }
   } else {
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, too short");
   }
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processRemoveOrder(Frame * frame)
-{
+void PlayerAgent::processRemoveOrder(Frame * frame){
   Logger::getLogger()->debug("doing remove order frame");
 
   if(frame->getDataLength() < 12){
@@ -572,11 +556,11 @@ void PlayerAgent::processRemoveOrder(Frame * frame)
     return;
   }
 
-  int objectID = frame->unpackInt();
-  std::set<uint32_t> visibleObjects = player->getVisibleObjects();
-  if(visibleObjects.find(objectID) == visibleObjects.end()){
+  int orderqueueid = frame->unpackInt();
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No such object");
+    of->createFailFrame(fec_NonExistant, "No such Order Queue");
     curConnection->sendFrame(of);
     return;
   }
@@ -585,7 +569,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame)
 
   if(frame->getDataLength() != 8 + 4 * num_orders){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -600,14 +584,12 @@ void PlayerAgent::processRemoveOrder(Frame * frame)
   for(int i = 0; i < num_orders; i++){
     Frame *of = curConnection->createFrame(frame);
     int ordpos = frame->unpackInt();
-    IGObject * obj = Game::getGame()->getObjectManager()->getObject(objectID);
-    if (obj != NULL && Game::getGame()->getOrderManager()->removeOrder(obj, ordpos, player->getID())) {
+    if (orderqueue->removeOrder(ordpos, player->getID())) {
       of->setType(ft02_OK);
       of->packString("Order removed");
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
     }
-    Game::getGame()->getObjectManager()->doneWithObject(objectID);
 
     curConnection->sendFrame(of);
     
