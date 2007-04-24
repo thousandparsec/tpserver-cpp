@@ -91,7 +91,7 @@ bool BoardManager::addMessage(Message* msg, Board* board, uint32_t pos){
     messagecache[msgid] = msg;
     std::list<uint32_t> bmlist = boardmessages[board->getBoardID()];
         if(bmlist.empty()){
-            bmlist = Game::getGame()->getPersistence()->retrieveOrderList(board->getBoardID());
+            bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
             boardmessages[board->getBoardID()] = bmlist;
         }
         if (pos == 0xffffffff) {
