@@ -31,6 +31,9 @@
 #include <tpserver/objectparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/ordermanager.h>
 
 #include "avacombat.h"
 
@@ -61,13 +64,15 @@ void MTSecTurn::doTurn(){
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
       if(oqop != NULL){
         OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
-        Order * currOrder = orderqueue->getFirstOrder();
-        if(currOrder != NULL){
+        if(orderqueue != NULL){
+          Order * currOrder = orderqueue->getFirstOrder();
+          if(currOrder != NULL){
             if(currOrder->doOrder(ob)){
             orderqueue->removeFirstOrder();
             }else{
                 orderqueue->updateFirstOrder();
             }
+          }
         }
       }
     }
@@ -101,14 +106,24 @@ void MTSecTurn::doTurn(){
                               combatstrategy->doCombat();
                               if(!combatstrategy->isAliveCombatant1()){
                                   if(itaobj->getType() == planettype){
-                                      ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                                    uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
+                                    ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                                    uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                                    OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                                    queue->removeOwner(oldowner);
+                                    queue->removeAllOrders();
                                   }else{
                                       objectmanager->scheduleRemoveObject(*ita);
                                   }
                               }
                               if(!combatstrategy->isAliveCombatant2()){
                                   if(itbobj->getType() == planettype){
+                                      uint32_t oldowner = ((OwnedObject*)(itbobj->getObjectData()))->getOwner();
                                       ((OwnedObject*)(itbobj->getObjectData()))->setOwner(0);
+                                      uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                                      OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                                      queue->removeOwner(oldowner);
+                                      queue->removeAllOrders();
                                   }else{
                                       objectmanager->scheduleRemoveObject(*itb);
                                   }
@@ -126,14 +141,24 @@ void MTSecTurn::doTurn(){
                       combatstrategy->doCombat();
                       if(!combatstrategy->isAliveCombatant1()){
                           if(itaobj->getType() == planettype){
-                              ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                            uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
+                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
+                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                            queue->removeOwner(oldowner);
+                            queue->removeAllOrders();
                           }else{
                               objectmanager->scheduleRemoveObject(*ita);
                           }
                       }
                       if(!combatstrategy->isAliveCombatant2()){
                           if(ob->getType() == planettype){
-                              ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
+                            uint32_t oldowner = ((OwnedObject*)(ob->getObjectData()))->getOwner();
+                            ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
+                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                            queue->removeOwner(oldowner);
+                            queue->removeAllOrders();
                           }else{
                               objectmanager->scheduleRemoveObject(*itcurr);
                           }
