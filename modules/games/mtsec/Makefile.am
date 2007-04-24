@@ -2,14 +2,6 @@
 
 rulesetlib_LTLIBRARIES = libmtsec.la
 
-if MYSQL
-MYSQL_MTSEC_SOURCE = mysqlemptyobject.h mysqlemptyobject.cpp \
-	mysqlfleet.h mysqlfleet.cpp \
-	mysqlplanet.h mysqlplanet.cpp
-else
-MYSQL_MTSEC_SOURCE =
-endif
-
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
 libmtsec_la_SOURCES = planet.cpp fleet.cpp \
@@ -17,12 +9,9 @@ libmtsec_la_SOURCES = planet.cpp fleet.cpp \
 		colonise.cpp \
 		splitfleet.cpp mergefleet.cpp \
 		avacombat.cpp mtsec.cpp \
-		mtsecturn.cpp \
-		${MYSQL_MTSEC_SOURCE}
+		mtsecturn.cpp
 
 libmtsec_la_LDFLAGS = -module
-AM_CXXFLAGS = @MYSQL_CFLAGS@
-libmtsec_la_LIBADD = @MYSQL_LIBS@
 
 noinst_HEADERS = planet.h fleet.h move.h build.h colonise.h splitfleet.h mergefleet.h \
 		avacombat.h mtsec.h mtsecturn.h
