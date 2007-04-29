@@ -114,6 +114,8 @@ void PlayerConnection::login(){
       char *password = recvframe->unpackString();
       if (username != NULL && password != NULL) {
         //authenicate
+        if(username[0] == '@')
+          username[0] = '_';
         char* atsign = strstr(username, "@");
         if(atsign != NULL){
           (*atsign) = '\0'; //chop the at sign and game name off.
@@ -149,7 +151,7 @@ void PlayerConnection::login(){
               Frame *failframe = createFrame(recvframe);
               failframe->createFailFrame(fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
               sendFrame(failframe);
-              close();
+              //close();
       }
       if (username != NULL)
         delete[] username;
@@ -174,6 +176,8 @@ void PlayerConnection::login(){
         char *password = recvframe->unpackString();
         // also email address and comment strings
         if (username != NULL && password != NULL) {
+          if(username[0] == '@')
+            username[0] = '_';
           char* atsign = strstr(username, "@");
           if(atsign != NULL){
             (*atsign) = '\0'; //chop the at sign and game name off.
@@ -181,6 +185,8 @@ void PlayerConnection::login(){
           Logger::getLogger()->info("Creating new player");
           Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
           if(player != NULL){
+            player->setEmail(recvframe->unpackStdString());
+            player->setComment(recvframe->unpackStdString());
             Frame *okframe = createFrame(recvframe);
             okframe->setType(ft02_OK);
             okframe->packString("Account created and logged in.");
