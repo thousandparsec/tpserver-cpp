@@ -33,10 +33,9 @@
 #include "player.h"
 
 
-Player::Player(){
-  pid = 0;
-  currObjSeq = 0;
-  boardid = 0;
+Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0), 
+    visibleObjects(), currObjSeq(0), visibleDesigns(), usableDesigns(),
+    visibleComponents(), usableComponents(){
 }
 
 Player::~Player(){
@@ -48,6 +47,14 @@ void Player::setName(const std::string& newname){
 
 void Player::setPass(const std::string& newpass){
     passwd = newpass;
+}
+
+void Player::setEmail(const std::string& newemail){
+  email = newemail;
+}
+
+void Player::setComment(const std::string& newcomm){
+  comment = newcomm;
 }
 
 void Player::setId(uint32_t newid){
@@ -131,6 +138,14 @@ std::string Player::getName() const{
 
 std::string Player::getPass() const{
   return passwd;
+}
+
+std::string Player::getEmail() const{
+  return email;
+}
+
+std::string Player::getComment() const{
+  return comment;
 }
 
 uint32_t Player::getID(){
