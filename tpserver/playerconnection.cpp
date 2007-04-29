@@ -110,16 +110,10 @@ void PlayerConnection::login(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
-      char *username = recvframe->unpackString();
-      char *password = recvframe->unpackString();
-      if (username != NULL && password != NULL) {
-        //authenicate
-        if(username[0] == '@')
-          username[0] = '_';
-        char* atsign = strstr(username, "@");
-        if(atsign != NULL){
-          (*atsign) = '\0'; //chop the at sign and game name off.
-        }
+      std::string username = recvframe->unpackStdString();
+      std::string password = recvframe->unpackStdString();
+      username = username.substr(0, username.find('@'));
+      if (username.length() > 0 && password.length() > 0) {
         Player* player = NULL;
         try{
           player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
@@ -135,7 +129,7 @@ void PlayerConnection::login(){
           okframe->setType(ft02_OK);
           okframe->packString("Welcome");
           sendFrame(okframe);
-          Logger::getLogger()->info("Login ok by %s", username);
+          Logger::getLogger()->info("Login ok by %s", username.c_str());
           playeragent = new PlayerAgent();
           playeragent->setPlayer(player);
           playeragent->setConnection(this);
@@ -153,10 +147,6 @@ void PlayerConnection::login(){
               sendFrame(failframe);
               //close();
       }
-      if (username != NULL)
-        delete[] username;
-      if (password != NULL)
-        delete[] password;
 
 
     }else if(version >= fv0_3 && recvframe->getType() == ft03_Features_Get){
@@ -172,26 +162,21 @@ void PlayerConnection::login(){
       sendFrame(time);
     }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
       if(Settings::getSettings()->get("add_players") == "yes"){
-        char *username = recvframe->unpackString();
-        char *password = recvframe->unpackString();
-        // also email address and comment strings
-        if (username != NULL && password != NULL) {
-          if(username[0] == '@')
-            username[0] = '_';
-          char* atsign = strstr(username, "@");
-          if(atsign != NULL){
-            (*atsign) = '\0'; //chop the at sign and game name off.
-          }
+        std::string username = recvframe->unpackStdString();
+        std::string password = recvframe->unpackStdString();
+        username = username.substr(0, username.find('@'));
+        if (username.length() > 0 && password.length() > 0) {
           Logger::getLogger()->info("Creating new player");
           Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
           if(player != NULL){
+            // also email address and comment strings
             player->setEmail(recvframe->unpackStdString());
             player->setComment(recvframe->unpackStdString());
             Frame *okframe = createFrame(recvframe);
             okframe->setType(ft02_OK);
             okframe->packString("Account created and logged in.");
             sendFrame(okframe);
-            Logger::getLogger()->info("Account created ok for %s", username);
+            Logger::getLogger()->info("Account created ok for %s", username.c_str());
             playeragent = new PlayerAgent();
             playeragent->setPlayer(player);
             playeragent->setConnection(this);
@@ -209,10 +194,6 @@ void PlayerConnection::login(){
           sendFrame(failframe);
           close();
         }
-        if (username != NULL)
-          delete[] username;
-        if (password != NULL)
-          delete[] password;
       }else{
         Logger::getLogger()->info("Account creation disabled, not creating account");
         Frame *failframe = createFrame(recvframe);
