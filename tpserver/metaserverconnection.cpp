@@ -235,6 +235,19 @@ bool MetaserverConnection::sendUpdate(){
     localname = settings->get("metaserver_fake_dns");
   }
 
+  if(localip.find("10.") == 0 // 10.x.x.x ipv4 private ip
+     || localip.find("192.168.") == 0 // 192.168.x.x ipv4 private ip
+     || localip.find("127.0.0.1") == 0 // ipv4 loopback ip
+     || (localip.find("::1") == 0 && localip.length() == 3) // ipv6 loopback ip
+     || localip.find("fec0::") == 0 // ipv6 site local address
+     || localip.find("fe80::") == 0) // ipv6 link local address
+  {
+    status = 0;
+    close(sockfd);
+    Logger::getLogger()->warning("Was going to send private ip address to metaserver, not updating metaserver");
+    return false;
+  }
+  
   std::string tname = settings->get("game_name");
   if(tname.empty())
     tname = "Tpserver-cpp";
