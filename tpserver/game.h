@@ -24,6 +24,7 @@
 #include <map>
 #include <set>
 #include <stdint.h>
+#include <string>
 
 class Player;
 class IGObject;
@@ -80,7 +81,7 @@ class Game {
 
     void doEndOfTurn();
     void resetEOTTimer();
-    int getTurnNumber();
+    uint32_t getTurnNumber() const;
 
     int secondsToEOT();
     void setTurnLength(unsigned int sec);
@@ -89,6 +90,15 @@ class Game {
     void saveAndClose();
 
     void packGameInfoFrame(Frame* frame);
+    
+    //For persistence only
+    void setTurnNumber(uint32_t t);
+    void setGameStartTime(uint64_t t);
+    void setKey(const std::string& nk);
+    
+    uint64_t getGameStartTime() const;
+    //Persistence and Advertiser/publishers only
+    std::string getKey() const;
 
   private:
     Game();
@@ -106,6 +116,10 @@ class Game {
 
     bool loaded;
     bool started;
+    
+    uint64_t ctime;
+    uint32_t turnNum;
+    std::string key;
     
     Ruleset* ruleset;
 

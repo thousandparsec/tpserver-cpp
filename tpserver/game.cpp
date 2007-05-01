@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <ctime>
 #include <cassert>
+#include <sstream>
+#include <iomanip>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -35,7 +37,6 @@
 #include "player.h"
 #include "object.h"
 #include "order.h"
-#include "universe.h"
 #include "frame.h"
 #include "net.h"
 #include "vector3d.h"
@@ -45,7 +46,6 @@
 #include "boardmanager.h"
 #include "resourcemanager.h"
 #include "playermanager.h"
-#include "ownedobject.h"
 #include "designstore.h"
 #include "ruleset.h"
 #include "persistence.h"
@@ -99,19 +99,23 @@ bool Game::load()
 
     //if nothing loaded from database
     //init game
-        IGObject* universe = objectmanager->getObject(0);
-        if(universe != NULL){
-            objectmanager->doneWithObject(0);
-            objectmanager->init();
-            ordermanager->init();
-            boardmanager->init();
-            resourcemanager->init();
-            playermanager->init();
-            designstore->init();
-        }else{
-            Logger::getLogger()->info("Creating Game");
-            ruleset->createGame();
-        }
+    if(!persistence->retrieveGameInfo()){
+      Logger::getLogger()->info("Creating Game");
+      ctime = time(NULL);
+      turnNum = 0;
+      std::ostringstream formater;
+      formater << std::ios::hex << random->getInt32() << std::ios::hex << random->getInt32();
+      key = formater.str();
+      persistence->saveGameInfo();
+      ruleset->createGame();
+    }
+
+    objectmanager->init();
+    ordermanager->init();
+    boardmanager->init();
+    resourcemanager->init();
+    playermanager->init();
+    designstore->init();
     
     loaded = true;
     return true;
@@ -251,6 +255,10 @@ void Game::doEndOfTurn(){
     // DO END OF TURN STUFF HERE
     turnprocess->doTurn();
 
+    // increment the turn counter
+    turnNum++;
+    // save game info
+    persistence->saveGameInfo();
     // increment the time to the next turn
     turnTime += turnIncrement;
     timer->setValid(false);
@@ -285,10 +293,8 @@ int Game::secondsToEOT(){
   return turnTime - time(NULL);
 }
 
-int Game::getTurnNumber(){
-    int turnnum = ((Universe*)(objectmanager->getObject(0)->getObjectData()))->getYear();
-    objectmanager->doneWithObject(0);
-    return turnnum;
+uint32_t Game::getTurnNumber() const{
+  return turnNum;
 }
 
 void Game::setTurnLength(unsigned int sec){
@@ -397,7 +403,7 @@ void Game::packGameInfoFrame(Frame* frame){
   
   frame->packInt(9);
   frame->packString("");
-  frame->packInt(getTurnNumber());
+  frame->packInt(turnNum);
   
   frame->packInt(10);
   frame->packString("");
@@ -418,14 +424,33 @@ void Game::packGameInfoFrame(Frame* frame){
   
 }
 
-Game::Game()
-{
-    objectmanager = new ObjectManager();
+void Game::setTurnNumber(uint32_t t){
+  turnNum = t;
+}
+
+void Game::setGameStartTime(uint64_t t){
+  ctime = t;
+}
+
+void Game::setKey(const std::string& nk){
+  key = nk;
+}
+
+uint64_t Game::getGameStartTime() const{
+  return ctime;
+}
+
+std::string Game::getKey() const{
+  return key;
+}
+
+Game::Game() : ctime(0), turnNum(0), key(){
+  objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
-    boardmanager = new BoardManager();
-    resourcemanager = new ResourceManager();
-    playermanager = new PlayerManager();
+  boardmanager = new BoardManager();
+  resourcemanager = new ResourceManager();
+  playermanager = new PlayerManager();
   designstore = new DesignStore();
   turnprocess = NULL;
   ruleset = NULL;
