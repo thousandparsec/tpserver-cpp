@@ -43,6 +43,14 @@ bool Persistence::init(){
 void Persistence::shutdown(){
 }
 
+bool Persistence::saveGameInfo(){
+  return false;
+}
+
+bool Persistence::retrieveGameInfo(){
+  return false;
+}
+
 bool Persistence::saveObject(IGObject* ob){
     return false;
 }

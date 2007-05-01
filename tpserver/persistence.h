@@ -42,6 +42,9 @@ public:
 
     virtual bool init();
     virtual void shutdown();
+    
+    virtual bool saveGameInfo();
+    virtual bool retrieveGameInfo();
 
     virtual bool saveObject(IGObject* ob);
     virtual bool updateObject(IGObject* ob);
