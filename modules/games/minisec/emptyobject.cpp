@@ -1,6 +1,6 @@
 /*  Empty Object class
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
  *
  */
 
-#include "objectparametergroup.h"
-#include "position3dobjectparam.h"
-#include "sizeobjectparam.h"
+#include <tpserver/objectparametergroup.h>
+#include <tpserver/position3dobjectparam.h>
+#include <tpserver/sizeobjectparam.h>
 
 #include "emptyobject.h"
 
