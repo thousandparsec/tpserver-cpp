@@ -39,8 +39,6 @@ public:
   virtual ~MetaserverPublisher();
   
   void update();
-
-  std::string getKey();
   
 
 private:
@@ -49,7 +47,6 @@ private:
   void metaserverSettingChanged(const std::string& skey, const std::string& value);
   uint64_t lastpublishtime;
   bool needtoupdate;
-  std::string key;
   TimerCallback* timer;
   int errorcount;
 

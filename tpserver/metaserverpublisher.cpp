@@ -38,7 +38,7 @@
 
 #include "metaserverpublisher.h"
 
-MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), key(), timer(NULL), errorcount(0){
+MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), timer(NULL), errorcount(0){
   Settings* settings = Settings::getSettings();
   settings->setCallback("metaserver_fake_ip", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
   settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
@@ -89,9 +89,6 @@ void MetaserverPublisher::update(){
   setTimer();
 }
 
-std::string MetaserverPublisher::getKey(){
-  return key;
-}
 
 void MetaserverPublisher::metaserverSettingChanged(const std::string& skey, const std::string& value){
   update();

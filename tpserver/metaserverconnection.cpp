@@ -259,7 +259,7 @@ bool MetaserverConnection::sendUpdate(){
 
   std::ostringstream formater;
   formater << "GET /?action=update&sertype=tpserver-cpp&server=" VERSION;
-  formater << "&tp=0.3,0.2&key=" << publisher->getKey();
+  formater << "&tp=0.3,0.2&key=" << Game::getGame()->getKey();
   formater << "&rule=" << Game::getGame()->getRuleset()->getName();
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
