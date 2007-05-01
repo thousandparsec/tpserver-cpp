@@ -30,7 +30,7 @@
 #include "tpserver/object.h"
 #include "tpserver/objectmanager.h"
 #include "tpserver/ownedobject.h"
-#include "tpserver/universe.h"
+#include "universe.h"
 #include "tpserver/emptyobject.h"
 #include "planet.h"
 #include "fleet.h"

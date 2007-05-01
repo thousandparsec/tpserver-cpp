@@ -18,11 +18,11 @@
  *
  */
 
-#include "frame.h"
-#include "position3dobjectparam.h"
-#include "integerobjectparam.h"
-#include "objectparametergroup.h"
-#include "sizeobjectparam.h"
+#include <tpserver/frame.h>
+#include <tpserver/position3dobjectparam.h>
+#include <tpserver/integerobjectparam.h>
+#include <tpserver/objectparametergroup.h>
+#include <tpserver/sizeobjectparam.h>
 
 #include "universe.h"
 
