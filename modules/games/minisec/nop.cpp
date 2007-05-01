@@ -18,15 +18,15 @@
  *
  */
 
-#include "order.h"
-#include "frame.h"
-#include "object.h"
-#include "game.h"
-#include "player.h"
-#include "message.h"
-#include "ownedobject.h"
-#include "playermanager.h"
-#include "timeparameter.h"
+#include <tpserver/order.h>
+#include <tpserver/frame.h>
+#include <tpserver/object.h>
+#include <tpserver/game.h>
+#include <tpserver/player.h>
+#include <tpserver/message.h>
+#include <tpserver/ownedobject.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/timeparameter.h>
 
 #include "nop.h"
 

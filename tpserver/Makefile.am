@@ -21,7 +21,7 @@ endif
 
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
-		order.cpp objectdata.cpp universe.cpp ownedobject.cpp emptyobject.cpp nop.cpp \
+		order.cpp objectdata.cpp universe.cpp ownedobject.cpp emptyobject.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objectdatamanager.cpp \
 		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
@@ -41,7 +41,7 @@ headers_HEADERS = connection.h console.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h objectdata.h universe.h ownedobject.h \
-	emptyobject.h nop.h \
+	emptyobject.h \
 	vector3d.h board.h message.h ordermanager.h \
 	objectdatamanager.h \
 	playerconnection.h \

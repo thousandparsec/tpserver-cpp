@@ -39,7 +39,7 @@
 #include "avacombat.h"
 #include "tpserver/designstore.h"
 #include "tpserver/ordermanager.h"
-#include "tpserver/nop.h"
+#include "nop.h"
 #include "move.h"
 #include "build.h"
 #include "colonise.h"
