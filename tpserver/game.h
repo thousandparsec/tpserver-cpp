@@ -83,6 +83,8 @@ class Game {
     void resetEOTTimer();
     uint32_t getTurnNumber() const;
 
+    uint64_t getGameStartTime() const;
+
     int secondsToEOT();
     void setTurnLength(unsigned int sec);
     uint32_t getTurnLength();
@@ -95,8 +97,7 @@ class Game {
     void setTurnNumber(uint32_t t);
     void setGameStartTime(uint64_t t);
     void setKey(const std::string& nk);
-    
-    uint64_t getGameStartTime() const;
+
     //Persistence and Advertiser/publishers only
     std::string getKey() const;
 
