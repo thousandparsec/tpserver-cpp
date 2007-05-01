@@ -1,6 +1,6 @@
-#ifndef PLANET_H
-#define PLANET_H
-/*  Planet ObjectData class
+#ifndef OWNEDOBJECT_H
+#define OWNEDOBJECT_H
+/*  OwnedObject base class
  *
  *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
@@ -20,41 +20,21 @@
  *
  */
 
-#include <map>
+#include <tpserver/objectdata.h>
 
-#include "ownedobject.h"
+class ReferenceObjectParam;
 
-class ResourceListObjectParam;
-class OrderQueueObjectParam;
-
-class Planet:public OwnedObject {
+class OwnedObject:public ObjectData {
       public:
-	Planet();
+	OwnedObject();
 
-        void setDefaultOrderTypes();
-        
 	void packExtraData(Frame * frame);
 
-	void doOnceATurn(IGObject * obj);
-
-	void packAllowedOrders(Frame * frame, int playerid);
-
-	bool checkAllowedOrder(int ot, int playerid);
-
-	int getContainerType();
-	
-	ObjectData* clone();
-
-    std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
-    uint32_t getResource(uint32_t restype) const;
-    
-    void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
-    void addResource(uint32_t restype, uint32_t amount);
-    bool removeResource(uint32_t restype, uint32_t amount);
+	void setOwner(int player);
+	int getOwner();
 
       private:
-    ResourceListObjectParam* resources;
-    OrderQueueObjectParam * orderqueue;
+        ReferenceObjectParam * playerref;
 
 };
 

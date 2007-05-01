@@ -24,7 +24,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
-#include <tpserver/ownedobject.h>
+#include "ownedobject.h"
 #include <tpserver/player.h>
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/objectdata.h>

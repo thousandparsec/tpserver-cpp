@@ -18,10 +18,10 @@
  *
  */
 
-#include "frame.h"
-#include "objectparametergroup.h"
-#include "refsys.h"
-#include "referenceobjectparam.h"
+#include <tpserver/frame.h>
+#include <tpserver/objectparametergroup.h>
+#include <tpserver/refsys.h>
+#include <tpserver/referenceobjectparam.h>
 
 #include "ownedobject.h"
 

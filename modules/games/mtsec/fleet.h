@@ -22,7 +22,7 @@
 
 #include <map>
 
-#include <tpserver/ownedobject.h>
+#include "ownedobject.h"
 
 class RefQuantityListObjectParam;
 class IntegerObjectParam;

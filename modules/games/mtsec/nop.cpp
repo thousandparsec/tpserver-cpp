@@ -24,7 +24,7 @@
 #include <tpserver/game.h>
 #include <tpserver/player.h>
 #include <tpserver/message.h>
-#include <tpserver/ownedobject.h>
+#include "ownedobject.h"
 #include <tpserver/playermanager.h>
 #include <tpserver/timeparameter.h>
 

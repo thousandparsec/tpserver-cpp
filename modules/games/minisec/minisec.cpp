@@ -28,7 +28,7 @@
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/ownedobject.h>
+#include "ownedobject.h"
 #include "universe.h"
 #include "emptyobject.h"
 #include "planet.h"
