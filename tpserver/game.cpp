@@ -108,14 +108,14 @@ bool Game::load()
       key = formater.str();
       persistence->saveGameInfo();
       ruleset->createGame();
+    }else{
+      objectmanager->init();
+      ordermanager->init();
+      boardmanager->init();
+      resourcemanager->init();
+      playermanager->init();
+      designstore->init();
     }
-
-    objectmanager->init();
-    ordermanager->init();
-    boardmanager->init();
-    resourcemanager->init();
-    playermanager->init();
-    designstore->init();
     
     loaded = true;
     return true;
