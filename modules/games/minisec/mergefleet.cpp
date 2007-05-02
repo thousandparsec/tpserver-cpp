@@ -37,7 +37,7 @@
 MergeFleet::MergeFleet() : Order(){
   moveorder = new Move();
   
-  name = "MergeFleet";
+  name = "Merge Fleet";
   description = "Merge this fleet into another one";
   
   object = new ObjectOrderParameter();

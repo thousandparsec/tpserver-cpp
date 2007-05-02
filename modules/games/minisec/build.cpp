@@ -48,7 +48,7 @@
 
 Build::Build() : Order()
 {
-  name = "BuildFleet";
+  name = "Build Fleet";
   description = "Build a fleet";
   
   fleetlist = new ListParameter();

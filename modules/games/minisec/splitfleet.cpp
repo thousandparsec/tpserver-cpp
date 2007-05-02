@@ -39,7 +39,7 @@
 #include "splitfleet.h"
 
 SplitFleet::SplitFleet() : Order(){
-  name = "SplitFleet";
+  name = "Split Fleet";
   description = "Split the fleet into two";
   
   shiplist = new ListParameter();

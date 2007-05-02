@@ -147,8 +147,8 @@ void Fleet::setDefaultOrderTypes(){
   std::set<uint32_t> allowedlist;
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Move"));
-  allowedlist.insert(om->getOrderTypeByName("SplitFleet"));
-  allowedlist.insert(om->getOrderTypeByName("MergeFleet"));
+  allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
+  allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
   orderqueue->setAllowedOrders(allowedlist);
 }
 

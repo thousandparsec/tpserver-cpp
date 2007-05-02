@@ -119,7 +119,7 @@ void Planet::setOwner(uint32_t no){
 void Planet::setDefaultOrderTypes(){
   OrderManager * om = Game::getGame()->getOrderManager();
   std::set<uint32_t> allowedlist;
-  allowedlist.insert(om->getOrderTypeByName("BuildFleet"));
+  allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   orderqueue->setAllowedOrders(allowedlist);
 }
