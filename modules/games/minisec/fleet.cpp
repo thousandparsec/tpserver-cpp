@@ -42,7 +42,7 @@
 #include "fleet.h"
 
 Fleet::Fleet():OwnedObject(){
-  Position3dObjectParam * pos = new Position3dObjectParam();
+  pos = new Position3dObjectParam();
   pos->setName("Position");
   pos->setDescription("The position of the Fleet");
   ObjectParameterGroup* group = new ObjectParameterGroup();
@@ -50,7 +50,7 @@ Fleet::Fleet():OwnedObject(){
   group->setName("Positional");
   group->setDescription("Positional information");
   group->addParameter(pos);
-  Velocity3dObjectParam* vel = new Velocity3dObjectParam();
+  vel = new Velocity3dObjectParam();
   vel->setName("Velocity");
   vel->setDescription("The velocity of the fleet");
   group->addParameter(vel);
@@ -92,6 +92,24 @@ Fleet::Fleet():OwnedObject(){
 }
 
 Fleet::~Fleet(){
+}
+
+Vector3d Fleet::getPosition() const{
+  return pos->getPosition();
+}
+
+Vector3d Fleet::getVelocity() const{
+  return vel->getVelocity();
+}
+
+void Fleet::setPosition(const Vector3d & np){
+  pos->setPosition(np);
+  touchModTime();
+}
+
+void Fleet::setVelocity(const Vector3d & nv){
+  vel->setVelocity(nv);
+  touchModTime();
 }
 
 void Fleet::setDefaultOrderTypes(){

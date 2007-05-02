@@ -23,8 +23,11 @@
 #include <map>
 #include <list>
 
+#include <tpserver/vector3d.h>
 #include "ownedobject.h"
 
+class Position3dObjectParam;
+class Velocity3dObjectParam;
 class RefQuantityListObjectParam;
 class IntegerObjectParam;
 class OrderQueueObjectParam;
@@ -33,6 +36,11 @@ class Fleet:public OwnedObject {
       public:
 	Fleet();
 	virtual ~Fleet();
+        
+        Vector3d getPosition() const;
+        Vector3d getVelocity() const;
+        void setPosition(const Vector3d & np);
+        void setVelocity(const Vector3d & nv);
 
         void setDefaultOrderTypes();
 	void addShips(int type, int number);
@@ -57,6 +65,8 @@ class Fleet:public OwnedObject {
 	ObjectData* clone();
 
       private:
+        Position3dObjectParam * pos;
+        Velocity3dObjectParam * vel;
 	RefQuantityListObjectParam * shiplist;
 	IntegerObjectParam * damage;
         OrderQueueObjectParam * orderqueue;
