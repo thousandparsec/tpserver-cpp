@@ -46,7 +46,7 @@ bool ObjectDataManager::checkValid(uint32_t type){
 
 uint32_t ObjectDataManager::getObjectTypeByName(const std::string& name) const{
   if(stringmap.find(name) != stringmap.end()){
-    return stringmap.find(name).second;
+    return stringmap.find(name)->second;
   }
   return 0xffffffff;
 }
