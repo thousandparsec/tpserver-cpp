@@ -102,7 +102,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -186,19 +186,19 @@ bool Build::doOrder(IGObject *ob)
     //create fleet
     
     IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
-
+    fleet->setType(4);
     
     //add fleet to container
     fleet->addToParent(ob->getID());
-
-    fleet->setType(4);
-    fleet->setSize(2);
+    
     fleet->setName(fleetname->getString().c_str());
-    ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
-    fleet->setPosition(ob->getPosition());
-    fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    
+    thefleet->setSize(2);
+    thefleet->setOwner(ownerid); // set ownerid
+    thefleet->setPosition(ob->getPosition());
+    thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setQueueId(fleet->getID());

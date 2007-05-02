@@ -25,7 +25,7 @@
 #include "emptyobject.h"
 
 EmptyObject::EmptyObject() : ObjectData(){
-  Position3dObjectParam* pos = new Position3dObjectParam();
+  pos = new Position3dObjectParam();
   pos->setName("Position");
   pos->setDescription("The position of the object");
   ObjectParameterGroup *group = new ObjectParameterGroup();
@@ -33,11 +33,29 @@ EmptyObject::EmptyObject() : ObjectData(){
   group->setName("Positional");
   group->setDescription("Describes the position");
   group->addParameter(pos);
-  SizeObjectParam * size = new SizeObjectParam();
+  size = new SizeObjectParam();
   size->setName("Size");
   size->setDescription("The diameter of the object");
   group->addParameter(size);
   paramgroups.push_back(group);
+}
+
+Vector3d EmptyObject::getPosition() const{
+  return pos->getPosition();
+}
+
+uint64_t EmptyObject::getSize() const{
+  return size->getSize();
+}
+
+void EmptyObject::setPosition(const Vector3d & np){
+  pos->setPosition(np);
+  touchModTime();
+}
+
+void EmptyObject::setSize(uint64_t ns){
+  size->setSize(ns);
+  touchModTime();
 }
 
 void EmptyObject::packExtraData(Frame * frame)

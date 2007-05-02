@@ -54,6 +54,10 @@ bool RSPCombat::isAliveCombatant2(){
 
 void RSPCombat::doCombat(){
   Fleet * f1, *f2;
+  
+  uint32_t obT_Fleet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet");
+  uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+  
   if(c1->getType() == obT_Fleet){
     f1 = (Fleet*)(c1->getObjectData());
   }else if(c1->getType() == obT_Planet){
@@ -63,7 +67,7 @@ void RSPCombat::doCombat(){
       //two more for home planets
       f1->addShips(3, 2);
     }
-    f1->setOwner(((OwnedObject*)c1->getObjectData())->getOwner());
+    f1->setOwner(((Planet*)c1->getObjectData())->getOwner());
   }
   if(c2->getType() == obT_Fleet){
     f2 = (Fleet*)(c2->getObjectData());
@@ -74,7 +78,7 @@ void RSPCombat::doCombat(){
       //two more for home planets
       f2->addShips(3, 2);
     }
-    f2->setOwner(((OwnedObject*)c2->getObjectData())->getOwner());
+    f2->setOwner(((Planet*)c2->getObjectData())->getOwner());
   }
   if(f1 == NULL || f2 == NULL){
     return;

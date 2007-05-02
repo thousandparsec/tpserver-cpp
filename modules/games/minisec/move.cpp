@@ -30,6 +30,9 @@
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/spacecoordparam.h>
+#include "minisecturn.h"
+#include <tpserver/position3dobjectparam.h>
+#include <tpserver/sizeobjectparam.h>
 
 #include "move.h"
 
@@ -61,8 +64,9 @@ void Move::setDest(const Vector3d & ndest)
 }
 
 int Move::getETA(IGObject *ob) const{
-  unsigned long long distance = coords->getPosition().getDistance(ob->getPosition());
-  unsigned long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  Fleet* fleet = ((Fleet*)(ob->getObjectData()));
+  unsigned long long distance = coords->getPosition().getDistance(fleet->getPosition());
+  unsigned long max_speed = fleet->maxSpeed();
   
   if(distance == 0) 
     return 1;
@@ -84,8 +88,9 @@ Result Move::inputFrame(Frame * f, unsigned int playerid)
 
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
-  unsigned long long distance = dest.getDistance(ob->getPosition());
-  unsigned long long max_speed = ((Fleet*)(ob->getObjectData()))->maxSpeed();
+  Fleet* fleet = ((Fleet*)(ob->getObjectData()));
+  unsigned long long distance = dest.getDistance(fleet->getPosition());
+  unsigned long long max_speed = fleet->maxSpeed();
 
   Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
 	ob->getID(), distance, max_speed, distance/max_speed);
@@ -95,27 +100,122 @@ bool Move::doOrder(IGObject * ob){
     Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Is arriving at [%lld, %lld, %lld] ", 
       ob->getID(), dest.getX(), dest.getY(), dest.getZ());
   
-    ob->setFuturePosition(dest, true);
+    fleet->setVelocity(Vector3d(0,0,0));
     parentid = ob->getParent();
 
+    // recontainerise if necessary
+    int containertype = Game::getGame()->getObjectManager()->getObject(parentid)->getContainerType();
+    Game::getGame()->getObjectManager()->doneWithObject(parentid);
+  
+    if(fleet->getPosition() != dest && containertype >= 1){
+      //removeFromParent();
+      std::set<unsigned int> oblist = ((MinisecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
+        IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
+        
+        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Position_3D));
+        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Size));
+        if(pos == NULL || size == NULL){
+          Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+          continue;
+        }
+        Vector3d pos1 = pos->getPosition();
+        uint64_t size1 = size->getSize();
+        
+        uint64_t diff = dest.getDistance(pos1);
+        if(diff <= fleet->getSize() / 2 + size1 / 2){
+        
+          Logger::getLogger()->debug("Container object %d", *itcurr);
+          //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+          //if(*itcurr != id){
+          
+          if(size1 >= fleet->getSize()){
+            if(*itcurr != parentid){
+                ob->removeFromParent();
+                ob->addToParent(*itcurr);
+            }
+            Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+            parentid = *itcurr;
+            break;
+          }
+        }
+        Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+        //}
+      }
+      if(parentid == 0){
+          ob->removeFromParent();
+          ob->addToParent(0);
+      }
+    }
+    
+    fleet->setPosition(dest);
+    
     Message * msg = new Message();
     msg->setSubject("Move order complete");
     msg->setBody("The fleet '" +  ob->getName() + "' has reached it's destination.");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
     msg->addReference(rst_Object, parentid); /* It's parent */
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->postToBoard(msg);
 
     return true;
 
   }else{
-    Vector3d velo = (dest - ob->getPosition()).makeLength(max_speed);
-    Vector3d arriveat = ob->getPosition()+velo;
+    Vector3d velo = (dest - fleet->getPosition()).makeLength(max_speed);
+    Vector3d arriveat = fleet->getPosition()+velo;
     Logger::getLogger()->debug("Move->doOrder(%d): Velocity is [%lld, %lld, %lld] (will arrive at [%lld, %lld, %lld])", 
       ob->getID(), velo.getX(), velo.getY(), velo.getZ(), arriveat.getX(), arriveat.getY(), arriveat.getZ());
 
-    ob->setFuturePosition(arriveat);
+    fleet->setVelocity(velo);
 
+    uint32_t parentid = ob->getParent();
+    // recontainerise if necessary
+    uint32_t containertype = Game::getGame()->getObjectManager()->getObject(parentid)->getContainerType();
+    Game::getGame()->getObjectManager()->doneWithObject(parentid);
+  
+    if(fleet->getPosition() != arriveat && containertype >= 1){
+      //removeFromParent();
+      std::set<uint32_t> oblist = ((MinisecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
+        IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
+        
+        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Position_3D));
+        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Size));
+        if(pos == NULL || size == NULL){
+          Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+          continue;
+        }
+        Vector3d pos1 = pos->getPosition();
+        uint64_t size1 = size->getSize();
+        
+        uint64_t diff = arriveat.getDistance(pos1);
+        if(diff <= fleet->getSize() / 2 + size1 / 2){
+        
+          Logger::getLogger()->debug("Container object %d", *itcurr);
+          //if(Game::getGame()->getObject(*itcurr)->getType() <= 2){
+          //if(*itcurr != id){
+          
+          if(size1 >= fleet->getSize()){
+            if(*itcurr != parentid){
+                ob->removeFromParent();
+                ob->addToParent(*itcurr);
+            }
+            Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+            parentid = *itcurr;
+            break;
+          }
+        }
+        Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+        //}
+      }
+      if(parentid == 0){
+          ob->removeFromParent();
+          ob->addToParent(0);
+      }
+    }
+    
+    fleet->setPosition(arriveat);
+    
     return false;
   }
 }

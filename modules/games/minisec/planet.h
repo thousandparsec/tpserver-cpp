@@ -22,15 +22,28 @@
 
 #include <map>
 
-#include "ownedobject.h"
+#include <tpserver/vector3d.h>
+#include <tpserver/objectdata.h>
 
+class Position3dObjectParam;
+class SizeObjectParam;
+class ReferenceObjectParam;
 class ResourceListObjectParam;
 class OrderQueueObjectParam;
 
-class Planet:public OwnedObject {
+class Planet:public ObjectData {
       public:
 	Planet();
+        virtual ~Planet();
 
+        Vector3d getPosition() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setSize(uint64_t ns);
+        
+        uint32_t getOwner() const;
+        void setOwner(uint32_t no);
+        
         void setDefaultOrderTypes();
         
 	void packExtraData(Frame * frame);
@@ -48,7 +61,10 @@ class Planet:public OwnedObject {
     void addResource(uint32_t restype, uint32_t amount);
     bool removeResource(uint32_t restype, uint32_t amount);
 
-      private:
+  private:
+    Position3dObjectParam * pos;
+    SizeObjectParam * size;
+    ReferenceObjectParam * playerref;
     ResourceListObjectParam* resources;
     OrderQueueObjectParam * orderqueue;
 

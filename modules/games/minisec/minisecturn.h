@@ -21,6 +21,7 @@
  */
 
 #include <stdint.h>
+#include <set>
 
 #include <tpserver/turnprocess.h>
 
@@ -34,9 +35,12 @@ class MinisecTurn : public TurnProcess{
     void setFleetType(uint32_t ft);
     void setPlanetType(uint32_t pt);
     
+    std::set<uint32_t> getContainerIds() const;
+    
   private:
     uint32_t planettype;
     uint32_t fleettype;
+    std::set<uint32_t> containerids;
 };
 
 #endif

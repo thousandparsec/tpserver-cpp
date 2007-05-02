@@ -22,28 +22,43 @@
 #include <tpserver/order.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/game.h>
+#include <tpserver/position3dobjectparam.h>
+#include <tpserver/sizeobjectparam.h>
+#include <tpserver/referenceobjectparam.h>
 #include <tpserver/resourcelistobjectparam.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/objectparametergroup.h>
+#include <tpserver/refsys.h>
 
 #include "planet.h"
 
-Planet::Planet():OwnedObject(){
-  Position3dObjectParam * pos = new Position3dObjectParam();
+Planet::Planet():ObjectData(){
+  pos = new Position3dObjectParam();
   pos->setName("Position");
   pos->setDescription("The position of the planet");
   ObjectParameterGroup* group = new ObjectParameterGroup();
-  group->setGroupId(2);
+  group->setGroupId(1);
   group->setName("Positional");
   group->setDescription("Positional information");
   group->addParameter(pos);
-  SizeObjectParam* size = new SizeObjectParam();
+  size = new SizeObjectParam();
   size->setName("Size");
   size->setDescription( "The size of the planet");
   size->setSize(2);
   group->addParameter(size);
+  paramgroups.push_back(group);
+  
+  playerref = new ReferenceObjectParam();
+  playerref->setName("Owner");
+  playerref->setDescription("The owner of this object");
+  playerref->setReferenceType(rst_Player);
+  group = new ObjectParameterGroup();
+  group->setGroupId(2);
+  group->setName("Ownership");
+  group->setDescription("The ownership of this object");
+  group->addParameter(playerref);
   paramgroups.push_back(group);
   
   group = new ObjectParameterGroup();
@@ -71,6 +86,36 @@ Planet::Planet():OwnedObject(){
   typedesc = "A planet object";
 }
 
+Planet::~Planet(){
+}
+
+Vector3d Planet::getPosition() const{
+  return pos->getPosition();
+}
+
+uint64_t Planet::getSize() const{
+  return size->getSize();
+}
+
+void Planet::setPosition(const Vector3d & np){
+  pos->setPosition(np);
+  touchModTime();
+}
+
+void Planet::setSize(uint64_t ns){
+  size->setSize(ns);
+  touchModTime();
+}
+
+uint32_t Planet::getOwner() const{
+  return playerref->getReferencedId();
+}
+
+void Planet::setOwner(uint32_t no){
+  playerref->setReferencedId(no);
+  touchModTime();
+}
+
 void Planet::setDefaultOrderTypes(){
   OrderManager * om = Game::getGame()->getOrderManager();
   std::set<uint32_t> allowedlist;
@@ -80,7 +125,10 @@ void Planet::setDefaultOrderTypes(){
 }
 
 void Planet::packExtraData(Frame * frame){
-  OwnedObject::packExtraData(frame);
+  ObjectData::packExtraData(frame);
+  
+  frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
+  
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
     frame->packInt(reslist.size());
     for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
