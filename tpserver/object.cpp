@@ -33,6 +33,8 @@
 #include "velocity3dobjectparam.h"
 #include "sizeobjectparam.h"
 #include "orderqueueobjectparam.h"
+#include "ordermanager.h"
+#include "orderqueue.h"
 
 #include "object.h"
 
@@ -279,9 +281,13 @@ bool IGObject::removeContainedObject(unsigned int removeObjectID)
 
 uint32_t IGObject::getNumOrders(int playerid)
 {
-    //check if nop order (order type 0) is allowed
-  if(myObjectData->checkAllowedOrder(0, playerid)){
-    return getNumOrders();
+  if(myObjectData != NULL){
+    OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(myObjectData->getParameterByType(obpT_Order_Queue));
+    if(oq != NULL){
+      OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
+      if(queue->isOwner(playerid))
+        return queue->getNumberOrders();
+    }
   }
   return 0;
 }
@@ -363,16 +369,34 @@ void IGObject::createFrame(Frame * frame, int playerid)
   }
 
   if(frame->getVersion() <= fv0_3){
-    int templength = frame->getDataLength();
   
-    myObjectData->packAllowedOrders(frame, playerid);
-  
-    if(frame->getDataLength() - templength > 4){
-      frame->packInt(getNumOrders(playerid));
+    if(myObjectData != NULL){
+      OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(myObjectData->getParameterByType(obpT_Order_Queue));
+      if(oq != NULL){
+        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
+        if(queue->isOwner(playerid)){
+          std::set<uint32_t> allowedtypes = queue->getAllowedOrderTypes();
+          frame->packInt(allowedtypes.size());
+          for(std::set<uint32_t>::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
+              ++itcurr){
+            frame->packInt(*itcurr);
+          }
+          frame->packInt(queue->getNumberOrders());
+        }else{
+          frame->packInt(0);
+          frame->packInt(0);
+        }
+      }else{
+        frame->packInt(0);
+        frame->packInt(0);
+      }
+      
     }else{
+      frame->packInt(0);
       frame->packInt(0);
     }
   }
+  //padding
   if(frame->getVersion() >= fv0_3){
     frame->packInt64(myObjectData->getModTime());
     frame->packInt(0);
