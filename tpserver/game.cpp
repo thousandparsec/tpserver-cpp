@@ -191,6 +191,10 @@ void Game::setTurnProcess(TurnProcess* tp){
   turnprocess = tp;
 }
 
+TurnProcess* Game::getTurnProcess() const{
+  return turnprocess;
+}
+
 DesignStore* Game::getDesignStore() const{
   return designstore;
 }

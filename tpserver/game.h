@@ -65,6 +65,7 @@ class Game {
     PlayerManager* getPlayerManager() const;
     
     void setTurnProcess(TurnProcess* tp);
+    TurnProcess* getTurnProcess() const;
 
     DesignStore* getDesignStore() const;
 
