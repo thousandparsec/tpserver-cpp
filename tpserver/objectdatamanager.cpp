@@ -1,6 +1,6 @@
 /*  ObjectDataManager for managing ObjectData objects
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@ ObjectDataManager::ObjectDataManager(){
 }
 
 ObjectDataManager::~ObjectDataManager(){
-   for(std::map<int, ObjectData*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
+   for(std::map<uint32_t, ObjectData*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
     delete itcurr->second;
   }
 }
 
-ObjectData* ObjectDataManager::createObjectData(int type){
+ObjectData* ObjectDataManager::createObjectData(uint32_t type){
   ObjectData* prototype = prototypeStore[type];
   if(prototype != NULL){
     return prototype->clone();
@@ -40,11 +40,20 @@ ObjectData* ObjectDataManager::createObjectData(int type){
   return NULL;
 }
 
-bool ObjectDataManager::checkValid(int type){
+bool ObjectDataManager::checkValid(uint32_t type){
   return (0 <= type && type <= nextType - 1);
 }
 
+uint32_t ObjectDataManager::getObjectTypeByName(const std::string& name) const{
+  if(stringmap.find(name) != stringmap.end()){
+    return stringmap.find(name).second;
+  }
+  return 0xffffffff;
+}
+
 int ObjectDataManager::addNewObjectType(ObjectData* od){
-  prototypeStore[nextType++] = od;
+  prototypeStore[nextType] = od;
+  stringmap[od->getTypeName()] = nextType;
+  nextType++;
   return nextType - 1;
 }

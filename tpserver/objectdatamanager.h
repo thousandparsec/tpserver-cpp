@@ -2,7 +2,7 @@
 #define OBJECTDATAMANAGER_H
 /*  ObjectDataManager class
  *
- *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,17 +21,8 @@
  */
 
 #include <map>
-
-typedef enum{
-  obT_Invalid = -1,
-  obT_Universe = 0,
-  obT_Galaxy = 1,
-  obT_Star_System = 2,
-  obT_Planet = 3,
-  obT_Fleet = 4,
-
-  obT_Max
-} bi_ObjectType;
+#include <string>
+#include <stdint.h>
 
 class ObjectData;
 
@@ -40,14 +31,17 @@ class ObjectDataManager{
   ObjectDataManager();
   ~ObjectDataManager();
 
-  ObjectData* createObjectData(int type);
-  bool checkValid(int type);
+  ObjectData* createObjectData(uint32_t type);
+  bool checkValid(uint32_t type);
+  
+  uint32_t getObjectTypeByName(const std::string& name) const;
 
   int addNewObjectType(ObjectData* od);
 
  private:
-  std::map<int, ObjectData*> prototypeStore;
-  int nextType;
+  std::map<uint32_t, ObjectData*> prototypeStore;
+  std::map<std::string, uint32_t> stringmap;
+  uint32_t nextType;
 
 };
 
