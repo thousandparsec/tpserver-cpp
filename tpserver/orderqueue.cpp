@@ -27,7 +27,7 @@
 
 #include "orderqueue.h"
 
-OrderQueue::OrderQueue(){
+OrderQueue::OrderQueue() : active(true), repeating(false) {
   queueid = 0;
   nextOrderId = 1;
 }
@@ -179,6 +179,22 @@ void OrderQueue::updateFirstOrder(){
   uint32_t orderid = orderlist.front();
   Order* ord = ordercache[orderid];
   Game::getGame()->getPersistence()->updateOrder(queueid, orderid, ord);
+}
+
+void OrderQueue::setActive(bool a){
+  active = a;
+}
+
+void OrderQueue::setRepeating(bool r){
+  repeating = r;
+}
+
+bool OrderQueue::isActive() const{
+  return active;
+}
+
+bool OrderQueue::isRepeating() const{
+  return repeating;
 }
 
 

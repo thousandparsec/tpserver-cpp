@@ -56,6 +56,12 @@ class OrderQueue{
   Order * getFirstOrder();
   void removeFirstOrder();
   void updateFirstOrder();
+  
+  void setActive(bool a);
+  void setRepeating(bool r);
+  bool isActive() const;
+  bool isRepeating() const;
+  
 
   void removeAllOrders();
 
@@ -68,6 +74,8 @@ class OrderQueue{
   std::set<uint32_t> allowedtypes;
   std::set<uint32_t> owner;
   uint32_t nextOrderId;
+  bool active;
+  bool repeating;
 
 };
 
