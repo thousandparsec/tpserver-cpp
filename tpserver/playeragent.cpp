@@ -681,12 +681,11 @@ void PlayerAgent::processProbeOrder(Frame * frame){
     return;
   }
   
-  int obid = frame->unpackInt();
-  IGObject* theobject = Game::getGame()->getObjectManager()->getObject(obid);
-  if(theobject == NULL){
-    Logger::getLogger()->debug("The object the probed orders are for doesn't exist");
+  int orderqueueid = frame->unpackInt();
+  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "No such object");
+    of->createFailFrame(fec_NonExistant, "No such Order Queue");
     curConnection->sendFrame(of);
     return;
   }
@@ -698,10 +697,10 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
   if (ord == NULL) {
     of->createFailFrame(fec_NonExistant, "No such order type");
-  }else if(theobject->getObjectData()->checkAllowedOrder(ord->getType(), player->getID())){
+  }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     
     if(ord->inputFrame(frame, player->getID())){
-      ord->createFrame(of, obid, pos);
+      ord->createFrame(of, orderqueueid, pos);
     }else{
       of->createFailFrame(fec_FrameError, "Order could not be unpacked correctly, invalid order");
       Logger::getLogger()->debug("Probe Order, could not unpack order");
@@ -713,7 +712,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
     of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
     
   }
-  Game::getGame()->getObjectManager()->doneWithObject(obid);
+  delete ord;
   curConnection->sendFrame(of);
   
 }
