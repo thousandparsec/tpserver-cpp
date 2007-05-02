@@ -24,7 +24,6 @@
 #include <list>
 #include <string>
 
-class Game;
 class Frame;
 class IGObject;
 class ObjectParameter;
@@ -45,10 +44,6 @@ class ObjectData {
         ObjectParameter* getParameterByType(uint32_t ptype);
 
 	virtual void doOnceATurn(IGObject * obj) = 0;
-
-	virtual void packAllowedOrders(Frame * frame, int playerid);
-	
-	virtual bool checkAllowedOrder(int ot, int playerid);
 
 	virtual int getContainerType() = 0;
 

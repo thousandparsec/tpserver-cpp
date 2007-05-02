@@ -310,50 +310,6 @@ void Fleet::doOnceATurn(IGObject * obj)
     Game::getGame()->getObjectManager()->doneWithObject(obj->getParent());
 }
 
-void Fleet::packAllowedOrders(Frame * frame, int playerid){
-  if(playerid == getOwner()){
-    bool colonise = false;
-    DesignStore* ds = Game::getGame()->getDesignStore();
-    std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
-    for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-        if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-	colonise = true;
-	break;
-      }
-    }
-    OrderManager * om = Game::getGame()->getOrderManager();
-    if(colonise){
-      frame->packInt(5);
-      frame->packInt(om->getOrderTypeByName("Colonise"));
-    }else{
-      frame->packInt(4);
-    }
-    frame->packInt(om->getOrderTypeByName("Move"));
-    frame->packInt(om->getOrderTypeByName("No Operation"));
-    frame->packInt(om->getOrderTypeByName("SplitFleet"));
-    frame->packInt(om->getOrderTypeByName("MergeFleet"));
-    
-  }else{
-    frame->packInt(0);
-  }
-}
-
-bool Fleet::checkAllowedOrder(int ot, int playerid){
-  bool colonise = false;
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
-  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-        if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-      colonise = true;
-      break;
-    }
-  }
-  OrderManager * om = Game::getGame()->getOrderManager();
-  return (playerid == getOwner() && (ot == om->getOrderTypeByName("Move") || ot == om->getOrderTypeByName("No Operation") || ot == om->getOrderTypeByName("SplitFleet") || ot == om->getOrderTypeByName("MergeFleet") || (colonise && ot == om->getOrderTypeByName("Colonise"))));
-}
-
 int Fleet::getContainerType(){
   return 0;
 }

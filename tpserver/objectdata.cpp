@@ -81,14 +81,6 @@ ObjectParameter* ObjectData::getParameterByType(uint32_t ptype){
   return NULL;
 }
 
-void ObjectData::packAllowedOrders(Frame * frame, int playerid){
-  frame->packInt(0);
-}
-
-bool ObjectData::checkAllowedOrder(int ot, int playerid){
-  return false;
-}
-
 void ObjectData::touchModTime(){
   modtime = time(NULL);
 }
