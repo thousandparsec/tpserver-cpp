@@ -126,6 +126,10 @@ void AVACombat::doCombat()
 {
     Fleet * f1, *f2;
 
+    uint32_t obT_Fleet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet");
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+
+    
     // If one combatant or the other is actually a planet,
     // simulate this with two battleships.
     if ( c1->getType() == obT_Fleet) {

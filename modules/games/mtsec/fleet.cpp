@@ -225,6 +225,7 @@ void Fleet::packExtraData(Frame * frame)
 void Fleet::doOnceATurn(IGObject * obj)
 {
   IGObject * pob = Game::getGame()->getObjectManager()->getObject(obj->getParent());
+  uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
     if(damage->getValue() != 0){
         damage->setValue(0);

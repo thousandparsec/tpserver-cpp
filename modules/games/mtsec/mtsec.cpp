@@ -997,6 +997,10 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     IGObject*      ac = game->getObjectManager()->createNewObject();
     IGObject*      acprime = game->getObjectManager()->createNewObject();
 
+    uint32_t obT_Star_System = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+
+    
     ac->setType(obT_Star_System);
     ac->setSize(800000ll);
     ac->setName("Alpha Centauri System");
@@ -1042,6 +1046,9 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     ResourceManager* resman = game->getResourceManager();
     IGObject*      sirius = game->getObjectManager()->createNewObject();
     IGObject*      s1 = game->getObjectManager()->createNewObject();
+    
+    uint32_t obT_Star_System = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
 
     sirius->setType(obT_Star_System);
     sirius->setSize(2000000ll);
@@ -1096,6 +1103,9 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     IGObject*      star = game->getObjectManager()->createNewObject();
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
+    
+    uint32_t obT_Star_System = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
 
     star->setType( obT_Star_System);
     star->setSize(1400000ll);
@@ -1162,6 +1172,9 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     IGObject*      venus = game->getObjectManager()->createNewObject();
     IGObject*      mars = game->getObjectManager()->createNewObject();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    
+    uint32_t obT_Star_System = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
     
     sol->setType(obT_Star_System);
     sol->setSize(1400000ll);
@@ -1364,6 +1377,9 @@ void MTSec::createGame()
 
     ObjectManager* obman = game->getObjectManager();
 
+    uint32_t obT_Universe = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
+    uint32_t obT_Galaxy = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Galaxy");
+    
     IGObject* universe = game->getObjectManager()->createNewObject();
     universe->setType(obT_Universe);
     universe->setSize(100000000000ll);
@@ -1457,8 +1473,8 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
 {
     Game *game = Game::getGame();
     IGObject *fleet = game->getObjectManager()->createNewObject();
-
-    fleet->setType( obT_Fleet);
+        
+    fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
     
     Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
@@ -1525,6 +1541,8 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     
     std::string planetName = player->getName() + " Planet";
 
+    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+    
     planet->setType( obT_Planet);
     Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
@@ -1575,7 +1593,7 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
     
     std::string starName = player->getName() + " Star System";
 
-    star->setType( obT_Star_System);
+    star->setType(game->getObjectDataManager()->getObjectTypeByName("Star System"));
     Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
