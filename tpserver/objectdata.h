@@ -34,6 +34,8 @@ class ObjectData {
       public:
 	ObjectData();
 	virtual ~ObjectData();
+        
+        std::string getTypeName() const;
 
 	virtual void packExtraData(Frame * frame) = 0;
         void packObjectParameters(Frame* frame, uint32_t playerid);

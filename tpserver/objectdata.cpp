@@ -38,6 +38,10 @@ ObjectData::~ObjectData(){
   }
 }
 
+std::string ObjectData::getTypeName() const{
+  return nametype;
+}
+
 void ObjectData::packObjectParameters(Frame* frame, uint32_t playerid){
   for(std::list<ObjectParameterGroup*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
