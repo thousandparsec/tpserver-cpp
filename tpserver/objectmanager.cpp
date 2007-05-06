@@ -24,6 +24,9 @@
 #include "game.h"
 #include "object.h"
 #include "ordermanager.h"
+#include "sizeobjectparam.h"
+#include "position3dobjectparam.h"
+#include "objectdata.h"
 
 #include "objectmanager.h"
 
@@ -120,40 +123,20 @@ std::set<uint32_t> ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t
             }
         }
         if(ob != NULL){
-            uint64_t br = ob->getSize() / 2;
-            uint64_t diff = ob->getPosition().getDistance(pos); /*- r - br;*/
+          SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Size));
+          Position3dObjectParam * obpos = dynamic_cast<Position3dObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Position_3D));
+          if(size != NULL && obpos != NULL){
+            uint64_t br = size->getSize() / 2;
+            uint64_t diff = obpos->getPosition().getDistance(pos); /*- r - br;*/
             if(diff <=  r + br)
             oblist.insert(itcurr->first);
+          }
         }
     }
     
     return oblist;
 }
 
-std::set<uint32_t> ObjectManager::getContainerByPos(const Vector3d & pos){
-    std::set<uint32_t> oblist;
-
-    for(std::map<uint32_t, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr){
-        IGObject* ob = itcurr->second;
-        if(ob == NULL){
-            ob = Game::getGame()->getPersistence()->retrieveObject(itcurr->first);
-            if(ob != NULL){
-                itcurr->second = ob;
-                objmtime[itcurr->first] = ob->getModTime();
-            }
-        }
-        if(ob != NULL){
-            if(ob->getContainerType() >= 1){
-            uint64_t br = ob->getSize() / 2 + itcurr->second->getSize() % 2;
-            
-            //long long diff = itcurr->second->getPosition().getDistanceSq(pos) - br * br;
-            if(ob->getPosition().getDistance(pos) <= br)
-                oblist.insert(itcurr->first);
-            }
-        }
-    }
-    return oblist;
-}
 
 std::set<uint32_t> ObjectManager::getAllIds(){
     std::set<uint32_t> vis;

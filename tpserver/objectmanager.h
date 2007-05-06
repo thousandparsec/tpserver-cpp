@@ -44,7 +44,6 @@ class ObjectManager{
     void clearRemovedObjects();
     
     std::set<uint32_t> getObjectsByPos(const Vector3d & pos, uint64_t r);
-    std::set<uint32_t> getContainerByPos(const Vector3d & pos);
     
     std::set<uint32_t> getAllIds();
     

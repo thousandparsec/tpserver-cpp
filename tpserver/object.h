@@ -20,15 +20,9 @@
  *
  */
 
-#include <list>
 #include <set>
-#include <map>
 #include <stdint.h>
 #include <string>
-
-// must try to fix this
-
-#include <tpserver/vector3d.h>
 
 class Frame;
 class Game;
@@ -46,21 +40,14 @@ class IGObject {
 
 	unsigned int getID();
 	unsigned int getType();
-	unsigned long long getSize();
 	std::string getName();
-	Vector3d getPosition();
-	Vector3d getVelocity();
+
 	unsigned int getParent();
 
 	bool setID(unsigned int newid);
 	void autoSetID();
 	void setType(unsigned int newtype);
-	void setSize(unsigned long long newsize);
 	void setName(const std::string &newname);
-	void setPosition(const Vector3d & npos);
-	void setFuturePosition(const Vector3d & npos, bool isend = false);
-	void updatePosition();
-	void setVelocity(const Vector3d & nvel);
 	
 	void removeFromParent();
         void addToParent(uint32_t pid);
@@ -69,9 +56,6 @@ class IGObject {
 	std::set<unsigned int> getContainedObjects();
 	bool addContainedObject(unsigned int addObjectID);
 	bool removeContainedObject(unsigned int removeObjectID);
-
-	uint32_t getNumOrders(int playerid);
-        uint32_t getNumOrders();
 
 	void createFrame(Frame * frame, int playerid);
 
@@ -98,11 +82,6 @@ class IGObject {
 	unsigned int type;
 	std::string name;
         std::string description;
-
-	// Where the object will be next turn
-	Vector3d futurepos;
-	bool futureposIsEnd; // Is the future position the destination
-;
 	
 	unsigned int parentid;
 
