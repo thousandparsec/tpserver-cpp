@@ -26,108 +26,81 @@
 #include <tpserver/game.h>
 #include <tpserver/logging.h>
 #include "fleet.h"
-#include "move.h"
 #include <tpserver/player.h>
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/objectorderparameter.h>
 
 #include "mergefleet.h"
 
 MergeFleet::MergeFleet() : Order(){
-  moveorder = new Move();
-  
   name = "Merge Fleet";
   description = "Merge this fleet into another one";
-  
-  object = new ObjectOrderParameter();
-  object->setName("fleet");
-  object->setDescription("The fleet to be merged into");
-  parameters.push_back(object);
-  
 }
 
 MergeFleet::~MergeFleet(){
-  delete moveorder;
-  delete object;
 }
-
-void MergeFleet::createFrame(Frame * f, int objID, int pos){
-  
-  turns = moveorder->getETA(Game::getGame()->getObjectManager()->getObject(objID)); // number of turns
-  Game::getGame()->getObjectManager()->doneWithObject(objID);
-  
-  Order::createFrame(f, objID, pos);
-}
-
-Result MergeFleet::inputFrame(Frame * f, unsigned int playerid){
-  Result r = Order::inputFrame(f, playerid);
-  if(!r){
-    return r;
-  }
-  
-  IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
-
-  if(target == NULL || (object->getObjectId() != 0 && ((target->getType() != 4)
-    || ((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid))){
-    Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
-    Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-    return Failure("Player tried to merge fleet with something that is not a fleet.");
-  }
-  moveorder->setDest(target->getPosition());
-  Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-  return Success();
-  
-}
-
 
 bool MergeFleet::doOrder(IGObject * ob){
-    IGObject* target = Game::getGame()->getObjectManager()->getObject(object->getObjectId());
-    if(target == NULL){
-        Message * msg = new Message();
-        msg->setSubject("Merge Fleet order canceled");
-        msg->setBody("The target fleet doesn't exist");
-        msg->addReference(rst_Action_Order, rsorav_Canceled);
-        msg->addReference(rst_Object, ob->getID());
-        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
-        return true;
+  IGObject* parent = Game::getGame()->getObjectManager()->getObject(ob->getParent());
+  
+  Fleet *myfleet = (Fleet*)(ob->getObjectData());
+  //find fleet to merge with
+  
+  uint32_t targetid = 0;
+  
+  std::set<uint32_t> oblist = parent->getContainedObjects();
+  for(std::set<uint32_t>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+    if(*itcurr == ob->getID())
+      continue;
+    IGObject* ptarget = Game::getGame()->getObjectManager()->getObject(*itcurr);
+    if(ptarget->getType() == ob->getType()){
+      Fleet* pfleet = (Fleet*)(ptarget->getObjectData());
+      if(pfleet->getOwner() == myfleet->getOwner()){
+        if(pfleet->getSize() + myfleet->getSize() > pfleet->getPosition().getDistance(myfleet->getPosition())){
+          targetid = *itcurr;
+          Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+          break;
+        }
+      }
     }
-    moveorder->setDest(target->getPosition());
-  Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
+    Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+  }
 
-  if(moveorder->doOrder(ob)){
-
-    Fleet *myfleet = (Fleet*)(ob->getObjectData());
+  if(targetid == 0){
+    Message * msg = new Message();
+    msg->setSubject("Merge Fleet order canceled");
+    msg->setBody("No targe fleet at this location");
+    msg->addReference(rst_Action_Order, rsorav_Canceled);
+    msg->addReference(rst_Object, ob->getID());
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+  }else{
+  
+    IGObject* target = Game::getGame()->getObjectManager()->getObject(targetid);
 
     Message * msg = new Message();
     msg->setSubject("Merge Fleet order complete");
     msg->setBody("The two fleets have been merged");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
-    msg->addReference(rst_Object, object->getObjectId());
+    msg->addReference(rst_Object, target->getID());
 
-    if(object->getObjectId() != 0){
-      Fleet *tfleet = (Fleet*)(Game::getGame()->getObjectManager()->getObject(object->getObjectId())->getObjectData());
+    
+    Fleet *tfleet = (Fleet*)(target->getObjectData());
       
-      if(tfleet->getOwner() == myfleet->getOwner()){
-	std::map<int, int> ships = myfleet->getShips();
-	for(std::map<int, int>::iterator itcurr = ships.begin();
-	    itcurr != ships.end(); ++itcurr){
-	  tfleet->addShips(itcurr->first, itcurr->second);
-	}
 
-	Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
-	
-      }
-    Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
+    std::map<int, int> ships = myfleet->getShips();
+    for(std::map<int, int>::iterator itcurr = ships.begin();
+        itcurr != ships.end(); ++itcurr){
+      tfleet->addShips(itcurr->first, itcurr->second);
     }
 
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
-    
-    return true;
-  }else{
-    return false;
+    Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
+	
+    Game::getGame()->getObjectManager()->doneWithObject(target->getID());
+
+    Game::getGame()->getPlayerManager()->getPlayer(myfleet->getOwner())->postToBoard(msg);
   }
+  return true;
 }
 
 Order* MergeFleet::clone() const{
