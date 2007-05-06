@@ -30,7 +30,6 @@
 #include "fleet.h"
 #include "planet.h"
 #include <tpserver/player.h>
-#include "rspcombat.h"
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>

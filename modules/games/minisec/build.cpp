@@ -38,6 +38,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/objectdatamanager.h>
 
 #include "planet.h"
 
@@ -186,7 +187,7 @@ bool Build::doOrder(IGObject *ob)
     //create fleet
     
     IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
-    fleet->setType(4);
+    fleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
     
     //add fleet to container
     fleet->addToParent(ob->getID());
