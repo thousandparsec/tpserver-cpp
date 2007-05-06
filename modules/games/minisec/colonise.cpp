@@ -33,7 +33,6 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/objectorderparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>

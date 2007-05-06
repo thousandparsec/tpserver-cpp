@@ -352,8 +352,8 @@ void MiniSec::createGame(){
   
   IGObject *venus = game->getObjectManager()->createNewObject();
   venus->setType(obT_Planet);
-  venus->setSize(2);
   Planet* thevenus = (Planet*)(venus->getObjectData());
+  thevenus->setSize(2);
   venus->setName("Venus");
   thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
   planetoq = new OrderQueue();
@@ -588,7 +588,7 @@ void MiniSec::onPlayerAdded(Player* player){
     
     theplanet->setOwner(player->getID());
     theplanet->addResource(2, 1);
-    theplanet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
+    theplanet->setPosition(thestar->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
                                                       (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
     
@@ -605,16 +605,16 @@ void MiniSec::onPlayerAdded(Player* player){
     
     IGObject *fleet = game->getObjectManager()->createNewObject();
     fleet->setType(obT_Fleet);
-    fleet->setSize(2);
+    Fleet* thefleet = (Fleet*)(fleet->getObjectData());
+    thefleet->setSize(2);
     temp = new char[strlen(name) + 13];
     strncpy(temp, name, strlen(name));
     strncpy(temp + strlen(name), " First Fleet", 12);
     temp[strlen(name) + 12] = '\0';
     fleet->setName(temp);
     delete[] temp;
-    Fleet* thefleet = (Fleet*)(fleet->getObjectData());
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(star->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
                                                       (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
     thefleet->addShips(scoutid, 2);
@@ -690,7 +690,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
         
         theplanet->setSize( 2);
         planet->setName( formatter.str().c_str());
-        theplanet->setPosition( star->getPosition() + Vector3d( i * 40000ll,
+        theplanet->setPosition( thestar->getPosition() + Vector3d( i * 40000ll,
                                                              i * -35000ll,
                                                              0ll));
         OrderQueue *planetoq = new OrderQueue();

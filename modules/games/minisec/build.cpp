@@ -198,7 +198,7 @@ bool Build::doOrder(IGObject *ob)
     
     thefleet->setSize(2);
     thefleet->setOwner(ownerid); // set ownerid
-    thefleet->setPosition(ob->getPosition());
+    thefleet->setPosition(planet->getPosition());
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();

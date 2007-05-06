@@ -34,7 +34,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
-
+#include <tpserver/objectdatamanager.h>
 
 #include "splitfleet.h"
 
@@ -80,14 +80,15 @@ bool SplitFleet::doOrder(IGObject * ob){
   Message * msg = new Message();
   msg->setSubject("Split Fleet order complete");
   msg->addReference(rst_Object, ob->getID());
-
-  IGObject * nfleet = Game::getGame() ->getObjectManager()->createNewObject();
-  nfleet->setType(4);
-  nfleet->setSize(2);
-  nfleet->setName("A fleet");
+  
+  IGObject * nfleet = Game::getGame()->getObjectManager()->createNewObject();
+  nfleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
   Fleet* nf = (Fleet*)(nfleet->getObjectData());
+  nf->setSize(2);
+  nfleet->setName("A fleet");
+  
   nf->setOwner(of->getOwner());
-  nfleet->setPosition(ob->getPosition());
+  nf->setPosition(of->getPosition());
   
   OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setQueueId(nfleet->getID());
