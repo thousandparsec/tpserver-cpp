@@ -38,7 +38,7 @@ Universe::Universe() : ObjectData(){
   group->setName("Positional");
   group->setDescription("Describes the position");
   group->addParameter(pos);
-  SizeObjectParam * size = new SizeObjectParam();
+  size = new SizeObjectParam();
   size->setName("Size");
   size->setDescription("The diameter of the universe");
   size->setSize(0xffffffffffffffffULL);
@@ -52,6 +52,27 @@ Universe::Universe() : ObjectData(){
   paramgroups.push_back(group);
   nametype = "Universe";
   typedesc = "The Universe";
+  touchModTime();
+}
+
+Universe::~Universe(){
+}
+
+Vector3d Universe::getPosition() const{
+  return pos->getPosition();
+}
+
+uint64_t Universe::getSize() const{
+  return size->getSize();
+}
+
+void Universe::setPosition(const Vector3d & np){
+  pos->setPosition(np);
+  touchModTime();
+}
+
+void Universe::setSize(uint64_t ns){
+  size->setSize(ns);
   touchModTime();
 }
 

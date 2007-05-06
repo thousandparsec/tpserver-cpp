@@ -20,14 +20,22 @@
  *
  */
 
+#include <tpserver/vector3d.h>
 #include <tpserver/objectdata.h>
 
 class IntegerObjectParam;
 class Position3dObjectParam;
+class SizeObjectParam;
 
 class Universe:public ObjectData {
       public:
 	Universe();
+        virtual ~Universe();
+        
+        Vector3d getPosition() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setSize(uint64_t ns);
 
 	void packExtraData(Frame * frame);
 
@@ -42,6 +50,7 @@ class Universe:public ObjectData {
 
       private:
 	Position3dObjectParam * pos;
+        SizeObjectParam * size;
         IntegerObjectParam * year;
 
 };

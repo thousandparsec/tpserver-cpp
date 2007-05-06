@@ -21,6 +21,7 @@
 
 #include "tpserver/object.h"
 #include "fleet.h"
+#include "planet.h"
 #include "tpserver/objectdatamanager.h"
 #include "tpserver/message.h"
 #include "tpserver/game.h"
@@ -138,7 +139,7 @@ void AVACombat::doCombat()
     else if ( c1->getType() == obT_Planet) {
         f1 = new Fleet();
         f1->addShips( 3, 2);
-        f1->setOwner( ( ( OwnedObject*) c1->getObjectData())->getOwner());
+        f1->setOwner( ( ( Planet*) c1->getObjectData())->getOwner());
     }
     if ( c2->getType() == obT_Fleet) {
         f2 = ( Fleet*) ( c2->getObjectData());
@@ -146,7 +147,7 @@ void AVACombat::doCombat()
     else if ( c2->getType() == obT_Planet) {
         f2 = new Fleet();
         f2->addShips( 3, 2);
-        f2->setOwner( ( ( OwnedObject*) c2->getObjectData())->getOwner());
+        f2->setOwner( ( ( Planet*) c2->getObjectData())->getOwner());
     }
     if ( f1 == NULL || f2 == NULL) {
         return;

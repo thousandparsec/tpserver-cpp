@@ -24,7 +24,8 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
-#include "ownedobject.h"
+#include "planet.h"
+#include "fleet.h"
 #include <tpserver/player.h>
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/objectdata.h>
@@ -56,9 +57,141 @@ void MTSecTurn::doTurn(){
   AVACombat* combatstrategy = new AVACombat();
   PlayerManager* playermanager = game->getPlayerManager();
 
-  //do orders
+  //sort by order type
+  std::set<uint32_t> movers;
+  std::set<uint32_t> otherorders;
+  
+  containerids.clear();
+  std::set<uint32_t> possiblecombatants;
+  
   std::set<uint32_t> objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+    IGObject * ob = objectmanager->getObject(*itcurr);
+    if(ob->getType() == planettype || ob->getType() == fleettype){
+      possiblecombatants.insert(ob->getID());
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+      if(oqop != NULL){
+        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+        if(orderqueue != NULL){
+          Order * currOrder = orderqueue->getFirstOrder();
+          if(currOrder != NULL){
+            if(currOrder->getType() == ordermanager->getOrderTypeByName("Move")){
+              movers.insert(ob->getID());
+            }else{
+              otherorders.insert(ob->getID());
+            }
+          }
+        }
+      }
+    }
+    if(ob->getContainerType() >= 1){
+      containerids.insert(ob->getID());
+    }
+    objectmanager->doneWithObject(ob->getID());
+  }
+  
+  // do move
+  for(itcurr = movers.begin(); itcurr != movers.end(); ++itcurr) {
+    IGObject * ob = objectmanager->getObject(*itcurr);
+    
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+    Order * currOrder = orderqueue->getFirstOrder();
+    if(currOrder->doOrder(ob)){
+      orderqueue->removeFirstOrder();
+    }else{
+      orderqueue->updateFirstOrder();
+    }
+    
+    objectmanager->doneWithObject(ob->getID());
+  }
+  
+  // do combat
+  
+  for(itcurr = possiblecombatants.begin(); itcurr != possiblecombatants.end(); ++itcurr) {
+    IGObject * ob = objectmanager->getObject(*itcurr);
+    uint32_t playerid1;
+    Vector3d pos1;
+    uint32_t size1;
+    if(ob->getType() == planettype){
+      Planet* planet = (Planet*)(ob->getObjectData());
+      playerid1 = planet->getOwner();
+      pos1 = planet->getPosition();
+      size1 = planet->getSize();
+    }else{
+      Fleet* fleet = (Fleet*)(ob->getObjectData());
+      playerid1 = fleet->getOwner();
+      pos1 = fleet->getPosition();
+      size1 = fleet->getSize();
+    }
+    
+    if(playerid1 == 0){
+      objectmanager->doneWithObject(ob->getID());
+      continue;
+    }
+    
+    
+    for(std::set<unsigned int>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
+      IGObject* itbobj = objectmanager->getObject(*itb);
+      uint32_t playerid2;
+      Vector3d pos2;
+      uint32_t size2;
+      if(itbobj->getType() == planettype){
+        Planet* planet = (Planet*)(itbobj->getObjectData());
+        playerid2 = planet->getOwner();
+        pos2 = planet->getPosition();
+        size2 = planet->getSize();
+      }else{
+        Fleet* fleet = (Fleet*)(itbobj->getObjectData());
+        playerid2 = fleet->getOwner();
+        pos2 = fleet->getPosition();
+        size2 = fleet->getSize();
+      }
+      
+      if(playerid2 == 0 || playerid1 == playerid2){
+        objectmanager->doneWithObject(itbobj->getID());
+        continue;
+      }
+
+      uint64_t diff = pos1.getDistance(pos2);
+      if(diff <= size1 / 2 + size2 / 2){
+        combatstrategy->setCombatants(ob, itbobj);
+        combatstrategy->doCombat();
+        if(!combatstrategy->isAliveCombatant1()){
+          if(ob->getType() == planettype){
+            uint32_t oldowner = ((Planet*)(ob->getObjectData()))->getOwner();
+            ((Planet*)(ob->getObjectData()))->setOwner(0);
+            uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            queue->removeOwner(oldowner);
+            queue->removeAllOrders();
+          }else{
+            objectmanager->scheduleRemoveObject(*itcurr);
+          }
+        }
+        if(!combatstrategy->isAliveCombatant2()){
+          if(itbobj->getType() == planettype){
+            uint32_t oldowner = ((Planet*)(itbobj->getObjectData()))->getOwner();
+            ((Planet*)(itbobj->getObjectData()))->setOwner(0);
+            uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            queue->removeOwner(oldowner);
+            queue->removeAllOrders();
+          }else{
+            objectmanager->scheduleRemoveObject(*itb);
+          }
+        }
+      }
+      objectmanager->doneWithObject(itbobj->getID());
+    }
+    objectmanager->doneWithObject(ob->getID());
+  }
+
+  objectmanager->clearRemovedObjects();
+  
+  // do other orders (nop, buildfleet, colonise)
+  
+  for(itcurr = otherorders.begin(); itcurr != otherorders.end(); ++itcurr) {
     IGObject * ob = objectmanager->getObject(*itcurr);
     if(ob->getType() == planettype || ob->getType() == fleettype){
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
@@ -68,107 +201,15 @@ void MTSecTurn::doTurn(){
           Order * currOrder = orderqueue->getFirstOrder();
           if(currOrder != NULL){
             if(currOrder->doOrder(ob)){
-            orderqueue->removeFirstOrder();
+              orderqueue->removeFirstOrder();
             }else{
-                orderqueue->updateFirstOrder();
+              orderqueue->updateFirstOrder();
             }
           }
         }
       }
     }
     objectmanager->doneWithObject(ob->getID());
-  }
-
-  objectmanager->clearRemovedObjects();
-
-  // update positions and velocities
-  objects = objectmanager->getAllIds();
-  for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-      IGObject * ob = objectmanager->getObject(*itcurr);
-      ob->updatePosition();
-      objectmanager->doneWithObject(ob->getID());
-  }
-
-  for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-      IGObject * ob = objectmanager->getObject(*itcurr);
-      //ob->updatePosition();
-      std::set<unsigned int> cont = ob->getContainedObjects();
-      for(std::set<uint32_t>::iterator ita = cont.begin(); ita != cont.end(); ++ita){
-          IGObject* itaobj = objectmanager->getObject(*ita);
-          if(itaobj->getType() == fleettype || (itaobj->getType() == planettype && ((OwnedObject*)(itaobj->getObjectData()))->getOwner() != 0)){
-              for(std::set<unsigned int>::iterator itb = ita; itb != cont.end(); ++itb){
-                  IGObject* itbobj = objectmanager->getObject(*itb);
-                  if((*ita != *itb) && (itbobj->getType() == fleettype || (itbobj->getType() == planettype && ((OwnedObject*)(itbobj->getObjectData()))->getOwner() != 0))){
-                      if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(itbobj->getObjectData()))->getOwner()){
-                          uint64_t diff = itaobj->getPosition().getDistance(itbobj->getPosition());
-                          if(diff <= itaobj->getSize() / 2 + itbobj->getSize() / 2){
-                              combatstrategy->setCombatants(itaobj, itbobj);
-                              combatstrategy->doCombat();
-                              if(!combatstrategy->isAliveCombatant1()){
-                                  if(itaobj->getType() == planettype){
-                                    uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
-                                    ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
-                                    uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-                                    OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-                                    queue->removeOwner(oldowner);
-                                    queue->removeAllOrders();
-                                  }else{
-                                      objectmanager->scheduleRemoveObject(*ita);
-                                  }
-                              }
-                              if(!combatstrategy->isAliveCombatant2()){
-                                  if(itbobj->getType() == planettype){
-                                      uint32_t oldowner = ((OwnedObject*)(itbobj->getObjectData()))->getOwner();
-                                      ((OwnedObject*)(itbobj->getObjectData()))->setOwner(0);
-                                      uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-                                      OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-                                      queue->removeOwner(oldowner);
-                                      queue->removeAllOrders();
-                                  }else{
-                                      objectmanager->scheduleRemoveObject(*itb);
-                                  }
-                              }
-                          }
-                      }
-                  }
-                  objectmanager->doneWithObject(itbobj->getID());
-              }
-              
-              //combat between object and container (ie planet)
-              if(ob->getType() == fleettype || (ob->getType() == planettype && ((OwnedObject*)(ob->getObjectData()))->getOwner() != 0)){
-                  if(((OwnedObject*)(itaobj->getObjectData()))->getOwner() != ((OwnedObject*)(ob->getObjectData()))->getOwner()){
-                      combatstrategy->setCombatants(itaobj, ob);
-                      combatstrategy->doCombat();
-                      if(!combatstrategy->isAliveCombatant1()){
-                          if(itaobj->getType() == planettype){
-                            uint32_t oldowner = ((OwnedObject*)(itaobj->getObjectData()))->getOwner();
-                            ((OwnedObject*)(itaobj->getObjectData()))->setOwner(0);
-                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(itaobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-                            queue->removeOwner(oldowner);
-                            queue->removeAllOrders();
-                          }else{
-                              objectmanager->scheduleRemoveObject(*ita);
-                          }
-                      }
-                      if(!combatstrategy->isAliveCombatant2()){
-                          if(ob->getType() == planettype){
-                            uint32_t oldowner = ((OwnedObject*)(ob->getObjectData()))->getOwner();
-                            ((OwnedObject*)(ob->getObjectData()))->setOwner(0);
-                            uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-                            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-                            queue->removeOwner(oldowner);
-                            queue->removeAllOrders();
-                          }else{
-                              objectmanager->scheduleRemoveObject(*itcurr);
-                          }
-                      }
-                  }
-              }
-          }
-          objectmanager->doneWithObject(itaobj->getID());
-      }
-      objectmanager->doneWithObject(ob->getID());
   }
 
   objectmanager->clearRemovedObjects();
@@ -198,4 +239,8 @@ void MTSecTurn::setPlanetType(uint32_t pt){
 
 void MTSecTurn::setFleetType(uint32_t ft){
   fleettype = ft;
+}
+
+std::set<uint32_t> MTSecTurn::getContainerIds() const{
+  return containerids;
 }

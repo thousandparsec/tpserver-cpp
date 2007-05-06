@@ -34,6 +34,7 @@
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/referenceobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/refquantitylistobjectparam.h>
 #include <tpserver/integerobjectparam.h>
@@ -42,12 +43,12 @@
 
 #include "fleet.h"
 
-Fleet::Fleet():OwnedObject(){
+Fleet::Fleet():ObjectData(){
   pos = new Position3dObjectParam();
   pos->setName("Position");
   pos->setDescription("The position of the Fleet");
   ObjectParameterGroup* group = new ObjectParameterGroup();
-  group->setGroupId(2);
+  group->setGroupId(1);
   group->setName("Positional");
   group->setDescription("Positional information");
   group->addParameter(pos);
@@ -55,11 +56,22 @@ Fleet::Fleet():OwnedObject(){
   vel->setName("Velocity");
   vel->setDescription("The velocity of the fleet");
   group->addParameter(vel);
-  SizeObjectParam* size = new SizeObjectParam();
+  size = new SizeObjectParam();
   size->setName("Size");
   size->setDescription( "The size of the planet");
   size->setSize(2);
   group->addParameter(size);
+  paramgroups.push_back(group);
+  
+  playerref = new ReferenceObjectParam();
+  playerref->setName("Owner");
+  playerref->setDescription("The owner of this object");
+  playerref->setReferenceType(rst_Player);
+  group = new ObjectParameterGroup();
+  group->setGroupId(2);
+  group->setName("Ownership");
+  group->setDescription("The ownership of this object");
+  group->addParameter(playerref);
   paramgroups.push_back(group);
   
   group = new ObjectParameterGroup();
@@ -103,6 +115,10 @@ Vector3d Fleet::getVelocity() const{
   return vel->getVelocity();
 }
 
+uint64_t Fleet::getSize() const{
+  return size->getSize();
+}
+
 void Fleet::setPosition(const Vector3d & np){
   pos->setPosition(np);
   touchModTime();
@@ -113,13 +129,27 @@ void Fleet::setVelocity(const Vector3d & nv){
   touchModTime();
 }
 
+void Fleet::setSize(uint64_t ns){
+  size->setSize(ns);
+  touchModTime();
+}
+
+uint32_t Fleet::getOwner() const{
+  return playerref->getReferencedId();
+}
+
+void Fleet::setOwner(uint32_t no){
+  playerref->setReferencedId(no);
+  touchModTime();
+}
+
 void Fleet::setDefaultOrderTypes(){
   OrderManager * om = Game::getGame()->getOrderManager();
   std::set<uint32_t> allowedlist;
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Move"));
-  allowedlist.insert(om->getOrderTypeByName("SplitFleet"));
-  allowedlist.insert(om->getOrderTypeByName("MergeFleet"));
+  allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
+  allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
   orderqueue->setAllowedOrders(allowedlist);
 }
 
@@ -205,20 +235,21 @@ void Fleet::setDamage(int nd){
     touchModTime();
 }
 
-void Fleet::packExtraData(Frame * frame)
-{
-	OwnedObject::packExtraData(frame);
-	
-        std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
-	frame->packInt(ships.size());
-        for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
-	  //if(itcurr->second > 0){
-	    frame->packInt(itcurr->first.second);
-	    frame->packInt(itcurr->second);
-	    //}
-	}
-	
-	frame->packInt(damage->getValue());
+void Fleet::packExtraData(Frame * frame){
+  ObjectData::packExtraData(frame);
+  
+  frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
+
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  frame->packInt(ships.size());
+  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
+    //if(itcurr->second > 0){
+      frame->packInt(itcurr->first.second);
+      frame->packInt(itcurr->second);
+      //}
+  }
+  
+  frame->packInt(damage->getValue());
 
 }
 

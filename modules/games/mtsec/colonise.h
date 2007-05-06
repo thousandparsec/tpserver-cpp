@@ -30,19 +30,10 @@ class Colonise : public Order {
  public:
   Colonise();
   virtual ~Colonise();
-
-  void createFrame(Frame * f, int objID, int pos);
-  Result inputFrame(Frame * f, unsigned int playerid);
   
   bool doOrder(IGObject * ob);
-  
-    uint32_t getPlanetId() const;
 
   Order* clone() const;
-
- private:
-  ObjectOrderParameter* object;
-  Move* moveorder;
 
 
 };

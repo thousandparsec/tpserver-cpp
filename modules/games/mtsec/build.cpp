@@ -38,6 +38,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/objectdatamanager.h>
 
 #include "planet.h"
 
@@ -48,7 +49,7 @@
 
 Build::Build() : Order()
 {
-  name = "BuildFleet";
+  name = "Build Fleet";
   description = "Build a fleet";
   
   fleetlist = new ListParameter();
@@ -102,7 +103,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((OwnedObject*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -148,7 +149,12 @@ Result Build::inputFrame(Frame *f, unsigned int playerid)
         design->addUnderConstruction(number);
         ds->designCountsUpdated(design);
 
+    }else{
+      return Failure("The requested design was not valid.");
     }
+  }
+  if(usedshipres == 0 && !fleettype.empty()){
+    return Failure("To build was empty...");
   }
   
   resources[1] = usedshipres;
@@ -181,20 +187,19 @@ bool Build::doOrder(IGObject *ob)
     //create fleet
     
     IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
-
+    fleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
     
     //add fleet to container
     fleet->addToParent(ob->getID());
-
-    fleet->setType(4);
-    fleet->setSize(2);
-    fleet->setName(fleetname->getString().c_str());
-    ((OwnedObject*)(fleet->getObjectData()))->setOwner(ownerid); // set ownerid
-    fleet->setPosition(ob->getPosition());
-    fleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
-    //set ship type
+    fleet->setName(fleetname->getString().c_str());
+    
     Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    
+    thefleet->setSize(2);
+    thefleet->setOwner(ownerid); // set ownerid
+    thefleet->setPosition(ob->getPosition());
+    thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setQueueId(fleet->getID());
@@ -204,6 +209,7 @@ bool Build::doOrder(IGObject *ob)
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
     
+    //set ship type
     std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
     for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
@@ -216,7 +222,7 @@ bool Build::doOrder(IGObject *ob)
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
-    msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete");
+    msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete.");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, fleet->getID());
     msg->addReference(rst_Object, ob->getID());

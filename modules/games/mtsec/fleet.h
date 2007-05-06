@@ -23,23 +23,30 @@
 #include <map>
 
 #include <tpserver/vector3d.h>
-#include "ownedobject.h"
+#include <tpserver/objectdata.h>
 
 class Position3dObjectParam;
 class Velocity3dObjectParam;
+class SizeObjectParam;
+class ReferenceObjectParam;
 class RefQuantityListObjectParam;
 class IntegerObjectParam;
 class OrderQueueObjectParam;
 
-class Fleet:public OwnedObject {
+class Fleet:public ObjectData {
       public:
 	Fleet();
 	virtual ~Fleet();
         
         Vector3d getPosition() const;
         Vector3d getVelocity() const;
+        uint64_t getSize() const;
         void setPosition(const Vector3d & np);
         void setVelocity(const Vector3d & nv);
+        void setSize(uint64_t ns);
+        
+        uint32_t getOwner() const;
+        void setOwner(uint32_t no);
 
         void setDefaultOrderTypes();
 	void addShips(int type, int number);
@@ -62,6 +69,8 @@ class Fleet:public OwnedObject {
       private:
         Position3dObjectParam * pos;
         Velocity3dObjectParam * vel;
+        SizeObjectParam * size;
+        ReferenceObjectParam * playerref;
 	RefQuantityListObjectParam * shiplist;
 	IntegerObjectParam * damage;
         OrderQueueObjectParam * orderqueue;

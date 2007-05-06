@@ -22,12 +22,22 @@
 
 #include <string>
 
+#include <tpserver/vector3d.h>
 #include <tpserver/objectdata.h>
+
+class Position3dObjectParam;
+class SizeObjectParam;
 
 class EmptyObject:public ObjectData {
       public:
 	EmptyObject();
 	virtual ~EmptyObject(){};
+        
+        Vector3d getPosition() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setSize(uint64_t ns);
+        
 	void packExtraData(Frame * frame);
 	void doOnceATurn(IGObject * obj);
 	int getContainerType();
@@ -36,6 +46,10 @@ class EmptyObject:public ObjectData {
         
         void setTypeName(const std::string& n);
         void setTypeDescription(const std::string& d);
+        
+    private:
+      Position3dObjectParam * pos;
+      SizeObjectParam * size;
 
 };
 

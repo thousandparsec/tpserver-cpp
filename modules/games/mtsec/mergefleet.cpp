@@ -37,7 +37,7 @@
 MergeFleet::MergeFleet() : Order(){
   moveorder = new Move();
   
-  name = "MergeFleet";
+  name = "Merge Fleet";
   description = "Merge this fleet into another one";
   
   object = new ObjectOrderParameter();
@@ -72,7 +72,7 @@ Result MergeFleet::inputFrame(Frame * f, unsigned int playerid){
     || ((unsigned int)(((Fleet*)(target->getObjectData()))->getOwner())) != playerid))){
     Logger::getLogger()->debug("Player tried to merge fleet with something that is not a fleet");
     Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
-    return Failure("Player tried to merge fleet with something that is not a fleet");
+    return Failure("Player tried to merge fleet with something that is not a fleet.");
   }
   moveorder->setDest(target->getPosition());
   Game::getGame()->getObjectManager()->doneWithObject(object->getObjectId());
