@@ -38,7 +38,9 @@ enum FeatureIDs {
   fid_http_other = 4,
   fid_keep_alive = 5,
   fid_serverside_property = 6,
-  fid_account_register = 1000
+  fid_account_register = 1000,
+  fid_filter_tls = 0x1000,
+  fid_filter_stringpad = 0x1D00
 };
 
 class Network {

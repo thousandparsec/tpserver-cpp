@@ -205,6 +205,29 @@ void PlayerConnection::login(){
       Frame *game = createFrame(recvframe);
       Game::getGame()->packGameInfoFrame(game);
       sendFrame(game);
+    }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
+      Logger::getLogger()->debug("Processing set filters");
+      Frame* rtnframe = createFrame(recvframe);
+      uint32_t numfilters = recvframe->unpackInt();
+      std::set<uint32_t> filters_wanted;
+      for(uint32_t i = 0; i < numfilters; i++){
+        filters_wanted.insert(recvframe->unpackInt());
+      }
+      std::set<uint32_t> filters_setup;
+      if(filters_wanted.count(fid_filter_stringpad) != 0){
+        filters_setup.insert(fid_filter_stringpad);
+      }
+      if(filters_wanted.size() != filters_setup.size()){
+        rtnframe->createFailFrame(fec_PermUnavailable, "Not all filters specified are available");
+        sendFrame(rtnframe);
+      }else{
+        rtnframe->setType(ft02_OK);
+        rtnframe->packString("Filters ready, setting filters now");
+        sendFrame(rtnframe);
+        if(filters_setup.count(fid_filter_stringpad) != 0){
+          paddingfilter = true;
+        }
+      }
     }else{
       Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining");
       Frame *failframe = createFrame(recvframe);
