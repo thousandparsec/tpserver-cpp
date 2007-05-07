@@ -9,11 +9,10 @@ libmtsec_la_SOURCES = universe.cpp planet.cpp fleet.cpp \
 		colonise.cpp \
 		splitfleet.cpp mergefleet.cpp \
 		avacombat.cpp mtsec.cpp \
-		mtsecturn.cpp emptyobject.cpp \
-		ownedobject.cpp
+		mtsecturn.cpp emptyobject.cpp
 
 libmtsec_la_LDFLAGS = -module
 
 noinst_HEADERS = planet.h fleet.h nop.h move.h build.h colonise.h splitfleet.h mergefleet.h \
-		universe.h avacombat.h mtsec.h mtsecturn.h emptyobject.h ownedobject.h
+		universe.h avacombat.h mtsec.h mtsecturn.h emptyobject.h
 
