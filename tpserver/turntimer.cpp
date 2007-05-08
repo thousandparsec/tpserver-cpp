@@ -28,6 +28,7 @@
 #include "settingscallback.h"
 #include "playermanager.h"
 #include "frame.h"
+#include "asynctimeremaining.h"
 
 #include "turntimer.h"
 
@@ -112,21 +113,15 @@ void TurnTimer::resetTimer(){
   Network::getNetwork()->addTimer(*timer);
   
   // send frame to all connections that the end of turn has started
-  Frame * frame = new Frame(fv0_4);
-  frame->setType(ft02_Time_Remaining);
-  frame->packInt(secondsToEOT());
-  frame->packInt(1); //timer started
-  Network::getNetwork()->sendToAll(frame);
+  AsyncFrame * aframe = new AsyncTimeRemaining(secondsToEOT(), 1); //timer started
+  Network::getNetwork()->sendToAll(aframe);
   
 }
 
 void TurnTimer::manuallyRunEndOfTurn(){
   // send frame to all connections that the end of turn has started
-  Frame * frame = new Frame(fv0_4);
-  frame->setType(ft02_Time_Remaining);
-  frame->packInt(0);
-  frame->packInt(5); //EOT started
-  Network::getNetwork()->sendToAll(frame);
+  AsyncFrame * aframe = new AsyncTimeRemaining(0, 5); //EOT started
+  Network::getNetwork()->sendToAll(aframe);
   
   Game::getGame()->doEndOfTurn();
   finishedPlayers.clear();
@@ -165,20 +160,14 @@ void TurnTimer::updateTimer(){
   Network::getNetwork()->addTimer(*timer);
   
   // send frame to all connections that the end of turn has started
-  Frame * frame = new Frame(fv0_4);
-  frame->setType(ft02_Time_Remaining);
-  frame->packInt(increment);
-  frame->packInt(4); //threshold finished, timer started
-  Network::getNetwork()->sendToAll(frame);
+  AsyncFrame * aframe = new AsyncTimeRemaining(increment, 4); //threshold finished, timer started
+  Network::getNetwork()->sendToAll(aframe);
 }
 
 void TurnTimer::timerFinished(){
   // send frame to all connections that the end of turn has started
-  Frame * frame = new Frame(fv0_4);
-  frame->setType(ft02_Time_Remaining);
-  frame->packInt(0);
-  frame->packInt(5); //EOT started
-  Network::getNetwork()->sendToAll(frame);
+  AsyncFrame * aframe = new AsyncTimeRemaining(0, 5); //EOT started
+  Network::getNetwork()->sendToAll(aframe);
   
   Game::getGame()->doEndOfTurn();
   finishedPlayers.clear();
@@ -189,11 +178,8 @@ void TurnTimer::timerFinished(){
 
 void TurnTimer::thresholdDoneAndStartEOT(){
   // send frame to all connections that the end of turn has started
-  Frame * frame = new Frame(fv0_4);
-  frame->setType(ft02_Time_Remaining);
-  frame->packInt(0);
-  frame->packInt(3); //threshold finished and eot started
-  Network::getNetwork()->sendToAll(frame);
+  AsyncFrame * aframe = new AsyncTimeRemaining(0, 3); //threshold finished and eot started
+  Network::getNetwork()->sendToAll(aframe);
   
   Game::getGame()->doEndOfTurn();
   finishedPlayers.clear();
