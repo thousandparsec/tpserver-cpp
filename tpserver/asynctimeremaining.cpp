@@ -31,7 +31,7 @@ AsyncTimeRemaining::~AsyncTimeRemaining(){
 bool AsyncTimeRemaining::createFrame(Frame* f){
   f->setType(ft02_Time_Remaining);
   f->packInt(rtime);
-  if(f->getVersion() == fv0_4){
+  if(f->getVersion() >= fv0_4){
     f->packInt(why); //reason
   }
   return true;
