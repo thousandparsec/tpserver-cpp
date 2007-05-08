@@ -256,24 +256,6 @@ bool Network::isStarted() const{
   return active;
 }
 
-void Network::sendToAll(Frame * frame){
-  std::map < int, Connection * >::iterator itcurr;
-  char* data = frame->getData();
-  for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-    PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
-    if(currConn != NULL && currConn->getStatus() == 3){
-      Frame * currFrame = currConn->createFrame(NULL);
-      currFrame->setType(frame->getType());
-      currFrame->setData(data, frame->getDataLength());
-      
-      currConn->sendFrame(currFrame);
-
-    }
-  }
-  free(data);
-  delete frame;
-}
-
 void Network::sendToAll(AsyncFrame* aframe){
   std::map < int, Connection * >::iterator itcurr;
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {

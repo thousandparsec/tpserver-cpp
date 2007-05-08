@@ -69,7 +69,6 @@ class Network {
         
         bool isStarted() const;
 
-	void sendToAll(Frame * frame);
         void sendToAll(AsyncFrame* aframe);
         void doneEOT();
         
