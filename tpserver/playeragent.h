@@ -76,6 +76,8 @@ private:
   void processGetComponentIds(Frame* frame);
   void processGetProperty(Frame* frame);
   void processGetPropertyIds(Frame* frame);
+  
+  void processTurnFinished(Frame* frame);
 
   PlayerAgent(PlayerAgent & rhs);
   PlayerAgent operator=(PlayerAgent & rhs);

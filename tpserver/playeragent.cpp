@@ -45,6 +45,7 @@
 #include "resourcedescription.h"
 #include "resourcemanager.h"
 #include "player.h"
+#include "turntimer.h"
 
 #include "playeragent.h"
 
@@ -181,6 +182,10 @@ void PlayerAgent::processIGFrame(Frame * frame){
     processGetPropertyIds(frame);
     break;
 
+  case ft04_TurnFinished:
+    processTurnFinished(frame);
+    break;
+    
   default:
     Logger::getLogger()->warning("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
 
@@ -1622,4 +1627,24 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   }
  
   curConnection->sendFrame(of);
+}
+
+void PlayerAgent::processTurnFinished(Frame* frame){
+ Logger::getLogger()->debug("doing Done Turn frame");
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Finished Turn frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  Game::getGame()->getTurnTimer()->playerFinishedTurn(player->getID());
+  
+  Frame *of = curConnection->createFrame(frame);
+  of->setType(ft02_OK);
+  of->packString("Thanks for letting me know you have finished your turn.");
+  curConnection->sendFrame(of);
+  
 }
