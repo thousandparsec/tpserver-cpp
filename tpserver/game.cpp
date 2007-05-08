@@ -55,6 +55,7 @@
 #include "prng.h"
 #include "turnprocess.h"
 #include "advertiser.h"
+#include "turntimer.h"
 
 #include "game.h"
 
@@ -139,13 +140,11 @@ bool Game::start(){
     Logger::getLogger()->info("Starting Game");
 
     ruleset->startGame();
-    
-    uint32_t tl = atoi(Settings::getSettings()->get("turn_length").c_str());
-    if(tl != 0){
-      setTurnLength(tl);
-    }
 
-    resetEOTTimer();
+    if(turntimer == NULL){
+      turntimer = new TurnTimer();
+    }
+    turntimer->resetTimer();
 
     started = true;
     return true;
@@ -238,6 +237,20 @@ Random* Game::getRandom() const{
   return random;
 }
 
+bool Game::setTurnTimer(TurnTimer* tt){
+  if(!started){
+    if(turntimer != NULL)
+      delete turntimer;
+    turntimer = tt;
+    return true;
+  }else
+    return false;
+}
+
+TurnTimer* Game::getTurnTimer() const{
+  return turntimer;
+}
+
 bool Game::isLoaded() const{
   return loaded;
 }
@@ -250,12 +263,6 @@ void Game::doEndOfTurn(){
   if(loaded && started){
     Logger::getLogger()->info("End Of Turn started");
 
-    // send frame to all connections that the end of turn has started
-    Frame * frame = new Frame(fv0_2);
-    frame->setType(ft02_Time_Remaining);
-    frame->packInt(0);
-    Network::getNetwork()->sendToAll(frame);
-
     // DO END OF TURN STUFF HERE
     turnprocess->doTurn();
 
@@ -263,54 +270,15 @@ void Game::doEndOfTurn(){
     turnNum++;
     // save game info
     persistence->saveGameInfo();
-    // increment the time to the next turn
-    turnTime += turnIncrement;
-    timer->setValid(false);
-    delete timer;
-    timer = NULL;
-    if(secondsToEOT() <= 0)
-      resetEOTTimer();
-    else
-      setEOTTimer();
-
-    // send frame to all connections that the end of turn has finished
-    frame = new Frame(fv0_2);
-    frame->setType(ft02_Time_Remaining);
-    frame->packInt(secondsToEOT());
-    Network::getNetwork()->sendToAll(frame);
-    Network::getNetwork()->doneEOT();
 
     Logger::getLogger()->info("End Of Turn finished");
   }else{
     Logger::getLogger()->info("End Of Turn not run because game not started");
-    turnTime += turnIncrement;
-    setEOTTimer();
   }
-}
-
-void Game::resetEOTTimer(){
-  turnTime = time(NULL) + turnIncrement;
-  setEOTTimer();
-}
-
-int Game::secondsToEOT(){
-  return turnTime - time(NULL);
 }
 
 uint32_t Game::getTurnNumber() const{
   return turnNum;
-}
-
-void Game::setTurnLength(unsigned int sec){
-    if(sec == 0){
-        Logger::getLogger()->warning("Tried to set turn length to zero seconds, setting to 1 minute instead.");
-        sec = 60;
-    }
-  turnIncrement = sec;
-}
-
-uint32_t Game::getTurnLength(){
-  return turnIncrement;
 }
 
 void Game::saveAndClose()
@@ -374,8 +342,12 @@ void Game::packGameInfoFrame(Frame* frame){
   if(!settings->get("game_comment").empty()){
     optionalparams[5] = std::pair<std::string, uint32_t>(settings->get("game_comment"), 0);
   }
+  if(turntimer != NULL){
+    optionalparams[6] = std::pair<std::string, uint32_t>("", turntimer->secondsToEOT() + time(NULL));
+    optionalparams[10] = std::pair<std::string, uint32_t>("", turntimer->getTurnLength());
+  }
   //number of optional params
-  frame->packInt(7 + optionalparams.size());
+  frame->packInt(5 + optionalparams.size());
   
   frame->packInt(8);
   if(settings->get("game_shortname").empty()){
@@ -401,17 +373,9 @@ void Game::packGameInfoFrame(Frame* frame){
   frame->packString("");
   frame->packInt(objectmanager->getNumObjects());
   
-  frame->packInt(6);
-  frame->packString("");
-  frame->packInt(turnTime);
-  
   frame->packInt(9);
   frame->packString("");
   frame->packInt(turnNum);
-  
-  frame->packInt(10);
-  frame->packString("");
-  frame->packInt(turnIncrement);
   
   for(std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator itcurr = optionalparams.begin();
       itcurr != optionalparams.end(); ++itcurr){
@@ -448,7 +412,7 @@ std::string Game::getKey() const{
   return key;
 }
 
-Game::Game() : ctime(0), turnNum(0), key(){
+Game::Game() : ctime(0), turnNum(0), key(), turntimer(NULL){
   objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objectdatamanager = new ObjectDataManager();
@@ -464,9 +428,6 @@ Game::Game() : ctime(0), turnNum(0), key(){
   loaded = false;
   started = false;
 
-  turnIncrement = 86400; //24 hours
-  timer = NULL;
-  resetEOTTimer();
   //this is a good place to seed the PNRG
   random->seed(getpid() + time(NULL));
 }
@@ -491,11 +452,9 @@ Game::~Game()
   delete designstore;
     if(persistence != NULL)
         delete persistence;
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
-  }
   delete random;
+  if(turntimer != NULL)
+    delete turntimer;
 }
 
 Game Game::operator=(Game & rhs)
@@ -503,13 +462,4 @@ Game Game::operator=(Game & rhs)
   //only here to stop people doing funny things...
   assert(0);
   return *this;
-}
-
-void Game::setEOTTimer(){
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
-  }
-  timer = new TimerCallback(this, &Game::doEndOfTurn, turnTime - time(NULL));
-  Network::getNetwork()->addTimer(*timer);
 }

@@ -34,6 +34,7 @@
 #include "playermanager.h"
 #include "settings.h"
 #include "playeragent.h"
+#include "turntimer.h"
 
 #include "playerconnection.h"
 
@@ -158,7 +159,10 @@ void PlayerConnection::login(){
       Logger::getLogger()->debug("Processing Get Time frame");
       Frame *time = createFrame(recvframe);
       time->setType(ft02_Time_Remaining);
-      time->packInt(Game::getGame()->secondsToEOT());
+      time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
+      if(time->getVersion() >= fv0_4){
+        time->packInt(0); //player requested
+      }
       sendFrame(time);
     }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
       if(Settings::getSettings()->get("add_players") == "yes"){
@@ -267,7 +271,10 @@ void PlayerConnection::inGameFrame()
       Logger::getLogger()->debug("Processing Get Time frame");
       Frame *time = createFrame(frame);
       time->setType(ft02_Time_Remaining);
-      time->packInt(Game::getGame()->secondsToEOT());
+      time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
+      if(time->getVersion() >= fv0_4){
+        time->packInt(0); //player requested
+      }
       sendFrame(time);
     }else if(version >= fv0_4 && frame->getType() == ft04_GameInfo_Get){
       Logger::getLogger()->debug("Processing get GameInfo frame");

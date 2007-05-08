@@ -43,6 +43,7 @@ class TpScheme;
 class TimerCallback;
 class Random;
 class Frame;
+class TurnTimer;
 
 class Game {
 
@@ -76,19 +77,19 @@ class Game {
     TpScheme* getTpScheme() const;
     
     Random* getRandom() const;
+    
+    bool setTurnTimer(TurnTimer* tt);
+    TurnTimer* getTurnTimer() const;
   
     bool isLoaded() const;
     bool isStarted() const;
 
+    // only to be called by TurnTimer and subclasses
     void doEndOfTurn();
-    void resetEOTTimer();
+
     uint32_t getTurnNumber() const;
 
     uint64_t getGameStartTime() const;
-
-    int secondsToEOT();
-    void setTurnLength(unsigned int sec);
-    uint32_t getTurnLength();
 
     void saveAndClose();
 
@@ -107,15 +108,9 @@ class Game {
     Game(Game & rhs);
     ~Game();
     Game operator=(Game & rhs);
-
-    void setEOTTimer();
     
     static Game *myInstance;
     
-    int turnTime;
-    int turnIncrement;
-    TimerCallback* timer;
-
     bool loaded;
     bool started;
     
@@ -136,6 +131,7 @@ class Game {
     Persistence* persistence;
     TpScheme* tpscheme;
     Random* random;
+    TurnTimer* turntimer;
 
 };
 

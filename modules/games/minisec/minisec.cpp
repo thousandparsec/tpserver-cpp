@@ -488,7 +488,12 @@ void MiniSec::startGame(){
         Game::getGame()->getResourceManager()->addResourceDescription(res);
     }
     
-  Game::getGame()->setTurnLength(600);
+  Settings* settings = Settings::getSettings();
+  if(settings->get("turn_length_over_threshold") == ""){
+    settings->set("turn_length_over_threshold", "600");
+    settings->set("turn_player_threshold", "0");
+    settings->set("turn_length_under_threshold", "600");
+  }
 }
 
 bool MiniSec::onAddPlayer(Player* player){

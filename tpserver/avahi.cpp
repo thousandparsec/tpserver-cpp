@@ -52,6 +52,7 @@
 #include "timercallback.h"
 #include "net.h"
 #include "connection.h"
+#include "turntimer.h"
 
 #include "avahi.h"
 
@@ -329,11 +330,11 @@ void Avahi::createServices(){
       NULL);
   txtfields = avahi_string_list_add(txtfields, (std::string("rule=") + Game::getGame()->getRuleset()->getName()).c_str());
   txtfields = avahi_string_list_add(txtfields,(std::string("rulever=") + Game::getGame()->getRuleset()->getVersion()).c_str());
-  txtfields = avahi_string_list_add_printf(txtfields, "next=%ld", Game::getGame()->secondsToEOT() + time(NULL));
+  txtfields = avahi_string_list_add_printf(txtfields, "next=%ld", Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
   txtfields = avahi_string_list_add_printf(txtfields, "objs=%d", Game::getGame()->getObjectManager()->getNumObjects());
   txtfields = avahi_string_list_add_printf(txtfields, "plys=%d", Game::getGame()->getPlayerManager()->getNumPlayers());
   txtfields = avahi_string_list_add_printf(txtfields, "turn=%d", Game::getGame()->getTurnNumber());
-  txtfields = avahi_string_list_add_printf(txtfields, "prd=%d", Game::getGame()->getTurnLength());
+  txtfields = avahi_string_list_add_printf(txtfields, "prd=%d", Game::getGame()->getTurnTimer()->getTurnLength());
   
   Settings* settings = Settings::getSettings();
   

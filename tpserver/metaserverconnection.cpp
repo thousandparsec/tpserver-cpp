@@ -51,6 +51,7 @@
 #include "settings.h"
 #include "playermanager.h"
 #include "objectmanager.h"
+#include "turntimer.h"
 
 #include "metaserverconnection.h"
 
@@ -264,7 +265,7 @@ bool MetaserverConnection::sendUpdate(){
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
   formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
-  formater << "&prd=" << (Game::getGame()->getTurnLength());
+  formater << "&prd=" << (Game::getGame()->getTurnTimer()->getTurnLength());
   if(!(settings->get("admin_email").empty())){
     formater << "&admin=" << settings->get("admin_email");
   }
@@ -278,7 +279,7 @@ bool MetaserverConnection::sendUpdate(){
   
   if(settings->get("metaserver_params_version") == "3"){
     formater << "&name=" << tname;
-    formater << "&turn=" << (Game::getGame()->secondsToEOT() + time(NULL));
+    formater << "&turn=" << (Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
   }else{
     formater << "&ln=" << tname;
     formater << "&sn=";
@@ -287,7 +288,7 @@ bool MetaserverConnection::sendUpdate(){
     }else{
       formater << "tp";
     }
-    formater << "&next=" << (Game::getGame()->secondsToEOT() + time(NULL));
+    formater << "&next=" << (Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
     formater << "&turn=" << (Game::getGame()->getTurnNumber());
   }
   

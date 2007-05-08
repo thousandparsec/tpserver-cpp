@@ -38,6 +38,7 @@
 #include "settings.h"
 #include "pluginmanager.h"
 #include "ruleset.h"
+#include "turntimer.h"
 
 #include "tpserver/console.h"
 
@@ -60,8 +61,7 @@ class EndTurnCommand : public tprl::RLCommand{
         }
         void action(const std::string& cmdline){
             Logger::getLogger()->info("End Of Turn initiated from console");
-            Game::getGame()->doEndOfTurn();
-            Game::getGame()->resetEOTTimer();
+            Game::getGame()->getTurnTimer()->manuallyRunEndOfTurn();
         }
 };
 
@@ -72,7 +72,7 @@ class TurnTimeCommand : public tprl::RLCommand{
             help = "The amount of time until the next turn.";
         }
         void action(const std::string& cmdline){
-            std::cout << Game::getGame()->secondsToEOT() << " seconds to EOT" << std::endl;
+            std::cout << Game::getGame()->getTurnTimer()->secondsToEOT() << " seconds to EOT" << std::endl;
         }
 };
 
@@ -83,24 +83,24 @@ class TurnResetCommand : public tprl::RLCommand{
             help = "Reset the timer for the next turn.";
         }
         void action(const std::string& cmdline){
-            Game::getGame()->resetEOTTimer();
-            std::cout << "Reset EOT timer, " << Game::getGame()->secondsToEOT() 
+            Game::getGame()->getTurnTimer()->resetTimer();
+            std::cout << "Reset EOT timer, " << Game::getGame()->getTurnTimer()->secondsToEOT() 
                     << " seconds to EOT" << std::endl;
         }
 };
 
-class TurnLengthCommand : public tprl::RLCommand{
-    public:
-      TurnLengthCommand() : tprl::RLCommand(){
-            name = "length";
-            help = "Sets the turn length, but doesn't affect the current turn.";
-        }
-        void action(const std::string& cmdline){
-            uint32_t tlen = atoi(cmdline.c_str());
-            Game::getGame()->setTurnLength(tlen);
-            std::cout << "Setting turn length to " << tlen << " seconds" << std::endl;
-        }
-};
+// class TurnLengthCommand : public tprl::RLCommand{
+//     public:
+//       TurnLengthCommand() : tprl::RLCommand(){
+//             name = "length";
+//             help = "Sets the turn length, but doesn't affect the current turn.";
+//         }
+//         void action(const std::string& cmdline){
+//             uint32_t tlen = atoi(cmdline.c_str());
+//             Game::getGame()->setTurnLength(tlen);
+//             std::cout << "Setting turn length to " << tlen << " seconds" << std::endl;
+//         }
+// };
 
 class TurnNumberCommand : public tprl::RLCommand{
   public:
@@ -271,8 +271,8 @@ class StatusCommand : public tprl::RLCommand{
       std::cout << "Game Loaded: " << ((Game::getGame()->isLoaded()) ? "yes" : "no") << std::endl;
       std::cout << "Game Started: " << ((Game::getGame()->isStarted()) ? "yes" : "no") << std::endl;
       if(Game::getGame()->isStarted()){
-        std::cout << "Time to next turn: " << Game::getGame()->secondsToEOT() << std::endl;
-        std::cout << "Turn length: " << Game::getGame()->getTurnLength() << " seconds" << std::endl;
+        std::cout << "Time to next turn: " << Game::getGame()->getTurnTimer()->secondsToEOT() << std::endl;
+        std::cout << "Turn length: " << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds" << std::endl;
         std::cout << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
       }
       std::cout << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
@@ -328,7 +328,7 @@ Console::Console() : Connection()
     cat->add(new EndTurnCommand());
     cat->add(new TurnTimeCommand());
     cat->add(new TurnResetCommand());
-    cat->add(new TurnLengthCommand());
+    //cat->add(new TurnLengthCommand());
     cat->add(new TurnNumberCommand());
     commands.insert(cat);
     
