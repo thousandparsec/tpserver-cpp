@@ -34,4 +34,5 @@ bool AsyncTimeRemaining::createFrame(Frame* f){
   if(f->getVersion() == fv0_4){
     f->packInt(why); //reason
   }
+  return true;
 }

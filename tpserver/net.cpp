@@ -43,6 +43,7 @@
 #include "httpsocket.h"
 #include "advertiser.h"
 #include "timercallback.h"
+#include "asyncframe.h"
 
 #ifdef HAVE_LIBGNUTLS
 #include "tlssocket.h"
@@ -271,6 +272,20 @@ void Network::sendToAll(Frame * frame){
   }
   free(data);
   delete frame;
+}
+
+void Network::sendToAll(AsyncFrame* aframe){
+  std::map < int, Connection * >::iterator itcurr;
+  for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
+    PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
+    if(currConn != NULL && currConn->getStatus() == 3){
+      Frame * currFrame = currConn->createFrame(NULL);
+      if(aframe->createFrame(currFrame)){
+        currConn->sendFrame(currFrame);
+      }
+    }
+  }
+  delete aframe;
 }
 
 void Network::doneEOT(){
