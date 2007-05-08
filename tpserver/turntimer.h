@@ -32,7 +32,9 @@ class TurnTimer{
     virtual ~TurnTimer();
     
     void playerFinishedTurn(uint32_t playerid);
+    
     uint32_t secondsToEOT() const;
+    virtual uint32_t getTurnLength() const;
     
     virtual void resetTimer();
     

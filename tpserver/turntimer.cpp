@@ -61,6 +61,24 @@ uint32_t TurnTimer::secondsToEOT() const{
   return 0xffffffff;
 }
 
+uint32_t TurnTimer::getTurnLength() const{
+  // It's hard to put an exact length on a turn
+  // Using max of turn_length_over_threshold and turn_length_under_threshold
+  // unless turn_player_threshold is 0
+  Settings* settings = Settings::getSettings();
+  
+  uint32_t len_over_thres = atoi(settings->get("turn_length_over_threshold").c_str());
+  uint32_t len_under_thres = atoi(settings->get("turn_length_under_threshold").c_str());
+  if(atoi(settings->get("turn_player_threshold").c_str()) == 0){
+    return len_over_thres;
+  }else{
+    if(len_under_thres == 0){
+      return 0xffffff;
+    }
+    return (len_over_thres > len_under_thres) ? len_over_thres : len_under_thres;
+  }
+}
+
 void TurnTimer::resetTimer(){
   Settings* settings = Settings::getSettings();
   
