@@ -167,6 +167,7 @@ uint32_t Planet::getResource(uint32_t restype) const{
 
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
     resources->setResources(ress);
+    touchModTime();
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
@@ -175,6 +176,7 @@ void Planet::addResource(uint32_t restype, uint32_t amount){
     respair.first += amount;
     reslist[restype] = respair;
     resources->setResources(reslist);
+    touchModTime();
 }
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){
@@ -185,6 +187,7 @@ bool Planet::removeResource(uint32_t restype, uint32_t amount){
             respair.first -= amount;
             reslist[restype] = respair;
             resources->setResources(reslist);
+            touchModTime();
             return true;
         }
     }
