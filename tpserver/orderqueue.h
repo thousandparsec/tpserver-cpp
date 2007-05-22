@@ -62,6 +62,9 @@ class OrderQueue{
   bool isActive() const;
   bool isRepeating() const;
   
+  uint64_t getModTime() const;
+  void touchModTime();
+  void setModTime(uint64_t nmt);
 
   void removeAllOrders();
 
@@ -76,6 +79,7 @@ class OrderQueue{
   uint32_t nextOrderId;
   bool active;
   bool repeating;
+  uint64_t modtime;
 
 };
 
