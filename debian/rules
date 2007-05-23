@@ -27,8 +27,8 @@ endif
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
-
+	./autogen.sh
+	./configure --prefix=/usr
 
 build: build-stamp
 
@@ -64,9 +64,10 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tpserver-cpp.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/tpserver-cpp install
-
+	# Add here commands to install the package into debian/tmp.
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	mkdir -p $(CURDIR)/debian/tmp/etc/tpserver
+	cp sample.conf $(CURDIR)/debian/tmp/etc/tpserver/tpserver.conf
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -79,7 +80,7 @@ binary-arch: build install
 	dh_installchangelogs ChangeLog
 	dh_installdocs
 	dh_installexamples
-#	dh_install
+	dh_install --sourcedir=debian/tmp
 #	dh_installmenu
 #	dh_installdebconf	
 #	dh_installlogrotate
