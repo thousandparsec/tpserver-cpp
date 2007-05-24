@@ -1,0 +1,80 @@
+Source: tpserver-cpp
+Section: unknown
+Priority: extra
+Maintainer: Paul Schulz <paul@mawsonlakes.org>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: tpserver-cpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++
+ Thousand Parsec Server, written in C++
+ .
+ This is the meta package that will install all of the other packages
+ required to run a Thousand Parsec server.
+
+Package: tpserver-cpp-core
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++
+ Thousand Parsec Server, written in C++
+ .
+ These are the the core server programs. 
+
+Package: tpserver-cpp-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++
+ Thousand Parsec Server, written in C++
+ .
+ Development files.
+
+Package: tpserver-cpp-scheme-guile
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, guile files
+ Thousand Parsec Server, written in C++
+ .
+ Guile files
+
+Package: tpserver-cpp-scheme-mzscheme
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, mzscheme files
+ Thousand Parsec Server, written in C++
+ .
+ mzscheme files
+
+Package: tpserver-cpp-persistance-mysql
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, mysql files
+ Thousand Parsec Server, written in C++
+ .
+ MySQL persistance library
+
+Package: tpserver-cpp-persistance-postgresql
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, postgresql files
+ Thousand Parsec Server, written in C++
+ .
+ PostgreSQL persistance library
+
+Package: tpserver-cpp-ruleset-minisec
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, Minisec ruleset
+ Thousand Parsec Server, written in C++
+ .
+ Files for the minisec game ruleset.
+
+Package: tpserver-cpp-ruleset-mtsec
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, Mtsec ruleset
+ Thousand Parsec Server, written in C++
+ .
+ Files for the mtsec game ruleset.
+
