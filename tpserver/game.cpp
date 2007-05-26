@@ -104,9 +104,13 @@ bool Game::load()
       Logger::getLogger()->info("Creating Game");
       ctime = time(NULL);
       turnNum = 0;
-      std::ostringstream formater;
-      formater << std::ios::hex << random->getInt32() << std::ios::hex << random->getInt32();
-      key = formater.str();
+      if(Settings::getSettings()->get("metaserver_key_unsafe") == ""){
+        std::ostringstream formater;
+        formater << std::ios::hex << random->getInt32() << std::ios::hex << random->getInt32();
+        key = formater.str();
+      }else{
+        key = Settings::getSettings()->get("metaserver_key_unsafe");
+      }
       persistence->saveGameInfo();
       ruleset->createGame();
     }else{
