@@ -90,14 +90,23 @@ ObjectParameter* ObjectData::getParameterByType(uint32_t ptype){
 
 void ObjectData::touchModTime(){
   modtime = time(NULL);
+  dirty = true;
 }
 
 long long ObjectData::getModTime() const{
   return modtime;
 }
 
+bool ObjectData::isDirty() const{
+  return dirty;
+}
+
 void ObjectData::setModTime(uint64_t time){
     modtime = time;
+}
+
+void ObjectData::setDirty(bool nd){
+  dirty = nd;
 }
 
 void ObjectData::signalRemoval(){

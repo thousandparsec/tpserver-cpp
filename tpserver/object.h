@@ -63,10 +63,12 @@ class IGObject {
 	
 	void touchModTime();
 	long long getModTime() const;
+        bool isDirty() const;
 
         // Only Persistence classes should call these
         void setParent(uint32_t pid);
         void setModTime(uint64_t time);
+        void setDirty(bool nd);
         
         // Only the OrderManager should call this
         void signalRemoval();

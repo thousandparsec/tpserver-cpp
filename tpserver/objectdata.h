@@ -53,8 +53,10 @@ class ObjectData {
 
 	void touchModTime();
 	long long getModTime() const;
+        bool isDirty() const;
         //persistence only
         void setModTime(uint64_t time);
+        void setDirty(bool nd);
         //object only
         void signalRemoval();
 
@@ -65,6 +67,7 @@ class ObjectData {
 
       private:
 	long long modtime;
+        bool dirty;
 
 };
 

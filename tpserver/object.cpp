@@ -297,6 +297,13 @@ long long IGObject::getModTime() const{
     return 0LL;
 }
 
+bool IGObject::isDirty() const{
+  if(myObjectData != NULL)
+    return myObjectData->isDirty();
+  else
+    return true;
+}
+
 void IGObject::setParent(uint32_t pid){
     parentid = pid;
 }
@@ -304,6 +311,11 @@ void IGObject::setParent(uint32_t pid){
 void IGObject::setModTime(uint64_t time){
     if(myObjectData != NULL)
         myObjectData->setModTime(time);
+}
+
+void IGObject::setDirty(bool nd){
+  if(myObjectData != NULL)
+    myObjectData->setDirty(nd);
 }
 
 void IGObject::signalRemoval(){
