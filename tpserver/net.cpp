@@ -156,7 +156,7 @@ void Network::start()
               addConnection(httpsocket);
               numsocks++;
               addFeature(fid_http_other, atoi(Settings::getSettings()->get("http_port").c_str()));
-              advertiser->addService("tphttp", httpsocket->getPort());
+              advertiser->addService("tp+http", httpsocket->getPort());
             }else{
               delete httpsocket;
               Logger::getLogger()->warning("Could not listen on HTTP (http tunneling) socket");
@@ -186,7 +186,7 @@ void Network::start()
                 if(secsocket->getStatus() != 0){
                     addConnection(secsocket);
                     numsocks++;
-                    advertiser->addService("tphttps", secsocket->getPort());
+                    advertiser->addService("tp+https", secsocket->getPort());
                 }else{
                     delete secsocket;
                     Logger::getLogger()->warning("Could not listen on HTTPS (https tunneling) socket");

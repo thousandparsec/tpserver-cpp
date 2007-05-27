@@ -315,10 +315,10 @@ void Avahi::createServices(){
   int ret;
   std::map<std::string, uint16_t> services = advertiser->getServices();
   
-  // Don't export tphttp and tphttps unless they are the only ones
+  // Don't export tp+http and tp+https unless they are the only ones
   std::map<std::string, uint16_t> nservices = services;
-  nservices.erase("tphttp");
-  nservices.erase("tphttps");
+  nservices.erase("tp+http");
+  nservices.erase("tp+https");
   if(!nservices.empty()){
     services = nservices;
   }
