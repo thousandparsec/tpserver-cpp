@@ -56,7 +56,6 @@ IGObject* ObjectManager::createNewObject(){
 
 void ObjectManager::addObject(IGObject* obj){
     objects[obj->getID()] = obj;
-    objmtime[obj->getID()] = obj->getModTime();
     Game::getGame()->getPersistence()->saveObject(obj);
 }
 
@@ -79,7 +78,6 @@ IGObject *ObjectManager::getObject(uint32_t id){
         rtn = Game::getGame()->getPersistence()->retrieveObject(id);
         if(rtn != NULL){
             objects[id] = rtn;
-            objmtime[id] = rtn->getModTime();
         }
     }
     return rtn;
@@ -87,9 +85,7 @@ IGObject *ObjectManager::getObject(uint32_t id){
 }
 
 void ObjectManager::doneWithObject(uint32_t id){
-    if(objmtime[id] >= ((uint64_t)(time(NULL) - 2)) || 
-            (uint64_t)(objects[id]->getModTime()) >= objmtime[id]){
-        objmtime[id] = objects[id]->getModTime();
+    if(objects[id]->isDirty()){
         Game::getGame()->getPersistence()->updateObject(objects[id]);
     }
 }
@@ -105,7 +101,6 @@ void ObjectManager::clearRemovedObjects(){
         Game::getGame()->getPersistence()->removeObject(*itrm);
         delete objects[*itrm];
         objects.erase(*itrm);
-        objmtime.erase(*itrm);
     }
     scheduleRemove.clear();
 }
@@ -119,7 +114,6 @@ std::set<uint32_t> ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t
             ob = Game::getGame()->getPersistence()->retrieveObject(itcurr->first);
             if(ob != NULL){
                 itcurr->second = ob;
-                objmtime[itcurr->first] = ob->getModTime();
             }
         }
         if(ob != NULL){
