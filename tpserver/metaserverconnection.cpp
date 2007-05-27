@@ -296,7 +296,11 @@ bool MetaserverConnection::sendUpdate(){
   std::map<std::string, uint16_t> services = advertiser->getServices();
   for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
       itcurr != services.end(); ++itcurr){
-    formater << "&type" << servicenumber << "=" << itcurr->first;
+    std::string servtype = itcurr->first;
+    if((pos = servtype.find('+')) != servtype.npos){
+      servtype.replace(pos,1, "%2B");
+    }
+    formater << "&type" << servicenumber << "=" << servtype;
     formater << "&port" << servicenumber << "=" << itcurr->second;
     formater << "&dns" << servicenumber << "=" << localname;
     formater << "&ip" << servicenumber << "=" << localip;
