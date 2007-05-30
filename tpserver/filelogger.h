@@ -31,7 +31,7 @@ class FileLogger : public LogSink {
     FileLogger( std::string  logfile);
     virtual ~FileLogger();
 
-    virtual void doLogging( int level, char* msg) const;
+    virtual void doLogging( int level, const char* msg) const;
 
  protected:
     std::string    logFileSpec;

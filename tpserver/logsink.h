@@ -25,7 +25,7 @@ class LogSink {
  public:
     virtual ~LogSink(){};
 
-    virtual void doLogging( int level, char* msg) const = 0;
+    virtual void doLogging( int level, const char* msg) const = 0;
 
  private:
 

@@ -54,7 +54,7 @@ FileLogger::~FileLogger()
 }
 
 
-void FileLogger::doLogging( int level, char* msg) const
+void FileLogger::doLogging( int level, const char* msg) const
 {
     char     timeStr[40];
     time_t   currTime = time( NULL);

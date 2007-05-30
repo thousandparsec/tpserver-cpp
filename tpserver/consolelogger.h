@@ -29,7 +29,7 @@ class ConsoleLogger : public LogSink {
     ConsoleLogger();
     virtual ~ConsoleLogger();
 
-    virtual void doLogging( int level, char* msg) const;
+    virtual void doLogging( int level, const char* msg) const;
 
  private:
     void reconfigure(const std::string& key, const std::string& value);

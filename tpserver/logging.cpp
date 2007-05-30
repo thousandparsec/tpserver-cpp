@@ -46,7 +46,7 @@ Logger *Logger::getLogger()
 	return myInstance;
 }
 
-void Logger::debug(char *msg, ...)
+void Logger::debug(const char *msg, ...)
 {
     if ( loglevel <= 0) {
         char* fmsg = new char[100];
@@ -67,7 +67,7 @@ void Logger::debug(char *msg, ...)
     }
 }
 
-void Logger::info(char *msg, ...)
+void Logger::info(const char *msg, ...)
 {
     if ( loglevel <= 1) {
         char* fmsg = new char[100];
@@ -88,7 +88,7 @@ void Logger::info(char *msg, ...)
     }
 }
 
-void Logger::warning(char *msg, ...)
+void Logger::warning(const char *msg, ...)
 {
     if ( loglevel <= 2) {
         char* fmsg = new char[100];
@@ -109,7 +109,7 @@ void Logger::warning(char *msg, ...)
     }
 }
 
-void Logger::error(char *msg, ...)
+void Logger::error(const char *msg, ...)
 {
   if ( loglevel <= 3) {
       char* fmsg = new char[100];
@@ -200,7 +200,7 @@ Logger::~Logger()
 }
 
 
-void Logger::doLogging(int level, char *msg)
+void Logger::doLogging(int level, const char *msg)
 {
     std::map<std::string, LogSink*>::iterator  pos;
 

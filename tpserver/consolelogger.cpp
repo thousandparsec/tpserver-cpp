@@ -47,7 +47,7 @@ void ConsoleLogger::reconfigure(const std::string& key, const std::string& value
     colour = (Settings::getSettings()->get("log_colour") == "yes");
 }
 
-void ConsoleLogger::doLogging( int level, char* msg) const
+void ConsoleLogger::doLogging( int level, const char* msg) const
 {
     char        timeStr[30];
     time_t      currTime = time( NULL);

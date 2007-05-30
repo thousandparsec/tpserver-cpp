@@ -30,10 +30,10 @@ class Logger {
  public:
 	static Logger *getLogger();
 
-	void debug(char *msg, ...);
-	void info(char *msg, ...);
-	void warning(char *msg, ...);
-	void error(char *msg, ...);
+	void debug(const char *msg, ...);
+	void info(const char *msg, ...);
+	void warning(const char *msg, ...);
+	void error(const char *msg, ...);
 
 	//void addLog(Log* newlog);
 	//void removeLog(Log* newlog);
@@ -49,7 +49,7 @@ class Logger {
     Logger(Logger & rhs);
 	Logger operator=(Logger & rhs);
 
-	void doLogging( int level, char *msg);
+	void doLogging( int level, const char *msg);
 
     std::map<std::string, LogSink*>  logSinkMap;
 	int loglevel;

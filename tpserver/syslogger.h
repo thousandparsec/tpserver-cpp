@@ -28,7 +28,7 @@ class SysLogger : public LogSink {
     SysLogger();
     virtual ~SysLogger();
 
-    virtual void doLogging( int level, char* msg) const;
+    virtual void doLogging( int level, const char* msg) const;
 
  private:
 

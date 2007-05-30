@@ -36,7 +36,7 @@ SysLogger::~SysLogger()
     closelog();
 }
 
-void SysLogger::doLogging( int level, char* msg) const
+void SysLogger::doLogging( int level, const char* msg) const
 {
     switch ( level) {
     case 0:
