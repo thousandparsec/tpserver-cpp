@@ -57,6 +57,7 @@ void Player::setComment(const std::string& newcomm){
 
 void Player::setId(uint32_t newid){
   pid = newid;
+  playerview->setPlayerId(pid);
 }
 
 void Player::postToBoard(Message* msg){
