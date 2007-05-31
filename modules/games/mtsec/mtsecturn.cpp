@@ -27,6 +27,7 @@
 #include "planet.h"
 #include "fleet.h"
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/objectdata.h>
 #include <tpserver/objectparameter.h>
@@ -226,7 +227,7 @@ void MTSecTurn::doTurn(){
   std::set<uint32_t> vis = objectmanager->getAllIds();
   std::set<uint32_t> players = playermanager->getAllIds();
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-      playermanager->getPlayer(*itplayer)->setVisibleObjects(vis);
+      playermanager->getPlayer(*itplayer)->getPlayerView()->setVisibleObjects(vis);
   }
   playermanager->updateAll();
   

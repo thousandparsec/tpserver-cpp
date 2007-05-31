@@ -35,6 +35,7 @@
 #include "fleet.h"
 #include "tpserver/objectdatamanager.h"
 #include "tpserver/player.h"
+#include <tpserver/playerview.h>
 #include "avacombat.h"
 #include "tpserver/designstore.h"
 #include "tpserver/ordermanager.h"
@@ -1632,11 +1633,12 @@ void MTSec::setNewPlayerTech( Player* player)
     Logger::getLogger()->debug( "Enter MTSec::setNewPlayerTech");
     Game *game = Game::getGame();
 
-    player->setVisibleObjects( game->getObjectManager()->getAllIds());
+    PlayerView* playerview = player->getPlayerView();
+    playerview->setVisibleObjects( game->getObjectManager()->getAllIds());
 
     for(uint32_t itcurr = 1; itcurr <= compMax; ++itcurr){
-      player->addVisibleComponent(itcurr);
-      player->addUsableComponent(itcurr);
+      playerview->addVisibleComponent(itcurr);
+      playerview->addUsableComponent(itcurr);
     }
 
     Logger::getLogger()->debug( "Exit MTSec::setNewPlayerTech");

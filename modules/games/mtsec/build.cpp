@@ -30,6 +30,7 @@
 #include "fleet.h"
 #include <tpserver/message.h>
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
@@ -103,7 +104,7 @@ void Build::createFrame(Frame *f, int objID, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getPlayerView()->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(objID);
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -142,7 +143,7 @@ Result Build::inputFrame(Frame *f, unsigned int playerid)
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
     
-    if(player->isUsableDesign(type) && number >= 0){
+    if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
       
       Design* design = ds->getDesign(type);
       usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));

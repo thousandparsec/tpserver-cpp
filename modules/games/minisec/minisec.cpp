@@ -34,6 +34,7 @@
 #include "fleet.h"
 #include <tpserver/objectdatamanager.h>
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include "rspcombat.h"
 #include <tpserver/designstore.h>
 #include <tpserver/ordermanager.h>
@@ -505,17 +506,19 @@ void MiniSec::onPlayerAdded(Player* player){
   Game *game = Game::getGame();
 
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
+  
+  PlayerView* playerview = player->getPlayerView();
 
-  player->setVisibleObjects(game->getObjectManager()->getAllIds());
+  playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
 
-  player->addVisibleComponent(1);
-  player->addVisibleComponent(2);
-  player->addVisibleComponent(3);
+  playerview->addVisibleComponent(1);
+  playerview->addVisibleComponent(2);
+  playerview->addVisibleComponent(3);
 
   //temporarily add the components as usable to get the designs done
-  player->addUsableComponent(1);
-  player->addUsableComponent(2);
-  player->addUsableComponent(3);
+  playerview->addUsableComponent(1);
+  playerview->addUsableComponent(2);
+  playerview->addUsableComponent(3);
 
   Design* scout = new Design();
   scout->setCategoryId(1);
@@ -549,9 +552,9 @@ void MiniSec::onPlayerAdded(Player* player){
   game->getDesignStore()->addDesign(design);
 
   //remove temporarily added usable components
-  player->removeUsableComponent(1);
-  player->removeUsableComponent(2);
-  player->removeUsableComponent(3);
+  playerview->removeUsableComponent(1);
+  playerview->removeUsableComponent(2);
+  playerview->removeUsableComponent(3);
 
   if(std::string(player->getName()) != "guest"){
     

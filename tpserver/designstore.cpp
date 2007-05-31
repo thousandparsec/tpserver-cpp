@@ -25,6 +25,7 @@
 #include "property.h"
 #include "game.h"
 #include "player.h"
+#include "playerview.h"
 #include "playermanager.h"
 #include "persistence.h"
 
@@ -178,21 +179,22 @@ bool DesignStore::addDesign(Design* d){
   d->setDesignId(next_designid++);
   
   //check components all come from this category
-    std::map<unsigned int, unsigned int> cl = d->getComponents();
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
-    for(std::map<unsigned int, unsigned int>::iterator itcurr = cl.begin(); 
-            itcurr != cl.end(); ++itcurr){
-        if(!(player->isUsableComponent(itcurr->first)))
-            return false;
-        if(components.find(itcurr->first) == components.end())
-            return false;
-    }
+  std::map<unsigned int, unsigned int> cl = d->getComponents();
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
+  PlayerView* playerview = player->getPlayerView();
+  for(std::map<unsigned int, unsigned int>::iterator itcurr = cl.begin(); 
+          itcurr != cl.end(); ++itcurr){
+      if(!(playerview->isUsableComponent(itcurr->first)))
+          return false;
+      if(components.find(itcurr->first) == components.end())
+          return false;
+  }
   d->eval();
   designs[d->getDesignId()] = d;
   getCategory(d->getCategoryId())->doAddDesign(d);
-  player->addVisibleDesign(d->getDesignId());
+  playerview->addVisibleDesign(d->getDesignId());
   if(d->isValid()){
-    player->addUsableDesign(d->getDesignId());
+    playerview->addUsableDesign(d->getDesignId());
   }
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
     Game::getGame()->getPersistence()->saveDesign(d);
@@ -204,7 +206,8 @@ bool DesignStore::modifyDesign(Design* d){
   if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
-  player->removeUsableDesign(d->getDesignId());
+  PlayerView* playerview = player->getPlayerView();
+  playerview->removeUsableDesign(d->getDesignId());
   d->eval();
   bool rtv;
   if(getCategory(d->getCategoryId())->doModifyDesign(d)){
@@ -217,7 +220,7 @@ bool DesignStore::modifyDesign(Design* d){
     rtv = false;
   }
   if(d->isValid()){
-    player->addUsableDesign(d->getDesignId());
+    playerview->addUsableDesign(d->getDesignId());
   }
     Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
     Game::getGame()->getPersistence()->updateDesign(d);

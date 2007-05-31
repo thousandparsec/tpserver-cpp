@@ -26,19 +26,17 @@
 #include "board.h"
 #include "message.h"
 #include "boardmanager.h"
-#include "designstore.h"
-#include "design.h"
-#include "component.h"
+#include "playerview.h"
 
 #include "player.h"
 
 
-Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0), 
-    visibleObjects(), currObjSeq(0), visibleDesigns(), usableDesigns(),
-    visibleComponents(), usableComponents(){
+Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0){
+  playerview = new PlayerView();
 }
 
 Player::~Player(){
+  delete playerview;
 }
 
 void Player::setName(const std::string& newname){
@@ -59,72 +57,6 @@ void Player::setComment(const std::string& newcomm){
 
 void Player::setId(uint32_t newid){
   pid = newid;
-}
-
-void Player::setVisibleObjects(std::set<unsigned int> vis){
-  visibleObjects = vis;
-  currObjSeq++;
-}
-
-bool Player::isVisibleObject(unsigned int objid){
-  return visibleObjects.find(objid) != visibleObjects.end();
-}
-
-std::set<uint32_t> Player::getVisibleObjects() const{
-  return visibleObjects;
-}
-
-void Player::addVisibleDesign(unsigned int designid){
-  visibleDesigns.insert(designid);
-}
-
-void Player::addUsableDesign(unsigned int designid){
-  usableDesigns.insert(designid);
-  Logger::getLogger()->debug("Added valid design");
-}
-
-void Player::removeUsableDesign(unsigned int designid){
-  std::set<unsigned int>::iterator dicurr = usableDesigns.find(designid);
-  if(dicurr != usableDesigns.end())
-    usableDesigns.erase(dicurr);
-}
-
-bool Player::isUsableDesign(unsigned int designid) const{
-  return (usableDesigns.find(designid) != usableDesigns.end());
-}
-
-std::set<unsigned int> Player::getUsableDesigns() const{
-  return usableDesigns;
-}
-
-std::set<uint32_t> Player::getVisibleDesigns() const{
-  return visibleDesigns;
-}
-
-void Player::addVisibleComponent(unsigned int compid){
-  visibleComponents.insert(compid);
-}
-
-void Player::addUsableComponent(unsigned int compid){
-  usableComponents.insert(compid);
-}
-
-void Player::removeUsableComponent(unsigned int compid){
-  std::set<unsigned int>::iterator cicurr = usableComponents.find(compid);
-  if(cicurr != usableComponents.end())
-    usableComponents.erase(cicurr);
-}
-
-bool Player::isUsableComponent(unsigned int compid){
-  return (usableComponents.find(compid) != usableComponents.end());
-}
-
-std::set<uint32_t> Player::getVisibleComponents() const{
-  return visibleComponents;
-}
-
-std::set<uint32_t> Player::getUsableComponents() const{
-  return usableComponents;
 }
 
 void Player::postToBoard(Message* msg){
@@ -160,8 +92,8 @@ void Player::setBoardId(uint32_t nbi){
   boardid = nbi;
 }
 
-uint32_t Player::getObjectSequenceKey() const{
-  return currObjSeq;
+PlayerView* Player::getPlayerView() const{
+  return playerview;
 }
 
 void Player::packFrame(Frame* frame){

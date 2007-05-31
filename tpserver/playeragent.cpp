@@ -45,6 +45,7 @@
 #include "resourcedescription.h"
 #include "resourcemanager.h"
 #include "player.h"
+#include "playerview.h"
 #include "turntimer.h"
 
 #include "playeragent.h"
@@ -229,7 +230,7 @@ void PlayerAgent::processGetObjectById (Frame * frame){
         unsigned int objectID = frame->unpackInt();
 
         of = curConnection->createFrame ( frame );
-        std::set<uint32_t> visibleObjects = player->getVisibleObjects();
+        std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
         if ( visibleObjects.find ( objectID ) != visibleObjects.end() ){
 
           IGObject* o = Game::getGame()->getObjectManager()->getObject ( objectID );
@@ -267,7 +268,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
     std::set<unsigned int> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
 
-    std::set<uint32_t> visibleObjects = player->getVisibleObjects();
+    std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
 
     for(std::set<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
       if(visibleObjects.find(*vischk) == visibleObjects.end()){
@@ -316,7 +317,8 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
     return;
   }
 
-  uint32_t currObjSeq = player->getObjectSequenceKey();
+  PlayerView* playerview = player->getPlayerView();
+  uint32_t currObjSeq = playerview->getObjectSequenceKey();
   
   unsigned int seqkey = frame->unpackInt();
   if(seqkey == 0xffffffff){
@@ -335,7 +337,7 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
   }
   
   unsigned int num_remain;
-  std::set<uint32_t> visibleObjects = player->getVisibleObjects();
+  std::set<uint32_t> visibleObjects = playerview->getVisibleObjects();
   if(num == 0xffffffff || start + num > visibleObjects.size()){
     num = visibleObjects.size() - start;
     num_remain = 0;
@@ -370,7 +372,7 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
     r = frame->unpackInt64();
 
     std::set<unsigned int> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
-    std::set<uint32_t> visibleObjects = player->getVisibleObjects();
+    std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
     for(std::set<unsigned int>::iterator vischk = oblist.begin(); vischk != oblist.end();){
       if(visibleObjects.find(*vischk) == visibleObjects.end()){
         std::set<unsigned int>::iterator temp = vischk;
@@ -405,7 +407,7 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
     of->createFailFrame(fec_FrameError, "Invalid frame");
   }else{
     unsigned int objectID = frame->unpackInt();
-    std::set<uint32_t> visibleObjects = player->getVisibleObjects();
+    std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
     if(visibleObjects.find(objectID) != visibleObjects.end()){
       
         IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
@@ -1275,7 +1277,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
     Frame *of = curConnection->createFrame(frame);
     int designnum = frame->unpackInt();
     Design* design = ds->getDesign(designnum);
-    std::set<uint32_t> visibleDesigns = player->getVisibleDesigns();
+    std::set<uint32_t> visibleDesigns = player->getPlayerView()->getVisibleDesigns();
     if(design == NULL || visibleDesigns.find(designnum) == visibleDesigns.end()){
        of->createFailFrame(fec_NonExistant, "No Such Design");
     }else{
@@ -1410,7 +1412,7 @@ void PlayerAgent::processGetDesignIds(Frame* frame){
   frame->unpackInt(); //seqnum
   uint32_t snum = frame->unpackInt();
   uint32_t numtoget = frame->unpackInt();
-  std::set<uint32_t> visibleDesigns = player->getVisibleDesigns();
+  std::set<uint32_t> visibleDesigns = player->getPlayerView()->getVisibleDesigns();
   if(snum > visibleDesigns.size()){
     Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
     Frame *of = curConnection->createFrame(frame);
@@ -1476,7 +1478,7 @@ void PlayerAgent::processGetComponent(Frame* frame){
     Frame *of = curConnection->createFrame(frame);
     int compnum = frame->unpackInt();
     Component* component = ds->getComponent(compnum);
-    std::set<uint32_t> visibleComponents = player->getVisibleComponents();
+    std::set<uint32_t> visibleComponents = player->getPlayerView()->getVisibleComponents();
     if(component == NULL || visibleComponents.find(compnum) == visibleComponents.end()){
       of->createFailFrame(fec_NonExistant, "No Such Component");
     }else{
@@ -1506,7 +1508,7 @@ void PlayerAgent::processGetComponentIds(Frame* frame){
     frame->unpackInt(); //seqnum
     uint32_t snum = frame->unpackInt();
     uint32_t numtoget = frame->unpackInt();
-    std::set<uint32_t> visibleComponents = player->getVisibleComponents();
+    std::set<uint32_t> visibleComponents = player->getPlayerView()->getVisibleComponents();
     if(snum > visibleComponents.size()){
         Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
         Frame *of = curConnection->createFrame(frame);

@@ -29,6 +29,7 @@
 #include "objectdatamanager.h"
 #include "playermanager.h"
 #include "player.h"
+#include "playerview.h"
 #include "position3dobjectparam.h"
 #include "velocity3dobjectparam.h"
 #include "sizeobjectparam.h"
@@ -212,7 +213,7 @@ void IGObject::createFrame(Frame * frame, int playerid)
   itend = temp.end();
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   while(itcurr != itend){
-    if(!player->isVisibleObject(*itcurr)){
+    if(!player->getPlayerView()->isVisibleObject(*itcurr)){
       std::set<unsigned int>::iterator itemp = itcurr;
       ++itcurr;
       temp.erase(itemp);

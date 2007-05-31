@@ -26,6 +26,7 @@
 
 class Frame;
 class Message;
+class PlayerView;
 
 class Player {
 public:
@@ -38,24 +39,6 @@ public:
   void setComment(const std::string& newcomm);
   void setId(uint32_t newid);
 
-  void setVisibleObjects(std::set<unsigned int> vis);
-  bool isVisibleObject(unsigned int objid);
-  std::set<uint32_t> getVisibleObjects() const;
-
-  void addVisibleDesign(unsigned int designid);
-  void addUsableDesign(unsigned int designid);
-  void removeUsableDesign(unsigned int designid);
-  bool isUsableDesign(unsigned int designid) const;
-  std::set<unsigned int> getUsableDesigns() const;
-  std::set<uint32_t> getVisibleDesigns() const;
-
-  void addVisibleComponent(unsigned int compid);
-  void addUsableComponent(unsigned int compid);
-  void removeUsableComponent(unsigned int compid);
-  bool isUsableComponent(unsigned int compid);
-  std::set<uint32_t> getVisibleComponents() const;
-  std::set<uint32_t> getUsableComponents() const;
-
   void postToBoard(Message* msg);
 
   std::string getName() const;
@@ -66,8 +49,8 @@ public:
   uint32_t getBoardId() const;
   void setBoardId(uint32_t nbi);
 
-  uint32_t getObjectSequenceKey() const;
-
+  PlayerView* getPlayerView() const;
+  
   void packFrame(Frame* frame);
 
 
@@ -80,19 +63,12 @@ private:
 
   uint32_t pid;
   uint32_t boardid;
+  
+  PlayerView* playerview;
 
   Player(Player & rhs);
 
   Player operator=(Player & rhs);
-
-  std::set<unsigned int> visibleObjects;
-  unsigned int currObjSeq;
-
-  std::set<unsigned int> visibleDesigns;
-  std::set<unsigned int> usableDesigns;
-
-  std::set<unsigned int> visibleComponents;
-  std::set<unsigned int> usableComponents;
 
 };
 
