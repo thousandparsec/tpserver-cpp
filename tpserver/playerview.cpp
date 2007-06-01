@@ -22,6 +22,7 @@
 #include <time.h>
 
 #include "logging.h"
+#include "frame.h"
 #include "game.h"
 #include "designstore.h"
 #include "design.h"
@@ -116,7 +117,7 @@ void PlayerView::addVisibleComponent(Component* comp){
   }
   cacheComponents[compid] = comp;
   currCompSeq++;
-  turnCompdifflist[compid] = ModListItem(compid, time(NULL));
+  turnCompdifflist[compid] = ModListItem(compid, comp->getModTime());
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
@@ -142,6 +143,110 @@ std::set<uint32_t> PlayerView::getVisibleComponents() const{
 
 std::set<uint32_t> PlayerView::getUsableComponents() const{
   return usableComponents;
+}
+
+void PlayerView::processGetComponent(uint32_t compid, Frame* frame) const{
+  if(visibleComponents.find(compid) == visibleComponents.end()){
+    frame->createFailFrame(fec_NonExistant, "No Such Component");
+  }else{
+    Component* component = cacheComponents.find(compid)->second;
+    component->packFrame(frame);
+  }
+}
+
+void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
+  Logger::getLogger()->debug("doing Get Component Ids frame");
+  
+  if(in->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    out->createFailFrame(fec_FrameError, "Get Component ids isn't supported in this protocol");
+    return;
+  }
+  
+  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
+    out->createFailFrame(fec_FrameError, "Invalid frame");
+    return;
+  }
+  
+  uint32_t seqnum = in->unpackInt();
+  uint32_t snum = in->unpackInt();
+  uint32_t numtoget = in->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffff;
+  if(in->getVersion() >= fv0_4){
+    fromtime = in->unpackInt64();
+  }
+  
+  if(seqnum != currCompSeq && seqnum != 0xffffffff){
+    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    return;
+  }
+  
+  
+  
+  if(fromtime == 0xffffffffffffffff){
+  
+    if(snum > visibleComponents.size()){
+      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
+      out->createFailFrame(fec_NonExistant, "Starting number too high");
+      return;
+    }
+    if(numtoget > visibleComponents.size() - snum){
+      numtoget = visibleComponents.size() - snum;
+    }
+    
+    out->setType(ft03_ComponentIds_List);
+    out->packInt(currCompSeq);
+    out->packInt(visibleComponents.size() - snum - numtoget);
+    out->packInt(numtoget);
+    std::set<uint32_t>::iterator itcurr = visibleComponents.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+      out->packInt(*itcurr);
+      out->packInt64(cacheComponents.find(*itcurr)->second->getModTime());
+    }
+    
+    if(out->getVersion() >= fv0_4){
+      out->packInt64(fromtime);
+    }
+    
+  }else{
+    
+    out->setType(ft03_ComponentIds_List);
+    out->packInt(currCompSeq);
+    
+    // get list of changes since fromtime
+    
+    std::list<ModListItem> difflist;
+    for(std::list<ModListItem>::const_iterator itcurr = difflistComponents.begin();
+        itcurr != difflistComponents.end(); ++itcurr){
+      if((*itcurr).modtime >= fromtime){
+        difflist.insert(difflist.end(), itcurr, difflistComponents.end());
+        break;
+      }
+    }
+    
+    if(snum > difflist.size()){
+      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, difflist.size());
+      out->createFailFrame(fec_NonExistant, "Starting number too high");
+      return;
+    }
+    if(numtoget > difflist.size() - snum){
+      numtoget = difflist.size() - snum;
+    }
+    
+    out->packInt(visibleComponents.size() - snum - numtoget);
+    out->packInt(numtoget);
+    
+    std::list<ModListItem>::iterator itcurr = difflist.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+      out->packInt((*itcurr).id);
+      out->packInt64((*itcurr).modtime);
+    }
+    
+    out->packInt64(fromtime);
+    
+  }
 }
 
 uint32_t PlayerView::getObjectSequenceKey() const{

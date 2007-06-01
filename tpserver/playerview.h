@@ -26,6 +26,7 @@
 #include <string>
 #include <stdint.h>
 
+class Frame;
 class Component;
 
 struct ModListItem{
@@ -61,6 +62,8 @@ public:
   bool isUsableComponent(uint32_t compid) const;
   std::set<uint32_t> getVisibleComponents() const;
   std::set<uint32_t> getUsableComponents() const;
+  void processGetComponent(uint32_t compid, Frame* frame) const;
+  void processGetComponentIds(Frame* in, Frame* out) const;
 
   uint32_t getObjectSequenceKey() const;
 

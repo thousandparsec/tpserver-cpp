@@ -1442,8 +1442,6 @@ void PlayerAgent::processGetDesignIds(Frame* frame){
 void PlayerAgent::processGetComponent(Frame* frame){
   Logger::getLogger()->debug("doing Get Component frame");
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
-
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -1477,60 +1475,14 @@ void PlayerAgent::processGetComponent(Frame* frame){
   for(int i = 0; i < numcomps; i++){
     Frame *of = curConnection->createFrame(frame);
     int compnum = frame->unpackInt();
-    Component* component = ds->getComponent(compnum);
-    std::set<uint32_t> visibleComponents = player->getPlayerView()->getVisibleComponents();
-    if(component == NULL || visibleComponents.find(compnum) == visibleComponents.end()){
-      of->createFailFrame(fec_NonExistant, "No Such Component");
-    }else{
-      component->packFrame(of);
-    }
+    player->getPlayerView()->processGetComponent(compnum, of);
     curConnection->sendFrame(of);
   }
 }
 
 void PlayerAgent::processGetComponentIds(Frame* frame){
- Logger::getLogger()->debug("doing Get Component Ids frame");
-  
-  if(frame->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
-    curConnection->sendFrame(of);
-    return;
-  }
-  
-    if(frame->getDataLength() != 12){
-        Frame *of = curConnection->createFrame(frame);
-        of->createFailFrame(fec_FrameError, "Invalid frame");
-        curConnection->sendFrame(of);
-        return;
-    }
-    frame->unpackInt(); //seqnum
-    uint32_t snum = frame->unpackInt();
-    uint32_t numtoget = frame->unpackInt();
-    std::set<uint32_t> visibleComponents = player->getPlayerView()->getVisibleComponents();
-    if(snum > visibleComponents.size()){
-        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
-        Frame *of = curConnection->createFrame(frame);
-        of->createFailFrame(fec_NonExistant, "Starting number too high");
-        curConnection->sendFrame(of);
-        return;
-    }
-    if(numtoget > visibleComponents.size() - snum){
-        numtoget = visibleComponents.size() - snum;
-    }
-  
   Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_ComponentIds_List);
-  of->packInt(0);
-    of->packInt(visibleComponents.size() - snum - numtoget);
-    of->packInt(numtoget);
-    std::set<unsigned int>::iterator itcurr = visibleComponents.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(*itcurr);
-    of->packInt64(0ll);
-  }
+  player->getPlayerView()->processGetComponentIds(frame, of);
  
   curConnection->sendFrame(of);
 }
