@@ -511,10 +511,6 @@ void MiniSec::onPlayerAdded(Player* player){
 
   playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
 
-  playerview->addVisibleComponent(1);
-  playerview->addVisibleComponent(2);
-  playerview->addVisibleComponent(3);
-
   //temporarily add the components as usable to get the designs done
   playerview->addUsableComponent(1);
   playerview->addUsableComponent(2);
@@ -555,6 +551,7 @@ void MiniSec::onPlayerAdded(Player* player){
   playerview->removeUsableComponent(1);
   playerview->removeUsableComponent(2);
   playerview->removeUsableComponent(3);
+  // the components are still visible
 
   if(std::string(player->getName()) != "guest"){
     

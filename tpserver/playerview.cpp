@@ -19,6 +19,7 @@
  */
 
 // #include "string.h"
+#include <time.h>
 
 #include "logging.h"
 #include "game.h"
@@ -28,9 +29,15 @@
 
 #include "playerview.h"
 
+ModListItem::ModListItem() : id(0), modtime(0){
+}
+
+ModListItem::ModListItem(uint32_t nid, uint64_t nmt) : id(nid), modtime(nmt){
+}
 
 PlayerView::PlayerView() : pid(0), visibleObjects(), currObjSeq(0), visibleDesigns(), usableDesigns(),
-    visibleComponents(), usableComponents(){
+    visibleComponents(), usableComponents(), cacheComponents(),
+    difflistComponents(), turnCompdifflist(), currCompSeq(0){
 }
 
 PlayerView::~PlayerView(){
@@ -38,6 +45,26 @@ PlayerView::~PlayerView(){
 
 void PlayerView::setPlayerId(uint32_t newid){
   pid = newid;
+}
+
+void PlayerView::doOnceATurn(){
+  DesignStore* ds = Game::getGame()->getDesignStore();
+  
+  //Components
+  // check for updated usable components
+  for(std::set<uint32_t>::iterator itcurr = usableComponents.begin();
+      itcurr != usableComponents.end(); ++itcurr){
+    Component* comp = ds->getComponent(*itcurr);
+    if(comp->getModTime() > cacheComponents[*itcurr]->getModTime()){
+      addVisibleComponent(comp->copy());
+    }
+  }
+  // build new diff list
+  for(std::map<uint32_t, ModListItem>::iterator itcurr = turnCompdifflist.begin();
+      itcurr != turnCompdifflist.end(); ++itcurr){
+    difflistComponents.push_back(itcurr->second);
+  }
+  turnCompdifflist.clear();
 }
 
 void PlayerView::setVisibleObjects(std::set<unsigned int> vis){
@@ -80,21 +107,32 @@ std::set<uint32_t> PlayerView::getVisibleDesigns() const{
   return visibleDesigns;
 }
 
-void PlayerView::addVisibleComponent(unsigned int compid){
+void PlayerView::addVisibleComponent(Component* comp){
+  comp->setModTime(time(NULL));
+  uint32_t compid = comp->getComponentId();
   visibleComponents.insert(compid);
+  if(cacheComponents.find(compid) != cacheComponents.end()){
+    delete cacheComponents[compid];
+  }
+  cacheComponents[compid] = comp;
+  currCompSeq++;
+  turnCompdifflist[compid] = ModListItem(compid, time(NULL));
 }
 
-void PlayerView::addUsableComponent(unsigned int compid){
+void PlayerView::addUsableComponent(uint32_t compid){
   usableComponents.insert(compid);
+  if(visibleComponents.find(compid) == visibleComponents.end()){
+    addVisibleComponent(Game::getGame()->getDesignStore()->getComponent(compid)->copy());
+  }
 }
 
-void PlayerView::removeUsableComponent(unsigned int compid){
-  std::set<unsigned int>::iterator cicurr = usableComponents.find(compid);
+void PlayerView::removeUsableComponent(uint32_t compid){
+  std::set<uint32_t>::iterator cicurr = usableComponents.find(compid);
   if(cicurr != usableComponents.end())
     usableComponents.erase(cicurr);
 }
 
-bool PlayerView::isUsableComponent(unsigned int compid){
+bool PlayerView::isUsableComponent(uint32_t compid) const{
   return (usableComponents.find(compid) != usableComponents.end());
 }
 

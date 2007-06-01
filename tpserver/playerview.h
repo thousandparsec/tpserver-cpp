@@ -21,8 +21,19 @@
  */
 
 #include <set>
+#include <map>
+#include <list>
 #include <string>
 #include <stdint.h>
+
+class Component;
+
+struct ModListItem{
+  ModListItem();
+  ModListItem(uint32_t nid, uint64_t nmt);
+  uint32_t id;
+  uint64_t modtime;
+};
 
 class PlayerView {
 public:
@@ -30,6 +41,8 @@ public:
   ~PlayerView();
 
   void setPlayerId(uint32_t newid);
+  
+  void doOnceATurn();
 
   void setVisibleObjects(std::set<unsigned int> vis);
   bool isVisibleObject(unsigned int objid);
@@ -42,10 +55,10 @@ public:
   std::set<unsigned int> getUsableDesigns() const;
   std::set<uint32_t> getVisibleDesigns() const;
 
-  void addVisibleComponent(unsigned int compid);
-  void addUsableComponent(unsigned int compid);
-  void removeUsableComponent(unsigned int compid);
-  bool isUsableComponent(unsigned int compid);
+  void addVisibleComponent(Component* comp);
+  void addUsableComponent(uint32_t compid);
+  void removeUsableComponent(uint32_t compid);
+  bool isUsableComponent(uint32_t compid) const;
   std::set<uint32_t> getVisibleComponents() const;
   std::set<uint32_t> getUsableComponents() const;
 
@@ -62,6 +75,10 @@ private:
 
   std::set<uint32_t> visibleComponents;
   std::set<uint32_t> usableComponents;
+  std::map<uint32_t, Component*> cacheComponents;
+  std::list<ModListItem> difflistComponents;
+  std::map<uint32_t, ModListItem> turnCompdifflist;
+  uint32_t currCompSeq;
 
 };
 

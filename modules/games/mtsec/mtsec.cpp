@@ -1637,7 +1637,6 @@ void MTSec::setNewPlayerTech( Player* player)
     playerview->setVisibleObjects( game->getObjectManager()->getAllIds());
 
     for(uint32_t itcurr = 1; itcurr <= compMax; ++itcurr){
-      playerview->addVisibleComponent(itcurr);
       playerview->addUsableComponent(itcurr);
     }
 
