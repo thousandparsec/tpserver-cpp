@@ -54,14 +54,14 @@ public:
 private:
   uint32_t pid;
 
-  std::set<unsigned int> visibleObjects;
-  unsigned int currObjSeq;
+  std::set<uint32_t> visibleObjects;
+  uint32_t currObjSeq;
 
-  std::set<unsigned int> visibleDesigns;
-  std::set<unsigned int> usableDesigns;
+  std::set<uint32_t> visibleDesigns;
+  std::set<uint32_t> usableDesigns;
 
-  std::set<unsigned int> visibleComponents;
-  std::set<unsigned int> usableComponents;
+  std::set<uint32_t> visibleComponents;
+  std::set<uint32_t> usableComponents;
 
 };
 
