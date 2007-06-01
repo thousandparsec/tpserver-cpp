@@ -49,6 +49,18 @@ void Component::packFrame(Frame* frame) const{
   }
 }
 
+Component* Component::copy() const{
+  Component * comp = new Component();
+  comp->compid = compid;
+  comp->catid = catid;
+  comp->timestamp = timestamp;
+  comp->name = name;
+  comp->description = description;
+  comp->tpcl_requirements = tpcl_requirements;
+  comp->propertylist = propertylist;
+  return comp;
+}
+
 unsigned int Component::getComponentId() const{
   return compid;
 }

@@ -32,6 +32,7 @@ class Component{
   virtual ~Component();
 
   void packFrame(Frame* frame) const;
+  Component* copy() const;
 
   unsigned int getComponentId() const;
   unsigned int getCategoryId() const;
