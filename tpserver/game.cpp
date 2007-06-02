@@ -35,6 +35,7 @@
 
 #include "logging.h"
 #include "player.h"
+#include "playerview.h"
 #include "object.h"
 #include "order.h"
 #include "frame.h"
@@ -267,11 +268,19 @@ void Game::doEndOfTurn(){
   if(loaded && started){
     Logger::getLogger()->info("End Of Turn started");
 
+    // increment the turn counter
+    turnNum++;
+
     // DO END OF TURN STUFF HERE
     turnprocess->doTurn();
 
-    // increment the turn counter
-    turnNum++;
+    std::set<uint32_t> players = playermanager->getAllIds();
+    for(std::set<uint32_t>::iterator itcurr = players.begin();
+        itcurr != players.end(); ++itcurr){
+      Player* player = playermanager->getPlayer(*itcurr);
+      player->getPlayerView()->doOnceATurn();
+    }
+
     // save game info
     persistence->saveGameInfo();
 
