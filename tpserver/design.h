@@ -2,7 +2,7 @@
 #define DESIGN_H
 /*  Design class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,33 +34,35 @@ class Design{
   virtual ~Design();
 
   void packFrame(Frame* frame) const;
+  
+  Design* copy() const;
 
-  unsigned int getDesignId() const;
-  unsigned int getCategoryId() const;
+  uint32_t getDesignId() const;
+  uint32_t getCategoryId() const;
   std::string getName() const;
   std::string getDescription() const;
-  unsigned int getOwner() const;
-  std::map<unsigned int, unsigned int> getComponents() const;
-  unsigned int getNumExist() const;
+  uint32_t getOwner() const;
+  std::map<uint32_t, uint32_t> getComponents() const;
+  uint32_t getNumExist() const;
   uint32_t getInUse() const;
   bool isValid() const;
   std::string getFeedback() const;
-  double getPropertyValue(unsigned int propid) const;
+  double getPropertyValue(uint32_t propid) const;
   std::map<uint32_t, PropertyValue> getPropertyValues() const;
   uint64_t getModTime() const;
 
-  void setDesignId(unsigned int id);
-  void setCategoryId(unsigned int id);
+  void setDesignId(uint32_t id);
+  void setCategoryId(uint32_t id);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
-  void setOwner(unsigned int o);
-  void setComponents(std::map<unsigned int, unsigned int> cl);
+  void setOwner(uint32_t o);
+  void setComponents(std::map<uint32_t, uint32_t> cl);
   void setInUse(uint32_t niu);
   void setNumExist(uint32_t nne);
   void setModTime(uint64_t nmt);
 
   void eval();
-  void setPropertyValues(std::map<unsigned int, PropertyValue> pvl);
+  void setPropertyValues(std::map<uint32_t, PropertyValue> pvl);
   void setValid(bool v, const std::string& f);
 
   void addUnderConstruction(uint32_t num);
@@ -69,17 +71,17 @@ class Design{
   void removeDestroyed(uint32_t num);
 
  protected:
-  unsigned int designid;
-  unsigned int catid;
+  uint32_t designid;
+  uint32_t catid;
   std::string name;
   std::string description;
-  unsigned int inuse;
-  unsigned int exist;
-  unsigned int owner;
+  uint32_t inuse;
+  uint32_t exist;
+  uint32_t owner;
   bool valid;
-  unsigned long long timestamp;
-  std::map<unsigned int, unsigned int> components;
-  std::map<unsigned int, PropertyValue> properties;
+  uint64_t timestamp;
+  std::map<uint32_t, uint32_t> components;
+  std::map<uint32_t, PropertyValue> properties;
   std::string feedback;
 
 };

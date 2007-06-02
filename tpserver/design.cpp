@@ -1,6 +1,6 @@
 /*  Design class
  *
- *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,24 +48,41 @@ void Design::packFrame(Frame* frame) const{
   frame->packInt(valid ? inuse : 0xFFFFFFFF);
   frame->packInt(owner);
   frame->packInt(components.size());
-  for(std::map<unsigned int, unsigned int>::const_iterator itcurr = components.begin();
+  for(std::map<uint32_t, uint32_t>::const_iterator itcurr = components.begin();
       itcurr != components.end(); ++itcurr){
     frame->packInt(itcurr->first);
     frame->packInt(itcurr->second);
   }
   frame->packString(feedback.c_str());
   frame->packInt(properties.size());
-  for(std::map<unsigned int, PropertyValue>::const_iterator itcurr = properties.begin();
+  for(std::map<uint32_t, PropertyValue>::const_iterator itcurr = properties.begin();
       itcurr != properties.end(); ++itcurr){
     itcurr->second.packFrame(frame);
   }
 }
 
-unsigned int Design::getDesignId() const{
+Design* Design::copy() const{
+  Design* d = new Design();
+  d->designid = designid;
+  d->catid = catid;
+  d->name = name;
+  d->description = description;
+  d->inuse = inuse;
+  d->exist = exist;
+  d->owner = owner;
+  d->valid = valid;
+  d->timestamp = timestamp;
+  d->components = components;
+  d->properties = properties;
+  d->feedback = feedback;
+  return d;
+}
+
+uint32_t Design::getDesignId() const{
   return designid;
 }
 
-unsigned int Design::getCategoryId() const{
+uint32_t Design::getCategoryId() const{
   return catid;
 }
 
@@ -77,15 +94,15 @@ std::string Design::getDescription() const{
     return description;
 }
 
-unsigned int Design::getOwner() const{
+uint32_t Design::getOwner() const{
   return owner;
 }
 
-std::map<unsigned int, unsigned int> Design::getComponents() const{
+std::map<uint32_t, uint32_t> Design::getComponents() const{
   return components;
 }
 
-unsigned int Design::getNumExist() const{
+uint32_t Design::getNumExist() const{
   return exist;
 }
 
@@ -101,8 +118,8 @@ std::string Design::getFeedback() const{
     return feedback;
 }
 
-double Design::getPropertyValue(unsigned int propid) const{
-  std::map<unsigned int, PropertyValue>::const_iterator itpos = properties.find(propid);
+double Design::getPropertyValue(uint32_t propid) const{
+  std::map<uint32_t, PropertyValue>::const_iterator itpos = properties.find(propid);
   if(itpos != properties.end()){
     PropertyValue pv = itpos->second;
     return pv.getValue();
@@ -118,11 +135,11 @@ uint64_t Design::getModTime() const{
     return timestamp;
 }
 
-void Design::setDesignId(unsigned int id){
+void Design::setDesignId(uint32_t id){
   designid = id;
 }
 
-void Design::setCategoryId(unsigned int id){
+void Design::setCategoryId(uint32_t id){
   catid = id;
 }
 
@@ -134,11 +151,11 @@ void Design::setDescription(const std::string& d){
   description = d;
 }
 
-void Design::setOwner(unsigned int o){
+void Design::setOwner(uint32_t o){
   owner = o;
 }
 
-void Design::setComponents(std::map<unsigned int, unsigned int> cl){
+void Design::setComponents(std::map<uint32_t, uint32_t> cl){
   components = cl;
   valid = false;
   properties.clear();
@@ -170,7 +187,7 @@ void Design::eval(){
   scheme_intr->evalDesign(this);
 }
 
-void Design::setPropertyValues(std::map<unsigned int, PropertyValue> pvl){
+void Design::setPropertyValues(std::map<uint32_t, PropertyValue> pvl){
   properties = pvl;
 }
 
