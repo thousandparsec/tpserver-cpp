@@ -1276,13 +1276,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
   for(int i = 0; i < numdesigns; i++){
     Frame *of = curConnection->createFrame(frame);
     int designnum = frame->unpackInt();
-    Design* design = ds->getDesign(designnum);
-    std::set<uint32_t> visibleDesigns = player->getPlayerView()->getVisibleDesigns();
-    if(design == NULL || visibleDesigns.find(designnum) == visibleDesigns.end()){
-       of->createFailFrame(fec_NonExistant, "No Such Design");
-    }else{
-      design->packFrame(of);
-    }
+    player->getPlayerView()->processGetDesign(designnum, of);
     curConnection->sendFrame(of);
   }
 }
@@ -1392,50 +1386,8 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 }
 
 void PlayerAgent::processGetDesignIds(Frame* frame){
- Logger::getLogger()->debug("doing Get Design Ids frame");
-  
-  if(frame->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
-    curConnection->sendFrame(of);
-    return;
-  }
-  
-  if(frame->getDataLength() != 12){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    curConnection->sendFrame(of);
-    return;
-  }
-  
-  frame->unpackInt(); //seqnum
-  uint32_t snum = frame->unpackInt();
-  uint32_t numtoget = frame->unpackInt();
-  std::set<uint32_t> visibleDesigns = player->getPlayerView()->getVisibleDesigns();
-  if(snum > visibleDesigns.size()){
-    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_NonExistant, "Starting number too high");
-    curConnection->sendFrame(of);
-    return;
-  }
-  if(numtoget > visibleDesigns.size() - snum){
-    numtoget = visibleDesigns.size() - snum;
-  }
-    
   Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_DesignIds_List);
-  of->packInt(0);
-  of->packInt(visibleDesigns.size() - snum - numtoget);
-  of->packInt(numtoget);
-  std::set<unsigned int>::iterator itcurr = visibleDesigns.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(*itcurr);
-    of->packInt64(0ll);
-  }
- 
+  player->getPlayerView()->processGetDesignIds(frame, of);
   curConnection->sendFrame(of);
 }
 
