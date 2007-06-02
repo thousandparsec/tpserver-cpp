@@ -364,7 +364,12 @@ void Avahi::createServices(){
   
   for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
       itcurr != services.end(); ++itcurr){
-        std::string servicename = std::string("_") + itcurr->first + "._tcp";
+        std::string sertype = itcurr->first;
+        size_t pos;
+        if((pos = sertype.find('+')) != sertype.npos){
+          sertype.replace(pos,1, "-");
+        }
+        std::string servicename = std::string("_") + sertype + "._tcp";
     // after the port, there is a NULL terminated list of strings for the TXT field
     if ((ret = avahi_entry_group_add_service_strlst(group, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC,
          (AvahiPublishFlags)0, name, servicename.c_str(), NULL, NULL, itcurr->second, txtfields)) < 0) {
