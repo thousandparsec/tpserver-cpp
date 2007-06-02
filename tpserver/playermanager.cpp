@@ -29,6 +29,7 @@
 #include "board.h"
 #include "message.h"
 #include "designstore.h"
+#include "design.h"
 
 #include "playermanager.h"
 
@@ -88,7 +89,8 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         PlayerView* playerview = rtn->getPlayerView();
         std::set<uint32_t> designs = Game::getGame()->getDesignStore()->getDesignIds();
         for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
-          playerview->addVisibleDesign(*desid);
+          Design* d = Game::getGame()->getDesignStore()->getDesign(*desid);
+          playerview->addVisibleDesign(d->copy());
         }
         playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
         Game::getGame()->getPersistence()->updatePlayer(rtn);
@@ -113,7 +115,8 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 playerview = op->getPlayerView();
                 playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
                 for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
-                  playerview->addVisibleDesign(*desid);
+                  Design* d = Game::getGame()->getDesignStore()->getDesign(*desid);
+                  playerview->addVisibleDesign(d->copy());
                 }
                 //to update the difflist, etc
                 playerview->doOnceATurn();

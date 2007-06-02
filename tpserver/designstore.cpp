@@ -192,7 +192,7 @@ bool DesignStore::addDesign(Design* d){
   d->eval();
   designs[d->getDesignId()] = d;
   getCategory(d->getCategoryId())->doAddDesign(d);
-  playerview->addVisibleDesign(d->getDesignId());
+  playerview->addVisibleDesign(d->copy());
   if(d->isValid()){
     playerview->addUsableDesign(d->getDesignId());
   }

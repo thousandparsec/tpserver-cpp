@@ -27,6 +27,7 @@
 #include <stdint.h>
 
 class Frame;
+class Design;
 class Component;
 
 struct ModListItem{
@@ -49,12 +50,14 @@ public:
   bool isVisibleObject(unsigned int objid);
   std::set<uint32_t> getVisibleObjects() const;
 
-  void addVisibleDesign(unsigned int designid);
-  void addUsableDesign(unsigned int designid);
-  void removeUsableDesign(unsigned int designid);
-  bool isUsableDesign(unsigned int designid) const;
-  std::set<unsigned int> getUsableDesigns() const;
+  void addVisibleDesign(Design* design);
+  void addUsableDesign(uint32_t designid);
+  void removeUsableDesign(uint32_t designid);
+  bool isUsableDesign(uint32_t designid) const;
+  std::set<uint32_t> getUsableDesigns() const;
   std::set<uint32_t> getVisibleDesigns() const;
+  void processGetDesign(uint32_t designid, Frame* frame) const;
+  void processGetDesignIds(Frame* in, Frame* out) const;
 
   void addVisibleComponent(Component* comp);
   void addUsableComponent(uint32_t compid);
@@ -75,6 +78,10 @@ private:
 
   std::set<uint32_t> visibleDesigns;
   std::set<uint32_t> usableDesigns;
+  std::map<uint32_t, Design*> cacheDesigns;
+  std::list<ModListItem> difflistDesigns;
+  std::map<uint32_t, ModListItem> turnDesigndifflist;
+  uint32_t currDesignSeq;
 
   std::set<uint32_t> visibleComponents;
   std::set<uint32_t> usableComponents;

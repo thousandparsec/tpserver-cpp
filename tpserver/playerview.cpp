@@ -36,7 +36,9 @@ ModListItem::ModListItem() : id(0), modtime(0){
 ModListItem::ModListItem(uint32_t nid, uint64_t nmt) : id(nid), modtime(nmt){
 }
 
-PlayerView::PlayerView() : pid(0), visibleObjects(), currObjSeq(0), visibleDesigns(), usableDesigns(),
+PlayerView::PlayerView() : pid(0), visibleObjects(), currObjSeq(0), 
+    visibleDesigns(), usableDesigns(), cacheDesigns(),
+    difflistDesigns(), turnDesigndifflist(), currDesignSeq(0),
     visibleComponents(), usableComponents(), cacheComponents(),
     difflistComponents(), turnCompdifflist(), currCompSeq(0){
 }
@@ -50,6 +52,22 @@ void PlayerView::setPlayerId(uint32_t newid){
 
 void PlayerView::doOnceATurn(){
   DesignStore* ds = Game::getGame()->getDesignStore();
+  
+  //Designs
+  // check for updated usable designs
+  for(std::set<uint32_t>::iterator itcurr = usableDesigns.begin();
+      itcurr != usableDesigns.end(); ++itcurr){
+    Design* design = ds->getDesign(*itcurr);
+    if(design->getModTime() > cacheDesigns[*itcurr]->getModTime()){
+      addVisibleDesign(design->copy());
+    }
+  }
+  // build new diff list
+  for(std::map<uint32_t, ModListItem>::iterator itcurr = turnDesigndifflist.begin();
+      itcurr != turnDesigndifflist.end(); ++itcurr){
+    difflistDesigns.push_back(itcurr->second);
+  }
+  turnDesigndifflist.clear();
   
   //Components
   // check for updated usable components
@@ -81,31 +99,166 @@ std::set<uint32_t> PlayerView::getVisibleObjects() const{
   return visibleObjects;
 }
 
-void PlayerView::addVisibleDesign(unsigned int designid){
-  visibleDesigns.insert(designid);
+void PlayerView::addVisibleDesign(Design* design){
+  bool needtoupdate = false;
+  uint32_t designid = design->getDesignId();
+  if(visibleDesigns.find(designid) != visibleDesigns.end()){
+    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
+      needtoupdate = true;
+    }
+  }else{
+    needtoupdate = true;
+  }
+  if(needtoupdate){
+    design->setModTime(time(NULL));
+    visibleDesigns.insert(designid);
+    if(cacheDesigns.find(designid) != cacheDesigns.end()){
+      delete cacheDesigns[designid];
+    }
+    cacheDesigns[designid] = design;
+    currDesignSeq++;
+    turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
+  }else{
+    delete design;
+  }
 }
 
-void PlayerView::addUsableDesign(unsigned int designid){
+void PlayerView::addUsableDesign(uint32_t designid){
   usableDesigns.insert(designid);
+  bool needtoupdate = false;
+  Design* design = Game::getGame()->getDesignStore()->getDesign(designid);
+  if(visibleDesigns.find(designid) == visibleDesigns.end()){
+    needtoupdate = true;
+  }else{
+    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
+      needtoupdate = true;
+    }
+  }
+  if(needtoupdate){
+    addVisibleDesign(design->copy());
+  }
   Logger::getLogger()->debug("Added valid design");
 }
 
-void PlayerView::removeUsableDesign(unsigned int designid){
-  std::set<unsigned int>::iterator dicurr = usableDesigns.find(designid);
+void PlayerView::removeUsableDesign(uint32_t designid){
+  std::set<uint32_t>::iterator dicurr = usableDesigns.find(designid);
   if(dicurr != usableDesigns.end())
     usableDesigns.erase(dicurr);
 }
 
-bool PlayerView::isUsableDesign(unsigned int designid) const{
+bool PlayerView::isUsableDesign(uint32_t designid) const{
   return (usableDesigns.find(designid) != usableDesigns.end());
 }
 
-std::set<unsigned int> PlayerView::getUsableDesigns() const{
+std::set<uint32_t> PlayerView::getUsableDesigns() const{
   return usableDesigns;
 }
 
 std::set<uint32_t> PlayerView::getVisibleDesigns() const{
   return visibleDesigns;
+}
+
+void PlayerView::processGetDesign(uint32_t designid, Frame* frame) const{
+  if(visibleComponents.find(designid) == visibleDesigns.end()){
+    frame->createFailFrame(fec_NonExistant, "No Such Design");
+  }else{
+    Design* design = cacheDesigns.find(designid)->second;
+    design->packFrame(frame);
+  }
+}
+
+void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
+  Logger::getLogger()->debug("doing Get Design Ids frame");
+  
+  if(in->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    out->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
+    return;
+  }
+  
+  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
+    out->createFailFrame(fec_FrameError, "Invalid frame");
+    return;
+  }
+  
+  uint32_t seqnum = in->unpackInt();
+  uint32_t snum = in->unpackInt();
+  uint32_t numtoget = in->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffffULL;
+  if(in->getVersion() >= fv0_4){
+    fromtime = in->unpackInt64();
+  }
+  
+  if(seqnum != currDesignSeq && seqnum != 0xffffffff){
+    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    return;
+  }
+  
+  
+  
+  if(fromtime == 0xffffffffffffffffULL){
+  
+    if(snum > visibleDesigns.size()){
+      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
+      out->createFailFrame(fec_NonExistant, "Starting number too high");
+      return;
+    }
+    if(numtoget > visibleDesigns.size() - snum){
+      numtoget = visibleDesigns.size() - snum;
+    }
+    
+    out->setType(ft03_DesignIds_List);
+    out->packInt(currDesignSeq);
+    out->packInt(visibleDesigns.size() - snum - numtoget);
+    out->packInt(numtoget);
+    std::set<uint32_t>::iterator itcurr = visibleDesigns.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+      out->packInt(*itcurr);
+      out->packInt64(cacheDesigns.find(*itcurr)->second->getModTime());
+    }
+    
+    if(out->getVersion() >= fv0_4){
+      out->packInt64(fromtime);
+    }
+    
+  }else{
+    
+    // get list of changes since fromtime
+    
+    std::list<ModListItem> difflist;
+    for(std::list<ModListItem>::const_iterator itcurr = difflistDesigns.begin();
+        itcurr != difflistDesigns.end(); ++itcurr){
+      if((*itcurr).modtime >= fromtime){
+        difflist.insert(difflist.end(), itcurr, difflistDesigns.end());
+        break;
+      }
+    }
+    
+    if(snum > difflist.size()){
+      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, difflist.size());
+      out->createFailFrame(fec_NonExistant, "Starting number too high");
+      return;
+    }
+    if(numtoget > difflist.size() - snum){
+      numtoget = difflist.size() - snum;
+    }
+    
+    out->setType(ft03_DesignIds_List);
+    out->packInt(currDesignSeq);
+    out->packInt(difflist.size() - snum - numtoget);
+    out->packInt(numtoget);
+    
+    std::list<ModListItem>::iterator itcurr = difflist.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+      out->packInt((*itcurr).id);
+      out->packInt64((*itcurr).modtime);
+    }
+    
+    out->packInt64(fromtime);
+    
+  }
 }
 
 void PlayerView::addVisibleComponent(Component* comp){
@@ -211,9 +364,6 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
     
   }else{
     
-    out->setType(ft03_ComponentIds_List);
-    out->packInt(currCompSeq);
-    
     // get list of changes since fromtime
     
     std::list<ModListItem> difflist;
@@ -234,7 +384,9 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
       numtoget = difflist.size() - snum;
     }
     
-    out->packInt(visibleComponents.size() - snum - numtoget);
+    out->setType(ft03_ComponentIds_List);
+    out->packInt(currCompSeq);
+    out->packInt(difflist.size() - snum - numtoget);
     out->packInt(numtoget);
     
     std::list<ModListItem>::iterator itcurr = difflist.begin();
