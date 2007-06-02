@@ -115,10 +115,14 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
                   playerview->addVisibleDesign(*desid);
                 }
+                //to update the difflist, etc
+                playerview->doOnceATurn();
                 Game::getGame()->getPersistence()->updatePlayer(op);
                 //end HACK
             }
         }
+
+        rtn->getPlayerView()->doOnceATurn();
 
       }else{
           // player can not be added
