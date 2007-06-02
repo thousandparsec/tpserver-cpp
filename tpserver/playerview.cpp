@@ -207,6 +207,12 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
       numtoget = visibleDesigns.size() - snum;
     }
     
+    if(numtoget > 87379){
+      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+      return;
+    }
+    
     out->setType(ft03_DesignIds_List);
     out->packInt(currDesignSeq);
     out->packInt(visibleDesigns.size() - snum - numtoget);
@@ -347,6 +353,12 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
       numtoget = visibleComponents.size() - snum;
     }
     
+    if(numtoget > 87379){
+      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+      return;
+    }
+    
     out->setType(ft03_ComponentIds_List);
     out->packInt(currCompSeq);
     out->packInt(visibleComponents.size() - snum - numtoget);
@@ -382,6 +394,12 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
     }
     if(numtoget > difflist.size() - snum){
       numtoget = difflist.size() - snum;
+    }
+    
+    if(numtoget > 87379){
+      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+      return;
     }
     
     out->setType(ft03_ComponentIds_List);
