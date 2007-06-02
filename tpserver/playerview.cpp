@@ -171,7 +171,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
   uint32_t seqnum = in->unpackInt();
   uint32_t snum = in->unpackInt();
   uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffff;
+  uint64_t fromtime = 0xffffffffffffffffULL;
   if(in->getVersion() >= fv0_4){
     fromtime = in->unpackInt64();
   }
@@ -183,7 +183,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
   
   
   
-  if(fromtime == 0xffffffffffffffff){
+  if(fromtime == 0xffffffffffffffffULL){
   
     if(snum > visibleComponents.size()){
       Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
