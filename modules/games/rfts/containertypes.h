@@ -1,6 +1,6 @@
-#ifndef RFTS_H
-#define RFTS_H
-/*  RFTS rulesset class
+#ifndef containertypes_H
+#define containertypes_H
+/*  containertypes class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -20,34 +20,16 @@
  *
  */
 
-#include <tpserver/ruleset.h>
-
 namespace RFTS_ {
 
-class Rfts : public Ruleset {
- public:
-   Rfts();
-   virtual ~Rfts();
-
-   virtual std::string getName();
-   virtual std::string getVersion();
-      
-   virtual void initGame();
-   virtual void createGame();
-   virtual void startGame();
-
-   virtual bool onAddPlayer(Player *player);
-   virtual void onPlayerAdded(Player *player);
- private:
+namespace ContainerTypes_ {
    
-   void setObjectTypes();
-   void setOrderTypes();
+typedef enum {
+   EMPTY_OBJECT = 1,
+   PLANET = 2
+} ContainerType;
 
-   void createDesignCategories();
-   void createResources();
-
-   static const unsigned MAX_PLAYERS = 4;
-};
+}
 
 }
 
