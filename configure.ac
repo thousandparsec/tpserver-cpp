@@ -316,6 +316,7 @@ modules/persistence/mysql/Makefile
 modules/tpcl/Makefile
 modules/tpcl/guile/Makefile
 modules/tpcl/mzscheme/Makefile
+modules/games/rfts/Makefile
 ]) 
 
 AC_OUTPUT
