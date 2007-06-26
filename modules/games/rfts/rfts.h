@@ -20,11 +20,13 @@
  *
  */
 
+#include <map>
+
 #include <tpserver/ruleset.h>
 
 namespace RFTS_ {
 
-class Rfts : public Ruleset {
+class Rfts : public ::Ruleset {
  public:
    Rfts();
    virtual ~Rfts();
@@ -40,13 +42,25 @@ class Rfts : public Ruleset {
    virtual void onPlayerAdded(Player *player);
  private:
    
-   void setObjectTypes();
-   void setOrderTypes();
+   void setObjectTypes() const;
+   void setOrderTypes() const;
 
-   void createDesignCategories();
-   void createResources();
+   void createDesignCategories() const;
+   void createProperties();
+   void createComponents();
+   void createResources() const;
 
-   static const unsigned MAX_PLAYERS = 4;
+   void createUniverse() const;
+
+   Component* createEngineComponent();
+   Component* createBattleComponent();
+   Component* createTransportComponent();
+
+   Design* createMarkDesign(Player *owner, int level) const;
+   Design* createScoutDesign(Player *owner) const;
+
+   std::map<std::string,unsigned int>  propertyIndex; // could use enum & array, but this is easy
+   static const unsigned MAX_PLAYERS = 4; // to be data-driven?
 };
 
 }
