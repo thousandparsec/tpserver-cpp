@@ -150,6 +150,7 @@ void Rfts::createProperties() {
    propertyIndex[prop->getName()] = prop->getPropertyId();
    
    // speed (non-battle)
+   prop = new Property(*prop);
    prop->setCategoryId(DesignCategories_::NON_BATTLE_SHIPS);
    ds->addProperty(prop);
 
@@ -166,6 +167,7 @@ void Rfts::createProperties() {
    propertyIndex[prop->getName()] = prop->getPropertyId();
 
    // attack (pdb)
+   prop = new Property(*prop);
    prop->setCategoryId(DesignCategories_::PDBS);
    ds->addProperty(prop);
 
@@ -181,11 +183,13 @@ void Rfts::createProperties() {
    ds->addProperty(prop);
    propertyIndex[prop->getName()] = prop->getPropertyId();
    
-   // armour (pdb)
+   // armour (pdb)   
+   prop = new Property(*prop);
    prop->setCategoryId(DesignCategories_::PDBS);
    ds->addProperty(prop);
 
    // colonise (non-battle)
+   prop = new Property();
    prop->setCategoryId(DesignCategories_::NON_BATTLE_SHIPS);
    prop->setName("Colonise");
    prop->setDisplayName("Can Colonise");
@@ -269,6 +273,14 @@ Component* Rfts::createTransportComponent() {
    return trans;
 }
 
+void Rfts::createUniverse() const {
+   //todo - something
+}
+
+void Rfts::createResources() const {
+   //todo - something
+}
+
 void Rfts::startGame() {
 	DEBUG_FN_PRINT();
 }
@@ -277,7 +289,7 @@ Design* Rfts::createMarkDesign(Player *owner, int level) const {
    Design* mark = new Design();
    std::map<unsigned int, unsigned int> componentList;
 
-   mark->setCategoryId(1); // check (exactly what category is this?)
+   mark->setCategoryId(1); // check
    mark->setName( "Mark"); // add level
    mark->setDescription("Mark ship");
    mark->setOwner( owner->getID());
@@ -294,7 +306,7 @@ Design* Rfts::createScoutDesign(Player *owner) const {
    Design* scout = new Design();
    std::map<unsigned int, unsigned int> componentList;
 
-   scout->setCategoryId(1); // check (exactly what category is this?)
+   scout->setCategoryId(1); // check
    scout->setName( "Scout");
    scout->setDescription("Scout ship");
    scout->setOwner( owner->getID());
