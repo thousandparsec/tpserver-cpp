@@ -27,10 +27,15 @@
 #include <tpserver/component.h>
 #include <tpserver/design.h>
 #include <tpserver/category.h>
-
-#include <tpserver/objectdatamanager.h>
 #include <tpserver/designstore.h>
+
+#include <tpserver/object.h>
+#include <tpserver/objectdatamanager.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/objectmanager.h>
+#include <tpserver/objectparameter.h>
 
 
 #include "emptyobject.h"
@@ -63,11 +68,11 @@ Rfts::~Rfts() {
 }
 
 std::string Rfts::getName() {
-  return "TP RFTS";
+   return "TP RFTS";
 }
 
 std::string Rfts::getVersion() {
-  return "0.0";
+   return "0.0";
 }
 
 void Rfts::initGame() {
@@ -86,12 +91,18 @@ void Rfts::setObjectTypes() const {
    DEBUG_FN_PRINT();
 
    ObjectDataManager* obdm = Game::getGame()->getObjectDataManager();
-   EmptyObject *ss = new EmptyObject();
+   EmptyObject *eo;
 
-   ss->setTypeName("Star System"); 
-   ss->setTypeDescription("A system of stars!");
-   
-   obdm->addNewObjectType(ss);
+   eo = new EmptyObject();
+   eo->setTypeName("Universe");
+   eo->setTypeDescription("The entire universe");
+   obdm->addNewObjectType(eo);
+
+   eo = new EmptyObject();
+   eo->setTypeName("Star System"); 
+   eo->setTypeDescription("A system of stars!");
+   obdm->addNewObjectType(eo);
+
    obdm->addNewObjectType(new Planet);
    //obdm->addNewObjectType(new Fleet);
 }
@@ -281,7 +292,61 @@ Component* Rfts::createTransportComponent() {
 }
 
 void Rfts::createUniverse() const {
-   //todo - something
+   ObjectManager *objman = Game::getGame()->getObjectManager();
+
+   uint32_t uniType = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
+   IGObject *universe = objman->createNewObject();
+
+   universe->setType(uniType);
+   universe->setName("The Universe");
+   EmptyObject* uniData = static_cast<EmptyObject*>(universe->getObjectData());
+   uniData->setPosition(Vector3d(0ll, 0ll, 0ll));
+   objman->addObject(universe);   
+   
+   createStarSystems(universe);
+}
+
+void Rfts::createStarSystems(IGObject *universe) const {
+
+   // todo (make all the systems... and functions for each)
+   // just create a single test system for now
+
+   Game *game = Game::getGame();
+   ObjectManager *objman = game->getObjectManager();
+   //ResourceManager* resman = game->getResourceManager();
+   IGObject *starSys = game->getObjectManager()->createNewObject();
+   IGObject *planet = game->getObjectManager()->createNewObject();   
+   //std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+   
+   uint32_t ssType = game->getObjectDataManager()->getObjectTypeByName("Star System");
+   uint32_t planetType = game->getObjectDataManager()->getObjectTypeByName("Planet");
+   
+   starSys->setType(ssType);
+   starSys->setName("Star System1");
+   EmptyObject* starSysData = static_cast<EmptyObject*>(starSys->getObjectData());
+   starSysData->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+   starSys->addToParent(universe->getID());
+   objman->addObject(starSys);
+   
+   planet->setType(planetType);
+   planet->setName("Planet1");
+   Planet* planetData = static_cast<Planet*>(planet->getObjectData());
+   planetData->setSize(2);
+   planetData->setPosition(starSysData->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+   // set up resources
+   //ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
+   //((Planet*)(planet->getObjectData()))->setResources(ress);
+   
+   OrderQueue *planetOrders = new OrderQueue();
+   planetOrders->setQueueId(planet->getID());
+   planetOrders->addOwner(0); // check
+   game->getOrderManager()->addOrderQueue(planetOrders);
+   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
+   oqop->setQueueId(planetOrders->getQueueId());
+   //planetData->setDefaultOrderTypes();
+   
+   planet->addToParent(starSys->getID());
+   objman->addObject(planet);
 }
 
 void Rfts::createResources() const {
@@ -323,7 +388,6 @@ Design* Rfts::createScoutDesign(Player *owner) const {
    scout->setOwner( owner->getID());
    componentList[ ds->getComponentByName("Engine1") ] = 1;
    scout->setComponents(componentList);
-
 
     return scout;
 }

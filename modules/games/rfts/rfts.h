@@ -24,6 +24,8 @@
 
 #include <tpserver/ruleset.h>
 
+class IGObject;
+
 namespace RFTS_ {
 
 class Rfts : public ::Ruleset {
@@ -51,6 +53,7 @@ class Rfts : public ::Ruleset {
    void createResources() const;
 
    void createUniverse() const;
+   void createStarSystems(IGObject *universe) const;
 
    Component* createEngineComponent(char techLevel);
    Component* createBattleComponent(char techLevel);
