@@ -150,7 +150,6 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000)) \" speedy units\")) ) )");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
-   propertyIndex[prop->getName()] = prop->getPropertyId();
    
    // speed (non-battle)
    prop = new Property(*prop);
@@ -167,7 +166,6 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
-   propertyIndex[prop->getName()] = prop->getPropertyId();
 
    // attack (pdb)
    prop = new Property(*prop);
@@ -184,7 +182,6 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
-   propertyIndex[prop->getName()] = prop->getPropertyId();
    
    // armour (pdb)   
    prop = new Property(*prop);
@@ -227,6 +224,8 @@ Component* Rfts::createEngineComponent(char techLevel) {
    Component* engine = new Component();
    map<unsigned int, string> propList;
 
+   DesignStore *ds = Game::getGame()->getDesignStore();
+
    engine->setCategoryId(1); // check
    engine->setName( string("Engine") + techLevel);
    engine->setDescription( "A ship engine, required if you want your ship to move!");
@@ -235,14 +234,17 @@ Component* Rfts::createEngineComponent(char techLevel) {
       /*"(if (= (designType._num-components design) 1) "
       "(cons #t \"\") "*/
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[propertyIndex["Speed"]] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
+   propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
+
    return engine;
 }
 
 Component* Rfts::createBattleComponent(char techLevel) {
    Component *battle = new Component();
    map<unsigned int, string> propList;
+
+   DesignStore *ds = Game::getGame()->getDesignStore();
 
    battle->setCategoryId(1); // check
    battle->setName( string("Battle") + techLevel);
@@ -252,8 +254,8 @@ Component* Rfts::createBattleComponent(char techLevel) {
       /*"(if (= (designType._num-components design) 1) "
       "(cons #t \"\") "*/
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[propertyIndex["Attack"]] = string("(lambda (design) (* 5") + techLevel + string("))");
-   propList[propertyIndex["Armour"]] = string("(lambda (design) (* 5") + techLevel + string("))");
+   propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
+   propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    battle->setPropertyList(propList);
    return battle;
 }
@@ -263,6 +265,8 @@ Component* Rfts::createTransportComponent() {
    Component *trans = new Component();
    map<unsigned int, string> propList;
 
+   DesignStore *ds = Game::getGame()->getDesignStore();
+
    trans->setCategoryId(1); // check
    trans->setName( "Transport");
    trans->setDescription( "A colonist transport bay");
@@ -271,7 +275,7 @@ Component* Rfts::createTransportComponent() {
       /*"(if (= (designType._num-components design) 1) "
       "(cons #t \"\") "*/
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[propertyIndex["Colonise"]] = "(lambda (design) 1)";   
+   propList[ ds->getPropertyByName("Colonise") ] = "(lambda (design) 1)";   
    trans->setPropertyList(propList);
    return trans;
 }

@@ -60,7 +60,6 @@ class Rfts : public ::Ruleset {
    Design* createScoutDesign(Player *owner) const;
    Design* createTransportDesign(Player *ownder) const;
 
-   std::map<std::string, unsigned int> propertyIndex;
    static const unsigned MAX_PLAYERS = 4; // to be data-driven?
 };
 
