@@ -30,10 +30,14 @@
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/objectparametergroup.h>
+#include <tpserver/game.h>
+#include <tpserver/ordermanager.h>
 
 #include "containertypes.h"
+#include "nop.h"
 
 #include "planet.h"
+
 
 namespace RFTS_ {
 
@@ -96,10 +100,13 @@ Planet::~Planet() {
 }
 
 void Planet::setDefaultOrderTypes() {
-   //todo set orders
+   OrderManager *om = Game::getGame()->getOrderManager();
+   std::set<uint32_t> allowedlist;
+   allowedlist.insert(om->getOrderTypeByName("No Operation"));
+   orderqueue->setAllowedOrders(allowedlist);
 }
 
-void Planet::doOnceATurn(IGObject * obj) {
+void Planet::doOnceATurn(IGObject* obj) {
 
 }
 

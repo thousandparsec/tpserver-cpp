@@ -37,7 +37,7 @@
 #include <tpserver/objectmanager.h>
 #include <tpserver/objectparameter.h>
 
-
+#include "nop.h"
 #include "emptyobject.h"
 #include "planet.h"
 
@@ -108,7 +108,7 @@ void Rfts::setObjectTypes() const {
 void Rfts::setOrderTypes() const {
    OrderManager* orm = Game::getGame()->getOrderManager();
 
-   // todo (make orders :p)
+   orm->addOrderType(new Nop());
 }
 
 void Rfts::createGame() {

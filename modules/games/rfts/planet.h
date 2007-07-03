@@ -23,6 +23,7 @@
 #include <tpserver/objectdata.h>
 #include <tpserver/vector3d.h>
 
+class IGObject;
 class Position3dObjectParam;
 class SizeObjectParam;
 class ReferenceObjectParam;
@@ -40,7 +41,7 @@ class Planet : public ObjectData {
    virtual ObjectData* clone();
 
    virtual void packExtraData(Frame * frame);
-   virtual void doOnceATurn(IGObject * obj);
+   virtual void doOnceATurn(IGObject* obj);
    virtual int getContainerType();
 
    void setDefaultOrderTypes();
