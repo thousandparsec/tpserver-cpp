@@ -70,6 +70,9 @@ void DesignStore::init(){
     ids = persistence->getComponentIds();
     for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
         components[*itcurr] = NULL;
+        Component* tmpcomp = persistence->retrieveComponent(*itcurr);
+        componentIndex[tmpcomp->getName()] = (*itcurr);
+        delete tmpcomp;
     }
     ids = persistence->getPropertyIds();
     for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
@@ -250,6 +253,7 @@ void DesignStore::addComponent(Component* c){
   pl[p->getPropertyId()] = "(lambda (design) 1)";
   c->setPropertyList(pl);
   components[c->getComponentId()] = c;
+  componentIndex[c->getName()] = c->getComponentId();
     Game::getGame()->getPersistence()->saveComponent(c);
 }
 
@@ -262,6 +266,10 @@ void DesignStore::addProperty(Property* p){
 
 unsigned int DesignStore::getCategoryByName(const std::string& name){
   return categoryIndex[name];
+}
+
+uint32_t DesignStore::getComponentByName(const std::string& name){
+  return componentIndex[name];
 }
 
 unsigned int DesignStore::getPropertyByName(const std::string& name){
