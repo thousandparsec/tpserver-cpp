@@ -40,7 +40,6 @@
 
 #include "emptyobject.h"
 #include "planet.h"
-#include "designcategories.h"
 
 #include "rfts.h"
 
@@ -118,7 +117,11 @@ void Rfts::createGame() {
    
    Game *game = game->getGame();
    
-   createDesignCategories();
+   // create general category
+   Category* cat = new Category();
+   cat->setName("Ships");
+   cat->setDescription("The Battle ship design & component category");
+   game->getDesignStore()->addCategory(cat);
 
    createProperties();
 
@@ -130,31 +133,13 @@ void Rfts::createGame() {
    createUniverse(); // wow that looks like a powerful function!
 }
 
-void Rfts::createDesignCategories() const {
-   DesignStore* ds = Game::getGame()->getDesignStore();
-
-   Category* cat = new Category();
-   cat->setName("Battle Ships");
-   cat->setDescription("The Battle ship design & component category");
-   ds->addCategory(cat);
-   
-   cat = new Category();
-   cat->setName("Non-battle Ships");
-   cat->setDescription("The Non-battle ship design & component category");
-   ds->addCategory(cat);
-  
-   cat = new Category();
-   cat->setName("PDB");
-   cat->setDescription("The Planetary Defense Base design & component category");
-}
-
 void Rfts::createProperties() {
    Property* prop = new Property();
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   // speed (battle ships)
-   prop->setCategoryId(DesignCategories_::BATTLE_SHIPS);
-   prop->setRank(0);    // CHECK
+   // speed
+   prop->setCategoryId(1);
+   prop->setRank(0);
    prop->setName("Speed");
    prop->setDisplayName("Speed");
    prop->setDescription("The number of units the ship can move each turn");
@@ -162,14 +147,9 @@ void Rfts::createProperties() {
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
    
-   // speed (non-battle)
-   prop = new Property(*prop);
-   prop->setCategoryId(DesignCategories_::NON_BATTLE_SHIPS);
-   ds->addProperty(prop);
-
-   // attack (battle)
+   // attack
    prop = new Property();
-   prop->setCategoryId(DesignCategories_::BATTLE_SHIPS);
+   prop->setCategoryId(1);
    prop->setRank(0);
    prop->setName("Attack");
    prop->setDisplayName("Attack");
@@ -178,14 +158,9 @@ void Rfts::createProperties() {
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
 
-   // attack (pdb)
-   prop = new Property(*prop);
-   prop->setCategoryId(DesignCategories_::PDBS);
-   ds->addProperty(prop);
-
    // armour (battle)
    prop = new Property();
-   prop->setCategoryId(DesignCategories_::BATTLE_SHIPS);
+   prop->setCategoryId(1);
    prop->setRank(0);
    prop->setName("Armour");
    prop->setDisplayName("Armour");
@@ -193,15 +168,10 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
-   
-   // armour (pdb)   
-   prop = new Property(*prop);
-   prop->setCategoryId(DesignCategories_::PDBS);
-   ds->addProperty(prop);
 
    // colonise (non-battle)
    prop = new Property();
-   prop->setCategoryId(DesignCategories_::NON_BATTLE_SHIPS);
+   prop->setCategoryId(1);
    prop->setName("Colonise");
    prop->setDisplayName("Can Colonise");
    prop->setDescription("The ship colonise planets");

@@ -47,7 +47,6 @@ class Rfts : public ::Ruleset {
    void setObjectTypes() const;
    void setOrderTypes() const;
 
-   void createDesignCategories() const;
    void createProperties();
    void createComponents();
    void createResources() const;
