@@ -37,6 +37,8 @@
 
 namespace RFTS_ {
 
+using std::string;
+
 Planet::Planet() : ObjectData() {
    nametype = "Planet";
    typedesc = "A planet object";
@@ -77,7 +79,6 @@ Planet::Planet() : ObjectData() {
    group->addParameter(resources);
    paramgroups.push_back(group);
    
-   /* possibly not used
    group = new ObjectParameterGroup();
    group->setGroupId(4);
    group->setName("Orders");
@@ -87,13 +88,15 @@ Planet::Planet() : ObjectData() {
    orderqueue->setDescription("The queue of orders for this planet");
    
    group->addParameter(orderqueue);
-   paramgroups.push_back(group);
-   */
- 
+   paramgroups.push_back(group); 
 }
 
 Planet::~Planet() {
 
+}
+
+void Planet::setDefaultOrderTypes() {
+   //todo set orders
 }
 
 void Planet::doOnceATurn(IGObject * obj) {

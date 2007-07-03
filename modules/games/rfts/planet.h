@@ -42,6 +42,8 @@ class Planet : public ObjectData {
    virtual void packExtraData(Frame * frame);
    virtual void doOnceATurn(IGObject * obj);
    virtual int getContainerType();
+
+   void setDefaultOrderTypes();
    
    Vector3d getPosition() const;
    void setPosition(const Vector3d & np);
@@ -64,7 +66,7 @@ class Planet : public ObjectData {
    SizeObjectParam * size;
    ReferenceObjectParam * playerref;
    ResourceListObjectParam* resources;
-   //OrderQueueObjectParam * orderqueue; // might not need
+   OrderQueueObjectParam * orderqueue;
 };
 
 

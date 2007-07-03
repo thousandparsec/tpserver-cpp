@@ -82,7 +82,6 @@ void Rfts::initGame() {
    setObjectTypes();
 
    setOrderTypes();
-
 }
 
 void Rfts::setObjectTypes() const {
@@ -120,7 +119,7 @@ void Rfts::createGame() {
    // create general category
    Category* cat = new Category();
    cat->setName("Ships");
-   cat->setDescription("The Battle ship design & component category");
+   cat->setDescription("The ship design & component category");
    game->getDesignStore()->addCategory(cat);
 
    createProperties();
@@ -158,7 +157,7 @@ void Rfts::createProperties() {
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
 
-   // armour (battle)
+   // armour
    prop = new Property();
    prop->setCategoryId(1);
    prop->setRank(0);
@@ -169,7 +168,7 @@ void Rfts::createProperties() {
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
 
-   // colonise (non-battle)
+   // colonise
    prop = new Property();
    prop->setCategoryId(1);
    prop->setName("Colonise");
@@ -314,10 +313,9 @@ void Rfts::createStarSystems(IGObject *universe) const {
    planetOrders->setQueueId(planet->getID());
    planetOrders->addOwner(0); // check
    game->getOrderManager()->addOrderQueue(planetOrders);
-   DEBUG_FN_PRINT();
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
-   //oqop->setQueueId(planetOrders->getQueueId()); // SEG FAULTS
-   //planetData->setDefaultOrderTypes();
+   oqop->setQueueId(planetOrders->getQueueId()); // SEG FAULTS
+   planetData->setDefaultOrderTypes();
   
    planet->addToParent(starSys->getID());
    objman->addObject(planet);
