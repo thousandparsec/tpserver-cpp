@@ -125,7 +125,7 @@ void Rfts::createGame() {
    createComponents();
 
    createResources();
-
+   
    // set up universe (universe -> star sys -> planets)
    createUniverse(); // wow that looks like a powerful function!
 }
@@ -292,6 +292,8 @@ Component* Rfts::createTransportComponent() {
 }
 
 void Rfts::createUniverse() const {
+   DEBUG_FN_PRINT();
+
    ObjectManager *objman = Game::getGame()->getObjectManager();
 
    uint32_t uniType = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
@@ -307,7 +309,7 @@ void Rfts::createUniverse() const {
 }
 
 void Rfts::createStarSystems(IGObject *universe) const {
-
+   DEBUG_FN_PRINT();
    // todo (make all the systems... and functions for each)
    // just create a single test system for now
 
@@ -320,11 +322,12 @@ void Rfts::createStarSystems(IGObject *universe) const {
    
    uint32_t ssType = game->getObjectDataManager()->getObjectTypeByName("Star System");
    uint32_t planetType = game->getObjectDataManager()->getObjectTypeByName("Planet");
-   
+
    starSys->setType(ssType);
    starSys->setName("Star System1");
    EmptyObject* starSysData = static_cast<EmptyObject*>(starSys->getObjectData());
    starSysData->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+   
    starSys->addToParent(universe->getID());
    objman->addObject(starSys);
    
@@ -341,10 +344,11 @@ void Rfts::createStarSystems(IGObject *universe) const {
    planetOrders->setQueueId(planet->getID());
    planetOrders->addOwner(0); // check
    game->getOrderManager()->addOrderQueue(planetOrders);
+   DEBUG_FN_PRINT();
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
+   //oqop->setQueueId(planetOrders->getQueueId()); // SEG FAULTS
    //planetData->setDefaultOrderTypes();
-   
+  
    planet->addToParent(starSys->getID());
    objman->addObject(planet);
 }
