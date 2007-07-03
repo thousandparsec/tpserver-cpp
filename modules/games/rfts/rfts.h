@@ -52,14 +52,15 @@ class Rfts : public ::Ruleset {
 
    void createUniverse() const;
 
-   Component* createEngineComponent();
-   Component* createBattleComponent();
+   Component* createEngineComponent(char techLevel);
+   Component* createBattleComponent(char techLevel);
    Component* createTransportComponent();
 
-   Design* createMarkDesign(Player *owner, int level) const;
+   Design* createMarkDesign(Player *owner, char level) const;
    Design* createScoutDesign(Player *owner) const;
+   Design* createTransportDesign(Player *ownder) const;
 
-   std::map<std::string,unsigned int>  propertyIndex; // could use enum & array, but this is easy
+   std::map<std::string, unsigned int> propertyIndex;
    static const unsigned MAX_PLAYERS = 4; // to be data-driven?
 };
 
