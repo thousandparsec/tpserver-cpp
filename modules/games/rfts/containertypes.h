@@ -25,9 +25,9 @@ namespace RFTS_ {
 namespace ContainerTypes_ {
    
 typedef enum {
-   EMPTY_OBJECT = 0,
-   UNIVERSE,
-   PLANET
+   EmptyObject = 0,
+   Universe,
+   Planet
 } ContainerType;
 
 }
