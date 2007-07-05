@@ -1,6 +1,6 @@
-#ifndef emptyobject_H
-#define emptyobject_H
-/*  emptyobject class
+#ifndef universe_H
+#define universe_H
+/*  universe class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -20,41 +20,29 @@
  *
  */
 
+#include "emptyobject.h"
 
-#include <string>
-
-#include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
-
-class Position3dObjectParam;
 class SizeObjectParam;
 
 namespace RFTS_ {
 
-class EmptyObject:public ObjectData {
+class Universe : public EmptyObject 
+{
  public:
-   EmptyObject();
-   virtual ~EmptyObject() {};
-        
-   Vector3d getPosition() const;
-   void setPosition(const Vector3d & np);
+   Universe();
+   virtual ~Universe() {}
 
-   uint64_t getSize() const;
-   void setSize(uint64_t ns);
-   
-   virtual void packExtraData(Frame * frame);
-   virtual void doOnceATurn(IGObject * obj);
+   virtual void packExtraData(Frame* frame);
+   virtual void doOnceATurn(IGObject *obj);
    virtual int getContainerType();
 
    virtual ObjectData* clone();
-   
-   void setTypeName(const std::string& n);
-   void setTypeDescription(const std::string& d);
-   
- private:
-   Position3dObjectParam * pos;
-   SizeObjectParam * size;
 
+   void setTurn(int turn);
+   int getTurn() const;
+
+ private:
+   IntegerObjectParam *turn;
 };
 
 }

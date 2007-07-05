@@ -20,6 +20,7 @@
 
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/position3dobjectparam.h>
+#include <tpserver/sizeobjectparam.h>
 
 #include "containertypes.h"
 
@@ -28,17 +29,21 @@
 namespace RFTS_ {
 
 EmptyObject::EmptyObject() : ObjectData(){
-  pos = new Position3dObjectParam();
-  pos->setName("Position");
-  pos->setDescription("The position of the object");
+   pos = new Position3dObjectParam();
+   pos->setName("Position");
+   pos->setDescription("The position of the object");
+   
+   ObjectParameterGroup *group = new ObjectParameterGroup();
+   group->setGroupId(1); // check!
+   group->setName("Positional");
+   group->setDescription("Describes the position");
+   group->addParameter(pos);
 
-  ObjectParameterGroup *group = new ObjectParameterGroup();
-  group->setGroupId(1); // check!
-  group->setName("Positional");
-  group->setDescription("Describes the position");
-  group->addParameter(pos);
-
-  paramgroups.push_back(group);
+   size = new SizeObjectParam();
+   size->setName("Size");
+   size->setDescription("The diameter of the object");
+   group->addParameter(size);
+   paramgroups.push_back(group);
 }
 
 Vector3d EmptyObject::getPosition() const{
@@ -50,6 +55,14 @@ void EmptyObject::setPosition(const Vector3d & np){
   touchModTime();
 }
 
+uint64_t EmptyObject::getSize() const{
+  return size->getSize();
+}
+
+void EmptyObject::setSize(uint64_t ns){
+  size->setSize(ns);
+  touchModTime();
+}
 
 void EmptyObject::packExtraData(Frame * frame) {
 

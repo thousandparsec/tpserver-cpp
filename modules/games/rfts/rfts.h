@@ -42,7 +42,7 @@ class Rfts : public ::Ruleset {
 
    virtual bool onAddPlayer(Player *player);
    virtual void onPlayerAdded(Player *player);
- private:
+ private: 
    
    void setObjectTypes() const;
    void setOrderTypes() const;

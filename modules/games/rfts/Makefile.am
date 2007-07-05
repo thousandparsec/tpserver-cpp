@@ -4,10 +4,10 @@ rulesetlib_LTLIBRARIES = librfts.la
 
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
-librfts_la_SOURCES =  emptyobject.cpp nop.cpp planet.cpp \
-	rfts.cpp rftsturn.cpp
+librfts_la_SOURCES = emptyobject.cpp nop.cpp planet.cpp rfts.cpp rftsturn.cpp \
+	universe.cpp
 
 librfts_la_LDFLAGS = -module
 
-noinst_HEADERS = containertypes.h \
-	emptyobject.h nop.h planet.h rfts.h rftsturn.h
+noinst_HEADERS = containertypes.h emptyobject.h nop.h planet.h rfts.h \
+	rftsturn.h universe.h
