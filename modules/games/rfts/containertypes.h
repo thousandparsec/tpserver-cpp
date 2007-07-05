@@ -27,7 +27,10 @@ namespace ContainerTypes_ {
 typedef enum {
    EmptyObject = 0,
    Universe,
-   Planet
+   Galaxy,
+   StarSystem,
+   Planet,
+   Fleet
 } ContainerType;
 
 }

@@ -80,7 +80,7 @@ ObjectData* EmptyObject::clone(){
 }
 
 int EmptyObject::getContainerType(){
-  return ContainerTypes_::EMPTY_OBJECT;
+  return ContainerTypes_::EmptyObject;
 }
 
 void EmptyObject::setTypeName(const std::string& n){

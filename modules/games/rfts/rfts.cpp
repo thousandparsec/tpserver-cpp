@@ -312,7 +312,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    planetOrders->addOwner(0); // check
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId()); // SEG FAULTS
+   oqop->setQueueId(planetOrders->getQueueId());
    planetData->setDefaultOrderTypes();
   
    planet->addToParent(starSys->getID());

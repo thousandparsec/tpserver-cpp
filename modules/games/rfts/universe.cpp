@@ -61,7 +61,7 @@ ObjectData* Universe::clone() {
 }
 
 int Universe::getContainerType() {
-   return ContainerTypes_::UNIVERSE;
+   return ContainerTypes_::Universe;
 }
 
 void Universe::packExtraData(Frame *frame) {

@@ -29,6 +29,7 @@
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/integerobjectparam.h>
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
@@ -43,24 +44,12 @@ namespace RFTS_ {
 
 using std::string;
 
-Planet::Planet() : ObjectData() {
+Planet::Planet() : EmptyObject() {
    nametype = "Planet";
    typedesc = "A planet object";
+   setSize(2);
 
-   pos = new Position3dObjectParam();
-   pos->setName("Position");
-   pos->setDescription("The position of the planet");
    ObjectParameterGroup* group = new ObjectParameterGroup();
-   group->setGroupId(1);
-   group->setName("Positional");
-   group->setDescription("Positional information");
-   group->addParameter(pos);
-   size = new SizeObjectParam();
-   size->setName("Size");
-   size->setDescription( "The size of the planet");
-   size->setSize(2);
-   group->addParameter(size);
-   paramgroups.push_back(group);
    
    playerref = new ReferenceObjectParam();
    playerref->setName("Owner");
@@ -93,6 +82,20 @@ Planet::Planet() : ObjectData() {
    
    group->addParameter(orderqueue);
    paramgroups.push_back(group); 
+
+   // could take the place of resources
+   group = new ObjectParameterGroup();
+   group->setGroupId(5);
+   group->setName("Stats");
+   group->setDescription("The planet's stats");
+   resourcePoints = new IntegerObjectParam();
+   resourcePoints->setName("Resource Points");
+   resourcePoints->setDescription("The resource points for this planet");
+   resourcePoints->setValue(0);
+   group->addParameter(resourcePoints);
+   
+   paramgroups.push_back(group);
+   
 }
 
 Planet::~Planet() {
@@ -107,11 +110,14 @@ void Planet::setDefaultOrderTypes() {
 }
 
 void Planet::doOnceATurn(IGObject* obj) {
-
+   if(!(Game::getGame()->getTurnNumber() % 2))
+   {
+      // todo, calc resource points etc
+   }
 }
 
 int Planet::getContainerType() {
-   return ContainerTypes_::PLANET;
+   return ContainerTypes_::Planet;
 }
 
 ObjectData* Planet::clone() {
@@ -132,25 +138,6 @@ void Planet::packExtraData(Frame * frame){
         frame->packInt(itcurr->second.second);
         frame->packInt(0);
     }
-}
-
-
-Vector3d Planet::getPosition() const{
-  return pos->getPosition();
-}
-
-uint64_t Planet::getSize() const{
-  return size->getSize();
-}
-
-void Planet::setPosition(const Vector3d & np){
-  pos->setPosition(np);
-  touchModTime();
-}
-
-void Planet::setSize(uint64_t ns){
-  size->setSize(ns);
-  touchModTime();
 }
 
 uint32_t Planet::getOwner() const{

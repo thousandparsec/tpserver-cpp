@@ -20,19 +20,18 @@
  *
  */
 
-#include <tpserver/objectdata.h>
 #include <tpserver/vector3d.h>
 
-class IGObject;
-class Position3dObjectParam;
-class SizeObjectParam;
+#include "emptyobject.h"
+
 class ReferenceObjectParam;
 class ResourceListObjectParam;
 class OrderQueueObjectParam;
+class IntegerObjectParam;
 
 namespace RFTS_ {
 
-class Planet : public ObjectData {
+class Planet : public EmptyObject {
 
  public:
    Planet();
@@ -45,13 +44,7 @@ class Planet : public ObjectData {
    virtual int getContainerType();
 
    void setDefaultOrderTypes();
-   
-   Vector3d getPosition() const;
-   void setPosition(const Vector3d & np);
-
-   uint64_t getSize() const;
-   void setSize(uint64_t ns);
-        
+           
    uint32_t getOwner() const;
    void setOwner(uint32_t no);
 
@@ -63,11 +56,11 @@ class Planet : public ObjectData {
    bool removeResource(uint32_t restype, uint32_t amount);
 
  private:
-   Position3dObjectParam * pos;
-   SizeObjectParam * size;
    ReferenceObjectParam * playerref;
    ResourceListObjectParam* resources;
    OrderQueueObjectParam * orderqueue;
+
+   IntegerObjectParam *resourcePoints;
 };
 
 
