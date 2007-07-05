@@ -40,6 +40,7 @@
 #include "nop.h"
 #include "emptyobject.h"
 #include "planet.h"
+#include "universe.h"
 
 #include "rfts.h"
 
@@ -91,10 +92,7 @@ void Rfts::setObjectTypes() const {
    ObjectDataManager* obdm = Game::getGame()->getObjectDataManager();
    EmptyObject *eo;
 
-   eo = new EmptyObject();
-   eo->setTypeName("Universe");
-   eo->setTypeDescription("The entire universe");
-   obdm->addNewObjectType(eo);
+   obdm->addNewObjectType(new Universe);
 
    eo = new EmptyObject();
    eo->setTypeName("Star System"); 

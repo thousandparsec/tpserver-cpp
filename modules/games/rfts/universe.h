@@ -22,7 +22,7 @@
 
 #include "emptyobject.h"
 
-class SizeObjectParam;
+class IntegerObjectParam;
 
 namespace RFTS_ {
 
