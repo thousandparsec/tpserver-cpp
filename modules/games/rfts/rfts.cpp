@@ -299,7 +299,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    starSys->setType(ssType);
    starSys->setName("Star System1");
    EmptyObject* starSysData = static_cast<EmptyObject*>(starSys->getObjectData());
-   starSysData->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+   starSysData->setPosition(Vector3d(3000ll, 200ll, 0ll));
    
    starSys->addToParent(universe->getID());
    objman->addObject(starSys);
