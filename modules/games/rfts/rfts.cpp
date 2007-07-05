@@ -94,6 +94,12 @@ void Rfts::setObjectTypes() const {
 
    obdm->addNewObjectType(new Universe);
 
+   // added for tp03
+   eo = new EmptyObject();
+   eo->setTypeName("Galaxy");
+   eo->setTypeDescription("Galaxy");
+   obdm->addNewObjectType(eo);
+
    eo = new EmptyObject();
    eo->setTypeName("Star System"); 
    eo->setTypeDescription("A system of stars!");
