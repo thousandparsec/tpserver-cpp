@@ -34,7 +34,7 @@ EmptyObject::EmptyObject() : ObjectData(){
    pos->setDescription("The position of the object");
    
    ObjectParameterGroup *group = new ObjectParameterGroup();
-   group->setGroupId(1); // check!
+   group->setGroupId(1);
    group->setName("Positional");
    group->setDescription("Describes the position");
    group->addParameter(pos);

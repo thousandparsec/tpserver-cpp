@@ -349,6 +349,8 @@ Design* Rfts::createMarkDesign(Player *owner, char level) const {
    componentList[ ds->getComponentByName(string("Battle") + level) ] = 1;
    mark->setComponents(componentList);
 
+   ds->addDesign(mark); // check
+
    return mark;
 }
 
@@ -366,7 +368,9 @@ Design* Rfts::createScoutDesign(Player *owner) const {
    componentList[ ds->getComponentByName("Engine1") ] = 1;
    scout->setComponents(componentList);
 
-    return scout;
+   ds->addDesign(scout); // check
+
+   return scout;
 }
 
 bool Rfts::onAddPlayer(Player *player) {
