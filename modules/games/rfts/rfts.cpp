@@ -20,6 +20,7 @@
 
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 #include <tpserver/game.h>
 #include <tpserver/logging.h>
 
@@ -141,7 +142,7 @@ void Rfts::createProperties() {
    DesignStore *ds = Game::getGame()->getDesignStore();
 
    // speed
-   prop->setCategoryId(1);
+   prop->setCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Speed");
    prop->setDisplayName("Speed");
@@ -152,7 +153,7 @@ void Rfts::createProperties() {
    
    // attack
    prop = new Property();
-   prop->setCategoryId(1);
+   prop->setCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Attack");
    prop->setDisplayName("Attack");
@@ -163,7 +164,7 @@ void Rfts::createProperties() {
 
    // armour
    prop = new Property();
-   prop->setCategoryId(1);
+   prop->setCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Armour");
    prop->setDisplayName("Armour");
@@ -174,7 +175,7 @@ void Rfts::createProperties() {
 
    // colonise
    prop = new Property();
-   prop->setCategoryId(1);
+   prop->setCategoryId(ds->getCategoryByName("Ships"));
    prop->setName("Colonise");
    prop->setDisplayName("Can Colonise");
    prop->setDescription("The ship colonise planets");
@@ -210,13 +211,13 @@ Component* Rfts::createEngineComponent(char techLevel) {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   engine->setCategoryId(1); // check
+   engine->setCategoryId(ds->getCategoryByName("Ships"));
    engine->setName( string("Engine") + techLevel);
    engine->setDescription( "A ship engine, required if you want your ship to move!");
    engine->setTpclRequirementsFunction(
       "(lambda (design) "
-      /*"(if (= (designType._num-components design) 1) "
-      "(cons #t \"\") "*/
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
@@ -230,13 +231,13 @@ Component* Rfts::createBattleComponent(char techLevel) {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   battle->setCategoryId(1); // check
+   battle->setCategoryId(ds->getCategoryByName("Ships"));
    battle->setName( string("Battle") + techLevel);
    battle->setDescription( "Guns and armour for a ship");
    battle->setTpclRequirementsFunction(
       "(lambda (design) "
-      /*"(if (= (designType._num-components design) 1) "
-      "(cons #t \"\") "*/
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
@@ -251,13 +252,13 @@ Component* Rfts::createTransportComponent() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   trans->setCategoryId(1); // check
+   trans->setCategoryId(ds->getCategoryByName("Ships"));
    trans->setName( "Transport");
    trans->setDescription( "A colonist transport bay");
    trans->setTpclRequirementsFunction(
       "(lambda (design) "
-      /*"(if (= (designType._num-components design) 1) "
-      "(cons #t \"\") "*/
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ ds->getPropertyByName("Colonise") ] = "(lambda (design) 1)";   
    trans->setPropertyList(propList);
@@ -308,7 +309,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    planet->setName("Planet1");
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
    planetData->setSize(2);
-   planetData->setPosition(starSysData->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+   planetData->setPosition(starSysData->getPosition() + Vector3d(1000ll, 0ll, 0ll));
    // set up resources
    //ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
    //((Planet*)(planet->getObjectData()))->setResources(ress);
@@ -340,8 +341,8 @@ Design* Rfts::createMarkDesign(Player *owner, char level) const {
 
    string name = "Mark " + level;
 
-   mark->setCategoryId(1); // check
-   mark->setName( name ); // add level
+   mark->setCategoryId(ds->getCategoryByName("Ships"));
+   mark->setName( name );
    mark->setDescription( name + string(" battle ship") );
    mark->setOwner( owner->getID() );
    componentList[ ds->getComponentByName(string("Engine") + level) ] = 1;
@@ -358,7 +359,7 @@ Design* Rfts::createScoutDesign(Player *owner) const {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   scout->setCategoryId(1); // check
+   scout->setCategoryId(ds->getCategoryByName("Ships"));
    scout->setName( "Scout");
    scout->setDescription("Scout ship");
    scout->setOwner( owner->getID());
@@ -377,8 +378,14 @@ bool Rfts::onAddPlayer(Player *player) {
 void Rfts::onPlayerAdded(Player *player) {
    DEBUG_FN_PRINT();
 
-   // set designs (?)
-   // ^^ apply to player
+   PlayerView* playerview = player->getPlayerView();
+   playerview->setVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
+
+   for(uint32_t itcurr = 1; itcurr <= 9; ++itcurr){
+      playerview->addUsableComponent(itcurr);
+   }
+
+   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
 
 }
