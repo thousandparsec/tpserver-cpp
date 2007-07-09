@@ -149,7 +149,7 @@ int Planet::getContainerType(){
   return 2;
 }
 
-ObjectData* Planet::clone(){
+ObjectData* Planet::clone() const{
   return new Planet();
 }
 

@@ -52,7 +52,7 @@ class Planet:public ObjectData {
 
 	int getContainerType();
 	
-	ObjectData* clone();
+	ObjectData* clone() const;
 
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
     uint32_t getResource(uint32_t restype) const;

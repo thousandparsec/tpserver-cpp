@@ -42,7 +42,7 @@ class EmptyObject:public ObjectData {
 	void doOnceATurn(IGObject * obj);
 	int getContainerType();
 
-	ObjectData* clone();
+	ObjectData* clone() const;
         
         void setTypeName(const std::string& n);
         void setTypeDescription(const std::string& d);
