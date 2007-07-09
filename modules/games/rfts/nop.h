@@ -28,20 +28,20 @@ class TimeParameter;
 
 namespace RFTS_ {
 
-class Nop:public Order {
-      public:
-	Nop();
-	virtual ~Nop();
+class Nop : public Order {
+ public:
+   Nop();
+   virtual ~Nop();
+   
+   void createFrame(Frame * f, int objID, int pos);
+   Result inputFrame(Frame * f, uint32_t playerid);
+   
+   bool doOrder(IGObject * ob);
+   
+   Order* clone() const;
 
-	void createFrame(Frame * f, int objID, int pos);
-	Result inputFrame(Frame * f, unsigned int playerid);
-
-	bool doOrder(IGObject * ob);
-
-	Order* clone() const;
-
-  private:
-    TimeParameter* timeparam;
+ private:
+   TimeParameter* timeparam;
 
 };
 

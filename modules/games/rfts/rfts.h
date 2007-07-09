@@ -62,7 +62,7 @@ class Rfts : public ::Ruleset {
    Design* createScoutDesign(Player *owner) const;
    Design* createTransportDesign(Player *ownder) const;
 
-   static const unsigned MAX_PLAYERS = 4; // to be data-driven?
+   static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 };
 
 }
