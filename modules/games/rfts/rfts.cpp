@@ -39,6 +39,7 @@
 #include <tpserver/objectparameter.h>
 
 #include "nop.h"
+#include "buildfleet.h"
 #include "emptyobject.h"
 #include "planet.h"
 #include "universe.h"
@@ -114,6 +115,7 @@ void Rfts::setOrderTypes() const {
    OrderManager* orm = Game::getGame()->getOrderManager();
 
    orm->addOrderType(new Nop());
+   orm->addOrderType(new BuildFleet());
 }
 
 void Rfts::createGame() {
