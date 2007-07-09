@@ -218,9 +218,7 @@ Component* Rfts::createEngineComponent(char techLevel) {
    engine->setDescription( "A ship engine, required if you want your ship to move!");
    engine->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(if (= (designType._num-components design) 1) "
-      "(cons #t \"\") "
-      "(cons #f \"This is a complete component, nothing else can be included\")))");
+      "(cons #t \"\") ");
    propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
 
@@ -238,9 +236,7 @@ Component* Rfts::createBattleComponent(char techLevel) {
    battle->setDescription( "Guns and armour for a ship");
    battle->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(if (= (designType._num-components design) 1) "
-      "(cons #t \"\") "
-      "(cons #f \"This is a complete component, nothing else can be included\")))");
+      "(cons #t \"\") ");
    propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    battle->setPropertyList(propList);
