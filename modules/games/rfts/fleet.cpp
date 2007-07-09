@@ -33,6 +33,7 @@
 #include <tpserver/refsys.h>
 
 #include "nop.h"
+#include "containertypes.h"
 
 #include "fleet.h"
 
@@ -207,5 +208,18 @@ void Fleet::packExtraData(Frame *frame) {
    
    frame->packInt(damage->getValue());
 }
+
+void Fleet::doOnceATurn(IGObject *obj) {
+   // check
+}
+
+int Fleet::getContainerType() {
+   return ContainerTypes_::Fleet;
+}
+
+ObjectData* Fleet::clone() {
+   return new Fleet();
+}
+
 
 }
