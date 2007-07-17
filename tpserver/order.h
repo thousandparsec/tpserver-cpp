@@ -56,6 +56,7 @@ class Order {
 	virtual Order *clone() const = 0;
 
       protected:
+        void addOrderParameter(OrderParameter* op);
 	 uint32_t type;
 	 uint64_t descmodtime;
          std::string name;
