@@ -132,10 +132,14 @@ void Component::setModTime(uint64_t nmt){
 
 void Component::setInUse(bool used){
   inuse = used;
-  if(used && parentdesignid != 0){
+  if(parentdesignid != 0){
     DesignStore* ds = Game::getGame()->getDesignStore();
     Design* design = ds->getDesign(parentdesignid);
-    design->addUnderConstruction(1);
+    if(used){
+      design->addUnderConstruction(1);
+    }else{
+      design->removeCanceledConstruction(1);
+    }
     ds->designCountsUpdated(design);
   }
 }
