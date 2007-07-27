@@ -138,15 +138,17 @@ void MiniSec::initGame(){
 void MiniSec::createGame(){
   Game* game = Game::getGame();
   
+  std::set<uint32_t> catids;
+  
     DesignStore *ds = game->getDesignStore();
     Category * cat = new Category();
     cat->setName("Ships");
     cat->setDescription("The Ship design and component category");
     ds->addCategory(cat);
-    assert(cat->getCategoryId() == 1);
+    catids.insert(cat->getCategoryId());
     
     Property* prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Speed");
     prop->setDisplayName("Speed");
@@ -156,7 +158,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("BuildTime");
     prop->setDisplayName("Build Time");
@@ -166,7 +168,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Armour");
     prop->setDisplayName("Armour");
@@ -176,7 +178,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("WeaponWin");
     prop->setDisplayName("Weapon Strength at Win");
@@ -186,7 +188,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("WeaponDraw");
     prop->setDisplayName("Weapon Strength at Draw");
@@ -196,7 +198,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Colonise");
     prop->setDisplayName("Can Colonise Planets");
@@ -206,7 +208,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("_num-components");
     prop->setDisplayName("Number of Conponents");
@@ -221,7 +223,7 @@ void MiniSec::createGame(){
     std::map<unsigned int, std::string> propertylist;
     
     Component* comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("ScoutHull");
     comp->setDescription("The scout hull, fitted out with everything a scout needs");
     comp->setTpclRequirementsFunction(
@@ -239,7 +241,7 @@ void MiniSec::createGame(){
     ds->addComponent(comp);
     
     comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("FrigateHull");
     comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
     comp->setTpclRequirementsFunction(
@@ -259,7 +261,7 @@ void MiniSec::createGame(){
     ds->addComponent(comp);
     
     comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("BattleshipHull");
     comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
     comp->setTpclRequirementsFunction(

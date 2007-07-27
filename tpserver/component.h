@@ -22,6 +22,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <stdint.h>
 
 class Frame;
@@ -35,7 +36,8 @@ class Component{
   Component* copy() const;
 
   unsigned int getComponentId() const;
-  unsigned int getCategoryId() const;
+  std::set<uint32_t> getCategoryIds() const;
+  bool isInCategory(uint32_t id) const;
   std::string getName() const;
   std::string getDescription() const;
   std::string getTpclRequirementsFunction() const;
@@ -43,7 +45,8 @@ class Component{
   uint64_t getModTime() const;
 
   void setComponentId(unsigned int id);
-  void setCategoryId(unsigned int id);
+  void setCategoryIds(const std::set<uint32_t>& ids);
+  void addCategoryId(uint32_t id);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
   void setTpclRequirementsFunction(const std::string& a);
@@ -52,7 +55,7 @@ class Component{
   
  protected:
   unsigned int compid;
-  unsigned int catid;
+  std::set<uint32_t> catids;
   unsigned long long timestamp;
   std::string name;
   std::string description;

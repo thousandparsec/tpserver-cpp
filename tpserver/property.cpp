@@ -1,6 +1,6 @@
 /*  Property class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include "property.h"
 
-Property::Property(){
+Property::Property() : catids(){
   propid = 0;
   timestamp = time(NULL);
 }
@@ -37,8 +37,10 @@ void Property::packFrame(Frame* frame) const{
   frame->setType(ft03_Property);
   frame->packInt(propid);
   frame->packInt64(timestamp);
-  frame->packInt(1);
-  frame->packInt(catid);
+  frame->packInt(catids.size());
+  for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
+    frame->packInt(*idit);
+  }
   frame->packInt(rank);
   frame->packString(name.c_str());
     frame->packString(display.c_str());
@@ -51,8 +53,12 @@ unsigned int Property::getPropertyId() const{
   return propid;
 }
 
-unsigned int Property::getCategoryId() const{
-  return catid;
+std::set<uint32_t> Property::getCategoryIds() const{
+  return catids;
+}
+
+bool Property::isInCategory(uint32_t id) const{
+  return catids.count(id) != 0;
 }
 
 unsigned int Property::getRank() const{
@@ -87,8 +93,12 @@ void Property::setPropertyId(unsigned int id){
   propid = id;
 }
 
-void Property::setCategoryId(unsigned int id){
-  catid = id;
+void Property::addCategoryId(uint32_t id){
+  catids.insert(id);
+}
+
+void Property::setCategoryIds(const std::set<uint32_t>& ids){
+  catids = ids;
 }
 
 void Property::setRank(unsigned int r){

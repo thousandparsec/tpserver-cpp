@@ -167,7 +167,7 @@ void MTSec::createSpeedProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("Speed");
     prop->setDisplayName("Speed");
@@ -186,7 +186,7 @@ void MTSec::createAmmoCostProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("AmmoCost");
     prop->setDisplayName("Explosive Unit Cost");
@@ -205,7 +205,7 @@ void MTSec::createAmmoExplosivenessProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("AmmoExplosiveness");
     prop->setDisplayName("Unit Explosive Punch");
@@ -224,7 +224,7 @@ void MTSec::createAmmoSizeProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("AmmoSize");
     prop->setDisplayName("Explosive Density");
@@ -243,7 +243,7 @@ void MTSec::createFirepowerProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(2);
     prop->setName("Firepower");
     prop->setDisplayName("Firepower");
@@ -262,7 +262,7 @@ void MTSec::createMissileCostProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(1);
     prop->setName("MissileCost");
     prop->setDisplayName("MissileCost");
@@ -281,7 +281,7 @@ void MTSec::createMissileFirepowerProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(1);
     prop->setName("MissileFirepower");
     prop->setDisplayName("Missile Firepower");
@@ -300,7 +300,7 @@ void MTSec::createMissileSizeProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(1);
     prop->setName("MissileSize");
     prop->setDisplayName("MissileSize");
@@ -319,7 +319,7 @@ void MTSec::createHitPointsProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("StartingHitPoints");
     prop->setDisplayName("Initial Hit Points");
@@ -338,7 +338,7 @@ void MTSec::createBuildTimeProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("BuildTime");
     prop->setDisplayName("Build Time");
@@ -357,7 +357,7 @@ void MTSec::createArmorProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("Armor");
     prop->setDisplayName("Armor");
@@ -376,7 +376,7 @@ void MTSec::createHPProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("HitPoints");
     prop->setDisplayName("Hit Points");
@@ -395,7 +395,7 @@ void MTSec::createColoniseProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("Colonise");
     prop->setDisplayName("Can Colonise Planets");
@@ -414,7 +414,7 @@ void MTSec::createNumAmmoProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("num-ammo");
     prop->setDisplayName("Number of missile and torpedo warhead types");
@@ -436,7 +436,7 @@ void MTSec::createNumBayTypesProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("num-baytypes");
     prop->setDisplayName("Number of missile or torpedo types");
@@ -458,7 +458,7 @@ void MTSec::createNumHullsProp()
     Property* prop = new Property();
     DesignStore *ds = Game::getGame()->getDesignStore();
 
-    prop->setCategoryId(1);
+    prop->addCategoryId(1);
     prop->setRank(0);
     prop->setName("num-hulls");
     prop->setDisplayName("Number of hulls");
@@ -481,7 +481,7 @@ void MTSec::createScoutHullComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "ScoutHull");
     comp->setDescription( "The scout hull, fitted out with everything a scout needs");
     comp->setTpclRequirementsFunction(
@@ -507,7 +507,7 @@ void MTSec::createBattleScoutHullComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "BattleScoutHull");
     comp->setDescription( "The battle scout hull");
     comp->setTpclRequirementsFunction(
@@ -544,7 +544,7 @@ void MTSec::createCerium3AmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "Cerium3Explosives");
     comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
     comp->setTpclRequirementsFunction(
@@ -577,7 +577,7 @@ void MTSec::createCerium6AmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "Cerium6Explosives");
     comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
     comp->setTpclRequirementsFunction(
@@ -610,7 +610,7 @@ void MTSec::createCerium12AmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "Cerium12Explosives");
     comp->setDescription( "A huge but extremely explosive sub-nuclear particle");
     comp->setTpclRequirementsFunction(
@@ -643,7 +643,7 @@ void MTSec::createUraniumAmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "UraniumExplosives");
     comp->setDescription( "Most basic nuclear explosive");
     comp->setTpclRequirementsFunction(
@@ -676,7 +676,7 @@ void MTSec::createAntiparticleAmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "AntiparticleExplosives");
     comp->setDescription( "An extremely expensive but hugely explosive particle and anit-particle explosive");
     comp->setTpclRequirementsFunction(
@@ -709,7 +709,7 @@ void MTSec::createAntimatterAmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "AntimatterExplosives");
     comp->setDescription( "An even more extremely expensive but insanely explosive antimatter-matter explosive");
     comp->setTpclRequirementsFunction(
@@ -742,7 +742,7 @@ void MTSec::createThoriumAmmoComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "ThoriumExplosives");
     comp->setDescription( "A significantly cheaper but less explosive nuclear explosive");
     comp->setTpclRequirementsFunction(
@@ -775,7 +775,7 @@ void MTSec::createAlphaMissileBayComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "AlphaMissileBay");
     comp->setDescription( "An alpha missile bay, capable of firing one alpha missile per combat round");
     comp->setTpclRequirementsFunction(
@@ -814,7 +814,7 @@ void MTSec::createBetaMissileBayComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "BetaMissileBay");
     comp->setDescription( "A beta missile bay, capable of firing one beta missile per combat round");
     comp->setTpclRequirementsFunction(
@@ -853,7 +853,7 @@ void MTSec::createGammaMissileBayComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "GammaMissileBay");
     comp->setDescription( "A gamma missile bay, capable of firing one gamma missile per combat round");
     comp->setTpclRequirementsFunction(
@@ -892,7 +892,7 @@ void MTSec::createDeltaMissileBayComp()
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
-    comp->setCategoryId(1);
+    comp->addCategoryId(1);
     comp->setName( "DeltaMissileBay");
     comp->setDescription( "A delta missile bay, capable of firing one delta missile per combat round");
     comp->setTpclRequirementsFunction(
