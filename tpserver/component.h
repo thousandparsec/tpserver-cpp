@@ -53,6 +53,11 @@ class Component{
   void setPropertyList(std::map<unsigned int, std::string> pl);
   void setModTime(uint64_t nmt);
   
+  void setInUse(bool used=true);
+  bool isInUse() const;
+  void setParentDesignId(uint32_t designid);
+  uint32_t getParentDesignId() const;
+  
  protected:
   unsigned int compid;
   std::set<uint32_t> catids;
@@ -61,7 +66,8 @@ class Component{
   std::string description;
   std::string tpcl_requirements;
   std::map<unsigned int, std::string> propertylist;
-  
+  bool inuse;
+  uint32_t parentdesignid;
 
 };
 

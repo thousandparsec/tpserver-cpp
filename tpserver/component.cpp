@@ -21,10 +21,13 @@
 #include <time.h>
 
 #include "frame.h"
+#include "game.h"
+#include "designstore.h"
+#include "design.h"
 
 #include "component.h"
 
-Component::Component(): catids(){
+Component::Component(): catids(), inuse(false), parentdesignid(0){
   compid = 0;
     timestamp = time(NULL);
 }
@@ -125,4 +128,26 @@ void Component::setPropertyList(std::map<unsigned int, std::string> pl){
 
 void Component::setModTime(uint64_t nmt){
     timestamp = nmt;
+}
+
+void Component::setInUse(bool used){
+  inuse = used;
+  if(used && parentdesignid != 0){
+    DesignStore* ds = Game::getGame()->getDesignStore();
+    Design* design = ds->getDesign(parentdesignid);
+    design->addUnderConstruction(1);
+    ds->designCountsUpdated(design);
+  }
+}
+
+bool Component::isInUse() const{
+  return inuse;
+}
+
+void Component::setParentDesignId(uint32_t designid){
+  parentdesignid = designid;
+}
+
+uint32_t Component::getParentDesignId() const{
+  return parentdesignid;
 }
