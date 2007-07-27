@@ -189,8 +189,10 @@ bool DesignStore::addDesign(Design* d){
           itcurr != cl.end(); ++itcurr){
       if(!(playerview->isUsableComponent(itcurr->first)))
           return false;
-      if(components.find(itcurr->first) == components.end())
+      std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);
+      if(itcomp == components.end())
           return false;
+      itcomp->second->setInUse();
   }
   d->eval();
   designs[d->getDesignId()] = d;
@@ -211,6 +213,23 @@ bool DesignStore::modifyDesign(Design* d){
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView* playerview = player->getPlayerView();
   playerview->removeUsableDesign(d->getDesignId());
+  
+  std::map<uint32_t, uint32_t> cl = current->getComponents();
+  for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
+          itcurr != cl.end(); ++itcurr){
+    Component* comp = components[itcurr->first];
+    comp->setInUse(false);
+  }
+  for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
+          itcurr != cl.end(); ++itcurr){
+    if(!(playerview->isUsableComponent(itcurr->first)))
+        return false;
+    std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);
+    if(itcomp == components.end())
+        return false;
+    itcomp->second->setInUse();
+  }
+  
   d->eval();
   bool rtv;
   if(getCategory(d->getCategoryId())->doModifyDesign(d)){
