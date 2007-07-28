@@ -48,6 +48,8 @@
 #include "playerview.h"
 #include "turntimer.h"
 
+#include "orderqueueobjectparam.h"
+
 #include "playeragent.h"
 
 PlayerAgent::PlayerAgent(){
@@ -458,7 +460,26 @@ void PlayerAgent::processGetOrder(Frame * frame){
     return;
   }
  
-  int orderqueueid = frame->unpackInt();
+  uint32_t orderqueueid = frame->unpackInt();
+  
+  if(frame->getVersion() <= fv0_3){
+    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    if(ob == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object");
+      curConnection->sendFrame(of);
+      return;
+    }
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    if(oqop == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
+      curConnection->sendFrame(of);
+      return;
+    }
+    orderqueueid = oqop->getQueueId();
+  }
+  
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
