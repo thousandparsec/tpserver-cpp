@@ -89,7 +89,7 @@ int Universe::getContainerType(){
   return 1;
 }
 
-ObjectData* Universe::clone(){
+ObjectData* Universe::clone() const{
   return new Universe();
 }
 

@@ -136,3 +136,7 @@ void Order::describeOrder(Frame * f) const
 uint64_t Order::getDescriptionModTime() const{
   return descmodtime;
 }
+
+void Order::addOrderParameter(OrderParameter* op){
+  parameters.push_back(op);
+}

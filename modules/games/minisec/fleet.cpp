@@ -294,25 +294,27 @@ bool Fleet::hit(std::list<int> firepower){
     }
     shiplist->setRefQuantityList(ships);
     DesignStore* ds = Game::getGame()->getDesignStore();
-    bool colonise = false;
-    for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-        itcurr != ships.end(); ++itcurr){
-      if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-        colonise = true;
-        break;
+    if(orderqueue->getQueueId() != 0){
+      bool colonise = false;
+      for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
+          itcurr != ships.end(); ++itcurr){
+        if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
+          colonise = true;
+          break;
+        }
       }
+      OrderManager* om = Game::getGame()->getOrderManager();
+      if(colonise){
+        std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
+        allowed.insert(om->getOrderTypeByName("Colonise"));
+        orderqueue->setAllowedOrders(allowed);
+      }else{
+        std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
+        allowed.erase(om->getOrderTypeByName("Colonise"));
+        orderqueue->setAllowedOrders(allowed);
+      }
+      touchModTime();
     }
-    OrderManager* om = Game::getGame()->getOrderManager();
-    if(colonise){
-      std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
-      allowed.insert(om->getOrderTypeByName("Colonise"));
-      orderqueue->setAllowedOrders(allowed);
-    }else{
-      std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
-      allowed.erase(om->getOrderTypeByName("Colonise"));
-      orderqueue->setAllowedOrders(allowed);
-    }
-    touchModTime();
   }
   if(totalShips() == 0)
     return false;
@@ -364,6 +366,6 @@ int Fleet::getContainerType(){
   return 0;
 }
 
-ObjectData* Fleet::clone(){
+ObjectData* Fleet::clone() const{
   return new Fleet();
 }

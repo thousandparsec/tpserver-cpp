@@ -194,7 +194,7 @@ void MinisecTurn::doTurn(){
   
   for(itcurr = otherorders.begin(); itcurr != otherorders.end(); ++itcurr) {
     IGObject * ob = objectmanager->getObject(*itcurr);
-    if(ob->getType() == planettype || ob->getType() == fleettype){
+    if(ob != NULL && (ob->getType() == planettype || ob->getType() == fleettype)){
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
       if(oqop != NULL){
         OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());

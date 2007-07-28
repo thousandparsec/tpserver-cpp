@@ -85,12 +85,13 @@ extern "C" {
   }
 }
 
-MiniSec::MiniSec(){
-
+MiniSec::MiniSec() : random(NULL){
 }
 
 MiniSec::~MiniSec(){
-
+  if(random != NULL){
+    delete random;
+  }
 }
 
 std::string MiniSec::getName(){
@@ -137,15 +138,17 @@ void MiniSec::initGame(){
 void MiniSec::createGame(){
   Game* game = Game::getGame();
   
+  std::set<uint32_t> catids;
+  
     DesignStore *ds = game->getDesignStore();
     Category * cat = new Category();
     cat->setName("Ships");
     cat->setDescription("The Ship design and component category");
     ds->addCategory(cat);
-    assert(cat->getCategoryId() == 1);
+    catids.insert(cat->getCategoryId());
     
     Property* prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Speed");
     prop->setDisplayName("Speed");
@@ -155,7 +158,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("BuildTime");
     prop->setDisplayName("Build Time");
@@ -165,7 +168,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Armour");
     prop->setDisplayName("Armour");
@@ -175,7 +178,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("WeaponWin");
     prop->setDisplayName("Weapon Strength at Win");
@@ -185,7 +188,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("WeaponDraw");
     prop->setDisplayName("Weapon Strength at Draw");
@@ -195,7 +198,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("Colonise");
     prop->setDisplayName("Can Colonise Planets");
@@ -205,7 +208,7 @@ void MiniSec::createGame(){
     ds->addProperty(prop);
     
     prop = new Property();
-    prop->setCategoryId(1);
+    prop->setCategoryIds(catids);
     prop->setRank(0);
     prop->setName("_num-components");
     prop->setDisplayName("Number of Conponents");
@@ -220,7 +223,7 @@ void MiniSec::createGame(){
     std::map<unsigned int, std::string> propertylist;
     
     Component* comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("ScoutHull");
     comp->setDescription("The scout hull, fitted out with everything a scout needs");
     comp->setTpclRequirementsFunction(
@@ -238,7 +241,7 @@ void MiniSec::createGame(){
     ds->addComponent(comp);
     
     comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("FrigateHull");
     comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
     comp->setTpclRequirementsFunction(
@@ -258,7 +261,7 @@ void MiniSec::createGame(){
     ds->addComponent(comp);
     
     comp = new Component();
-    comp->setCategoryId(1);
+    comp->setCategoryIds(catids);
     comp->setName("BattleshipHull");
     comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
     comp->setTpclRequirementsFunction(
@@ -418,13 +421,22 @@ void MiniSec::createGame(){
   std::set<const char*> sys_names(systemNames, systemNames + (sizeof(systemNames) / sizeof(systemNames[0])));
   
   //create random systems
+  Random * currandom;
+  if(Settings::getSettings()->get("minisec_debug_random_seed") != ""){
+    random = new Random();
+    random->seed(atoi(Settings::getSettings()->get("minisec_debug_random_seed").c_str()));
+    currandom = random;
+  }else{
+    currandom = game->getRandom();
+  }
+  
   uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
   uint32_t max_systems = atoi(Settings::getSettings()->get("minisec_max_systems").c_str());
   uint32_t num_systems;
   if(min_systems == max_systems){
     num_systems = min_systems;
   }else{
-    num_systems =  game->getRandom()->getInRange(min_systems ,max_systems);
+    num_systems =  currandom->getInRange(min_systems ,max_systems);
   }
   if(num_systems > sys_names.size()) 
     num_systems = sys_names.size();
@@ -559,6 +571,13 @@ void MiniSec::onPlayerAdded(Player* player){
     uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
     uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
   
+    Random * currandom;
+    if(random != NULL){
+      currandom = random;
+    }else{
+      currandom = game->getRandom();
+    }
+    
     const char* name = player->getName().c_str();
     IGObject *star = game->getObjectManager()->createNewObject();
     star->setType(obT_Star_System);
@@ -570,8 +589,8 @@ void MiniSec::onPlayerAdded(Player* player){
     temp[strlen(name) + 12] = '\0';
     star->setName(temp);
     delete[] temp;
-    thestar->setPosition(Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
-                              (long long)(game->getRandom()->getInRange(-5000, 5000) * 10000000),
+    thestar->setPosition(Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10000000),
+                              (long long)(currandom->getInRange(-5000, 5000) * 10000000),
                               /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
     
     star->addToParent(1);
@@ -593,8 +612,8 @@ void MiniSec::onPlayerAdded(Player* player){
     
     theplanet->setOwner(player->getID());
     theplanet->addResource(2, 1);
-    theplanet->setPosition(thestar->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000)* 10),
-                                                      (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+    theplanet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000)* 10),
+                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
     
     OrderQueue *planetoq = new OrderQueue();
@@ -619,8 +638,8 @@ void MiniSec::onPlayerAdded(Player* player){
     fleet->setName(temp);
     delete[] temp;
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
-                                                      (long long)(game->getRandom()->getInRange(-5000, 5000) * 10),
+    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
     thefleet->addShips(scoutid, 2);
       scout->addUnderConstruction(2);
@@ -653,6 +672,13 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     IGObject*      star = game->getObjectManager()->createNewObject();
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
+    
+    Random * currandom;
+    if(random != NULL){
+      currandom = random;
+    }else{
+      currandom = game->getRandom();
+    }
 
     // Create a variable number of planets for each star system
     uint maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
@@ -660,7 +686,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     if(minplanets == maxplanets){
       nplanets = minplanets;
     }else{
-      nplanets = game->getRandom()->getInRange(minplanets, maxplanets);
+      nplanets = currandom->getInRange(minplanets, maxplanets);
     }
     if(max_planets < nplanets)
       nplanets = max_planets;
@@ -671,15 +697,15 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     star->setType( obT_Star_System);
     EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
     thestar->setSize(nplanets * 60000ll);
-    unsigned int   thx = game->getRandom()->getInRange(0U, systemnames.size() - 1);
+    unsigned int   thx = currandom->getInRange(0U, systemnames.size() - 1);
     std::set<const char*>::iterator name = systemnames.begin();
     advance(name, thx);
     if(name == systemnames.end())
       name = systemnames.begin();
     star->setName(*name);
     systemnames.erase(name);
-    thestar->setPosition( Vector3d( game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
-                                 game->getRandom()->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+    thestar->setPosition( Vector3d( currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+                                 currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  0ll));
     star->addToParent( mw_galaxy->getID());
     obman->addObject( star);

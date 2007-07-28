@@ -49,7 +49,7 @@ class ObjectData {
 
 	virtual int getContainerType() = 0;
 
-	virtual ObjectData* clone() = 0;
+	virtual ObjectData* clone() const = 0;
 
 	void touchModTime();
 	long long getModTime() const;

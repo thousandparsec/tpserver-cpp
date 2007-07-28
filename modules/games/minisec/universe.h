@@ -43,7 +43,7 @@ class Universe:public ObjectData {
 
 	int getContainerType();
 
-	ObjectData* clone();
+	ObjectData* clone() const;
 
 	void setYear(int year);
 	int getYear();

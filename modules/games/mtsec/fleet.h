@@ -64,7 +64,7 @@ class Fleet:public ObjectData {
 
 	int getContainerType();
 
-	ObjectData* clone();
+	ObjectData* clone() const;
 
       private:
         Position3dObjectParam * pos;

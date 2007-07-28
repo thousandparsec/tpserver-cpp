@@ -2,7 +2,7 @@
 #define PROPERTY_H
 /*  Component/Design Property class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <set>
 
 class Frame;
 
@@ -32,7 +33,8 @@ class Property{
   void packFrame(Frame* frame) const;
 
   unsigned int getPropertyId() const;
-  unsigned int getCategoryId() const;
+  std::set<uint32_t> getCategoryIds() const;
+  bool isInCategory(uint32_t catid) const;
   unsigned int getRank() const;
   std::string getName() const;
         std::string getDisplayName() const;
@@ -42,7 +44,8 @@ class Property{
     uint64_t getModTime() const;
   
   void setPropertyId(unsigned int id);
-  void setCategoryId(unsigned int id);
+  void addCategoryId(uint32_t id);
+  void setCategoryIds(const std::set<uint32_t>& idset);
   void setRank(unsigned int r);
   void setName(const std::string& n);
         void setDisplayName(const std::string& d);
@@ -53,7 +56,7 @@ class Property{
 
  private:
   unsigned int propid;
-  unsigned int catid;
+  std::set<uint32_t> catids;
   unsigned int rank;
   unsigned long long timestamp;
   std::string name;

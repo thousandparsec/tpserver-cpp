@@ -24,6 +24,8 @@
 
 #include <tpserver/ruleset.h>
 
+class Random;
+
 class MiniSec : public Ruleset{
  public:
   MiniSec();
@@ -40,6 +42,8 @@ class MiniSec : public Ruleset{
 private:
   IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames);
 
+  Random* random;
+  
 };
 
 #endif

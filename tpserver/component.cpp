@@ -1,6 +1,6 @@
 /*  Component class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@
 #include <time.h>
 
 #include "frame.h"
+#include "game.h"
+#include "designstore.h"
+#include "design.h"
 
 #include "component.h"
 
-Component::Component(){
+Component::Component(): catids(), inuse(false), parentdesignid(0){
   compid = 0;
     timestamp = time(NULL);
 }
@@ -37,8 +40,10 @@ void Component::packFrame(Frame* frame) const{
   frame->setType(ft03_Component);
   frame->packInt(compid);
   frame->packInt64(timestamp);
-  frame->packInt(1);
-  frame->packInt(catid);
+  frame->packInt(catids.size());
+  for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
+    frame->packInt(*idit);
+  }
   frame->packString(name.c_str());
   frame->packString(description.c_str());
   frame->packString(tpcl_requirements.c_str());
@@ -52,7 +57,7 @@ void Component::packFrame(Frame* frame) const{
 Component* Component::copy() const{
   Component * comp = new Component();
   comp->compid = compid;
-  comp->catid = catid;
+  comp->catids = catids;
   comp->timestamp = timestamp;
   comp->name = name;
   comp->description = description;
@@ -65,8 +70,12 @@ unsigned int Component::getComponentId() const{
   return compid;
 }
 
-unsigned int Component::getCategoryId() const{
-  return catid;
+std::set<uint32_t> Component::getCategoryIds() const{
+  return catids;
+}
+
+bool Component::isInCategory(uint32_t id) const{
+  return catids.count(id) != 0;
 }
 
 std::string Component::getName() const{
@@ -93,8 +102,12 @@ void Component::setComponentId(unsigned int id){
   compid = id;
 }
 
-void Component::setCategoryId(unsigned int id){
-  catid = id;
+void Component::setCategoryIds(const std::set<uint32_t>& ids){
+  catids = ids;
+}
+
+void Component::addCategoryId(uint32_t id){
+  catids.insert(id);
 }
 
 void Component::setName(const std::string& n){
@@ -115,4 +128,30 @@ void Component::setPropertyList(std::map<unsigned int, std::string> pl){
 
 void Component::setModTime(uint64_t nmt){
     timestamp = nmt;
+}
+
+void Component::setInUse(bool used){
+  inuse = used;
+  if(parentdesignid != 0){
+    DesignStore* ds = Game::getGame()->getDesignStore();
+    Design* design = ds->getDesign(parentdesignid);
+    if(used){
+      design->addUnderConstruction(1);
+    }else{
+      design->removeCanceledConstruction(1);
+    }
+    ds->designCountsUpdated(design);
+  }
+}
+
+bool Component::isInUse() const{
+  return inuse;
+}
+
+void Component::setParentDesignId(uint32_t designid){
+  parentdesignid = designid;
+}
+
+uint32_t Component::getParentDesignId() const{
+  return parentdesignid;
 }

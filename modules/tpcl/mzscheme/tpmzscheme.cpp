@@ -1,6 +1,6 @@
 /*  MzScheme Interpreter class
  *
- *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -247,21 +247,21 @@ TpMzScheme::TpMzScheme(){
     bool loaded = false;
   env = scheme_basic_env();
   if (scheme_setjmp(scheme_error_buf)) {
-    Logger::getLogger()->warning("MzScheme Error");
+    Logger::getLogger()->warning("MzScheme warning: could not load local file, trying installed file");
   } else {
       scheme_eval_string("(load \"../modules/tpcl/mzscheme/designstruct.scm\")",env);
         loaded = true;
   }
     if(loaded == false){
         if (scheme_setjmp(scheme_error_buf)) {
-            Logger::getLogger()->warning("MzScheme Error");
+            Logger::getLogger()->warning("MzScheme warning: could not load installed file");
         } else {
             scheme_eval_string("(load \"" DATADIR "/tpserver/tpscheme/mzscheme/designstruct.scm\")", env);
             loaded = true;
         }
     }
     if(loaded == false){
-        Logger::getLogger()->warning("MzScheme Error");
+        Logger::getLogger()->error("MzScheme Error: failed to load designstruct.scm file");
         //throw exception?
     }
 }
