@@ -561,7 +561,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
           of->setType(ft02_OK);
           of->packString("Order Added");
         } else {
-          of->createFailFrame(fec_TempUnavailable, "OrderQueue failure.");
+          of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
         }
       }else{
                 // FIXME: This isn't always a FrameError really...
