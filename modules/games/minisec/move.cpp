@@ -75,8 +75,14 @@ int Move::getETA(IGObject *ob) const{
 
 void Move::createFrame(Frame * f, int objID, int pos)
 {
-  turns = getETA(Game::getGame()->getObjectManager()->getObject(objID));
-  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  IGObject* obj = Game::getGame()->getObjectManager()->getObject(objID);
+  if(obj != NULL){
+    turns = getETA(obj);
+    Game::getGame()->getObjectManager()->doneWithObject(objID);
+  }else{
+    turns = 0;
+    Logger::getLogger()->error("Move create frame: object not found, id = %d", objID);
+  }
   
   Order::createFrame(f, objID, pos);	
 }
