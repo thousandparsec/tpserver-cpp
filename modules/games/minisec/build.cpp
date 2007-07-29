@@ -30,6 +30,7 @@
 #include "fleet.h"
 #include <tpserver/message.h>
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
@@ -39,7 +40,6 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectdatamanager.h>
-#include <tpserver/playerview.h>
 
 #include "planet.h"
 
@@ -57,28 +57,25 @@ Build::Build() : Order()
   fleetlist->setName("ships");
   fleetlist->setDescription("The type of ship to build");
   fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
-  parameters.push_back(fleetlist);
+  addOrderParameter(fleetlist);
   
   fleetname = new StringParameter();
   fleetname->setName("name");
   fleetname->setDescription("The name of the new fleet being built");
   fleetname->setMax(1024);
-  parameters.push_back(fleetname);
+  addOrderParameter(fleetname);
 }
 
-Build::~Build()
-{
-    delete fleetlist;
-    delete fleetname;
+Build::~Build(){
 }
 
 void Build::createFrame(Frame *f, int objID, int pos)
 {
-  IGObject * planet = Game::getGame()->getObjectManager()->getObject(objID);
+  IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   
   // number of turns
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectData())->getResources();
-  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  Game::getGame()->getObjectManager()->doneWithObject(planet->getID());
   uint32_t res_current;
   if(presources.find(1) != presources.end()){
     res_current = presources.find(1)->second.first;
@@ -104,8 +101,8 @@ void Build::createFrame(Frame *f, int objID, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData()))->getOwner())->getPlayerView()->getUsableDesigns();
-    Game::getGame()->getObjectManager()->doneWithObject(objID);
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData()))->getOwner())->getPlayerView()->getUsableDesigns();
+    Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<Design*> usable;

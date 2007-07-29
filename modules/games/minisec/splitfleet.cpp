@@ -46,22 +46,21 @@ SplitFleet::SplitFleet() : Order(){
   shiplist->setName("ships");
   shiplist->setDescription("The ships to be transferred");
   shiplist->setListOptionsCallback(ListOptionCallback(this, &SplitFleet::generateListOptions));
-  parameters.push_back(shiplist);
+  addOrderParameter(shiplist);
   
   turns = 1;
 }
 
 SplitFleet::~SplitFleet(){
-  delete shiplist;
 }
 
 std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(int objID){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
-  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(objID)->getObjectData());
+  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData());
 
   std::map<int, int> sotf = of->getShips();
-  Game::getGame()->getObjectManager()->doneWithObject(objID);
+  Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
