@@ -32,9 +32,11 @@ Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resou
   descmodtime = time(NULL);
 }
 
-Order::~Order()
-{
-
+Order::~Order(){
+ for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+      ++itcurr){
+    delete (*itcurr);
+  }
 }
 
 int Order::getType() const
