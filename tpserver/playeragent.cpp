@@ -48,6 +48,8 @@
 #include "playerview.h"
 #include "turntimer.h"
 
+#include "orderqueueobjectparam.h"
+
 #include "playeragent.h"
 
 PlayerAgent::PlayerAgent(){
@@ -458,7 +460,26 @@ void PlayerAgent::processGetOrder(Frame * frame){
     return;
   }
  
-  int orderqueueid = frame->unpackInt();
+  uint32_t orderqueueid = frame->unpackInt();
+  
+  if(frame->getVersion() <= fv0_3){
+    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    if(ob == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object");
+      curConnection->sendFrame(of);
+      return;
+    }
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    if(oqop == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
+      curConnection->sendFrame(of);
+      return;
+    }
+    orderqueueid = oqop->getQueueId();
+  }
+  
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
@@ -517,7 +538,26 @@ void PlayerAgent::processAddOrder(Frame * frame){
 
     // See if we have a valid orderqueue id
     
-    int orderqueueid = frame->unpackInt();
+    uint32_t orderqueueid = frame->unpackInt();
+    
+    if(frame->getVersion() <= fv0_3){
+      IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+      if(ob == NULL){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "No such Object");
+        curConnection->sendFrame(of);
+        return;
+      }
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+      if(oqop == NULL){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
+        curConnection->sendFrame(of);
+        return;
+      }
+      orderqueueid = oqop->getQueueId();
+    }
+    
     OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
     if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
       Frame *of = curConnection->createFrame(frame);
@@ -540,7 +580,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
           of->setType(ft02_OK);
           of->packString("Order Added");
         } else {
-          of->createFailFrame(fec_TempUnavailable, "OrderQueue failure.");
+          of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
         }
       }else{
                 // FIXME: This isn't always a FrameError really...
@@ -564,6 +604,25 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
   }
 
   int orderqueueid = frame->unpackInt();
+   
+  if(frame->getVersion() <= fv0_3){
+    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    if(ob == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object");
+      curConnection->sendFrame(of);
+      return;
+    }
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    if(oqop == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
+      curConnection->sendFrame(of);
+      return;
+    }
+    orderqueueid = oqop->getQueueId();
+  }
+  
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);
@@ -689,6 +748,25 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   }
   
   int orderqueueid = frame->unpackInt();
+  
+  if(frame->getVersion() <= fv0_3){
+  IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    if(ob == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object");
+      curConnection->sendFrame(of);
+      return;
+    }
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    if(oqop == NULL){
+      Frame *of = curConnection->createFrame(frame);
+      of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
+      curConnection->sendFrame(of);
+      return;
+    }
+    orderqueueid = oqop->getQueueId();
+  }
+  
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     Frame *of = curConnection->createFrame(frame);

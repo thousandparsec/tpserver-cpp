@@ -194,23 +194,25 @@ void MinisecTurn::doTurn(){
   
   for(itcurr = otherorders.begin(); itcurr != otherorders.end(); ++itcurr) {
     IGObject * ob = objectmanager->getObject(*itcurr);
-    if(ob != NULL && (ob->getType() == planettype || ob->getType() == fleettype)){
-      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
-      if(oqop != NULL){
-        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
-        if(orderqueue != NULL){
-          Order * currOrder = orderqueue->getFirstOrder();
-          if(currOrder != NULL){
-            if(currOrder->doOrder(ob)){
-              orderqueue->removeFirstOrder();
-            }else{
-              orderqueue->updateFirstOrder();
+    if(ob != NULL){
+      if(ob->getType() == planettype || ob->getType() == fleettype){
+        OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+        if(oqop != NULL){
+          OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+          if(orderqueue != NULL){
+            Order * currOrder = orderqueue->getFirstOrder();
+            if(currOrder != NULL){
+              if(currOrder->doOrder(ob)){
+                orderqueue->removeFirstOrder();
+              }else{
+                orderqueue->updateFirstOrder();
+              }
             }
           }
         }
       }
+      objectmanager->doneWithObject(ob->getID());
     }
-    objectmanager->doneWithObject(ob->getID());
   }
 
   objectmanager->clearRemovedObjects();
