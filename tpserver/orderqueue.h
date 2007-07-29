@@ -41,6 +41,9 @@ class OrderQueue{
   bool isOwner(uint32_t playerid) const;
   std::set<uint32_t> getOwner() const;
   
+  void setObjectId(uint32_t oid);
+  uint32_t getObjectId() const;
+  
   bool checkOrderType(uint32_t type, uint32_t playerid) const;
   
   std::set<uint32_t> getAllowedOrderTypes() const;
@@ -72,6 +75,7 @@ class OrderQueue{
 
  private:
   uint32_t queueid;
+  uint32_t objectid;
   std::list<uint32_t> orderlist;
   std::map<uint32_t, Order*> ordercache;
   std::set<uint32_t> allowedtypes;
