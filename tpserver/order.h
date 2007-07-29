@@ -55,8 +55,13 @@ class Order {
 	void describeOrder(Frame * f) const;
 	virtual Order *clone() const = 0;
 
+        //For OrderQueue only
+        void setOrderQueueId(uint32_t id);
+        uint32_t getOrderQueueId() const;
+        
       protected:
         void addOrderParameter(OrderParameter* op);
+        uint32_t orderqueueid;
 	 uint32_t type;
 	 uint64_t descmodtime;
          std::string name;
