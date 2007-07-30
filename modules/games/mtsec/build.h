@@ -34,7 +34,7 @@ class Build : public Order{
   Build();
   virtual ~Build();
 
-  void createFrame(Frame *f, int objID, int pos);
+  void createFrame(Frame *f, int pos);
   Result inputFrame(Frame *f, unsigned int playerid);
 
   bool doOrder(IGObject *ob);
@@ -42,7 +42,7 @@ class Build : public Order{
   Order* clone() const;
 
  private:
-  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions(uint32_t objID);
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 
   ListParameter * fleetlist;
   StringParameter * fleetname;

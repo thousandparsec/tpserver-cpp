@@ -69,7 +69,7 @@ Build::Build() : Order()
 Build::~Build(){
 }
 
-void Build::createFrame(Frame *f, int objID, int pos)
+void Build::createFrame(Frame *f, int pos)
 {
   IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   
@@ -94,11 +94,11 @@ void Build::createFrame(Frame *f, int objID, int pos)
   }
   
   
-  Order::createFrame(f, objID, pos);
+  Order::createFrame(f, pos);
 
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(uint32_t objID){
+std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
   std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData()))->getOwner())->getPlayerView()->getUsableDesigns();

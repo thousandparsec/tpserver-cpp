@@ -24,6 +24,9 @@
 #include "result.h"
 #include "frame.h"
 #include "orderparameter.h"
+#include "game.h"
+#include "ordermanager.h"
+#include "orderqueue.h"
 
 #include "order.h"
 
@@ -72,11 +75,11 @@ std::list<OrderParameter*> Order::getParameters() const{
   return parameters;
 }
 
-void Order::createFrame(Frame * f, int objID, int pos)
+void Order::createFrame(Frame * f, int pos)
 {
 
   f->setType(ft02_Order);
-  f->packInt(objID);
+  f->packInt(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   f->packInt(pos);
   f->packInt(type);
   f->packInt(turns);
@@ -88,7 +91,7 @@ void Order::createFrame(Frame * f, int objID, int pos)
   }
   for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
-    (*itcurr)->packOrderFrame(f, objID);
+    (*itcurr)->packOrderFrame(f);
   }
 }
 

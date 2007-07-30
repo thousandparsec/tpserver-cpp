@@ -54,7 +54,7 @@ SplitFleet::SplitFleet() : Order(){
 SplitFleet::~SplitFleet(){
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(int objID){
+std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
   Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData());

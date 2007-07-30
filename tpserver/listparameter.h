@@ -28,7 +28,7 @@ class ListOptionCallbackBase{
   public:
     ListOptionCallbackBase(): ref(0) {}
     virtual ~ListOptionCallbackBase(){};
-    virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call(uint32_t objectid) = 0;
+    virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call() = 0;
     int ref;
 };
 
@@ -47,8 +47,8 @@ public:
 
   virtual ~ListOptionCallbackImpl(){};
   
-  virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call(uint32_t objectid){
-    return ((*object).*method)(objectid);
+  virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call(){
+    return ((*object).*method)();
   }
   
 private:
@@ -94,8 +94,8 @@ class ListOptionCallback{
       return *this;
     }
     
-    std::map<uint32_t, std::pair<std::string, uint32_t> > call(uint32_t objectid){
-      return impl->call(objectid);
+    std::map<uint32_t, std::pair<std::string, uint32_t> > call(){
+      return impl->call();
     }
   
   private:
@@ -110,7 +110,7 @@ public:
   ListParameter();
   virtual ~ListParameter();
 
-  virtual void packOrderFrame(Frame * f, uint32_t objID);
+  virtual void packOrderFrame(Frame * f);
   virtual bool unpackFrame(Frame * f, unsigned int playerid);
 
   virtual OrderParameter *clone() const;

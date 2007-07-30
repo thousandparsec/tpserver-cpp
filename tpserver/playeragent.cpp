@@ -520,7 +520,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
     int ordpos = frame->unpackInt();
     Order *ord = orderqueue->getOrder(ordpos, player->getID());
     if (ord != NULL) {
-      ord->createFrame(of, orderqueueid, ordpos);
+      ord->createFrame(of, ordpos);
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not get Order");
     }
@@ -785,7 +785,8 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     
     if(ord->inputFrame(frame, player->getID())){
-      ord->createFrame(of, orderqueueid, pos);
+      ord->setOrderQueueId(orderqueueid);
+      ord->createFrame(of, pos);
     }else{
       of->createFailFrame(fec_FrameError, "Order could not be unpacked correctly, invalid order");
       Logger::getLogger()->debug("Probe Order, could not unpack order");
