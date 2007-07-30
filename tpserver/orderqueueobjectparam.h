@@ -43,9 +43,7 @@ public:
   void setQueueId(uint32_t ob);
   
   uint32_t getNumOrders() const;
-  
-//   uint32_t getOwner() const;
-//   void setOwner(uint32_t no);
+
   
   std::set<uint32_t> getAllowedOrders() const;
   void setAllowedOrders(std::set<uint32_t> ao);
@@ -53,7 +51,6 @@ public:
 protected:
   uint32_t queueid;
   uint32_t numorders;
-  uint32_t owner;
   
   std::set<uint32_t> ordertypes;
 

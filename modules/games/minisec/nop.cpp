@@ -42,13 +42,11 @@ Nop::Nop() : Order()
   timeparam->setMax(1000);
   timeparam->setName("wait");
   timeparam->setDescription("The number of turns to wait");
-  parameters.push_back(timeparam);
+  addOrderParameter(timeparam);
 
 }
 
-Nop::~Nop()
-{
-  delete timeparam;
+Nop::~Nop(){
 }
 
 void Nop::createFrame(Frame * f, int objID, int pos)

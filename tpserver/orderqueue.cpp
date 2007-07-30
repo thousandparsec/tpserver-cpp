@@ -29,8 +29,7 @@
 
 #include "orderqueue.h"
 
-OrderQueue::OrderQueue() : active(true), repeating(false) {
-  queueid = 0;
+OrderQueue::OrderQueue() : queueid(0), objectid(0), active(true), repeating(false) {
   nextOrderId = 1;
   touchModTime();
 }
@@ -64,6 +63,14 @@ bool OrderQueue::isOwner(uint32_t playerid) const{
 
 std::set<uint32_t> OrderQueue::getOwner() const{
   return owner;
+}
+
+void OrderQueue::setObjectId(uint32_t oid){
+  objectid = oid;
+}
+
+uint32_t OrderQueue::getObjectId() const{
+  return objectid;
 }
 
 bool OrderQueue::checkOrderType(uint32_t type, uint32_t playerid) const{
@@ -101,6 +108,7 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
 
     uint32_t orderid = nextOrderId++;
     ordercache[orderid] = ord;
+    ord->setOrderQueueId(queueid);
 
     if (pos == 0xffffffff) {
       orderlist.push_back(orderid);

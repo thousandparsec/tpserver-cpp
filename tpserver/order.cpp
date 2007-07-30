@@ -27,14 +27,16 @@
 
 #include "order.h"
 
-Order::Order(): type(0), name(), description(), turns(0), resources(), parameters()
+Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resources(), parameters()
 {
   descmodtime = time(NULL);
 }
 
-Order::~Order()
-{
-
+Order::~Order(){
+ for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+      ++itcurr){
+    delete (*itcurr);
+  }
 }
 
 int Order::getType() const
@@ -139,4 +141,12 @@ uint64_t Order::getDescriptionModTime() const{
 
 void Order::addOrderParameter(OrderParameter* op){
   parameters.push_back(op);
+}
+
+void Order::setOrderQueueId(uint32_t id){
+  orderqueueid = id;
+}
+
+uint32_t Order::getOrderQueueId() const{
+  return orderqueueid;
 }
