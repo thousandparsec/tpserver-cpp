@@ -33,6 +33,8 @@
 #include "minisecturn.h"
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
 
 #include "move.h"
 
@@ -44,12 +46,10 @@ Move::Move() : Order()
   coords = new SpaceCoordParam();
   coords->setName("pos");
   coords->setDescription("The position in space to move to");
-  parameters.push_back(coords);
+  addOrderParameter(coords);
 }
 
-Move::~Move()
-{
-  delete coords;
+Move::~Move(){
 }
 
 Vector3d Move::getDest() const
@@ -75,13 +75,14 @@ int Move::getETA(IGObject *ob) const{
 
 void Move::createFrame(Frame * f, int objID, int pos)
 {
-  IGObject* obj = Game::getGame()->getObjectManager()->getObject(objID);
+  Game* game = Game::getGame();
+  IGObject* obj = game->getObjectManager()->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   if(obj != NULL){
     turns = getETA(obj);
-    Game::getGame()->getObjectManager()->doneWithObject(objID);
+    game->getObjectManager()->doneWithObject(obj->getID());
   }else{
     turns = 0;
-    Logger::getLogger()->error("Move create frame: object not found, id = %d", objID);
+    Logger::getLogger()->error("Move create frame: object not found, id = %d", obj->getID());
   }
   
   Order::createFrame(f, objID, pos);	
