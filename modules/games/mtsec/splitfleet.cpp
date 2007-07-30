@@ -90,7 +90,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   nf->setPosition(of->getPosition());
   
   OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(nfleet->getID());
+    fleetoq->setObjectId(nfleet->getID());
     fleetoq->addOwner(nf->getOwner());
     Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nf->getParameterByType(obpT_Order_Queue));

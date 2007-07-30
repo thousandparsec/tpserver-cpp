@@ -53,6 +53,7 @@ class OrderManager{
   std::map<int, Order*> prototypeStore;
   std::map<std::string, uint32_t> typeNames;
   int nextType;
+  uint32_t nextOrderQueueId;
 
   unsigned int seqkey;
 

@@ -200,7 +200,7 @@ bool Build::doOrder(IGObject *ob)
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
+    fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(ownerid);
     Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getObjectData()->getParameterByType(obpT_Order_Queue));

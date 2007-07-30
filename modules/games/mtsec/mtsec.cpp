@@ -1203,7 +1203,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ((Planet*)(earth->getObjectData()))->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
-    planetoq->setQueueId(earth->getID());
+    planetoq->setObjectId(earth->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theearth->getParameterByType(obpT_Order_Queue));
