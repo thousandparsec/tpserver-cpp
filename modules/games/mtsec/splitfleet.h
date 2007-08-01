@@ -35,7 +35,7 @@ class SplitFleet : public Order{
   
  private:
   ListParameter* shiplist;
-  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions(int objID);
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 
 };
 

@@ -30,7 +30,7 @@
 
 OrderManager::OrderManager(){
   nextType = 0;
-  
+  nextOrderQueueId = 1;
   seqkey = 1;
 }
 
@@ -113,6 +113,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
 }
 
 bool OrderManager::addOrderQueue(OrderQueue* oq){
+  oq->setQueueId(nextOrderQueueId++);
   orderqueues[oq->getQueueId()] = oq;
   Game::getGame()->getPersistence()->saveOrderQueue(oq);
   return true;

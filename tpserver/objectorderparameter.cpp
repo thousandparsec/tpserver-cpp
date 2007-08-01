@@ -33,7 +33,7 @@ ObjectOrderParameter::~ObjectOrderParameter(){
 }
 
 
-void ObjectOrderParameter::packOrderFrame(Frame * f, uint32_t objID){
+void ObjectOrderParameter::packOrderFrame(Frame * f){
   f->packInt(object);
 }
 

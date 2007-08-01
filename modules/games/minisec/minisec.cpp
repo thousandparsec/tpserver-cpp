@@ -617,7 +617,7 @@ void MiniSec::onPlayerAdded(Player* player){
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
     
     OrderQueue *planetoq = new OrderQueue();
-    planetoq->setQueueId(planet->getID());
+    planetoq->setObjectId(planet->getID());
     planetoq->addOwner(player->getID());
     game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));
@@ -648,7 +648,7 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
+    fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(player->getID());
     game->getOrderManager()->addOrderQueue(fleetoq);
     oqop = static_cast<OrderQueueObjectParam*>(thefleet->getParameterByType(obpT_Order_Queue));
@@ -725,7 +725,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
                                                              i * -35000ll,
                                                              0ll));
         OrderQueue *planetoq = new OrderQueue();
-        planetoq->setQueueId(planet->getID());
+        planetoq->setObjectId(planet->getID());
         planetoq->addOwner(0);
         game->getOrderManager()->addOrderQueue(planetoq);
         OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));

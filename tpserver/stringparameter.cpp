@@ -33,7 +33,7 @@ StringParameter::~StringParameter(){
 }
 
 
-void StringParameter::packOrderFrame(Frame * f, uint32_t objID){
+void StringParameter::packOrderFrame(Frame * f){
   f->packInt(max);
   f->packString(string.c_str());
 }

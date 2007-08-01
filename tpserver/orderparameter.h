@@ -52,7 +52,7 @@ class OrderParameter {
         void setName(const std::string& nn);
         void setDescription(const std::string& nd);
         
-	virtual void packOrderFrame(Frame * f, uint32_t objID) = 0;
+	virtual void packOrderFrame(Frame * f) = 0;
         void packOrderDescFrame(Frame* f) const;
 	virtual bool unpackFrame(Frame * f, unsigned int playerid) = 0;
 

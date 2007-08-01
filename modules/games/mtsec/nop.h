@@ -31,7 +31,7 @@ class Nop:public Order {
 	Nop();
 	virtual ~Nop();
 
-	void createFrame(Frame * f, int objID, int pos);
+	void createFrame(Frame * f, int pos);
 	Result inputFrame(Frame * f, unsigned int playerid);
 
 	bool doOrder(IGObject * ob);

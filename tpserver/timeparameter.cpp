@@ -34,7 +34,7 @@ TimeParameter::~TimeParameter(){
 }
 
 
-void TimeParameter::packOrderFrame(Frame * f, uint32_t objID){
+void TimeParameter::packOrderFrame(Frame * f){
   f->packInt(turns);
   f->packInt(max);
 }

@@ -54,7 +54,7 @@ SplitFleet::SplitFleet() : Order(){
 SplitFleet::~SplitFleet(){
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(int objID){
+std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
   Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData());
@@ -90,7 +90,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   nf->setPosition(of->getPosition());
   
   OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(nfleet->getID());
+    fleetoq->setObjectId(nfleet->getID());
     fleetoq->addOwner(nf->getOwner());
     Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nf->getParameterByType(obpT_Order_Queue));
