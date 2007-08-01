@@ -345,7 +345,7 @@ void MiniSec::createGame(){
   earth->setName("Earth/Terra");
   theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
   OrderQueue *planetoq = new OrderQueue();
-  planetoq->setQueueId(earth->getID());
+  planetoq->setObjectId(earth->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theearth->getParameterByType(obpT_Order_Queue));
@@ -361,7 +361,7 @@ void MiniSec::createGame(){
   venus->setName("Venus");
   thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
   planetoq = new OrderQueue();
-  planetoq->setQueueId(venus->getID());
+  planetoq->setObjectId(venus->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
   oqop = static_cast<OrderQueueObjectParam*>(thevenus->getParameterByType(obpT_Order_Queue));
@@ -377,7 +377,7 @@ void MiniSec::createGame(){
   mars->setName("Mars");
   themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
   planetoq = new OrderQueue();
-  planetoq->setQueueId(mars->getID());
+  planetoq->setObjectId(mars->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
   oqop = static_cast<OrderQueueObjectParam*>(themars->getParameterByType(obpT_Order_Queue));
@@ -393,7 +393,7 @@ void MiniSec::createGame(){
   acprime->setName("Alpha Centauri Prime");
   theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
   planetoq = new OrderQueue();
-  planetoq->setQueueId(acprime->getID());
+  planetoq->setObjectId(acprime->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
   oqop = static_cast<OrderQueueObjectParam*>(theacprime->getParameterByType(obpT_Order_Queue));
@@ -409,7 +409,7 @@ void MiniSec::createGame(){
   s1->setName("Sirius 1");
   thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
   planetoq = new OrderQueue();
-  planetoq->setQueueId(s1->getID());
+  planetoq->setObjectId(s1->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
   oqop = static_cast<OrderQueueObjectParam*>(thes1->getParameterByType(obpT_Order_Queue));
