@@ -25,7 +25,7 @@ namespace RFTS_ {
 namespace ContainerTypes_ {
    
 typedef enum {
-   EmptyObject = 1,
+   StaticObject = 1,
    Universe = 1,
    Galaxy,
    StarSystem,

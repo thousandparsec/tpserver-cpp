@@ -30,7 +30,7 @@
 
 namespace RFTS_ {
 
-Universe::Universe() : EmptyObject() {
+Universe::Universe() : StaticObject() {
 
    turn = new IntegerObjectParam();
    turn->setName("Turn");

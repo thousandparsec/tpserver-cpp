@@ -20,7 +20,7 @@
  *
  */
 
-#include "emptyobject.h"
+#include "staticobject.h"
 
 class Velocity3dObjectParam;
 class ReferenceObjectParam;
@@ -30,7 +30,7 @@ class OrderQueueObjectParam;
 
 namespace RFTS_ {
 
-class Fleet : public EmptyObject
+class Fleet : public StaticObject
 {
  public:
    Fleet();

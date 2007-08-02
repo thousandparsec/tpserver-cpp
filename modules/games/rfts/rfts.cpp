@@ -40,9 +40,10 @@
 
 #include "nop.h"
 #include "buildfleet.h"
-#include "emptyobject.h"
+#include "staticobject.h"
 #include "planet.h"
 #include "universe.h"
+#include "fleet.h"
 
 #include "rfts.h"
 
@@ -92,23 +93,23 @@ void Rfts::setObjectTypes() const {
    DEBUG_FN_PRINT();
 
    ObjectDataManager* obdm = Game::getGame()->getObjectDataManager();
-   EmptyObject *eo;
+   StaticObject *eo;
 
    obdm->addNewObjectType(new Universe);
 
-   // added for tp03
-   eo = new EmptyObject();
+   // galaxy added for tp03
+   eo = new StaticObject();
    eo->setTypeName("Galaxy");
    eo->setTypeDescription("Galaxy");
    obdm->addNewObjectType(eo);
 
-   eo = new EmptyObject();
+   eo = new StaticObject();
    eo->setTypeName("Star System"); 
    eo->setTypeDescription("A system of stars!");
    obdm->addNewObjectType(eo);
 
    obdm->addNewObjectType(new Planet);
-   //obdm->addNewObjectType(new Fleet);
+   obdm->addNewObjectType(new Fleet);
 }
 
 void Rfts::setOrderTypes() const {
@@ -274,7 +275,7 @@ void Rfts::createUniverse() const {
 
    universe->setType(uniType);
    universe->setName("The Universe");
-   EmptyObject* uniData = static_cast<EmptyObject*>(universe->getObjectData());
+   StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
    uniData->setPosition(Vector3d(0ll, 0ll, 0ll));
    objman->addObject(universe);   
    
@@ -298,8 +299,8 @@ void Rfts::createStarSystems(IGObject *universe) const {
 
    starSys->setType(ssType);
    starSys->setName("Star System1");
-   EmptyObject* starSysData = static_cast<EmptyObject*>(starSys->getObjectData());
-   starSysData->setPosition(Vector3d(3000ll, 200ll, 0ll));
+   StaticObject* starSysData = static_cast<StaticObject*>(starSys->getObjectData());
+   starSysData->setPosition(Vector3d(3000ll, 2000ll, 0ll));
    
    starSys->addToParent(universe->getID());
    objman->addObject(starSys);
@@ -308,7 +309,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    planet->setName("Planet1");
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
    planetData->setSize(2);
-   planetData->setPosition(starSysData->getPosition() + Vector3d(1000ll, 0ll, 0ll));
+   planetData->setPosition(starSysData->getPosition() + Vector3d(20ll, 20ll, 0ll));
    // set up resources
    //ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
    //((Planet*)(planet->getObjectData()))->setResources(ress);

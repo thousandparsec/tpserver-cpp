@@ -44,7 +44,7 @@ namespace RFTS_ {
 
 using std::string;
 
-Planet::Planet() : EmptyObject() {
+Planet::Planet() : StaticObject() {
    nametype = "Planet";
    typedesc = "A planet object";
    setSize(2);

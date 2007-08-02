@@ -20,13 +20,13 @@
  *
  */
 
-#include "emptyobject.h"
+#include "staticobject.h"
 
 class IntegerObjectParam;
 
 namespace RFTS_ {
 
-class Universe : public EmptyObject 
+class Universe : public StaticObject 
 {
  public:
    Universe();
