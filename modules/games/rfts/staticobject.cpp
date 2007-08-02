@@ -1,4 +1,4 @@
-/*  Empty Object
+/*  static object
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -24,11 +24,11 @@
 
 #include "containertypes.h"
 
-#include "emptyobject.h"
+#include "staticobject.h"
 
 namespace RFTS_ {
 
-EmptyObject::EmptyObject() : ObjectData(){
+StaticObject::StaticObject() : ObjectData(){
    pos = new Position3dObjectParam();
    pos->setName("Position");
    pos->setDescription("The position of the object");
@@ -46,48 +46,48 @@ EmptyObject::EmptyObject() : ObjectData(){
    paramgroups.push_back(group);
 }
 
-Vector3d EmptyObject::getPosition() const{
+Vector3d StaticObject::getPosition() const{
   return pos->getPosition();
 }
 
-void EmptyObject::setPosition(const Vector3d & np){
+void StaticObject::setPosition(const Vector3d & np){
   pos->setPosition(np);
   touchModTime();
 }
 
-uint64_t EmptyObject::getSize() const{
+uint64_t StaticObject::getSize() const{
   return size->getSize();
 }
 
-void EmptyObject::setSize(uint64_t ns){
+void StaticObject::setSize(uint64_t ns){
   size->setSize(ns);
   touchModTime();
 }
 
-void EmptyObject::packExtraData(Frame * frame) {
+void StaticObject::packExtraData(Frame * frame) {
 
 }
 
-void EmptyObject::doOnceATurn(IGObject * obj) {
+void StaticObject::doOnceATurn(IGObject * obj) {
 
 }
 
-ObjectData* EmptyObject::clone() const {
-  EmptyObject* eo = new EmptyObject();
+ObjectData* StaticObject::clone() const {
+  StaticObject* eo = new StaticObject();
   eo->nametype = nametype;
   eo->typedesc = typedesc;
   return eo;
 }
 
-int EmptyObject::getContainerType(){
-  return ContainerTypes_::EmptyObject;
+int StaticObject::getContainerType(){
+  return ContainerTypes_::StaticObject;
 }
 
-void EmptyObject::setTypeName(const std::string& n){
+void StaticObject::setTypeName(const std::string& n){
   nametype = n;
 }
 
-void EmptyObject::setTypeDescription(const std::string& d){
+void StaticObject::setTypeDescription(const std::string& d){
   typedesc = d;
 }
 

@@ -1,6 +1,6 @@
-#ifndef emptyobject_H
-#define emptyobject_H
-/*  emptyobject class
+#ifndef staticobject_H
+#define staticobject_H
+/*  static object class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -31,10 +31,10 @@ class SizeObjectParam;
 
 namespace RFTS_ {
 
-class EmptyObject:public ObjectData {
+class StaticObject:public ObjectData {
  public:
-   EmptyObject();
-   virtual ~EmptyObject() {};
+   StaticObject();
+   virtual ~StaticObject() {};
         
    Vector3d getPosition() const;
    void setPosition(const Vector3d & np);
