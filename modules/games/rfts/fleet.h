@@ -54,7 +54,7 @@ class Fleet : public EmptyObject
    virtual void doOnceATurn(IGObject * obj);   
    virtual int getContainerType();
    
-   virtual ObjectData* clone();
+   virtual ObjectData* clone() const;
 
  private:
    Velocity3dObjectParam *velocity;

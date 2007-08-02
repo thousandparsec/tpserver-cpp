@@ -72,7 +72,7 @@ void EmptyObject::doOnceATurn(IGObject * obj) {
 
 }
 
-ObjectData* EmptyObject::clone(){
+ObjectData* EmptyObject::clone() const {
   EmptyObject* eo = new EmptyObject();
   eo->nametype = nametype;
   eo->typedesc = typedesc;

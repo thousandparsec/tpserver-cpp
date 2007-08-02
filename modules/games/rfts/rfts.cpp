@@ -143,8 +143,9 @@ void Rfts::createProperties() {
    Property* prop = new Property();
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   // speed
-   prop->setCategoryId(ds->getCategoryByName("Ships"));
+   // speed   
+
+   prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Speed");
    prop->setDisplayName("Speed");
@@ -155,7 +156,7 @@ void Rfts::createProperties() {
    
    // attack
    prop = new Property();
-   prop->setCategoryId(ds->getCategoryByName("Ships"));
+   prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Attack");
    prop->setDisplayName("Attack");
@@ -166,7 +167,7 @@ void Rfts::createProperties() {
 
    // armour
    prop = new Property();
-   prop->setCategoryId(ds->getCategoryByName("Ships"));
+   prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Armour");
    prop->setDisplayName("Armour");
@@ -177,7 +178,7 @@ void Rfts::createProperties() {
 
    // colonise
    prop = new Property();
-   prop->setCategoryId(ds->getCategoryByName("Ships"));
+   prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setName("Colonise");
    prop->setDisplayName("Can Colonise");
    prop->setDescription("The ship colonise planets");
@@ -213,7 +214,7 @@ Component* Rfts::createEngineComponent(char techLevel) {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   engine->setCategoryId(ds->getCategoryByName("Ships"));
+   engine->addCategoryId(ds->getCategoryByName("Ships"));
    engine->setName( string("Engine") + techLevel);
    engine->setDescription( "A ship engine, required if you want your ship to move!");
    engine->setTpclRequirementsFunction(
@@ -231,7 +232,7 @@ Component* Rfts::createBattleComponent(char techLevel) {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   battle->setCategoryId(ds->getCategoryByName("Ships"));
+   battle->addCategoryId(ds->getCategoryByName("Ships"));
    battle->setName( string("Battle") + techLevel);
    battle->setDescription( "Guns and armour for a ship");
    battle->setTpclRequirementsFunction(
@@ -250,7 +251,7 @@ Component* Rfts::createTransportComponent() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
-   trans->setCategoryId(ds->getCategoryByName("Ships"));
+   trans->addCategoryId(ds->getCategoryByName("Ships"));
    trans->setName( "Transport");
    trans->setDescription( "A colonist transport bay");
    trans->setTpclRequirementsFunction(

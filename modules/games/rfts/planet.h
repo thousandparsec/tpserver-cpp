@@ -37,7 +37,7 @@ class Planet : public EmptyObject {
    Planet();
    virtual ~Planet();
 
-   virtual ObjectData* clone();
+   virtual ObjectData* clone() const;
 
    virtual void packExtraData(Frame * frame);
    virtual void doOnceATurn(IGObject* obj);

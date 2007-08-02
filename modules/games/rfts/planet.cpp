@@ -120,7 +120,7 @@ int Planet::getContainerType() {
    return ContainerTypes_::Planet;
 }
 
-ObjectData* Planet::clone() {
+ObjectData* Planet::clone() const {
    return new Planet();
 }
 

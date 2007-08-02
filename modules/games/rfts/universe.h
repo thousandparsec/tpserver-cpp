@@ -36,7 +36,7 @@ class Universe : public EmptyObject
    virtual void doOnceATurn(IGObject *obj);
    virtual int getContainerType();
 
-   virtual ObjectData* clone();
+   virtual ObjectData* clone() const;
 
    void setTurn(int turn);
    int getTurn() const;

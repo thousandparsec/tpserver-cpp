@@ -46,7 +46,7 @@ Order* BuildFleet::clone() const {
    return new BuildFleet();
 }
 
-void BuildFleet::createFrame(Frame *f, int objID, int pos) {
+void BuildFleet::createFrame(Frame *f, int pos) {
 
 }
 

@@ -55,10 +55,10 @@ Nop::~Nop()
   delete timeparam;
 }
 
-void Nop::createFrame(Frame * f, int objID, int pos)
+void Nop::createFrame(Frame * f, int pos)
 {
   turns = timeparam->getTime();
-  Order::createFrame(f, objID, pos);
+  Order::createFrame(f, pos);
 }
 
 Result Nop::inputFrame(Frame * f, unsigned int playerid)

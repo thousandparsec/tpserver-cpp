@@ -46,7 +46,7 @@ class EmptyObject:public ObjectData {
    virtual void doOnceATurn(IGObject * obj);
    virtual int getContainerType();
 
-   virtual ObjectData* clone();
+   virtual ObjectData* clone() const;
    
    void setTypeName(const std::string& n);
    void setTypeDescription(const std::string& d);

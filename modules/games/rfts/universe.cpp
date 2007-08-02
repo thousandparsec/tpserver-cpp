@@ -56,7 +56,7 @@ int Universe::getTurn() const {
    return turn->getValue();
 }
 
-ObjectData* Universe::clone() {
+ObjectData* Universe::clone() const {
    return new Universe();
 }
 

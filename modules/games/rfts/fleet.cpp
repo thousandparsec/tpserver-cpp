@@ -217,7 +217,7 @@ int Fleet::getContainerType() {
    return ContainerTypes_::Fleet;
 }
 
-ObjectData* Fleet::clone() {
+ObjectData* Fleet::clone() const {
    return new Fleet();
 }
 
