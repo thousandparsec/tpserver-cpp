@@ -33,6 +33,7 @@
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
 
 #include "containertypes.h"
 #include "nop.h"
@@ -106,6 +107,7 @@ void Planet::setDefaultOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
+   allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
    orderqueue->setAllowedOrders(allowedlist);
 }
 
@@ -146,6 +148,7 @@ uint32_t Planet::getOwner() const{
 
 void Planet::setOwner(uint32_t no){
   playerref->setReferencedId(no);
+  Game::getGame()->getOrderManager()->getOrderQueue(orderqueue->getQueueId())->addOwner(no);
   touchModTime();
 }
 
