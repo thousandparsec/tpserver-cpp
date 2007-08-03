@@ -31,6 +31,7 @@
 #include <tpserver/logging.h>
 
 #include "planet.h"
+#include "fleet.h"
 
 #include "nop.h"
 
@@ -46,8 +47,7 @@ Nop::Nop() : Order()
   timeparam->setMax(1000);
   timeparam->setName("wait");
   timeparam->setDescription("The number of turns to wait");
-  parameters.push_back(timeparam);
-
+  addOrderParameter(timeparam);
 }
 
 Nop::~Nop()

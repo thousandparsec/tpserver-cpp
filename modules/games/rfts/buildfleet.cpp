@@ -35,7 +35,7 @@ BuildFleet::BuildFleet() {
    shipList->setDescription("The ships to build");
    // todo - set callback function
    
-   parameters.push_back(shipList);
+   addOrderParameter(shipList);
 }
 
 BuildFleet::~BuildFleet() {
