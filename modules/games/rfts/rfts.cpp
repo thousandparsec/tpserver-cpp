@@ -389,6 +389,10 @@ void Rfts::onPlayerAdded(Player *player) {
       playerview->addUsableComponent(itcurr);
    }
 
+   // test : set the 1st object - a planet - to be owned by the player
+   Planet* pData = dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(2)->getObjectData());
+   pData->setOwner(player->getID());
+   
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
 
