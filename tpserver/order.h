@@ -68,6 +68,8 @@ class Order {
          std::string description;
          uint32_t turns;
          std::map<uint32_t, uint32_t> resources;
+         
+      private:
          std::list<OrderParameter*> parameters;
 
 };
