@@ -94,6 +94,9 @@ bool MergeFleet::doOrder(IGObject * ob){
       tfleet->addShips(itcurr->first, itcurr->second);
     }
 
+    //remove the fleet from the physical universe
+    ob->removeFromParent();
+    
     Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
 	
     Game::getGame()->getObjectManager()->doneWithObject(target->getID());
