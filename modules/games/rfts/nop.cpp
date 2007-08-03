@@ -52,7 +52,6 @@ Nop::Nop() : Order()
 
 Nop::~Nop()
 {
-  delete timeparam;
 }
 
 void Nop::createFrame(Frame * f, int pos)
@@ -81,6 +80,8 @@ bool Nop::doOrder(IGObject * ob){
     msg->addReference(rst_Object, ob->getID());
     if(ob->getType() == Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet")){
       Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    }else if(ob->getType() == Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet")){
+      Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
     }else{
       Logger::getLogger()->debug("Nop order not on planet of fleet");
       delete msg;
