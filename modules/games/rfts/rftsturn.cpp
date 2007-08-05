@@ -72,9 +72,9 @@ void RftsTurn::doTurn() {
 
             Order* order = oq->getOrder(j, dynamic_cast<OwnedObject*>(currObj->getObjectData())->getOwner());
             if(order->doOrder(currObj))
-               oq->removeFirstOrder();
+               oq->removeOrder(j, dynamic_cast<OwnedObject*>(currObj->getObjectData())->getOwner());
             else
-               oq->updateFirstOrder();
+               oq->updateFirstOrder(); // check
 
          }
       currObj->touchModTime();

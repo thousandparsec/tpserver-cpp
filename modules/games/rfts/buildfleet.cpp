@@ -45,6 +45,12 @@
 
 namespace RFTS_ {
 
+using std::set;
+using std::map;
+using std::string;
+using std::pair;
+
+
 BuildFleet::BuildFleet() {
    name = "Build Fleet";
    description = "Build a fleet of ships";
@@ -73,139 +79,141 @@ void BuildFleet::createFrame(Frame *f, int pos) {
    Order::createFrame(f, pos);
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > BuildFleet::generateListOptions(){
-  std::map<uint32_t, std::pair<std::string, uint32_t> > options;
-  
-  std::set<unsigned int> designs = 
-      Game::getGame()->getPlayerManager()->getPlayer(
-      dynamic_cast<OwnedObject*>(Game::getGame()->getObjectManager()->getObject(
-      Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())
-      ->getObjectData())->getOwner())->getPlayerView()->getUsableDesigns();
+map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
 
+   map<uint32_t, pair< string, uint32_t> > options;
 
-    Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-  DesignStore* ds = Game::getGame()->getDesignStore();
+   Game* game = Game::getGame();
 
-  std::set<Design*> usable;
-  for(std::set<uint>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
-      Design* design = ds->getDesign(*itcurr);
-      if(design->getCategoryId() == 1){
-          usable.insert(design);
+   IGObject *selectedObj = game->getObjectManager()->getObject(
+      game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+
+   set<unsigned int> designs = game->getPlayerManager()->getPlayer(
+                           dynamic_cast<OwnedObject*>(selectedObj->getObjectData())->getOwner())->
+                          getPlayerView()->getUsableDesigns();
+
+   Game::getGame()->getObjectManager()->doneWithObject(selectedObj->getID());
+   DesignStore* ds = Game::getGame()->getDesignStore();
+   
+   for(set<uint>::iterator i = designs.begin(); i != designs.end(); ++i)
+   {
+      Design* design = ds->getDesign(*i);
+      if(design->getCategoryId() == ds->getCategoryByName("Ships"))
+      {
+         options[design->getDesignId()] = pair<string, uint32_t>(design->getName(), 100);
       }
-  }
-
-  for(std::set<Design*>::iterator itcurr = usable.begin();
-      itcurr != usable.end(); ++itcurr){
-    Design * design = (*itcurr);
-    options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
-  }
+   }
   
-  return options;
+   return options;
 }
 
-Result BuildFleet::inputFrame(Frame *f, unsigned int playerid)
-{
-  Result r = Order::inputFrame(f, playerid);
-  if(!r) return r;
-  
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  
-  std::map<uint32_t, uint32_t> fleettype = shipList->getList();
-  uint32_t usedshipres = 0;
-  
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
-     itcurr != fleettype.end(); ++itcurr){
-    uint32_t type = itcurr->first;
-    uint32_t number = itcurr->second; // number to build
-    
-    if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
-      
-      Design* design = ds->getDesign(type);
-        design->addUnderConstruction(number);
-        ds->designCountsUpdated(design);
+Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
-    }else{
-      return Failure("The requested design was not valid.");
-    }
-  }
-  if(usedshipres == 0 && !fleettype.empty()){
-    return Failure("To build was empty...");
-  }
-  
-  resources[1] = usedshipres;
+   Result r = Order::inputFrame(f, playerid);
+   if(!r) return r;
+   
+   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
+   DesignStore* ds = Game::getGame()->getDesignStore();
+   
+   std::map<uint32_t, uint32_t> fleettype = shipList->getList();
+   uint32_t usedshipres = 0, costId = ds->getPropertyByName("RP Cost");
+   
+   
+   for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
+      itcurr != fleettype.end(); ++itcurr)
+   {
+      uint32_t type = itcurr->first;
+      uint32_t numToBuild = itcurr->second;
 
-  return Success();
+      usedshipres += static_cast<uint32_t>((ds->getDesign(type)->getPropertyValue(costId)) * numToBuild + .05f);
+
+      if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
+      {
+         Design* design = ds->getDesign(type);
+         design->addUnderConstruction(numToBuild);
+         ds->designCountsUpdated(design);
+   
+      }
+      else
+      {
+         return Failure("The requested design was not valid.");
+      }
+   }
+   if(usedshipres == 0 && !fleettype.empty())
+      return Failure("To build was empty...");
+   
+   resources[1] = usedshipres;
+   
+   return Success();
 }
 
 bool BuildFleet::doOrder(IGObject *ob)
 {
   
-  Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
+   Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
+   
+   uint32_t usedshipres = resources[1];
 
-  uint32_t usedshipres = resources[1];
+   
+   int ownerid = planet->getOwner();
+   if(ownerid == 0){
+         //currently not owned by anyone, just forget about it
+         return true;
+   }
   
-  if(usedshipres == 0)
-    return true;
+  //planet->addResource(1, 1);
+    
+  //if(planet->removeResource(1, usedshipres)){
+    
+   Game *game = Game::getGame();
 
-  int ownerid = planet->getOwner();
-  if(ownerid == 0){
-      //currently not owned by anyone, just forget about it
-      return true;
-  }
-  
-  planet->addResource(1, 1);
-    
-  if(planet->removeResource(1, usedshipres)){
-    //create fleet
-    
-    IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
-    fleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
-    
-    //add fleet to container
-    fleet->addToParent(ob->getID());
-    
-    //fleet->setName(fleetname->getString().c_str());
-    
-    Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-    
-    fleetData->setSize(2);
-    fleetData->setOwner(ownerid); // set ownerid
-    fleetData->setPosition(planet->getPosition());
-    fleetData->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(ownerid);
-    Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(
-                                 fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
-    fleetData->setDefaultOrderTypes();
-    
-    //set ship type
-    std::map<uint32_t,uint32_t> fleettype = shipList->getList();
-    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
-      fleetData->addShips(itcurr->first, itcurr->second);
-        Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
-        design->addComplete(itcurr->second);
-        Game::getGame()->getDesignStore()->designCountsUpdated(design);
-    }
-    //add fleet to universe
-    Game::getGame()->getObjectManager()->addObject(fleet);
-
-    Message * msg = new Message();
-    msg->setSubject("Build Fleet order complete");
-    msg->setBody(std::string("The construction of your new fleet is complete."));
-    msg->addReference(rst_Action_Order, rsorav_Completion);
-    msg->addReference(rst_Object, fleet->getID());
-    msg->addReference(rst_Object, ob->getID());
- 
-    Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
-
-    return true;
-  }
-  return false;
+   IGObject *fleet = game->getObjectManager()->createNewObject();
+   fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
+   
+   //add fleet to star sys
+   fleet->addToParent(ob->getParent());
+   
+   fleet->setName("New Fleet");
+   
+   Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   
+   fleetData->setSize(2);
+   fleetData->setOwner(ownerid); // set ownerid
+   fleetData->setPosition(planet->getPosition());
+   fleetData->setVelocity(Vector3d(0LL, 0ll, 0ll));
+   
+   OrderQueue *fleetoq = new OrderQueue();
+   fleetoq->setObjectId(fleet->getID());
+   fleetoq->addOwner(ownerid);
+   Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
+   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(
+                              fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
+   oqop->setQueueId(fleetoq->getQueueId());
+   fleetData->setDefaultOrderTypes();
+   
+   //set ship type
+   std::map<uint32_t,uint32_t> fleettype = shipList->getList();
+   for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+   fleetData->addShips(itcurr->first, itcurr->second);
+      Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
+      design->addComplete(itcurr->second);
+      game->getDesignStore()->designCountsUpdated(design);
+   }
+   //add fleet to universe
+   game->getObjectManager()->addObject(fleet);
+   game->getObjectManager()->getObject(ob->getParent())->touchModTime();
+   
+   // post completion message
+   Message * msg = new Message();
+   msg->setSubject("Build Fleet order complete");
+   msg->setBody(std::string("The construction of your new fleet is complete."));
+   msg->addReference(rst_Action_Order, rsorav_Completion);
+   msg->addReference(rst_Object, fleet->getID());
+   msg->addReference(rst_Object, ob->getID());
+   
+   Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+   
+   return true;
 }
 
 

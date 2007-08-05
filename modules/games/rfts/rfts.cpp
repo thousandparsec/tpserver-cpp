@@ -188,6 +188,16 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
+
+   prop = new Property();
+   prop->addCategoryId(ds->getCategoryByName("Ships"));
+   prop->setName("RP Cost");
+   prop->setDisplayName("RP Cost");
+   prop->setDescription("The number of resource points required to build this ship");
+   prop->setRank(0);
+   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" RP\")) ) )");
+   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+   ds->addProperty(prop);
 }
 
 void Rfts::createComponents() {
@@ -225,6 +235,7 @@ Component* Rfts::createEngineComponent(char techLevel) {
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
+   propList[ds->getPropertyByName("RP Cost")] = string("(lambda (design) (* 3 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
 
    return engine;
@@ -246,6 +257,7 @@ Component* Rfts::createBattleComponent(char techLevel) {
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
+   //propList[ ds->getPropertyByName("RP Cost") ] = string("(lamda (design) (* 9") + techLevel + string("))");
    battle->setPropertyList(propList);
    return battle;
 }
@@ -265,7 +277,8 @@ Component* Rfts::createTransportComponent() {
       "(if (= (designType._num-components design) 1) "
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[ ds->getPropertyByName("Colonise") ] = "(lambda (design) 1)";   
+   propList[ ds->getPropertyByName("Colonise") ] = "(lambda (design) 1)";
+   //propList[ ds->getPropertyByName("RP Cost") ] = "(lambda (design) 2)";
    trans->setPropertyList(propList);
    return trans;
 }
