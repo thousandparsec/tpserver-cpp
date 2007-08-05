@@ -44,6 +44,7 @@
 #include "planet.h"
 #include "universe.h"
 #include "fleet.h"
+#include "rftsturn.h"
 
 #include "rfts.h"
 
@@ -81,7 +82,7 @@ std::string Rfts::getVersion() {
 void Rfts::initGame() {
    DEBUG_FN_PRINT();
    
-   // opt. set custom turn process.
+   Game::getGame()->setTurnProcess(new RftsTurn());
 
    setObjectTypes();
 
@@ -315,7 +316,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    //((Planet*)(planet->getObjectData()))->setResources(ress);
    
    OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setQueueId(planet->getID());
+   planetOrders->setObjectId(planet->getID());
    planetOrders->addOwner(0); // check
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));

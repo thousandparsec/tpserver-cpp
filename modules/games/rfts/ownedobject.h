@@ -1,6 +1,6 @@
-#ifndef rftsturn_H
-#define rftsturn_H
-/*  RFTS turn class
+#ifndef ownedobject_H
+#define ownedobject_H
+/*  ownedobject class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -20,17 +20,16 @@
  *
  */
 
-#include <tpserver/turnprocess.h>
-
 namespace RFTS_ {
 
-class RftsTurn : public TurnProcess {
+class OwnedObject
+{
  public:
-   RftsTurn();
-   virtual ~RftsTurn();
-   
-   virtual void doTurn();
+   OwnedObject() {}
+   virtual ~OwnedObject() {}
 
+   virtual uint32_t getOwner() const = 0;
+   virtual void setOwner(uint32_t no) = 0;
 };
 
 }

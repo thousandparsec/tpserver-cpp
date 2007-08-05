@@ -21,6 +21,7 @@
  */
 
 #include "staticobject.h"
+#include "ownedobject.h"
 
 class Velocity3dObjectParam;
 class ReferenceObjectParam;
@@ -30,7 +31,7 @@ class OrderQueueObjectParam;
 
 namespace RFTS_ {
 
-class Fleet : public StaticObject
+class Fleet : public StaticObject, public OwnedObject
 {
  public:
    Fleet();

@@ -23,6 +23,7 @@
 #include <tpserver/vector3d.h>
 
 #include "staticobject.h"
+#include "ownedobject.h"
 
 class ReferenceObjectParam;
 class ResourceListObjectParam;
@@ -31,7 +32,7 @@ class IntegerObjectParam;
 
 namespace RFTS_ {
 
-class Planet : public StaticObject {
+class Planet : public StaticObject, public OwnedObject {
 
  public:
    Planet();

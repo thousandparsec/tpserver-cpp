@@ -18,9 +18,25 @@
  *
  */
 
+#include <algorithm>
+#include <cassert>
+
+#include <tpserver/game.h>
+#include <tpserver/ordermanager.h>
+#include <tpserver/objectmanager.h>
+#include <tpserver/order.h>
+#include <tpserver/object.h>
+#include <tpserver/objectdata.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+
+#include "ownedobject.h"
+
 #include "rftsturn.h"
 
 namespace RFTS_ {
+
+using std::set;
 
 RftsTurn::RftsTurn() {
 
@@ -32,6 +48,60 @@ RftsTurn::~RftsTurn() {
 
 void RftsTurn::doTurn() {
 
+   Game* game = Game::getGame();
+   OrderManager* ordermanager = game->getOrderManager();
+   ObjectManager* objectmanager = game->getObjectManager();
+   
+   set<uint32_t> objectsIds = objectmanager->getAllIds();
+
+   // currently just go through each obj and do each ordermanager
+   // will be prioritized/sorted soon
+
+   for(set<uint32_t>::iterator i = objectsIds.begin();
+         i != objectsIds.end(); ++i)
+   {
+      IGObject * currObj = objectmanager->getObject(*i);
+
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getObjectData()->getParameterByType(obpT_Order_Queue));
+      OrderQueue* oq;
+      if(oqop != NULL && 
+         (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
+         for(uint32_t j = 0; j < oq->getNumberOrders(); j++)
+         {
+            assert(dynamic_cast<OwnedObject*>(currObj->getObjectData()));
+
+            Order* order = oq->getOrder(j, dynamic_cast<OwnedObject*>(currObj->getObjectData())->getOwner());
+            if(order->doOrder(currObj))
+               oq->removeFirstOrder();
+            else
+               oq->updateFirstOrder();
+
+         }
+      currObj->touchModTime();
+      objectmanager->doneWithObject(currObj->getID());
+          
+   }
+   
+   objectmanager->clearRemovedObjects();
+
+
+   // to once a turn (right at the end)
+   objectsIds = objectmanager->getAllIds();
+   for(std::set<uint32_t>::iterator i = objectsIds.begin(); 
+       i != objectsIds.end(); ++i)
+   {
+      IGObject * obj = objectmanager->getObject(*i);
+      obj->getObjectData()->doOnceATurn(obj);
+      objectmanager->doneWithObject(obj->getID());
+   }
+
+   objectmanager->clearRemovedObjects();
+
+   // next turn is odd - do RP production
+   if(game->getTurnNumber() % 2 == 0)
+   {
+      
+   }
 }
 
 }
