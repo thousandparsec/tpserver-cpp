@@ -54,7 +54,7 @@ void RftsTurn::doTurn() {
    
    set<uint32_t> objectsIds = objectmanager->getAllIds();
 
-   // currently just go through each obj and do each ordermanager
+   // currently just go through each obj and do each order
    // will be prioritized/sorted soon
 
    for(set<uint32_t>::iterator i = objectsIds.begin();
@@ -97,11 +97,6 @@ void RftsTurn::doTurn() {
 
    objectmanager->clearRemovedObjects();
 
-   // next turn is odd - do RP production
-   if(game->getTurnNumber() % 2 == 0)
-   {
-      
-   }
 }
 
 }

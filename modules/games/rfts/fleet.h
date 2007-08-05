@@ -43,6 +43,8 @@ class Fleet : public StaticObject, public OwnedObject
    int getDamage() const;
    void setDamage(int nd);
    void takeDamage(int dmg);
+
+   void setVelocity(const Vector3d& v);
    
    void setDefaultOrderTypes();
    void addShips(int type, uint32_t number);

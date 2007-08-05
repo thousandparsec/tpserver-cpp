@@ -43,6 +43,8 @@ class BuildFleet : public Order {
    virtual bool doOrder(IGObject * obj);
 
  private:
+   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+
    ListParameter *shipList;
 };
 

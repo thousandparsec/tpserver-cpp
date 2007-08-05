@@ -110,11 +110,15 @@ void Fleet::takeDamage(int dmg) {
    damage->setValue( damage->getValue() - dmg );
 }
 
+void Fleet::setVelocity(const Vector3d& nv) {
+   velocity->setVelocity(nv);
+}
+
 void Fleet::setDefaultOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
-   // todo - add more orders
+   // TODO - add more orders (move)
    orders->setAllowedOrders(allowedlist);
 }
 
@@ -125,7 +129,7 @@ void Fleet::addShips(int type, uint32_t number){
   shipList->setRefQuantityList(ships);
   DesignStore* ds = Game::getGame()->getDesignStore();
   OrderManager* om = Game::getGame()->getOrderManager();
-  if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
+  if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1){
     std::set<uint32_t> allowed = orders->getAllowedOrders();
     allowed.insert(om->getOrderTypeByName("Colonise"));
     orders->setAllowedOrders(allowed);
@@ -211,6 +215,7 @@ void Fleet::packExtraData(Frame *frame) {
 
 void Fleet::doOnceATurn(IGObject *obj) {
    // check
+   // TODO
 }
 
 int Fleet::getContainerType() {

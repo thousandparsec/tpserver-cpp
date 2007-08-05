@@ -221,7 +221,9 @@ Component* Rfts::createEngineComponent(char techLevel) {
    engine->setDescription( "A ship engine, required if you want your ship to move!");
    engine->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(cons #t \"\") ");
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
+      "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
 
@@ -239,7 +241,9 @@ Component* Rfts::createBattleComponent(char techLevel) {
    battle->setDescription( "Guns and armour for a ship");
    battle->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(cons #t \"\") ");
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
+      "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
    battle->setPropertyList(propList);
@@ -285,7 +289,7 @@ void Rfts::createUniverse() const {
 
 void Rfts::createStarSystems(IGObject *universe) const {
    DEBUG_FN_PRINT();
-   // todo (make all the systems... and functions for each)
+   // TODO (make all the systems... and functions for each)
    // just create a single test system for now
 
    Game *game = Game::getGame();
@@ -317,7 +321,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
-   planetOrders->addOwner(0); // check
+   planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
@@ -328,11 +332,41 @@ void Rfts::createStarSystems(IGObject *universe) const {
 }
 
 void Rfts::createResources() const {
-   //todo - something
+   //TODO - make resource points?
 }
 
 void Rfts::startGame() {
 	DEBUG_FN_PRINT();
+}
+
+IGObject* Rfts::createEmptyFleet(Player* player, IGObject* starSys, string name)
+{
+   Game *game = Game::getGame();
+   IGObject *fleet = game->getObjectManager()->createNewObject();
+      
+   fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
+   fleet->setName(name);
+      
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   fleetData->setSize(2);
+   fleetData->setOwner(player->getID());
+
+    // Place the fleet in orbit around the given star
+    fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
+    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
+    
+    OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(fleet->getID());
+    fleetoq->addOwner(player->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
+                                    fleetData->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    fleetData->setDefaultOrderTypes();
+
+    fleet->addToParent(starSys->getID());
+
+    return fleet;
 }
 
 Design* Rfts::createMarkDesign(Player *owner, char level) const {
@@ -393,7 +427,20 @@ void Rfts::onPlayerAdded(Player *player) {
    // test : set the 1st object - a planet - to be owned by the player
    Planet* pData = dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(2)->getObjectData());
    pData->setOwner(player->getID());
-   
+
+   Logger::getLogger()->debug("Making player's fleet");
+   Game *game = Game::getGame();
+   IGObject*   fleet = createEmptyFleet( player, game->getObjectManager()->getObject(1), "Fleet1");
+
+   Design* scout = createScoutDesign( player);
+
+   dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 2);
+   game->getDesignStore()->designCountsUpdated(scout);
+
+   game->getObjectManager()->addObject(fleet);
+
+   Logger::getLogger()->debug( "done making fleet");
+
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
 

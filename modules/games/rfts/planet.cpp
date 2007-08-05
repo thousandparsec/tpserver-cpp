@@ -112,9 +112,10 @@ void Planet::setDefaultOrderTypes() {
 }
 
 void Planet::doOnceATurn(IGObject* obj) {
-   if(!(Game::getGame()->getTurnNumber() % 2))
+   // next turn is odd - do RP production
+   if(Game::getGame()->getTurnNumber() % 2 == 0)
    {
-      // todo, calc resource points etc
+      // TODO, calc resource points etc
    }
 }
 
