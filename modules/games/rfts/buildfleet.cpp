@@ -154,9 +154,8 @@ bool BuildFleet::doOrder(IGObject *ob)
    
    uint32_t usedshipres = resources[1];
 
-   
-   int ownerid = planet->getOwner();
-   if(ownerid == 0){
+   int player = planet->getOwner();
+   if(player == 0){
          //currently not owned by anyone, just forget about it
          return true;
    }
@@ -167,36 +166,16 @@ bool BuildFleet::doOrder(IGObject *ob)
     
    Game *game = Game::getGame();
 
-   IGObject *fleet = game->getObjectManager()->createNewObject();
-   fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
-   
-   //add fleet to star sys
-   fleet->addToParent(ob->getParent());
-   
-   fleet->setName("New Fleet");
-   
+   IGObject* fleet = createEmptyFleet(game->getPlayerManager()->getPlayer(player),
+                                        game->getObjectManager()->getObject(ob->getParent()), "New Fleet");
    Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-   
-   fleetData->setSize(2);
-   fleetData->setOwner(ownerid); // set ownerid
-   fleetData->setPosition(planet->getPosition());
-   fleetData->setVelocity(Vector3d(0LL, 0ll, 0ll));
-   
-   OrderQueue *fleetoq = new OrderQueue();
-   fleetoq->setObjectId(fleet->getID());
-   fleetoq->addOwner(ownerid);
-   Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
-   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(
-                              fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(fleetoq->getQueueId());
-   fleetData->setDefaultOrderTypes();
-   
+
    //set ship type
    std::map<uint32_t,uint32_t> fleettype = shipList->getList();
-   for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
-   fleetData->addShips(itcurr->first, itcurr->second);
-      Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
-      design->addComplete(itcurr->second);
+   for(std::map<uint32_t,uint32_t>::iterator i = fleettype.begin(); i != fleettype.end(); ++i){
+      fleetData->addShips(i->first, i->second);
+      Design* design = Game::getGame()->getDesignStore()->getDesign(i->first);
+      design->addComplete(i->second);
       game->getDesignStore()->designCountsUpdated(design);
    }
    //add fleet to universe
@@ -211,7 +190,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    msg->addReference(rst_Object, fleet->getID());
    msg->addReference(rst_Object, ob->getID());
    
-   Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+   Game::getGame()->getPlayerManager()->getPlayer(player)->postToBoard(msg);
    
    return true;
 }

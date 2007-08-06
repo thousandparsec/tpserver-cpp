@@ -352,36 +352,6 @@ void Rfts::startGame() {
 	DEBUG_FN_PRINT();
 }
 
-IGObject* Rfts::createEmptyFleet(Player* player, IGObject* starSys, string name)
-{
-   Game *game = Game::getGame();
-   IGObject *fleet = game->getObjectManager()->createNewObject();
-      
-   fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
-   fleet->setName(name);
-      
-   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-   fleetData->setSize(2);
-   fleetData->setOwner(player->getID());
-
-    // Place the fleet in orbit around the given star
-    fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
-    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
-    
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
-    fleetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
-                                    fleetData->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
-    fleetData->setDefaultOrderTypes();
-
-    fleet->addToParent(starSys->getID());
-
-    return fleet;
-}
-
 Design* Rfts::createMarkDesign(Player *owner, char level) const {
    Design *mark = new Design();
    DesignStore *ds = Game::getGame()->getDesignStore();
@@ -443,7 +413,7 @@ void Rfts::onPlayerAdded(Player *player) {
 
    Logger::getLogger()->debug("Making player's fleet");
    Game *game = Game::getGame();
-   IGObject*   fleet = createEmptyFleet( player, game->getObjectManager()->getObject(1), "Fleet1");
+   IGObject* fleet = createEmptyFleet( player, game->getObjectManager()->getObject(1), "Fleet1");
 
    Design* scout = createScoutDesign( player);
 

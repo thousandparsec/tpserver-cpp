@@ -58,8 +58,6 @@ class Rfts : public ::Ruleset {
    Component* createBattleComponent(char techLevel);
    Component* createTransportComponent();
 
-   IGObject* createEmptyFleet(Player* player, IGObject* starSys, std::string name);
-
    Design* createMarkDesign(Player *owner, char level) const;
    Design* createScoutDesign(Player *owner) const;
    Design* createTransportDesign(Player *ownder) const;

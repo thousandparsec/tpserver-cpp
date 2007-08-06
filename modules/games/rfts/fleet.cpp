@@ -19,6 +19,13 @@
  */
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/object.h>
+#include <tpserver/objectdata.h>
+#include <tpserver/objectmanager.h>
+#include <tpserver/objectdatamanager.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/player.h>
+#include <tpserver/playermanager.h>
 #include <tpserver/frame.h>
 #include <tpserver/designstore.h>
 #include <tpserver/design.h>
@@ -224,6 +231,38 @@ int Fleet::getContainerType() {
 
 ObjectData* Fleet::clone() const {
    return new Fleet();
+}
+
+
+
+IGObject* createEmptyFleet(Player* player, IGObject* starSys, std::string name)
+{
+   Game *game = Game::getGame();
+   IGObject *fleet = game->getObjectManager()->createNewObject();
+      
+   fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
+   fleet->setName(name);
+      
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   fleetData->setSize(2);
+   fleetData->setOwner(player->getID());
+
+    // Place the fleet in orbit around the given star
+    fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
+    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
+    
+    OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(fleet->getID());
+    fleetoq->addOwner(player->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
+                                    fleetData->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    fleetData->setDefaultOrderTypes();
+
+    fleet->addToParent(starSys->getID());
+
+    return fleet;
 }
 
 
