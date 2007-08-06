@@ -64,7 +64,7 @@ Order* Move::clone() const {
 
 void Move::createFrame(Frame *f, int pos) {
 
-   assert(orderqueueid);
+   turns = -1;
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
@@ -77,10 +77,7 @@ void Move::createFrame(Frame *f, int pos) {
    if(planetData != NULL && fleetData != NULL)
       // need to calculate speed of fastest ship in fleet and do real calc below
       turns = static_cast<uint32_t>(fleetData->getPosition().getDistanceSq(planetData->getPosition()) /
-                                       3000. + .5);
-
-   if(turns == 0)
-      turns = 1;
+                                       (9000. * 9000.) + .5);
 
    Order::createFrame(f, pos);
 }
@@ -111,7 +108,7 @@ bool Move::doOrder(IGObject * obj) {
       // post completion message
       Message * msg = new Message();
       msg->setSubject("Move fleet order complete");
-      msg->setBody(string("You're fleet has arrived at") + om->getObject(planet->getObjectId())->getName() + ".");
+      msg->setBody(string("You're fleet has arrived at ") + om->getObject(planet->getObjectId())->getName() + ".");
       msg->addReference(rst_Action_Order, rsorav_Completion);
       msg->addReference(rst_Object, obj->getID());
       msg->addReference(rst_Object, planet->getObjectId());

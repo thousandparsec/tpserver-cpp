@@ -248,22 +248,22 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, std::string name)
    fleetData->setSize(2);
    fleetData->setOwner(player->getID());
 
-    // Place the fleet in orbit around the given star
-    fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
-    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
-    
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
-    fleetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
-                                    fleetData->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
-    fleetData->setDefaultOrderTypes();
+   // Place the fleet in orbit around the given star
+   fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
+   fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
+   
+   OrderQueue *fleetoq = new OrderQueue();
+   fleetoq->setObjectId(fleet->getID());
+   fleetoq->addOwner(player->getID());
+   game->getOrderManager()->addOrderQueue(fleetoq);
+   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
+                                 fleetData->getParameterByType(obpT_Order_Queue));
+   oqop->setQueueId(fleetoq->getQueueId());
+   fleetData->setDefaultOrderTypes();
 
-    fleet->addToParent(starSys->getID());
+   fleet->addToParent(starSys->getID());
 
-    return fleet;
+   return fleet;
 }
 
 
