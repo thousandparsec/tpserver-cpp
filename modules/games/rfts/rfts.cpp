@@ -40,6 +40,7 @@
 
 #include "nop.h"
 #include "buildfleet.h"
+#include "move.h"
 #include "staticobject.h"
 #include "planet.h"
 #include "universe.h"
@@ -118,6 +119,7 @@ void Rfts::setOrderTypes() const {
 
    orm->addOrderType(new Nop());
    orm->addOrderType(new BuildFleet());
+   orm->addOrderType(new Move());
 }
 
 void Rfts::createGame() {
@@ -309,7 +311,9 @@ void Rfts::createStarSystems(IGObject *universe) const {
    ObjectManager *objman = game->getObjectManager();
    //ResourceManager* resman = game->getResourceManager();
    IGObject *starSys = game->getObjectManager()->createNewObject();
-   IGObject *planet = game->getObjectManager()->createNewObject();   
+   IGObject *planet = game->getObjectManager()->createNewObject();
+   IGObject *starSys2 = game->getObjectManager()->createNewObject();
+   IGObject *planet2 = game->getObjectManager()->createNewObject();
    //std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
    
    uint32_t ssType = game->getObjectDataManager()->getObjectTypeByName("Star System");
@@ -318,7 +322,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    starSys->setType(ssType);
    starSys->setName("Star System1");
    StaticObject* starSysData = static_cast<StaticObject*>(starSys->getObjectData());
-   starSysData->setPosition(Vector3d(3000ll, 2000ll, 0ll));
+   starSysData->setPosition(Vector3d(30000ll, 20000ll, 0ll));
    
    starSys->addToParent(universe->getID());
    objman->addObject(starSys);
@@ -342,6 +346,32 @@ void Rfts::createStarSystems(IGObject *universe) const {
   
    planet->addToParent(starSys->getID());
    objman->addObject(planet);
+
+
+   starSys2->setType(ssType);
+   starSys2->setName("Star System2");
+   StaticObject* starSysData2 = static_cast<StaticObject*>(starSys2->getObjectData());
+   starSysData2->setPosition(Vector3d(20000ll, 30000ll, 0ll));
+   
+   starSys2->addToParent(universe->getID());
+   objman->addObject(starSys2);
+   
+   planet2->setType(planetType);
+   planet2->setName("Planet2");
+   Planet* planetData2 = static_cast<Planet*>(planet2->getObjectData());
+   planetData2->setSize(2);
+   planetData2->setPosition(starSysData2->getPosition() + Vector3d(20ll, 20ll, 0ll));
+   
+   OrderQueue *planetOrders2 = new OrderQueue();
+   planetOrders2->setObjectId(planet2->getID());
+   planetOrders2->addOwner(0);
+   game->getOrderManager()->addOrderQueue(planetOrders2);
+   OrderQueueObjectParam* oqop2 = static_cast<OrderQueueObjectParam*>(planetData2->getParameterByType(obpT_Order_Queue));
+   oqop2->setQueueId(planetOrders2->getQueueId());
+   planetData2->setDefaultOrderTypes();
+  
+   planet2->addToParent(starSys2->getID());
+   objman->addObject(planet2);
 }
 
 void Rfts::createResources() const {

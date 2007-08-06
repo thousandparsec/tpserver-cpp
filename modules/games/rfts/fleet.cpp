@@ -40,6 +40,7 @@
 #include <tpserver/refsys.h>
 
 #include "nop.h"
+#include "move.h"
 #include "containertypes.h"
 
 #include "fleet.h"
@@ -125,7 +126,7 @@ void Fleet::setDefaultOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
-   // TODO - add more orders (move)
+   allowedlist.insert(om->getOrderTypeByName("Move"));
    orders->setAllowedOrders(allowedlist);
 }
 
