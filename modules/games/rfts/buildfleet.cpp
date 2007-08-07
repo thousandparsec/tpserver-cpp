@@ -130,7 +130,7 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
       {
          Design* design = ds->getDesign(type);
-         design->addUnderConstruction(numToBuild);
+         //design->addUnderConstruction(numToBuild);
          ds->designCountsUpdated(design);
    
       }
@@ -149,25 +149,19 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
 bool BuildFleet::doOrder(IGObject *ob)
 {
-  
+   Game *game = Game::getGame();
+
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
    
    uint32_t usedshipres = resources[1];
 
-   int player = planet->getOwner();
-   if(player == 0){
-         //currently not owned by anyone, just forget about it
-         return true;
-   }
+   Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
   
   //planet->addResource(1, 1);
     
   //if(planet->removeResource(1, usedshipres)){
     
-   Game *game = Game::getGame();
-
-   IGObject* fleet = createEmptyFleet(game->getPlayerManager()->getPlayer(player),
-                                        game->getObjectManager()->getObject(ob->getParent()), "New Fleet");
+   IGObject* fleet = createEmptyFleet(player, game->getObjectManager()->getObject(ob->getParent()), "New Fleet");
    Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
    //set ship type
@@ -175,12 +169,13 @@ bool BuildFleet::doOrder(IGObject *ob)
    for(std::map<uint32_t,uint32_t>::iterator i = fleettype.begin(); i != fleettype.end(); ++i){
       fleetData->addShips(i->first, i->second);
       Design* design = Game::getGame()->getDesignStore()->getDesign(i->first);
-      design->addComplete(i->second);
       game->getDesignStore()->designCountsUpdated(design);
    }
    //add fleet to universe
    game->getObjectManager()->addObject(fleet);
-   game->getObjectManager()->getObject(ob->getParent())->touchModTime();
+
+   PlayerView* playerview = player->getPlayerView();
+   playerview->setVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
    
    // post completion message
    Message * msg = new Message();
@@ -190,7 +185,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    msg->addReference(rst_Object, fleet->getID());
    msg->addReference(rst_Object, ob->getID());
    
-   Game::getGame()->getPlayerManager()->getPlayer(player)->postToBoard(msg);
+   player->postToBoard(msg);
    
    return true;
 }
