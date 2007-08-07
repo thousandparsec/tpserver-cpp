@@ -54,16 +54,16 @@ class Rfts : public ::Ruleset {
    void createUniverse() const;
    void createStarSystems(IGObject *universe) const;
 
-   Component* createEngineComponent(char techLevel);
-   Component* createBattleComponent(char techLevel);
-   Component* createTransportComponent();
-
-   Design* createMarkDesign(Player *owner, char level) const;
-   Design* createScoutDesign(Player *owner) const;
-   Design* createTransportDesign(Player *ownder) const;
-
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 };
+
+Component* createEngineComponent(char techLevel);
+Component* createBattleComponent(char techLevel);
+Component* createTransportComponent();
+
+Design* createMarkDesign(Player *owner, char level);
+Design* createScoutDesign(Player *owner);
+Design* createTransportDesign(Player *ownder);
 
 }
 
