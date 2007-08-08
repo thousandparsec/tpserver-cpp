@@ -130,7 +130,6 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
       {
          Design* design = ds->getDesign(type);
-         //design->addUnderConstruction(numToBuild);
          ds->designCountsUpdated(design);
    
       }
@@ -152,19 +151,12 @@ bool BuildFleet::doOrder(IGObject *ob)
    Game *game = Game::getGame();
 
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
-   
-   uint32_t usedshipres = resources[1];
-
    Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
-  
-  //planet->addResource(1, 1);
-    
-  //if(planet->removeResource(1, usedshipres)){
-    
+      
    IGObject* fleet = createEmptyFleet(player, game->getObjectManager()->getObject(ob->getParent()), "New Fleet");
    Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
-   //set ship type
+   //add the ships
    std::map<uint32_t,uint32_t> fleettype = shipList->getList();
    for(std::map<uint32_t,uint32_t>::iterator i = fleettype.begin(); i != fleettype.end(); ++i){
       fleetData->addShips(i->first, i->second);

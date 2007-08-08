@@ -41,7 +41,8 @@ class Move : public Order
    virtual bool doOrder(IGObject * obj);
 
  private:
-   ObjectOrderParameter* planet;
+   ObjectOrderParameter* starSys;
+   bool firstTurn;
 };
 
 }

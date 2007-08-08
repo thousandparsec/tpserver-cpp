@@ -46,10 +46,10 @@ Move::Move() : Order() {
    name = "Move";
    description = "Move to a given planet";
    
-   planet = new ObjectOrderParameter();
-   planet->setName("planet");
-   planet->setDescription("The planet to move to");
-   addOrderParameter(planet);
+   starSys = new ObjectOrderParameter();
+   starSys->setName("Star System");
+   starSys->setDescription("The star system to move to");
+   addOrderParameter(starSys);
 }
 
 Move::~Move() {
@@ -64,7 +64,8 @@ Order* Move::clone() const {
 
 void Move::createFrame(Frame *f, int pos) {
 
-   turns = -1;
+   turns = 0;
+   firstTurn = true;
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
@@ -72,12 +73,16 @@ void Move::createFrame(Frame *f, int pos) {
    IGObject *fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-   StaticObject* planetData = dynamic_cast<StaticObject*>(om->getObject(planet->getObjectId())->getObjectData());
+   StaticObject* starSysData = dynamic_cast<StaticObject*>(om->getObject(starSys->getObjectId())->getObjectData());
 
-   if(planetData != NULL && fleetData != NULL)
-      // need to calculate speed of fastest ship in fleet and do real calc below
-      turns = static_cast<uint32_t>(fleetData->getPosition().getDistanceSq(planetData->getPosition()) /
+   //TODO change planet locations to their owning star sys, ignore other locations
+
+   if(starSysData != NULL && fleetData != NULL)
+      //TODO need to calculate speed of fastest ship in fleet and do real calc below
+      turns = static_cast<uint32_t>(fleetData->getPosition().getDistanceSq(starSysData->getPosition()) /
                                        (9000. * 9000.) + .5);
+   else
+      starSys->setObjectId(fleet->getParent()); // ignore invalid move locations
 
    Order::createFrame(f, pos);
 }
@@ -89,29 +94,31 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
 bool Move::doOrder(IGObject * obj) {
    turns--;
 
+   if(firstTurn)
+   {
+      firstTurn = false;
+      obj->removeFromParent();
+   }
+
+
    if(turns <= 0)
    {
       ObjectManager* om = Game::getGame()->getObjectManager();
       Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
+      
+      IGObject *newStarSys = om->getObject(starSys->getObjectId());
+      obj->setParent(starSys->getObjectId());
+      fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
 
-      IGObject *oldPlanet = om->getObject(obj->getParent());
-      IGObject *newPlanet = om->getObject(planet->getObjectId());
-
-      obj->removeFromParent();
-      obj->setParent(planet->getObjectId());
-      fleetData->setPosition(dynamic_cast<StaticObject*>(newPlanet->getObjectData())->getPosition());
-
-      oldPlanet->touchModTime();
-      newPlanet->touchModTime();
-      obj->touchModTime();
+      newStarSys->touchModTime();
    
       // post completion message
       Message * msg = new Message();
       msg->setSubject("Move fleet order complete");
-      msg->setBody(string("You're fleet has arrived at ") + om->getObject(planet->getObjectId())->getName() + ".");
+      msg->setBody(string("You're fleet has arrived and is in orbit around ") + om->getObject(starSys->getObjectId())->getName() + ".");
       msg->addReference(rst_Action_Order, rsorav_Completion);
       msg->addReference(rst_Object, obj->getID());
-      msg->addReference(rst_Object, planet->getObjectId());
+      msg->addReference(rst_Object, starSys->getObjectId());
       
       Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner())->postToBoard(msg);
 
