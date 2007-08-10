@@ -25,7 +25,6 @@
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/referenceobjectparam.h>
-#include <tpserver/resourcelistobjectparam.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
@@ -34,7 +33,10 @@
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/resourcemanager.h>
+#include <tpserver/resourcedescription.h>
 
+#include "resourcelistparam.h"
 #include "containertypes.h"
 #include "nop.h"
 
@@ -44,6 +46,8 @@
 namespace RFTS_ {
 
 using std::string;
+using std::pair;
+using std::map;
 
 Planet::Planet() : StaticObject() {
    nametype = "Planet";
@@ -66,10 +70,10 @@ Planet::Planet() : StaticObject() {
    group = new ObjectParameterGroup();
    group->setGroupId(3);
    group->setName("Resources");
-   group->setDescription("The planets resources");
-   resources = new ResourceListObjectParam();
+   group->setDescription("The planets stats");
+   resources = new ResourceListParam();
    resources->setName("Resource List");
-   resources->setDescription("The resource list of the resources the planet has available");
+   resources->setDescription("The stats for this planet");
    group->addParameter(resources);
    paramgroups.push_back(group);
    
@@ -83,19 +87,6 @@ Planet::Planet() : StaticObject() {
    
    group->addParameter(orderqueue);
    paramgroups.push_back(group); 
-
-   // could take the place of resources
-   group = new ObjectParameterGroup();
-   group->setGroupId(5);
-   group->setName("Stats");
-   group->setDescription("The planet's stats");
-   resourcePoints = new IntegerObjectParam();
-   resourcePoints->setName("Resource Points");
-   resourcePoints->setDescription("The resource points for this planet");
-   resourcePoints->setValue(0);
-   group->addParameter(resourcePoints);
-   
-   paramgroups.push_back(group);
    
 }
 
@@ -108,6 +99,7 @@ void Planet::setDefaultOrderTypes() {
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
    allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
+   allowedlist.insert(om->getOrderTypeByName("Produce"));
    orderqueue->setAllowedOrders(allowedlist);
 }
 
@@ -132,9 +124,9 @@ void Planet::packExtraData(Frame * frame){
   
   frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
   
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
+  map<uint32_t, pair<uint32_t, uint32_t> > reslist = resources->getResources();
     frame->packInt(reslist.size());
-    for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
+    for(map<uint32_t, pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
             itcurr != reslist.end(); ++itcurr){
         frame->packInt(itcurr->first);
         frame->packInt(itcurr->second.first);
@@ -153,45 +145,51 @@ void Planet::setOwner(uint32_t no){
   touchModTime();
 }
 
-std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
+void Planet::setDefaultResources() {
+   setResource("Resource Point", 20);
+   setResource("Industry", 10, 50);
+}
+
+const uint32_t Planet::getCurrentRP() const {
+   return resources->getResource("Resource Point").first;
+}
+
+const pair<uint32_t, uint32_t> Planet::getResource(const string& resTypeName) const {
+   return resources->getResource(resTypeName);
+}
+
+void Planet::setResource(const string& resType, uint32_t currVal, uint32_t maxVal) {
+   resources->setResource(resType, currVal, maxVal);
+}
+
+const map<uint32_t, pair<uint32_t, uint32_t> > Planet::getResources() const{
     return resources->getResources();
 }
 
-uint32_t Planet::getResource(uint32_t restype) const{
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
-  if(reslist.find(restype) != reslist.end()){
-    return reslist.find(restype)->first;
-  }
-  return 0;
+void Planet::addResource(std::string resType, uint32_t amount){
+   resources->getResource(resType).first += amount;
+   touchModTime();
 }
 
-void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
-    resources->setResources(ress);
-    touchModTime();
-}
+bool Planet::removeResource(std::string resTypeName, uint32_t amount){
+   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
+   uint32_t resType = Game::getGame()->getResourceManager()->
+                      getResourceDescription(resTypeName)->getResourceType();
 
-void Planet::addResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
-    std::pair<uint32_t, uint32_t> respair = reslist[restype];
-    respair.first += amount;
-    reslist[restype] = respair;
-    resources->setResources(reslist);
-    touchModTime();
-}
-
-bool Planet::removeResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
-    if(reslist.find(restype) != reslist.end()){
-        if(reslist[restype].first >= amount){
-            std::pair<uint32_t, uint32_t> respair = reslist[restype];
+      if(reslist.find(resType) != reslist.end()){
+         touchModTime();
+         if(reslist[resType].first >= amount){
+            std::pair<uint32_t, uint32_t> respair = reslist[resType];
             respair.first -= amount;
-            reslist[restype] = respair;
+            reslist[resType] = respair;
             resources->setResources(reslist);
-            touchModTime();
-            return true;
-        }
-    }
-    return false;
+         } else {
+            reslist[resType].first = 0;
+            resources->setResources(reslist);
+         }
+         return true;
+      }
+      return false;
 }
 
 }

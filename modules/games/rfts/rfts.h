@@ -24,7 +24,12 @@
 
 #include <tpserver/ruleset.h>
 
+#include "productioninfo.h"
+
 class IGObject;
+class Component;
+class Design;
+class Player;
 
 namespace RFTS_ {
 
@@ -42,7 +47,10 @@ class Rfts : public ::Ruleset {
 
    virtual bool onAddPlayer(Player *player);
    virtual void onPlayerAdded(Player *player);
- private: 
+
+   static const ProductionInfo& getProductionInfo();
+   
+ private:    
    
    void setObjectTypes() const;
    void setOrderTypes() const;

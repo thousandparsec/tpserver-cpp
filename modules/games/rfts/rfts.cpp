@@ -37,10 +37,13 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/objectparameter.h>
+#include <tpserver/resourcemanager.h>
+#include <tpserver/resourcedescription.h>
 
 #include "nop.h"
 #include "buildfleet.h"
 #include "move.h"
+#include "productionorder.h"
 #include "staticobject.h"
 #include "planet.h"
 #include "universe.h"
@@ -78,6 +81,11 @@ std::string Rfts::getName() {
 
 std::string Rfts::getVersion() {
    return "0.0";
+}
+
+const ProductionInfo& Rfts::getProductionInfo() {
+   static ProductionInfo prodInfo = ProductionInfo();
+   return prodInfo;
 }
 
 void Rfts::initGame() {
@@ -120,6 +128,7 @@ void Rfts::setOrderTypes() const {
    orm->addOrderType(new Nop());
    orm->addOrderType(new BuildFleet());
    orm->addOrderType(new Move());
+   orm->addOrderType(new ProductionOrder());
 }
 
 void Rfts::createGame() {
@@ -245,12 +254,10 @@ void Rfts::createStarSystems(IGObject *universe) const {
 
    Game *game = Game::getGame();
    ObjectManager *objman = game->getObjectManager();
-   //ResourceManager* resman = game->getResourceManager();
    IGObject *starSys = game->getObjectManager()->createNewObject();
    IGObject *planet = game->getObjectManager()->createNewObject();
    IGObject *starSys2 = game->getObjectManager()->createNewObject();
    IGObject *planet2 = game->getObjectManager()->createNewObject();
-   //std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
    
    uint32_t ssType = game->getObjectDataManager()->getObjectTypeByName("Star System");
    uint32_t planetType = game->getObjectDataManager()->getObjectTypeByName("Planet");
@@ -268,9 +275,7 @@ void Rfts::createStarSystems(IGObject *universe) const {
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
    planetData->setSize(2);
    planetData->setPosition(starSysData->getPosition() + Vector3d(20ll, 20ll, 0ll));
-   // set up resources
-   //ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
-   //((Planet*)(planet->getObjectData()))->setResources(ress);
+   planetData->setDefaultResources();
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
@@ -311,7 +316,67 @@ void Rfts::createStarSystems(IGObject *universe) const {
 }
 
 void Rfts::createResources() const {
-   //TODO - make resource points?
+   ResourceManager* resMan = Game::getGame()->getResourceManager();
+   
+   ResourceDescription* res = new ResourceDescription();
+   res->setNameSingular("Resource Point");
+   res->setNamePlural("Resource Points");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Resource points");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Industry");
+   res->setNamePlural("Industry");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Industrial strength");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Social Environment");
+   res->setNamePlural("Social Environment");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Social Environment");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Planetary Environment");
+   res->setNamePlural("Planetary Environment");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Planetary Environment");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Population Maintenance");
+   res->setNamePlural("Population Maintenance");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Population Maintenance");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Colonist");
+   res->setNamePlural("Colonists");
+   res->setUnitSingular("unit");
+   res->setUnitPlural("units");
+   res->setDescription("Population availabl for colonisation");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
 }
 
 void Rfts::startGame() {

@@ -26,7 +26,7 @@
 #include "ownedobject.h"
 
 class ReferenceObjectParam;
-class ResourceListObjectParam;
+class ResourceListParam;
 class OrderQueueObjectParam;
 class IntegerObjectParam;
 
@@ -44,21 +44,29 @@ class Planet : public StaticObject, public OwnedObject {
    virtual void doOnceATurn(IGObject* obj);
    virtual int getContainerType();
 
-   void setDefaultOrderTypes();
-           
+
    uint32_t getOwner() const;
    void setOwner(uint32_t no);
 
-   std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
-   uint32_t getResource(uint32_t restype) const;
+   void setDefaultOrderTypes();
+
+   void setDefaultResources();
+
+   const uint32_t getCurrentRP() const;
+
+   const std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources() const;
+
+   const std::pair<uint32_t, uint32_t> getResource(uint32_t resTypeId) const;
+   const std::pair<uint32_t, uint32_t> getResource(const std::string& resTypName) const;
+   void setResource(uint32_t resTypeId, uint32_t currentVal = 0, uint32_t maxVal = 0);
+   void setResource(const std::string& resType, uint32_t currentVal = 0, uint32_t maxVal = 0);
     
-   void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
-   void addResource(uint32_t restype, uint32_t amount);
-   bool removeResource(uint32_t restype, uint32_t amount);
+   void addResource(std::string resType, uint32_t amount);
+   bool removeResource(std::string resType, uint32_t amount);
 
  private:
    ReferenceObjectParam * playerref;
-   ResourceListObjectParam* resources;
+   ResourceListParam* resources;
    OrderQueueObjectParam * orderqueue;
 
    IntegerObjectParam *resourcePoints;
