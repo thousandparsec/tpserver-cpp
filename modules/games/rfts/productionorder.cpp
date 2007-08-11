@@ -45,13 +45,13 @@ ProductionOrder::ProductionOrder() {
    name = "Produce";
    description = "Order the production of planetary stats";
    
-   planetStats = new ListParameter();
-   planetStats->setName("Planetary stats");
-   planetStats->setDescription("The production orders");
-   planetStats->setListOptionsCallback(ListOptionCallback(this,
+   productionList = new ListParameter();
+   productionList->setName("Planetary stats");
+   productionList->setDescription("The production orders");
+   productionList->setListOptionsCallback(ListOptionCallback(this,
             &ProductionOrder::generateListOptions));
    
-   addOrderParameter(planetStats);
+   addOrderParameter(productionList);
 }
 
 ProductionOrder::~ProductionOrder() {
@@ -90,27 +90,8 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
 }
 
 void ProductionOrder::createFrame(Frame *f, int pos) {
-   
-   // CHECK / TODO - FIX 
-   /*map<uint32_t, uint32_t> list = planetStats->getList();
-
-   Game *game = Game::getGame();
-   ResourceManager *resMan = game->getResourceManager();
-   IGObject *selectedObj = game->getObjectManager()->getObject(
-            game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-   Planet *planet = dynamic_cast<Planet*>(selectedObj->getObjectData());
-
-   assert(planet);   
-
-   for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
-   {
-      // remove the RPs for this each of this resource
-      string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
-      uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
-
-      planet->removeResource(0, planet->getResource(i->first).first * resCost);
-   }*/
-
+   // TODO - make it so that you cannot request for more
+   // than the current RP allows in any spec prod.
    Order::createFrame(f, pos);
 }
 
@@ -119,6 +100,24 @@ Result ProductionOrder::inputFrame(Frame *f, unsigned int playerid) {
 }
 
 bool ProductionOrder::doOrder(IGObject *obj) {
+
+   Game *game = Game::getGame();
+   ResourceManager *resMan = game->getResourceManager();
+   Planet *planet = dynamic_cast<Planet*>(obj->getObjectData());
+   assert(planet);
+
+   map<uint32_t, uint32_t> list = productionList->getList();
+   
+   for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
+   {
+      // remove the RPs for this each of this resource
+      string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
+      uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
+
+      planet->removeResource("Resource Point", planet->getResource(i->first).first * resCost);
+      planet->addResource(i->first, i->second);
+   }
+
    return true;
 }
 

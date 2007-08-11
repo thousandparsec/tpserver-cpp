@@ -154,8 +154,16 @@ const uint32_t Planet::getCurrentRP() const {
    return resources->getResource("Resource Point").first;
 }
 
+const pair<uint32_t, uint32_t> Planet::getResource(uint32_t resTypeId) const {
+   return resources->getResource(resTypeId);
+}
+
 const pair<uint32_t, uint32_t> Planet::getResource(const string& resTypeName) const {
    return resources->getResource(resTypeName);
+}
+
+void Planet::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
+   resources->setResource(resTypeId, currVal, maxVal);
 }
 
 void Planet::setResource(const string& resType, uint32_t currVal, uint32_t maxVal) {
@@ -166,30 +174,40 @@ const map<uint32_t, pair<uint32_t, uint32_t> > Planet::getResources() const{
     return resources->getResources();
 }
 
-void Planet::addResource(std::string resType, uint32_t amount){
+void Planet::addResource(uint32_t resTypeId, uint32_t amount){
+   resources->getResource(resTypeId).first += amount;
+   touchModTime();
+}
+
+void Planet::addResource(const string& resType, uint32_t amount){
    resources->getResource(resType).first += amount;
    touchModTime();
 }
 
-bool Planet::removeResource(std::string resTypeName, uint32_t amount){
+bool Planet::removeResource(uint32_t resTypeId, uint32_t amount){
    std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
-   uint32_t resType = Game::getGame()->getResourceManager()->
-                      getResourceDescription(resTypeName)->getResourceType();
-
-      if(reslist.find(resType) != reslist.end()){
+   
+      if(reslist.find(resTypeId) != reslist.end()){
          touchModTime();
-         if(reslist[resType].first >= amount){
-            std::pair<uint32_t, uint32_t> respair = reslist[resType];
+         if(reslist[resTypeId].first >= amount){
+            std::pair<uint32_t, uint32_t> respair = reslist[resTypeId];
             respair.first -= amount;
-            reslist[resType] = respair;
+            reslist[resTypeId] = respair;
             resources->setResources(reslist);
          } else {
-            reslist[resType].first = 0;
+            reslist[resTypeId].first = 0;
             resources->setResources(reslist);
          }
          return true;
       }
       return false;
+}
+
+bool Planet::removeResource(const string& resTypeName, uint32_t amount){
+
+   return removeResource(Game::getGame()->getResourceManager()->
+                        getResourceDescription(resTypeName)->getResourceType(),
+                        amount);
 }
 
 }

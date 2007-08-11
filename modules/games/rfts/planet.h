@@ -58,11 +58,15 @@ class Planet : public StaticObject, public OwnedObject {
 
    const std::pair<uint32_t, uint32_t> getResource(uint32_t resTypeId) const;
    const std::pair<uint32_t, uint32_t> getResource(const std::string& resTypName) const;
+
    void setResource(uint32_t resTypeId, uint32_t currentVal = 0, uint32_t maxVal = 0);
    void setResource(const std::string& resType, uint32_t currentVal = 0, uint32_t maxVal = 0);
     
-   void addResource(std::string resType, uint32_t amount);
-   bool removeResource(std::string resType, uint32_t amount);
+   void addResource(uint32_t resTypeId, uint32_t amount);
+   void addResource(const std::string& resTypeName, uint32_t amount);
+
+   bool removeResource(uint32_t resTypeId, uint32_t amount);
+   bool removeResource(const std::string& resTypeName, uint32_t amount);
 
  private:
    ReferenceObjectParam * playerref;

@@ -49,7 +49,7 @@ class ProductionOrder : public ::Order {
    void setOption(std::map<uint32_t, std::pair<std::string, uint32_t> >& options,
                const std::string& resTypeName, Planet* planet);
 
-   ListParameter *planetStats;
+   ListParameter *productionList;
 
 };
 
