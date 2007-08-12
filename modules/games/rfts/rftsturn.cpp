@@ -68,13 +68,15 @@ void RftsTurn::doTurn() {
          (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
          for(uint32_t j = 0; j < oq->getNumberOrders(); j++)
          {
-            assert(dynamic_cast<OwnedObject*>(currObj->getObjectData()));
+            OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectData());
+            assert(orderedObj);
 
-            Order* order = oq->getOrder(j, dynamic_cast<OwnedObject*>(currObj->getObjectData())->getOwner());
+            Order* order = oq->getOrder(j, orderedObj->getOwner());
             if(order->doOrder(currObj))
-               oq->removeOrder(j, dynamic_cast<OwnedObject*>(currObj->getObjectData())->getOwner());
+               oq->removeOrder(j, orderedObj->getOwner());
             else
                oq->updateFirstOrder(); // check
+
 
          }
       currObj->touchModTime();

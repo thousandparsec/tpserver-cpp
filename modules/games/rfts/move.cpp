@@ -84,6 +84,8 @@ void Move::createFrame(Frame *f, int pos) {
    else
       starSys->setObjectId(fleet->getParent()); // ignore invalid move locations
 
+   om->doneWithObject(fleet->getID());
+
    Order::createFrame(f, pos);
 }
 
@@ -97,7 +99,7 @@ bool Move::doOrder(IGObject * obj) {
    if(firstTurn)
    {
       firstTurn = false;
-      obj->removeFromParent();
+      // obj->removeFromParent(); FIX
    }
 
 

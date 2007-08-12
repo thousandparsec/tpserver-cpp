@@ -1,6 +1,6 @@
 #ifndef containertypes_H
 #define containertypes_H
-/*  containertypes class
+/*  containertypes enum
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
