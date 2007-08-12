@@ -106,6 +106,7 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
       Design* design = ds->getDesign(*i);
       if(design->getCategoryId() == ds->getCategoryByName("Ships"))
       {
+         // TODO - limit creation amount by industry and RP
          options[design->getDesignId()] = pair<string, uint32_t>(design->getName(), 100);
       }
    }

@@ -418,10 +418,13 @@ void Rfts::onPlayerAdded(Player *player) {
    Game *game = Game::getGame();
    IGObject* fleet = createEmptyFleet( player, game->getObjectManager()->getObject(1), "Fleet1");
 
-   Design* scout = createScoutDesign( player);
-
+   Design* scout = createScoutDesign(player);
+   
    dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 2);
+   
    game->getDesignStore()->designCountsUpdated(scout);
+   
+   game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '1'));
 
    game->getObjectManager()->addObject(fleet);
 
@@ -445,11 +448,10 @@ Component* createEngineComponent(char techLevel) {
    engine->setDescription( "A ship engine, required if you want your ship to move!");
    engine->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(if (= (designType._num-components design) 1) "
+      "(if (< (designType._num-components design) 3) "
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
-   propList[ds->getPropertyByName("RP Cost")] = string("(lambda (design) (* 3 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
 
    return engine;
@@ -466,12 +468,11 @@ Component* createBattleComponent(char techLevel) {
    battle->setDescription( "Guns and armour for a ship");
    battle->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(if (= (designType._num-components design) 1) "
+      "(if (< (designType._num-components design) 3) "
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5") + techLevel + string("))");
-   propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5") + techLevel + string("))");
-   //propList[ ds->getPropertyByName("RP Cost") ] = string("(lamda (design) (* 9") + techLevel + string("))");
+   propList[ ds->getPropertyByName("Attack") ] = string("(lambda (design) (* 5 ") + techLevel + string("))");
+   propList[ ds->getPropertyByName("Armour") ] = string("(lambda (design) (* 5 ") + techLevel + string("))");
    battle->setPropertyList(propList);
    return battle;
 }
@@ -488,11 +489,10 @@ Component* createTransportComponent() {
    trans->setDescription( "A colonist transport bay");
    trans->setTpclRequirementsFunction(
       "(lambda (design) "
-      "(if (= (designType._num-components design) 1) "
+      "(if (< (designType._num-components design) 3) "
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
    propList[ ds->getPropertyByName("Colonise") ] = "(lambda (design) 1)";
-   //propList[ ds->getPropertyByName("RP Cost") ] = "(lambda (design) 2)";
    trans->setPropertyList(propList);
    return trans;
 }
@@ -502,7 +502,7 @@ Design* createMarkDesign(Player *owner, char level) {
    DesignStore *ds = Game::getGame()->getDesignStore();
    map<unsigned int, unsigned int> componentList;
 
-   string name = "Mark " + level;
+   string name = string("Mark") + level;
 
    mark->setCategoryId(ds->getCategoryByName("Ships"));
    mark->setName( name );
@@ -512,7 +512,7 @@ Design* createMarkDesign(Player *owner, char level) {
    componentList[ ds->getComponentByName(string("Battle") + level) ] = 1;
    mark->setComponents(componentList);
 
-   ds->addDesign(mark); // check
+   ds->addDesign(mark);
 
    return mark;
 }
@@ -531,7 +531,7 @@ Design* createScoutDesign(Player *owner) {
    componentList[ ds->getComponentByName("Engine1") ] = 1;
    scout->setComponents(componentList);
 
-   ds->addDesign(scout); // check
+   ds->addDesign(scout);
 
    return scout;
 }

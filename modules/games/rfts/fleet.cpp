@@ -49,6 +49,7 @@ namespace RFTS_ {
 
 using std::map;
 using std::pair;
+using std::string;
 
 Fleet::Fleet() {
    nametype = "Fleet";
@@ -267,6 +268,15 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    fleet->addToParent(starSys->getID());
 
    return fleet;
+}
+
+IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
+                        const map<int, uint32_t>& ships) {
+   IGObject* fleet = createEmptyFleet(player, starSys, name);
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+
+   for(map<int, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+      fleetData->addShips(i->first, i->second);
 }
 
 
