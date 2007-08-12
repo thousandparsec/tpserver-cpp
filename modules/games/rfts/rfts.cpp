@@ -331,9 +331,19 @@ void Rfts::createResources() const {
    res = new ResourceDescription();
    res->setNameSingular("Industry");
    res->setNamePlural("Industry");
-   res->setUnitSingular("point");
-   res->setUnitPlural("points");
+   res->setUnitSingular("units");
+   res->setUnitPlural("units");
    res->setDescription("Industrial strength");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Population");
+   res->setNamePlural("Population");
+   res->setUnitSingular("unit");
+   res->setUnitPlural("units");
+   res->setDescription("Population of the planet");
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);
@@ -343,7 +353,7 @@ void Rfts::createResources() const {
    res->setNamePlural("Social Environment");
    res->setUnitSingular("point");
    res->setUnitPlural("points");
-   res->setDescription("Social Environment");
+   res->setDescription("Social Env. describes the health of the population. (Influences Population)");
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);
@@ -353,7 +363,7 @@ void Rfts::createResources() const {
    res->setNamePlural("Planetary Environment");
    res->setUnitSingular("point");
    res->setUnitPlural("points");
-   res->setDescription("Planetary Environment");
+   res->setDescription("Planetary Env. describes the health of the planet. (Influences Social Env.)");
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);
@@ -363,7 +373,8 @@ void Rfts::createResources() const {
    res->setNamePlural("Population Maintenance");
    res->setUnitSingular("point");
    res->setUnitPlural("points");
-   res->setDescription("Population Maintenance");
+   res->setDescription("Population Maintenance is the cost required to maintain the current population.\
+                         A 1:1 ratio with population is required for healthy populations.");
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);

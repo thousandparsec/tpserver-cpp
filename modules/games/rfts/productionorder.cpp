@@ -114,7 +114,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
       string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
       uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
 
-      planet->removeResource("Resource Point", planet->getResource(i->first).first * resCost);
+      planet->removeResource("Resource Point", i->second * resCost);
       planet->addResource(i->first, i->second);
    }
 
