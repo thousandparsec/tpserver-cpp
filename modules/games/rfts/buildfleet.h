@@ -24,6 +24,7 @@
 #include <tpserver/order.h>
 
 class ListParameter;
+class StringParameter;
 class IGObject;
 class Frame;
 
@@ -46,6 +47,7 @@ class BuildFleet : public Order {
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 
    ListParameter *shipList;
+   StringParameter *fleetName;
 };
 
 

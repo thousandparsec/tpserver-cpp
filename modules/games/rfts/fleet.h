@@ -68,7 +68,7 @@ class Fleet : public StaticObject, public OwnedObject
 
 };
 
-IGObject* createEmptyFleet(Player * player, IGObject* starSys, std::string name);
+IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
 
 }
 

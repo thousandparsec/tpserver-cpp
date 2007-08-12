@@ -236,13 +236,16 @@ ObjectData* Fleet::clone() const {
 
 
 
-IGObject* createEmptyFleet(Player* player, IGObject* starSys, std::string name)
+IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name)
 {
    Game *game = Game::getGame();
    IGObject *fleet = game->getObjectManager()->createNewObject();
       
    fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
-   fleet->setName(name);
+   if(name[0] == '\0' || name[0] == ' ')
+      fleet->setName(player->getName() + "'s New Fleet");
+   else
+      fleet->setName(name);
       
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
    fleetData->setSize(2);

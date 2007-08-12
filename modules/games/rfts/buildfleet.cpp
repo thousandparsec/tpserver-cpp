@@ -21,6 +21,7 @@
 #include <cmath>
 
 #include <tpserver/listparameter.h>
+#include <tpserver/stringparameter.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectdata.h>
@@ -61,6 +62,12 @@ BuildFleet::BuildFleet() {
    shipList->setListOptionsCallback(ListOptionCallback(this, &BuildFleet::generateListOptions));
    
    addOrderParameter(shipList);
+
+   fleetName = new StringParameter();
+   fleetName->setName("Name");
+   fleetName->setDescription("The name of the fleet to build");
+   
+   addOrderParameter(fleetName);
 }
 
 BuildFleet::~BuildFleet() {
@@ -74,7 +81,6 @@ Order* BuildFleet::clone() const {
 }
 
 void BuildFleet::createFrame(Frame *f, int pos) {
-
    turns = 0;
    Order::createFrame(f, pos);
 }
@@ -153,7 +159,8 @@ bool BuildFleet::doOrder(IGObject *ob)
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
    Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
       
-   IGObject* fleet = createEmptyFleet(player, game->getObjectManager()->getObject(ob->getParent()), "New Fleet");
+   IGObject* fleet = createEmptyFleet(player, game->getObjectManager()->getObject(ob->getParent()),
+                                       fleetName->getString());
    Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
    //add the ships
