@@ -73,7 +73,10 @@ void RftsTurn::doTurn() {
 
             Order* order = oq->getOrder(j, orderedObj->getOwner());
             if(order->doOrder(currObj))
+            {
                oq->removeOrder(j, orderedObj->getOwner());
+               j--; // list has been reordered
+            }
             else
                oq->updateFirstOrder(); // check
 
