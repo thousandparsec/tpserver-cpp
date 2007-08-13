@@ -183,9 +183,7 @@ bool BuildFleet::doOrder(IGObject *ob)
 
    planet->removeResource("Resource Point", usedRP);
 
-   // FIXME - shouldn't set all ids, only the one that's just created
-   PlayerView* playerview = player->getPlayerView();
-   playerview->setVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
+   player->getPlayerView()->addVisibleObject( fleet->getID() );
    
    // post completion message
    Message * msg = new Message();
