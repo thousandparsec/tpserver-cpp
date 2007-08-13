@@ -91,6 +91,11 @@ void PlayerView::setVisibleObjects(std::set<unsigned int> vis){
   currObjSeq++;
 }
 
+void PlayerView::addVisibleObject(uint32_t objid){
+  visibleObjects.insert(objid);
+  currObjSeq++;
+}
+
 bool PlayerView::isVisibleObject(unsigned int objid){
   return visibleObjects.find(objid) != visibleObjects.end();
 }
