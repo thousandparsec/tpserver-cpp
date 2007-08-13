@@ -139,7 +139,8 @@ void Planet::calcPopuation() {
 
    uint32_t& popMaint = resources->getResource("Population Maintenance").first;
 
-   newPop *= (popMaint / newPop);
+   if(newPop != 0)
+      newPop *= (popMaint / newPop);
 
    popMaint = 0; // use up maint points
    

@@ -42,7 +42,7 @@ class Move : public Order
 
  private:
    ObjectOrderParameter* starSys;
-   bool firstTurn;
+   bool calcTurns, firstTurn;
 };
 
 }

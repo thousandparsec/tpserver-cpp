@@ -55,7 +55,7 @@ void RftsTurn::doTurn() {
    set<uint32_t> objectsIds = objectmanager->getAllIds();
 
    // currently just go through each obj and do each order
-   // will be prioritized/sorted soon
+   // will be prioritized/sorted soon TODO
 
    for(set<uint32_t>::iterator i = objectsIds.begin();
          i != objectsIds.end(); ++i)
@@ -79,8 +79,6 @@ void RftsTurn::doTurn() {
             }
             else
                oq->updateFirstOrder(); // check
-
-
          }
       currObj->touchModTime();
       objectmanager->doneWithObject(currObj->getID());
@@ -88,7 +86,6 @@ void RftsTurn::doTurn() {
    }
    
    objectmanager->clearRemovedObjects();
-
 
    // to once a turn (right at the end)
    objectsIds = objectmanager->getAllIds();

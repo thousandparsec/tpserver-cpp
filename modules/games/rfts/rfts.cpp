@@ -235,20 +235,20 @@ void Rfts::createUniverse() {
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
    uniData->setPosition(Vector3d(0ll, 0ll, 0ll));
-   uniData->setSize(1234567890123ll);
+   uniData->setSize(123456789012ll);
    objman->addObject(universe);   
 
    list<string> planetNames;
    planetNames.push_back(string("Castor Prime"));
-   createStarSystem(*universe, "Castor", Vector3d(10000000, 5000000, 0), planetNames);
+   createStarSystem(*universe, "Castor", Vector3d(100000000, 50000000, 0), planetNames);
 
    planetNames.clear();
    planetNames.push_back("Dipha Prime");
-   createStarSystem(*universe, "Diphda", Vector3d(10000000, 50000000, 0), planetNames);
+   createStarSystem(*universe, "Diphda", Vector3d(100000000, 500000000, 0), planetNames);
 
    planetNames.clear();
    planetNames.push_back("Saiph Prime");
-   createStarSystem(*universe, "Saiph", Vector3d(60000000, 25000000, 0), planetNames);
+   createStarSystem(*universe, "Saiph", Vector3d(600000000, 250000000, 0), planetNames);
 }
 
 IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
@@ -270,7 +270,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
 
    for(list<string>::const_iterator i = planetNames.begin(); i != planetNames.end(); ++i)
       createPlanet(*starSys, *i, starSysData->getPosition() +
-         Vector3d(rand->getInRange(10000,300000), rand->getInRange(10000,300000),
+         Vector3d(rand->getInRange(100000,3000000), rand->getInRange(100000,3000000),
                    rand->getInRange(1000,30000)));
 
    return starSys;
