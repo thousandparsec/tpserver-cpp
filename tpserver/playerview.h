@@ -47,6 +47,7 @@ public:
   void doOnceATurn();
 
   void setVisibleObjects(std::set<unsigned int> vis);
+  void addVisibleObject(uint32_t objid);
   bool isVisibleObject(unsigned int objid);
   std::set<uint32_t> getVisibleObjects() const;
 

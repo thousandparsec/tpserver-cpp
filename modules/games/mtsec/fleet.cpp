@@ -31,6 +31,7 @@
 #include <tpserver/designstore.h>
 #include <tpserver/logging.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
@@ -253,17 +254,22 @@ void Fleet::packExtraData(Frame * frame){
 
 }
 
-void Fleet::doOnceATurn(IGObject * obj)
-{
-  IGObject * pob = Game::getGame()->getObjectManager()->getObject(obj->getParent());
-  uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+void Fleet::doOnceATurn(IGObject * obj){
+  Game* game = Game::getGame();
+  IGObject * pob = game->getObjectManager()->getObject(obj->getParent());
+  uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
     if(damage->getValue() != 0){
         damage->setValue(0);
         touchModTime();
     }
   }
-    Game::getGame()->getObjectManager()->doneWithObject(obj->getParent());
+  game->getObjectManager()->doneWithObject(obj->getParent());
+  
+  Order* order = game->getOrderManager()->getOrderQueue(orderqueue->getQueueId())->getFirstOrder();
+  if(order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")){
+    setVelocity(Vector3d(0,0,0));
+  }
 }
 
 int Fleet::getContainerType(){
