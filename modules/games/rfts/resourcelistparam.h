@@ -33,9 +33,10 @@ class ResourceListParam : public ::ResourceListObjectParam
    std::pair<uint32_t,uint32_t>& getResource(uint32_t resTypeId);
    std::pair<uint32_t,uint32_t>& getResource(const std::string& resTypeName);
    
-   void setResource(uint32_t resTypeId, uint32_t currVal = 0, uint32_t maxVal = 0);
-   void setResource(const std::string& resTypeName, uint32_t currVal = 0, uint32_t maxVal = 0);
-   
+   void setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal = KEEP_VAL);
+   void setResource(const std::string& resTypeName, uint32_t currVal, uint32_t maxVal = KEEP_VAL);
+
+   static const uint32_t KEEP_VAL = 0xFFFFFFFF;
 };
 
 

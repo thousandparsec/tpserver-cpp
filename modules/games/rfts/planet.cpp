@@ -35,10 +35,12 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
+#include <tpserver/prng.h>
 
 #include "resourcelistparam.h"
 #include "containertypes.h"
 #include "nop.h"
+#include "rfts.h"
 
 #include "planet.h"
 
@@ -127,7 +129,24 @@ void Planet::calcRP() {
 }
 
 void Planet::calcPopuation() {
-   ;// TODO
+   uint32_t newPop = resources->getResource("Population").first;
+   const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
+   pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
+
+            // social + midpoint of difference of percentage of planetary and social
+   social.first = static_cast<uint32_t>(social.first + .5 *
+                   ((planetary.first / planetary.second) - (social.first / social.second)));
+
+   uint32_t& popMaint = resources->getResource("Population Maintenance").first;
+
+   newPop *= (popMaint / newPop);
+
+   popMaint = 0; // use up maint points
+   
+      // social < 40 => pop goes down, else goes up
+   newPop *= static_cast<uint32_t>((social.first / 40.) / 10.);
+
+   resources->setResource("Population", newPop);
 }
 
 int Planet::getContainerType() {
@@ -165,12 +184,24 @@ void Planet::setOwner(uint32_t no){
 }
 
 void Planet::setDefaultResources() {
-   //TODO - make semi-random
-   setResource("Resource Point", 20);
-   setResource("Industry", 10, 50);
-   setResource("Population", 45, 100);
-   setResource("Social Environment", 23, 80);
-   setResource("Planetary Environment", 5, 30);
+
+   Random* rand = Game::getGame()->getRandom();
+   const ProductionInfo& po = Rfts::getProductionInfo();
+   uint32_t zero = 0;
+   
+   setResource("Resource Point", rand->getInRange(zero, static_cast<uint32_t>(60)) );
+   
+   setResource("Industry", rand->getInRange(zero,po.getMinResources("Industry")/2),
+                        po.getRandResourceVal("Industry"));
+                        
+   setResource("Population", rand->getInRange(zero,po.getMinResources("Population")/2),
+                        po.getRandResourceVal("Population"));
+                        
+   setResource("Social Environment", rand->getInRange(zero,po.getMinResources("Social Environment")/2),
+                        po.getRandResourceVal("Social Environment"));
+                        
+   setResource("Planetary Environment", rand->getInRange(zero,po.getMinResources("Planetary Environment")/2),
+                        po.getRandResourceVal("Planetary Environment"));
 }
 
 const uint32_t Planet::getCurrentRP() const {

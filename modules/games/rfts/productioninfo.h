@@ -36,6 +36,7 @@ class ProductionInfo
    const uint32_t getResourceCost(const std::string& resTypeName) const;
    const uint32_t getMaxResources(const std::string& resTypeName) const;
    const uint32_t getMinResources(const std::string& resTypeName) const;
+   const uint32_t getRandResourceVal(const std::string& resTypeName) const;
 
  private:  
 

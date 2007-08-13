@@ -50,14 +50,20 @@ pair<uint32_t, uint32_t>& ResourceListParam::getResource(const string& resTypeNa
 
 void ResourceListParam::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
    pair<uint32_t,uint32_t> &res = getResource(resTypeId);
+   
    res.first = currVal;
-   res.second = maxVal;
+   
+   if(maxVal != KEEP_VAL)
+      res.second = maxVal;
 }
 
 void ResourceListParam::setResource(const string& resTypeName, uint32_t currVal, uint32_t maxVal) {
    pair<uint32_t,uint32_t> &res = getResource(resTypeName);
+   
    res.first = currVal;
-   res.second = maxVal;
+   
+   if(maxVal != KEEP_VAL)
+      res.second = maxVal;
 }
 
 }

@@ -18,11 +18,15 @@
  *
  */
 
+#include <tpserver/game.h>
+#include <tpserver/prng.h>
+
 #include "productioninfo.h"
 
 namespace RFTS_ {
 
 using std::string;
+using std::pair;
 
 ProductionInfo::ProductionInfo() {
    init();
@@ -54,8 +58,11 @@ void ProductionInfo::init() {
    // pdb (?)
 
 
-   // Max Resources 
-   // stats TODO
+   // Min/Max Resources
+   minMaxResource["Industry"] = pair<uint32_t,uint32_t>(40,70);
+   minMaxResource["Population"] = pair<uint32_t, uint32_t>(30,110);
+   minMaxResource["Social Environment"] = pair<uint32_t,uint32_t>(45,95);
+   minMaxResource["Planetary Environment"] = pair<uint32_t,uint32_t>(25,50);
 }
 
 const uint32_t ProductionInfo::getResourceCost(const string& resTypeName) const {
@@ -68,6 +75,11 @@ const uint32_t ProductionInfo::getMinResources(const string& resTypeName) const 
 
 const uint32_t ProductionInfo::getMaxResources(const string& resTypeName) const {
    return (*minMaxResource.find(resTypeName)).second.second;
+}
+
+const uint32_t ProductionInfo::getRandResourceVal(const string& resTypeName) const {
+  return Game::getGame()->getRandom()->getInRange(getMinResources(resTypeName),
+                                                   getMaxResources(resTypeName));
 }
 
 }
