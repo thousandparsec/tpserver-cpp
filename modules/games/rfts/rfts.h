@@ -59,8 +59,10 @@ class Rfts : public ::Ruleset {
    void createComponents();
    void createResources() const;
 
-   void createUniverse() const;
-   void createStarSystems(IGObject *universe) const;
+   void createUniverse();
+   IGObject* createStarSystem(IGObject& universe, const std::string& name, const Vector3d& location,
+                           const std::list<std::string>& planetNames);
+   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
 
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 };

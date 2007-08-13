@@ -39,6 +39,8 @@
 #include <tpserver/objectparameter.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
+#include <tpserver/prng.h>
+#include <tpserver/settings.h>
 
 #include "nop.h"
 #include "buildfleet.h"
@@ -66,6 +68,7 @@ namespace RFTS_ {
 
 using std::string;
 using std::map;
+using std::list;
 
 Rfts::Rfts() {
 
@@ -80,7 +83,7 @@ std::string Rfts::getName() {
 }
 
 std::string Rfts::getVersion() {
-   return "0.0";
+   return "0.1";
 }
 
 const ProductionInfo& Rfts::getProductionInfo() {
@@ -199,16 +202,6 @@ void Rfts::createProperties() {
    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
-
-   prop = new Property();
-   prop->addCategoryId(ds->getCategoryByName("Ships"));
-   prop->setName("RP Cost");
-   prop->setDisplayName("RP Cost");
-   prop->setDescription("The number of resource points required to build this ship");
-   prop->setRank(0);
-   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" RP\")) ) )");
-   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-   ds->addProperty(prop);
 }
 
 void Rfts::createComponents() {
@@ -230,7 +223,7 @@ void Rfts::createComponents() {
    ds->addComponent(createTransportComponent());
 }
 
-void Rfts::createUniverse() const {
+void Rfts::createUniverse() {
    DEBUG_FN_PRINT();
 
    ObjectManager *objman = Game::getGame()->getObjectManager();
@@ -242,77 +235,73 @@ void Rfts::createUniverse() const {
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
    uniData->setPosition(Vector3d(0ll, 0ll, 0ll));
+   uniData->setSize(1234567890123ll);
    objman->addObject(universe);   
-   
-   createStarSystems(universe);
+
+   list<string> planetNames;
+   planetNames.push_back(string("Castor Prime"));
+   createStarSystem(*universe, "Castor", Vector3d(10000000, 5000000, 0), planetNames);
+
+   planetNames.clear();
+   planetNames.push_back("Dipha Prime");
+   createStarSystem(*universe, "Diphda", Vector3d(10000000, 50000000, 0), planetNames);
+
+   planetNames.clear();
+   planetNames.push_back("Saiph Prime");
+   createStarSystem(*universe, "Saiph", Vector3d(60000000, 25000000, 0), planetNames);
 }
 
-void Rfts::createStarSystems(IGObject *universe) const {
-   DEBUG_FN_PRINT();
-   // TODO (make all the systems... and functions for each)
-   // just create a single test system for now
+IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
+                  const Vector3d& location, const list<string>& planetNames)
+{
+   Game *game = Game::getGame();
+   
+   IGObject *starSys = game->getObjectManager()->createNewObject();
+
+   starSys->setType(game->getObjectDataManager()->getObjectTypeByName("Star System"));
+   starSys->setName(name);
+   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectData());
+   starSysData->setPosition(location);
+   
+   starSys->addToParent(universe.getID());
+   game->getObjectManager()->addObject(starSys);
+
+   Random* rand = game->getRandom();
+
+   for(list<string>::const_iterator i = planetNames.begin(); i != planetNames.end(); ++i)
+      createPlanet(*starSys, *i, starSysData->getPosition() +
+         Vector3d(rand->getInRange(10000,300000), rand->getInRange(10000,300000),
+                   rand->getInRange(1000,30000)));
+
+   return starSys;
+}
+
+IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name, const Vector3d& location) {
 
    Game *game = Game::getGame();
-   ObjectManager *objman = game->getObjectManager();
-   IGObject *starSys = game->getObjectManager()->createNewObject();
-   IGObject *planet = game->getObjectManager()->createNewObject();
-   IGObject *starSys2 = game->getObjectManager()->createNewObject();
-   IGObject *planet2 = game->getObjectManager()->createNewObject();
-   
-   uint32_t ssType = game->getObjectDataManager()->getObjectTypeByName("Star System");
-   uint32_t planetType = game->getObjectDataManager()->getObjectTypeByName("Planet");
 
-   starSys->setType(ssType);
-   starSys->setName("Star System1");
-   StaticObject* starSysData = static_cast<StaticObject*>(starSys->getObjectData());
-   starSysData->setPosition(Vector3d(30000ll, 20000ll, 0ll));
-   
-   starSys->addToParent(universe->getID());
-   objman->addObject(starSys);
-   
-   planet->setType(planetType);
-   planet->setName("Planet1");
+   IGObject *planet = game->getObjectManager()->createNewObject();
+
+   planet->setType(game->getObjectDataManager()->getObjectTypeByName("Planet"));
+   planet->setName(name);
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
-   planetData->setSize(2);
-   planetData->setPosition(starSysData->getPosition() + Vector3d(20ll, 20ll, 0ll));
+   planetData->setSize(3);
+   planetData->setPosition(location);
    planetData->setDefaultResources();
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
    planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planetData->getParameterByType(obpT_Order_Queue));
+   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
+                                       (planetData->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
    planetData->setDefaultOrderTypes();
   
-   planet->addToParent(starSys->getID());
-   objman->addObject(planet);
+   planet->addToParent(parentStarSys.getID());
+   game->getObjectManager()->addObject(planet);
 
-
-   starSys2->setType(ssType);
-   starSys2->setName("Star System2");
-   StaticObject* starSysData2 = static_cast<StaticObject*>(starSys2->getObjectData());
-   starSysData2->setPosition(Vector3d(20000ll, 30000ll, 0ll));
-   
-   starSys2->addToParent(universe->getID());
-   objman->addObject(starSys2);
-   
-   planet2->setType(planetType);
-   planet2->setName("Planet2");
-   Planet* planetData2 = static_cast<Planet*>(planet2->getObjectData());
-   planetData2->setSize(2);
-   planetData2->setPosition(starSysData2->getPosition() + Vector3d(20ll, 20ll, 0ll));
-   
-   OrderQueue *planetOrders2 = new OrderQueue();
-   planetOrders2->setObjectId(planet2->getID());
-   planetOrders2->addOwner(0);
-   game->getOrderManager()->addOrderQueue(planetOrders2);
-   OrderQueueObjectParam* oqop2 = static_cast<OrderQueueObjectParam*>(planetData2->getParameterByType(obpT_Order_Queue));
-   oqop2->setQueueId(planetOrders2->getQueueId());
-   planetData2->setDefaultOrderTypes();
-  
-   planet2->addToParent(starSys2->getID());
-   objman->addObject(planet2);
+   return planet;
 }
 
 void Rfts::createResources() const {
@@ -391,7 +380,14 @@ void Rfts::createResources() const {
 }
 
 void Rfts::startGame() {
-	DEBUG_FN_PRINT();
+   DEBUG_FN_PRINT();
+   
+   Settings* settings = Settings::getSettings();
+   if(settings->get("turn_length_over_threshold") == ""){
+      settings->set("turn_length_over_threshold", "170");
+      settings->set("turn_player_threshold", "0");
+      settings->set("turn_length_under_threshold", "170");
+   }
 }
 
 bool Rfts::onAddPlayer(Player *player) {
