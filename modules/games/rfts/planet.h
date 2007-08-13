@@ -69,6 +69,10 @@ class Planet : public StaticObject, public OwnedObject {
    bool removeResource(const std::string& resTypeName, uint32_t amount);
 
  private:
+
+   void calcRP();
+   void calcPopuation();
+ 
    ReferenceObjectParam * playerref;
    ResourceListParam* resources;
    OrderQueueObjectParam * orderqueue;

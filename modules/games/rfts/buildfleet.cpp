@@ -19,6 +19,7 @@
  */
 
 #include <cmath>
+#include <cassert>
 
 #include <tpserver/listparameter.h>
 #include <tpserver/stringparameter.h>
@@ -41,6 +42,7 @@
 #include "ownedobject.h"
 #include "planet.h"
 #include "fleet.h"
+#include "rfts.h"
 
 #include "buildfleet.h"
 
@@ -93,10 +95,12 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
 
    IGObject *selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectData());
+
+   assert(planetData);
 
    set<unsigned int> designs = game->getPlayerManager()->getPlayer(
-                           dynamic_cast<OwnedObject*>(selectedObj->getObjectData())->getOwner())->
-                          getPlayerView()->getUsableDesigns();
+                           planetData->getOwner())->getPlayerView()->getUsableDesigns();
 
    Game::getGame()->getObjectManager()->doneWithObject(selectedObj->getID());
    DesignStore* ds = Game::getGame()->getDesignStore();
@@ -106,8 +110,13 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
       Design* design = ds->getDesign(*i);
       if(design->getCategoryId() == ds->getCategoryByName("Ships"))
       {
-         // TODO - limit creation amount by industry and RP
-         options[design->getDesignId()] = pair<string, uint32_t>(design->getName(), 100);
+         // limit creation amount by industry and RP
+
+         uint32_t rp = planetData->getCurrentRP(), industry = planetData->getResource("Industry").first,
+                  designCost = Rfts::getProductionInfo().getResourceCost(design->getName());
+ 
+         options[design->getDesignId()] =
+            pair<string, uint32_t>( design->getName(), std::min(industry, rp / designCost) );
       }
    }
   
@@ -123,7 +132,7 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
    DesignStore* ds = Game::getGame()->getDesignStore();
    
    std::map<uint32_t, uint32_t> fleettype = shipList->getList();
-   uint32_t usedshipres = 0, costId = ds->getPropertyByName("RP Cost");
+   uint32_t fleetCostRP = 0;
    
    
    for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
@@ -131,24 +140,25 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
    {
       uint32_t type = itcurr->first;
       uint32_t numToBuild = itcurr->second;
-
-      usedshipres += static_cast<uint32_t>((ds->getDesign(type)->getPropertyValue(costId)) * numToBuild + .05f);
+      
 
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
       {
          Design* design = ds->getDesign(type);
+         uint32_t shipCost = Rfts::getProductionInfo().getResourceCost(design->getName());
+         
+         fleetCostRP += shipCost * numToBuild;
          ds->designCountsUpdated(design);
-   
       }
       else
       {
          return Failure("The requested design was not valid.");
       }
    }
-   if(usedshipres == 0 && !fleettype.empty())
+   if(fleetCostRP == 0 && !fleettype.empty())
       return Failure("To build was empty...");
    
-   resources[1] = usedshipres;
+   resources[1] = fleetCostRP;
    
    return Success();
 }
@@ -159,28 +169,36 @@ bool BuildFleet::doOrder(IGObject *ob)
 
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
    Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
-      
-   IGObject* fleet = createEmptyFleet(player, game->getObjectManager()->getObject(ob->getParent()),
-                                       fleetName->getString());
-   Fleet * fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
-   //add the ships
-   std::map<uint32_t,uint32_t> fleettype = shipList->getList();
-   for(std::map<uint32_t,uint32_t>::iterator i = fleettype.begin(); i != fleettype.end(); ++i){
-      fleetData->addShips(i->first, i->second);
-      Design* design = Game::getGame()->getDesignStore()->getDesign(i->first);
-      game->getDesignStore()->designCountsUpdated(design);
-   }
+
+   pair<IGObject*, uint32_t> fleetResult =
+      createFleet(player, game->getObjectManager()->getObject(ob->getParent()),
+                  fleetName->getString(), shipList->getList(), planet->getCurrentRP());
+
+   IGObject *fleet = fleetResult.first;
+   uint32_t usedRP = fleetResult.second;
+   
    //add fleet to universe
    game->getObjectManager()->addObject(fleet);
 
+   planet->removeResource("Resource Point", usedRP);
+
+   // FIXME - shouldn't set all ids, only the one that's just created
    PlayerView* playerview = player->getPlayerView();
    playerview->setVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
    
    // post completion message
    Message * msg = new Message();
    msg->setSubject("Build Fleet order complete");
-   msg->setBody(std::string("The construction of your new fleet is complete."));
+
+   if(usedRP < planet->getCurrentRP())
+      msg->setBody(string("The construction of your new fleet \"") + fleetName->getString() +
+                  string("\" is complete."));
+   else
+      msg->setBody(string("The construction of your fleet \"") + fleetName->getString() + string("\"\
+                    is finished, but not all ships were created due to resource constraints!"));
+                  
+   
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, fleet->getID());
    msg->addReference(rst_Object, ob->getID());

@@ -42,6 +42,7 @@
 #include "nop.h"
 #include "move.h"
 #include "containertypes.h"
+#include "rfts.h"
 
 #include "fleet.h"
 
@@ -132,7 +133,7 @@ void Fleet::setDefaultOrderTypes() {
 }
 
 
-void Fleet::addShips(int type, uint32_t number){
+void Fleet::addShips(uint32_t type, uint32_t number){
   map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
   ships[pair<int32_t, uint32_t>(rst_Design, type)] += number;
   shipList->setRefQuantityList(ships);
@@ -270,13 +271,22 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    return fleet;
 }
 
-IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
-                        const map<int, uint32_t>& ships) {
+pair<IGObject*,uint32_t> createFleet(Player *player, IGObject* starSys, const string& name,
+                        const map<uint32_t, uint32_t>& ships, uint32_t availableRP) {
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
-   for(map<int, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+   uint32_t usedRP = 0;
+
+   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin();
+       i != ships.end() &&
+       (usedRP += Rfts::getProductionInfo().getResourceCost(
+                  Game::getGame()->getDesignStore()->getDesign(i->first)->getName())) < availableRP; ++i)
+   {
       fleetData->addShips(i->first, i->second);
+   }
+
+   return pair<IGObject*, uint32_t>(fleet, usedRP);
 }
 
 

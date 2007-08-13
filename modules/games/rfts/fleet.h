@@ -47,7 +47,7 @@ class Fleet : public StaticObject, public OwnedObject
    void setVelocity(const Vector3d& v);
    
    void setDefaultOrderTypes();
-   void addShips(int type, uint32_t number);
+   void addShips(uint32_t type, uint32_t number);
    bool removeShips(int type, uint32_t number);
    int numShips(int type);
    std::map<int, int> getShips() const;
@@ -70,8 +70,8 @@ class Fleet : public StaticObject, public OwnedObject
 
 //helper functions
 IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
-IGObject* createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const std::map<int, uint32_t>& ships);
+std::pair<IGObject*, uint32_t> createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const std::map<uint32_t, uint32_t>& ships, uint32_t availableRP);
 
 }
 

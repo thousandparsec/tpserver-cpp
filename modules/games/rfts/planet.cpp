@@ -108,11 +108,26 @@ void Planet::doOnceATurn(IGObject* obj) {
    // next turn is odd - do RP production
    if(Game::getGame()->getTurnNumber() % 2 == 0)
    {
-      resources->setResource("Resource Point", 
+      // calc RP for next turn
+      calcRP();
+   }
+   else // this turn was odd - take care of prod. order
+   {
+      calcPopuation();
+      
+   }
+
+}
+
+void Planet::calcRP() {
+   resources->setResource("Resource Point",
          (resources->getResource("Population").first * 2) +
          (resources->getResource("Industry").first * resources->getResource("Social Environment").first) 
                                              / 16);
-   }
+}
+
+void Planet::calcPopuation() {
+   ;// TODO
 }
 
 int Planet::getContainerType() {
@@ -150,6 +165,7 @@ void Planet::setOwner(uint32_t no){
 }
 
 void Planet::setDefaultResources() {
+   //TODO - make semi-random
    setResource("Resource Point", 20);
    setResource("Industry", 10, 50);
    setResource("Population", 45, 100);

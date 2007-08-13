@@ -40,6 +40,15 @@ void ProductionInfo::init() {
    resourceCost["Planetary Environment"] = 8;
    resourceCost["Population Maintenance"] = 1;
    resourceCost["Colonist"] = 5;
+
+   // ships
+   resourceCost["Scout"] = 3;
+   resourceCost["Transport"] = 5;
+   resourceCost["Mark1"] = 14;
+   resourceCost["Mark2"] = 30;
+   resourceCost["Mark3"] = 80;
+   resourceCost["Mark4"] = 120;
+
    
    // tech TODO
    // pdb (?)
