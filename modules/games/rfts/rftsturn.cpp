@@ -94,7 +94,6 @@ void RftsTurn::doTurn() {
    {
       IGObject * obj = objectmanager->getObject(*i);
       obj->getObjectData()->doOnceATurn(obj);
-      obj->touchModTime();
       objectmanager->doneWithObject(obj->getID());
    }
 

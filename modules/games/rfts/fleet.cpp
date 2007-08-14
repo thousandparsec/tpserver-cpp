@@ -280,6 +280,8 @@ void Fleet::doOnceATurn(IGObject *obj) {
    //       then add bombard order
    //       else remove bombard order
    //    add colonise order
+
+   // touchModTime();
 }
 
 int Fleet::getContainerType() {

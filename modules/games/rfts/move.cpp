@@ -117,9 +117,10 @@ bool Move::doOrder(IGObject * obj) {
    {
       ObjectManager* om = Game::getGame()->getObjectManager();
       Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
-      
+
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
       obj->setParent(starSys->getObjectId());
+      obj->addToParent(starSys->getObjectId());
       fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
 
       newStarSys->touchModTime();
