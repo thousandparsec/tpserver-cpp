@@ -41,6 +41,8 @@
 
 #include "nop.h"
 #include "move.h"
+#include "renamefleet.h"
+#include "splitfleet.h"
 #include "containertypes.h"
 #include "rfts.h"
 
@@ -131,6 +133,7 @@ void Fleet::setDefaultOrderTypes() {
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
    allowedlist.insert(om->getOrderTypeByName("Move"));
    allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
+   allowedlist.insert(om->getOrderTypeByName("Rename Fleet"));
    orders->setAllowedOrders(allowedlist);
 }
 

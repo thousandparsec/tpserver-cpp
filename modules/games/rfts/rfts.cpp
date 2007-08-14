@@ -47,6 +47,7 @@
 #include "move.h"
 #include "productionorder.h"
 #include "splitfleet.h"
+#include "renamefleet.h"
 #include "staticobject.h"
 #include "planet.h"
 #include "universe.h"

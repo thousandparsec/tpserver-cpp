@@ -20,6 +20,9 @@
  *
  */
 
+#include <map>
+#include <utility>
+
 #include "staticobject.h"
 #include "ownedobject.h"
 
@@ -28,6 +31,7 @@ class ReferenceObjectParam;
 class RefQuantityListObjectParam;
 class IntegerObjectParam;
 class OrderQueueObjectParam;
+class Player;
 
 namespace RFTS_ {
 
