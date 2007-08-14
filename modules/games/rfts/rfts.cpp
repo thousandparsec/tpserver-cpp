@@ -135,6 +135,7 @@ void Rfts::setOrderTypes() const {
    orm->addOrderType(new Move());
    orm->addOrderType(new ProductionOrder());
    orm->addOrderType(new SplitFleet());
+   orm->addOrderType(new RenameFleet());
 }
 
 void Rfts::createGame() {
