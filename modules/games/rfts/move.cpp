@@ -28,6 +28,7 @@
 #include <tpserver/objectmanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 #include <tpserver/message.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
@@ -122,7 +123,10 @@ bool Move::doOrder(IGObject * obj) {
       fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
 
       newStarSys->touchModTime();
-      om->doneWithObject(obj->getID());
+      om->doneWithObject(newStarSys->getID());
+
+      Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
+      player->getPlayerView()->addVisibleObject(newStarSys->getID()); // check / testing
    
       // post completion message
       Message * msg = new Message();
@@ -130,10 +134,10 @@ bool Move::doOrder(IGObject * obj) {
       msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has arrived and is in orbit around ")
           + newStarSys->getName() + ".");
       msg->addReference(rst_Action_Order, rsorav_Completion);
-      msg->addReference(rst_Object, obj->getID());
       msg->addReference(rst_Object, starSys->getObjectId());
+      msg->addReference(rst_Object, obj->getID());
       
-      Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner())->postToBoard(msg);
+      player->postToBoard(msg);
 
       return true;
    }
