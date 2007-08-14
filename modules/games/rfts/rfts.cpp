@@ -300,7 +300,7 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name, const 
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
                                        (planetData->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
-   planetData->setDefaultOrderTypes();
+   planetData->setOrderTypes();
   
    planet->addToParent(parentStarSys.getID());
    game->getObjectManager()->addObject(planet);

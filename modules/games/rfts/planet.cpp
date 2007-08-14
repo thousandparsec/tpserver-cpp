@@ -50,6 +50,7 @@ namespace RFTS_ {
 using std::string;
 using std::pair;
 using std::map;
+using std::set;
 
 Planet::Planet() : StaticObject() {
    nametype = "Planet";
@@ -96,12 +97,22 @@ Planet::~Planet() {
 
 }
 
-void Planet::setDefaultOrderTypes() {
+void Planet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
+   uint32_t turn = Game::getGame()->getTurnNumber() % 3;
+   
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
-   allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
-   allowedlist.insert(om->getOrderTypeByName("Produce"));
+
+   if(turn == 0) // 1st turn - allow production
+   {
+      allowedlist.insert(om->getOrderTypeByName("Produce"));
+   }
+   if(turn == 0 || turn == 1) // non-first turn, allow build
+   {
+      allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
+   }
+      
    orderqueue->setAllowedOrders(allowedlist);
 }
 
@@ -116,9 +127,11 @@ void Planet::doOnceATurn(IGObject* obj) {
    else // this turn was odd - take care of prod. order
    {
       calcPopuation();
-      
    }
 
+   setOrderTypes();
+
+   touchModTime();
 }
 
 void Planet::calcRP() {

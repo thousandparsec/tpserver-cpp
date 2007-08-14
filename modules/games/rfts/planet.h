@@ -48,7 +48,7 @@ class Planet : public StaticObject, public OwnedObject {
    uint32_t getOwner() const;
    void setOwner(uint32_t no);
 
-   void setDefaultOrderTypes();
+   void setOrderTypes();
 
    void setDefaultResources();
 
