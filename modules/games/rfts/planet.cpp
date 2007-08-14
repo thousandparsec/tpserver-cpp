@@ -195,6 +195,7 @@ uint32_t Planet::getOwner() const{
 void Planet::setOwner(uint32_t no){
   playerref->setReferencedId(no);
   Game::getGame()->getOrderManager()->getOrderQueue(orderqueue->getQueueId())->addOwner(no);
+
   touchModTime();
 }
 

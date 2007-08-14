@@ -4,9 +4,9 @@ rulesetlib_LTLIBRARIES = librfts.la
 
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
-librfts_la_SOURCES = buildfleet.cpp fleet.cpp move.cpp nop.cpp planet.cpp \
-	productioninfo.cpp productionorder.cpp renamefleet.cpp resourcelistparam.cpp rfts.cpp \
-	rftsturn.cpp splitfleet.cpp staticobject.cpp universe.cpp
+librfts_la_SOURCES = buildfleet.cpp fleet.cpp move.cpp nop.cpp ownedobject.cpp \
+	planet.cpp productioninfo.cpp productionorder.cpp renamefleet.cpp \
+	resourcelistparam.cpp rfts.cpp rftsturn.cpp splitfleet.cpp staticobject.cpp universe.cpp
 
 librfts_la_LDFLAGS = -module
 

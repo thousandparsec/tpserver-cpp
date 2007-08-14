@@ -118,8 +118,9 @@ bool Move::doOrder(IGObject * obj) {
       ObjectManager* om = Game::getGame()->getObjectManager();
       Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
 
+      leaveStarSys(obj);
+
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
-      obj->setParent(starSys->getObjectId());
       obj->addToParent(starSys->getObjectId());
       fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
 
@@ -127,7 +128,8 @@ bool Move::doOrder(IGObject * obj) {
       om->doneWithObject(newStarSys->getID());
 
       Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
-      player->getPlayerView()->addVisibleObject(newStarSys->getID()); // check / testing
+
+      exploreStarSys(obj);
    
       // post completion message
       Message * msg = new Message();

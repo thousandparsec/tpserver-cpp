@@ -51,7 +51,7 @@ void RftsTurn::doTurn() {
    Game* game = Game::getGame();
    OrderManager* ordermanager = game->getOrderManager();
    ObjectManager* objectmanager = game->getObjectManager();
-   
+
    set<uint32_t> objectsIds = objectmanager->getAllIds();
 
    // currently just go through each obj and do each order
@@ -66,6 +66,7 @@ void RftsTurn::doTurn() {
       OrderQueue* oq;
       if(oqop != NULL && 
          (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
+      {
          for(uint32_t j = 0; j < oq->getNumberOrders(); j++)
          {
             OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectData());
@@ -80,7 +81,8 @@ void RftsTurn::doTurn() {
             else
                oq->updateFirstOrder(); // check
          }
-      currObj->touchModTime();
+         currObj->touchModTime();
+      }
       objectmanager->doneWithObject(currObj->getID());
           
    }

@@ -32,6 +32,9 @@ class OwnedObject
    virtual void setOwner(uint32_t no) = 0;
 };
 
+void exploreStarSys(IGObject* obj);
+void leaveStarSys(IGObject* obj);
+
 }
 
 #endif
