@@ -31,6 +31,7 @@
 #include <tpserver/objectmanager.h>
 
 #include "rfts.h"
+#include "productioninfo.h"
 #include "planet.h"
 
 #include "productionorder.h"

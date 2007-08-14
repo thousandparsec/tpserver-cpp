@@ -46,6 +46,7 @@
 #include "splitfleet.h"
 #include "containertypes.h"
 #include "rfts.h"
+#include "productioninfo.h"
 
 #include "fleet.h"
 
@@ -137,7 +138,6 @@ void Fleet::setDefaultOrderTypes() {
    allowedlist.insert(om->getOrderTypeByName("Rename Fleet"));
    orders->setAllowedOrders(allowedlist);
 }
-
 
 void Fleet::addShips(uint32_t type, uint32_t number) {
    map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
@@ -271,14 +271,6 @@ void Fleet::packExtraData(Frame *frame) {
 }
 
 void Fleet::doOnceATurn(IGObject *obj) {
-
-   // set the planets in this star sys to visible for my owner
-   PlayerView *pview = Game::getGame()->getPlayerManager()->getPlayer(getOwner())->getPlayerView();
-   IGObject *starSys = Game::getGame()->getObjectManager()->getObject(obj->getParent());
-
-   set<uint32_t> planets = starSys->getContainedObjects();
-   for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i)
-      pview->addVisibleObject(*i);
 
    // TODO
    // if in a star sys with an opposing fleet

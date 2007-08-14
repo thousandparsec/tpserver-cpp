@@ -41,6 +41,7 @@
 #include "containertypes.h"
 #include "nop.h"
 #include "rfts.h"
+#include "productioninfo.h"
 
 #include "planet.h"
 

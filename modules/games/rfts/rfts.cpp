@@ -53,6 +53,7 @@
 #include "universe.h"
 #include "fleet.h"
 #include "rftsturn.h"
+#include "productioninfo.h"
 
 #include "rfts.h"
 
@@ -71,7 +72,7 @@ namespace RFTS_ {
 using std::string;
 using std::map;
 using std::set;
-using std::list;
+using std::vector;
 
 Rfts::Rfts() {
 
@@ -243,7 +244,7 @@ void Rfts::createUniverse() {
    uniData->setSize(123456789012ll);
    objman->addObject(universe);   
 
-   list<string> planetNames;
+   vector<string> planetNames;
    planetNames.push_back(string("Castor Prime"));
    createStarSystem(*universe, "Castor", Vector3d(100000000, 50000000, 0), planetNames);
 
@@ -257,7 +258,7 @@ void Rfts::createUniverse() {
 }
 
 IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
-                  const Vector3d& location, const list<string>& planetNames)
+                  const Vector3d& location, const vector<string>& planetNames)
 {
    Game *game = Game::getGame();
    
@@ -273,7 +274,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
 
    Random* rand = game->getRandom();
 
-   for(list<string>::const_iterator i = planetNames.begin(); i != planetNames.end(); ++i)
+   for(vector<string>::const_iterator i = planetNames.begin(); i != planetNames.end(); ++i)
       createPlanet(*starSys, *i, starSysData->getPosition() +
          Vector3d(rand->getInRange(100000,3000000), rand->getInRange(100000,3000000),
                    rand->getInRange(1000,30000)));

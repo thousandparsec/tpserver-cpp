@@ -57,6 +57,7 @@ class Fleet : public StaticObject, public OwnedObject
    void recalcStats();
    
    void setDefaultOrderTypes();
+
    void addShips(uint32_t type, uint32_t number);
    bool removeShips(int type, uint32_t number);
    int numShips(int type);

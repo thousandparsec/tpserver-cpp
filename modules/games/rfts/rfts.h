@@ -21,10 +21,9 @@
  */
 
 #include <map>
+#include <vector>
 
 #include <tpserver/ruleset.h>
-
-#include "productioninfo.h"
 
 class IGObject;
 class Component;
@@ -32,6 +31,8 @@ class Design;
 class Player;
 
 namespace RFTS_ {
+
+class ProductionInfo;
 
 class Rfts : public ::Ruleset {
  public:
@@ -61,7 +62,7 @@ class Rfts : public ::Ruleset {
 
    void createUniverse();
    IGObject* createStarSystem(IGObject& universe, const std::string& name, const Vector3d& location,
-                           const std::list<std::string>& planetNames);
+                           const std::vector<std::string>& planetNames);
    IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
 
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?

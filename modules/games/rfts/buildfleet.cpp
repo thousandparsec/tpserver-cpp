@@ -42,9 +42,10 @@
 #include "ownedobject.h"
 #include "planet.h"
 #include "fleet.h"
-#include "rfts.h"
-
+#include "productioninfo.h"
 #include "buildfleet.h"
+
+#include "rfts.h"
 
 namespace RFTS_ {
 
