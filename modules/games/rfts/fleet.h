@@ -45,12 +45,18 @@ class Fleet : public StaticObject, public OwnedObject
    void takeDamage(int dmg);
 
    void setVelocity(const Vector3d& v);
+
+   const double getSpeed() const;
+   const double getAttack() const;
+   const double getArmour() const;
+
+   void recalcStats();
    
    void setDefaultOrderTypes();
    void addShips(uint32_t type, uint32_t number);
    bool removeShips(int type, uint32_t number);
    int numShips(int type);
-   std::map<int, int> getShips() const;
+   std::map<int,int> getShips() const;
    int totalShips() const;
          
    virtual void packExtraData(Frame * frame);   
@@ -60,6 +66,9 @@ class Fleet : public StaticObject, public OwnedObject
    virtual ObjectData* clone() const;
 
  private:
+
+   double speed, attack, armour;
+ 
    Velocity3dObjectParam *velocity;
    ReferenceObjectParam *player;
    RefQuantityListObjectParam *shipList;

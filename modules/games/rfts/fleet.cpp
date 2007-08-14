@@ -49,6 +49,7 @@
 namespace RFTS_ {
 
 using std::map;
+using std::set;
 using std::pair;
 using std::string;
 
@@ -133,18 +134,28 @@ void Fleet::setDefaultOrderTypes() {
 }
 
 
-void Fleet::addShips(uint32_t type, uint32_t number){
-  map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
-  ships[pair<int32_t, uint32_t>(rst_Design, type)] += number;
-  shipList->setRefQuantityList(ships);
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  OrderManager* om = Game::getGame()->getOrderManager();
-  if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1){
-    std::set<uint32_t> allowed = orders->getAllowedOrders();
-    allowed.insert(om->getOrderTypeByName("Colonise"));
-    orders->setAllowedOrders(allowed);
-  }
-  touchModTime();
+void Fleet::addShips(uint32_t type, uint32_t number) {
+   map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
+   ships[pair<int32_t, uint32_t>(rst_Design, type)] += number;
+   shipList->setRefQuantityList(ships);
+
+   DesignStore *ds = Game::getGame()->getDesignStore();
+   OrderManager* om = Game::getGame()->getOrderManager();
+   Design *design = ds->getDesign(type);
+   
+   if(design->getPropertyValue(ds->getPropertyByName("Colonise")) == 1){
+      std::set<uint32_t> allowed = orders->getAllowedOrders();
+      allowed.insert(om->getOrderTypeByName("Colonise"));
+      orders->setAllowedOrders(allowed);
+   }
+   if(design->getPropertyValue(ds->getPropertyByName("Speed")) > speed)
+      speed = design->getPropertyValue(ds->getPropertyByName("Speed"));
+   if(design->getPropertyValue(ds->getPropertyByName("Armour")) > armour)
+      armour = design->getPropertyValue(ds->getPropertyByName("Armour"));
+   if(design->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
+      attack = design->getPropertyValue(ds->getPropertyByName("Attack"));
+      
+   touchModTime();
 }
 
 bool Fleet::removeShips(int type, uint32_t number){
@@ -155,25 +166,9 @@ bool Fleet::removeShips(int type, uint32_t number){
       ships.erase(pair<int32_t, uint32_t>(rst_Design, type));
     }
     shipList->setRefQuantityList(ships);
-    DesignStore* ds = Game::getGame()->getDesignStore();
-    bool colonise = false;
-    for(map<pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-        itcurr != ships.end(); ++itcurr){
-      if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-        colonise = true;
-        break;
-      }
-    }
-    OrderManager* om = Game::getGame()->getOrderManager();
-    if(colonise){
-      std::set<uint32_t> allowed = orders->getAllowedOrders();
-      allowed.insert(om->getOrderTypeByName("Colonise"));
-      orders->setAllowedOrders(allowed);
-    }else{
-      std::set<uint32_t> allowed = orders->getAllowedOrders();
-      allowed.erase(om->getOrderTypeByName("Colonise"));
-      orders->setAllowedOrders(allowed);
-    }
+
+   recalcStats();
+
     touchModTime();
     return true;
   }
@@ -185,8 +180,8 @@ int Fleet::numShips(int type){
   return ships[pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
-map<int, int> Fleet::getShips() const{
-  map<int, int> ships;
+map<int,int> Fleet::getShips() const{
+  map<int,int> ships;
   map<pair<int32_t, uint32_t>, uint32_t> shipsref = shipList->getRefQuantityList();
   for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
       itcurr != shipsref.end(); ++itcurr){
@@ -203,6 +198,53 @@ int Fleet::totalShips() const{
     num += itcurr->second;
   }
   return num;
+}
+
+
+const double Fleet::getSpeed() const {
+   return speed;
+}
+
+const double Fleet::getAttack() const {
+   return attack;
+}
+
+const double Fleet::getArmour() const {
+   return armour;
+}
+
+void Fleet::recalcStats() {
+   map<pair<int32_t, uint32_t>, uint32_t> shipsref = shipList->getRefQuantityList();
+
+   DesignStore *ds = Game::getGame()->getDesignStore();
+   speed = armour = attack = 0;
+   bool colonise = false;
+
+   for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
+         i != shipsref.end(); ++i) //ships[i->first.second] = i->second;
+   {
+      Design *d = ds->getDesign(i->first.second);
+      
+      if(d->getPropertyValue(ds->getPropertyByName("Speed")) > speed)
+         speed = d->getPropertyValue(ds->getPropertyByName("Speed"));
+      if(d->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
+         attack = d->getPropertyValue(ds->getPropertyByName("Attack"));
+      if(d->getPropertyValue(ds->getPropertyByName("Armour")) > armour)
+         armour = d->getPropertyValue(ds->getPropertyByName("Armour"));
+
+      if(d->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.)
+         colonise = true;
+   }
+
+   OrderManager* om = Game::getGame()->getOrderManager();
+   set<uint32_t> allowed = orders->getAllowedOrders();
+   
+   if(colonise)
+      allowed.insert(om->getOrderTypeByName("Colonise"));
+   else
+      allowed.erase(om->getOrderTypeByName("Colonise"));
+      
+   orders->setAllowedOrders(allowed);
 }
 
 void Fleet::packExtraData(Frame *frame) {
