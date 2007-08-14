@@ -130,6 +130,7 @@ void Fleet::setDefaultOrderTypes() {
    std::set<uint32_t> allowedlist;
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
    allowedlist.insert(om->getOrderTypeByName("Move"));
+   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
    orders->setAllowedOrders(allowedlist);
 }
 

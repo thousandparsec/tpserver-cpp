@@ -6,10 +6,10 @@ rulesetlibdir = $(libdir)/tpserver/ruleset
 
 librfts_la_SOURCES = buildfleet.cpp fleet.cpp move.cpp nop.cpp planet.cpp \
 	productioninfo.cpp productionorder.cpp resourcelistparam.cpp rfts.cpp rftsturn.cpp \
-	staticobject.cpp universe.cpp
+	splitfleet.cpp staticobject.cpp universe.cpp
 
 librfts_la_LDFLAGS = -module
 
 noinst_HEADERS = buildfleet.h containertypes.h fleet.h move.h nop.h \
 	ownedobject.h planet.h productioninfo.h productionorder.h resourcelistparam.h rfts.h \
-	rftsturn.h staticobject.h universe.h
+	rftsturn.h splitfleet.h staticobject.h universe.h
