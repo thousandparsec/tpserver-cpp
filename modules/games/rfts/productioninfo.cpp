@@ -53,16 +53,23 @@ void ProductionInfo::init() {
    resourceCost["Mark3"] = 80;
    resourceCost["Mark4"] = 120;
 
-   
-   // tech TODO
-   // pdb (?)
+   // pdb
+   resourceCost["PDB1"] = 4;
+   resourceCost["PDB2"] = 8;
+   resourceCost["PDB3"] = 16;
+   resourceCost["PDB Maintenance1"] = 1;
+   resourceCost["PDB Maintenance2"] = 2;
+   resourceCost["PDB Maintenance3"] = 2;
+
+   // ship tech
+   resourceCost["Ship Techonology"] = 1;
 
 
    // Min/Max Resources
    minMaxResource["Industry"] = pair<uint32_t,uint32_t>(40,70);
    minMaxResource["Population"] = pair<uint32_t, uint32_t>(30,110);
-   minMaxResource["Social Environment"] = pair<uint32_t,uint32_t>(45,95);
-   minMaxResource["Planetary Environment"] = pair<uint32_t,uint32_t>(25,50);
+   minMaxResource["Social Environment"] = pair<uint32_t,uint32_t>(55,95);
+   minMaxResource["Planetary Environment"] = pair<uint32_t,uint32_t>(35,70);
 }
 
 const uint32_t ProductionInfo::getResourceCost(const string& resTypeName) const {

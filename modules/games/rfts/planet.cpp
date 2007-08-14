@@ -188,21 +188,24 @@ void Planet::setDefaultResources() {
 
    Random* rand = Game::getGame()->getRandom();
    const ProductionInfo& po = Rfts::getProductionInfo();
-   uint32_t zero = 0;
    
-   setResource("Resource Point", rand->getInRange(zero, static_cast<uint32_t>(60)) );
+   setResource("Resource Point", rand->getInRange(static_cast<uint32_t>(0), static_cast<uint32_t>(60)) );
    
-   setResource("Industry", rand->getInRange(zero,po.getMinResources("Industry")/2),
-                        po.getRandResourceVal("Industry"));
+   setResource("Industry",
+               rand->getInRange(static_cast<uint32_t>(5), po.getMinResources("Industry")*3/4),
+               po.getRandResourceVal("Industry"));
                         
-   setResource("Population", rand->getInRange(zero,po.getMinResources("Population")/2),
-                        po.getRandResourceVal("Population"));
+   setResource("Population",
+               rand->getInRange(static_cast<uint32_t>(10), po.getMinResources("Population")*3/4),
+               po.getRandResourceVal("Population"));
                         
-   setResource("Social Environment", rand->getInRange(zero,po.getMinResources("Social Environment")/2),
-                        po.getRandResourceVal("Social Environment"));
+   setResource("Social Environment",
+               rand->getInRange(static_cast<uint32_t>(15), po.getMinResources("Social Environment")*3/4),
+               po.getRandResourceVal("Social Environment"));
                         
-   setResource("Planetary Environment", rand->getInRange(zero,po.getMinResources("Planetary Environment")/2),
-                        po.getRandResourceVal("Planetary Environment"));
+   setResource("Planetary Environment",
+               rand->getInRange(static_cast<uint32_t>(5),po.getMinResources("Planetary Environment")*3/4),
+               po.getRandResourceVal("Planetary Environment"));
 }
 
 const uint32_t Planet::getCurrentRP() const {

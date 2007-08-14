@@ -90,8 +90,6 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
 }
 
 void ProductionOrder::createFrame(Frame *f, int pos) {
-   // TODO - make it so that you cannot request for more
-   // than the current RP allows in any spec prod.
    Order::createFrame(f, pos);
 }
 
