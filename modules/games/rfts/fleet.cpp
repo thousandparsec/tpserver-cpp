@@ -26,6 +26,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 #include <tpserver/frame.h>
 #include <tpserver/designstore.h>
 #include <tpserver/design.h>
@@ -270,6 +271,14 @@ void Fleet::packExtraData(Frame *frame) {
 }
 
 void Fleet::doOnceATurn(IGObject *obj) {
+
+   // set the planets in this star sys to visible for my owner
+   PlayerView *pview = Game::getGame()->getPlayerManager()->getPlayer(getOwner())->getPlayerView();
+   IGObject *starSys = Game::getGame()->getObjectManager()->getObject(obj->getParent());
+
+   set<uint32_t> planets = starSys->getContainedObjects();
+   for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i)
+      pview->addVisibleObject(*i);
 
    // TODO
    // if in a star sys with an opposing fleet

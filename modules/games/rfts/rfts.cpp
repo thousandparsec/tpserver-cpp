@@ -70,6 +70,7 @@ namespace RFTS_ {
 
 using std::string;
 using std::map;
+using std::set;
 using std::list;
 
 Rfts::Rfts() {
@@ -403,20 +404,27 @@ bool Rfts::onAddPlayer(Player *player) {
 void Rfts::onPlayerAdded(Player *player) {
    DEBUG_FN_PRINT();
 
+   Game *game = Game::getGame();
+   ObjectManager *om = Game::getGame()->getObjectManager();
+
    PlayerView* playerview = player->getPlayerView();
-   playerview->setVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
+
+   IGObject *universe = om->getObject(0);
+
+   // set all star systems visible
+   playerview->setVisibleObjects( universe->getContainedObjects() );
 
    for(uint32_t itcurr = 1; itcurr <= 9; ++itcurr){
       playerview->addUsableComponent(itcurr);
    }
 
-   // test : set the 1st object - a planet - to be owned by the player
-   Planet* pData = dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(2)->getObjectData());
+   // test : set the 2nd object - a planet - to be owned by the player
+   Planet* pData = dynamic_cast<Planet*>(om->getObject(2)->getObjectData());
    pData->setOwner(player->getID());
 
    Logger::getLogger()->debug("Making player's fleet");
-   Game *game = Game::getGame();
-   IGObject* fleet = createEmptyFleet( player, game->getObjectManager()->getObject(1), "Fleet1");
+   
+   IGObject* fleet = createEmptyFleet( player, om->getObject(1), "Fleet1");
 
    Design* scout = createScoutDesign(player);
    
