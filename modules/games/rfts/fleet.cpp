@@ -266,8 +266,16 @@ void Fleet::packExtraData(Frame *frame) {
 }
 
 void Fleet::doOnceATurn(IGObject *obj) {
-   // check
+
    // TODO
+   // if in a star sys with an opposing fleet
+   //    then set attack order
+   //    else remove attack order
+   // else (no opposing fleet here)
+   //    then if opposing planet is present
+   //       then add bombard order
+   //       else remove bombard order
+   //    add colonise order
 }
 
 int Fleet::getContainerType() {
