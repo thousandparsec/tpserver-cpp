@@ -574,6 +574,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
     if (ord == NULL) {
       of->createFailFrame(fec_NonExistant, "No such order type");
     } else {
+      ord->setOrderQueueId(orderqueueid);
       Result r = ord->inputFrame(frame, player->getID());
       if (r){
         if(orderqueue->addOrder(ord, pos, player->getID())) {
@@ -783,9 +784,8 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   if (ord == NULL) {
     of->createFailFrame(fec_NonExistant, "No such order type");
   }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
-    
+    ord->setOrderQueueId(orderqueueid);
     if(ord->inputFrame(frame, player->getID())){
-      ord->setOrderQueueId(orderqueueid);
       ord->createFrame(of, pos);
     }else{
       of->createFailFrame(fec_FrameError, "Order could not be unpacked correctly, invalid order");
