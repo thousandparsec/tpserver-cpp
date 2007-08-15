@@ -2,7 +2,7 @@ Source: tpserver-cpp
 Section: unknown
 Priority: extra
 Maintainer: Paul Schulz <paul@mawsonlakes.org>
-Build-Depends: debhelper (>= 5), autotools-dev
+Build-Depends: debhelper (>= 5), autotools-dev, automake, libtool, pkg-config, guile-1.8-dev, mzscheme, libtprl-dev
 Standards-Version: 3.7.2
 
 Package: tpserver-cpp
