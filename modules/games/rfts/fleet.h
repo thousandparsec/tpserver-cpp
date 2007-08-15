@@ -56,7 +56,7 @@ class Fleet : public StaticObject, public OwnedObject
 
    void recalcStats();
    
-   void setOrderTypes();
+   void setOrderTypes(bool addColonise = false, bool addBombard = false);
 
    void addShips(uint32_t type, uint32_t number);
    bool removeShips(int type, uint32_t number);
@@ -74,6 +74,9 @@ class Fleet : public StaticObject, public OwnedObject
 
    double speed, attack, armour;
    bool hasTransports;
+
+   bool setOpposingFleets(IGObject* thisObj, std::list<IGObject*>& fleets);
+   void doCombat(std::list<IGObject*>& fleets);
  
    Velocity3dObjectParam *velocity;
    ReferenceObjectParam *player;

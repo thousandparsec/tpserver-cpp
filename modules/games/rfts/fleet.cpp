@@ -17,6 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include <cassert>
+ 
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/object.h>
@@ -56,6 +59,7 @@ using std::map;
 using std::set;
 using std::pair;
 using std::string;
+using std::list;
 
 Fleet::Fleet() {
    nametype = "Fleet";
@@ -129,7 +133,7 @@ void Fleet::setVelocity(const Vector3d& nv) {
    velocity->setVelocity(nv);
 }
 
-void Fleet::setOrderTypes() {
+void Fleet::setOrderTypes(bool addColonise, bool addBombard) {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedList;
    allowedList.insert(om->getOrderTypeByName("Move"));
@@ -137,10 +141,15 @@ void Fleet::setOrderTypes() {
    allowedList.insert(om->getOrderTypeByName("Merge Fleet"));
    allowedList.insert(om->getOrderTypeByName("Rename Fleet"));
 
-   if(hasTransports) // TODO check that we're in a position to transport
+   if(addColonise)
       allowedList.insert(om->getOrderTypeByName("Colonise"));
+      
+   if(addBombard)
+      allowedList.insert(om->getOrderTypeByName("Bombard"));
    
    orders->setAllowedOrders(allowedList);
+   
+   touchModTime();
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number) {
@@ -213,18 +222,19 @@ void Fleet::recalcStats() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
    speed = armour = attack = 0;
+   hasTransports = false;
 
    for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
-         i != shipsref.end(); ++i) //ships[i->first.second] = i->second;
+         i != shipsref.end(); ++i)
    {
       Design *d = ds->getDesign(i->first.second);
       
-      if(d->getPropertyValue(ds->getPropertyByName("Speed")) > speed)
+      if(d->getPropertyValue(ds->getPropertyByName("Speed")) < speed)
          speed = d->getPropertyValue(ds->getPropertyByName("Speed"));
       if(d->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
-         attack = d->getPropertyValue(ds->getPropertyByName("Attack"));
+         attack =+ d->getPropertyValue(ds->getPropertyByName("Attack"));
       if(d->getPropertyValue(ds->getPropertyByName("Armour")) > armour)
-         armour = d->getPropertyValue(ds->getPropertyByName("Armour"));
+         armour =+ d->getPropertyValue(ds->getPropertyByName("Armour"));
 
       if(d->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.)
         hasTransports = true;
@@ -255,15 +265,25 @@ void Fleet::doOnceATurn(IGObject *obj) {
 
    // TODO
    // if in a star sys with an opposing fleet
-   //    then set attack order
-   //    else remove attack order
+   //    then do combat
    // else (no opposing fleet here)
    //    then if opposing planet is present
    //       then add bombard order
    //       else remove bombard order
    //    add colonise order
 
-   // touchModTime();
+   //check for opposing fleets
+   list<IGObject*> opposingFleets;
+   bool hasOpposingPlanet = setOpposingFleets(obj, opposingFleets);
+
+   if(!opposingFleets.empty())
+      doCombat(opposingFleets);
+
+   if(opposingFleets.empty()) // might be changed by doCombat
+   {
+      if(hasTransports)
+         setOrderTypes(hasTransports, hasOpposingPlanet);
+   }
 }
 
 int Fleet::getContainerType() {
@@ -274,6 +294,47 @@ ObjectData* Fleet::clone() const {
    return new Fleet();
 }
 
+bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
+
+   Game *game = Game::getGame();
+   ObjectManager *om = game->getObjectManager();
+
+   set<uint32_t> possibleFleets = om->getObject(obj->getParent())->getContainedObjects();
+   uint32_t fleetType = obj->getType();
+
+   bool hasOpposingPlanet = false;
+   
+   for(set<uint32_t>::iterator i = possibleFleets.begin(); i != possibleFleets.end(); ++i)
+   {
+      IGObject *objI = om->getObject(*i);
+      if(objI->getType() == fleetType)
+      {
+         Fleet* fleetDataI = dynamic_cast<Fleet*>(objI->getObjectData());
+         assert(fleetDataI);
+         if(fleetDataI->getOwner() != this->getOwner()) // TODO - ignore dead fleets
+            fleets.push_back(objI);
+      }
+      else
+      {
+         OwnedObject *owned = dynamic_cast<OwnedObject*>(objI->getObjectData());
+         assert(owned);
+         if(owned->getOwner() != -1 && owned->getOwner() != this->getOwner())
+            hasOpposingPlanet = true;
+      }
+   }
+
+   return hasOpposingPlanet;
+}
+
+void Fleet::doCombat(list<IGObject*>& fleets) {
+   touchModTime();
+
+   // while !fleets.empty && !dead
+      // attack each fleet
+      // get attacked by each fleet
+      // remove dead fleets
+   
+}
 
 
 IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name)
