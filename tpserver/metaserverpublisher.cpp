@@ -44,7 +44,7 @@ MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpu
   settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
   settings->setCallback("metaserver_address", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
   settings->setCallback("metaserver_port", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
-  lastpublishtime = time(NULL) - 600;
+  lastpublishtime = time(NULL);
   setTimer();
 }
 
