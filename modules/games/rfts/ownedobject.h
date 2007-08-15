@@ -33,7 +33,7 @@ class OwnedObject
 };
 
 void exploreStarSys(IGObject* obj);
-void leaveStarSys(IGObject* obj);
+
 
 }
 

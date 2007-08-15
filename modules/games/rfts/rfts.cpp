@@ -416,12 +416,6 @@ void Rfts::onPlayerAdded(Player *player) {
 
    PlayerView* playerview = player->getPlayerView();
 
-   IGObject *universe = om->getObject(0);
-
-   // set all star systems visible
-   playerview->setVisibleObjects( universe->getContainedObjects() );
-   playerview->addVisibleObject(0);
-
    for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
       playerview->addUsableComponent(i);
    }
@@ -446,6 +440,12 @@ void Rfts::onPlayerAdded(Player *player) {
    game->getObjectManager()->addObject(fleet);
 
    Logger::getLogger()->debug( "done making fleet");
+
+   // set visible objects
+   set<uint32_t> gameObjects = om->getAllIds();
+   set<uint32_t> ownedObjects;
+   findOwnedObjects(player->getID(), gameObjects, ownedObjects);
+   setVisibleObjects(player, ownedObjects);
 
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }

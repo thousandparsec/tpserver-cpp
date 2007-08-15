@@ -86,6 +86,9 @@ bool Colonise::doOrder(IGObject *obj) {
       uint32_t transId = 3; // ds->getDesignByName("Transport")->getDesignId();
       fleetData->removeShips(transId, fleetData->numShips(transId));
 
+      if(fleetData->totalShips() == 0)
+         om->scheduleRemoveObject(obj->getID());
+
       // TODO - check population of planet against number of colonists
       planetData->setOwner(player->getID());
 

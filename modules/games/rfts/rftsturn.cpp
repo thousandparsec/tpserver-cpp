@@ -29,6 +29,9 @@
 #include <tpserver/objectdata.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/player.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 
 #include "ownedobject.h"
 
@@ -89,6 +92,8 @@ void RftsTurn::doTurn() {
    
    objectmanager->clearRemovedObjects();
 
+   setPlayerVisibleObjects();
+
    // to once a turn (right at the end)
    objectsIds = objectmanager->getAllIds();
    for(std::set<uint32_t>::iterator i = objectsIds.begin(); 
@@ -101,6 +106,55 @@ void RftsTurn::doTurn() {
 
    objectmanager->clearRemovedObjects();
 
+}
+
+void RftsTurn::setPlayerVisibleObjects() {
+   PlayerManager *pm = Game::getGame()->getPlayerManager();
+   
+   set<uint32_t> gameObjects = Game::getGame()->getObjectManager()->getAllIds();
+   set<uint32_t> players = pm->getAllIds();
+   
+   for(set<uint32_t>::const_iterator i = players.begin(); i != players.end(); i++)
+   {
+      set<uint32_t> ownedObjects;
+      findOwnedObjects(*i, gameObjects, ownedObjects);
+      
+      Player *player = pm->getPlayer(*i);
+      setVisibleObjects(player, ownedObjects);
+   }
+}
+
+void setVisibleObjects(Player *player, const set<uint32_t>& ownedObjects) {
+   ObjectManager *om = Game::getGame()->getObjectManager();
+   
+   IGObject *universe = om->getObject(0);
+   PlayerView *pv = player->getPlayerView();
+
+   // add universe and star systems
+   pv->setVisibleObjects(universe->getContainedObjects());
+   pv->addVisibleObject(universe->getID());
+
+   for(set<uint32_t>::const_iterator i = ownedObjects.begin(); i != ownedObjects.end(); ++i)
+   {
+      IGObject *obj = om->getObject(*i);
+      exploreStarSys(obj);
+   }
+      
+   
+}
+
+void findOwnedObjects(uint32_t playerId, set<uint32_t>& gameObjects, set<uint32_t>& ownedObjects) {
+   ObjectManager *om = Game::getGame()->getObjectManager();
+   
+   for(set<uint32_t>::const_iterator i = gameObjects.begin(); i != gameObjects.end(); ++i)
+   {
+      OwnedObject *obj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectData());
+      if(obj != NULL && obj->getOwner() == playerId)
+      {
+         ownedObjects.insert(*i);
+         gameObjects.erase(*i);
+      }
+   }
 }
 
 }

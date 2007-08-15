@@ -30,6 +30,7 @@
 #include <tpserver/playerview.h>
 
 #include "fleet.h"
+#include "rfts.h"
 
 #include "mergefleet.h"
 
@@ -92,7 +93,6 @@ bool MergeFleet::doOrder(IGObject *obj) {
       
       otherFleetObj->removeFromParent();
       om->scheduleRemoveObject(otherFleetObj->getID());
-      player->getPlayerView()->removeVisibleObject(otherFleetObj->getID()); // CHECK - remove from all pvs?
    }
 
    om->doneWithObject(otherFleetObj->getID());

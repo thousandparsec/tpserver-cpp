@@ -109,7 +109,6 @@ bool Move::doOrder(IGObject * obj) {
    if(firstTurn)
    {
       firstTurn = false;
-      leaveStarSys(obj);
       obj->removeFromParent();
    }
 
@@ -129,8 +128,6 @@ bool Move::doOrder(IGObject * obj) {
 
       Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
-      exploreStarSys(obj);
-   
       // post completion message
       Message * msg = new Message();
       msg->setSubject("Move fleet order complete");

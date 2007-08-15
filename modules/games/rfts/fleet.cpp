@@ -163,20 +163,22 @@ void Fleet::addShips(uint32_t type, uint32_t number) {
 }
 
 bool Fleet::removeShips(int type, uint32_t number){
-  map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
-  if(ships[pair<int32_t, uint32_t>(rst_Design, type)] >= number){
-    ships[pair<int32_t, uint32_t>(rst_Design, type)] -= number;
-    if(ships[pair<int32_t, uint32_t>(rst_Design, type)] == 0){
-      ships.erase(pair<int32_t, uint32_t>(rst_Design, type));
-    }
-    shipList->setRefQuantityList(ships);
+   map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
+   if(ships[pair<int32_t, uint32_t>(rst_Design, type)] >= number)
+   {
+      ships[pair<int32_t, uint32_t>(rst_Design, type)] -= number;
+      
+      if(ships[pair<int32_t, uint32_t>(rst_Design, type)] == 0)
+         ships.erase(pair<int32_t, uint32_t>(rst_Design, type));
 
-   recalcStats();
+      shipList->setRefQuantityList(ships);
 
-    touchModTime();
-    return true;
-  }
-  return false;
+      recalcStats();
+
+      touchModTime();
+      return true;
+   }
+   return false;
 }
 
 int Fleet::numShips(int type){
@@ -263,6 +265,9 @@ void Fleet::packExtraData(Frame *frame) {
 
 void Fleet::doOnceATurn(IGObject *obj) {
 
+   if(obj->getParent() == 0) // fleet is in transit, no updates apply
+      return;
+
    // TODO
    // if in a star sys with an opposing fleet
    //    then do combat
@@ -318,7 +323,7 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
       {
          OwnedObject *owned = dynamic_cast<OwnedObject*>(objI->getObjectData());
          assert(owned);
-         if(owned->getOwner() != -1 && owned->getOwner() != this->getOwner())
+         if(owned->getOwner() != static_cast<uint32_t>(-1) && owned->getOwner() != this->getOwner())
             hasOpposingPlanet = true;
       }
    }
@@ -366,6 +371,8 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    fleetData->setOrderTypes();
 
    fleet->addToParent(starSys->getID());
+
+   exploreStarSys(fleet);
 
    return fleet;
 }
