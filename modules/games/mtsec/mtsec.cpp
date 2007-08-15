@@ -1657,6 +1657,9 @@ void MTSec::onPlayerAdded(Player* player)
     setNewPlayerTech( player);
     makeNewPlayerFleet( player, star);
     Game::getGame()->getPlayerManager()->updatePlayer( player->getID());
+    
+    PlayerView* playerview = player->getPlayerView();
+    playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
 
     Logger::getLogger()->debug( "Exit MTSec::onPlayerAdded");
     return;
