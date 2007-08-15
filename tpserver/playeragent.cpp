@@ -19,6 +19,7 @@
  */
 
 #include <algorithm>
+#include <ctime>
 
 // #include "string.h"
 
@@ -356,7 +357,12 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
   advance(itcurr, start);
   for(unsigned int i = 0; i < num; i++){
     of->packInt(*itcurr);
-    of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
+    IGObject* obj = Game::getGame()->getObjectManager()->getObject(*itcurr);
+    if(obj != NULL){
+      of->packInt64(obj->getModTime());
+    }else{
+      of->packInt64(time(NULL));
+    }
     Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
     ++itcurr;
   }
