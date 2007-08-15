@@ -420,6 +420,7 @@ void Rfts::onPlayerAdded(Player *player) {
 
    // set all star systems visible
    playerview->setVisibleObjects( universe->getContainedObjects() );
+   playerview->addVisibleObject(0);
 
    for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
       playerview->addUsableComponent(i);

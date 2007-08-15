@@ -92,9 +92,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
       
       otherFleetObj->removeFromParent();
       om->scheduleRemoveObject(otherFleetObj->getID());
-      set<uint32_t> pvis = player->getPlayerView()->getVisibleObjects(); //FIXME
-      pvis.erase(otherFleetObj->getID());
-      player->getPlayerView()->setVisibleObjects(pvis);
+      player->getPlayerView()->removeVisibleObject(otherFleetObj->getID()); // CHECK - remove from all pvs?
    }
 
    om->doneWithObject(otherFleetObj->getID());
