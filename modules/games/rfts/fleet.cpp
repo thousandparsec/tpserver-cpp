@@ -135,6 +135,7 @@ void Fleet::setDefaultOrderTypes() {
    allowedlist.insert(om->getOrderTypeByName("No Operation"));
    allowedlist.insert(om->getOrderTypeByName("Move"));
    allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
+   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
    allowedlist.insert(om->getOrderTypeByName("Rename Fleet"));
    orders->setAllowedOrders(allowedlist);
 }

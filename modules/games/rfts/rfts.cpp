@@ -47,6 +47,7 @@
 #include "move.h"
 #include "productionorder.h"
 #include "splitfleet.h"
+#include "mergefleet.h"
 #include "renamefleet.h"
 #include "staticobject.h"
 #include "planet.h"
@@ -137,6 +138,7 @@ void Rfts::setOrderTypes() const {
    orm->addOrderType(new Move());
    orm->addOrderType(new ProductionOrder());
    orm->addOrderType(new SplitFleet());
+   orm->addOrderType(new MergeFleet());
    orm->addOrderType(new RenameFleet());
 }
 
