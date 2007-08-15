@@ -66,6 +66,8 @@ class Rfts : public ::Ruleset {
    IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
 
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
+
+   std::map<std::string, uint32_t> designIndex;
 };
 
 Component* createEngineComponent(char techLevel);

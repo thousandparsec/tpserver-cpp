@@ -129,15 +129,18 @@ void Fleet::setVelocity(const Vector3d& nv) {
    velocity->setVelocity(nv);
 }
 
-void Fleet::setDefaultOrderTypes() {
+void Fleet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
-   std::set<uint32_t> allowedlist;
-   allowedlist.insert(om->getOrderTypeByName("No Operation"));
-   allowedlist.insert(om->getOrderTypeByName("Move"));
-   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
-   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
-   allowedlist.insert(om->getOrderTypeByName("Rename Fleet"));
-   orders->setAllowedOrders(allowedlist);
+   std::set<uint32_t> allowedList;
+   allowedList.insert(om->getOrderTypeByName("Move"));
+   allowedList.insert(om->getOrderTypeByName("Split Fleet"));
+   allowedList.insert(om->getOrderTypeByName("Merge Fleet"));
+   allowedList.insert(om->getOrderTypeByName("Rename Fleet"));
+
+   if(hasTransports) // TODO check that we're in a position to transport
+      allowedList.insert(om->getOrderTypeByName("Colonise"));
+   
+   orders->setAllowedOrders(allowedList);
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number) {
@@ -145,21 +148,7 @@ void Fleet::addShips(uint32_t type, uint32_t number) {
    ships[pair<int32_t, uint32_t>(rst_Design, type)] += number;
    shipList->setRefQuantityList(ships);
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
-   OrderManager* om = Game::getGame()->getOrderManager();
-   Design *design = ds->getDesign(type);
-   
-   if(design->getPropertyValue(ds->getPropertyByName("Colonise")) == 1){
-      std::set<uint32_t> allowed = orders->getAllowedOrders();
-      allowed.insert(om->getOrderTypeByName("Colonise"));
-      orders->setAllowedOrders(allowed);
-   }
-   if(design->getPropertyValue(ds->getPropertyByName("Speed")) > speed)
-      speed = design->getPropertyValue(ds->getPropertyByName("Speed"));
-   if(design->getPropertyValue(ds->getPropertyByName("Armour")) > armour)
-      armour = design->getPropertyValue(ds->getPropertyByName("Armour"));
-   if(design->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
-      attack = design->getPropertyValue(ds->getPropertyByName("Attack"));
+   recalcStats();
       
    touchModTime();
 }
@@ -224,7 +213,6 @@ void Fleet::recalcStats() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
    speed = armour = attack = 0;
-   bool colonise = false;
 
    for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
          i != shipsref.end(); ++i) //ships[i->first.second] = i->second;
@@ -239,18 +227,10 @@ void Fleet::recalcStats() {
          armour = d->getPropertyValue(ds->getPropertyByName("Armour"));
 
       if(d->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.)
-         colonise = true;
+        hasTransports = true;
    }
 
-   OrderManager* om = Game::getGame()->getOrderManager();
-   set<uint32_t> allowed = orders->getAllowedOrders();
-   
-   if(colonise)
-      allowed.insert(om->getOrderTypeByName("Colonise"));
-   else
-      allowed.erase(om->getOrderTypeByName("Colonise"));
-      
-   orders->setAllowedOrders(allowed);
+   setOrderTypes();
 }
 
 void Fleet::packExtraData(Frame *frame) {
@@ -322,7 +302,7 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
                                  fleetData->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(fleetoq->getQueueId());
-   fleetData->setDefaultOrderTypes();
+   fleetData->setOrderTypes();
 
    fleet->addToParent(starSys->getID());
 
