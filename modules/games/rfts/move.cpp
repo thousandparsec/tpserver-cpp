@@ -109,6 +109,7 @@ bool Move::doOrder(IGObject * obj) {
    if(firstTurn)
    {
       firstTurn = false;
+      leaveStarSys(obj);
       obj->removeFromParent();
    }
 
@@ -118,7 +119,6 @@ bool Move::doOrder(IGObject * obj) {
       ObjectManager* om = Game::getGame()->getObjectManager();
       Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
 
-      leaveStarSys(obj);
 
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
       obj->addToParent(starSys->getObjectId());

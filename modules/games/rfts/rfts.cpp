@@ -47,18 +47,22 @@
 #include "move.h"
 #include "productionorder.h"
 #include "splitfleet.h"
+#include "mergefleet.h"
 #include "renamefleet.h"
+#include "colonise.h"
+
 #include "staticobject.h"
 #include "planet.h"
 #include "universe.h"
 #include "fleet.h"
+
 #include "rftsturn.h"
 #include "productioninfo.h"
 
 #include "rfts.h"
 
 // hacky define :p
-#define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__FUNCTION__))
+#define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
 
 extern "C" {
   #define tp_init librfts_LTX_tp_init
@@ -137,7 +141,9 @@ void Rfts::setOrderTypes() const {
    orm->addOrderType(new Move());
    orm->addOrderType(new ProductionOrder());
    orm->addOrderType(new SplitFleet());
+   orm->addOrderType(new MergeFleet());
    orm->addOrderType(new RenameFleet());
+   orm->addOrderType(new Colonise());
 }
 
 void Rfts::createGame() {
@@ -415,8 +421,8 @@ void Rfts::onPlayerAdded(Player *player) {
    // set all star systems visible
    playerview->setVisibleObjects( universe->getContainedObjects() );
 
-   for(uint32_t itcurr = 1; itcurr <= 9; ++itcurr){
-      playerview->addUsableComponent(itcurr);
+   for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
+      playerview->addUsableComponent(i);
    }
 
    // test : set the 2nd object - a planet - to be owned by the player
@@ -434,6 +440,7 @@ void Rfts::onPlayerAdded(Player *player) {
    game->getDesignStore()->designCountsUpdated(scout);
    
    game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '1'));
+   game->getDesignStore()->designCountsUpdated(createTransportDesign(player));
 
    game->getObjectManager()->addObject(fleet);
 
@@ -543,6 +550,25 @@ Design* createScoutDesign(Player *owner) {
    ds->addDesign(scout);
 
    return scout;
+}
+
+Design* createTransportDesign(Player *owner) {
+   Design* trans = new Design();
+   map<unsigned int, unsigned int> componentList;
+
+   DesignStore *ds = Game::getGame()->getDesignStore();
+
+   trans->setCategoryId(ds->getCategoryByName("Ships"));
+   trans->setName("Transport");
+   trans->setDescription("Transport ship");
+   trans->setOwner( owner->getID());
+   componentList[ ds->getComponentByName("Engine1") ] = 1;
+   componentList[ ds->getComponentByName("Transport") ] = 1;
+   trans->setComponents(componentList);
+
+   ds->addDesign(trans);
+
+   return trans;
 }
 
 }

@@ -204,7 +204,7 @@ void Planet::setDefaultResources() {
    Random* rand = Game::getGame()->getRandom();
    const ProductionInfo& po = Rfts::getProductionInfo();
    
-   setResource("Resource Point", rand->getInRange(static_cast<uint32_t>(0), static_cast<uint32_t>(60)) );
+   setResource("Resource Point", rand->getInRange(static_cast<uint32_t>(200), static_cast<uint32_t>(325)) );
    
    setResource("Industry",
                rand->getInRange(static_cast<uint32_t>(5), po.getMinResources("Industry")*3/4),
