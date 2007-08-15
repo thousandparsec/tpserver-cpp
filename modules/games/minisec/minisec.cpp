@@ -521,8 +521,6 @@ void MiniSec::onPlayerAdded(Player* player){
   
   PlayerView* playerview = player->getPlayerView();
 
-  playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
-
   //temporarily add the components as usable to get the designs done
   playerview->addUsableComponent(1);
   playerview->addUsableComponent(2);
@@ -660,6 +658,8 @@ void MiniSec::onPlayerAdded(Player* player){
 
   }
 
+  playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
+  
   game->getPlayerManager()->updatePlayer(player->getID());
 }
 

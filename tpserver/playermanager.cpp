@@ -92,7 +92,6 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
           Design* d = Game::getGame()->getDesignStore()->getDesign(*desid);
           playerview->addVisibleDesign(d->copy());
         }
-        playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
         Game::getGame()->getPersistence()->updatePlayer(rtn);
         
         //tell the other players about it
