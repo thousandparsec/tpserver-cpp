@@ -18,6 +18,8 @@
  *
  */
 
+#include <cassert>
+
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
@@ -77,6 +79,7 @@ using std::string;
 using std::map;
 using std::set;
 using std::vector;
+using std::advance;
 
 Rfts::Rfts() {
 
@@ -421,12 +424,14 @@ void Rfts::onPlayerAdded(Player *player) {
    }
 
    // test : set the 2nd object - a planet - to be owned by the player
-   Planet* pData = dynamic_cast<Planet*>(om->getObject(2)->getObjectData());
+   IGObject *homePlanet = choosePlayerPlanet();
+   Planet* pData = dynamic_cast<Planet*>(homePlanet->getObjectData());
    pData->setOwner(player->getID());
 
    Logger::getLogger()->debug("Making player's fleet");
    
-   IGObject* fleet = createEmptyFleet( player, om->getObject(1), "Fleet1");
+   IGObject* fleet = createEmptyFleet( player, om->getObject(homePlanet->getParent()),
+                                        player->getName() + "'s fleet");
 
    Design* scout = createScoutDesign(player);
    
@@ -450,6 +455,52 @@ void Rfts::onPlayerAdded(Player *player) {
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
 
+
+// make sure to start the player in a non-occupied area
+IGObject* Rfts::choosePlayerPlanet() const {
+   DEBUG_FN_PRINT();
+
+   Game *game = Game::getGame();
+   ObjectManager *om = game->getObjectManager();
+   Random *rand = game->getRandom();
+
+   IGObject *universe = om->getObject(0);
+   set<uint32_t> starSystems = universe->getContainedObjects();
+
+   IGObject *homePlanet = NULL;
+   unsigned searchedSystems = 0;
+
+   while(homePlanet == NULL && searchedSystems < starSystems.size() * 3./4)
+   {
+      // pick rand Star System to search
+      set<uint32_t>::iterator starSysI = starSystems.begin();
+      advance(starSysI, rand->getInRange(static_cast<uint32_t>(0), starSystems.size()-1));
+      IGObject *starSys = om->getObject(*starSysI);
+      
+      searchedSystems++;
+      
+      set<uint32_t> planets = starSys->getContainedObjects(); // (might not -actually- be planets)
+      unsigned starSysClear = 0;
+      for(set<uint32_t>::iterator i = planets.begin(); i != planets.end(); i++)
+      {
+         OwnedObject *owned = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectData());
+         if(owned->getOwner() == 0)
+            starSysClear++;
+         
+      }
+
+      if(starSysClear == planets.size())
+      {
+         set<uint32_t>::iterator i = planets.begin();
+         advance(i, rand->getInRange(static_cast<uint32_t>(0), planets.size()-1));
+         homePlanet = om->getObject(*i); // must be a planet because it's owner-less
+      }
+   }
+
+   assert(homePlanet != NULL); // possible, will write a last-ditch effort later maybe
+   
+   return homePlanet;
+}
 
 // helper functions
 

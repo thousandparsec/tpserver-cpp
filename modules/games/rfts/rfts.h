@@ -65,6 +65,9 @@ class Rfts : public ::Ruleset {
                            const std::vector<std::string>& planetNames);
    IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
 
+
+   IGObject* choosePlayerPlanet() const;
+
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 
    std::map<std::string, uint32_t> designIndex;
