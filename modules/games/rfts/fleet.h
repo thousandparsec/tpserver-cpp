@@ -50,10 +50,6 @@ class Fleet : public StaticObject, public OwnedObject
 
    void setVelocity(const Vector3d& v);
 
-   const double getSpeed() const;
-   const double getAttack() const;
-   const double getArmour() const;
-
    void recalcStats();
    
    void setOrderTypes(bool addColonise = false, bool addBombard = false);

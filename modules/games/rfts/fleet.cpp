@@ -212,19 +212,6 @@ const bool Fleet::isDead() const {
    return totalShips() == 0;
 }
 
-
-const double Fleet::getSpeed() const {
-   return speed;
-}
-
-const double Fleet::getAttack() const {
-   return attack;
-}
-
-const double Fleet::getArmour() const {
-   return armour;
-}
-
 void Fleet::recalcStats() {
    map<pair<int32_t, uint32_t>, uint32_t> shipsref = shipList->getRefQuantityList();
 
