@@ -82,6 +82,7 @@ using std::map;
 using std::set;
 using std::vector;
 using std::advance;
+using std::pair;
 
 Rfts::Rfts() {
 
@@ -322,7 +323,7 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name, const 
    return planet;
 }
 
-void Rfts::createResources() const {
+void Rfts::createResources() {
    ResourceManager* resMan = Game::getGame()->getResourceManager();
    
    ResourceDescription* res = new ResourceDescription();
@@ -395,6 +396,58 @@ void Rfts::createResources() const {
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);
+
+   res = new ResourceDescription();
+   res->setNameSingular("Ship Technology");
+   res->setNamePlural("Ship Technology");
+   res->setUnitSingular("point");
+   res->setUnitPlural("points");
+   res->setDescription("Research points in ship/pdb technology");
+   res->setMass(0);
+   res->setVolume(0);
+   resMan->addResourceDescription(res);
+
+   pair<ResourceDescription*,ResourceDescription*> pdbRes;
+   
+   pdbRes = createPdbResource('1');
+   resMan->addResourceDescription(pdbRes.first);
+   resMan->addResourceDescription(pdbRes.second);
+
+   pdbRes = createPdbResource('2');
+   resMan->addResourceDescription(pdbRes.first);
+   resMan->addResourceDescription(pdbRes.second);
+
+   pdbRes = createPdbResource('3');
+   resMan->addResourceDescription(pdbRes.first);
+   resMan->addResourceDescription(pdbRes.second);
+}
+
+pair<ResourceDescription*,ResourceDescription*> Rfts::createPdbResource(char level) const {
+
+   string name = string("PDB") + level;
+   
+   ResourceDescription* pdb = new ResourceDescription();
+   pdb->setNameSingular(name);
+   pdb->setNamePlural(name + "s");
+   pdb->setUnitSingular("unit");
+   pdb->setUnitPlural("units");
+   pdb->setDescription("Planetary Defense Bases: defend against attacking fleets!");
+   pdb->setMass(0);
+   pdb->setVolume(0);
+
+   name += " Maintenance";
+
+   ResourceDescription* maint = new ResourceDescription();
+   maint->setNameSingular(name);
+   maint->setNamePlural(name);
+   maint->setUnitSingular("unit");
+   maint->setUnitPlural("units");
+   maint->setDescription("Planetary Defense Bases Maintenance: keep your bases in working order!\
+                           (1:1 ration to PDBs required)");
+   maint->setMass(0);
+   maint->setVolume(0);
+
+   return pair<ResourceDescription*,ResourceDescription*>(pdb, maint);
 }
 
 void Rfts::startGame() {

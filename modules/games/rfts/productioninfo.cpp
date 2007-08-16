@@ -57,12 +57,12 @@ void ProductionInfo::init() {
    resourceCost["PDB1"] = 4;
    resourceCost["PDB2"] = 8;
    resourceCost["PDB3"] = 16;
-   resourceCost["PDB Maintenance1"] = 1;
-   resourceCost["PDB Maintenance2"] = 2;
-   resourceCost["PDB Maintenance3"] = 2;
+   resourceCost["PDB1 Maintenance"] = 1;
+   resourceCost["PDB2 Maintenance"] = 2;
+   resourceCost["PDB3 Maintenance"] = 2;
 
    // ship tech
-   resourceCost["Ship Techonology"] = 1;
+   resourceCost["Ship Technology"] = 1;
 
 
    // Min/Max Resources

@@ -32,6 +32,7 @@
 
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
 #include "planet.h"
 
 #include "productionorder.h"
@@ -72,11 +73,22 @@ map<uint32_t, pair<string, uint32_t> >ProductionOrder::generateListOptions() {
    
    game->getObjectManager()->doneWithObject(selectedObj->getID());
 
+   char pdbLevel = PlayerInfo::getPlayerInfo(planet->getOwner()).getShipTechLevel();
+
+   // PDBs actually only go up to 3
+   if(pdbLevel == '4')
+      pdbLevel = '3';
+
+   string pdbName = string("PDB") + pdbLevel;
+
    setOption(options, "Industry", planet);
    setOption(options, "Social Environment", planet);
    setOption(options, "Planetary Environment", planet);
    setOption(options, "Population Maintenance", planet);
+   setOption(options, pdbName, planet);
+   setOption(options, pdbName + " Maintenance", planet);
    setOption(options, "Colonist", planet);
+   setOption(options, "Ship Technology", planet);
    
    return options;
 }

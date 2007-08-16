@@ -35,7 +35,8 @@ PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
    return *infos[pid];
 }
 
-PlayerInfo::PlayerInfo() : transportDesignId(0), victoryPoints(0) {
+PlayerInfo::PlayerInfo()
+   : transportDesignId(0), victoryPoints(0), shipTech(0), globalRP(0) {
 
 }
 
@@ -53,6 +54,20 @@ void PlayerInfo::addVictoryPoints(uint32_t vp) {
 
 const uint32_t PlayerInfo::getVictoryPoints() const {
    return victoryPoints;
+}
+
+void PlayerInfo::addShipTechPoints(uint32_t points) {
+   shipTech += points;
+}
+
+const char PlayerInfo::getShipTechLevel() const {
+   if(shipTech >= 2000)
+      return '4';
+   if(shipTech >= 1000)
+      return '3';
+   if(shipTech >= 400)
+      return '2';
+   return '1';
 }
 
 }

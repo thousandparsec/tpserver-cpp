@@ -29,6 +29,7 @@ class IGObject;
 class Component;
 class Design;
 class Player;
+class ResourceDescription;
 
 namespace RFTS_ {
 
@@ -58,7 +59,8 @@ class Rfts : public ::Ruleset {
 
    void createProperties();
    void createComponents();
-   void createResources() const;
+   void createResources();
+   std::pair<ResourceDescription*,ResourceDescription*> createPdbResource(char level) const;
 
    void createUniverse();
    IGObject* createStarSystem(IGObject& universe, const std::string& name, const Vector3d& location,

@@ -64,7 +64,6 @@ bool Colonise::doOrder(IGObject *obj) {
    
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
-   DesignStore *ds = game->getDesignStore();
    
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
 

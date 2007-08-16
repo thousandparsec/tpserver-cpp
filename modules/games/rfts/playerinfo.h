@@ -32,6 +32,9 @@ class PlayerInfo {
    void addVictoryPoints(uint32_t vp);
    const uint32_t getVictoryPoints() const;
 
+   void addShipTechPoints(uint32_t points);
+   const char getShipTechLevel() const;
+
  private:
    PlayerInfo();
    PlayerInfo(const PlayerInfo&);
@@ -40,6 +43,8 @@ class PlayerInfo {
 
    uint32_t transportDesignId;
    uint32_t victoryPoints;
+   uint32_t shipTech;
+   uint32_t globalRP;
 };
 
 
