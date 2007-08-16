@@ -29,6 +29,7 @@
 
 #include "fleet.h"
 #include "planet.h"
+#include "playerinfo.h"
 
 #include "colonise.h"
 
@@ -82,18 +83,28 @@ bool Colonise::doOrder(IGObject *obj) {
    }
    else
    {
-      // FIXME
-      uint32_t transId = 3; // ds->getDesignByName("Transport")->getDesignId();
-      fleetData->removeShips(transId, fleetData->numShips(transId));
+      uint32_t transId = PlayerInfo::getPlayerInfo(player->getID()).getTransportId();
+      uint32_t colonists = fleetData->numShips(transId);
+      fleetData->removeShips(transId, colonists);
 
       if(fleetData->totalShips() == 0)
          om->scheduleRemoveObject(obj->getID());
 
-      // TODO - check population of planet against number of colonists
-      planetData->setOwner(player->getID());
+      // colonists attack planet
+      planetData->removeResource("Population", static_cast<uint32_t>(colonists * 4.f/3));
+
+      // check for take over
+      if(colonists >= planetData->getResource("Population").first / 2)
+      {
+         planetData->setOwner(player->getID());
+         msg->setBody(string("Colonists from ") + obj->getName() + " colonised "  + planetObj->getName());
+      }
+      else
+         msg->setBody(string("Colonists from ") + obj->getName() + " attacked, but failed to colonise " +
+                        planetObj->getName());
 
       msg->setSubject("Colonise order complete");
-      msg->setBody(string("Transports from ") + obj->getName() + " colonised "  + planetObj->getName());
+      
       msg->addReference(rst_Action_Order, rsorav_Completion);
 
    }
