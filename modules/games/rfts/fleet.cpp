@@ -40,7 +40,7 @@
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/objectparametergroup.h>
-
+#include <tpserver/prng.h>
 #include <tpserver/refsys.h>
 
 #include "nop.h"
@@ -123,10 +123,12 @@ int Fleet::getDamage() const {
 
 void Fleet::setDamage(int newDmg) {
    damage->setValue(newDmg);
+
+   destroyShips(armour == 0 ? 99999 : newDmg*.125f / armour);
 }
 
 void Fleet::takeDamage(int dmg) {
-   damage->setValue( damage->getValue() - dmg );
+   setDamage( damage->getValue() + dmg );
 }
 
 void Fleet::setVelocity(const Vector3d& nv) {
@@ -206,6 +208,10 @@ int Fleet::totalShips() const{
   return num;
 }
 
+const bool Fleet::isDead() const {
+   return totalShips() == 0;
+}
+
 
 const double Fleet::getSpeed() const {
    return speed;
@@ -282,7 +288,10 @@ void Fleet::doOnceATurn(IGObject *obj) {
    bool hasOpposingPlanet = setOpposingFleets(obj, opposingFleets);
 
    if(!opposingFleets.empty())
-      doCombat(opposingFleets);
+   {
+      if(doCombat(opposingFleets))
+         Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
+   }
 
    if(opposingFleets.empty()) // might be changed by doCombat
    {
@@ -331,13 +340,74 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
    return hasOpposingPlanet;
 }
 
-void Fleet::doCombat(list<IGObject*>& fleets) {
+bool Fleet::doCombat(list<IGObject*>& fleets) {
    touchModTime();
 
    // while !fleets.empty && !dead
       // attack each fleet
       // get attacked by each fleet
       // remove dead fleets
+
+   ObjectManager *om = Game::getGame()->getObjectManager();
+   list< list<IGObject*>::iterator > killed;
+
+   while(!fleets.empty() && !isDead() && attack != 0)
+   {
+      for(list<IGObject*>::iterator i = fleets.begin(); i != fleets.end(); ++i)
+      {
+         Fleet *fleet = dynamic_cast<Fleet*>((*i)->getObjectData());
+         attackFleet(fleet);
+         fleet->attackFleet(this);
+
+         if(fleet->isDead())
+         {
+            killed.push_back(i);
+            om->scheduleRemoveObject((*i)->getID());
+         }
+      }
+
+      for(list< list<IGObject*>::iterator >::iterator i = killed.begin(); i != killed.end(); ++i)
+         fleets.erase(*i);
+
+      killed.clear();
+   }
+
+   return isDead();
+}
+
+void Fleet::attackFleet(Fleet* opp) {
+   opp->takeDamage(static_cast<uint32_t>(attack));
+}
+
+void Fleet::destroyShips(double intensity) {
+   Random *rand = Game::getGame()->getRandom();
+
+   map<int,int> ships = getShips();
+
+   map<int,int>::iterator i = ships.begin();
+
+   std::advance(i, rand->getInRange(static_cast<uint32_t>(0), ships.size()));
+
+   int shipType = i->first;
+   DesignStore *ds = Game::getGame()->getDesignStore();
+   Design *d = ds->getDesign(shipType);
+
+   
+   double shipArmour = d->getPropertyValue(ds->getPropertyByName("Armour"));
+
+   if(shipArmour == 0)
+   {
+      removeShips(shipType, rand->getInRange(static_cast<uint32_t>(1),
+                                             static_cast<uint32_t>(numShips(shipType)/2.)));
+   }
+   else
+   {
+      shipArmour =  1.f / shipArmour;
+   
+      int shipNum = static_cast<int>(intensity * rand->getReal2() * shipArmour);
+
+      removeShips(shipType, shipNum);
+   }
    
 }
 

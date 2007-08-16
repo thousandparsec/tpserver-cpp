@@ -92,6 +92,7 @@ void RftsTurn::doTurn() {
    
    objectmanager->clearRemovedObjects();
 
+   // re-explore new area
    setPlayerVisibleObjects();
 
    // to once a turn (right at the end)
@@ -106,6 +107,8 @@ void RftsTurn::doTurn() {
 
    objectmanager->clearRemovedObjects();
 
+   // update in case fleets were destroyed in combat
+   setPlayerVisibleObjects();
 }
 
 void RftsTurn::setPlayerVisibleObjects() {

@@ -63,6 +63,8 @@ class Fleet : public StaticObject, public OwnedObject
    int numShips(int type);
    std::map<int,int> getShips() const;
    int totalShips() const;
+
+   const bool isDead() const;
          
    virtual void packExtraData(Frame * frame);   
    virtual void doOnceATurn(IGObject * obj);   
@@ -76,7 +78,9 @@ class Fleet : public StaticObject, public OwnedObject
    bool hasTransports;
 
    bool setOpposingFleets(IGObject* thisObj, std::list<IGObject*>& fleets);
-   void doCombat(std::list<IGObject*>& fleets);
+   bool doCombat(std::list<IGObject*>& fleets);
+   void attackFleet(Fleet* opponent);
+   void destroyShips(double intensity);
  
    Velocity3dObjectParam *velocity;
    ReferenceObjectParam *player;
