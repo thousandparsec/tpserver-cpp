@@ -135,6 +135,10 @@ void Fleet::setVelocity(const Vector3d& nv) {
    velocity->setVelocity(nv);
 }
 
+const double Fleet::getAttack() const {
+   return attack;
+}
+
 void Fleet::setOrderTypes(bool addColonise, bool addBombard) {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedList;
@@ -280,11 +284,7 @@ void Fleet::doOnceATurn(IGObject *obj) {
          Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
    }
 
-   if(opposingFleets.empty()) // might be changed by doCombat
-   {
-      if(hasTransports)
-         setOrderTypes(hasTransports, hasOpposingPlanet);
-   }
+   setOrderTypes(hasTransports, hasOpposingPlanet && attack != 0);
 }
 
 int Fleet::getContainerType() {
@@ -319,7 +319,7 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
       {
          OwnedObject *owned = dynamic_cast<OwnedObject*>(objI->getObjectData());
          assert(owned);
-         if(owned->getOwner() != static_cast<uint32_t>(-1) && owned->getOwner() != this->getOwner())
+         if(owned->getOwner() != 0 && owned->getOwner() != this->getOwner())
             hasOpposingPlanet = true;
       }
    }

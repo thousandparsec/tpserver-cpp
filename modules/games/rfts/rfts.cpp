@@ -52,6 +52,7 @@
 #include "mergefleet.h"
 #include "renamefleet.h"
 #include "colonise.h"
+#include "bombard.h"
 
 #include "staticobject.h"
 #include "planet.h"
@@ -147,6 +148,7 @@ void Rfts::setOrderTypes() const {
    orm->addOrderType(new MergeFleet());
    orm->addOrderType(new RenameFleet());
    orm->addOrderType(new Colonise());
+   orm->addOrderType(new Bombard());
 }
 
 void Rfts::createGame() {

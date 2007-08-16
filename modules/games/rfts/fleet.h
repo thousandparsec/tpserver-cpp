@@ -48,7 +48,10 @@ class Fleet : public StaticObject, public OwnedObject
    void setDamage(int nd);
    void takeDamage(int dmg);
 
+   const double getAttack() const;
+
    void setVelocity(const Vector3d& v);
+
 
    void recalcStats();
    
