@@ -77,7 +77,6 @@ class Planet : public StaticObject, public OwnedObject {
    ResourceListParam* resources;
    OrderQueueObjectParam * orderqueue;
 
-   IntegerObjectParam *resourcePoints;
 };
 
 
