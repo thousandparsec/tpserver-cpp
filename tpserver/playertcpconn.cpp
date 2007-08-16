@@ -121,6 +121,10 @@ void PlayerTcpConnection::processWrite(){
         ok = false;
         if(len != -2){
           Logger::getLogger()->error("Socket error writing");
+          while(!sendqueue.empty()){
+            delete sendqueue.front();
+            sendqueue.pop();
+          }
           close();
         }
       }
@@ -351,6 +355,10 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     }else{
       if(len != -2){
         Logger::getLogger()->warning("Socket error");
+        while(!sendqueue.empty()){
+          delete sendqueue.front();
+          sendqueue.pop();
+        }
         close();
       }
       rtn = false;
@@ -400,6 +408,10 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
       }else{
         if(len != -2){
           Logger::getLogger()->warning("Socket error");
+          while(!sendqueue.empty()){
+            delete sendqueue.front();
+            sendqueue.pop();
+          }
           close();
         }
         rtn = false;
