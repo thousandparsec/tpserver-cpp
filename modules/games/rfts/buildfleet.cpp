@@ -113,7 +113,8 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
       {
          // limit creation amount by industry and RP
 
-         uint32_t rp = planetData->getCurrentRP(), industry = planetData->getResource("Industry").first,
+         uint32_t rp = planetData->getCurrentRP(),
+                  industry = planetData->getResource("Industry").first,
                   designCost = Rfts::getProductionInfo().getResourceCost(design->getName());
  
          options[design->getDesignId()] =

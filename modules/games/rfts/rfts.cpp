@@ -61,6 +61,7 @@
 
 #include "rftsturn.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
 
 #include "rfts.h"
 
@@ -390,7 +391,7 @@ void Rfts::createResources() const {
    res->setNamePlural("Colonists");
    res->setUnitSingular("unit");
    res->setUnitPlural("units");
-   res->setDescription("Population availabl for colonisation");
+   res->setDescription("Population available for colonisation");
    res->setMass(0);
    res->setVolume(0);
    resMan->addResourceDescription(res);
@@ -435,14 +436,20 @@ void Rfts::onPlayerAdded(Player *player) {
    IGObject* fleet = createEmptyFleet( player, om->getObject(homePlanet->getParent()),
                                         player->getName() + "'s fleet");
 
+   // give 'em a scout to start
    Design* scout = createScoutDesign(player);
    
-   dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 2);
+   dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 1);
    
    game->getDesignStore()->designCountsUpdated(scout);
-   
+
+   // start them out with access to mark1
    game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '1'));
-   game->getDesignStore()->designCountsUpdated(createTransportDesign(player));
+
+   // and a transport (save the transport id for easy searching later)
+   Design *trans = createTransportDesign(player);
+   PlayerInfo::getPlayerInfo(player->getID()).setTransportId(trans->getDesignId());
+   game->getDesignStore()->designCountsUpdated(trans);
 
    game->getObjectManager()->addObject(fleet);
 
