@@ -38,7 +38,6 @@ class BuildFleet : public Order {
 
    virtual Order *clone() const;
 
-   virtual void createFrame(Frame * f, int pos);
    virtual Result inputFrame(Frame * f, unsigned int playerid);
 
    virtual bool doOrder(IGObject * obj);

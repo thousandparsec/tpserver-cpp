@@ -35,6 +35,8 @@ class Player;
 
 namespace RFTS_ {
 
+class Planet;
+
 class Fleet : public StaticObject, public OwnedObject
 {
  public:
@@ -91,8 +93,10 @@ class Fleet : public StaticObject, public OwnedObject
 
 //helper functions
 IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
-std::pair<IGObject*, uint32_t> createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const std::map<uint32_t, uint32_t>& ships, uint32_t availableRP = 0xFFFFFF);
+IGObject* createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const std::map<uint32_t, uint32_t>& ships);
+std::pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const std::map<uint32_t, uint32_t>& ships, Planet *planetData);
 
 }
 

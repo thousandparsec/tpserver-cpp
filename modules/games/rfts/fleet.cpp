@@ -50,6 +50,8 @@
 #include "containertypes.h"
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
+#include "planet.h"
 
 #include "fleet.h"
 
@@ -399,8 +401,7 @@ void Fleet::destroyShips(double intensity) {
 }
 
 
-IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name)
-{
+IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name) {
    Game *game = Game::getGame();
    IGObject *fleet = game->getObjectManager()->createNewObject();
       
@@ -434,23 +435,60 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    return fleet;
 }
 
-pair<IGObject*,uint32_t> createFleet(Player *player, IGObject* starSys, const string& name,
-                        const map<uint32_t, uint32_t>& ships, uint32_t availableRP) {
+IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
+                      const map<uint32_t, uint32_t>& ships) {
+   IGObject* fleet = createEmptyFleet(player, starSys, name);
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   
+   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+      fleetData->addShips(i->first, i->second);
+
+   return fleet;
+}
+
+pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const map<uint32_t, uint32_t>& ships, Planet *planetData) {
+                      
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
-   uint32_t usedRP = 0;
+   bool complete = true;
 
-   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin();
-       i != ships.end() &&
-       (usedRP += Rfts::getProductionInfo().getResourceCost(
-                  Game::getGame()->getDesignStore()->getDesign(i->first)->getName())) < availableRP; ++i)
+   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
    {
-      fleetData->addShips(i->first, i->second);
+      uint32_t designCost = Rfts::getProductionInfo().getResourceCost(
+                  Game::getGame()->getDesignStore()->getDesign(i->first)->getName());
+
+      // handle transport creation a lil' different
+      if(PlayerInfo::getPlayerInfo(player->getID()).getTransportId() == i->first)
+      {
+         // CHECK - this assumes(!) you have enough for a _single_ transport
+         // the colonist assumption should be safe due to previous limiting (generate list)
+         
+         fleetData->addShips(i->first, i->second);
+         planetData->removeResource("Resource Point", designCost); // only 1 transport
+         planetData->removeResource("Colonist", i->second); // remove colonists
+         
+      }
+      else // normal creation
+      {
+         uint32_t numShips = i->second;
+         unsigned usedRP = designCost * numShips;
+         
+         if(usedRP > planetData->getCurrentRP())
+         {
+            complete = false;
+            numShips = planetData->getCurrentRP() / designCost;
+            usedRP = designCost * numShips;
+         }
+         
+         fleetData->addShips(i->first, numShips);
+         planetData->removeResource("Resource Point", usedRP);
+      }
+
    }
 
-   return pair<IGObject*, uint32_t>(fleet, usedRP);
+   return pair<IGObject*, bool>(fleet, complete);
 }
-
 
 }

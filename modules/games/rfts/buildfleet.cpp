@@ -43,9 +43,12 @@
 #include "planet.h"
 #include "fleet.h"
 #include "productioninfo.h"
+#include "rfts.h"
+#include "playerinfo.h"
+
 #include "buildfleet.h"
 
-#include "rfts.h"
+
 
 namespace RFTS_ {
 
@@ -71,6 +74,8 @@ BuildFleet::BuildFleet() {
    fleetName->setDescription("The name of the fleet to build");
    
    addOrderParameter(fleetName);
+
+   turns = 1;
 }
 
 BuildFleet::~BuildFleet() {
@@ -81,11 +86,6 @@ Order* BuildFleet::clone() const {
    Order * c = new BuildFleet();
    c->setType(type);
    return c;
-}
-
-void BuildFleet::createFrame(Frame *f, int pos) {
-   turns = 0;
-   Order::createFrame(f, pos);
 }
 
 map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
@@ -116,9 +116,16 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
          uint32_t rp = planetData->getCurrentRP(),
                   industry = planetData->getResource("Industry").first,
                   designCost = Rfts::getProductionInfo().getResourceCost(design->getName());
- 
-         options[design->getDesignId()] =
-            pair<string, uint32_t>( design->getName(), std::min(industry, rp / designCost) );
+
+         if(design->getDesignId() == PlayerInfo::getPlayerInfo(planetData->getOwner()).getTransportId())
+         {
+            options[design->getDesignId()] =
+               pair<string,uint32_t>( "Colonist", std::min(planetData->getResource("Colonist").first,
+                                                            rp / designCost) );
+         }
+         else
+            options[design->getDesignId()] =
+               pair<string, uint32_t>( design->getName(), std::min(industry, rp / designCost) );
       }
    }
   
@@ -129,19 +136,22 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
    Result r = Order::inputFrame(f, playerid);
    if(!r) return r;
+
+   Game *game = Game::getGame();
+   Player* player = game->getPlayerManager()->getPlayer(playerid);
+   DesignStore* ds = game->getDesignStore();
+
+   IGObject *selectedObj = game->getObjectManager()->getObject(
+      game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectData());
    
-   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-   DesignStore* ds = Game::getGame()->getDesignStore();
-   
-   std::map<uint32_t, uint32_t> fleettype = shipList->getList();
+   map<uint32_t, uint32_t> localShipList = shipList->getList();
    uint32_t fleetCostRP = 0;
    
-   
-   for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
-      itcurr != fleettype.end(); ++itcurr)
+   for(map<uint32_t, uint32_t>::iterator i = localShipList.begin(); i != localShipList.end(); ++i)
    {
-      uint32_t type = itcurr->first;
-      uint32_t numToBuild = itcurr->second;
+      uint32_t type = i->first;
+      unsigned &numToBuild = i->second;
       
 
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
@@ -150,6 +160,11 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
          uint32_t shipCost = Rfts::getProductionInfo().getResourceCost(design->getName());
          
          fleetCostRP += shipCost * numToBuild;
+
+         // if they're out or RP and trying to build more, reset them to current max
+         if(fleetCostRP > planetData->getCurrentRP() )
+            numToBuild = (fleetCostRP -  planetData->getCurrentRP()) / shipCost;
+         
          ds->designCountsUpdated(design);
       }
       else
@@ -157,10 +172,10 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
          return Failure("The requested design was not valid.");
       }
    }
-   if(fleetCostRP == 0 && !fleettype.empty())
+   if(fleetCostRP == 0 && !localShipList.empty())
       return Failure("To build was empty...");
-   
-   resources[1] = fleetCostRP;
+
+   shipList->setList(localShipList); // save the list back in case of changes
    
    return Success();
 }
@@ -173,17 +188,15 @@ bool BuildFleet::doOrder(IGObject *ob)
    Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
 
 
-   pair<IGObject*, uint32_t> fleetResult =
+   pair<IGObject*, bool> fleetResult =
       createFleet(player, game->getObjectManager()->getObject(ob->getParent()),
-                  fleetName->getString(), shipList->getList(), planet->getCurrentRP());
+                  fleetName->getString(), shipList->getList(), planet);
 
    IGObject *fleet = fleetResult.first;
-   uint32_t usedRP = fleetResult.second;
+   bool complete = fleetResult.second;
    
    //add fleet to universe
    game->getObjectManager()->addObject(fleet);
-
-   planet->removeResource("Resource Point", usedRP);
 
    player->getPlayerView()->addVisibleObject( fleet->getID() );
    
@@ -191,7 +204,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    Message * msg = new Message();
    msg->setSubject("Build Fleet order complete");
 
-   if(usedRP < planet->getCurrentRP())
+   if(complete)
       msg->setBody(string("The construction of your new fleet \"") + fleetName->getString() +
                   string("\" is complete."));
    else
