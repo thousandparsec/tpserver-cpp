@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
@@ -185,7 +186,9 @@ void Rfts::createProperties() {
    prop->setName("Speed");
    prop->setDisplayName("Speed");
    prop->setDescription("The number of units the ship can move each turn");
-   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000)) \" speedy units\")) ) )");
+   prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits)))\
+                                 (cons n (string-append (number->string\
+                                 (/ n 10)) \" speedy units\")) ) )");
    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
    ds->addProperty(prop);
    
@@ -253,25 +256,31 @@ void Rfts::createUniverse() {
    universe->setType(uniType);
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
-   uniData->setPosition(Vector3d(0ll, 0ll, 0ll));
-   uniData->setSize(123456789012ll);
-   objman->addObject(universe);   
+   uniData->setUnitPos(0,0);
+   uniData->setSize(UNIVERSE_TOTAL_SCALE * UNIVERSE_TOTAL_SCALE);
+   objman->addObject(universe);
 
    vector<string> planetNames;
    planetNames.push_back(string("Castor Prime"));
-   createStarSystem(*universe, "Castor", Vector3d(100000000, 50000000, 0), planetNames);
+   createStarSystem(*universe, "Castor", 0, 1, planetNames);
 
    planetNames.clear();
    planetNames.push_back("Dipha Prime");
-   createStarSystem(*universe, "Diphda", Vector3d(100000000, 500000000, 0), planetNames);
+   createStarSystem(*universe, "Diphda", .1, .75, planetNames);
 
    planetNames.clear();
    planetNames.push_back("Saiph Prime");
-   createStarSystem(*universe, "Saiph", Vector3d(600000000, 250000000, 0), planetNames);
+   createStarSystem(*universe, "Saiph", .23, .875, planetNames);
+
+   createStarSystem(*universe, "Vega", .23, .7, planetNames);
+
+   createStarSystem(*universe, "Procyon", .15, .6, planetNames);
+
+   createStarSystem(*universe, "Nihal", .23, .6, planetNames);
 }
 
 IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
-                  const Vector3d& location, const vector<string>& planetNames)
+                  double unitX, double unitY, const vector<string>& planetNames)
 {
    Game *game = Game::getGame();
    
@@ -280,7 +289,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
    starSys->setType(game->getObjectDataManager()->getObjectTypeByName("Star System"));
    starSys->setName(name);
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectData());
-   starSysData->setPosition(location);
+   starSysData->setUnitPos(unitX, unitY);
    
    starSys->addToParent(universe.getID());
    game->getObjectManager()->addObject(starSys);
@@ -295,7 +304,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
    return starSys;
 }
 
-IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name, const Vector3d& location) {
+IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
 
    Game *game = Game::getGame();
 
@@ -305,7 +314,7 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name, const 
    planet->setName(name);
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
    planetData->setSize(3);
-   planetData->setPosition(location);
+   planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
    
    OrderQueue *planetOrders = new OrderQueue();
@@ -455,9 +464,9 @@ void Rfts::startGame() {
    
    Settings* settings = Settings::getSettings();
    if(settings->get("turn_length_over_threshold") == ""){
-      settings->set("turn_length_over_threshold", "170");
+      settings->set("turn_length_over_threshold", "120");
       settings->set("turn_player_threshold", "0");
-      settings->set("turn_length_under_threshold", "170");
+      settings->set("turn_length_under_threshold", "120");
    }
 }
 
@@ -516,7 +525,6 @@ void Rfts::onPlayerAdded(Player *player) {
 
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
-
 
 // make sure to start the player in a non-occupied area
 IGObject* Rfts::choosePlayerPlanet() const {
@@ -581,7 +589,7 @@ Component* createEngineComponent(char techLevel) {
       "(if (< (designType._num-components design) 3) "
       "(cons #t \"\") "
       "(cons #f \"This is a complete component, nothing else can be included\")))");
-   propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* 100 ") +  techLevel + string("))");
+   propList[ds->getPropertyByName("Speed")] = string("(lambda (design) (* .1 ") +  techLevel + string("))");
    engine->setPropertyList(propList);
 
    return engine;

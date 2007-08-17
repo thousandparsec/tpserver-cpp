@@ -51,6 +51,12 @@ class Rfts : public ::Ruleset {
    virtual void onPlayerAdded(Player *player);
 
    static const ProductionInfo& getProductionInfo();
+
+   // used for calculating cone-like universe (for wrapping map)
+   static const uint64_t UNIVERSE_TOTAL_SCALE = 1000000000ll;
+   static const uint32_t UNIVERSE_WIDTH = 4;
+   static const uint32_t UNIVERSE_HEIGHT = 3;
+   static const uint32_t UNIVERSE_DEPTH = UNIVERSE_WIDTH * UNIVERSE_HEIGHT;
    
  private:    
    
@@ -63,17 +69,18 @@ class Rfts : public ::Ruleset {
    std::pair<ResourceDescription*,ResourceDescription*> createPdbResource(char level) const;
 
    void createUniverse();
-   IGObject* createStarSystem(IGObject& universe, const std::string& name, const Vector3d& location,
-                           const std::vector<std::string>& planetNames);
-   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
-
+   IGObject* createStarSystem(IGObject& universe, const std::string& name,
+                           double unitX, double unitY, const std::vector<std::string>& planetNames);
+   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
+                            const Vector3d& location);
 
    IGObject* choosePlayerPlanet() const;
 
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 
-   std::map<std::string, uint32_t> designIndex;
 };
+
+const Vector3d calcUniverseCoord(double unitX, double unitY);
 
 Component* createEngineComponent(char techLevel);
 Component* createBattleComponent(char techLevel);

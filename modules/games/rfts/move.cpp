@@ -39,6 +39,8 @@
 #include "fleet.h"
 #include "planet.h"
 
+#include "map.h"
+
 #include "move.h"
 
 namespace RFTS_ {
@@ -105,8 +107,7 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
 
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSysObj->getObjectData());
    
-   turns = static_cast<uint32_t>((fleetData->getPosition().getDistanceSq(starSysData->getPosition()) /
-                                       (1000000000. * 100000000.)) + .5);
+   turns = static_cast<uint32_t>(getWrappingUnitDist(*fleetData, *starSysData) / fleetData->getSpeed()  + .5);
    
    om->doneWithObject(fleet->getID());
 
@@ -131,7 +132,7 @@ bool Move::doOrder(IGObject * obj) {
 
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
       obj->addToParent(starSys->getObjectId());
-      fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
+      fleetData->setUnitPos(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getUnitPos());
 
       newStarSys->touchModTime();
       om->doneWithObject(newStarSys->getID());

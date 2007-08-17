@@ -141,6 +141,10 @@ const double Fleet::getAttack() const {
    return attack;
 }
 
+const double Fleet::getSpeed() const {
+   return speed;
+}
+
 void Fleet::setOrderTypes(bool addColonise, bool addBombard) {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedList;
@@ -223,6 +227,7 @@ void Fleet::recalcStats() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
    speed = armour = attack = 0;
+   
    hasTransports = false;
 
    for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
@@ -230,7 +235,7 @@ void Fleet::recalcStats() {
    {
       Design *d = ds->getDesign(i->first.second);
       
-      if(d->getPropertyValue(ds->getPropertyByName("Speed")) < speed)
+      if(speed == 0 || d->getPropertyValue(ds->getPropertyByName("Speed")) < speed)
          speed = d->getPropertyValue(ds->getPropertyByName("Speed"));
       if(d->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
          attack =+ d->getPropertyValue(ds->getPropertyByName("Attack"));
@@ -416,7 +421,7 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    fleetData->setOwner(player->getID());
 
    // Place the fleet in orbit around the given star
-   fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
+   fleetData->setUnitPos( dynamic_cast<StaticObject*>(starSys->getObjectData())->getUnitPos());
    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
    
    OrderQueue *fleetoq = new OrderQueue();

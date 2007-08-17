@@ -22,13 +22,16 @@
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 
+#include "map.h"
 #include "containertypes.h"
 
 #include "staticobject.h"
 
 namespace RFTS_ {
 
-StaticObject::StaticObject() : ObjectData(){
+using std::pair;
+
+StaticObject::StaticObject() : ObjectData(), unitX(0), unitY(0) {
    pos = new Position3dObjectParam();
    pos->setName("Position");
    pos->setDescription("The position of the object");
@@ -44,6 +47,21 @@ StaticObject::StaticObject() : ObjectData(){
    size->setDescription("The diameter of the object");
    group->addParameter(size);
    paramgroups.push_back(group);
+}
+
+void StaticObject::setUnitPos(double x, double y) {
+   unitX = x, unitY = y;
+   setPosition(getUniverseCoord(x,y));
+}
+
+void StaticObject::setUnitPos(const std::pair<double,double>& unitPos) {
+   unitX = unitPos.first;
+   unitY = unitPos.second;
+   setPosition(getUniverseCoord(unitPos));
+}
+
+pair<double,double> StaticObject::getUnitPos() const {
+   return pair<double,double>(unitX, unitY);
 }
 
 Vector3d StaticObject::getPosition() const{
