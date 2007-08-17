@@ -345,7 +345,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
    for(char i = '1'; i < numPlanets + '1'; i++)
    {
       planetName = starSys->getName() + " " + i;
-      createPlanet(*starSys, name, starSysData->getPosition() +
+      createPlanet(*starSys, planetName, starSysData->getPosition() +
          Vector3d(rand->getInRange(100000,3000000), rand->getInRange(100000,3000000),
                    rand->getInRange(1000,30000)));
    }

@@ -18,6 +18,7 @@
  *
  */
 
+#include <cmath>
 #include <map>
 
 #include <tpserver/frame.h>
@@ -119,15 +120,19 @@ void Planet::setOrderTypes() {
 
 void Planet::doOnceATurn(IGObject* obj) {
 
-   // next turn is odd - do RP production
-   if(Game::getGame()->getTurnNumber() % 2 == 0)
+   unsigned turn = Game::getGame()->getTurnNumber() % 3;
+
+   if(getOwner() != 0)
    {
-      // calc RP for next turn
-      calcRP();
-   }
-   else // this turn was odd - take care of prod. order
-   {
-      calcPopuation();
+      if(turn == 0) // next turn is 0 - do RP production
+      {
+         // calc RP for next turn
+         calcRP();
+      }
+      else if(turn == 1) // just did a prod. turn
+      {
+         calcPopuation();
+      }
    }
 
    setOrderTypes();
@@ -143,23 +148,33 @@ void Planet::calcRP() {
 }
 
 void Planet::calcPopuation() {
+
+   Random *rand = Game::getGame()->getRandom();
+
    uint32_t newPop = resources->getResource("Population").first;
    const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
    pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
 
             // social + midpoint of difference of percentage of planetary and social
-   social.first = static_cast<uint32_t>(social.first + .5 *
-                   ((planetary.first / planetary.second) - (social.first / social.second)));
+   uint32_t socialMax = std::min(social.second, static_cast<unsigned>(70));
+   social.first = static_cast<uint32_t>( social.first + .125 *
+                   ((static_cast<double>(planetary.first) / planetary.second) -
+                    (static_cast<double>(social.first) / socialMax))) ;
 
    uint32_t& popMaint = resources->getResource("Population Maintenance").first;
 
-   if(newPop != 0)
-      newPop *= (popMaint / newPop);
+   // add in a lil' randomness
+   popMaint += static_cast<uint32_t>(popMaint * (rand->getInRange(-50,100) / 1000.) );
+
+   if(newPop != 0 && popMaint < newPop)
+   {
+      newPop -= (newPop - popMaint) / 2;
+   }
 
    popMaint = 0; // use up maint points
    
       // social < 40 => pop goes down, else goes up
-   newPop *= static_cast<uint32_t>((social.first / 40.) / 10.);
+   newPop -= static_cast<uint32_t>( newPop * ((social.first / 40.) / 10.) );
 
    resources->setResource("Population", newPop);
 }
