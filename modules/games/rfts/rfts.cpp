@@ -260,27 +260,70 @@ void Rfts::createUniverse() {
    uniData->setSize(UNIVERSE_TOTAL_SCALE * UNIVERSE_TOTAL_SCALE);
    objman->addObject(universe);
 
-   vector<string> planetNames;
-   planetNames.push_back(string("Castor Prime"));
-   createStarSystem(*universe, "Castor", 0, 1, planetNames);
 
-   planetNames.clear();
-   planetNames.push_back("Dipha Prime");
-   createStarSystem(*universe, "Diphda", .1, .75, planetNames);
+   createStarSystem(*universe, "Castor", .05, .95);
+   createStarSystem(*universe, "Diphda", .1, .75);
+   createStarSystem(*universe, "Saiph", .23, .875);
+   createStarSystem(*universe, "Vega", .23, .7);
+   createStarSystem(*universe, "Procyon", .15, .6);
+   createStarSystem(*universe, "Nihal", .23, .6);
+   createStarSystem(*universe, "Kochab", .18, .38);
+   createStarSystem(*universe, "Antares", .075, .35);
+   createStarSystem(*universe, "Adara", .18, .24);
+   createStarSystem(*universe, "Agena", .18, .075);
 
-   planetNames.clear();
-   planetNames.push_back("Saiph Prime");
-   createStarSystem(*universe, "Saiph", .23, .875, planetNames);
+   createStarSystem(*universe, "Algol", .28, .75);
+   createStarSystem(*universe, "Schedar", .27, .6);
+   createStarSystem(*universe, "Rastaban", .29, .375);
+   createStarSystem(*universe, "Izar", .29, .21);
 
-   createStarSystem(*universe, "Vega", .23, .7, planetNames);
+   createStarSystem(*universe, "Ascella", .43, .875);
+   createStarSystem(*universe, "Mirzam", .37, .8);
+   createStarSystem(*universe, "Wesen", .39, .65);
+   createStarSystem(*universe, "Alioth", .37, .5);
+   createStarSystem(*universe, "Nunki", .39, .25);
+   createStarSystem(*universe, "Sirius", .42, .18);
 
-   createStarSystem(*universe, "Procyon", .15, .6, planetNames);
+   createStarSystem(*universe, "Wolf", .54, .92);
+   createStarSystem(*universe, "Spica", .475, .79);
+   createStarSystem(*universe, "Gemma", .5, .625);
+   createStarSystem(*universe, "Dubhe", .475, .5);
+   createStarSystem(*universe, "Arneb", .485, .37);
 
-   createStarSystem(*universe, "Nihal", .23, .6, planetNames);
+   createStarSystem(*universe, "Phaeda", .58, .95);
+   createStarSystem(*universe, "Enif", .62, .77);
+   createStarSystem(*universe, "Sabik", .6, .745);
+   createStarSystem(*universe, "Altair", .58, .62);
+   createStarSystem(*universe, "Canopus", .55, .55);
+   createStarSystem(*universe, "Shedir", .57, .47);
+   createStarSystem(*universe, "Mizar", .6, .375);
+   createStarSystem(*universe, "Mintaka", .57, .27);
+
+   createStarSystem(*universe, "Aludra", .71, .95);
+   createStarSystem(*universe, "Pollux", .68, .875);
+   createStarSystem(*universe, "Megrez", .69, .8);
+   createStarSystem(*universe, "Hamal", .75, .625);
+   createStarSystem(*universe, "Regulus", .69, .6);
+   createStarSystem(*universe, "Nath", .7, .375);
+   createStarSystem(*universe, "Polaris", .65, .2);
+   createStarSystem(*universe, "Furud", .64, .075);
+   createStarSystem(*universe, "Capella", .76, .075);
+
+   createStarSystem(*universe, "Acrux", .875, .87);
+   createStarSystem(*universe, "Rigel", .8, .8);
+   createStarSystem(*universe, "Gienah", .8, .75);
+   createStarSystem(*universe, "Ross", .88, .61);
+   createStarSystem(*universe, "Deneb", .85, .55);
+   createStarSystem(*universe, "Tarazed", .9, .42);
+   createStarSystem(*universe, "Thuban", .83, .4);
+   createStarSystem(*universe, "Caph", .79, .33);
+   createStarSystem(*universe, "Alhema", .86, .24);
+   createStarSystem(*universe, "Almak", .84, .125);
+   createStarSystem(*universe, "Zosma", .86, .05);
 }
 
 IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
-                  double unitX, double unitY, const vector<string>& planetNames)
+                  double unitX, double unitY)
 {
    Game *game = Game::getGame();
    
@@ -296,10 +339,16 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
 
    Random* rand = game->getRandom();
 
-   for(vector<string>::const_iterator i = planetNames.begin(); i != planetNames.end(); ++i)
-      createPlanet(*starSys, *i, starSysData->getPosition() +
+   int numPlanets = rand->getInRange(0, 3);
+   string planetName;
+   
+   for(char i = '1'; i < numPlanets + '1'; i++)
+   {
+      planetName = starSys->getName() + " " + i;
+      createPlanet(*starSys, name, starSysData->getPosition() +
          Vector3d(rand->getInRange(100000,3000000), rand->getInRange(100000,3000000),
                    rand->getInRange(1000,30000)));
+   }
 
    return starSys;
 }

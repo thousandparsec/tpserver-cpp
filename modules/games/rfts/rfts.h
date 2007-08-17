@@ -70,7 +70,7 @@ class Rfts : public ::Ruleset {
 
    void createUniverse();
    IGObject* createStarSystem(IGObject& universe, const std::string& name,
-                           double unitX, double unitY, const std::vector<std::string>& planetNames);
+                           double unitX, double unitY);
    IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
                             const Vector3d& location);
 
