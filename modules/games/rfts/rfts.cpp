@@ -45,7 +45,6 @@
 #include <tpserver/prng.h>
 #include <tpserver/settings.h>
 
-#include "nop.h"
 #include "buildfleet.h"
 #include "move.h"
 #include "productionorder.h"
@@ -144,10 +143,10 @@ void Rfts::setObjectTypes() const {
 void Rfts::setOrderTypes() const {
    OrderManager* orm = Game::getGame()->getOrderManager();
 
-   orm->addOrderType(new Nop());
    orm->addOrderType(new BuildFleet());
-   orm->addOrderType(new Move());
    orm->addOrderType(new ProductionOrder());
+   
+   orm->addOrderType(new Move());
    orm->addOrderType(new SplitFleet());
    orm->addOrderType(new MergeFleet());
    orm->addOrderType(new RenameFleet());

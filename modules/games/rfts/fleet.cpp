@@ -43,7 +43,6 @@
 #include <tpserver/prng.h>
 #include <tpserver/refsys.h>
 
-#include "nop.h"
 #include "move.h"
 #include "renamefleet.h"
 #include "splitfleet.h"
