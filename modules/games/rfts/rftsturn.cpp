@@ -34,6 +34,7 @@
 #include <tpserver/playerview.h>
 
 #include "ownedobject.h"
+#include "playerinfo.h"
 
 #include "rftsturn.h"
 
@@ -106,6 +107,10 @@ void RftsTurn::doTurn() {
    }
 
    objectmanager->clearRemovedObjects();
+
+   set<uint32_t> players = game->getPlayerManager()->getAllIds();
+   for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
+      PlayerInfo::getPlayerInfo(*i).clearPdbUpgrade();
 
    // update in case fleets were destroyed in combat
    setPlayerVisibleObjects();

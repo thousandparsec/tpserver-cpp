@@ -25,6 +25,7 @@ namespace RFTS_ {
 class PlayerInfo {
  public:
    static PlayerInfo& getPlayerInfo(uint32_t pid);
+   static void clear();
 
    void setTransportId(uint32_t tid);
    const uint32_t getTransportId() const;
@@ -32,19 +33,31 @@ class PlayerInfo {
    void addVictoryPoints(uint32_t vp);
    const uint32_t getVictoryPoints() const;
 
-   void addShipTechPoints(uint32_t points);
+   bool addShipTech(uint32_t points);
    const char getShipTechLevel() const;
+   const uint32_t getShipTechPoints() const;
+
+   const bool upgradePdbs() const;
+   void clearPdbUpgrade();
 
  private:
-   PlayerInfo();
+   PlayerInfo(uint32_t playerId);
    PlayerInfo(const PlayerInfo&);
    PlayerInfo& operator=(const PlayerInfo&);
    ~PlayerInfo();
+
+   static std::map<uint32_t,PlayerInfo*> infos;
 
    uint32_t transportDesignId;
    uint32_t victoryPoints;
    uint32_t shipTech;
    uint32_t globalRP;
+   uint32_t playerId;
+   bool upgrade;
+
+   static const unsigned TECH_2 = 400;
+   static const unsigned TECH_3 = 1000;
+   static const unsigned TECH_4 = 2000;
 };
 
 

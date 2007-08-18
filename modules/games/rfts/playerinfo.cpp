@@ -20,23 +20,37 @@
 
 #include <map>
 
+#include <tpserver/game.h>
+#include <tpserver/player.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/designstore.h>
+
+#include "rfts.h"
+
 #include "playerinfo.h"
 
 namespace RFTS_ {
 
 using std::map;
 
-PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
-   static map<uint32_t,PlayerInfo*> infos;
+map<uint32_t,PlayerInfo*> PlayerInfo::infos;
 
+PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
+   
    if(infos.find(pid) == infos.end())
-      infos[pid] = new PlayerInfo();
+      infos[pid] = new PlayerInfo(pid);
 
    return *infos[pid];
 }
 
-PlayerInfo::PlayerInfo()
-   : transportDesignId(0), victoryPoints(0), shipTech(0), globalRP(0) {
+void PlayerInfo::clear() {
+   for(map<uint32_t,PlayerInfo*>::iterator i = infos.begin(); i != infos.end(); ++i)
+      delete i->second;
+}
+
+PlayerInfo::PlayerInfo(uint32_t pid)
+   : transportDesignId(0), victoryPoints(0), shipTech(0), globalRP(0),
+       playerId(pid), upgrade(false) {
 
 }
 
@@ -48,6 +62,14 @@ const uint32_t PlayerInfo::getTransportId() const {
    return transportDesignId;
 }
 
+const bool PlayerInfo::upgradePdbs() const {
+   return upgrade;
+}
+
+void PlayerInfo::clearPdbUpgrade() {
+   upgrade = false;
+}
+
 void PlayerInfo::addVictoryPoints(uint32_t vp) {
    victoryPoints += vp;
 }
@@ -56,18 +78,49 @@ const uint32_t PlayerInfo::getVictoryPoints() const {
    return victoryPoints;
 }
 
-void PlayerInfo::addShipTechPoints(uint32_t points) {
+bool PlayerInfo::addShipTech(uint32_t points) {
    shipTech += points;
+
+   bool justUpgraded = false;
+
+   Game* game = Game::getGame();
+   Player *player = game->getPlayerManager()->getPlayer(playerId);
+
+   if(shipTech >= TECH_2 && shipTech - points < TECH_2)
+   {
+      game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '2'));
+      justUpgraded = true;
+   }
+
+   if(shipTech >= TECH_3 && shipTech - points < TECH_3)
+   {
+      game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '3'));
+      justUpgraded = true;
+   }
+   
+   if(shipTech >= TECH_4 && shipTech - points < TECH_4)
+   {
+      game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '4'));
+      justUpgraded = true;
+   }
+
+    upgrade |= justUpgraded;
+
+   return justUpgraded;
 }
 
 const char PlayerInfo::getShipTechLevel() const {
-   if(shipTech >= 2000)
+   if(shipTech >= TECH_4)
       return '4';
-   if(shipTech >= 1000)
+   if(shipTech >= TECH_3)
       return '3';
-   if(shipTech >= 400)
+   if(shipTech >= TECH_2)
       return '2';
    return '1';
+}
+
+const uint32_t PlayerInfo::getShipTechPoints() const {
+   return shipTech;
 }
 
 }

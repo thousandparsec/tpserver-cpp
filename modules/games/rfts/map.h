@@ -20,7 +20,6 @@
  *
  */
 
-#include <utility>
 
 #include <tpserver/vector3d.h>
 
@@ -28,8 +27,11 @@ namespace RFTS_ {
 
 class StaticObject;
 
+
 const Vector3d getUniverseCoord(double unitX, double unitY);
 const Vector3d getUniverseCoord(const std::pair<double,double>& unitPos);
+
+const Vector3d getRandPlanetOffset();
 
 const double getWrappingUnitDist(const StaticObject& obj1, const StaticObject& obj2);
 const unsigned getWrappingDistSq(const StaticObject& obj1, const StaticObject& obj2);

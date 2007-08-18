@@ -19,6 +19,10 @@
  */
 
 #include <cmath>
+#include <utility>
+
+#include <tpserver/game.h>
+#include <tpserver/prng.h>
 
 #include "staticobject.h"
 
@@ -28,8 +32,9 @@ namespace RFTS_ {
 
 using std::pair;
 
+// used for calculating universe (for wrapping map)
 namespace {
-   const uint64_t UNIVERSE_TOTAL_SCALE = 1000000000ll;
+   const uint64_t UNIVERSE_TOTAL_SCALE = 1050000000ll;
    const uint32_t UNIVERSE_WIDTH = 4;
    const uint32_t UNIVERSE_HEIGHT = 3;
 }
@@ -44,6 +49,15 @@ const Vector3d getUniverseCoord(double unitX, double unitY) {
 const Vector3d getUniverseCoord(const pair<double,double>& unitPos) {
    return Vector3d( static_cast<uint64_t>(UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE * unitPos.first),
                     static_cast<uint64_t>(UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE * unitPos.second),
+                    0 );
+}
+
+const Vector3d getRandPlanetOffset() {
+   Random *rand = Game::getGame()->getRandom();
+   return Vector3d( static_cast<int64_t>( UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE *
+                        (rand->getInRange(-300,300)/10000.) ),
+                    static_cast<int64_t>( UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE *
+                        (rand->getInRange(-300,300)/10000.) ),
                     0 );
 }
 

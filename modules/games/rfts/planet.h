@@ -74,6 +74,7 @@ class Planet : public StaticObject, public OwnedObject {
 
    void calcRP();
    void calcPopuation();
+   void upgradePdbs();
  
    ReferenceObjectParam * playerref;
    ResourceListParam* resources;

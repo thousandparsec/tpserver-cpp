@@ -63,6 +63,7 @@
 #include "rftsturn.h"
 #include "productioninfo.h"
 #include "playerinfo.h"
+#include "map.h"
 
 #include "rfts.h"
 
@@ -90,7 +91,7 @@ Rfts::Rfts() {
 }
 
 Rfts::~Rfts() {
-
+   PlayerInfo::clear();
 }
 
 std::string Rfts::getName() {
@@ -98,7 +99,7 @@ std::string Rfts::getName() {
 }
 
 std::string Rfts::getVersion() {
-   return "0.1";
+   return "0.5";
 }
 
 const ProductionInfo& Rfts::getProductionInfo() {
@@ -257,7 +258,7 @@ void Rfts::createUniverse() {
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
    uniData->setUnitPos(0,0);
-   uniData->setSize(UNIVERSE_TOTAL_SCALE * UNIVERSE_TOTAL_SCALE);
+   uniData->setSize(123456789123ll);
    objman->addObject(universe);
 
 
@@ -345,9 +346,7 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
    for(char i = '1'; i < numPlanets + '1'; i++)
    {
       planetName = starSys->getName() + " " + i;
-      createPlanet(*starSys, planetName, starSysData->getPosition() +
-         Vector3d(rand->getInRange(100000,3000000), rand->getInRange(100000,3000000),
-                   rand->getInRange(1000,30000)));
+      createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset());
    }
 
    return starSys;
@@ -589,13 +588,13 @@ IGObject* Rfts::choosePlayerPlanet() const {
    IGObject *homePlanet = NULL;
    unsigned searchedSystems = 0;
 
-   while(homePlanet == NULL && searchedSystems < starSystems.size() * 3./4)
+   while(homePlanet == NULL && searchedSystems < starSystems.size() * 4./3)
    {
       // pick rand Star System to search
       set<uint32_t>::iterator starSysI = starSystems.begin();
-      advance(starSysI, rand->getInRange(static_cast<uint32_t>(0), starSystems.size()-1));
+      advance(starSysI, rand->getInRange(static_cast<uint32_t>(1), starSystems.size()-1));
       IGObject *starSys = om->getObject(*starSysI);
-      
+
       searchedSystems++;
       
       set<uint32_t> planets = starSys->getContainedObjects(); // (might not -actually- be planets)
@@ -608,7 +607,7 @@ IGObject* Rfts::choosePlayerPlanet() const {
          
       }
 
-      if(starSysClear == planets.size())
+      if(planets.size() != 0 && starSysClear == planets.size())
       {
          set<uint32_t>::iterator i = planets.begin();
          advance(i, rand->getInRange(static_cast<uint32_t>(0), planets.size()-1));

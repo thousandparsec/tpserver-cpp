@@ -52,12 +52,6 @@ class Rfts : public ::Ruleset {
 
    static const ProductionInfo& getProductionInfo();
 
-   // used for calculating cone-like universe (for wrapping map)
-   static const uint64_t UNIVERSE_TOTAL_SCALE = 1000000000ll;
-   static const uint32_t UNIVERSE_WIDTH = 4;
-   static const uint32_t UNIVERSE_HEIGHT = 3;
-   static const uint32_t UNIVERSE_DEPTH = UNIVERSE_WIDTH * UNIVERSE_HEIGHT;
-   
  private:    
    
    void setObjectTypes() const;
@@ -79,8 +73,6 @@ class Rfts : public ::Ruleset {
    static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
 
 };
-
-const Vector3d calcUniverseCoord(double unitX, double unitY);
 
 Component* createEngineComponent(char techLevel);
 Component* createBattleComponent(char techLevel);

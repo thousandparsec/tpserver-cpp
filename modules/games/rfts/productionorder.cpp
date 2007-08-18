@@ -23,12 +23,17 @@
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/frame.h>
+#include <tpserver/message.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/listparameter.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/designstore.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/player.h>
+
 
 #include "rfts.h"
 #include "productioninfo.h"
@@ -118,6 +123,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
    assert(planet);
 
    map<uint32_t, uint32_t> list = productionList->getList();
+   planet->setResource("Ship Technology", 0);
    
    for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
    {
@@ -127,6 +133,25 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
       planet->removeResource("Resource Point", i->second * resCost);
       planet->addResource(i->first, i->second);
+   }
+
+   Message *msg = new Message();
+   msg->setSubject("Production complete");
+   msg->setBody("Your production order has been completed at " + obj->getName());
+   msg->addReference(rst_Action_Order, rsorav_Completion);
+   msg->addReference(rst_Object, obj->getID());
+   game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(msg);
+
+   PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
+   if(pi.addShipTech(planet->getResource("Ship Technology").first))
+   {
+      Message *upgradeMsg = new Message();
+      upgradeMsg->setSubject("Ship Technology");
+      upgradeMsg->setBody(string("Your ship technology level has just increased to level : ") +
+                           pi.getShipTechLevel() + string("\n") +
+                           string("You can now make Mark ") + pi.getShipTechLevel() + "s and\
+                            your PDBs have been upgraded.");
+      game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(upgradeMsg);
    }
 
    return true;

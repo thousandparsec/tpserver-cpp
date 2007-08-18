@@ -43,6 +43,7 @@
 #include "nop.h"
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
 
 #include "planet.h"
 
@@ -132,10 +133,16 @@ void Planet::doOnceATurn(IGObject* obj) {
       else if(turn == 1) // just did a prod. turn
       {
          calcPopuation();
+         upgradePdbs();
       }
    }
 
    setOrderTypes();
+
+   
+
+   resources->setResource("Ship Technology", 0,
+                           PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
 
    touchModTime();
 }
@@ -151,7 +158,7 @@ void Planet::calcPopuation() {
 
    Random *rand = Game::getGame()->getRandom();
 
-   uint32_t newPop = resources->getResource("Population").first;
+   int newPop = resources->getResource("Population").first;
    const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
    pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
 
@@ -164,19 +171,38 @@ void Planet::calcPopuation() {
    uint32_t& popMaint = resources->getResource("Population Maintenance").first;
 
    // add in a lil' randomness
-   popMaint += static_cast<uint32_t>(popMaint * (rand->getInRange(-50,100) / 1000.) );
+   popMaint += static_cast<uint32_t>(popMaint * (rand->getInRange(-50,125) / 1000.) );
 
-   if(newPop != 0 && popMaint < newPop)
-   {
-      newPop -= (newPop - popMaint) / 2;
-   }
+   if(newPop != 0 && static_cast<int>(popMaint) < newPop)
+      newPop -= (newPop - popMaint ) / 3;
 
    popMaint = 0; // use up maint points
    
       // social < 40 => pop goes down, else goes up
-   newPop -= static_cast<uint32_t>( newPop * ((social.first / 40.) / 10.) );
+   newPop += static_cast<int>( newPop * ((social.first - 40) / 9.) );
 
-   resources->setResource("Population", newPop);
+   if(newPop < 0)
+      newPop = 0;
+
+   resources->setResource("Population", static_cast<uint32_t>(newPop) );
+}
+
+void Planet::upgradePdbs() {
+   if(PlayerInfo::getPlayerInfo(getOwner()).upgradePdbs())
+   {
+      const char techLevel = PlayerInfo::getPlayerInfo(getOwner()).getShipTechLevel();
+      uint32_t totalPdbs = 0;
+
+      // just in case they skip a tech level, make sure we upgrade any/all pdbs
+      for(char oldTech = static_cast<char>(techLevel - 1); oldTech >= '1'; oldTech--)
+      {
+         uint32_t oldPdbs = resources->getResource(string("PDB") + oldTech).first;
+         resources->setResource(string("PDB") + oldTech, 0);
+         totalPdbs += oldPdbs;
+      }
+
+      resources->setResource(string("PDB") + techLevel, totalPdbs);
+   }
 }
 
 int Planet::getContainerType() {
