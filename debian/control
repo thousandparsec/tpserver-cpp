@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: tpserver-cpp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, tpserver-cpp-core (= ${binary:Version}), tpserver-cpp-scheme-guile (= ${binary:Version}) | tpserver-cpp-scheme-mzscheme (= ${binary:Version}), tpserver-cpp-persistance-mysql (= ${binary:Version}) | tpserver-cpp-persistance-postgresql (= ${binary:Version}), tpserver-cpp-ruleset-minisec (= ${binary:Version}) | tpserver-cpp-ruleset-mtsec (= ${binary:Version})
 Description: Thousand Parsec Server, written in C++
  Thousand Parsec Server, written in C++
  .
@@ -24,7 +24,7 @@ Description: Thousand Parsec Server, written in C++
 
 Package: tpserver-cpp-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, tpserver-cpp-core (= ${binary:Version})
 Description: Thousand Parsec Server, written in C++
  Thousand Parsec Server, written in C++
  .
