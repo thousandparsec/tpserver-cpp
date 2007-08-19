@@ -44,9 +44,10 @@ class Bombard : public ::Order {
    ObjectOrderParameter *planet;
 
    static const unsigned VICTORY_POINTS = 50;
-   static const unsigned INDUSTRY_DMG = 1;
+   static const unsigned INDUSTRY_DMG = 2;
    static const unsigned SOCIAL_DMG = 5;
-   static const unsigned PLANETARY_DMG = 4;
+   static const unsigned PLANETARY_DMG = 3;
+   static const unsigned PDB_DMG = 4;
    
 };
 
