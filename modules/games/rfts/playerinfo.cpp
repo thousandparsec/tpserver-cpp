@@ -34,6 +34,7 @@ namespace RFTS_ {
 
 using std::map;
 using std::string;
+using std::set;
 
 map<uint32_t,PlayerInfo*> PlayerInfo::infos;
 
@@ -47,8 +48,9 @@ PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
 
 string& PlayerInfo::appAllVictoryPoints(string& msg) {
    msg += "<br><br> Current Victory Points:<br>";
-   for(map<uint32_t,PlayerInfo*>::iterator i = infos.begin(); i != infos.end(); ++i)
-      msg += i->second->getVictoryPointsStr() + "<br>";
+   set<uint32_t> players = Game::getGame()->getPlayerManager()->getAllIds();
+   for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
+      msg += infos[*i]->getVictoryPointsStr() + "<br>";
    return msg;
 }
 
