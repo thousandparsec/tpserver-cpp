@@ -134,14 +134,12 @@ void Planet::doOnceATurn(IGObject* obj) {
          calcPopuation();
          upgradePdbs();
       }
+
+      resources->setResource("Ship Technology", 0,
+                           PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
    }
 
    setOrderTypes();
-
-   
-
-   resources->setResource("Ship Technology", 0,
-                           PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
 
    touchModTime();
 }

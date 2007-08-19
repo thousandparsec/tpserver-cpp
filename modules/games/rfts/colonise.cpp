@@ -87,7 +87,8 @@ bool Colonise::doOrder(IGObject *obj) {
       uint32_t colonists = fleetData->numShips(transId);
       fleetData->removeShips(transId, colonists);
 
-      defender = game->getPlayerManager()->getPlayer(planetData->getOwner());
+      if(planetData->getOwner() != 0) // make sure the owner exists
+         defender = game->getPlayerManager()->getPlayer(planetData->getOwner());
       string msgBody = string("Colonists from ") + attacker->getName() + "'s fleet " + obj->getName();
 
       if(fleetData->totalShips() == 0)
