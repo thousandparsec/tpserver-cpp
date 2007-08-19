@@ -131,18 +131,25 @@ bool ProductionOrder::doOrder(IGObject *obj) {
       string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
       uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
 
+      // get VP if we're constructing a PDB
+      if(resTypeName.find("PDB") != string::npos)
+         PlayerInfo::getPlayerInfo(planet->getOwner()).addVictoryPoints( i->second * resCost);
+         
+
       planet->removeResource("Resource Point", i->second * resCost);
       planet->addResource(i->first, i->second);
    }
 
+
+   PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
+
    Message *msg = new Message();
    msg->setSubject("Production complete");
-   msg->setBody("Your production order has been completed at " + obj->getName());
+   msg->setBody( "Your production order has been completed at " + obj->getName() );
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, obj->getID());
    game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(msg);
 
-   PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
    if(pi.addShipTech(planet->getResource("Ship Technology").first))
    {
       Message *upgradeMsg = new Message();

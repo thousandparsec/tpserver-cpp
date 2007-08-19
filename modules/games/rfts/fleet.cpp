@@ -370,6 +370,7 @@ bool Fleet::doCombat(list<IGObject*>& fleets) {
 
 void Fleet::attackFleet(Fleet* opp) {
    opp->takeDamage(static_cast<uint32_t>(attack));
+   PlayerInfo::getPlayerInfo(getOwner()).addVictoryPoints(static_cast<uint32_t>(attack));
 }
 
 void Fleet::destroyShips(double intensity) {
@@ -463,8 +464,9 @@ pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::
       uint32_t designCost = Rfts::getProductionInfo().getResourceCost(
                   Game::getGame()->getDesignStore()->getDesign(i->first)->getName());
 
+      PlayerInfo &pi = PlayerInfo::getPlayerInfo(player->getID());
       // handle transport creation a lil' different
-      if(PlayerInfo::getPlayerInfo(player->getID()).getTransportId() == i->first)
+      if(pi.getTransportId() == i->first)
       {
          // CHECK - this assumes(!) you have enough for a _single_ transport
          // the colonist assumption should be safe due to previous limiting (generate list)
@@ -488,6 +490,8 @@ pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::
          
          fleetData->addShips(i->first, numShips);
          planetData->removeResource("Resource Point", usedRP);
+
+         pi.addVictoryPoints(static_cast<uint32_t>(usedRP * 3./4));
       }
 
    }

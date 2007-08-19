@@ -70,7 +70,8 @@ bool Colonise::doOrder(IGObject *obj) {
    IGObject *planetObj = om->getObject(planet->getObjectId());
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
 
-   Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player *attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player *defender = NULL;
    
    Message *msg = new Message();
    
@@ -82,9 +83,12 @@ bool Colonise::doOrder(IGObject *obj) {
    }
    else
    {
-      uint32_t transId = PlayerInfo::getPlayerInfo(player->getID()).getTransportId();
+      uint32_t transId = PlayerInfo::getPlayerInfo(attacker->getID()).getTransportId();
       uint32_t colonists = fleetData->numShips(transId);
       fleetData->removeShips(transId, colonists);
+
+      defender = game->getPlayerManager()->getPlayer(planetData->getOwner());
+      string msgBody = string("Colonists from ") + attacker->getName() + "'s fleet " + obj->getName();
 
       if(fleetData->totalShips() == 0)
          om->scheduleRemoveObject(obj->getID());
@@ -95,25 +99,32 @@ bool Colonise::doOrder(IGObject *obj) {
       // check for take over
       if(colonists >= planetData->getResource("Population").first / 2)
       {
-         planetData->setOwner(player->getID());
-         msg->setBody(string("Colonists from ") + obj->getName() + " colonised "  + planetObj->getName());
+         planetData->setOwner(attacker->getID());
+         msgBody += string(" colonised ")  + planetObj->getName();
+         PlayerInfo::getPlayerInfo(attacker->getID()).addVictoryPoints(VICTORY_POINTS_COLONISE);
       }
       else
-         msg->setBody(string("Colonists from ") + obj->getName() + " attacked, but failed to colonise " +
-                        planetObj->getName());
+      {
+         msgBody += string(" attacked, but failed to colonise ") + planetObj->getName();
+         PlayerInfo::getPlayerInfo(attacker->getID()).addVictoryPoints(VICTORY_POINTS_ATTACK);
+      }
+
+      msg->setBody(PlayerInfo::appAllVictoryPoints(msgBody));
 
       msg->setSubject("Colonise order complete");
-      
       msg->addReference(rst_Action_Order, rsorav_Completion);
-
    }
+
 
    om->doneWithObject(planetObj->getID());
 
    msg->addReference(rst_Object, planetObj->getID());
    msg->addReference(rst_Object, obj->getID());
    
-   player->postToBoard(msg);
+   attacker->postToBoard(msg);
+   if(defender != NULL)
+      defender->postToBoard(msg);
+      
 
    return true;
 }

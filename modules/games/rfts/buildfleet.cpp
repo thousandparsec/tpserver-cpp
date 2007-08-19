@@ -137,6 +137,7 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
    Result r = Order::inputFrame(f, playerid);
    if(!r) return r;
 
+
    Game *game = Game::getGame();
    Player* player = game->getPlayerManager()->getPlayer(playerid);
    DesignStore* ds = game->getDesignStore();

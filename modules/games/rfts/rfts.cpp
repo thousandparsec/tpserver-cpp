@@ -510,18 +510,25 @@ void Rfts::startGame() {
    DEBUG_FN_PRINT();
    
    Settings* settings = Settings::getSettings();
-   if(settings->get("turn_length_over_threshold") == ""){
+   if(settings->get("turn_length_over_threshold") == "")
+   {
       settings->set("turn_length_over_threshold", "120");
       settings->set("turn_player_threshold", "0");
       settings->set("turn_length_under_threshold", "120");
    }
+   
+   if(settings->get("max_players") == "")
+      settings->set("max_players", "4");
+      
+   if(settings->get("game_length") == "")
+      settings->set("game_length", "60");
 }
 
 bool Rfts::onAddPlayer(Player *player) {
    DEBUG_FN_PRINT();
-   if(Game::getGame()->getPlayerManager()->getNumPlayers() < MAX_PLAYERS)
-      return true;
-   return false;
+   unsigned players = Game::getGame()->getPlayerManager()->getNumPlayers();
+   unsigned maxPlayers = strtol(Settings::getSettings()->get("max_players").c_str(), NULL, 10);
+   return players < maxPlayers;
 }
 void Rfts::onPlayerAdded(Player *player) {
    DEBUG_FN_PRINT();

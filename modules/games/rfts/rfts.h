@@ -69,9 +69,6 @@ class Rfts : public ::Ruleset {
                             const Vector3d& location);
 
    IGObject* choosePlayerPlanet() const;
-
-   static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
-
 };
 
 Component* createEngineComponent(char techLevel);

@@ -32,6 +32,8 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
+#include <tpserver/settings.h>
+#include <tpserver/message.h>
 
 #include "ownedobject.h"
 #include "playerinfo.h"
@@ -41,6 +43,7 @@
 namespace RFTS_ {
 
 using std::set;
+using std::string;
 
 RftsTurn::RftsTurn() {
 
@@ -55,6 +58,7 @@ void RftsTurn::doTurn() {
    Game* game = Game::getGame();
    OrderManager* ordermanager = game->getOrderManager();
    ObjectManager* objectmanager = game->getObjectManager();
+   PlayerManager *pm = game->getPlayerManager();
 
    set<uint32_t> objectsIds = objectmanager->getAllIds();
 
@@ -108,12 +112,32 @@ void RftsTurn::doTurn() {
 
    objectmanager->clearRemovedObjects();
 
-   set<uint32_t> players = game->getPlayerManager()->getAllIds();
+   set<uint32_t> players = pm->getAllIds();
    for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
       PlayerInfo::getPlayerInfo(*i).clearPdbUpgrade();
 
    // update in case fleets were destroyed in combat
    setPlayerVisibleObjects();
+
+   Player* winner = getWinner();
+   if(winner != NULL)
+   {
+      string body;
+      Message *gameOver = new Message();
+      gameOver->setSubject("Game over!");
+      
+      if( game->getTurnNumber() ==
+            static_cast<unsigned>(strtol(Settings::getSettings()->get("game_length").c_str(), NULL, 10)) )
+         body = "Overwhelming victory by: ";
+      else
+         body = "Game length elapsed, winner is: ";
+         
+      body += winner->getName();
+      gameOver->setBody(PlayerInfo::appAllVictoryPoints(body));
+
+      for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
+         pm->getPlayer(*i)->postToBoard(gameOver);
+   }
 }
 
 void RftsTurn::setPlayerVisibleObjects() {
@@ -131,6 +155,44 @@ void RftsTurn::setPlayerVisibleObjects() {
       setVisibleObjects(player, ownedObjects);
    }
 }
+
+Player* RftsTurn::getWinner() {
+
+   Game *game = Game::getGame();
+   
+   unsigned gameLength = strtol(Settings::getSettings()->get("game_length").c_str(), NULL, 10);
+
+   uint32_t highestScore = 0, nextHighest = 0;
+   Player *winner = NULL;
+   
+   
+   // check for overwhelming victory (only if we're reasonablly started)
+   if(game->getTurnNumber() > gameLength / 4)
+   {
+      set<uint32_t> players = game->getPlayerManager()->getAllIds();
+      for(set<uint32_t>::iterator i = players.begin(); i!= players.end(); ++i)
+      {
+         uint32_t vp = PlayerInfo::getPlayerInfo(*i).getVictoryPoints();
+         if( vp > highestScore)
+         {
+            nextHighest = highestScore;
+            highestScore = vp;
+            winner = game->getPlayerManager()->getPlayer(*i); // save winner
+         }
+      }
+
+      // only save if we're in an overwhelming victory state
+      // or game is over
+      if(! (highestScore > nextHighest * 2.5 ||
+            game->getTurnNumber() == gameLength) )
+         winner = NULL;
+   }
+
+   return winner;
+}
+
+
+// helpers
 
 void setVisibleObjects(Player *player, const set<uint32_t>& ownedObjects) {
    ObjectManager *om = Game::getGame()->getObjectManager();

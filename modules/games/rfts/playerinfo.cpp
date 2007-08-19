@@ -19,6 +19,7 @@
  */
 
 #include <map>
+#include <sstream>
 
 #include <tpserver/game.h>
 #include <tpserver/player.h>
@@ -32,6 +33,7 @@
 namespace RFTS_ {
 
 using std::map;
+using std::string;
 
 map<uint32_t,PlayerInfo*> PlayerInfo::infos;
 
@@ -41,6 +43,13 @@ PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
       infos[pid] = new PlayerInfo(pid);
 
    return *infos[pid];
+}
+
+string& PlayerInfo::appAllVictoryPoints(string& msg) {
+   msg += "\n\n Current Victory Points:\n";
+   for(map<uint32_t,PlayerInfo*>::iterator i = infos.begin(); i != infos.end(); ++i)
+      msg += i->second->getVictoryPointsStr() + "\n";
+   return msg;
 }
 
 void PlayerInfo::clear() {
@@ -76,6 +85,13 @@ void PlayerInfo::addVictoryPoints(uint32_t vp) {
 
 const uint32_t PlayerInfo::getVictoryPoints() const {
    return victoryPoints;
+}
+
+string PlayerInfo::getVictoryPointsStr() const {
+   std::ostringstream vp;
+   vp << victoryPoints;
+   return Game::getGame()->getPlayerManager()->getPlayer(playerId)->getName() +
+          string(" victory points: ") + vp.str();
 }
 
 bool PlayerInfo::addShipTech(uint32_t points) {
@@ -122,5 +138,6 @@ const char PlayerInfo::getShipTechLevel() const {
 const uint32_t PlayerInfo::getShipTechPoints() const {
    return shipTech;
 }
+
 
 }

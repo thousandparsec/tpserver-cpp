@@ -32,6 +32,8 @@ class RftsTurn : public TurnProcess {
    virtual void doTurn();
 
    void setPlayerVisibleObjects();
+
+   Player* getWinner();
 };
 
 void setVisibleObjects(Player *player, const std::set<uint32_t>& ownedObjects);

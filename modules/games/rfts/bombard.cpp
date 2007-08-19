@@ -27,15 +27,20 @@
 #include <tpserver/message.h>
 #include <tpserver/logging.h>
 #include <tpserver/prng.h>
+#include <tpserver/player.h>
+#include <tpserver/playermanager.h>
 
 #include <tpserver/objectorderparameter.h>
 
 #include "planet.h"
 #include "fleet.h"
+#include "playerinfo.h"
 
 #include "bombard.h"
 
 namespace RFTS_ {
+
+using std::string;
 
 Bombard::Bombard() {
    name = "Bombard";
@@ -95,20 +100,32 @@ bool Bombard::doOrder(IGObject *fleet) {
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
 
    double attack = fleetData->getAttack();
-
+   
    planetData->removeResource("Population",
-                              static_cast<uint32_t>(attack * POPULATION_DMG * rand->getReal1()));
+                  static_cast<uint32_t>(attack * POPULATION_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
    planetData->removeResource("Industry", 
-                              static_cast<uint32_t>(attack * INDUSTRY_DMG * rand->getReal1()));
+                  static_cast<uint32_t>(attack * INDUSTRY_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
    planetData->removeResource("Social Environment", 
-                              static_cast<uint32_t>(attack * SOCIAL_DMG * rand->getReal1()));
+                  static_cast<uint32_t>(attack * SOCIAL_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
    planetData->removeResource("Planetary Environment", 
-                              static_cast<uint32_t>(attack * PLANETARY_DMG * rand->getReal1()));
+                  static_cast<uint32_t>(attack * PLANETARY_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
-   
+
+   PlayerInfo::getPlayerInfo(fleetData->getOwner()).addVictoryPoints(VICTORY_POINTS);
+
+   Message *msg = new Message();
+   msg->setSubject("Bombard complete");
+   string body = "Fleet \"" + fleet->getName() + "\" bombarded " + planetObj->getName();
+   msg->setBody(PlayerInfo::appAllVictoryPoints(body));
+   msg->addReference(rst_Action_Order, rsorav_Completion);
+   msg->addReference(rst_Object, fleet->getID());
+   msg->addReference(rst_Object, planetObj->getID());
+
+   game->getPlayerManager()->getPlayer(fleetData->getOwner())->postToBoard(msg);
+   game->getPlayerManager()->getPlayer(planetData->getOwner())->postToBoard(msg);
 
    return true;
 }
