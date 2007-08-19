@@ -150,7 +150,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
       totalRPUsed += rpUsed;
 
       resourcesAddedMsg << "Added " << i->second <<  " " << resTypeName << " for "
-                        << rpUsed << ", at " << resCost << " per" << std::endl;
+                        << rpUsed << ", at " << resCost << " per" << "<br>";
 
       planet->removeResource("Resource Point", rpUsed);
       planet->addResource(i->first, i->second);
@@ -162,7 +162,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
    Message *msg = new Message();
    msg->setSubject("Production complete");
-   msg->setBody( "Your production order has been completed at " + obj->getName() + "<br>" +
+   msg->setBody( "Your production order has been completed at " + obj->getName() + "<br><br>" +
                   resourcesAddedMsg.str() );
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, obj->getID());

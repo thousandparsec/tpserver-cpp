@@ -204,14 +204,15 @@ bool BuildFleet::doOrder(IGObject *ob)
    // post completion message
    Message * msg = new Message();
    msg->setSubject("Build Fleet order complete");
+   string body;
 
    if(complete)
-      msg->setBody(string("The construction of your new fleet \"") + fleetName->getString() +
-                  string("\" is complete."));
+      body = string("The construction of your new fleet \"") + fleetName->getString() + string("\" is complete.");
    else
-      msg->setBody(string("The construction of your fleet \"") + fleetName->getString() + string("\"\
-                    is finished, but not all ships were created due to resource constraints!"));
+      body = string("The construction of your fleet \"") + fleetName->getString() + string("\"\
+                    is finished, but not all ships were created due to resource constraints!");
                   
+   msg->setBody(PlayerInfo::appAllVictoryPoints(body));
    
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, fleet->getID());
