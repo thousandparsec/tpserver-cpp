@@ -78,7 +78,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
    
    if(otherFleetData == NULL || otherFleetData->getOwner() != fleetData->getOwner())
    {
-      msg->setBody("Merge failed!\nTried to merge with something that wasn't one of your fleets!");
+      msg->setBody("Merge failed!<br>Tried to merge with something that wasn't one of your fleets!");
       msg->addReference(rst_Action_Order, rsorav_Canceled);
       msg->addReference(rst_Object, otherFleetObj->getID());
    }

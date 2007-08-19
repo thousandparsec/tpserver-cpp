@@ -162,7 +162,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
    Message *msg = new Message();
    msg->setSubject("Production complete");
-   msg->setBody( "Your production order has been completed at " + obj->getName() + "\n" +
+   msg->setBody( "Your production order has been completed at " + obj->getName() + "<br>" +
                   resourcesAddedMsg.str() );
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, obj->getID());
@@ -173,7 +173,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
       Message *upgradeMsg = new Message();
       upgradeMsg->setSubject("Ship Technology");
       upgradeMsg->setBody(string("Your ship technology level has just increased to level : ") +
-                           pi.getShipTechLevel() + string("\n") +
+                           pi.getShipTechLevel() + string("<br>") +
                            string("You can now make Mark ") + pi.getShipTechLevel() + "s and\
                             your PDBs have been upgraded.");
       game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(upgradeMsg);

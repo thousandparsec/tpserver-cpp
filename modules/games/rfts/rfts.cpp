@@ -573,22 +573,27 @@ void Rfts::onPlayerAdded(Player *player) {
    setVisibleObjects(player, ownedObjects);
 
    Message *welcome = new Message();
-   welcome->setSubject("Welcome to TP RFTS! Here's a brief reminder of the rules");
-   welcome->setBody("3 turn cycle:\n\
-                     1st turn: planetary production, fleet building, and fleet movement\n\
-                     2nd turn: fleet building and fleet movement\n\
-                     3rd turn: fleet movement only\n\
-                     *repeat*\n\n\
-                     Costs:\n\
-                     Industry: 10         Social Env: 4\n\
-                     Planetary Env: 8     Pop. Maint: 1\n\
-                     Colonists: 5         Scouts: 3\n\
-                     Mark1: 14            Mark2: 30\n\
-                     Mark3: 80            Mark4: 120\n\
-                     PDB: 4/8/16          PDB Maint.: 1/2/2\n\
-                     Ship Tech: 1\n\
-                     Ship Tech. Upgrade Levels (determind Marks and PDBs availble):\n\
-                     Level 2: 400         Level 3: 1,000      Level 4: 2,000");
+   welcome->setSubject("Welcome to TP RFTS! Here's a brief reminder of some rules");
+   welcome->setBody("<b><u>3 Turn Cycle</b></u>:<br />\
+                     1st turn: planetary production, fleet building, and fleet movement<br />\
+                     2nd turn: fleet building and fleet movement<br />\
+                     3rd turn: fleet movement only<br />\
+                     *repeat*<br /><br />\
+                     <b><u>COSTS:</b></u><br />\
+                     <table border=\"0\">\
+                     <tr><th>Industry: 10        <td> Social Env:4\
+                     <tr><th>Planetary Env: 8    <td> Pop. Maint: 1\
+                     <tr><th>Colonists: 5        <td> Scouts: 3\
+                     <tr><th>Mark1: 14           <td> Mark2: 30\
+                     <tr><th>Mark3: 80           <td> Mark4: 120\
+                     <tr><th>PDB: 4/8/16         <td> PDB Maint.: 1/2/2\
+                     <tr><th>Ship Tech: 1</table><br /><br />\
+                     Ship Tech. Upgrade Levels (determind Marks and PDBs availble):<br />\
+                     Level 2: 400 <br />\
+                     Level 3: 1,000 <br />\
+                     Level 4: 2,000 <br /><br />\
+                     <a href=\"http://www.thousandparsec.net/wiki/TP_RFTS\"><h5>More information on how\
+                      to play</h5></a>");
 
    player->postToBoard(welcome);
 

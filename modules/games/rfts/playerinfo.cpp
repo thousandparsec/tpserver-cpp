@@ -46,9 +46,9 @@ PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
 }
 
 string& PlayerInfo::appAllVictoryPoints(string& msg) {
-   msg += "\n\n Current Victory Points:\n";
+   msg += "<br><br> Current Victory Points:<br>";
    for(map<uint32_t,PlayerInfo*>::iterator i = infos.begin(); i != infos.end(); ++i)
-      msg += i->second->getVictoryPointsStr() + "\n";
+      msg += i->second->getVictoryPointsStr() + "<br>";
    return msg;
 }
 
