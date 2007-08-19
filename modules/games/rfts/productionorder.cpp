@@ -59,6 +59,8 @@ ProductionOrder::ProductionOrder() {
             &ProductionOrder::generateListOptions));
    
    addOrderParameter(productionList);
+
+   turns = 0;
 }
 
 ProductionOrder::~ProductionOrder() {
@@ -94,6 +96,11 @@ map<uint32_t, pair<string, uint32_t> >ProductionOrder::generateListOptions() {
    setOption(options, pdbName + " Maintenance", planet);
    setOption(options, "Colonist", planet);
    setOption(options, "Ship Technology", planet);
+
+   if(options[Game::getGame()->getResourceManager()->
+      getResourceDescription("Ship Technology")->getResourceType()].second > 100)
+         options[Game::getGame()->getResourceManager()->
+            getResourceDescription("Ship Technology")->getResourceType()].second = 100;
    
    return options;
 }
@@ -108,6 +115,7 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
 }
 
 void ProductionOrder::createFrame(Frame *f, int pos) {
+   turns = 1;
    Order::createFrame(f, pos);
 }
 

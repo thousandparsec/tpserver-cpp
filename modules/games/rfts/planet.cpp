@@ -147,8 +147,9 @@ void Planet::doOnceATurn(IGObject* obj) {
 }
 
 void Planet::calcRP() {
+   pair<uint32_t,uint32_t> popn = resources->getResource("Population");
    resources->setResource("Resource Point",
-         (resources->getResource("Population").first * 2) +
+         ( std::min(popn.first, popn.second) * 2) +
          (resources->getResource("Industry").first * resources->getResource("Social Environment").first) 
                                              / 16);
 }
