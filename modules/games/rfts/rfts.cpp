@@ -259,67 +259,61 @@ void Rfts::createUniverse() {
    uniData->setUnitPos(0,0);
    uniData->setSize(123456789123ll);
    objman->addObject(universe);
-
-
-   createStarSystem(*universe, "Castor", .05, .95);
-   createStarSystem(*universe, "Diphda", .1, .75);
-   createStarSystem(*universe, "Saiph", .23, .875);
-   createStarSystem(*universe, "Vega", .23, .7);
-   createStarSystem(*universe, "Procyon", .15, .6);
-   createStarSystem(*universe, "Nihal", .23, .6);
-   createStarSystem(*universe, "Kochab", .18, .38);
-   createStarSystem(*universe, "Antares", .075, .35);
+   
+   createStarSystem(*universe, "Acrux", .875, .87);
    createStarSystem(*universe, "Adara", .18, .24);
    createStarSystem(*universe, "Agena", .18, .075);
-
    createStarSystem(*universe, "Algol", .28, .75);
-   createStarSystem(*universe, "Schedar", .27, .6);
-   createStarSystem(*universe, "Rastaban", .29, .375);
-   createStarSystem(*universe, "Izar", .29, .21);
-
-   createStarSystem(*universe, "Ascella", .43, .875);
-   createStarSystem(*universe, "Mirzam", .37, .8);
-   createStarSystem(*universe, "Wesen", .39, .65);
+   createStarSystem(*universe, "Alhema", .86, .24);
    createStarSystem(*universe, "Alioth", .37, .5);
-   createStarSystem(*universe, "Nunki", .39, .25);
-   createStarSystem(*universe, "Sirius", .42, .18);
-
-   createStarSystem(*universe, "Wolf", .54, .92);
-   createStarSystem(*universe, "Spica", .475, .79);
-   createStarSystem(*universe, "Gemma", .5, .625);
-   createStarSystem(*universe, "Dubhe", .475, .5);
-   createStarSystem(*universe, "Arneb", .485, .37);
-
-   createStarSystem(*universe, "Phaeda", .58, .95);
-   createStarSystem(*universe, "Enif", .62, .77);
-   createStarSystem(*universe, "Sabik", .6, .745);
+   createStarSystem(*universe, "Almak", .84, .125);
    createStarSystem(*universe, "Altair", .58, .62);
-   createStarSystem(*universe, "Canopus", .55, .55);
-   createStarSystem(*universe, "Shedir", .57, .47);
-   createStarSystem(*universe, "Mizar", .6, .375);
-   createStarSystem(*universe, "Mintaka", .57, .27);
-
    createStarSystem(*universe, "Aludra", .71, .95);
-   createStarSystem(*universe, "Pollux", .68, .875);
-   createStarSystem(*universe, "Megrez", .69, .8);
-   createStarSystem(*universe, "Hamal", .75, .625);
-   createStarSystem(*universe, "Regulus", .69, .6);
-   createStarSystem(*universe, "Nath", .7, .375);
-   createStarSystem(*universe, "Polaris", .65, .2);
-   createStarSystem(*universe, "Furud", .64, .075);
+   createStarSystem(*universe, "Antares", .075, .35);
+   createStarSystem(*universe, "Arneb", .485, .37);
+   createStarSystem(*universe, "Ascella", .43, .875);
+   createStarSystem(*universe, "Canopus", .55, .55);
    createStarSystem(*universe, "Capella", .76, .075);
-
-   createStarSystem(*universe, "Acrux", .875, .87);
-   createStarSystem(*universe, "Rigel", .8, .8);
-   createStarSystem(*universe, "Gienah", .8, .75);
-   createStarSystem(*universe, "Ross", .88, .61);
+   createStarSystem(*universe, "Caph", .79, .33);
+   createStarSystem(*universe, "Castor", .05, .95);
    createStarSystem(*universe, "Deneb", .85, .55);
+   createStarSystem(*universe, "Diphda", .1, .75);
+   createStarSystem(*universe, "Dubhe", .475, .5);
+   createStarSystem(*universe, "Enif", .62, .77);
+   createStarSystem(*universe, "Furud", .64, .075);
+   createStarSystem(*universe, "Gemma", .5, .625);
+   createStarSystem(*universe, "Gienah", .8, .75);
+   createStarSystem(*universe, "Hamal", .75, .625);
+   createStarSystem(*universe, "Izar", .29, .21);
+   createStarSystem(*universe, "Kochab", .18, .38);
+   createStarSystem(*universe, "Megrez", .69, .8);
+   createStarSystem(*universe, "Mintaka", .57, .27);
+   createStarSystem(*universe, "Mirzam", .37, .8);
+   createStarSystem(*universe, "Mizar", .6, .375);
+   createStarSystem(*universe, "Nath", .7, .375);
+   createStarSystem(*universe, "Nihal", .23, .6);
+   createStarSystem(*universe, "Nunki", .39, .25);
+   createStarSystem(*universe, "Phaeda", .58, .95);
+   createStarSystem(*universe, "Polaris", .65, .2);
+   createStarSystem(*universe, "Pollux", .68, .875);
+   createStarSystem(*universe, "Procyon", .15, .6);
+   createStarSystem(*universe, "Rastaban", .29, .375);
+   createStarSystem(*universe, "Regulus", .69, .6);
+   createStarSystem(*universe, "Rigel", .8, .8);
+   createStarSystem(*universe, "Ross", .88, .61);
+   createStarSystem(*universe, "Sabik", .6, .745);
+   createStarSystem(*universe, "Saiph", .23, .875);
+   createStarSystem(*universe, "Schedar", .27, .6);
+   createStarSystem(*universe, "Sirius", .42, .18);
+   createStarSystem(*universe, "Shedir", .57, .47);
+   createStarSystem(*universe, "Spica", .475, .79);
    createStarSystem(*universe, "Tarazed", .9, .42);
    createStarSystem(*universe, "Thuban", .83, .4);
-   createStarSystem(*universe, "Caph", .79, .33);
-   createStarSystem(*universe, "Alhema", .86, .24);
-   createStarSystem(*universe, "Almak", .84, .125);
+   createStarSystem(*universe, "Vega", .23, .7);
+   createStarSystem(*universe, "Wesen", .39, .65);
+   createStarSystem(*universe, "Wolf", .54, .92);
    createStarSystem(*universe, "Zosma", .86, .05);
+   
 }
 
 IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
@@ -512,9 +506,9 @@ void Rfts::startGame() {
    Settings* settings = Settings::getSettings();
    if(settings->get("turn_length_over_threshold") == "")
    {
-      settings->set("turn_length_over_threshold", "120");
+      settings->set("turn_length_over_threshold", "180");
       settings->set("turn_player_threshold", "0");
-      settings->set("turn_length_under_threshold", "120");
+      settings->set("turn_length_under_threshold", "180");
    }
    
    if(settings->get("max_players") == "")
