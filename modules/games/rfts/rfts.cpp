@@ -44,6 +44,7 @@
 #include <tpserver/resourcedescription.h>
 #include <tpserver/prng.h>
 #include <tpserver/settings.h>
+#include <tpserver/message.h>
 
 #include "buildfleet.h"
 #include "move.h"
@@ -570,6 +571,26 @@ void Rfts::onPlayerAdded(Player *player) {
    set<uint32_t> ownedObjects;
    findOwnedObjects(player->getID(), gameObjects, ownedObjects);
    setVisibleObjects(player, ownedObjects);
+
+   Message *welcome = new Message();
+   welcome->setSubject("Welcome to TP RFTS! Here's a brief reminder of the rules");
+   welcome->setBody("3 turn cycle:\n\
+                     1st turn: planetary production, fleet building, and fleet movement\n\
+                     2nd turn: fleet building and fleet movement\n\
+                     3rd turn: fleet movement only\n\
+                     *repeat*\n\n\
+                     Costs:\n\
+                     Industry: 10         Social Env: 4\n\
+                     Planetary Env: 8     Pop. Maint: 1\n\
+                     Colonists: 5         Scouts: 3\n\
+                     Mark1: 14            Mark2: 30\n\
+                     Mark3: 80            Mark4: 120\n\
+                     PDB: 4/8/16          PDB Maint.: 1/2/2\n\
+                     Ship Tech: 1\n\
+                     Ship Tech. Upgrade Levels (determind Marks and PDBs availble):\n\
+                     Level 2: 400         Level 3: 1,000      Level 4: 2,000");
+
+   player->postToBoard(welcome);
 
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
 }
