@@ -33,15 +33,23 @@ class ProductionInfo
    
    virtual void init();
 
-   const uint32_t getResourceCost(const std::string& resTypeName) const;
-   const uint32_t getMaxResources(const std::string& resTypeName) const;
-   const uint32_t getMinResources(const std::string& resTypeName) const;
-   const uint32_t getRandResourceVal(const std::string& resTypeName) const;
+   enum PlanetType {
+      INDUSTRIAL = 1,
+      NEUTRAL,
+      PRIMARY,
+      TOTAL_PLANET_TYPES
+   };
 
- private:  
+   const uint32_t getResourceCost(const std::string& resTypeName) const;
+   const uint32_t getMaxResources(const std::string& resTypeName, PlanetType planetType) const;
+   const uint32_t getMinResources(const std::string& resTypeName, PlanetType planetType) const;
+   const uint32_t getRandResourceVal(const std::string& resTypeName,
+                                     PlanetType planetType) const;
+
+ private:
 
    std::map<std::string, uint32_t> resourceCost;
-   std::map<std::string, std::pair<uint32_t,uint32_t> > minMaxResource;
+   std::map<std::pair<std::string, PlanetType>, std::pair<uint32_t,uint32_t> > minMaxResource;
 };
 
 }

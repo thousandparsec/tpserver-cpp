@@ -66,27 +66,38 @@ void ProductionInfo::init() {
 
 
    // Min/Max Resources
-   minMaxResource["Industry"] = pair<uint32_t,uint32_t>(40,70);
-   minMaxResource["Population"] = pair<uint32_t, uint32_t>(30,110);
-   minMaxResource["Social Environment"] = pair<uint32_t,uint32_t>(55,95);
-   minMaxResource["Planetary Environment"] = pair<uint32_t,uint32_t>(35,70);
+   minMaxResource[pair<string,PlanetType>("Population",INDUSTRIAL)] = pair<uint32_t,uint32_t>(10,30);
+   minMaxResource[pair<string,PlanetType>("Industry",INDUSTRIAL)] = pair<uint32_t,uint32_t>(25,90);
+   minMaxResource[pair<string,PlanetType>("Social Environment",INDUSTRIAL)] = pair<uint32_t,uint32_t>(5,20);
+   minMaxResource[pair<string,PlanetType>("Planetary Environment",INDUSTRIAL)] = pair<uint32_t,uint32_t>(5,20);
+
+   minMaxResource[pair<string,PlanetType>("Population",NEUTRAL)] = pair<uint32_t,uint32_t>(40,80);
+   minMaxResource[pair<string,PlanetType>("Industry",NEUTRAL)] = pair<uint32_t,uint32_t>(30,70);
+   minMaxResource[pair<string,PlanetType>("Social Environment",NEUTRAL)] = pair<uint32_t,uint32_t>(30,75);
+   minMaxResource[pair<string,PlanetType>("Planetary Environment",NEUTRAL)] = pair<uint32_t,uint32_t>(30,75);
+
+   minMaxResource[pair<string,PlanetType>("Population",PRIMARY)] = pair<uint32_t,uint32_t>(75,100);
+   minMaxResource[pair<string,PlanetType>("Industry",PRIMARY)] = pair<uint32_t,uint32_t>(30,55);
+   minMaxResource[pair<string,PlanetType>("Social Environment",PRIMARY)] = pair<uint32_t,uint32_t>(55,100);
+   minMaxResource[pair<string,PlanetType>("Planetary Environment",PRIMARY)] = pair<uint32_t,uint32_t>(55,100);
 }
 
 const uint32_t ProductionInfo::getResourceCost(const string& resTypeName) const {
    return (*resourceCost.find(resTypeName)).second;
 }
 
-const uint32_t ProductionInfo::getMinResources(const string& resTypeName) const {
-   return (*minMaxResource.find(resTypeName)).second.first;
+const uint32_t ProductionInfo::getMinResources(const string& resTypeName, PlanetType planetType) const {
+   return (*minMaxResource.find( pair<string,PlanetType>(resTypeName,planetType)) ).second.first;
 }
 
-const uint32_t ProductionInfo::getMaxResources(const string& resTypeName) const {
-   return (*minMaxResource.find(resTypeName)).second.second;
+const uint32_t ProductionInfo::getMaxResources(const string& resTypeName, PlanetType planetType) const {
+   return (*minMaxResource.find( pair<string,PlanetType>(resTypeName,planetType)) ).second.second;
 }
 
-const uint32_t ProductionInfo::getRandResourceVal(const string& resTypeName) const {
-  return Game::getGame()->getRandom()->getInRange(getMinResources(resTypeName),
-                                                   getMaxResources(resTypeName));
+const uint32_t ProductionInfo::getRandResourceVal(const string& resTypeName, PlanetType planetType) const {
+   uint32_t val = Game::getGame()->getRandom()->getInRange( getMinResources(resTypeName,planetType),
+                                                   getMaxResources(resTypeName,planetType));
+  return val - (val % 5); // round to a mult of 5
 }
 
 }

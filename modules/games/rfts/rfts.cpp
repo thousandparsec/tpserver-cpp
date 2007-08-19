@@ -355,7 +355,6 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const V
    planet->setType(game->getObjectDataManager()->getObjectTypeByName("Planet"));
    planet->setName(name);
    Planet* planetData = static_cast<Planet*>(planet->getObjectData());
-   planetData->setSize(3);
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
    
@@ -625,19 +624,31 @@ IGObject* Rfts::choosePlayerPlanet() const {
       
       set<uint32_t> planets = starSys->getContainedObjects(); // (might not -actually- be planets)
       unsigned starSysClear = 0;
+      int primaryPlanet = -1;
+      
       for(set<uint32_t>::iterator i = planets.begin(); i != planets.end(); i++)
       {
-         OwnedObject *owned = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectData());
-         if(owned->getOwner() == 0)
+         ObjectData *objDataI = om->getObject(*i)->getObjectData();
+         
+         if(dynamic_cast<OwnedObject*>(objDataI)->getOwner() == 0) // no owner
             starSysClear++;
+         if(dynamic_cast<StaticObject*>(objDataI)->getSize() == ProductionInfo::PRIMARY)
+            primaryPlanet = *i;
          
       }
 
-      if(planets.size() != 0 && starSysClear == planets.size())
+      if(planets.size() != 0 && starSysClear == planets.size() && primaryPlanet != -1)
       {
-         set<uint32_t>::iterator i = planets.begin();
-         advance(i, rand->getInRange(static_cast<uint32_t>(0), planets.size()-1));
-         homePlanet = om->getObject(*i); // must be a planet because it's owner-less
+         homePlanet = om->getObject(primaryPlanet); // must be a planet because it's owner-less
+         Planet *homePlanetData =  dynamic_cast<Planet*>(homePlanet->getObjectData());
+         
+         // set initial planet values
+         homePlanetData->setResource("Resource Point", 200);
+         homePlanetData->setResource("Population", 50); 
+         homePlanetData->setResource("Industry", 15);
+         homePlanetData->setResource("Social Environment", 52);
+         homePlanetData->setResource("Planetary Environment", 55);
+         homePlanetData->setResource("PDB1", 12);
       }
    }
 
