@@ -47,10 +47,10 @@ PlayerInfo& PlayerInfo::getPlayerInfo(uint32_t pid) {
 }
 
 string& PlayerInfo::appAllVictoryPoints(string& msg) {
-   msg += "<br><br> Current Victory Points:<br>";
+   msg += "<br /><br /> Current Victory Points:<br />";
    set<uint32_t> players = Game::getGame()->getPlayerManager()->getAllIds();
    for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
-      msg += infos[*i]->getVictoryPointsStr() + "<br>";
+      msg += infos[*i]->getVictoryPointsStr() + "<br />";
    return msg;
 }
 
