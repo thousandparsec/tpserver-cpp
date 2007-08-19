@@ -101,9 +101,6 @@ bool Bombard::doOrder(IGObject *fleet) {
 
    double attack = fleetData->getAttack();
    
-   planetData->removeResource("Population",
-                  static_cast<uint32_t>(attack * POPULATION_DMG * (1+rand->getInRange(-2,2)/100.) ));
-
    planetData->removeResource("Industry", 
                   static_cast<uint32_t>(attack * INDUSTRY_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
