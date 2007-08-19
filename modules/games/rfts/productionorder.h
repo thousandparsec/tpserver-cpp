@@ -20,6 +20,8 @@
  *
  */
 
+#include <sstream>
+
 #include <tpserver/order.h>
 #include <tpserver/result.h>
 

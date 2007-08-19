@@ -132,28 +132,38 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
    map<uint32_t, uint32_t> list = productionList->getList();
    planet->setResource("Ship Technology", 0);
+
+   uint32_t totalRPUsed = 0;
+   std::ostringstream resourcesAddedMsg;
    
    for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
    {
       // remove the RPs for this each of this resource
       string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
       uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
+      uint32_t rpUsed = resCost * i->second;
 
       // get VP if we're constructing a PDB
       if(resTypeName.find("PDB") != string::npos)
-         PlayerInfo::getPlayerInfo(planet->getOwner()).addVictoryPoints( i->second * resCost);
-         
+         PlayerInfo::getPlayerInfo(planet->getOwner()).addVictoryPoints(rpUsed);
 
-      planet->removeResource("Resource Point", i->second * resCost);
+      totalRPUsed += rpUsed;
+
+      resourcesAddedMsg << "Added " << i->second <<  " " << resTypeName << " for "
+                        << rpUsed << ", at " << resCost << " per" << std::endl;
+
+      planet->removeResource("Resource Point", rpUsed);
       planet->addResource(i->first, i->second);
    }
 
+   resourcesAddedMsg << "Total RP used: " << totalRPUsed;
 
    PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
 
    Message *msg = new Message();
    msg->setSubject("Production complete");
-   msg->setBody( "Your production order has been completed at " + obj->getName() );
+   msg->setBody( "Your production order has been completed at " + obj->getName() + "\n" +
+                  resourcesAddedMsg.str() );
    msg->addReference(rst_Action_Order, rsorav_Completion);
    msg->addReference(rst_Object, obj->getID());
    game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(msg);
