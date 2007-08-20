@@ -183,6 +183,10 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
 bool BuildFleet::doOrder(IGObject *ob)
 {
+
+   if(shipList->getList().size() == 0)
+      return true;
+   
    Game *game = Game::getGame();
 
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
