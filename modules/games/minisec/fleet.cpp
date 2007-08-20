@@ -58,7 +58,7 @@ Fleet::Fleet():ObjectData(){
   group->addParameter(vel);
   size = new SizeObjectParam();
   size->setName("Size");
-  size->setDescription( "The size of the planet");
+  size->setDescription( "The size of the fleet");
   size->setSize(2);
   group->addParameter(size);
   paramgroups.push_back(group);
