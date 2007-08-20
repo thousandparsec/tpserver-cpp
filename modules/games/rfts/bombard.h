@@ -1,6 +1,6 @@
-#ifndef nop_H
-#define nop_H
-/*  nop class
+#ifndef bombard_H
+#define bombard_H
+/*  bombard class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -20,29 +20,35 @@
  *
  */
 
-
 #include <tpserver/order.h>
-#include <tpserver/result.h>
 
-class TimeParameter;
+class IGObject;
+class ObjectOrderParameter;
+class Frame;
 
-namespace RFTS_ {
+namespace RFTS_{
 
-class Nop : public Order {
+class Bombard : public ::Order {
+
  public:
-   Nop();
-   virtual ~Nop();
-   
-   void createFrame(Frame * f, int pos);
-   Result inputFrame(Frame * f, uint32_t playerid);
-   
-   bool doOrder(IGObject * ob);
-   
-   Order* clone() const;
+   Bombard();
+   virtual ~Bombard();
+
+   virtual Order* clone() const;
+
+   virtual Result inputFrame(Frame * f, unsigned int playerid);
+
+   virtual bool doOrder(IGObject *obj);
 
  private:
-   TimeParameter* timeparam;
+   ObjectOrderParameter *planet;
 
+   static const unsigned VICTORY_POINTS = 50;
+   static const unsigned INDUSTRY_DMG = 2;
+   static const unsigned SOCIAL_DMG = 5;
+   static const unsigned PLANETARY_DMG = 3;
+   static const unsigned PDB_DMG = 4;
+   
 };
 
 }

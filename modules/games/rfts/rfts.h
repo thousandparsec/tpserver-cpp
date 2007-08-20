@@ -29,6 +29,7 @@ class IGObject;
 class Component;
 class Design;
 class Player;
+class ResourceDescription;
 
 namespace RFTS_ {
 
@@ -50,7 +51,7 @@ class Rfts : public ::Ruleset {
    virtual void onPlayerAdded(Player *player);
 
    static const ProductionInfo& getProductionInfo();
-   
+
  private:    
    
    void setObjectTypes() const;
@@ -58,16 +59,16 @@ class Rfts : public ::Ruleset {
 
    void createProperties();
    void createComponents();
-   void createResources() const;
+   void createResources();
+   std::pair<ResourceDescription*,ResourceDescription*> createPdbResource(char level) const;
 
    void createUniverse();
-   IGObject* createStarSystem(IGObject& universe, const std::string& name, const Vector3d& location,
-                           const std::vector<std::string>& planetNames);
-   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name, const Vector3d& location);
+   IGObject* createStarSystem(IGObject& universe, const std::string& name,
+                           double unitX, double unitY);
+   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
+                            const Vector3d& location);
 
-   static const uint32_t MAX_PLAYERS = 4; // to be data-driven?
-
-   std::map<std::string, uint32_t> designIndex;
+   IGObject* choosePlayerPlanet() const;
 };
 
 Component* createEngineComponent(char techLevel);

@@ -24,9 +24,9 @@
 
 #include "staticobject.h"
 #include "ownedobject.h"
+#include "resourcelistparam.h"
 
 class ReferenceObjectParam;
-class ResourceListParam;
 class OrderQueueObjectParam;
 class IntegerObjectParam;
 
@@ -59,8 +59,10 @@ class Planet : public StaticObject, public OwnedObject {
    const std::pair<uint32_t, uint32_t> getResource(uint32_t resTypeId) const;
    const std::pair<uint32_t, uint32_t> getResource(const std::string& resTypName) const;
 
-   void setResource(uint32_t resTypeId, uint32_t currentVal = 0, uint32_t maxVal = 0);
-   void setResource(const std::string& resType, uint32_t currentVal = 0, uint32_t maxVal = 0);
+   void setResource(uint32_t resTypeId, uint32_t currentVal,
+                     uint32_t maxVal = ResourceListParam::KEEP_VAL);
+   void setResource(const std::string& resType, uint32_t currentVal,
+                     uint32_t maxVal = ResourceListParam::KEEP_VAL);
     
    void addResource(uint32_t resTypeId, uint32_t amount);
    void addResource(const std::string& resTypeName, uint32_t amount);
@@ -72,12 +74,12 @@ class Planet : public StaticObject, public OwnedObject {
 
    void calcRP();
    void calcPopuation();
+   void upgradePdbs();
  
    ReferenceObjectParam * playerref;
    ResourceListParam* resources;
    OrderQueueObjectParam * orderqueue;
 
-   IntegerObjectParam *resourcePoints;
 };
 
 

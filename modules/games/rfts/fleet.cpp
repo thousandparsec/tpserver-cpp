@@ -17,6 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#include <cassert>
+ 
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/object.h>
@@ -37,16 +40,17 @@
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/objectparametergroup.h>
-
+#include <tpserver/prng.h>
 #include <tpserver/refsys.h>
 
-#include "nop.h"
 #include "move.h"
 #include "renamefleet.h"
 #include "splitfleet.h"
 #include "containertypes.h"
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
+#include "planet.h"
 
 #include "fleet.h"
 
@@ -56,6 +60,7 @@ using std::map;
 using std::set;
 using std::pair;
 using std::string;
+using std::list;
 
 Fleet::Fleet() {
    nametype = "Fleet";
@@ -119,17 +124,27 @@ int Fleet::getDamage() const {
 
 void Fleet::setDamage(int newDmg) {
    damage->setValue(newDmg);
+
+   destroyShips(armour == 0 ? 99999 : newDmg*.125f / armour);
 }
 
 void Fleet::takeDamage(int dmg) {
-   damage->setValue( damage->getValue() - dmg );
+   setDamage( damage->getValue() + dmg );
 }
 
 void Fleet::setVelocity(const Vector3d& nv) {
    velocity->setVelocity(nv);
 }
 
-void Fleet::setOrderTypes() {
+const double Fleet::getAttack() const {
+   return attack;
+}
+
+const double Fleet::getSpeed() const {
+   return speed;
+}
+
+void Fleet::setOrderTypes(bool addColonise, bool addBombard) {
    OrderManager *om = Game::getGame()->getOrderManager();
    std::set<uint32_t> allowedList;
    allowedList.insert(om->getOrderTypeByName("Move"));
@@ -137,10 +152,15 @@ void Fleet::setOrderTypes() {
    allowedList.insert(om->getOrderTypeByName("Merge Fleet"));
    allowedList.insert(om->getOrderTypeByName("Rename Fleet"));
 
-   if(hasTransports) // TODO check that we're in a position to transport
+   if(addColonise)
       allowedList.insert(om->getOrderTypeByName("Colonise"));
+      
+   if(addBombard)
+      allowedList.insert(om->getOrderTypeByName("Bombard"));
    
    orders->setAllowedOrders(allowedList);
+   
+   touchModTime();
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number) {
@@ -154,20 +174,22 @@ void Fleet::addShips(uint32_t type, uint32_t number) {
 }
 
 bool Fleet::removeShips(int type, uint32_t number){
-  map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
-  if(ships[pair<int32_t, uint32_t>(rst_Design, type)] >= number){
-    ships[pair<int32_t, uint32_t>(rst_Design, type)] -= number;
-    if(ships[pair<int32_t, uint32_t>(rst_Design, type)] == 0){
-      ships.erase(pair<int32_t, uint32_t>(rst_Design, type));
-    }
-    shipList->setRefQuantityList(ships);
+   map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
+   if(ships[pair<int32_t, uint32_t>(rst_Design, type)] >= number)
+   {
+      ships[pair<int32_t, uint32_t>(rst_Design, type)] -= number;
+      
+      if(ships[pair<int32_t, uint32_t>(rst_Design, type)] == 0)
+         ships.erase(pair<int32_t, uint32_t>(rst_Design, type));
 
-   recalcStats();
+      shipList->setRefQuantityList(ships);
 
-    touchModTime();
-    return true;
-  }
-  return false;
+      recalcStats();
+
+      touchModTime();
+      return true;
+   }
+   return false;
 }
 
 int Fleet::numShips(int type){
@@ -195,17 +217,8 @@ int Fleet::totalShips() const{
   return num;
 }
 
-
-const double Fleet::getSpeed() const {
-   return speed;
-}
-
-const double Fleet::getAttack() const {
-   return attack;
-}
-
-const double Fleet::getArmour() const {
-   return armour;
+const bool Fleet::isDead() const {
+   return totalShips() == 0;
 }
 
 void Fleet::recalcStats() {
@@ -213,18 +226,20 @@ void Fleet::recalcStats() {
 
    DesignStore *ds = Game::getGame()->getDesignStore();
    speed = armour = attack = 0;
+   
+   hasTransports = false;
 
    for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
-         i != shipsref.end(); ++i) //ships[i->first.second] = i->second;
+         i != shipsref.end(); ++i)
    {
       Design *d = ds->getDesign(i->first.second);
       
-      if(d->getPropertyValue(ds->getPropertyByName("Speed")) > speed)
+      if(speed == 0 || d->getPropertyValue(ds->getPropertyByName("Speed")) < speed)
          speed = d->getPropertyValue(ds->getPropertyByName("Speed"));
       if(d->getPropertyValue(ds->getPropertyByName("Attack")) > attack)
-         attack = d->getPropertyValue(ds->getPropertyByName("Attack"));
+         attack =+ d->getPropertyValue(ds->getPropertyByName("Attack"));
       if(d->getPropertyValue(ds->getPropertyByName("Armour")) > armour)
-         armour = d->getPropertyValue(ds->getPropertyByName("Armour"));
+         armour =+ d->getPropertyValue(ds->getPropertyByName("Armour"));
 
       if(d->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.)
         hasTransports = true;
@@ -253,17 +268,29 @@ void Fleet::packExtraData(Frame *frame) {
 
 void Fleet::doOnceATurn(IGObject *obj) {
 
+   if(obj->getParent() == 0) // fleet is in transit, no updates apply
+      return;
+
    // TODO
    // if in a star sys with an opposing fleet
-   //    then set attack order
-   //    else remove attack order
+   //    then do combat
    // else (no opposing fleet here)
    //    then if opposing planet is present
    //       then add bombard order
    //       else remove bombard order
    //    add colonise order
 
-   // touchModTime();
+   //check for opposing fleets
+   list<IGObject*> opposingFleets;
+   bool hasOpposingPlanet = setOpposingFleets(obj, opposingFleets);
+
+   if(!opposingFleets.empty())
+   {
+      if(doCombat(opposingFleets))
+         Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
+   }
+
+   setOrderTypes(hasTransports, hasOpposingPlanet && attack != 0);
 }
 
 int Fleet::getContainerType() {
@@ -274,10 +301,112 @@ ObjectData* Fleet::clone() const {
    return new Fleet();
 }
 
+bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
+
+   Game *game = Game::getGame();
+   ObjectManager *om = game->getObjectManager();
+
+   set<uint32_t> possibleFleets = om->getObject(obj->getParent())->getContainedObjects();
+   uint32_t fleetType = obj->getType();
+
+   bool hasOpposingPlanet = false;
+   
+   for(set<uint32_t>::iterator i = possibleFleets.begin(); i != possibleFleets.end(); ++i)
+   {
+      IGObject *objI = om->getObject(*i);
+      if(objI->getType() == fleetType)
+      {
+         Fleet* fleetDataI = dynamic_cast<Fleet*>(objI->getObjectData());
+         assert(fleetDataI);
+         if(fleetDataI->getOwner() != this->getOwner()) // TODO - ignore dead fleets
+            fleets.push_back(objI);
+      }
+      else
+      {
+         OwnedObject *owned = dynamic_cast<OwnedObject*>(objI->getObjectData());
+         assert(owned);
+         if(owned->getOwner() != 0 && owned->getOwner() != this->getOwner())
+            hasOpposingPlanet = true;
+      }
+   }
+
+   return hasOpposingPlanet;
+}
+
+bool Fleet::doCombat(list<IGObject*>& fleets) {
+   touchModTime();
+
+   // while !fleets.empty && !dead
+      // attack each fleet
+      // get attacked by each fleet
+      // remove dead fleets
+
+   ObjectManager *om = Game::getGame()->getObjectManager();
+   list< list<IGObject*>::iterator > killed;
+
+   while(!fleets.empty() && !isDead() && attack != 0)
+   {
+      for(list<IGObject*>::iterator i = fleets.begin(); i != fleets.end(); ++i)
+      {
+         Fleet *fleet = dynamic_cast<Fleet*>((*i)->getObjectData());
+         attackFleet(fleet);
+         fleet->attackFleet(this);
+
+         if(fleet->isDead())
+         {
+            killed.push_back(i);
+            om->scheduleRemoveObject((*i)->getID());
+         }
+      }
+
+      for(list< list<IGObject*>::iterator >::iterator i = killed.begin(); i != killed.end(); ++i)
+         fleets.erase(*i);
+
+      killed.clear();
+   }
+
+   return isDead();
+}
+
+void Fleet::attackFleet(Fleet* opp) {
+   opp->takeDamage(static_cast<uint32_t>(attack));
+   PlayerInfo::getPlayerInfo(getOwner()).addVictoryPoints(static_cast<uint32_t>(attack));
+}
+
+void Fleet::destroyShips(double intensity) {
+   Random *rand = Game::getGame()->getRandom();
+
+   map<int,int> ships = getShips();
+
+   map<int,int>::iterator i = ships.begin();
+
+   std::advance(i, rand->getInRange(static_cast<uint32_t>(0), ships.size()));
+
+   int shipType = i->first;
+   DesignStore *ds = Game::getGame()->getDesignStore();
+   Design *d = ds->getDesign(shipType);
+
+   
+   double shipArmour = d->getPropertyValue(ds->getPropertyByName("Armour"));
+
+   if(shipArmour == 0)
+   {
+      removeShips(shipType, rand->getInRange(static_cast<uint32_t>(1),
+                                             static_cast<uint32_t>(numShips(shipType)/2.)));
+   }
+   else
+   {
+      shipArmour =  1.f / shipArmour;
+   
+      int shipNum = static_cast<int>(intensity * rand->getReal2() * shipArmour);
+
+      removeShips(shipType, shipNum);
+   }
+   
+}
 
 
-IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name)
-{
+IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name) {
    Game *game = Game::getGame();
    IGObject *fleet = game->getObjectManager()->createNewObject();
       
@@ -292,7 +421,7 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    fleetData->setOwner(player->getID());
 
    // Place the fleet in orbit around the given star
-   fleetData->setPosition( dynamic_cast<StaticObject*>(starSys->getObjectData())->getPosition());
+   fleetData->setUnitPos( dynamic_cast<StaticObject*>(starSys->getObjectData())->getUnitPos());
    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
    
    OrderQueue *fleetoq = new OrderQueue();
@@ -306,26 +435,68 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
 
    fleet->addToParent(starSys->getID());
 
+   exploreStarSys(fleet);
+
    return fleet;
 }
 
-pair<IGObject*,uint32_t> createFleet(Player *player, IGObject* starSys, const string& name,
-                        const map<uint32_t, uint32_t>& ships, uint32_t availableRP) {
+IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
+                      const map<uint32_t, uint32_t>& ships) {
+   IGObject* fleet = createEmptyFleet(player, starSys, name);
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   
+   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+      fleetData->addShips(i->first, i->second);
+
+   return fleet;
+}
+
+pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const map<uint32_t, uint32_t>& ships, Planet *planetData) {
+                      
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
 
-   uint32_t usedRP = 0;
+   bool complete = true;
 
-   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin();
-       i != ships.end() &&
-       (usedRP += Rfts::getProductionInfo().getResourceCost(
-                  Game::getGame()->getDesignStore()->getDesign(i->first)->getName())) < availableRP; ++i)
+   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
    {
-      fleetData->addShips(i->first, i->second);
+      uint32_t designCost = Rfts::getProductionInfo().getResourceCost(
+                  Game::getGame()->getDesignStore()->getDesign(i->first)->getName());
+
+      PlayerInfo &pi = PlayerInfo::getPlayerInfo(player->getID());
+      // handle transport creation a lil' different
+      if(pi.getTransportId() == i->first)
+      {
+         // CHECK - this assumes(!) you have enough for a _single_ transport
+         // the colonist assumption should be safe due to previous limiting (generate list)
+         
+         fleetData->addShips(i->first, i->second);
+         planetData->removeResource("Resource Point", designCost); // only 1 transport
+         planetData->removeResource("Colonist", i->second); // remove colonists
+         
+      }
+      else // normal creation
+      {
+         uint32_t numShips = i->second;
+         unsigned usedRP = designCost * numShips;
+         
+         if(usedRP > planetData->getCurrentRP())
+         {
+            complete = false;
+            numShips = planetData->getCurrentRP() / designCost;
+            usedRP = designCost * numShips;
+         }
+         
+         fleetData->addShips(i->first, numShips);
+         planetData->removeResource("Resource Point", usedRP);
+
+         pi.addVictoryPoints(static_cast<uint32_t>(usedRP * 3./4));
+      }
+
    }
 
-   return pair<IGObject*, uint32_t>(fleet, usedRP);
+   return pair<IGObject*, bool>(fleet, complete);
 }
-
 
 }

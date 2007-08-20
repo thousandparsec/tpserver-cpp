@@ -22,6 +22,7 @@
 
 
 #include <string>
+#include <utility>
 
 #include <tpserver/vector3d.h>
 #include <tpserver/objectdata.h>
@@ -35,7 +36,11 @@ class StaticObject:public ObjectData {
  public:
    StaticObject();
    virtual ~StaticObject() {};
-        
+
+   void setUnitPos(double unitX, double unitY);
+   void setUnitPos(const std::pair<double,double>& unitPos);
+   std::pair<double,double> getUnitPos() const;
+   
    Vector3d getPosition() const;
    void setPosition(const Vector3d & np);
 
@@ -52,6 +57,7 @@ class StaticObject:public ObjectData {
    void setTypeDescription(const std::string& d);
    
  private:
+   double unitX, unitY;
    Position3dObjectParam * pos;
    SizeObjectParam * size;
 

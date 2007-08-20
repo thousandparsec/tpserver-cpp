@@ -29,6 +29,7 @@
 
 #include "fleet.h"
 #include "planet.h"
+#include "playerinfo.h"
 
 #include "colonise.h"
 
@@ -63,14 +64,14 @@ bool Colonise::doOrder(IGObject *obj) {
    
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
-   DesignStore *ds = game->getDesignStore();
    
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
 
    IGObject *planetObj = om->getObject(planet->getObjectId());
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
 
-   Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player *attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player *defender = NULL;
    
    Message *msg = new Message();
    
@@ -82,25 +83,49 @@ bool Colonise::doOrder(IGObject *obj) {
    }
    else
    {
-      // FIXME
-      uint32_t transId = 3; // ds->getDesignByName("Transport")->getDesignId();
-      fleetData->removeShips(transId, fleetData->numShips(transId));
+      uint32_t transId = PlayerInfo::getPlayerInfo(attacker->getID()).getTransportId();
+      uint32_t colonists = fleetData->numShips(transId);
+      fleetData->removeShips(transId, colonists);
 
-      // TODO - check population of planet against number of colonists
-      planetData->setOwner(player->getID());
+      if(planetData->getOwner() != 0) // make sure the owner exists
+         defender = game->getPlayerManager()->getPlayer(planetData->getOwner());
+      string msgBody = string("Colonists from ") + attacker->getName() + "'s fleet " + obj->getName();
+
+      if(fleetData->totalShips() == 0)
+         om->scheduleRemoveObject(obj->getID());
+
+      // colonists attack planet
+      planetData->removeResource("Population", static_cast<uint32_t>(colonists * 4.f/3));
+
+      // check for take over
+      if(colonists >= planetData->getResource("Population").first / 2)
+      {
+         planetData->setOwner(attacker->getID());
+         msgBody += string(" colonised ")  + planetObj->getName();
+         PlayerInfo::getPlayerInfo(attacker->getID()).addVictoryPoints(VICTORY_POINTS_COLONISE);
+      }
+      else
+      {
+         msgBody += string(" attacked, but failed to colonise ") + planetObj->getName();
+         PlayerInfo::getPlayerInfo(attacker->getID()).addVictoryPoints(VICTORY_POINTS_ATTACK);
+      }
+
+      msg->setBody(PlayerInfo::appAllVictoryPoints(msgBody));
 
       msg->setSubject("Colonise order complete");
-      msg->setBody(string("Transports from ") + obj->getName() + " colonised "  + planetObj->getName());
       msg->addReference(rst_Action_Order, rsorav_Completion);
-
    }
+
 
    om->doneWithObject(planetObj->getID());
 
    msg->addReference(rst_Object, planetObj->getID());
    msg->addReference(rst_Object, obj->getID());
    
-   player->postToBoard(msg);
+   attacker->postToBoard(msg);
+   if(defender != NULL)
+      defender->postToBoard(msg);
+      
 
    return true;
 }

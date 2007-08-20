@@ -18,6 +18,7 @@
  *
  */
 
+#include <cmath>
 #include <map>
 
 #include <tpserver/frame.h>
@@ -39,9 +40,9 @@
 
 #include "resourcelistparam.h"
 #include "containertypes.h"
-#include "nop.h"
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
 
 #include "planet.h"
 
@@ -119,15 +120,23 @@ void Planet::setOrderTypes() {
 
 void Planet::doOnceATurn(IGObject* obj) {
 
-   // next turn is odd - do RP production
-   if(Game::getGame()->getTurnNumber() % 2 == 0)
+   unsigned turn = Game::getGame()->getTurnNumber() % 3;
+
+   if(getOwner() != 0)
    {
-      // calc RP for next turn
-      calcRP();
-   }
-   else // this turn was odd - take care of prod. order
-   {
-      calcPopuation();
+      if(turn == 0) // next turn is 0 - do RP production
+      {
+         // calc RP for next turn
+         calcRP();
+      }
+      else if(turn == 1) // just did a prod. turn
+      {
+         calcPopuation();
+         upgradePdbs();
+      }
+
+      resources->setResource("Ship Technology", 0,
+                           PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
    }
 
    setOrderTypes();
@@ -136,32 +145,61 @@ void Planet::doOnceATurn(IGObject* obj) {
 }
 
 void Planet::calcRP() {
+   pair<uint32_t,uint32_t> popn = resources->getResource("Population");
    resources->setResource("Resource Point",
-         (resources->getResource("Population").first * 2) +
+         ( std::min(popn.first, popn.second) * 2) +
          (resources->getResource("Industry").first * resources->getResource("Social Environment").first) 
                                              / 16);
 }
 
 void Planet::calcPopuation() {
-   uint32_t newPop = resources->getResource("Population").first;
+
+   Random *rand = Game::getGame()->getRandom();
+
+   int newPop = resources->getResource("Population").first;
    const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
    pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
 
             // social + midpoint of difference of percentage of planetary and social
-   social.first = static_cast<uint32_t>(social.first + .5 *
-                   ((planetary.first / planetary.second) - (social.first / social.second)));
+   social.first = static_cast<uint32_t>( social.first + .125 *
+                   ((static_cast<double>(planetary.first) / planetary.second) -
+                    (static_cast<double>(social.first) / social.second))) ;
 
    uint32_t& popMaint = resources->getResource("Population Maintenance").first;
 
-   if(newPop != 0)
-      newPop *= (popMaint / newPop);
+   // add in a lil' randomness
+   popMaint += static_cast<uint32_t>(popMaint * (rand->getInRange(-50,125) / 1000.) );
+
+   if(newPop != 0 && static_cast<int>(popMaint) < newPop)
+      newPop -= (newPop - popMaint ) / 3;
 
    popMaint = 0; // use up maint points
    
       // social < 40 => pop goes down, else goes up
-   newPop *= static_cast<uint32_t>((social.first / 40.) / 10.);
+   newPop += static_cast<int>( newPop * ((social.first - 40) / 9.) );
 
-   resources->setResource("Population", newPop);
+   if(newPop < 0)
+      newPop = 0;
+
+   resources->setResource("Population", static_cast<uint32_t>(newPop) );
+}
+
+void Planet::upgradePdbs() {
+   if(PlayerInfo::getPlayerInfo(getOwner()).upgradePdbs())
+   {
+      const char techLevel = PlayerInfo::getPlayerInfo(getOwner()).getShipTechLevel();
+      uint32_t totalPdbs = 0;
+
+      // just in case they skip a tech level, make sure we upgrade any/all pdbs
+      for(char oldTech = static_cast<char>(techLevel - 1); oldTech >= '1'; oldTech--)
+      {
+         uint32_t oldPdbs = resources->getResource(string("PDB") + oldTech).first;
+         resources->setResource(string("PDB") + oldTech, 0);
+         totalPdbs += oldPdbs;
+      }
+
+      resources->setResource(string("PDB") + techLevel, totalPdbs);
+   }
 }
 
 int Planet::getContainerType() {
@@ -203,24 +241,17 @@ void Planet::setDefaultResources() {
 
    Random* rand = Game::getGame()->getRandom();
    const ProductionInfo& po = Rfts::getProductionInfo();
+
+   setSize(rand->getInRange(1,ProductionInfo::TOTAL_PLANET_TYPES - 1));
    
-   setResource("Resource Point", rand->getInRange(static_cast<uint32_t>(200), static_cast<uint32_t>(325)) );
+   ProductionInfo::PlanetType planetType = static_cast<ProductionInfo::PlanetType>(getSize());
    
-   setResource("Industry",
-               rand->getInRange(static_cast<uint32_t>(5), po.getMinResources("Industry")*3/4),
-               po.getRandResourceVal("Industry"));
-                        
-   setResource("Population",
-               rand->getInRange(static_cast<uint32_t>(10), po.getMinResources("Population")*3/4),
-               po.getRandResourceVal("Population"));
-                        
-   setResource("Social Environment",
-               rand->getInRange(static_cast<uint32_t>(15), po.getMinResources("Social Environment")*3/4),
-               po.getRandResourceVal("Social Environment"));
-                        
-   setResource("Planetary Environment",
-               rand->getInRange(static_cast<uint32_t>(5),po.getMinResources("Planetary Environment")*3/4),
-               po.getRandResourceVal("Planetary Environment"));
+   setResource("Resource Point", 0, 0);
+   setResource("Industry", 0,  po.getRandResourceVal("Industry", planetType));
+   setResource("Population", 0, po.getRandResourceVal("Population", planetType));
+   setResource("Social Environment", 0, po.getRandResourceVal("Social Environment", planetType));
+   setResource("Planetary Environment", 0, po.getRandResourceVal("Planetary Environment", planetType));
+
 }
 
 const uint32_t Planet::getCurrentRP() const {

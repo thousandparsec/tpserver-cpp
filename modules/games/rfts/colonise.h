@@ -39,6 +39,9 @@ class Colonise : public ::Order {
 
  private:
    ObjectOrderParameter *planet;
+
+   static const unsigned VICTORY_POINTS_ATTACK = 25;
+   static const unsigned VICTORY_POINTS_COLONISE = 125;
 };
 }
 

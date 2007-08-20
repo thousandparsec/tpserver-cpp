@@ -1,6 +1,6 @@
-#ifndef ownedobject_H
-#define ownedobject_H
-/*  ownedobject class
+#ifndef map_H
+#define map_H
+/*  map class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
@@ -20,20 +20,21 @@
  *
  */
 
+
+#include <tpserver/vector3d.h>
+
 namespace RFTS_ {
 
-class OwnedObject
-{
- public:
-   OwnedObject() {}
-   virtual ~OwnedObject() {}
+class StaticObject;
 
-   virtual uint32_t getOwner() const = 0;
-   virtual void setOwner(uint32_t no) = 0;
-};
 
-void exploreStarSys(IGObject* obj);
+const Vector3d getUniverseCoord(double unitX, double unitY);
+const Vector3d getUniverseCoord(const std::pair<double,double>& unitPos);
 
+const Vector3d getRandPlanetOffset();
+
+const double getWrappingUnitDist(const StaticObject& obj1, const StaticObject& obj2);
+const unsigned getWrappingDistSq(const StaticObject& obj1, const StaticObject& obj2);
 
 }
 

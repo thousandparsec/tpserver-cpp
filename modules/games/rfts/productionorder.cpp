@@ -23,15 +23,21 @@
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/frame.h>
+#include <tpserver/message.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/listparameter.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/designstore.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/player.h>
+
 
 #include "rfts.h"
 #include "productioninfo.h"
+#include "playerinfo.h"
 #include "planet.h"
 
 #include "productionorder.h"
@@ -53,6 +59,8 @@ ProductionOrder::ProductionOrder() {
             &ProductionOrder::generateListOptions));
    
    addOrderParameter(productionList);
+
+   turns = 0;
 }
 
 ProductionOrder::~ProductionOrder() {
@@ -72,11 +80,27 @@ map<uint32_t, pair<string, uint32_t> >ProductionOrder::generateListOptions() {
    
    game->getObjectManager()->doneWithObject(selectedObj->getID());
 
+   char pdbLevel = PlayerInfo::getPlayerInfo(planet->getOwner()).getShipTechLevel();
+
+   // PDBs actually only go up to 3
+   if(pdbLevel == '4')
+      pdbLevel = '3';
+
+   string pdbName = string("PDB") + pdbLevel;
+
    setOption(options, "Industry", planet);
    setOption(options, "Social Environment", planet);
    setOption(options, "Planetary Environment", planet);
    setOption(options, "Population Maintenance", planet);
+   setOption(options, pdbName, planet);
+   setOption(options, pdbName + " Maintenance", planet);
    setOption(options, "Colonist", planet);
+   setOption(options, "Ship Technology", planet);
+
+   if(options[Game::getGame()->getResourceManager()->
+      getResourceDescription("Ship Technology")->getResourceType()].second > 100)
+         options[Game::getGame()->getResourceManager()->
+            getResourceDescription("Ship Technology")->getResourceType()].second = 100;
    
    return options;
 }
@@ -91,6 +115,7 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
 }
 
 void ProductionOrder::createFrame(Frame *f, int pos) {
+   turns = 1;
    Order::createFrame(f, pos);
 }
 
@@ -106,15 +131,52 @@ bool ProductionOrder::doOrder(IGObject *obj) {
    assert(planet);
 
    map<uint32_t, uint32_t> list = productionList->getList();
+   planet->setResource("Ship Technology", 0);
+
+   uint32_t totalRPUsed = 0;
+   std::ostringstream resourcesAddedMsg;
    
    for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
    {
       // remove the RPs for this each of this resource
       string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();
       uint32_t resCost = Rfts::getProductionInfo().getResourceCost(resTypeName);
+      uint32_t rpUsed = resCost * i->second;
 
-      planet->removeResource("Resource Point", i->second * resCost);
+      // get VP if we're constructing a PDB
+      if(resTypeName.find("PDB") != string::npos)
+         PlayerInfo::getPlayerInfo(planet->getOwner()).addVictoryPoints(rpUsed);
+
+      totalRPUsed += rpUsed;
+
+      resourcesAddedMsg << "Added " << i->second <<  " " << resTypeName << " for "
+                        << rpUsed << ", at " << resCost << " per" << "<br />";
+
+      planet->removeResource("Resource Point", rpUsed);
       planet->addResource(i->first, i->second);
+   }
+
+   resourcesAddedMsg << "Total RP used: " << totalRPUsed;
+
+   PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
+
+   Message *msg = new Message();
+   msg->setSubject("Production complete");
+   msg->setBody( "Your production order has been completed at " + obj->getName() + "<br /><br />" +
+                  resourcesAddedMsg.str() );
+   msg->addReference(rst_Action_Order, rsorav_Completion);
+   msg->addReference(rst_Object, obj->getID());
+   game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(msg);
+
+   if(pi.addShipTech(planet->getResource("Ship Technology").first))
+   {
+      Message *upgradeMsg = new Message();
+      upgradeMsg->setSubject("Ship Technology");
+      upgradeMsg->setBody(string("Your ship technology level has just increased to level : ") +
+                           pi.getShipTechLevel() + string("<br />") +
+                           string("You can now make Mark ") + pi.getShipTechLevel() + "s and\
+                            your PDBs have been upgraded.");
+      game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(upgradeMsg);
    }
 
    return true;

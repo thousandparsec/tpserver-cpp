@@ -35,6 +35,8 @@ class Player;
 
 namespace RFTS_ {
 
+class Planet;
+
 class Fleet : public StaticObject, public OwnedObject
 {
  public:
@@ -48,21 +50,23 @@ class Fleet : public StaticObject, public OwnedObject
    void setDamage(int nd);
    void takeDamage(int dmg);
 
+   const double getAttack() const;
+   const double getSpeed() const;
+
    void setVelocity(const Vector3d& v);
 
-   const double getSpeed() const;
-   const double getAttack() const;
-   const double getArmour() const;
 
    void recalcStats();
    
-   void setOrderTypes();
+   void setOrderTypes(bool addColonise = false, bool addBombard = false);
 
    void addShips(uint32_t type, uint32_t number);
    bool removeShips(int type, uint32_t number);
    int numShips(int type);
    std::map<int,int> getShips() const;
    int totalShips() const;
+
+   const bool isDead() const;
          
    virtual void packExtraData(Frame * frame);   
    virtual void doOnceATurn(IGObject * obj);   
@@ -74,6 +78,11 @@ class Fleet : public StaticObject, public OwnedObject
 
    double speed, attack, armour;
    bool hasTransports;
+
+   bool setOpposingFleets(IGObject* thisObj, std::list<IGObject*>& fleets);
+   bool doCombat(std::list<IGObject*>& fleets);
+   void attackFleet(Fleet* opponent);
+   void destroyShips(double intensity);
  
    Velocity3dObjectParam *velocity;
    ReferenceObjectParam *player;
@@ -85,8 +94,10 @@ class Fleet : public StaticObject, public OwnedObject
 
 //helper functions
 IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
-std::pair<IGObject*, uint32_t> createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const std::map<uint32_t, uint32_t>& ships, uint32_t availableRP = 0xFFFFFF);
+IGObject* createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const std::map<uint32_t, uint32_t>& ships);
+std::pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+                      const std::map<uint32_t, uint32_t>& ships, Planet *planetData);
 
 }
 

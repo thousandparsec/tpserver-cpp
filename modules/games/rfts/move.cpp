@@ -26,16 +26,20 @@
 #include <tpserver/object.h>
 #include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/objectdatamanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
 #include <tpserver/message.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/logging.h>
 
 #include "ownedobject.h"
 #include "fleet.h"
 #include "planet.h"
+
+#include "map.h"
 
 #include "move.h"
 
@@ -66,41 +70,48 @@ Order* Move::clone() const {
 }
 
 void Move::createFrame(Frame *f, int pos) {
-
-   if(calcTurns)
-   {
-      calcTurns = false;
-      firstTurn = true;
-      
-      Game *game = Game::getGame();
-      ObjectManager *om = game->getObjectManager();
-
-      IGObject *fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
-      Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-      StaticObject* starSysData =
-          dynamic_cast<StaticObject*>(om->getObject(starSys->getObjectId())->getObjectData());
-
-      //TODO change planet locations to their owning star sys, ignore other locations
-
-      if(starSysData != NULL && fleetData != NULL)
-         //TODO need to calculate speed of fastest ship in fleet and do real calc below
-         turns = static_cast<uint32_t>((fleetData->getPosition().getDistanceSq(starSysData->getPosition()) /
-                                          (1000000000. * 100000000.)) + .5);
-      else
-         starSys->setObjectId(fleet->getParent()); // ignore invalid move locations
-
-      om->doneWithObject(fleet->getID());
-   }
-
    Order::createFrame(f, pos);
 }
 
 Result Move::inputFrame(Frame *f, uint32_t playerid) {
-   return Order::inputFrame(f, playerid);
+   Result r = Order::inputFrame(f, playerid);
+   if(!r) return r;
 
+   firstTurn = true;
    turns = 0;
-   calcTurns = true;
+      
+   Game *game = Game::getGame();
+   ObjectManager *om = game->getObjectManager();
+   ObjectDataManager *odm = game->getObjectDataManager();
+   
+
+   IGObject *fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   assert(fleetData != NULL);
+
+   IGObject *starSysObj = om->getObject(starSys->getObjectId());
+
+   // if they chose a planet, set to the owning star sys
+   if(starSysObj->getType() == odm->getObjectTypeByName("Planet"))
+   {
+      starSys->setObjectId(starSysObj->getParent());
+      Logger::getLogger()->debug("Player trying to move to planet, setting to planet's star sys");
+   }
+   // if they're just crazy, reset to current position
+   else if(starSysObj->getType() != odm->getObjectTypeByName("Star System"))
+   {
+      starSys->setObjectId(fleet->getParent());
+      Logger::getLogger()->debug("Player made illogical move order, resetting move to current pos");
+   }
+
+   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSysObj->getObjectData());
+   
+   turns = static_cast<uint32_t>(getWrappingUnitDist(*fleetData, *starSysData) / fleetData->getSpeed()  + .5);
+   
+   om->doneWithObject(fleet->getID());
+
+   return Success();
 }
 
 bool Move::doOrder(IGObject * obj) {
@@ -109,7 +120,6 @@ bool Move::doOrder(IGObject * obj) {
    if(firstTurn)
    {
       firstTurn = false;
-      leaveStarSys(obj);
       obj->removeFromParent();
    }
 
@@ -122,15 +132,13 @@ bool Move::doOrder(IGObject * obj) {
 
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
       obj->addToParent(starSys->getObjectId());
-      fleetData->setPosition(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getPosition());
+      fleetData->setUnitPos(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getUnitPos());
 
       newStarSys->touchModTime();
       om->doneWithObject(newStarSys->getID());
 
       Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
-      exploreStarSys(obj);
-   
       // post completion message
       Message * msg = new Message();
       msg->setSubject("Move fleet order complete");
