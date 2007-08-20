@@ -128,9 +128,9 @@ void RftsTurn::doTurn() {
       
       if( game->getTurnNumber() ==
             static_cast<unsigned>(strtol(Settings::getSettings()->get("game_length").c_str(), NULL, 10)) )
-         body = "Overwhelming victory by: ";
-      else
          body = "Game length elapsed, winner is: ";
+      else
+         body = "Overwhelming victory by: ";
          
       body += winner->getName();
       gameOver->setBody(PlayerInfo::appAllVictoryPoints(body));
@@ -167,7 +167,7 @@ Player* RftsTurn::getWinner() {
    
    
    // check for overwhelming victory (only if we're reasonablly started)
-   if(game->getTurnNumber() > gameLength / 4)
+   if(game->getTurnNumber() > gameLength / 4.)
    {
       set<uint32_t> players = game->getPlayerManager()->getAllIds();
       for(set<uint32_t>::iterator i = players.begin(); i!= players.end(); ++i)
@@ -181,10 +181,10 @@ Player* RftsTurn::getWinner() {
          }
       }
 
-      // only save if we're in an overwhelming victory state
-      // or game is over
-      if(! (highestScore > nextHighest * 2.5 ||
-            game->getTurnNumber() == gameLength) )
+      // clear 'winner' if: NOT in an overwhelming victory state
+      // or                game is NOT over
+      if( highestScore < (nextHighest * 2.5) ||
+          game->getTurnNumber() != gameLength )
          winner = NULL;
    }
 
