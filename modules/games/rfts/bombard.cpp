@@ -110,7 +110,7 @@ bool Bombard::doOrder(IGObject *fleet) {
    planetData->removeResource("Planetary Environment", 
                   static_cast<uint32_t>(attack * PLANETARY_DMG * (1+rand->getInRange(-2,2)/100.) ));
 
-   planetData->removeResource("PDB" + planetShipTech,
+   planetData->removeResource(string("PDB") + planetShipTech,
                   static_cast<uint32_t>(attack * PDB_DMG / 10. * (1+rand->getInRange(-2,2)/100.) ));
 
    PlayerInfo::getPlayerInfo(fleetData->getOwner()).addVictoryPoints(VICTORY_POINTS);
@@ -118,7 +118,7 @@ bool Bombard::doOrder(IGObject *fleet) {
 
    // PDBs counter-attack at: PDB level * 6 * numPDBs
    fleetData->takeDamage( (planetShipTech - '0') *
-                         6 * planetData->getResource("PDB" + planetShipTech).first);
+                         6 * planetData->getResource(string("PDB") + planetShipTech).first);
 
    Message *msg = new Message();
    msg->setSubject("Bombard complete");
