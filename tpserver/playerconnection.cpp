@@ -178,13 +178,12 @@ void PlayerConnection::login(){
             player->setComment(recvframe->unpackStdString());
             Frame *okframe = createFrame(recvframe);
             okframe->setType(ft02_OK);
-            okframe->packString("Account created and logged in.");
+            okframe->packString("Account created.");
             sendFrame(okframe);
             Logger::getLogger()->info("Account created ok for %s", username.c_str());
             playeragent = new PlayerAgent();
             playeragent->setPlayer(player);
             playeragent->setConnection(this);
-            status = 3;
           }else{
             Logger::getLogger()->info("Bad username or password in account creation");
             Frame *failframe = createFrame(recvframe);
