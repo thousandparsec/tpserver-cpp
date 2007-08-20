@@ -145,7 +145,9 @@ Player* PlayerManager::getPlayer(uint32_t id){
     }
     if(rtn == NULL){
         rtn = Game::getGame()->getPersistence()->retrievePlayer(id);
-        players[id] = rtn;
+        if(rtn != NULL){
+          players[id] = rtn;
+        }
     }
     return rtn;
 }
