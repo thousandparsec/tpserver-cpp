@@ -104,6 +104,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
          fleetData->addShips(i->first, i->second);
       }
       om->discardNewObject(newFleet);
+      newFleet->removeFromParent();
       msg->setBody("Fleet not split, not enough ships");
       msg->addReference(rst_Action_Order, rsorav_Incompatible);
    }
@@ -111,6 +112,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
    {
       Logger::getLogger()->debug("Split fleet doesn't have any ships, not creating new fleet");
       om->discardNewObject(newFleet);
+      newFleet->removeFromParent();
       msg->setBody("Fleet not split, not enough ships");
       msg->addReference(rst_Action_Order, rsorav_Incompatible);
    }
