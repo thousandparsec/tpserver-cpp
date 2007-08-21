@@ -164,6 +164,9 @@ void Fleet::setOrderTypes(bool addColonise, bool addBombard) {
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number) {
+   if(number == 0)
+      return;
+
    map<pair<int32_t, uint32_t>, uint32_t> ships = shipList->getRefQuantityList();
    ships[pair<int32_t, uint32_t>(rst_Design, type)] += number;
    shipList->setRefQuantityList(ships);
