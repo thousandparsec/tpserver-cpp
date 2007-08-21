@@ -87,7 +87,7 @@ void RftsTurn::doTurn() {
                j--; // list has been reordered
             }
             else
-               oq->updateFirstOrder(); // check
+               oq->updateFirstOrder(); // CHECK
          }
          currObj->touchModTime();
       }
@@ -111,13 +111,13 @@ void RftsTurn::doTurn() {
    }
 
    objectmanager->clearRemovedObjects();
+   
+   // update in case fleets were destroyed in combat
+   setPlayerVisibleObjects();
 
    set<uint32_t> players = pm->getAllIds();
    for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
       PlayerInfo::getPlayerInfo(*i).clearPdbUpgrade();
-
-   // update in case fleets were destroyed in combat
-   setPlayerVisibleObjects();
 
    Player* winner = getWinner();
    if(winner != NULL)

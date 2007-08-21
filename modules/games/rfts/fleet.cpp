@@ -271,15 +271,6 @@ void Fleet::doOnceATurn(IGObject *obj) {
    if(obj->getParent() == 0) // fleet is in transit, no updates apply
       return;
 
-   // TODO
-   // if in a star sys with an opposing fleet
-   //    then do combat
-   // else (no opposing fleet here)
-   //    then if opposing planet is present
-   //       then add bombard order
-   //       else remove bombard order
-   //    add colonise order
-
    //check for opposing fleets
    list<IGObject*> opposingFleets;
    bool hasOpposingPlanet = setOpposingFleets(obj, opposingFleets);
@@ -287,7 +278,9 @@ void Fleet::doOnceATurn(IGObject *obj) {
    if(!opposingFleets.empty())
    {
       if(doCombat(opposingFleets))
+      {
          Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
+      }
    }
 
    setOrderTypes(hasTransports, hasOpposingPlanet && attack != 0);
@@ -318,7 +311,7 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
       {
          Fleet* fleetDataI = dynamic_cast<Fleet*>(objI->getObjectData());
          assert(fleetDataI);
-         if(fleetDataI->getOwner() != this->getOwner()) // TODO - ignore dead fleets
+         if(fleetDataI->getOwner() != this->getOwner() && !fleetDataI->isDead())
             fleets.push_back(objI);
       }
       else

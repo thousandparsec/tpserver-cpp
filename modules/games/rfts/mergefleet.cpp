@@ -91,7 +91,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
       msg->setBody(string("Merged \"") + obj->getName() + "\" with \"" + otherFleetObj->getName());
       msg->addReference(rst_Action_Order, rsorav_Completion);
       
-      otherFleetObj->removeFromParent();
+      //otherFleetObj->removeFromParent(); CHECK
       om->scheduleRemoveObject(otherFleetObj->getID());
    }
 
