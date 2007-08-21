@@ -104,7 +104,6 @@ void Planet::setOrderTypes() {
    uint32_t turn = Game::getGame()->getTurnNumber() % 3;
    
    std::set<uint32_t> allowedlist;
-   allowedlist.insert(om->getOrderTypeByName("No Operation"));
 
    if(turn == 0) // 1st turn - allow production
    {
