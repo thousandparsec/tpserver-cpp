@@ -60,7 +60,7 @@ bool ListParameter::unpackFrame(Frame *f, unsigned int playerid){
   for(int i = 0; i < selsize; i++){
     f->unpackInt();
     std::string name = f->unpackStdString();
-    if(!f->isEnoughRemaining(8 + (selsize - i + 1) * 12))
+    if(!f->isEnoughRemaining(8 + (selsize - i - 1) * 12))
       return false;
     f->unpackInt(); 
   }
