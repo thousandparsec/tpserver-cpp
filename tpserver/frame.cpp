@@ -532,7 +532,7 @@ std::string Frame::unpackStdString(){
       unpackptr += 4-pad;
     }
   }
-  return std::string(cstr);
+  return std::string(cstr, 0, len);
 }
 
 long long Frame::unpackInt64()
