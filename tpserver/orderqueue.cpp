@@ -26,6 +26,7 @@
 #include "objectdata.h"
 #include "game.h"
 #include "persistence.h"
+#include "objectmanager.h"
 
 #include "orderqueue.h"
 
@@ -226,6 +227,13 @@ uint64_t OrderQueue::getModTime() const{
 
 void OrderQueue::touchModTime(){
   modtime = time(NULL);
+  if(objectid != 0){
+    IGObject* robj = Game::getGame()->getObjectManager()->getObject(objectid);
+    if(robj != NULL){
+      robj->touchModTime();
+      Game::getGame()->getObjectManager()->doneWithObject(objectid);
+    }
+  }
 }
 
 void OrderQueue::setModTime(uint64_t nmt){
