@@ -989,8 +989,8 @@ void PlayerAgent::processPostMessage(Frame * frame){
             // only filled under TP02
             frame->unpackInt();
         }
-    msg->setSubject(std::string(frame->unpackString()));
-    msg->setBody(std::string(frame->unpackString()));
+    msg->setSubject(frame->unpackStdString());
+    msg->setBody(frame->unpackStdString());
         if(frame->getVersion() >= fv0_3){
             frame->unpackInt(); // turn created - overwritten by current turn number
             uint32_t numrefs = frame->unpackInt();
@@ -1389,8 +1389,8 @@ void PlayerAgent::processAddDesign(Frame* frame){
   for(int i = 0; i < numcats; i++){
     frame->unpackInt();
   }
-  design->setName(std::string(frame->unpackString()));
-  design->setDescription(std::string(frame->unpackString()));
+  design->setName(frame->unpackStdString());
+  design->setDescription(frame->unpackStdString());
   frame->unpackInt(); //number in use, (client) read only
   design->setOwner(player->getID());
   unsigned int tpid = frame->unpackInt();
@@ -1441,8 +1441,8 @@ void PlayerAgent::processModifyDesign(Frame* frame){
   for(int i = 0; i < numcats; i++){
     frame->unpackInt();
   }
-  design->setName(std::string(frame->unpackString()));
-  design->setDescription(std::string(frame->unpackString()));
+  design->setName(frame->unpackStdString());
+  design->setDescription(frame->unpackStdString());
   frame->unpackInt(); //number in use, (client) read only
   design->setOwner(player->getID());
   unsigned int tpid = frame->unpackInt();

@@ -266,9 +266,8 @@ void PlayerTcpConnection::verCheck(){
         }
         if(readFrame(recvframe)){
           if(recvframe->getType() == ft02_Connect){
-            char* clientsoft = recvframe->unpackString();
-            Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, clientsoft);
-            delete[] clientsoft;
+            std::string clientsoft = recvframe->unpackStdString();
+            Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, clientsoft.c_str());
             
             status = 2;
             
