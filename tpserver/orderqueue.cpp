@@ -146,6 +146,7 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
     if(ord != NULL){
       delete ord;
       orderlist.erase(itpos);
+      ordercache.erase(orderid);
       Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
       Game::getGame()->getPersistence()->saveOrderQueue(this);
       touchModTime();
