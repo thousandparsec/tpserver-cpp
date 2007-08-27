@@ -307,43 +307,6 @@ void Frame::enablePaddingStrings(bool on){
   padstrings = on;
 }
 
-bool Frame::packString(const char *str)
-{
-  int slen = strlen(str);
-
-  int netlen = htonl(slen);
-  char *temp = (char *) realloc(data, length + 4 + slen + 3);
-  
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-    
-    // Length
-    memcpy(temp, &netlen, 4);
-    temp += 4;
-    
-    // Actual string
-    memcpy(temp, str, slen);
-    temp += slen;
-    
-    length += 4 + slen;
-    
-    if(padstrings){
-      int pad = length % 4;
-      if(pad != 0){
-        for(int i = 0; i < 4-pad; i++){
-          *temp = '\0';
-          temp++;
-        }
-      }
-    }
-    
-    
-  } else {
-    return false;
-  }
-  return true;
-}
 
 bool Frame::packString(const std::string &str){
   int slen = str.length();

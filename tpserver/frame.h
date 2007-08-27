@@ -171,7 +171,6 @@ class Frame {
     bool isPaddingStrings() const;
     void enablePaddingStrings(bool on);
     
-    bool packString(const char *str);
     bool packString(const std::string &str);
     bool packInt(int val);
     bool packInt64(long long val);
