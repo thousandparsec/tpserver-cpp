@@ -40,7 +40,7 @@ void ListParameter::packOrderFrame(Frame * f){
   for(std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator itcurr = options.begin();
       itcurr != options.end(); ++itcurr){
     f->packInt(itcurr->first);
-    f->packString(itcurr->second.first.c_str());
+    f->packString(itcurr->second.first);
     f->packInt(itcurr->second.second);
   }
   
@@ -59,9 +59,7 @@ bool ListParameter::unpackFrame(Frame *f, unsigned int playerid){
     return false;
   for(int i = 0; i < selsize; i++){
     f->unpackInt();
-    char* name = f->unpackString();
-    if(name != NULL)
-      delete[] name;
+    std::string name = f->unpackStdString();
     if(!f->isEnoughRemaining(8 + (selsize - i + 1) * 12))
       return false;
     f->unpackInt(); 

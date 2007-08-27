@@ -35,20 +35,15 @@ StringParameter::~StringParameter(){
 
 void StringParameter::packOrderFrame(Frame * f){
   f->packInt(max);
-  f->packString(string.c_str());
+  f->packString(string);
 }
 
 bool StringParameter::unpackFrame(Frame *f, unsigned int playerid){
   if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt();
-  char* ts = f->unpackString();
-  if(ts != NULL){
-    string = std::string(ts);
-    return true;
-  }else{
-    return false;
-  }
+  string = f->unpackStdString();
+  return true;
 }
 
 OrderParameter *StringParameter::clone() const{
