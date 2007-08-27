@@ -487,31 +487,6 @@ int Frame::unpackInt()
 	return ntohl(nval);
 }
 
-char *Frame::unpackString()
-{
-	int len = unpackInt();
-	char *rtnstr = NULL;
-	
-	if (len > 0 && length >= unpackptr + len) {
-		rtnstr = new char[len + 1];
-		memcpy(rtnstr, data + unpackptr, len);
-		rtnstr[len] = '\0';
-		unpackptr += len;
-                if(padstrings){
-                  int pad = unpackptr % 4;
-                  if(pad != 0){
-                    unpackptr += 4-pad;
-                  }
-                }
-        }else if(len == 0){
-            rtnstr = new char[1];
-            rtnstr[0] = '\0';
-	} else {
-        Logger::getLogger()->debug("len < 0 or length < upackptr + len, len = %d, length = %d", len, length);
-	}
-	//printf("unpackptr %d\n", unpackptr);
-	return rtnstr;
-}
 
 std::string Frame::unpackStdString(){
   uint32_t len = unpackInt();

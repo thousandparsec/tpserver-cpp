@@ -184,7 +184,6 @@ class Frame {
     bool setUnpackOffset(uint32_t newoffset);
   
     int unpackInt();
-    char *unpackString();
     std::string unpackStdString();
     long long unpackInt64();
     char unpackInt8();
