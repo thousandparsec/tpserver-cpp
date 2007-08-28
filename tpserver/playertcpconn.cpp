@@ -114,6 +114,7 @@ void PlayerTcpConnection::processWrite(){
         if(sbuffused == sbuffsize){
           delete[] sbuff;
           sbuff = NULL;
+          delete sendqueue.front();
           sendqueue.pop();
           ok = !sendqueue.empty();
         }
@@ -130,6 +131,7 @@ void PlayerTcpConnection::processWrite(){
       }
     }else{
       Logger::getLogger()->error("Could not get packet from frame to send");
+      delete sendqueue.front();
       sendqueue.pop();
       ok = false;
     }
