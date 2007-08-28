@@ -80,7 +80,6 @@ Player *PlayerAgent::getPlayer() const{
 
 void PlayerAgent::processIGFrame(Frame * frame){
   if(player == NULL){
-    delete frame;
     Logger::getLogger()->warning("No Player for PlayerAgent to work on behalf of");
     return;
   }
@@ -199,8 +198,6 @@ void PlayerAgent::processIGFrame(Frame * frame){
     curConnection->sendFrame(of);
     break;
   }
-
-  delete frame;
 }
 
 

@@ -289,13 +289,12 @@ void PlayerConnection::inGameFrame()
         Frame *gns = createFrame(frame);
         gns->createFailFrame(fec_TempUnavailable, "Game has not yet started, please wait");
         sendFrame(gns);
-        delete frame;
       }
     }
   } else {
     Logger::getLogger()->debug("noFrame :(");
     // client closed
-    delete frame;
   }
+  delete frame;
 }
 
