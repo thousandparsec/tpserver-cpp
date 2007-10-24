@@ -251,7 +251,10 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
     }
     else {
         propval.setPropertyId( p->getPropertyId());
-        propval.setDisplayString( std::string( scm_to_locale_stringn( SCM_CDR( temp), &length)));
+        char* strval;
+        strval = scm_to_locale_stringn( SCM_CDR( temp), &length);
+        propval.setDisplayString( std::string(strval, length ));
+        free(strval);
         propval.setValue( scm_to_double( SCM_CAR( temp) ) );
     }
 
@@ -315,6 +318,7 @@ bool TpGuile::evalRequirementFtn( std::string function, std::string & why)
     std::string schStr = std::string( "(") + function + " design)";
     SCM         temp = scm_c_eval_string( schStr.c_str());
     size_t      length;
+    char* strval;
 
     if ( ! scm_pair_p( temp) ||
          ! scm_string_p( SCM_CDR( temp))) {
@@ -322,7 +326,9 @@ bool TpGuile::evalRequirementFtn( std::string function, std::string & why)
     }
     else {
         valid = ! scm_is_false( SCM_CAR( temp));
-        why = scm_to_locale_stringn( SCM_CDR( temp), &length);
+        strval = scm_to_locale_stringn( SCM_CDR( temp), &length);
+        why = std::string(strval, 0, length);
+        free(strval);
     }
 
     return valid;
