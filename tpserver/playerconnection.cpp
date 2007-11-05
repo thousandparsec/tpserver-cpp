@@ -111,8 +111,22 @@ void PlayerConnection::login(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
-      std::string username = recvframe->unpackStdString();
-      std::string password = recvframe->unpackStdString();
+      std::string username, password;
+      try{
+        if(!recvframe->isEnoughRemaining(10))
+          throw std::exception();
+        username = recvframe->unpackStdString();
+        if(!recvframe->isEnoughRemaining(5))
+          throw std::exception();
+        password = recvframe->unpackStdString();
+      }catch(std::exception e){
+        Logger::getLogger()->debug("Login: not enough data");
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_FrameError, "Login Error - missing username or password");
+        sendFrame(failframe);
+        delete recvframe;
+        return;
+      }
       username = username.substr(0, username.find('@'));
       if (username.length() > 0 && password.length() > 0) {
         Player* player = NULL;
