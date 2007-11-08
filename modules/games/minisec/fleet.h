@@ -50,18 +50,18 @@ class Fleet:public ObjectData {
         void setOwner(uint32_t no);
 
         void setDefaultOrderTypes();
-	void addShips(int type, int number);
-	bool removeShips(int type, int number);
-	int numShips(int type);
-	std::map<int, int> getShips() const;
-	int totalShips() const;
+	void addShips(uint32_t type, uint32_t number);
+	bool removeShips(uint32_t type, uint32_t number);
+	uint32_t numShips(uint32_t type);
+	std::map<uint32_t, uint32_t> getShips() const;
+	uint32_t totalShips() const;
 
 	long long maxSpeed();
-	std::list<int> firepower(bool draw);
-	bool hit(std::list<int> firepower);
+	std::list<uint32_t> firepower(bool draw);
+	bool hit(std::list<uint32_t> firepower);
 
-        int getDamage() const;
-        void setDamage(int nd);
+        uint32_t getDamage() const;
+        void setDamage(uint32_t nd);
 
 	void packExtraData(Frame * frame);
 
