@@ -57,8 +57,6 @@ class Fleet:public ObjectData {
 	uint32_t totalShips() const;
 
 	long long maxSpeed();
-	std::list<uint32_t> firepower(bool draw);
-	bool hit(std::list<uint32_t> firepower);
 
         uint32_t getDamage() const;
         void setDamage(uint32_t nd);
