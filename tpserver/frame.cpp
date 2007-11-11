@@ -307,43 +307,6 @@ void Frame::enablePaddingStrings(bool on){
   padstrings = on;
 }
 
-bool Frame::packString(const char *str)
-{
-  int slen = strlen(str);
-
-  int netlen = htonl(slen);
-  char *temp = (char *) realloc(data, length + 4 + slen + 3);
-  
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-    
-    // Length
-    memcpy(temp, &netlen, 4);
-    temp += 4;
-    
-    // Actual string
-    memcpy(temp, str, slen);
-    temp += slen;
-    
-    length += 4 + slen;
-    
-    if(padstrings){
-      int pad = length % 4;
-      if(pad != 0){
-        for(int i = 0; i < 4-pad; i++){
-          *temp = '\0';
-          temp++;
-        }
-      }
-    }
-    
-    
-  } else {
-    return false;
-  }
-  return true;
-}
 
 bool Frame::packString(const std::string &str){
   int slen = str.length();
@@ -487,31 +450,6 @@ int Frame::unpackInt()
 	return ntohl(nval);
 }
 
-char *Frame::unpackString()
-{
-	int len = unpackInt();
-	char *rtnstr = NULL;
-	
-	if (len > 0 && length >= unpackptr + len) {
-		rtnstr = new char[len + 1];
-		memcpy(rtnstr, data + unpackptr, len);
-		rtnstr[len] = '\0';
-		unpackptr += len;
-                if(padstrings){
-                  int pad = unpackptr % 4;
-                  if(pad != 0){
-                    unpackptr += 4-pad;
-                  }
-                }
-        }else if(len == 0){
-            rtnstr = new char[1];
-            rtnstr[0] = '\0';
-	} else {
-        Logger::getLogger()->debug("len < 0 or length < upackptr + len, len = %d, length = %d", len, length);
-	}
-	//printf("unpackptr %d\n", unpackptr);
-	return rtnstr;
-}
 
 std::string Frame::unpackStdString(){
   uint32_t len = unpackInt();
@@ -532,7 +470,7 @@ std::string Frame::unpackStdString(){
       unpackptr += 4-pad;
     }
   }
-  return std::string(cstr);
+  return std::string(cstr, 0, len);
 }
 
 long long Frame::unpackInt64()

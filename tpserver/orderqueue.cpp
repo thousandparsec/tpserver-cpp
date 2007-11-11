@@ -26,6 +26,7 @@
 #include "objectdata.h"
 #include "game.h"
 #include "persistence.h"
+#include "objectmanager.h"
 
 #include "orderqueue.h"
 
@@ -145,6 +146,7 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
     if(ord != NULL){
       delete ord;
       orderlist.erase(itpos);
+      ordercache.erase(orderid);
       Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
       Game::getGame()->getPersistence()->saveOrderQueue(this);
       touchModTime();
@@ -226,6 +228,13 @@ uint64_t OrderQueue::getModTime() const{
 
 void OrderQueue::touchModTime(){
   modtime = time(NULL);
+  if(objectid != 0){
+    IGObject* robj = Game::getGame()->getObjectManager()->getObject(objectid);
+    if(robj != NULL){
+      robj->touchModTime();
+      Game::getGame()->getObjectManager()->doneWithObject(objectid);
+    }
+  }
 }
 
 void OrderQueue::setModTime(uint64_t nmt){

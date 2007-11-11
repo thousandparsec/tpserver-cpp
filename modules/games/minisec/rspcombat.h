@@ -20,21 +20,27 @@
  *
  */
 
+#include <map>
+#include <set>
+#include <stdint.h>
+
 class IGObject;
+class Combatant;
 
 class RSPCombat{
  public:
   RSPCombat();
   ~RSPCombat();
 
-  void setCombatants(IGObject * a, IGObject * b);
-  bool isAliveCombatant1();
-  bool isAliveCombatant2();
-  void doCombat();
+  void doCombat(std::map<uint32_t, std::set<uint32_t> > sides);
 
- protected:
-  IGObject *c1, *c2;
 
+ private:
+  void resolveDamage(Combatant* fleet, std::set<uint32_t> objects);
+   
+  uint32_t obT_Fleet;
+  uint32_t obT_Planet;
+  std::map<uint32_t, IGObject*> objectcache;
 };
 
 #endif

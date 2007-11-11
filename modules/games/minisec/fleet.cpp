@@ -153,7 +153,7 @@ void Fleet::setDefaultOrderTypes(){
   orderqueue->setAllowedOrders(allowedlist);
 }
 
-void Fleet::addShips(int type, int number){
+void Fleet::addShips(uint32_t type, uint32_t number){
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
   ships[std::pair<int32_t, uint32_t>(rst_Design, type)] += number;
   shiplist->setRefQuantityList(ships);
@@ -167,7 +167,7 @@ void Fleet::addShips(int type, int number){
   touchModTime();
 }
 
-bool Fleet::removeShips(int type, int number){
+bool Fleet::removeShips(uint32_t type, uint32_t number){
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
   if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] >= number){
     ships[std::pair<int32_t, uint32_t>(rst_Design, type)] -= number;
@@ -200,13 +200,13 @@ bool Fleet::removeShips(int type, int number){
   return false;
 }
 
-int Fleet::numShips(int type){
+uint32_t Fleet::numShips(uint32_t type){
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
   return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
-std::map<int, int> Fleet::getShips() const{
-  std::map<int, int> ships;
+std::map<uint32_t, uint32_t> Fleet::getShips() const{
+  std::map<uint32_t, uint32_t> ships;
   std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = shiplist->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
       itcurr != shipsref.end(); ++itcurr){
@@ -215,8 +215,8 @@ std::map<int, int> Fleet::getShips() const{
   return ships;
 }
 
-int Fleet::totalShips() const{
-  int num = 0;
+uint32_t Fleet::totalShips() const{
+  uint32_t num = 0;
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
@@ -236,98 +236,11 @@ long long Fleet::maxSpeed(){
   return (long long)(floor(speed));
 }
 
-std::list<int> Fleet::firepower(bool draw){
-  std::list<int> fp;
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
-  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-    int attnum;
-    if(draw){
-      attnum = (int)(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("WeaponDraw")));
-    }else{
-      attnum = (int)(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("WeaponWin")));
-    }
-    for(int i = 0; i < itcurr->second; i++){
-      fp.push_back(attnum);
-    }
-  }
-  return fp;
-}
-
-bool Fleet::hit(std::list<int> firepower){
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  for(std::list<int>::iterator shot = firepower.begin(); shot != firepower.end(); ++shot){
-    int shiptype = 0;
-    int shiphp = 0;
-    
-    uint32_t armourprop = ds->getPropertyByName("Armour");
-    if(armourprop == 0){
-      armourprop = ds->getPropertyByName("Amour");
-    }
-    
-    std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
-    for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-      itcurr != ships.end(); ++itcurr){
-      Design *design = ds->getDesign(itcurr->first.second);
-      if(shiphp < (int)design->getPropertyValue(armourprop)){
-        shiptype = itcurr->first.second;
-        shiphp = (int)design->getPropertyValue(armourprop);
-      }
-    }
-    if(shiphp == 0){
-      touchModTime();
-      return false;
-    }
-    //get the current damage
-    int ldam = damage->getValue() / ships[std::pair<int32_t,uint32_t>(rst_Design, shiptype)];
-    if(ldam + (*shot) >= shiphp){
-      ships[std::pair<int32_t,uint32_t>(rst_Design, shiptype)]--;
-      damage->setValue(damage->getValue() - ldam);
-      Design* design = ds->getDesign(shiptype);
-      design->removeDestroyed(1);
-      ds->designCountsUpdated(design);
-    }else{
-      damage->setValue(damage->getValue() + (*shot));
-    }
-    if(ships[std::pair<int32_t,uint32_t>(rst_Design, shiptype)]== 0){
-      ships.erase(std::pair<int32_t,uint32_t>(rst_Design, shiptype));
-    }
-    shiplist->setRefQuantityList(ships);
-    DesignStore* ds = Game::getGame()->getDesignStore();
-    if(orderqueue->getQueueId() != 0){
-      bool colonise = false;
-      for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
-          itcurr != ships.end(); ++itcurr){
-        if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-          colonise = true;
-          break;
-        }
-      }
-      OrderManager* om = Game::getGame()->getOrderManager();
-      if(colonise){
-        std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
-        allowed.insert(om->getOrderTypeByName("Colonise"));
-        orderqueue->setAllowedOrders(allowed);
-      }else{
-        std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
-        allowed.erase(om->getOrderTypeByName("Colonise"));
-        orderqueue->setAllowedOrders(allowed);
-      }
-      touchModTime();
-    }
-  }
-  if(totalShips() == 0)
-    return false;
-  else
-    return true;
-}
-
-int Fleet::getDamage() const{
+uint32_t Fleet::getDamage() const{
     return damage->getValue();
 }
 
-void Fleet::setDamage(int nd){
+void Fleet::setDamage(uint32_t nd){
     damage->setValue(nd);
     touchModTime();
 }

@@ -114,6 +114,7 @@ void PlayerTcpConnection::processWrite(){
         if(sbuffused == sbuffsize){
           delete[] sbuff;
           sbuff = NULL;
+          delete sendqueue.front();
           sendqueue.pop();
           ok = !sendqueue.empty();
         }
@@ -130,6 +131,7 @@ void PlayerTcpConnection::processWrite(){
       }
     }else{
       Logger::getLogger()->error("Could not get packet from frame to send");
+      delete sendqueue.front();
       sendqueue.pop();
       ok = false;
     }
@@ -266,9 +268,8 @@ void PlayerTcpConnection::verCheck(){
         }
         if(readFrame(recvframe)){
           if(recvframe->getType() == ft02_Connect){
-            char* clientsoft = recvframe->unpackString();
-            Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, clientsoft);
-            delete[] clientsoft;
+            std::string clientsoft = recvframe->unpackStdString();
+            Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, clientsoft.c_str());
             
             status = 2;
             

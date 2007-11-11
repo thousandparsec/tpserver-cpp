@@ -87,10 +87,10 @@ bool Colonise::doOrder(IGObject * ob){
       DesignStore* ds = Game::getGame()->getDesignStore();
       int shiptype = 0;
       int shiphp = 2000000;
-      std::map<int, int> ships = fleet->getShips();
+      std::map<uint32_t, uint32_t> ships = fleet->getShips();
       unsigned int colonisePropID = ds->getPropertyByName( "Colonise");
       unsigned int armorPropID = ds->getPropertyByName( "Armour");
-      for(std::map<int, int>::iterator itcurr = ships.begin();
+      for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin();
 	  itcurr != ships.end(); ++itcurr){
 	Design *design = ds->getDesign(itcurr->first);
 	if(design->getPropertyValue(colonisePropID) != 0.0 && shiphp > (int)design->getPropertyValue(armorPropID)){

@@ -109,6 +109,8 @@ void MinisecTurn::doTurn(){
   
   // do combat
   
+  std::list<std::map<uint32_t, std::set<uint32_t> > > combats;
+  
   for(itcurr = possiblecombatants.begin(); itcurr != possiblecombatants.end(); ++itcurr) {
     IGObject * ob = objectmanager->getObject(*itcurr);
     uint32_t playerid1;
@@ -131,62 +133,124 @@ void MinisecTurn::doTurn(){
       continue;
     }
     
+    bool placed = false;
     
-    for(std::set<unsigned int>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
-      IGObject* itbobj = objectmanager->getObject(*itb);
-      uint32_t playerid2;
-      Vector3d pos2;
-      uint32_t size2;
-      if(itbobj->getType() == planettype){
-        Planet* planet = (Planet*)(itbobj->getObjectData());
-        playerid2 = planet->getOwner();
-        pos2 = planet->getPosition();
-        size2 = planet->getSize();
-      }else{
-        Fleet* fleet = (Fleet*)(itbobj->getObjectData());
-        playerid2 = fleet->getOwner();
-        pos2 = fleet->getPosition();
-        size2 = fleet->getSize();
-      }
-      
-      if(playerid2 == 0 || playerid1 == playerid2){
-        objectmanager->doneWithObject(itbobj->getID());
-        continue;
-      }
-
-      uint64_t diff = pos1.getDistance(pos2);
-      if(diff <= size1 / 2 + size2 / 2){
-        combatstrategy->setCombatants(ob, itbobj);
-        combatstrategy->doCombat();
-        if(!combatstrategy->isAliveCombatant1()){
-          if(ob->getType() == planettype){
-            uint32_t oldowner = ((Planet*)(ob->getObjectData()))->getOwner();
-            ((Planet*)(ob->getObjectData()))->setOwner(0);
-            uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-            queue->removeOwner(oldowner);
-            queue->removeAllOrders();
-          }else{
-            objectmanager->scheduleRemoveObject(*itcurr);
-          }
-        }
-        if(!combatstrategy->isAliveCombatant2()){
+    for(std::list<std::map<uint32_t, std::set<uint32_t> > >::iterator itlist = combats.begin();
+        itlist != combats.end(); ++itlist){
+      std::map<uint32_t, std::set<uint32_t> > themap = *itlist;
+      for(std::map<uint32_t, std::set<uint32_t> >::iterator itmap = themap.begin();
+          itmap != themap.end(); ++itmap){
+        std::set<uint32_t> theset = itmap->second;
+        for(std::set<uint32_t>::iterator itset = theset.begin(); itset != theset.end(); ++itset){
+          IGObject* itbobj = objectmanager->getObject(*itset);
+          uint32_t playerid2;
+          Vector3d pos2;
+          uint32_t size2;
           if(itbobj->getType() == planettype){
-            uint32_t oldowner = ((Planet*)(itbobj->getObjectData()))->getOwner();
-            ((Planet*)(itbobj->getObjectData()))->setOwner(0);
-            uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
-            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-            queue->removeOwner(oldowner);
-            queue->removeAllOrders();
+            Planet* planet = (Planet*)(itbobj->getObjectData());
+            playerid2 = planet->getOwner();
+            pos2 = planet->getPosition();
+            size2 = planet->getSize();
           }else{
-            objectmanager->scheduleRemoveObject(*itb);
+            Fleet* fleet = (Fleet*)(itbobj->getObjectData());
+            playerid2 = fleet->getOwner();
+            pos2 = fleet->getPosition();
+            size2 = fleet->getSize();
           }
+        
+          if(playerid2 == 0){
+            objectmanager->doneWithObject(itbobj->getID());
+            continue;
+          }
+          uint64_t diff = pos1.getDistance(pos2);
+          if(diff <= size1 / 2 + size2 / 2){
+            themap[playerid1].insert(ob->getID());
+            *itlist = themap;
+            placed = true;
+            objectmanager->doneWithObject(itbobj->getID());
+            break;
+          }
+          objectmanager->doneWithObject(itbobj->getID());
         }
+        if(placed)
+          break;
       }
-      objectmanager->doneWithObject(itbobj->getID());
+      if(placed)
+        break;
+    }
+    if(!placed){
+      std::map<uint32_t, std::set<uint32_t> > themap;
+      std::set<uint32_t> theset;
+      theset.insert(ob->getID());
+      themap[playerid1] = theset;
+      combats.push_back(themap);
     }
     objectmanager->doneWithObject(ob->getID());
   }
+  
+  for(std::list<std::map<uint32_t, std::set<uint32_t> > >::iterator itlist = combats.begin();
+        itlist != combats.end(); ++itlist){
+    std::map<uint32_t, std::set<uint32_t> > themap = *itlist;
+    if(themap.size() >= 2){
+      combatstrategy->doCombat(themap);
+    }
+  }
+  
+//     for(std::set<unsigned int>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
+//       IGObject* itbobj = objectmanager->getObject(*itb);
+//       uint32_t playerid2;
+//       Vector3d pos2;
+//       uint32_t size2;
+//       if(itbobj->getType() == planettype){
+//         Planet* planet = (Planet*)(itbobj->getObjectData());
+//         playerid2 = planet->getOwner();
+//         pos2 = planet->getPosition();
+//         size2 = planet->getSize();
+//       }else{
+//         Fleet* fleet = (Fleet*)(itbobj->getObjectData());
+//         playerid2 = fleet->getOwner();
+//         pos2 = fleet->getPosition();
+//         size2 = fleet->getSize();
+//       }
+//       
+//       if(playerid2 == 0 || playerid1 == playerid2){
+//         objectmanager->doneWithObject(itbobj->getID());
+//         continue;
+//       }
+// 
+//       uint64_t diff = pos1.getDistance(pos2);
+//       if(diff <= size1 / 2 + size2 / 2){
+//         combatstrategy->setCombatants(ob, itbobj);
+//         combatstrategy->doCombat();
+//         if(!combatstrategy->isAliveCombatant1()){
+//           if(ob->getType() == planettype){
+//             uint32_t oldowner = ((Planet*)(ob->getObjectData()))->getOwner();
+//             ((Planet*)(ob->getObjectData()))->setOwner(0);
+//             uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+//             OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+//             queue->removeOwner(oldowner);
+//             queue->removeAllOrders();
+//           }else{
+//             objectmanager->scheduleRemoveObject(*itcurr);
+//           }
+//         }
+//         if(!combatstrategy->isAliveCombatant2()){
+//           if(itbobj->getType() == planettype){
+//             uint32_t oldowner = ((Planet*)(itbobj->getObjectData()))->getOwner();
+//             ((Planet*)(itbobj->getObjectData()))->setOwner(0);
+//             uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+//             OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+//             queue->removeOwner(oldowner);
+//             queue->removeAllOrders();
+//           }else{
+//             objectmanager->scheduleRemoveObject(*itb);
+//           }
+//         }
+//       }
+//       objectmanager->doneWithObject(itbobj->getID());
+//     }
+//     objectmanager->doneWithObject(ob->getID());
+//   }
 
   objectmanager->clearRemovedObjects();
   
