@@ -373,7 +373,7 @@ void MiniSec::createGame(){
   IGObject *mars = game->getObjectManager()->createNewObject();
   mars->setType(obT_Planet);
   Planet* themars = (Planet*)(mars->getObjectData());
-  themars->setSize(1);
+  themars->setSize(2);
   mars->setName("Mars");
   themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
   planetoq = new OrderQueue();
