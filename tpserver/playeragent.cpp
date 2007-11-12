@@ -194,6 +194,10 @@ void PlayerAgent::processIGFrame(Frame * frame){
     processGetObjectDesc(frame);
     break;
     
+  case ft04_ObjectTypes_Get:
+    processGetObjectTypes(frame);
+    break;
+    
   default:
     Logger::getLogger()->warning("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
 
@@ -516,17 +520,34 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
 
     of = curConnection->createFrame(frame);
     
-    ObjectData* obd = Game::getGame()->getObjectDataManager()->createObjectData(objecttype);
-    
-    if ( obd != NULL ){
-      obd->packObjectDescFrame(of);
-      delete obd;
-    }else{
-      of->createFailFrame ( fec_NonExistant, "No such objecttype" );
-    }
+    Game::getGame()->getObjectDataManager()->doGetObjectDesc(objecttype, of);
     
     curConnection->sendFrame ( of );
   }
+  
+}
+
+void PlayerAgent::processGetObjectTypes(Frame * frame){
+  Logger::getLogger()->debug("Doing get OrderTypes list");
+  
+  Frame *of = curConnection->createFrame(frame);
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("Protocol version not high enough");
+    of->createFailFrame(fec_FrameError, "Get object type frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(frame->getDataLength() != 12){
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Game::getGame()->getObjectDataManager()->doGetObjectTypes(frame, of);
+  
+  curConnection->sendFrame(of);
   
 }
 

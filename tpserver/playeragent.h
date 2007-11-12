@@ -51,6 +51,7 @@ private:
   void processGetObjectIdsByContainer(Frame * frame);
   
   void processGetObjectDesc(Frame * frame);
+  void processGetObjectTypes(Frame * frame);
   
   void processGetOrder(Frame * frame);
   void processAddOrder(Frame * frame);
