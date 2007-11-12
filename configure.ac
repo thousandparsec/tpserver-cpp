@@ -14,7 +14,6 @@ CXXFLAGS="-g -Wall"
 AC_PROG_CC
 AC_PROG_CXX
 AC_LANG_CPLUSPLUS
-AC_REQUIRE_CPP
 
 #test if the C++ compiler actually works
 AC_MSG_CHECKING([for working C++ compiler])
@@ -34,7 +33,7 @@ int main(int n, char** c){
 AC_MSG_ERROR(C++ compiler not working)
 )
 
-
+AC_REQUIRE_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
