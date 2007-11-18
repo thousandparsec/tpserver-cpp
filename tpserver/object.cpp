@@ -84,6 +84,10 @@ std::string IGObject::getName(){
   return name;
 }
 
+std::string IGObject::getDescription(){
+  return description;
+}
+
 bool IGObject::setID(unsigned int newid)
 {
 	//check to see if id is use
@@ -116,6 +120,11 @@ void IGObject::setType(unsigned int newtype)
 
 void IGObject::setName(const std::string &newname){
   name = newname;
+  touchModTime();
+}
+
+void IGObject::setDescription(const std::string &newdesc){
+  description = newdesc;
   touchModTime();
 }
 

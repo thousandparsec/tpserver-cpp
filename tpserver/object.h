@@ -41,6 +41,7 @@ class IGObject {
 	unsigned int getID();
 	unsigned int getType();
 	std::string getName();
+        std::string getDescription();
 
 	unsigned int getParent();
 
@@ -48,6 +49,7 @@ class IGObject {
 	void autoSetID();
 	void setType(unsigned int newtype);
 	void setName(const std::string &newname);
+        void setDescription(const std::string &newdesc);
 	
 	void removeFromParent();
         void addToParent(uint32_t pid);
