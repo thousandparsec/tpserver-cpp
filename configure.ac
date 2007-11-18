@@ -13,6 +13,27 @@ CXXFLAGS="-g -Wall"
 
 AC_PROG_CC
 AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+#test if the C++ compiler actually works
+AC_MSG_CHECKING([for working C++ compiler])
+AC_COMPILE_IFELSE([
+#include <iostream>
+using namespace std;
+#ifdef __cplusplus
+int main(int n, char** c){
+  cout << "This is a working c++ compiler" << endl;
+  return 0;
+}
+#else
+#error Not a c++ compiler
+#endif
+
+],AC_MSG_RESULT(yes), 
+AC_MSG_ERROR(C++ compiler not working)
+)
+
+AC_REQUIRE_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
@@ -29,8 +50,6 @@ AC_PROG_LIBTOOL
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
 
-AC_LANG_CPLUSPLUS
-AC_REQUIRE_CPP
 
 AC_HEADER_STDC
 

@@ -34,6 +34,7 @@
 #include "board.h"
 #include "message.h"
 #include "objectmanager.h"
+#include "objectdatamanager.h"
 #include "ordermanager.h"
 #include "boardmanager.h"
 #include "playermanager.h"
@@ -187,6 +188,14 @@ void PlayerAgent::processIGFrame(Frame * frame){
 
   case ft04_TurnFinished:
     processTurnFinished(frame);
+    break;
+    
+  case ft04_ObjectDesc_Get:
+    processGetObjectDesc(frame);
+    break;
+    
+  case ft04_ObjectTypes_Get:
+    processGetObjectTypes(frame);
     break;
     
   default:
@@ -451,6 +460,95 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
     }
   }
   curConnection->sendFrame(of);
+}
+
+void PlayerAgent::processGetObjectDesc(Frame * frame){
+  Logger::getLogger()->debug("Doing get OrderDesc");
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("Protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get ObjectDesc frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  Frame *of;
+  
+  if ( frame->getDataLength() < 4 ){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Frame too short");
+    curConnection->sendFrame(of);
+    
+    return;
+    
+  }
+  
+  int len = frame->unpackInt();
+
+  // Check we have enough data
+  if ( frame->getDataLength() < 4 + 4*len ){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "List length incorrect");
+    curConnection->sendFrame(of);
+    
+    return;
+    
+  }
+
+  if(len > 1) {
+    Logger::getLogger()->debug("Got multiple orders, returning a sequence");
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(len);
+    curConnection->sendFrame(seq);
+  } else {
+    Logger::getLogger()->debug("Got single orders, returning one objectdesc");
+  }
+  
+  if(len == 0){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "No objecttype to get");
+    curConnection->sendFrame(of);
+    
+    return;
+  }
+
+  // Object frames
+  for ( int i=0 ; i < len; ++i ){
+    unsigned int objecttype = frame->unpackInt();
+
+    of = curConnection->createFrame(frame);
+    
+    Game::getGame()->getObjectDataManager()->doGetObjectDesc(objecttype, of);
+    
+    curConnection->sendFrame ( of );
+  }
+  
+}
+
+void PlayerAgent::processGetObjectTypes(Frame * frame){
+  Logger::getLogger()->debug("Doing get OrderTypes list");
+  
+  Frame *of = curConnection->createFrame(frame);
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("Protocol version not high enough");
+    of->createFailFrame(fec_FrameError, "Get object type frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(frame->getDataLength() != 12){
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Game::getGame()->getObjectDataManager()->doGetObjectTypes(frame, of);
+  
+  curConnection->sendFrame(of);
+  
 }
 
 void PlayerAgent::processGetOrder(Frame * frame){
@@ -1322,8 +1420,6 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
 
 void PlayerAgent::processGetDesign(Frame* frame){
   Logger::getLogger()->debug("doing Get Design frame");
-
-  DesignStore* ds = Game::getGame()->getDesignStore();
 
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);

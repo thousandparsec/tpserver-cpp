@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 class ObjectData;
+class Frame;
 
 class ObjectDataManager{
  public:
@@ -37,11 +38,15 @@ class ObjectDataManager{
   uint32_t getObjectTypeByName(const std::string& name) const;
 
   int addNewObjectType(ObjectData* od);
+  
+  void doGetObjectTypes(Frame* frame, Frame* of);
+  void doGetObjectDesc(uint32_t type, Frame* of);
 
  private:
   std::map<uint32_t, ObjectData*> prototypeStore;
   std::map<std::string, uint32_t> stringmap;
   uint32_t nextType;
+  uint32_t seqkey;
 
 };
 
