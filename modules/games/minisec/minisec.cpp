@@ -80,6 +80,30 @@ static char const * const defaultNames[] = {
   "Byzantis",        "Torontis",            "Radiant Pool"};
 
 /**
+* Base class for various ways to get names for starsystems.
+*/
+class Names {
+	uint64_t systems;
+
+public:
+	Names() {
+		systems = 0;
+	}
+
+	/**
+	 * Get a name which is "System xx".
+	 */
+	virtual std::string getName() {
+			std::ostringstream name;
+			name.str("");
+			name << "System " << ++systems;
+
+			return name.str();
+  }
+	virtual ~Names() {};
+};
+
+/**
  * Use a predefined list of names in this file and then fall back to "System xx" names.
  */
 class NamesSet : public Names {

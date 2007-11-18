@@ -25,30 +25,7 @@
 #include <tpserver/ruleset.h>
 
 class Random;
-
-/**
-* Base class for various ways to get names for starsystems.
-*/
-class Names {
-	uint64_t systems;
-
-public:
-	Names() {
-		systems = 0;
-	}
-
-	/**
-	 * Get a name which is "System xx".
-	 */
-	virtual std::string getName() {
-			std::ostringstream name;
-			name.str("");
-			name << "System " << ++systems;
-
-			return name.str();
-  }
-	virtual ~Names() {};
-};
+class Names;
 
 class MiniSec : public Ruleset {
 public:
