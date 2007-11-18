@@ -26,8 +26,33 @@
 
 class Random;
 
-class MiniSec : public Ruleset{
- public:
+/**
+* Base class for various ways to get names for starsystems.
+*/
+class Names {
+	uint64_t systems;
+
+public:
+	Names() {
+		systems = 0;
+	}
+
+	/**
+	 * Get a name which is "System xx".
+	 */
+	virtual std::string getName() {
+			std::ostringstream name;
+			name.str("");
+			name << "System " << ++systems;
+
+			return name.str();
+  }
+	virtual ~Names() {};
+};
+
+class MiniSec : public Ruleset {
+public:
+
   MiniSec();
   virtual ~MiniSec();
 
@@ -40,10 +65,9 @@ class MiniSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
 private:
-  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames);
+  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* systemnames);
 
   Random* random;
-  
 };
 
 #endif

@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <fstream>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -61,22 +62,153 @@
 
 #include "minisec.h"
 
-static char const * const systemNames[] = {
-    "Barnard's Star",  "Gielgud",             "Ventana",
-    "Aleph Prime",     "Ventil",              "Sagitaria",
-    "Drifter",         "Ptelemicus",          "Centanis",
-    "Mendelis",        "Cassious' Shadow",    "Llentim",
-    "Redoubt",         "Kelper",              "Cemara",
-    "Cilantarius",     "Kya",                 "Lanternis",
-    "Illatis",         "Rintim",              "Uvaharim",
-    "Plaetais",        "Denderis",            "Desiderata",
-    "Illuntara",       "Ivemteris",           "Wetcher",
-    "Monanara",        "Clesasia",            "RumRunner",
-    "Last Chance",     "Kiuper Shadow",       "NGC 42059",
-    "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
-    "Atlantis",        "Draconis",            "Muir's Gold",
-    "Fools Errand",    "Wrenganis",           "Humph",
-    "Byzantis",        "Torontis",            "Radiant Pool"};
+static char const * const defaultNames[] = {
+  "Barnard's Star",  "Gielgud",             "Ventana",
+  "Aleph Prime",     "Ventil",              "Sagitaria",
+  "Drifter",         "Ptelemicus",          "Centanis",
+  "Mendelis",        "Cassious' Shadow",    "Llentim",
+  "Redoubt",         "Kelper",              "Cemara",
+  "Cilantarius",     "Kya",                 "Lanternis",
+  "Illatis",         "Rintim",              "Uvaharim",
+  "Plaetais",        "Denderis",            "Desiderata",
+  "Illuntara",       "Ivemteris",           "Wetcher",
+  "Monanara",        "Clesasia",            "RumRunner",
+  "Last Chance",     "Kiuper Shadow",       "NGC 42059",
+  "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
+  "Atlantis",        "Draconis",            "Muir's Gold",
+  "Fools Errand",    "Wrenganis",           "Humph",
+  "Byzantis",        "Torontis",            "Radiant Pool"};
+
+/**
+ * Use a predefined list of names in this file and then fall back to "System xx" names.
+ */
+class NamesSet : public Names {
+
+  std::set<const char*> names;
+  Random* rand;
+
+public:
+  NamesSet(Random* r) :
+      Names(),
+      names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))) 
+  {
+    rand  = r;
+  }
+
+  std::string getName() {
+    if (names.size() > 0) {
+      // Choose a random name
+      unsigned int choice = rand->getInRange(0U, names.size() - 1);
+
+      std::set<const char*>::iterator name = names.begin();
+      advance(name, choice);
+      assert(name != names.end());
+
+      names.erase(name);
+
+      return std::string(*name);
+    } else {
+      // Opps we ran out of precreated names!
+      return Names::getName();
+    }
+  }
+};
+
+
+// FIXME: These belong in some type of string helper file
+#define WHITESPACE " \t\f\v\n\r"
+
+/**
+ * Strip any trailing or leading characters of a given type
+ * 
+ * @param str The string to strip (unmodified)
+ * @param sep The chars types to strip
+ * @return    A stripped string
+ */
+inline std::string strip(std::string const& str, char const* sep) {
+    std::string::size_type first = str.find_first_not_of(sep);
+    std::string::size_type last  = str.find_last_not_of(sep);
+    if ( first == std::string::npos || last  == std::string::npos )
+        return std::string("");
+
+    return str.substr(first, (last-first)+1);
+}
+/**
+ * Does a string start with another string?
+ * 
+ * @param str      The string to match against
+ * @param starting What the string should start with.
+ * @return Does the string start with starting?
+ */
+inline bool startswith(std::string const& str, std::string const& starting) {
+    if (str.length() < starting.length())
+        return false;
+
+    return str.substr(0, starting.length()) == starting;
+}
+
+
+#define BUFFERSIZE 1024
+
+/**
+ * Use a list of names from a file then fall back to "System xx" names.
+ */
+class NamesFile : public Names {
+  std::istream* m_file;
+
+  /**
+   * Read a line from a stream.
+   */ 
+  std::string readline() {
+    std::string buffer;    
+
+    // Get the next line
+    // Loop while the buffer is empty 
+    while (buffer.size() == 0 || m_file->fail()) {
+        // Temporary storage for the line
+        char cbuffer[BUFFERSIZE];
+        uint32_t cbuffer_amount = 0;
+
+        m_file->getline(cbuffer, BUFFERSIZE);
+        cbuffer_amount = m_file->gcount();      // The amount of data which was put in our buffer
+
+        if (cbuffer_amount > 0)
+            buffer.append(std::string(cbuffer, cbuffer_amount-1));
+
+        // Have we reached the end of the file
+        if (m_file->eof())
+            break;
+    }
+
+    return buffer;
+  }
+
+public:
+  NamesFile(std::istream* f) : Names() {
+    m_file = f;
+
+  }
+
+  ~NamesFile() {
+    delete m_file;
+  }
+
+  std::string getName() {
+    while (!m_file->eof()) {
+      // Choose a random name
+      std::string s = strip(readline(), WHITESPACE);
+      if (s.length() == 0)
+        continue;
+
+      return s;
+    }
+
+    // Opps we ran out of precreated names!
+    return Names::getName();
+  }
+
+};
+
 
 extern "C" {
   #define tp_init libminisec_LTX_tp_init
@@ -337,7 +469,6 @@ void MiniSec::createGame(){
 
   
   // now for some planets
-  
   IGObject *earth = game->getObjectManager()->createNewObject();
   earth->setType(obT_Planet);
   Planet * theearth = (Planet*)(earth->getObjectData());
@@ -417,19 +548,36 @@ void MiniSec::createGame(){
   thes1->setDefaultOrderTypes();
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
-  
-  std::set<const char*> sys_names(systemNames, systemNames + (sizeof(systemNames) / sizeof(systemNames[0])));
-  
+ 
   //create random systems
   Random * currandom;
-  if(Settings::getSettings()->get("minisec_debug_random_seed") != ""){
+
+  std::string randomseed = Settings::getSettings()->get("minisec_debug_random_seed");
+  if( randomseed != ""){
     random = new Random();
-    random->seed(atoi(Settings::getSettings()->get("minisec_debug_random_seed").c_str()));
+    random->seed(atoi(randomseed.c_str()));
     currandom = random;
-  }else{
+  } else {
     currandom = game->getRandom();
   }
-  
+
+  std::string namesfile  = Settings::getSettings()->get("minisec_system_names");
+
+  Names* names;
+  if(namesfile == ""){
+    names = new NamesSet(currandom);
+  } else {
+    std::ifstream* f = new std::ifstream(namesfile.c_str());
+    if (f->fail()) {
+      Logger::getLogger()->error("Could not open system names file %s", namesfile.c_str());
+      delete f;
+      // Fall back to the names set
+      names = new NamesSet(currandom);
+    } else {
+      names = new NamesFile(new std::ifstream(namesfile.c_str()));
+    }
+  }
+
   uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
   uint32_t max_systems = atoi(Settings::getSettings()->get("minisec_max_systems").c_str());
   uint32_t num_systems;
@@ -438,13 +586,12 @@ void MiniSec::createGame(){
   }else{
     num_systems =  currandom->getInRange(min_systems ,max_systems);
   }
-  if(num_systems > sys_names.size()) 
-    num_systems = sys_names.size();
+
   uint32_t total_planets = atoi(Settings::getSettings()->get("minisec_total_planets").c_str());
   if(total_planets == 0)
     total_planets = 0x0fffffff;
   for (uint32_t counter = 0; counter < num_systems; counter++) {
-    createStarSystem( mw_galaxy, total_planets, sys_names);
+    createStarSystem( mw_galaxy, total_planets, names);
     if(total_planets <= 0)
       break;
   }
@@ -471,7 +618,8 @@ void MiniSec::createGame(){
     game->getResourceManager()->addResourceDescription(res);
   
     game->getPlayerManager()->createNewPlayer("guest", "guest");
-    
+
+  delete names;    
 }
 
 void MiniSec::startGame(){
@@ -664,15 +812,16 @@ void MiniSec::onPlayerAdded(Player* player){
 }
 
 // Create a random star system
-IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames)
+IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* names)
 {
     Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
-    Game*          game = Game::getGame();
+    Game*          game  = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    IGObject*      star = game->getObjectManager()->createNewObject();
+    IGObject*      star  = game->getObjectManager()->createNewObject();
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
-    
+   
+    // FIXME: This is repeated everywhere put it in a getter
     Random * currandom;
     if(random != NULL){
       currandom = random;
@@ -681,8 +830,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     }
 
     // Create a variable number of planets for each star system
-    uint maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
-    uint minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
+    uint32_t maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
+    uint32_t minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
     if(minplanets == maxplanets){
       nplanets = minplanets;
     }else{
@@ -692,18 +841,17 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
       nplanets = max_planets;
 
     uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Planet      = game->getObjectDataManager()->getObjectTypeByName("Planet");
     
-    star->setType( obT_Star_System);
+    star->setType( obT_Star_System );
     EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
     thestar->setSize(nplanets * 60000ll);
-    unsigned int   thx = currandom->getInRange(0U, systemnames.size() - 1);
-    std::set<const char*>::iterator name = systemnames.begin();
-    advance(name, thx);
-    if(name == systemnames.end())
-      name = systemnames.begin();
-    star->setName(*name);
-    systemnames.erase(name);
+
+    std::string name = names->getName();
+
+    // FIXME: Would it not be better that this method takes a std::string?
+    star->setName(name.c_str());
+
     thestar->setPosition( Vector3d( currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  0ll));
@@ -713,7 +861,12 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
-        formatter << star->getName() << " " << i;
+
+				if (startswith(star->getName(), std::string("System"))) {
+						formatter << star->getName() << ", Planet " << i;
+				} else {
+						formatter << star->getName() << " " << i;
+				}
 
         planet->setType( obT_Planet);
         
