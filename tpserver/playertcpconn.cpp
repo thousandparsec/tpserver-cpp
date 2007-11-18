@@ -91,7 +91,7 @@ void PlayerTcpConnection::sendFrame(Frame * frame)
   if(version == fv0_2 && frame->getType() >= ft02_Max){
     Logger::getLogger()->error("Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
   }else{
-    if(!sendandclose){
+    if(status != 0 && !sendandclose){
       sendqueue.push(frame);
       
       processWrite();
