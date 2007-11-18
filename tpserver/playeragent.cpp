@@ -239,8 +239,8 @@ void PlayerAgent::processGetObjectById (Frame * frame){
         unsigned int objectID = frame->unpackInt();
 
         of = curConnection->createFrame ( frame );
-        std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
-        if ( visibleObjects.find ( objectID ) != visibleObjects.end() ){
+
+        if ( player->getPlayerView()->isVisibleObject(objectID) ){
 
           IGObject* o = Game::getGame()->getObjectManager()->getObject ( objectID );
           if ( o != NULL ){
