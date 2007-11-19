@@ -446,7 +446,7 @@ void MiniSec::createGame(){
   IGObject* universe = game->getObjectManager()->createNewObject();
   universe->setType(obT_Universe);
   Universe* theuniverse = (Universe*)(universe->getObjectData());
-  theuniverse->setSize(100000000000ll);
+  theuniverse->setSize(1000000000000ll);
   universe->setName("The Universe");
   theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
   obman->addObject(universe);
@@ -455,7 +455,7 @@ void MiniSec::createGame(){
   IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
   mw_galaxy->setType(obT_Galaxy);
   EmptyObject* eo = (EmptyObject*)(mw_galaxy->getObjectData());
-  eo->setSize(10000000000ll);
+  eo->setSize(100000000000ll);
   mw_galaxy->setName("Milky Way Galaxy");
   eo->setPosition(Vector3d(0ll, -6000ll, 0ll));
   mw_galaxy->addToParent(universe->getID());
