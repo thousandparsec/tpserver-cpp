@@ -26,7 +26,6 @@
 #include <tpserver/persistence.h>
 
 typedef struct st_mysql MYSQL;
-class MysqlObjectType;
 class SpaceCoordParam;
 class ObjectOrderParameter;
 class ListParameter;
@@ -40,6 +39,9 @@ public:
 
     virtual bool init();
     virtual void shutdown();
+
+    virtual bool saveGameInfo();
+    virtual bool retrieveGameInfo();
 
     virtual bool saveObject(IGObject* ob);
     virtual bool updateObject(IGObject* ob);
@@ -104,8 +106,6 @@ public:
 
     std::string addslashes(const std::string& in) const;
     uint32_t getTableVersion(const std::string& name);
-    
-    void addObjectType(MysqlObjectType* ot);
 
 private:
   
@@ -128,7 +128,6 @@ private:
     void lock();
     void unlock();
     MYSQL *conn;
-    std::map<uint32_t, MysqlObjectType*> objecttypes;
 
 };
 

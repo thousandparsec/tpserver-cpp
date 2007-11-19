@@ -41,11 +41,12 @@
 #include <tpserver/message.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include <tpserver/category.h>
 #include <tpserver/design.h>
 #include <tpserver/component.h>
 #include <tpserver/property.h>
-#include "mysqlobjecttype.h"
+
 
 #include "mysqlpersistence.h"
 
@@ -125,22 +126,25 @@ bool MysqlPersistence::init(){
                "name VARCHAR(50) NOT NULL UNIQUE, version INT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 0), (NULL, 'object', 0), "
-                    "(NULL, 'ordertype', 1), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
+            if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
+                    "(NULL, 'object', 0), "
+                    "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
                     "(NULL, 'orderparamlist', 0), "
                     "(NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messagereference', 0), (NULL, 'messageslot', 0), "
                     "(NULL, 'player', 0), (NULL, 'playerdesignvisible', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentvisible', 0), "
                     "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectvisible', 0), (NULL, 'category', 0), (NULL, 'design',0), "
-                    "(NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), (NULL, 'component', 0), (NULL, 'componentproperty', 0), "
-                    "(NULL, 'property', 0), (NULL, 'resourcedesc', 0);") != 0){
+                    "(NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), "
+                    "(NULL, 'component', 0), (NULL, 'componentcat', 0), (NULL, 'componentproperty', 0), "
+                    "(NULL, 'property', 0), (NULL, 'propertycat', 0), (NULL, 'resourcedesc', 0);") != 0){
                 throw std::exception();
             }
+            if(mysql_query(conn, "CREATE TABLE gameinfo (metakey varchar(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL);") != 0){
+              throw std::exception();
+            }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, " 
-                    "name TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, posx BIGINT NOT NULL, "
-                    "posy BIGINT NOT NULL, posz BIGINT NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, "
-                    "orders INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+                    "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE ordertype (orderid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL);") != 0){
@@ -226,9 +230,12 @@ bool MysqlPersistence::init(){
                     "value DOUBLE  NOT NULL, displaystring TEXT NOT NULL, PRIMARY KEY (designid, propertyid));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE component (componentid INT UNSIGNED NOT NULL PRIMARY KEY, categoryid INT UNSIGNED NOT NULL,"
+            if(mysql_query(conn, "CREATE TABLE component (componentid INT UNSIGNED NOT NULL PRIMARY KEY, "
                     "name TEXT NOT NULL, description TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE componentcat (componentid INT UNSIGNED NOT NULL, categoryid INT UNSIGNED NOT NULL, PRIMARY KEY (componentid, categoryid));") != 0){
+              throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE componentproperty (componentid INT UNSIGNED NOT NULL, propertyid INT UNSIGNED NOT NULL, "
                            "tpclvaluefunc TEXT NOT NULL, PRIMARY KEY (componentid, propertyid));") != 0){
@@ -238,6 +245,9 @@ bool MysqlPersistence::init(){
                     "rank INT UNSIGNED NOT NULL, name TEXT NOT NULL, displayname TEXT NOT NULL, description TEXT NOT NULL, "
                     "tpcldisplayfunc TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE propertycat (propertyid INT UNSIGNED NOT NULL, categoryid INT UNSIGNED NOT NULL, PRIMARY KEY (propertyid, categoryid));") != 0){
+              throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE resourcedesc (resourcetype INT UNSIGNED NOT NULL PRIMARY KEY, name_sig TEXT NOT NULL,"
                     "name_plur TEXT NOT NULL, unit_sig TEXT NOT NULL, uint_plur TEXT NOT NULL, description TEXT NOT NULL, "
@@ -267,29 +277,15 @@ bool MysqlPersistence::init(){
         mysql_free_result(tableversions);
         
         try{
-          if(getTableVersion("ordertype") == 0){
+          if(getTableVersion("tableversion") == 0){
             Logger::getLogger()->error("Old database format detected.");
-            Logger::getLogger()->error("Incompatable old order table format detected.");
-            Logger::getLogger()->error("Changes to order means there is no way to update from your current database to the newer format");
-            Logger::getLogger()->error("I cannot stress this enough: All the orders are gone, please shutdown your game, delete the contents of the database and start again. Sorry");
+            Logger::getLogger()->error("Incompatable old object, property and component table formats and missing tables detected.");
+            Logger::getLogger()->error("Changes to object, property and component means there is no way to update from your current database to the newer format");
+            Logger::getLogger()->error("I cannot stress this enough: Please shutdown your game, delete the contents of the database and start again. Sorry");
             Logger::getLogger()->error("Mysql persistence NOT STARTED");
             return false;
           }
         }catch(std::exception e){
-        }
-        
-        try{
-            getTableVersion("resourcedesc");
-        }catch(std::exception e){
-            if(mysql_query(conn, "CREATE TABLE resourcedesc (resourcetype INT UNSIGNED NOT NULL PRIMARY KEY, name_sig TEXT NOT NULL,"
-                    "name_plur TEXT NOT NULL, unit_sig TEXT NOT NULL, uint_plur TEXT NOT NULL, description TEXT NOT NULL, "
-                    "mass INT UNSIGNED NOT NULL, volume INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
-                Logger::getLogger()->error("Mysql: resourcedesc versions query result error: %s", mysql_error(conn));
-                Logger::getLogger()->error("You may need to delete the tables and start again");
-            }else if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'resourcedesc', 0);") != 0){
-                Logger::getLogger()->error("Mysql: resourcedesc versions update error: %s", mysql_error(conn));
-                Logger::getLogger()->error("You may need to delete the tables and start again");
-            }
         }
         
     }
@@ -336,14 +332,62 @@ void MysqlPersistence::shutdown(){
     unlock();
 }
 
+bool MysqlPersistence::saveGameInfo(){
+  lock();
+  mysql_query(conn, "DELETE FROM gameinfo;");
+  unlock();
+  std::ostringstream querybuilder;
+  Game* game = Game::getGame();
+  querybuilder << "INSERT INTO gameinfo VALUES ('" << addslashes(game->getKey()) << "', ";
+  querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber() << ");";
+  lock();
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not save gameinfo - %s", mysql_error(conn));
+    unlock();
+    return false;
+  }
+  unlock();
+  return true;;
+}
+
+bool MysqlPersistence::retrieveGameInfo(){
+  lock();
+  if(mysql_query(conn, "SELECT * FROM gameinfo;") != 0){
+    Logger::getLogger()->error("Mysql: Could not retrieve gameinfo - %s", mysql_error(conn));
+    unlock();
+    return false;
+  }
+  MYSQL_RES *giresult = mysql_store_result(conn);
+  if(giresult == NULL){
+    Logger::getLogger()->error("Mysql: retrieve gameinfo: Could not store result - %s", mysql_error(conn));
+    unlock();
+    return false;
+  }
+  unlock();
+  
+  MYSQL_ROW row = mysql_fetch_row(giresult);
+  if(row == NULL){
+    Logger::getLogger()->warning("Mysql: No existing gameinfo");
+    mysql_free_result(giresult);
+    return false;
+  }
+  
+  Game* game = Game::getGame();
+  
+  game->setKey(row[0]);
+  game->setGameStartTime(strtoull(row[1], NULL, 10));
+  game->setTurnNumber(atoi(row[2]));
+  
+  mysql_free_result(giresult);
+  
+  return true;
+}
+
 bool MysqlPersistence::saveObject(IGObject* ob){
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO object VALUES (" << ob->getID() << ", " << ob->getType() << ", ";
-    querybuilder << "'" << addslashes(ob->getName()) << "', " << ob->getParent() << ", ";
-    querybuilder << ob->getSize() << ", " << ob->getPosition().getX() << ", " << ob->getPosition().getY() << ", ";
-    querybuilder << ob->getPosition().getZ() << ", " << ob->getVelocity().getX() << ", ";
-    querybuilder << ob->getVelocity().getY() << ", " << ob->getVelocity().getZ() << ", " << ob->getNumOrders(-1);
-    querybuilder << ", " << ob->getModTime() << ");";
+    querybuilder << "'" << addslashes(ob->getName()) << "', '" << addslashes(ob->getDescription()) << "', ";
+    querybuilder << ob->getParent() << ", " << ob->getModTime() << ");";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not store object %d - %s", ob->getID(), mysql_error(conn));
@@ -352,13 +396,9 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     }
     bool rtv;
     //store type-specific information
-    MysqlObjectType* obtype = objecttypes[ob->getType()];
-    if(obtype != NULL){
-        rtv = obtype->save(this, conn, ob);
-    }else{
-        Logger::getLogger()->error("Mysql: Object type %d not registered", ob->getType());
-        rtv = false;
-    }
+    
+    //TODO objectparameters
+    
     unlock();
     return rtv;
 }
@@ -368,11 +408,8 @@ bool MysqlPersistence::saveObject(IGObject* ob){
 bool MysqlPersistence::updateObject(IGObject* ob){
     std::ostringstream querybuilder;
     querybuilder << "UPDATE object SET type=" << ob->getType() << ", name='";
-    querybuilder << addslashes(ob->getName()) << "', parentid=" << ob->getParent() << ", size=";
-    querybuilder << ob->getSize() << ", posx=" << ob->getPosition().getX() << ", posy=" << ob->getPosition().getY() << ", posz=";
-    querybuilder << ob->getPosition().getZ() << ", velx=" << ob->getVelocity().getX() << ", vely=";
-    querybuilder << ob->getVelocity().getY() << ", velz=" << ob->getVelocity().getZ() << ", orders=" << ob->getNumOrders();
-    querybuilder << ", modtime=" << ob->getModTime() << " WHERE objectid=" << ob->getID() << ";";
+    querybuilder << addslashes(ob->getName()) << "', description='", addslashes(ob->getDescription());
+    querybuilder << "', parentid=" << ob->getParent() << ", modtime=" << ob->getModTime() << " WHERE objectid=" << ob->getID() << ";";
     lock();
     std::string query = querybuilder.str();
     //std::cout << "Query: " << query << std::endl;
@@ -383,13 +420,9 @@ bool MysqlPersistence::updateObject(IGObject* ob){
     }
     bool rtv;
     //store type-specific information
-    MysqlObjectType* obtype = objecttypes[ob->getType()];
-    if(obtype != NULL){
-        rtv = obtype->update(this, conn, ob);
-    }else{
-        Logger::getLogger()->error("Mysql: Object type %d not registered", ob->getType());
-        rtv = false;
-    }
+    
+    //TODO objectparameters
+    
     unlock();
     return rtv;
 }
@@ -442,14 +475,8 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     object->setID(obid);
     object->setType(atoi(row[1]));
     object->setName(row[2]);
-    object->setParent(atoi(row[3]));
-    object->setSize(strtoull(row[4], NULL, 10));
-    Vector3d vec;
-    vec.setAll(atoll(row[5]), atoll(row[6]), atoll(row[7]));
-    object->setPosition(vec);
-    vec.setAll(atoll(row[8]), atoll(row[9]), atoll(row[10]));
-    object->setVelocity(vec);
-    object->setNumOrders(atoi(row[11]));
+    object->setDescription(row[3]);
+    object->setParent(atoi(row[4]));
     
     MYSQL_ROW children;
     while((children = mysql_fetch_row(childres)) != NULL){
@@ -462,22 +489,11 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     mysql_free_result(childres);
 
     // fetch type-specific information
-    MysqlObjectType* obtype = objecttypes[object->getType()];
-    if(obtype != NULL){
-        lock();
-        bool sucessful = obtype->retrieve(conn, object);
-        unlock();
-        object->setModTime(strtoull(row[12], NULL, 10));
-        if(!sucessful){
-            Logger::getLogger()->error("Mysql: Could not retrieve object type specific data");
-            delete object;
-            object = NULL;
-        }
-    }else{
-        Logger::getLogger()->error("Mysql: Object type %d not registered", object->getType());
-        delete object;
-        object = NULL;
-    }
+    
+    //TODO objectparameters
+    
+    object->setModTime(strtoull(row[5], NULL, 10));
+    
     mysql_free_result(obresult);
     return object;
 }
@@ -520,13 +536,9 @@ bool MysqlPersistence::removeObject(uint32_t obid){
     }
     bool rtv;
     //store type-specific information
-    MysqlObjectType* obtype = objecttypes[objecttype];
-    if(obtype != NULL){
-        rtv = obtype->remove(conn, obid);
-    }else{
-        Logger::getLogger()->error("Mysql: Object type %d not registered", objecttype);
-        rtv = false;
-    }
+    
+    //TODO objectparameters
+    
     unlock();
     return rtv;
     
@@ -1695,7 +1707,8 @@ bool MysqlPersistence::savePlayer(Player* player){
         return false;
     }
     unlock();
-    std::set<uint32_t> idset = player->getVisibleDesigns();
+    PlayerView* playerview = player->getPlayerView();
+    std::set<uint32_t> idset = playerview->getVisibleDesigns();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerdesignvisible VALUES ";
@@ -1713,7 +1726,7 @@ bool MysqlPersistence::savePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getUsableDesigns();
+    idset = playerview->getUsableDesigns();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerdesignusable VALUES ";
@@ -1731,7 +1744,7 @@ bool MysqlPersistence::savePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getVisibleComponents();
+    idset = playerview->getVisibleComponents();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playercomponentusable VALUES ";
@@ -1749,7 +1762,7 @@ bool MysqlPersistence::savePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getUsableComponents();
+    idset = playerview->getUsableComponents();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playercomponentusable VALUES ";
@@ -1767,7 +1780,7 @@ bool MysqlPersistence::savePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getVisibleObjects();
+    idset = playerview->getVisibleObjects();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerobjectvisible VALUES ";
@@ -1834,7 +1847,8 @@ bool MysqlPersistence::updatePlayer(Player* player){
         return false;
     }
     unlock();
-    std::set<uint32_t> idset = player->getVisibleDesigns();
+    PlayerView* playerview = player->getPlayerView();
+    std::set<uint32_t> idset = playerview->getVisibleDesigns();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerdesignvisible VALUES ";
@@ -1852,7 +1866,7 @@ bool MysqlPersistence::updatePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getUsableDesigns();
+    idset = playerview->getUsableDesigns();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerdesignusable VALUES ";
@@ -1870,7 +1884,7 @@ bool MysqlPersistence::updatePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getVisibleComponents();
+    idset = playerview->getVisibleComponents();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playercomponentvisible VALUES ";
@@ -1888,7 +1902,7 @@ bool MysqlPersistence::updatePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getUsableComponents();
+    idset = playerview->getUsableComponents();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playercomponentusable VALUES ";
@@ -1906,7 +1920,7 @@ bool MysqlPersistence::updatePlayer(Player* player){
         }
         unlock();
     }
-    idset = player->getVisibleObjects();
+    idset = playerview->getVisibleObjects();
     if(!idset.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO playerobjectvisible VALUES ";
@@ -1974,9 +1988,10 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
         return NULL;
     }
     unlock(); // finished with mysql for a bit
+    PlayerView* playerview = player->getPlayerView();
     
     while((row = mysql_fetch_row(res)) != NULL){
-        player->addVisibleDesign(atoi(row[0]));
+        playerview->addVisibleDesign(atoi(row[0]));
     }
     mysql_free_result(res);
     
@@ -1999,7 +2014,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     unlock(); // finished with mysql for a bit
     
     while((row = mysql_fetch_row(res)) != NULL){
-        player->addUsableDesign(atoi(row[0]));
+        playerview->addUsableDesign(atoi(row[0]));
     }
     mysql_free_result(res);
     
@@ -2022,7 +2037,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     unlock(); // finished with mysql for a bit
     
     while((row = mysql_fetch_row(res)) != NULL){
-        player->addVisibleComponent(atoi(row[0]));
+        playerview->addVisibleComponent(atoi(row[0]));
     }
     mysql_free_result(res);
     
@@ -2045,7 +2060,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     unlock(); // finished with mysql for a bit
     
     while((row = mysql_fetch_row(res)) != NULL){
-        player->addUsableComponent(atoi(row[0]));
+        playerview->addUsableComponent(atoi(row[0]));
     }
     mysql_free_result(res);
     
@@ -2072,7 +2087,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
         obids.insert(atoi(row[0]));
     }
     mysql_free_result(res);
-    player->setVisibleObjects(obids);
+    playerview->setVisibleObjects(obids);
     
     return player;
 }
@@ -2479,7 +2494,7 @@ std::set<uint32_t> MysqlPersistence::getDesignIds(){
 
 bool MysqlPersistence::saveComponent(Component* comp){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO component VALUES (" << comp->getComponentId() << ", " << comp->getCategoryId();
+    querybuilder << "INSERT INTO component VALUES (" << comp->getComponentId();
     querybuilder<< ", '" << addslashes(comp->getName()) << "', '" << addslashes(comp->getDescription()) << "', '";
     querybuilder << addslashes(comp->getTpclRequirementsFunction()) << "', " << comp->getModTime() << ");";
     lock();
@@ -2489,6 +2504,27 @@ bool MysqlPersistence::saveComponent(Component* comp){
         return false;
     }
     unlock();
+    
+    std::set<uint32_t> catlist = comp->getCategoryIds();
+    if(!catlist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO componentcat VALUES ";
+      for(std::set<uint32_t>::iterator itcurr = catlist.begin(); itcurr != catlist.end();
+          ++itcurr){
+        if(itcurr != catlist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << comp->getComponentId() << ", " << (*itcurr) << ")";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store component catergories %d - %s", comp->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
     std::map<uint32_t, std::string> proplist = comp->getPropertyList();
     if(!proplist.empty()){
         querybuilder.str("");
@@ -2535,12 +2571,35 @@ Component* MysqlPersistence::retrieveComponent(uint32_t compid){
     }
     Component* comp = new Component();
     comp->setComponentId(compid);
-    comp->setCategoryId(atoi(row[1]));
-    comp->setName(row[2]);
-    comp->setDescription(row[3]);
-    comp->setTpclRequirementsFunction(row[4]);
-    comp->setModTime(strtoull(row[5], NULL, 10));
+    comp->setName(row[1]);
+    comp->setDescription(row[2]);
+    comp->setTpclRequirementsFunction(row[3]);
+    uint64_t modtime = strtoull(row[4], NULL, 10);
     mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT categoryid FROM componentcat WHERE componentid = " << compid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not retrieve component categories %d - %s", compid, mysql_error(conn));
+      unlock();
+      delete comp;
+      return NULL;
+    }
+    MYSQL_RES *catresult = mysql_store_result(conn);
+    if(catresult == NULL){
+      Logger::getLogger()->error("Mysql: retrieve component categories: Could not store result - %s", mysql_error(conn));
+      unlock();
+      delete comp;
+      return NULL;
+    }
+    unlock();
+    std::set<uint32_t> catids;
+    while((row = mysql_fetch_row(catresult)) != NULL){
+      catids.insert(atoi(row[0]));
+    }
+    comp->setCategoryIds(catids);
+    mysql_free_result(catresult);
     
     querybuilder.str("");
     querybuilder << "SELECT propertyid,tpclvaluefunc FROM componentproperty WHERE componentid = " << compid << ";";
@@ -2566,6 +2625,8 @@ Component* MysqlPersistence::retrieveComponent(uint32_t compid){
     }
     comp->setPropertyList(pvlist);
     mysql_free_result(propresult);
+    
+    comp->setModTime(modtime);
     
     return comp;
 }
@@ -2616,7 +2677,7 @@ std::set<uint32_t> MysqlPersistence::getComponentIds(){
 
 bool MysqlPersistence::saveProperty(Property* prop){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO property VALUES (" << prop->getPropertyId() << ", " << prop->getCategoryId() << ", ";
+    querybuilder << "INSERT INTO property VALUES (" << prop->getPropertyId() << ", ";
     querybuilder << prop->getRank() << ", '" << addslashes(prop->getName()) << "', '" << addslashes(prop->getDisplayName());
     querybuilder << "', '" << addslashes(prop->getDescription()) << "', '" << addslashes(prop->getTpclDisplayFunction()) << "', '";
     querybuilder << addslashes(prop->getTpclRequirementsFunction()) << "', " << prop->getModTime() << ");";
@@ -2627,6 +2688,27 @@ bool MysqlPersistence::saveProperty(Property* prop){
         return false;
     }
     unlock();
+    
+    std::set<uint32_t> catlist = prop->getCategoryIds();
+    if(!catlist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO propertycat VALUES ";
+      for(std::set<uint32_t>::iterator itcurr = catlist.begin(); itcurr != catlist.end();
+          ++itcurr){
+        if(itcurr != catlist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << prop->getPropertyId() << ", " << (*itcurr) << ")";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store property catergories %d - %s", prop->getPropertyId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
     return true;
 }
 
@@ -2655,15 +2737,41 @@ Property* MysqlPersistence::retrieveProperty(uint32_t propid){
     }
     Property* prop = new Property();
     prop->setPropertyId(propid);
-    prop->setCategoryId(atoi(row[1]));
-    prop->setRank(atoi(row[2]));
-    prop->setName(row[3]);
-    prop->setDisplayName(row[4]);
-    prop->setDescription(row[5]);
-    prop->setTpclDisplayFunction(row[6]);
-    prop->setTpclRequirementsFunction(row[7]);
-    prop->setModTime(strtoull(row[8], NULL, 10));
+    prop->setRank(atoi(row[1]));
+    prop->setName(row[2]);
+    prop->setDisplayName(row[3]);
+    prop->setDescription(row[4]);
+    prop->setTpclDisplayFunction(row[5]);
+    prop->setTpclRequirementsFunction(row[6]);
+    uint64_t modtime = strtoull(row[7], NULL, 10);
     mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT categoryid FROM propertycat WHERE propertyid = " << propid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not retrieve property categories %d - %s", propid, mysql_error(conn));
+      unlock();
+      delete prop;
+      return NULL;
+    }
+    MYSQL_RES *catresult = mysql_store_result(conn);
+    if(catresult == NULL){
+      Logger::getLogger()->error("Mysql: retrieve property categories: Could not store result - %s", mysql_error(conn));
+      unlock();
+      delete prop;
+      return NULL;
+    }
+    unlock();
+    std::set<uint32_t> catids;
+    while((row = mysql_fetch_row(catresult)) != NULL){
+      catids.insert(atoi(row[0]));
+    }
+    prop->setCategoryIds(catids);
+    mysql_free_result(catresult);
+    
+    prop->setModTime(modtime);
+    
     return prop;
 }
 
@@ -2741,12 +2849,6 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
     }
 }
 
-void MysqlPersistence::addObjectType(MysqlObjectType* ot){
-    objecttypes[ot->getType()] = ot;
-    lock();
-    ot->initialise(this, conn);
-    unlock();
-}
 
 void MysqlPersistence::lock(){
 }
