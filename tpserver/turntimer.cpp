@@ -191,7 +191,7 @@ void TurnTimer::thresholdDoneAndStartEOT(){
 bool TurnTimer::isOverThreshold(){
   uint32_t threshold = atoi(Settings::getSettings()->get("turn_player_threshold").c_str());
   uint32_t numPlayers = Game::getGame()->getPlayerManager()->getNumPlayers();
-  return (numPlayers == 0) ? false : finishedPlayers.size() * 100 >= threshold * numPlayers;
+  return ((numPlayers == 0) ? false : finishedPlayers.size() * 100 >= threshold * numPlayers);
 }
 
 void TurnTimer::thresholdChanged(const std::string& key, const std::string& val){
