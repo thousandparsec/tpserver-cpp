@@ -105,6 +105,10 @@ void TurnTimer::resetTimer(){
     increment = atoi(settings->get("turn_length_under_threshold").c_str());
     if(increment == 0){
       // wait forever, don't set timer
+      // But do send an asynchTimeRemaining to alert players that the EOT finished
+      AsyncFrame * aframe = new AsyncTimeRemaining(secondsToEOT(), 1); //timer started
+      Network::getNetwork()->sendToAll(aframe);
+
       return;
     }
   }
