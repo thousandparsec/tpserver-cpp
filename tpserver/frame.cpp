@@ -254,7 +254,7 @@ int Frame::setHeader(char *newhead)
   }
 
 
-  if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max)) {
+  if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max && type != ft04_TurnFinished) || (version == fv0_4 && type >= ft04_Max)) {
     type = ft_Invalid;
     len = -1;
     
