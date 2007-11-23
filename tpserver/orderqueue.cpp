@@ -66,6 +66,10 @@ std::set<uint32_t> OrderQueue::getOwner() const{
   return owner;
 }
 
+void OrderQueue::setOwners(std::set<uint32_t> no){
+  owner = no;
+}
+
 void OrderQueue::setObjectId(uint32_t oid){
   objectid = oid;
 }
@@ -265,4 +269,12 @@ void OrderQueue::removeAllOrders(){
 
 void OrderQueue::setNextOrderId(uint32_t next){
   nextOrderId = next;
+}
+
+void OrderQueue::setOrderSlots(std::list<uint32_t> nos){
+  orderlist = nos;
+}
+
+std::list<uint32_t> OrderQueue::getOrderSlots(){
+  return orderlist;
 }
