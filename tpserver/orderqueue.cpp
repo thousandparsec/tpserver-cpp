@@ -275,6 +275,6 @@ void OrderQueue::setOrderSlots(std::list<uint32_t> nos){
   orderlist = nos;
 }
 
-std::list<uint32_t> OrderQueue::getOrderSlots(){
+std::list<uint32_t> OrderQueue::getOrderSlots() const{
   return orderlist;
 }

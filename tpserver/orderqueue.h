@@ -75,7 +75,7 @@ class OrderQueue{
   void setModTime(uint64_t nmt);
   void setOwners(std::set<uint32_t> no);
   void setOrderSlots(std::list<uint32_t> nos);
-  std::list<uint32_t> getOrderSlots();
+  std::list<uint32_t> getOrderSlots() const;
 
  private:
   uint32_t queueid;
