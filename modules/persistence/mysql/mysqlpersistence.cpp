@@ -30,6 +30,7 @@
 #include <tpserver/ordermanager.h>
 
 #include <tpserver/object.h>
+#include <tpserver/orderqueue.h>
 #include <tpserver/order.h>
 #include <tpserver/orderparameter.h>
 #include <tpserver/listparameter.h>
@@ -127,7 +128,7 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
-                    "(NULL, 'object', 0), "
+                    "(NULL, 'object', 0), (NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
@@ -147,29 +148,35 @@ bool MysqlPersistence::init(){
                     "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE ordertype (orderid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CRATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+              throw std::exception();
+            }
+            if(mysql_query(conn, "CRATE TABLE orderqueueowner (queueid INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL);") != 0){
+              throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE ordertype (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL, PRIMARY KEY(queueid, orderid));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderresource (orderid INT UNSIGNED NOT NULL, resourceid INT UNSIGNED NOT NULL, amount INT UNSIGNED NOT NULL, PRIMARY KEY (orderid, resourceid));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderresource (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, resourceid INT UNSIGNED NOT NULL, amount INT UNSIGNED NOT NULL, PRIMARY KEY (queueid, orderid, resourceid));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderparamspace (orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, PRIMARY KEY (orderid, position));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderparamspace (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, PRIMARY KEY (queueid, orderid, position));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderparamobject (orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, PRIMARY KEY (orderid, position));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderparamobject (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, PRIMARY KEY (queueid, orderid, position));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderparamstring (orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, thestring TEXT NOT NULL, PRIMARY KEY (orderid, position));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderparamstring (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, thestring TEXT NOT NULL, PRIMARY KEY (queueid, orderid, position));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderparamtime (orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL, PRIMARY KEY (orderid, position));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderparamtime (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL, PRIMARY KEY (queueid, orderid, position));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderparamlist (orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, listid INT UNSIGNED NOT NULL, amount INT UNSIGNED NOT NULL, PRIMARY KEY (orderid, position, listid));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderparamlist (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, position INT UNSIGNED NOT NULL, listid INT UNSIGNED NOT NULL, amount INT UNSIGNED NOT NULL, PRIMARY KEY (queueid, orderid, position, listid));") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderslot (objectid INT UNSIGNED NOT NULL, slot INT UNSIGNED NOT NULL, "
-                        "orderid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (objectid, slot));") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderslot (queueid INT UNSIGNED NOT NULL, slot INT UNSIGNED NOT NULL, "
+                        "orderid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (queueid, slot));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE board (boardid INT UNSIGNED NOT NULL PRIMARY KEY, "
@@ -279,8 +286,8 @@ bool MysqlPersistence::init(){
         try{
           if(getTableVersion("tableversion") == 0){
             Logger::getLogger()->error("Old database format detected.");
-            Logger::getLogger()->error("Incompatable old object, property and component table formats and missing tables detected.");
-            Logger::getLogger()->error("Changes to object, property and component means there is no way to update from your current database to the newer format");
+            Logger::getLogger()->error("Incompatable old object, order, property and component table formats and missing tables detected.");
+            Logger::getLogger()->error("Changes to object, order, property and component means there is no way to update from your current database to the newer format");
             Logger::getLogger()->error("I cannot stress this enough: Please shutdown your game, delete the contents of the database and start again. Sorry");
             Logger::getLogger()->error("Mysql persistence NOT STARTED");
             return false;
@@ -399,6 +406,7 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     
     //TODO objectparameters
     
+    ob->setDirty(!rtv);
     unlock();
     return rtv;
 }
@@ -423,6 +431,7 @@ bool MysqlPersistence::updateObject(IGObject* ob){
     
     //TODO objectparameters
     
+    ob->setDirty(!rtv);
     unlock();
     return rtv;
 }
@@ -493,6 +502,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     //TODO objectparameters
     
     object->setModTime(strtoull(row[5], NULL, 10));
+    object->setDirty(false);
     
     mysql_free_result(obresult);
     return object;
@@ -588,12 +598,293 @@ std::set<uint32_t> MysqlPersistence::getObjectIds(){
     return vis;
 }
 
-bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
-    std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO ordertype VALUES (" << ordid << ", " << ord->getType() << ", " << ord->getTurns() << ");";
-     lock();
+bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
+  std::ostringstream querybuilder;
+  querybuilder << "INSERT INTO orderqueue VALUES (" << oq->getQueueId() << ", " << oq->getObjectId() << ", ";
+  querybuilder << (oq->isActive() ? 1 : 0) << ", " << (oq->isRepeating() ? 1 : 0) << ", " << oq->getModTime() << ");";
+  lock();
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not insert orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
+    unlock();
+    return false;
+  }
+  unlock();
+  std::list<uint32_t> list = oq->getOrderSlots();
+  if(!list.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderslot VALUES ";
+    uint32_t slotnum = 0;
+    for(std::list<uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
+      if(itcurr != list.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << slotnum << ", " << (*itcurr) << ")";
+      slotnum++;
+    }
+    querybuilder << ";";
+    lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not store order %d - %s", ordid, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store orderslots - %s", mysql_error(conn));
+      unlock();
+      return false;
+    }
+    unlock();
+  }
+  std::set<uint32_t> owners = oq->getOwner();
+  if(!owners.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderqueueowner VALUES ";
+    for(std::set<uint32_t>::iterator itcurr = owners.begin(); itcurr != owners.end(); ++itcurr){
+      if(itcurr != owners.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
+    }
+    querybuilder << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not store orderqueue owners - %s", mysql_error(conn));
+      unlock();
+      return false;
+    }
+    unlock();
+  }
+  return true;
+}
+
+bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
+  std::ostringstream querybuilder;
+  querybuilder << "UPDATE orderqueue set objectid=" << oq->getObjectId() << ", active=" << (oq->isActive() ? 1 : 0);
+  querybuilder << ", repeating=" << (oq->isRepeating() ? 1 : 0) << ", modtime=" << oq->getModTime()<< " WHERE queueid=" << oq->getQueueId() << ");";
+  lock();
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not update orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
+    unlock();
+    return false;
+  }
+  
+  querybuilder.str("");
+  querybuilder << "DELETE FROM orderslot WHERE queueid=" << oq->getQueueId() <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not remove orderslots for orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
+    unlock();
+    return false;
+  }
+  querybuilder.str("");
+  querybuilder << "DELETE FROM orderqueueowner WHERE queueid=" << oq->getQueueId() <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not remove owners for orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
+    unlock();
+    return false;
+  }
+  unlock();
+  
+  std::list<uint32_t> list = oq->getOrderSlots();
+  if(!list.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderslot VALUES ";
+    uint32_t slotnum = 0;
+    for(std::list<uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
+      if(itcurr != list.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << slotnum << ", " << (*itcurr) << ")";
+      slotnum++;
+    }
+    querybuilder << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not store orderslots - %s", mysql_error(conn));
+      return false;
+    }
+  }
+  std::set<uint32_t> owners = oq->getOwner();
+  if(!owners.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderqueueowner VALUES ";
+    for(std::set<uint32_t>::iterator itcurr = owners.begin(); itcurr != owners.end(); ++itcurr){
+      if(itcurr != owners.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
+    }
+    querybuilder << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not store orderqueue owners - %s", mysql_error(conn));
+      unlock();
+      return false;
+    }
+    unlock();
+  }
+  
+  return true;
+}
+
+OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
+  std::ostringstream querybuilder;
+  querybuilder << "SELECT * FROM orderqueue WHERE queueid=" << oqid << ";";
+  lock();
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: get orderqueue: Could not store result - %s", mysql_error(conn));
+    unlock();
+    return NULL;
+  }
+  MYSQL_RES *oqresult = mysql_store_result(conn);
+  if(oqresult == NULL){
+    Logger::getLogger()->error("Mysql: get orderqueue: Could not store result - %s", mysql_error(conn));
+    unlock();
+    return NULL;
+  }
+  querybuilder.str("");
+  querybuilder << "SELECT orderid FROM orderslot WHERE queueid=" << oqid <<" ORDER BY slot;";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not query order list - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      return NULL;
+  }
+  MYSQL_RES *ordresult = mysql_store_result(conn);
+  if(ordresult == NULL){
+      Logger::getLogger()->error("Mysql: get order list: Could not store result - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      return NULL;
+  }
+  querybuilder.str("");
+  querybuilder << "SELECT playerid FROM orderqueueowner WHERE queueid=" << oqid <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not query orderqueue owners - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      mysql_free_result(ordresult);
+      return NULL;
+  }
+  MYSQL_RES *ownerresult = mysql_store_result(conn);
+  if(ownerresult == NULL){
+      Logger::getLogger()->error("Mysql: get order queue owners: Could not store result - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      mysql_free_result(ordresult);
+      return NULL;
+  }
+  unlock();
+  
+  
+  MYSQL_ROW oqrow = mysql_fetch_row(oqresult);
+  if(oqrow == NULL){
+    Logger::getLogger()->error("Mysql: get orderqueue: No such orderqueue - %d", oqid);
+    mysql_free_result(oqresult);
+    mysql_free_result(ordresult);
+    mysql_free_result(ownerresult);
+    return NULL;
+  }
+  
+  OrderQueue* oq = new OrderQueue();
+  oq->setQueueId(oqid);
+  oq->setObjectId(atoi(oqrow[1]));
+  oq->setActive(atoi(oqrow[2]) == 1);
+  oq->setRepeating(atoi(oqrow[3]) == 1);
+  oq->setModTime(strtoull(oqrow[4], NULL, 10));
+  
+  mysql_free_result(oqresult);
+  
+  uint32_t max = 0;
+  MYSQL_ROW olrow;
+  std::list<uint32_t> oolist;
+  while((olrow = mysql_fetch_row(ordresult)) != NULL){
+    uint32_t olvalue = atoi(olrow[0]);
+    oolist.push_back(olvalue);
+    if(olvalue > max)
+      max = olvalue;
+  }
+  mysql_free_result(ordresult);
+  oq->setOrderSlots(oolist);
+  oq->setNextOrderId(max+1);
+  
+  MYSQL_ROW ownrow;
+  std::set<uint32_t> owners;
+  while((ownrow = mysql_fetch_row(ownerresult)) != NULL){
+    owners.insert(atoi(ownrow[0]));
+  }
+  mysql_free_result(ownerresult);
+  oq->setOwners(owners);
+  
+  
+  return oq;
+}
+
+bool MysqlPersistence::removeOrderQueue(uint32_t oqid){
+  std::ostringstream querybuilder;
+  
+  
+  querybuilder << "DELETE FROM orderslot WHERE queueid=" << oqid <<";";
+  lock();
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not remove orderslots for object %d - %s", oqid, mysql_error(conn));
+      unlock();
+      return false;
+  }
+  querybuilder.str("");
+  querybuilder << "DELETE FROM orderqueueowner WHERE queueid=" << oqid <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not remove owners for orderqueue %d - %s", oqid, mysql_error(conn));
+    unlock();
+    return false;
+  }
+  unlock();
+  return true;
+}
+
+std::set<uint32_t> MysqlPersistence::getOrderQueueIds(){
+  lock();
+  if(mysql_query(conn, "SELECT queueid FROM orderqueue;") != 0){
+    Logger::getLogger()->error("Mysql: Could not query orderqueue ids - %s", mysql_error(conn));
+    unlock();
+    return std::set<uint32_t>();
+  }
+  MYSQL_RES *oqresult = mysql_store_result(conn);
+  unlock();
+  if(oqresult == NULL){
+    Logger::getLogger()->error("Mysql: get orderqueueids: Could not store result - %s", mysql_error(conn));
+    return std::set<uint32_t>();
+  }
+  MYSQL_ROW max;
+  std::set<uint32_t> vis;
+  while((max = mysql_fetch_row(oqresult)) != NULL){
+    vis.insert(atoi(max[0]));
+  }
+  mysql_free_result(oqresult);
+  return vis;
+}
+
+uint32_t MysqlPersistence::getMaxOrderQueueId(){
+  lock();
+  if(mysql_query(conn, "SELECT MAX(queueid) FROM orderqueue;") != 0){
+    Logger::getLogger()->error("Mysql: Could not query max orderqueue id - %s", mysql_error(conn));
+    unlock();
+    return 0;
+  }
+  MYSQL_RES *oqresult = mysql_store_result(conn);
+  unlock();
+  if(oqresult == NULL){
+    Logger::getLogger()->error("Mysql: get max orderqueueid: Could not store result - %s", mysql_error(conn));
+    return 0;
+  }
+  MYSQL_ROW max = mysql_fetch_row(oqresult);
+  uint32_t maxid = 0;
+  if(max[0] != NULL){
+    maxid = atoi(max[0]);
+  }
+  mysql_free_result(oqresult);
+  return maxid;
+}
+    
+bool MysqlPersistence::saveOrder(uint32_t queueid, uint32_t ordid, Order* ord){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO ordertype VALUES (" << queueid << ", " << ordid << ", " << ord->getType() << ", " << ord->getTurns() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store order %d,%d - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
     }
@@ -606,12 +897,12 @@ bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
       for(std::map<uint32_t, uint32_t>::iterator itcurr = ress.begin(); itcurr != ress.end(); ++itcurr){
         if(itcurr != ress.begin())
           querybuilder << ", ";
-        querybuilder << "(" << ordid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
+        querybuilder << "(" << queueid << ", " << ordid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
       }
       querybuilder << ";";
       lock();
       if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not store order %d resources - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not store order %d,%d resources - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
       }
@@ -623,19 +914,19 @@ bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
     for(std::list<OrderParameter*>::iterator itcurr = params.begin(); itcurr != params.end(); ++itcurr){
       switch((*itcurr)->getType()){
         case opT_Space_Coord_Abs:
-          updateSpaceCoordParam(ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
+          updateSpaceCoordParam(queueid, ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
           break;
         case opT_Time:
-          updateTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
+          updateTimeParameter(queueid, ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          updateObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
+          updateObjectOrderParameter(queueid, ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
-          updateListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
+          updateListParameter(queueid, ordid, parampos, static_cast<ListParameter*>(*itcurr));
           break;
         case opT_String:
-          updateStringParameter(ordid, parampos, static_cast<StringParameter*>(*itcurr));
+          updateStringParameter(queueid, ordid, parampos, static_cast<StringParameter*>(*itcurr));
           break;
         default:
           Logger::getLogger()->error("MysqlPersistence: unknown order parameter type at save");
@@ -646,24 +937,25 @@ bool MysqlPersistence::saveOrder(uint32_t ordid, Order* ord){
     
     unlock();
     return true;
+  
 }
 
-bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
+bool MysqlPersistence::updateOrder(uint32_t queueid, uint32_t ordid, Order* ord){
     std::ostringstream querybuilder;
-    querybuilder << "UPDATE ordertype SET type = " << ord->getType() << ", turns=" << ord->getTurns() << " WHERE orderid=" << ordid << ";";
+    querybuilder << "UPDATE ordertype SET type = " << ord->getType() << ", turns=" << ord->getTurns() << " WHERE queueid=" << queueid << " AND orderid=" << ordid << ";";
      lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update order %d - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not update order %d,%d - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
     }
     unlock();
     //update resources
     querybuilder.str("");
-    querybuilder << "DELETE FROM orderresource WHERE orderid=" << ordid << ";";
+    querybuilder << "DELETE FROM orderresource WHERE queueid=" << queueid << " AND orderid=" << ordid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update (a) order %d resources - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not update (a) order %d,%d resources - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
       }
@@ -675,12 +967,12 @@ bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
       for(std::map<uint32_t, uint32_t>::iterator itcurr = ress.begin(); itcurr != ress.end(); ++itcurr){
         if(itcurr != ress.begin())
           querybuilder << ", ";
-        querybuilder << "(" << ordid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
+        querybuilder << "(" << queueid << ", " << ordid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
       }
       querybuilder << ";";
       lock();
       if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update (b) order %d resources - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not update (b) order %d,%d resources - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
       }
@@ -692,19 +984,19 @@ bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
     for(std::list<OrderParameter*>::iterator itcurr = params.begin(); itcurr != params.end(); ++itcurr){
       switch((*itcurr)->getType()){
         case opT_Space_Coord_Abs:
-          updateSpaceCoordParam(ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
+          updateSpaceCoordParam(queueid, ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
           break;
         case opT_Time:
-          updateTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
+          updateTimeParameter(queueid, ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          updateObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
+          updateObjectOrderParameter(queueid, ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
-          updateListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
+          updateListParameter(queueid, ordid, parampos, static_cast<ListParameter*>(*itcurr));
           break;
         case opT_String:
-          updateStringParameter(ordid, parampos, static_cast<StringParameter*>(*itcurr));
+          updateStringParameter(queueid, ordid, parampos, static_cast<StringParameter*>(*itcurr));
           break;
         default:
           Logger::getLogger()->error("MysqlPersistence: unknown order parameter type at update");
@@ -715,12 +1007,12 @@ bool MysqlPersistence::updateOrder(uint32_t ordid, Order* ord){
     return true;
 }
 
-Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
+Order* MysqlPersistence::retrieveOrder(uint32_t queueid, uint32_t ordid){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT type,turns FROM ordertype WHERE orderid = " << ordid << ";";
+    querybuilder << "SELECT type,turns FROM ordertype WHERE queueid = " << queueid << " AND orderid = " << ordid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not retrieve order %d - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not retrieve order %d,%d - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return NULL;
     }
@@ -739,7 +1031,7 @@ Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
         turns = atoi(row[1]);
     }else{
         mysql_free_result(ordresult);
-        Logger::getLogger()->error("Mysql: retrieve order: no such order %d - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: retrieve order: no such order %d,%d - %s", queueid, ordid, mysql_error(conn));
         return NULL;
    }
     mysql_free_result(ordresult);
@@ -747,10 +1039,10 @@ Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
     order->setTurns(turns);
     //fetch resources
     querybuilder.str("");
-    querybuilder << "SELECT resourceid, amount FROM orderresource WHERE orderid=" << ordid << ";";
+    querybuilder << "SELECT resourceid, amount FROM orderresource WHERE queueid=" << queueid << " AND orderid=" << ordid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not retrieve order resources %d - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not retrieve order resources %d,%d - %s", queueid, ordid, mysql_error(conn));
         unlock();
         delete order;
         return NULL;
@@ -774,19 +1066,19 @@ Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
     for(std::list<OrderParameter*>::iterator itcurr = params.begin(); itcurr != params.end(); ++itcurr){
       switch((*itcurr)->getType()){
         case opT_Space_Coord_Abs:
-          retrieveSpaceCoordParam(ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
+          retrieveSpaceCoordParam(queueid, ordid, parampos, static_cast<SpaceCoordParam*>(*itcurr));
           break;
         case opT_Time:
-          retrieveTimeParameter(ordid, parampos, static_cast<TimeParameter*>(*itcurr));
+          retrieveTimeParameter(queueid, ordid, parampos, static_cast<TimeParameter*>(*itcurr));
           break;
         case opT_Object_ID:
-          retrieveObjectOrderParameter(ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
+          retrieveObjectOrderParameter(queueid, ordid, parampos, static_cast<ObjectOrderParameter*>(*itcurr));
           break;
         case opT_List:
-          retrieveListParameter(ordid, parampos, static_cast<ListParameter*>(*itcurr));
+          retrieveListParameter(queueid, ordid, parampos, static_cast<ListParameter*>(*itcurr));
           break;
         case opT_String:
-          retrieveStringParameter(ordid, parampos, static_cast<StringParameter*>(*itcurr));
+          retrieveStringParameter(queueid, ordid, parampos, static_cast<StringParameter*>(*itcurr));
           break;
         default:
           Logger::getLogger()->error("MysqlPersistence: unknown order parameter type at retrieve");
@@ -798,9 +1090,9 @@ Order* MysqlPersistence::retrieveOrder(uint32_t ordid){
     return order;
 }
 
-bool MysqlPersistence::removeOrder(uint32_t ordid){
+bool MysqlPersistence::removeOrder(uint32_t queueid, uint32_t ordid){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT type FROM ordertype WHERE orderid=" << ordid <<";";
+    querybuilder << "SELECT type FROM ordertype WHERE queueid=" << queueid << " AND orderid=" << ordid <<";";
     uint32_t ordertype;
     lock();
     try{
@@ -827,19 +1119,19 @@ bool MysqlPersistence::removeOrder(uint32_t ordid){
         return false;
     }
     querybuilder.str("");
-    querybuilder << "DELETE FROM ordertype WHERE orderid=" << ordid << ";";
+    querybuilder << "DELETE FROM ordertype WHERE queueid= " << queueid << " AND orderid=" << ordid << ";";
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not remove order %d - %s", ordid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not remove order %d,%d - %s", queueid, ordid, mysql_error(conn));
         unlock();
         return false;
     }
     unlock();
     //remove resources
     querybuilder.str("");
-    querybuilder << "DELETE FROM orderresource WHERE orderid=" << ordid << ";";
+    querybuilder << "DELETE FROM orderresource WHERE queueid=" << queueid << " AND orderid=" << ordid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove order %d resources - %s", ordid, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove order %d,%d resources - %s", queueid, ordid, mysql_error(conn));
       unlock();
       return false;
     }
@@ -851,19 +1143,19 @@ bool MysqlPersistence::removeOrder(uint32_t ordid){
     for(std::list<OrderParameter*>::iterator itcurr = params.begin(); itcurr != params.end(); ++itcurr){
       switch((*itcurr)->getType()){
         case opT_Space_Coord_Abs:
-          removeSpaceCoordParam(ordid, parampos);
+          removeSpaceCoordParam(queueid, ordid, parampos);
           break;
         case opT_Time:
-          removeTimeParameter(ordid, parampos);
+          removeTimeParameter(queueid, ordid, parampos);
           break;
         case opT_Object_ID:
-          removeObjectOrderParameter(ordid, parampos);
+          removeObjectOrderParameter(queueid, ordid, parampos);
           break;
         case opT_List:
-          removeListParameter(ordid, parampos);
+          removeListParameter(queueid, ordid, parampos);
           break;
         case opT_String:
-          removeStringParameter(ordid, parampos);
+          removeStringParameter(queueid, ordid, parampos);
           break;
         default:
           Logger::getLogger()->error("MysqlPersistence: unknown order parameter type at remove");
@@ -875,23 +1167,23 @@ bool MysqlPersistence::removeOrder(uint32_t ordid){
     return true;
 }
 
-bool MysqlPersistence::updateSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp){
+bool MysqlPersistence::updateSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos, SpaceCoordParam* scp){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamspace WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamspace WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update SpaceCoordParam %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update SpaceCoordParam %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   unlock();
   querybuilder.str("");
-  querybuilder << "INSERT INTO orderparamspace VALUES (" << ordid << ", " << pos << ", ";
+  querybuilder << "INSERT INTO orderparamspace VALUES (" << queueid << ", " << ordid << ", " << pos << ", ";
   querybuilder << scp->getPosition().getX() << ", " << scp->getPosition().getY() << ", ";
   querybuilder << scp->getPosition().getZ() <<");";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update SpaceCoordParam %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update SpaceCoordParam %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -899,12 +1191,12 @@ bool MysqlPersistence::updateSpaceCoordParam(uint32_t ordid, uint32_t pos, Space
   return true;
 }
 
-bool MysqlPersistence::retrieveSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp){
+bool MysqlPersistence::retrieveSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos, SpaceCoordParam* scp){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT posx,posy,posz FROM orderparamspace WHERE orderid = " << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT posx,posy,posz FROM orderparamspace WHERE queueid = " << queueid << " AND orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve SpaceCoordParam %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve SpaceCoordParam %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -918,7 +1210,7 @@ bool MysqlPersistence::retrieveSpaceCoordParam(uint32_t ordid, uint32_t pos, Spa
   MYSQL_ROW row = mysql_fetch_row(ordresult);
   if(row == NULL){
       mysql_free_result(ordresult);
-      Logger::getLogger()->error("Mysql: retrieve SpaceCoordParam: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve SpaceCoordParam: no such parameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       return false;
   }
   
@@ -929,12 +1221,12 @@ bool MysqlPersistence::retrieveSpaceCoordParam(uint32_t ordid, uint32_t pos, Spa
   return true;
 }
 
-bool MysqlPersistence::removeSpaceCoordParam(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamspace WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamspace WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove SpaceCoordParam %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove SpaceCoordParam %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -942,12 +1234,12 @@ bool MysqlPersistence::removeSpaceCoordParam(uint32_t ordid, uint32_t pos){
   return true;
 }
 
-bool MysqlPersistence::updateListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp){
+bool MysqlPersistence::updateListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ListParameter* lp){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamlist WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamlist WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update ListParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update ListParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -959,12 +1251,12 @@ bool MysqlPersistence::updateListParameter(uint32_t ordid, uint32_t pos, ListPar
     for(std::map<uint32_t, uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
       if(itcurr != list.begin())
         querybuilder << ", ";
-      querybuilder << "(" << ordid << ", " << pos << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
+      querybuilder << "(" << queueid << ", " << ordid << ", " << pos << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
     }
     querybuilder << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update ListParameter %d,&d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update ListParameter %d,%d,&d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
     }
@@ -973,12 +1265,12 @@ bool MysqlPersistence::updateListParameter(uint32_t ordid, uint32_t pos, ListPar
   return true;
 }
 
-bool MysqlPersistence::retrieveListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp){
+bool MysqlPersistence::retrieveListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ListParameter* lp){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT listid, amount FROM orderparamlist WHERE orderid=" << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT listid, amount FROM orderparamlist WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve ListParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve ListParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1000,12 +1292,12 @@ bool MysqlPersistence::retrieveListParameter(uint32_t ordid, uint32_t pos, ListP
   return true;
 }
 
-bool MysqlPersistence::removeListParameter(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamlist WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamlist WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove ListParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove ListParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1013,22 +1305,22 @@ bool MysqlPersistence::removeListParameter(uint32_t ordid, uint32_t pos){
   return true;
 }
 
-bool MysqlPersistence::updateObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
+bool MysqlPersistence::updateObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamobject WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamobject WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update ObjectOrderParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   unlock();
   querybuilder.str("");
-  querybuilder << "INSERT INTO orderparamobject VALUES (" << ordid << ", " << pos << ", ";
+  querybuilder << "INSERT INTO orderparamobject VALUES (" << queueid << ", " << ordid << ", " << pos << ", ";
   querybuilder << ob->getObjectId() << ");";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update ObjectOrderParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1036,12 +1328,12 @@ bool MysqlPersistence::updateObjectOrderParameter(uint32_t ordid, uint32_t pos, 
   return true;
 }
 
-bool MysqlPersistence::retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
+bool MysqlPersistence::retrieveObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT objectid FROM orderparamobject WHERE orderid = " << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT objectid FROM orderparamobject WHERE queueid=" << queueid << " AND orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve ObjectOrderParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1055,7 +1347,7 @@ bool MysqlPersistence::retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos
   MYSQL_ROW row = mysql_fetch_row(ordresult);
   if(row == NULL){
       mysql_free_result(ordresult);
-      Logger::getLogger()->error("Mysql: retrieve ObjectOrderParameter: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve ObjectOrderParameter: no such parameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       return false;
   }
   
@@ -1066,12 +1358,12 @@ bool MysqlPersistence::retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos
   return true;
 }
 
-bool MysqlPersistence::removeObjectOrderParameter(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamobject WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamobject WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove ObjectOrderParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove ObjectOrderParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1079,22 +1371,22 @@ bool MysqlPersistence::removeObjectOrderParameter(uint32_t ordid, uint32_t pos){
   return true;
 }
 
-bool MysqlPersistence::updateStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st){
+bool MysqlPersistence::updateStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, StringParameter* st){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamstring WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamstring WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update StringParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update StringParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   unlock();
   querybuilder.str("");
-  querybuilder << "INSERT INTO orderparamstring VALUES (" << ordid << ", " << pos << ", '";
+  querybuilder << "INSERT INTO orderparamstring VALUES (" << queueid << ", " << ordid << ", " << pos << ", '";
   querybuilder << addslashes(st->getString()) <<"');";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update StringParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update StringParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1102,12 +1394,12 @@ bool MysqlPersistence::updateStringParameter(uint32_t ordid, uint32_t pos, Strin
   return true;
 }
 
-bool MysqlPersistence::retrieveStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st){
+bool MysqlPersistence::retrieveStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, StringParameter* st){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT thestring FROM orderparamstring WHERE orderid = " << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT thestring FROM orderparamstring WHERE queueid=" << queueid << " AND orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve StringParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve StringParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1121,7 +1413,7 @@ bool MysqlPersistence::retrieveStringParameter(uint32_t ordid, uint32_t pos, Str
   MYSQL_ROW row = mysql_fetch_row(ordresult);
   if(row == NULL){
       mysql_free_result(ordresult);
-      Logger::getLogger()->error("Mysql: retrieve StringParameter: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve StringParameter: no such parameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       return false;
   }
   
@@ -1132,12 +1424,12 @@ bool MysqlPersistence::retrieveStringParameter(uint32_t ordid, uint32_t pos, Str
   return true;
 }
 
-bool MysqlPersistence::removeStringParameter(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamstring WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamstring WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove StringParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove StringParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1145,22 +1437,22 @@ bool MysqlPersistence::removeStringParameter(uint32_t ordid, uint32_t pos){
   return true;
 }
 
-bool MysqlPersistence::updateTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp){
+bool MysqlPersistence::updateTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamtime WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamtime WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove/update TimeParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove/update TimeParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   unlock();
   querybuilder.str("");
-  querybuilder << "INSERT INTO orderparamtime VALUES (" << ordid << ", " << pos << ", ";
+  querybuilder << "INSERT INTO orderparamtime VALUES (" << queueid << ", " << ordid << ", " << pos << ", ";
   querybuilder << tp->getTime() <<");";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not store/update TimeParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not store/update TimeParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1168,12 +1460,12 @@ bool MysqlPersistence::updateTimeParameter(uint32_t ordid, uint32_t pos, TimePar
   return true;
 }
 
-bool MysqlPersistence::retrieveTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp){
+bool MysqlPersistence::retrieveTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp){
   std::ostringstream querybuilder;
-  querybuilder << "SELECT turns FROM orderparamtime WHERE orderid = " << ordid << " AND position = " << pos << ";";
+  querybuilder << "SELECT turns FROM orderparamtime WHERE queueid=" << queueid << " AND orderid = " << ordid << " AND position = " << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not retrieve TimeParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not retrieve TimeParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
@@ -1187,7 +1479,7 @@ bool MysqlPersistence::retrieveTimeParameter(uint32_t ordid, uint32_t pos, TimeP
   MYSQL_ROW row = mysql_fetch_row(ordresult);
   if(row == NULL){
       mysql_free_result(ordresult);
-      Logger::getLogger()->error("Mysql: retrieve TimeParameter: no such parameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: retrieve TimeParameter: no such parameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       return false;
   }
   
@@ -1198,116 +1490,17 @@ bool MysqlPersistence::retrieveTimeParameter(uint32_t ordid, uint32_t pos, TimeP
   return true;
 }
   
-bool MysqlPersistence::removeTimeParameter(uint32_t ordid, uint32_t pos){
+bool MysqlPersistence::removeTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos){
   std::ostringstream querybuilder;
-  querybuilder << "DELETE FROM orderparamtime WHERE orderid=" << ordid << " AND position=" << pos << ";";
+  querybuilder << "DELETE FROM orderparamtime WHERE queueid=" << queueid << " AND orderid=" << ordid << " AND position=" << pos << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-      Logger::getLogger()->error("Mysql: Could not remove TimeParameter %d,%d - %s", ordid, pos, mysql_error(conn));
+      Logger::getLogger()->error("Mysql: Could not remove TimeParameter %d,%d,%d - %s", queueid, ordid, pos, mysql_error(conn));
       unlock();
       return false;
   }
   unlock();
   return true;
-}
-
-bool MysqlPersistence::saveOrderList(uint32_t obid, std::list<uint32_t> list){
-    std::ostringstream querybuilder;
-    querybuilder << "DELETE FROM orderslot WHERE objectid=" << obid <<";";
-    lock();
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not remove orderslots for object %d - %s", obid, mysql_error(conn));
-        unlock();
-        return false;
-    }
-    if(!list.empty()){
-        querybuilder.str("");
-        querybuilder << "INSERT INTO orderslot VALUES ";
-        uint32_t slotnum = 0;
-        for(std::list<uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
-            if(itcurr != list.begin()){
-                querybuilder << ", ";
-            }
-            querybuilder << "(" << obid << ", " << slotnum << ", " << (*itcurr) << ")";
-            slotnum++;
-        }
-        querybuilder << ";";
-        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-            Logger::getLogger()->error("Mysql: Could not store orderslots - %s", mysql_error(conn));
-            return false;
-        }
-    }
-    return true;
-}
-
-std::list<uint32_t> MysqlPersistence::retrieveOrderList(uint32_t obid){
-    std::ostringstream querybuilder;
-    querybuilder << "SELECT orderid FROM orderslot WHERE objectid=" << obid <<" ORDER BY slot;";
-    lock();
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not query order list - %s", mysql_error(conn));
-        unlock();
-        return std::list<uint32_t>();
-    }
-    MYSQL_RES *ordresult = mysql_store_result(conn);
-    unlock();
-    if(ordresult == NULL){
-        Logger::getLogger()->error("Mysql: get order list: Could not store result - %s", mysql_error(conn));
-        return std::list<uint32_t>();
-    }
-    MYSQL_ROW max;
-    std::list<uint32_t> oolist;
-    while((max = mysql_fetch_row(ordresult)) != NULL){
-        oolist.push_back(atoi(max[0]));
-    }
-    mysql_free_result(ordresult);
-
-    return oolist;
-}
-
-std::set<uint32_t> MysqlPersistence::retrieveObjectsWithOrders(){
-    lock();
-    if(mysql_query(conn, "SELECT DISTINCT objectid FROM orderslot;") != 0){
-        Logger::getLogger()->error("Mysql: Could not query objects with orders - %s", mysql_error(conn));
-        unlock();
-        return std::set<uint32_t>();
-    }
-    MYSQL_RES *obresult = mysql_store_result(conn);
-    unlock();
-    if(obresult == NULL){
-        Logger::getLogger()->error("Mysql: get objects with orders: Could not store result - %s", mysql_error(conn));
-        return std::set<uint32_t>();
-    }
-    MYSQL_ROW max;
-    std::set<uint32_t> obset;
-    while((max = mysql_fetch_row(obresult)) != NULL){
-        obset.insert(atoi(max[0]));
-    }
-    mysql_free_result(obresult);
-
-    return obset;
-}
-
-uint32_t MysqlPersistence::getMaxOrderId(){
-    lock();
-    if(mysql_query(conn, "SELECT MAX(orderid) FROM ordertype;") != 0){
-        Logger::getLogger()->error("Mysql: Could not query max order id - %s", mysql_error(conn));
-        unlock();
-        return 0;
-    }
-    MYSQL_RES *obresult = mysql_store_result(conn);
-    unlock();
-    if(obresult == NULL){
-        Logger::getLogger()->error("Mysql: get max orderid: Could not store result - %s", mysql_error(conn));
-        return 0;
-    }
-    MYSQL_ROW max = mysql_fetch_row(obresult);
-    uint32_t maxid = 0;
-    if(max[0] != NULL){
-        maxid = atoi(max[0]);
-    }
-    mysql_free_result(obresult);
-    return maxid;
 }
 
 bool MysqlPersistence::saveBoard(Board* board){

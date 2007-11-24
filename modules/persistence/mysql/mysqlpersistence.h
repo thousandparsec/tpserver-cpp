@@ -50,14 +50,18 @@ public:
     virtual uint32_t getMaxObjectId();
     virtual std::set<uint32_t> getObjectIds();
 
-    virtual bool saveOrder(uint32_t ordid, Order* ord);
-    virtual bool updateOrder(uint32_t ordid, Order* ord);
-    virtual Order* retrieveOrder(uint32_t ordid);
-    virtual bool removeOrder(uint32_t ordid);
-    virtual bool saveOrderList(uint32_t obid, std::list<uint32_t> list);
-    virtual std::list<uint32_t> retrieveOrderList(uint32_t obid);
-    virtual std::set<uint32_t> retrieveObjectsWithOrders();
-    virtual uint32_t getMaxOrderId();
+    virtual bool saveOrderQueue(const OrderQueue* oq);
+    virtual bool updateOrderQueue(const OrderQueue* oq);
+    virtual OrderQueue* retrieveOrderQueue(uint32_t oqid);
+    virtual bool removeOrderQueue(uint32_t oqid);
+    virtual std::set<uint32_t> getOrderQueueIds();
+    virtual uint32_t getMaxOrderQueueId();
+    
+    virtual bool saveOrder(uint32_t queueid, uint32_t ordid, Order* ord);
+    virtual bool updateOrder(uint32_t queueid, uint32_t ordid, Order* ord);
+    virtual Order* retrieveOrder(uint32_t queueid, uint32_t ordid);
+    virtual bool removeOrder(uint32_t queueid, uint32_t ordid);
+    
 
     virtual bool saveBoard(Board* board);
     virtual bool updateBoard(Board* board);
@@ -109,21 +113,21 @@ public:
 
 private:
   
-  bool updateSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
-  bool retrieveSpaceCoordParam(uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
-  bool removeSpaceCoordParam(uint32_t ordid, uint32_t pos);
-  bool updateListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
-  bool retrieveListParameter(uint32_t ordid, uint32_t pos, ListParameter* lp);
-  bool removeListParameter(uint32_t ordid, uint32_t pos);
-  bool updateObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
-  bool retrieveObjectOrderParameter(uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
-  bool removeObjectOrderParameter(uint32_t ordid, uint32_t pos);
-  bool updateStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
-  bool retrieveStringParameter(uint32_t ordid, uint32_t pos, StringParameter* st);
-  bool removeStringParameter(uint32_t ordid, uint32_t pos);
-  bool updateTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp);
-  bool retrieveTimeParameter(uint32_t ordid, uint32_t pos, TimeParameter* tp);
-  bool removeTimeParameter(uint32_t ordid, uint32_t pos);
+  bool updateSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
+  bool retrieveSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos, SpaceCoordParam* scp);
+  bool removeSpaceCoordParam(uint32_t queueid, uint32_t ordid, uint32_t pos);
+  bool updateListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ListParameter* lp);
+  bool retrieveListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ListParameter* lp);
+  bool removeListParameter(uint32_t queueid, uint32_t ordid, uint32_t pos);
+  bool updateObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
+  bool retrieveObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, ObjectOrderParameter* ob);
+  bool removeObjectOrderParameter(uint32_t queueid, uint32_t ordid, uint32_t pos);
+  bool updateStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, StringParameter* st);
+  bool retrieveStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, StringParameter* st);
+  bool removeStringParameter(uint32_t queueid, uint32_t ordid, uint32_t pos);
+  bool updateTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp);
+  bool retrieveTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp);
+  bool removeTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos);
   
     void lock();
     void unlock();
