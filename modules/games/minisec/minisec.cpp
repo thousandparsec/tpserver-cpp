@@ -692,50 +692,52 @@ void MiniSec::onPlayerAdded(Player* player){
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
   
   PlayerView* playerview = player->getPlayerView();
-
-  //temporarily add the components as usable to get the designs done
-  playerview->addUsableComponent(1);
-  playerview->addUsableComponent(2);
-  playerview->addUsableComponent(3);
-
-  Design* scout = new Design();
-  scout->setCategoryId(1);
-  scout->setName("Scout");
-  scout->setDescription("Scout ship");
-  scout->setOwner(player->getID());
-    std::map<unsigned int, unsigned int> cl;
-    cl[1] = 1;
-  scout->setComponents(cl);
-  game->getDesignStore()->addDesign(scout);
-  unsigned int scoutid = scout->getDesignId();
-
-    Design* design = new Design();
-  design->setCategoryId(1);
-  design->setName("Frigate");
-  design->setDescription("Frigate ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[2] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
-
-  design = new Design();
-  design->setCategoryId(1);
-  design->setName("Battleship");
-  design->setDescription("Battleship ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[3] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
-
-  //remove temporarily added usable components
-  playerview->removeUsableComponent(1);
-  playerview->removeUsableComponent(2);
-  playerview->removeUsableComponent(3);
-  // the components are still visible
-
-  if(std::string(player->getName()) != "guest"){
+  
+  if(std::string(player->getName()) == "guest"){
+    player->setIsAlive(false);
+  }else{
+    //temporarily add the components as usable to get the designs done
+    playerview->addUsableComponent(1);
+    playerview->addUsableComponent(2);
+    playerview->addUsableComponent(3);
+  
+    Design* scout = new Design();
+    scout->setCategoryId(1);
+    scout->setName("Scout");
+    scout->setDescription("Scout ship");
+    scout->setOwner(player->getID());
+      std::map<unsigned int, unsigned int> cl;
+      cl[1] = 1;
+    scout->setComponents(cl);
+    game->getDesignStore()->addDesign(scout);
+    unsigned int scoutid = scout->getDesignId();
+  
+      Design* design = new Design();
+    design->setCategoryId(1);
+    design->setName("Frigate");
+    design->setDescription("Frigate ship");
+    design->setOwner(player->getID());
+    cl.clear();
+      cl[2] = 1;
+    design->setComponents(cl);
+    game->getDesignStore()->addDesign(design);
+  
+    design = new Design();
+    design->setCategoryId(1);
+    design->setName("Battleship");
+    design->setDescription("Battleship ship");
+    design->setOwner(player->getID());
+    cl.clear();
+      cl[3] = 1;
+    design->setComponents(cl);
+    game->getDesignStore()->addDesign(design);
+  
+    //remove temporarily added usable components
+    playerview->removeUsableComponent(1);
+    playerview->removeUsableComponent(2);
+    playerview->removeUsableComponent(3);
+    // the components are still visible
+    
     
     uint32_t obT_Fleet = game->getObjectDataManager()->getObjectTypeByName("Fleet");
     uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
