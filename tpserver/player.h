@@ -21,6 +21,7 @@
  */
 
 #include <set>
+#include <map>
 #include <string>
 #include <stdint.h>
 
@@ -38,21 +39,31 @@ public:
   void setEmail(const std::string& newemail);
   void setComment(const std::string& newcomm);
   void setId(uint32_t newid);
-
-  void postToBoard(Message* msg);
+  void setIsAlive(bool na);
+  void setScore(uint32_t key, uint32_t value);
+  void setBoardId(uint32_t nbi);
+  
 
   std::string getName() const;
   std::string getPass() const;
   std::string getEmail() const;
   std::string getComment() const;
-  uint32_t getID();
+  uint32_t getID() const;
+  bool isAlive() const;
+  uint32_t getScore(uint32_t key) const;
+  std::map<uint32_t, uint32_t> getAllScores() const;
   uint32_t getBoardId() const;
-  void setBoardId(uint32_t nbi);
+  uint64_t getModTime() const;
 
+  void postToBoard(Message* msg);
+  
   PlayerView* getPlayerView() const;
   
   void packFrame(Frame* frame);
+  
 
+  //for persistence only
+  void setModTime(uint64_t nmt);
 
 private:
 
@@ -63,8 +74,14 @@ private:
 
   uint32_t pid;
   uint32_t boardid;
+  uint64_t modtime;
   
   PlayerView* playerview;
+  
+  bool alive;
+  std::map<uint32_t, uint32_t> score;
+  
+  void touchModTime();
 
   Player(Player & rhs);
 

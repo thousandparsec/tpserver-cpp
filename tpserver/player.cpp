@@ -19,6 +19,7 @@
  */
 
 // #include "string.h"
+#include <time.h>
 
 #include "frame.h"
 #include "logging.h"
@@ -31,7 +32,8 @@
 #include "player.h"
 
 
-Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0){
+Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0), 
+               modtime(0), alive(true), score(){
   playerview = new PlayerView();
 }
 
@@ -41,23 +43,38 @@ Player::~Player(){
 
 void Player::setName(const std::string& newname){
     name = newname;
+    touchModTime();
 }
 
 void Player::setPass(const std::string& newpass){
     passwd = newpass;
+    touchModTime();
 }
 
 void Player::setEmail(const std::string& newemail){
   email = newemail;
+  touchModTime();
 }
 
 void Player::setComment(const std::string& newcomm){
   comment = newcomm;
+  touchModTime();
 }
 
 void Player::setId(uint32_t newid){
   pid = newid;
   playerview->setPlayerId(pid);
+  touchModTime();
+}
+
+void Player::setIsAlive(bool na){
+  alive = na;
+  touchModTime();
+}
+
+void Player::setScore(uint32_t key, uint32_t value){
+  score[key] = value;
+  touchModTime();
 }
 
 void Player::postToBoard(Message* msg){
@@ -81,7 +98,7 @@ std::string Player::getComment() const{
   return comment;
 }
 
-uint32_t Player::getID(){
+uint32_t Player::getID() const{
   return pid;
 }
 
@@ -89,8 +106,30 @@ uint32_t Player::getBoardId() const{
   return boardid;
 }
 
+bool Player::isAlive() const{
+  return alive;
+}
+
+uint32_t Player::getScore(uint32_t key) const{
+  std::map<uint32_t,uint32_t>::const_iterator itval = score.find(key);
+  if(itval != score.end()){
+    return itval->second;
+  }else{
+    return 0;
+  }
+}
+
+std::map<uint32_t, uint32_t> Player::getAllScores() const{
+  return score;
+}
+
+uint64_t Player::getModTime() const{
+  return modtime;
+}
+
 void Player::setBoardId(uint32_t nbi){
   boardid = nbi;
+  touchModTime();
 }
 
 PlayerView* Player::getPlayerView() const{
@@ -102,4 +141,12 @@ void Player::packFrame(Frame* frame){
   frame->packInt(pid);
   frame->packString(name.c_str());
   frame->packString("Human");
+}
+
+void Player::setModTime(uint64_t nmt){
+  modtime = nmt;
+}
+
+void Player::touchModTime(){
+  modtime = time(NULL);
 }
