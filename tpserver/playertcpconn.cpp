@@ -369,18 +369,24 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
   uint32_t datalen;
   
   if(rtn && ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL)){
-    int32_t signeddatalen;
-    if ( (signeddatalen = recvframe->setHeader(rheaderbuff)) != -1 ) {
+    int32_t signeddatalen = recvframe->setHeader(rheaderbuff);
+    //check that the length field is probably valid
+    // length could be negative from wire or from having no synchronisation symbol
+    if (signeddatalen > 0 && signeddatalen < 1048576) {
       datalen = signeddatalen;
-      //sanity check
-      if(version != recvframe->getVersion()){
-        Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
-      }
+      
     }else{
-      Logger::getLogger()->debug("Incorrect header");
-      // protocol error
-      Frame *failframe = createFrame();
-      failframe->createFailFrame(fec_ProtocolError, "Protocol Error");
+      Frame *failframe;
+      if(signeddatalen < 1048576) {
+        Logger::getLogger()->debug("Incorrect header");
+        // protocol error
+        failframe = createFrame();
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, could not decode header");
+      }else{
+        Logger::getLogger()->debug("Frame too large");
+        failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, frame length too large");
+      }
       sendFrame(failframe);
       close();
       rtn = false;
@@ -425,6 +431,23 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
       delete[] rdatabuff;
       rheaderbuff = NULL;
       rdatabuff = NULL;
+      
+      //sanity checks
+      if(version != recvframe->getVersion()){
+        Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, wrong version number");
+        sendFrame(failframe);
+        rtn = false;
+      }
+      FrameType type = recvframe->getType();
+      if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max && type != ft04_TurnFinished) || (version == fv0_4 && type >= ft04_Max)) {
+        Logger::getLogger()->warning("Client has sent wrong frame type (%d)", type);
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, frame type not known");
+        sendFrame(failframe);
+        rtn = false;
+      }
     }
   }else if(rtn){
     delete[] rheaderbuff;
