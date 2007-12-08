@@ -36,6 +36,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/message.h>
 
 #include "rspcombat.h"
 
@@ -237,9 +238,45 @@ void MinisecTurn::doTurn(){
   // find the objects that are visible to each player
   std::set<uint32_t> vis = objectmanager->getAllIds();
   std::set<uint32_t> players = playermanager->getAllIds();
+  uint32_t numaliveplayers = 0;
+  uint32_t numdeadplayers = 0;
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-      playermanager->getPlayer(*itplayer)->getPlayerView()->setVisibleObjects(vis);
+    Player* player = playermanager->getPlayer(*itplayer);
+    PlayerView* playerview = player->getPlayerView();
+    playerview->setVisibleObjects(vis);
+    
+    if(!player->isAlive() || playerview->getNumberOwnedObjects() == 0){
+      if(player->isAlive()){
+        Message* msg = new Message();
+        msg->setSubject("You lost");
+        msg->setBody("You do not own any objects, therefore you game has finished.");
+        msg->addReference(rst_Action_Player, rspav_Eliminated);
+        player->postToBoard(msg);
+        player->setIsAlive(false);
+      }
+      numdeadplayers++;
+    }else{
+      numaliveplayers++;
+    }
   }
+  
+  if(numaliveplayers == 1){
+    //find alive player
+    Player* player;
+    for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
+      player = playermanager->getPlayer(*itplayer);
+      if(player->isAlive())
+        break;
+    }
+    if(player->getScore(0) != numdeadplayers - 1){
+      Message* msg = new Message();
+      msg->setSubject("You won!");
+      msg->setBody("You have eliminated all the competing players. Congratulations!");
+      player->postToBoard(msg);
+      player->setScore(0, numdeadplayers - 1);
+    }
+  }
+  
   playermanager->updateAll();
   
   delete combatstrategy;
