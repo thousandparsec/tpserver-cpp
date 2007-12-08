@@ -36,7 +36,7 @@ ModListItem::ModListItem() : id(0), modtime(0){
 ModListItem::ModListItem(uint32_t nid, uint64_t nmt) : id(nid), modtime(nmt){
 }
 
-PlayerView::PlayerView() : pid(0), visibleObjects(), currObjSeq(0), 
+PlayerView::PlayerView() : pid(0), visibleObjects(), ownedObjects(), currObjSeq(0), 
     visibleDesigns(), usableDesigns(), cacheDesigns(),
     difflistDesigns(), turnDesigndifflist(), currDesignSeq(0),
     visibleComponents(), usableComponents(), cacheComponents(),
@@ -106,6 +106,22 @@ bool PlayerView::isVisibleObject(unsigned int objid){
 
 std::set<uint32_t> PlayerView::getVisibleObjects() const{
   return visibleObjects;
+}
+
+void PlayerView::addOwnedObject(uint32_t objid){
+  ownedObjects.insert(objid);
+}
+
+void PlayerView::removeOwnedObject(uint32_t objid){
+  ownedObjects.erase(objid);
+}
+
+uint32_t PlayerView::getNumberOwnedObjects() const{
+  return ownedObjects.size();
+}
+
+std::set<uint32_t> PlayerView::getOwnedObject() const{
+  return ownedObjects;
 }
 
 void PlayerView::addVisibleDesign(Design* design){

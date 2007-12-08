@@ -51,6 +51,10 @@ public:
   void removeVisibleObject(uint32_t objid);
   bool isVisibleObject(unsigned int objid);
   std::set<uint32_t> getVisibleObjects() const;
+  void addOwnedObject(uint32_t objid);
+  void removeOwnedObject(uint32_t objid);
+  uint32_t getNumberOwnedObjects() const;
+  std::set<uint32_t> getOwnedObject() const;
 
   void addVisibleDesign(Design* design);
   void addUsableDesign(uint32_t designid);
@@ -76,6 +80,8 @@ private:
   uint32_t pid;
 
   std::set<uint32_t> visibleObjects;
+  std::set<uint32_t> ownedObjects;
+  
   uint32_t currObjSeq;
 
   std::set<uint32_t> visibleDesigns;
