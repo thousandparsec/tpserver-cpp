@@ -149,6 +149,20 @@ bool Game::start(){
     if(turntimer == NULL){
       turntimer = new TurnTimer();
     }
+    
+    //set num of dead players in the TurnTimer for accurate threshold calcuation
+    std::set<uint32_t> players = playermanager->getAllIds();
+    uint32_t numdeadplayers = 0;
+    for(std::set<uint32_t>::iterator itcurr = players.begin();
+        itcurr != players.end(); ++itcurr){
+      Player* player = playermanager->getPlayer(*itcurr);
+      if(!player->isAlive()){
+        numdeadplayers++;
+      }
+    }
+    
+    turntimer->setNumberDeadPlayers(numdeadplayers);
+    
     turntimer->resetTimer();
 
     started = true;
@@ -275,11 +289,17 @@ void Game::doEndOfTurn(){
     turnprocess->doTurn();
 
     std::set<uint32_t> players = playermanager->getAllIds();
+    uint32_t numdeadplayers = 0;
     for(std::set<uint32_t>::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
       Player* player = playermanager->getPlayer(*itcurr);
       player->getPlayerView()->doOnceATurn();
+      if(!player->isAlive()){
+        numdeadplayers++;
+      }
     }
+    
+    turntimer->setNumberDeadPlayers(numdeadplayers);
 
     // save game info
     persistence->saveGameInfo();
