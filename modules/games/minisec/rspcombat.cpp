@@ -293,6 +293,7 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
           OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
           queue->removeOwner(oldowner);
           queue->removeAllOrders();
+          Game::getGame()->getPlayerManager()->getPlayer(oldowner)->getPlayerView()->removeOwnedObject(obj->getID());
         }else{
           if(squant <= shipquant){
             squant = 0;
@@ -347,6 +348,7 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
     if(obj->getType() == obT_Fleet){
       if(((Fleet*)(obj->getObjectData()))->totalShips() == 0){
         Game::getGame()->getObjectManager()->scheduleRemoveObject(*itob);
+        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(obj->getObjectData()))->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
       }
     }
   }

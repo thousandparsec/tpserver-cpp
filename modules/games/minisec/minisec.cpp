@@ -798,6 +798,7 @@ void MiniSec::onPlayerAdded(Player* player){
     
     planet->addToParent(star->getID());
     game->getObjectManager()->addObject(planet);
+    playerview->addOwnedObject(planet->getID());
     
     IGObject *fleet = game->getObjectManager()->createNewObject();
     fleet->setType(obT_Fleet);
@@ -829,6 +830,7 @@ void MiniSec::onPlayerAdded(Player* player){
     
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
+    playerview->addOwnedObject(fleet->getID());
 
   }
 

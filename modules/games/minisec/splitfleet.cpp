@@ -35,6 +35,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectdatamanager.h>
+#include <tpserver/playerview.h>
 
 #include "splitfleet.h"
 
@@ -129,6 +130,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Action_Order, rsorav_Completion);
     nfleet->addToParent(ob->getParent());
     Game::getGame()->getObjectManager()->addObject(nfleet);
+    Game::getGame()->getPlayerManager()->getPlayer(of->getOwner())->getPlayerView()->addOwnedObject(nfleet->getID());
   }
   
   Game::getGame()->getPlayerManager()->getPlayer(nf->getOwner())->postToBoard(msg);

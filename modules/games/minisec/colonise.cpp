@@ -30,6 +30,7 @@
 #include "fleet.h"
 #include "planet.h"
 #include <tpserver/player.h>
+#include <tpserver/playerview.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
@@ -104,6 +105,7 @@ bool Colonise::doOrder(IGObject * ob){
       if(shiptype != 0){
         uint32_t oldowner = planet->getOwner();
 	planet->setOwner(fleet->getOwner());
+        Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->addOwnedObject(target->getID());
         uint32_t queueid = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue))->getQueueId();
         OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
         queue->removeOwner(oldowner);
@@ -123,6 +125,7 @@ bool Colonise::doOrder(IGObject * ob){
       
       if(fleet->totalShips() == 0){
 	Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
+        Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(ob->getID());
       }
       
     }

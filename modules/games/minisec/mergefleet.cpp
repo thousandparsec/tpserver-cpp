@@ -29,6 +29,7 @@
 #include <tpserver/player.h>
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 
 #include "mergefleet.h"
 
@@ -98,6 +99,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     ob->removeFromParent();
     
     Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
+    Game::getGame()->getPlayerManager()->getPlayer(myfleet->getOwner())->getPlayerView()->removeOwnedObject(ob->getID());
 	
     Game::getGame()->getObjectManager()->doneWithObject(target->getID());
 

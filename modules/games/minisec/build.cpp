@@ -217,6 +217,7 @@ bool Build::doOrder(IGObject *ob)
     }
     //add fleet to universe
     Game::getGame()->getObjectManager()->addObject(fleet);
+    Game::getGame()->getPlayerManager()->getPlayer(ownerid)->getPlayerView()->addOwnedObject(fleet->getID());
 
     Message * msg = new Message();
     msg->setSubject("Build Fleet order complete");
