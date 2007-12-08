@@ -27,12 +27,13 @@
 #include "settings.h"
 #include "settingscallback.h"
 #include "playermanager.h"
+#include "player.h"
 #include "frame.h"
 #include "asynctimeremaining.h"
 
 #include "turntimer.h"
 
-TurnTimer::TurnTimer(): timer(NULL), finishedPlayers(), overthreshold(false){
+TurnTimer::TurnTimer(): timer(NULL), finishedPlayers(), overthreshold(false), numdead(0){
   Settings::getSettings()->setCallback("turn_player_threshold", SettingsCallback(this, &TurnTimer::thresholdChanged));
 }
 
@@ -46,11 +47,13 @@ TurnTimer::~TurnTimer(){
 }
 
 void TurnTimer::playerFinishedTurn(uint32_t playerid){
-  finishedPlayers.insert(playerid);
-  if(!overthreshold && isOverThreshold()){
-    Logger::getLogger()->info("Threshold of players finished, setting over threshold turn length.");
-    updateTimer();
-    overthreshold = true;
+  if(Game::getGame()->getPlayerManager()->getPlayer(playerid)->isAlive()){
+    finishedPlayers.insert(playerid);
+    if(!overthreshold && isOverThreshold()){
+      Logger::getLogger()->info("Threshold of players finished, setting over threshold turn length.");
+      updateTimer();
+      overthreshold = true;
+    }
   }
 }
 
@@ -135,6 +138,10 @@ void TurnTimer::manuallyRunEndOfTurn(){
   Network::getNetwork()->doneEOT();
 }
 
+void TurnTimer::setNumberDeadPlayers(uint32_t ndp){
+  numdead = ndp;
+}
+
 void TurnTimer::updateTimer(){
   Settings * settings = Settings::getSettings();
   uint32_t increment = atoi(settings->get("turn_length_over_threshold").c_str());
@@ -194,7 +201,7 @@ void TurnTimer::thresholdDoneAndStartEOT(){
 
 bool TurnTimer::isOverThreshold(){
   uint32_t threshold = atoi(Settings::getSettings()->get("turn_player_threshold").c_str());
-  uint32_t numPlayers = Game::getGame()->getPlayerManager()->getNumPlayers();
+  uint32_t numPlayers = Game::getGame()->getPlayerManager()->getNumPlayers() - numdead;
   return ((numPlayers == 0) ? false : finishedPlayers.size() * 100 >= threshold * numPlayers);
 }
 

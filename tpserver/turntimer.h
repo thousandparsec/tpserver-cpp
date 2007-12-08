@@ -40,6 +40,8 @@ class TurnTimer{
     
     void manuallyRunEndOfTurn();
     
+    void setNumberDeadPlayers(uint32_t ndp);
+    
   private:
     void updateTimer();
     void timerFinished();
@@ -50,6 +52,7 @@ class TurnTimer{
     TimerCallback* timer;
     std::set<uint32_t> finishedPlayers;
     bool overthreshold;
+    uint32_t numdead;
 };
 
 #endif
