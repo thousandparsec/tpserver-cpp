@@ -25,15 +25,10 @@
 #include <set>
 #include <stdint.h>
 
-class Frame;
-
 class Component{
  public:
   Component();
   virtual ~Component();
-
-  void packFrame(Frame* frame) const;
-  Component* copy() const;
 
   unsigned int getComponentId() const;
   std::set<uint32_t> getCategoryIds() const;

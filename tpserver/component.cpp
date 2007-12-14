@@ -20,7 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
 #include "game.h"
 #include "designstore.h"
 #include "design.h"
@@ -34,36 +33,6 @@ Component::Component(): catids(), inuse(false), parentdesignid(0){
 
 Component::~Component(){
 
-}
-
-void Component::packFrame(Frame* frame) const{
-  frame->setType(ft03_Component);
-  frame->packInt(compid);
-  frame->packInt64(timestamp);
-  frame->packInt(catids.size());
-  for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
-    frame->packInt(*idit);
-  }
-  frame->packString(name.c_str());
-  frame->packString(description.c_str());
-  frame->packString(tpcl_requirements.c_str());
-  frame->packInt(propertylist.size());
-  for(std::map<unsigned int, std::string>::const_iterator itcurr = propertylist.begin(); itcurr != propertylist.end(); ++itcurr){
-    frame->packInt(itcurr->first);
-    frame->packString(itcurr->second.c_str());
-  }
-}
-
-Component* Component::copy() const{
-  Component * comp = new Component();
-  comp->compid = compid;
-  comp->catids = catids;
-  comp->timestamp = timestamp;
-  comp->name = name;
-  comp->description = description;
-  comp->tpcl_requirements = tpcl_requirements;
-  comp->propertylist = propertylist;
-  return comp;
 }
 
 unsigned int Component::getComponentId() const{
