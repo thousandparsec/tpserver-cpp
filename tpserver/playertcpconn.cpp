@@ -372,7 +372,7 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     int32_t signeddatalen = recvframe->setHeader(rheaderbuff);
     //check that the length field is probably valid
     // length could be negative from wire or from having no synchronisation symbol
-    if (signeddatalen > 0 && signeddatalen < 1048576) {
+    if (signeddatalen >= 0 && signeddatalen < 1048576) {
       datalen = signeddatalen;
       
     }else{
