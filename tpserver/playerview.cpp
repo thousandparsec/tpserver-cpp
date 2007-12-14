@@ -27,6 +27,7 @@
 #include "designstore.h"
 #include "design.h"
 #include "component.h"
+#include "componentview.h"
 
 #include "playerview.h"
 
@@ -75,7 +76,8 @@ void PlayerView::doOnceATurn(){
       itcurr != usableComponents.end(); ++itcurr){
     Component* comp = ds->getComponent(*itcurr);
     if(comp->getModTime() > cacheComponents[*itcurr]->getModTime()){
-      addVisibleComponent(comp->copy());
+      currCompSeq++;
+      turnCompdifflist[*itcurr] = ModListItem(*itcurr, comp->getModTime());
     }
   }
   // build new diff list
@@ -292,7 +294,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
   }
 }
 
-void PlayerView::addVisibleComponent(Component* comp){
+void PlayerView::addVisibleComponent(ComponentView* comp){
   comp->setModTime(time(NULL));
   uint32_t compid = comp->getComponentId();
   visibleComponents.insert(compid);
@@ -307,7 +309,14 @@ void PlayerView::addVisibleComponent(Component* comp){
 void PlayerView::addUsableComponent(uint32_t compid){
   usableComponents.insert(compid);
   if(visibleComponents.find(compid) == visibleComponents.end()){
-    addVisibleComponent(Game::getGame()->getDesignStore()->getComponent(compid)->copy());
+    ComponentView* compview = new ComponentView();
+    compview->setComponentId(compid);
+    compview->setCompletelyVisible(true);
+    addVisibleComponent(compview);
+  }else{
+    cacheComponents[compid]->setCompletelyVisible(true);
+    currCompSeq++;
+    turnCompdifflist[compid] = ModListItem(compid, cacheComponents[compid]->getModTime());
   }
 }
 
@@ -333,7 +342,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame) const{
   if(visibleComponents.find(compid) == visibleComponents.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
-    Component* component = cacheComponents.find(compid)->second;
+    ComponentView* component = cacheComponents.find(compid)->second;
     component->packFrame(frame);
   }
 }

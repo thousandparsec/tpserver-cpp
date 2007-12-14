@@ -28,7 +28,7 @@
 
 class Frame;
 class Design;
-class Component;
+class ComponentView;
 
 struct ModListItem{
   ModListItem();
@@ -65,7 +65,7 @@ public:
   void processGetDesign(uint32_t designid, Frame* frame) const;
   void processGetDesignIds(Frame* in, Frame* out) const;
 
-  void addVisibleComponent(Component* comp);
+  void addVisibleComponent(ComponentView* comp);
   void addUsableComponent(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
   bool isUsableComponent(uint32_t compid) const;
@@ -93,7 +93,7 @@ private:
 
   std::set<uint32_t> visibleComponents;
   std::set<uint32_t> usableComponents;
-  std::map<uint32_t, Component*> cacheComponents;
+  std::map<uint32_t, ComponentView*> cacheComponents;
   std::list<ModListItem> difflistComponents;
   std::map<uint32_t, ModListItem> turnCompdifflist;
   uint32_t currCompSeq;
