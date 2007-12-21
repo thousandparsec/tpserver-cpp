@@ -26,16 +26,10 @@
 
 #include <tpserver/propertyvalue.h>
 
-class Frame;
-
 class Design{
  public:
   Design();
   virtual ~Design();
-
-  void packFrame(Frame* frame) const;
-  
-  Design* copy() const;
 
   uint32_t getDesignId() const;
   uint32_t getCategoryId() const;

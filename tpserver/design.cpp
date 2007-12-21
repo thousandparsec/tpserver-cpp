@@ -20,7 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
 #include "tpscheme.h"
 #include "game.h"
 
@@ -37,46 +36,6 @@ Design::~Design(){
 
 }
 
-void Design::packFrame(Frame* frame) const{
-  frame->setType(ft03_Design);
-  frame->packInt(designid);
-  frame->packInt64(timestamp);
-  frame->packInt(1);
-  frame->packInt(catid);
-  frame->packString(name.c_str());
-  frame->packString(description.c_str());
-  frame->packInt(valid ? inuse : 0xFFFFFFFF);
-  frame->packInt(owner);
-  frame->packInt(components.size());
-  for(std::map<uint32_t, uint32_t>::const_iterator itcurr = components.begin();
-      itcurr != components.end(); ++itcurr){
-    frame->packInt(itcurr->first);
-    frame->packInt(itcurr->second);
-  }
-  frame->packString(feedback.c_str());
-  frame->packInt(properties.size());
-  for(std::map<uint32_t, PropertyValue>::const_iterator itcurr = properties.begin();
-      itcurr != properties.end(); ++itcurr){
-    itcurr->second.packFrame(frame);
-  }
-}
-
-Design* Design::copy() const{
-  Design* d = new Design();
-  d->designid = designid;
-  d->catid = catid;
-  d->name = name;
-  d->description = description;
-  d->inuse = inuse;
-  d->exist = exist;
-  d->owner = owner;
-  d->valid = valid;
-  d->timestamp = timestamp;
-  d->components = components;
-  d->properties = properties;
-  d->feedback = feedback;
-  return d;
-}
 
 uint32_t Design::getDesignId() const{
   return designid;
