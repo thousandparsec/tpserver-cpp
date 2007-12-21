@@ -26,6 +26,7 @@
 #include "game.h"
 #include "designstore.h"
 #include "design.h"
+#include "designview.h"
 #include "component.h"
 #include "componentview.h"
 
@@ -60,7 +61,8 @@ void PlayerView::doOnceATurn(){
       itcurr != usableDesigns.end(); ++itcurr){
     Design* design = ds->getDesign(*itcurr);
     if(design->getModTime() > cacheDesigns[*itcurr]->getModTime()){
-      addVisibleDesign(design->copy());
+      currDesignSeq++;
+      turnDesigndifflist[*itcurr] = ModListItem(*itcurr, design->getModTime());
     }
   }
   // build new diff list
@@ -126,45 +128,30 @@ std::set<uint32_t> PlayerView::getOwnedObject() const{
   return ownedObjects;
 }
 
-void PlayerView::addVisibleDesign(Design* design){
-  bool needtoupdate = false;
+void PlayerView::addVisibleDesign(DesignView* design){
+  design->setModTime(time(NULL));
   uint32_t designid = design->getDesignId();
-  if(visibleDesigns.find(designid) != visibleDesigns.end()){
-    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
-      needtoupdate = true;
-    }
-  }else{
-    needtoupdate = true;
+  visibleDesigns.insert(designid);
+  if(cacheDesigns.find(designid) != cacheDesigns.end()){
+    delete cacheDesigns[designid];
   }
-  if(needtoupdate){
-    design->setModTime(time(NULL));
-    visibleDesigns.insert(designid);
-    if(cacheDesigns.find(designid) != cacheDesigns.end()){
-      delete cacheDesigns[designid];
-    }
-    cacheDesigns[designid] = design;
-    currDesignSeq++;
-    turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
-  }else{
-    delete design;
-  }
+  cacheDesigns[designid] = design;
+  currDesignSeq++;
+  turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
   usableDesigns.insert(designid);
-  bool needtoupdate = false;
-  Design* design = Game::getGame()->getDesignStore()->getDesign(designid);
   if(visibleDesigns.find(designid) == visibleDesigns.end()){
-    needtoupdate = true;
+    DesignView* designview = new DesignView();
+    designview->setDesignId(designid);
+    designview->setIsCompletelyVisible(true);
+    addVisibleDesign(designview);
   }else{
-    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
-      needtoupdate = true;
-    }
+    cacheDesigns[designid]->setIsCompletelyVisible(true);
+    currCompSeq++;
+    turnDesigndifflist[designid] = ModListItem(designid, cacheDesigns[designid]->getModTime());
   }
-  if(needtoupdate){
-    addVisibleDesign(design->copy());
-  }
-  Logger::getLogger()->debug("Added valid design");
 }
 
 void PlayerView::removeUsableDesign(uint32_t designid){
@@ -189,7 +176,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame) const{
   if(visibleComponents.find(designid) == visibleDesigns.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
-    Design* design = cacheDesigns.find(designid)->second;
+    DesignView* design = cacheDesigns.find(designid)->second;
     design->packFrame(frame);
   }
 }

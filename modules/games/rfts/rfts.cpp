@@ -30,6 +30,7 @@
 #include <tpserver/property.h>
 #include <tpserver/component.h>
 #include <tpserver/design.h>
+#include <tpserver/designview.h>
 #include <tpserver/category.h>
 #include <tpserver/designstore.h>
 
@@ -532,6 +533,18 @@ void Rfts::onPlayerAdded(Player *player) {
 
    PlayerView* playerview = player->getPlayerView();
 
+   //Assuming that all designs should be visible.
+   // Please fix if this is not the case
+   std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
+   for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
+     DesignView* dv = new DesignView();
+     dv->setDesignId(*desid);
+     dv->setIsCompletelyVisible(true);
+     playerview->addVisibleDesign(dv);
+   }
+   
+   std::set<uint32_t> mydesignids;
+   
    for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
       playerview->addUsableComponent(i);
    }
@@ -550,16 +563,19 @@ void Rfts::onPlayerAdded(Player *player) {
    Design* scout = createScoutDesign(player);
    
    dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 1);
-   
+   scout->addUnderConstruction(2);
+   scout->addComplete(2);
    game->getDesignStore()->designCountsUpdated(scout);
+   mydesignids.insert(scout->getDesignId());
 
    // start them out with access to mark1
-   game->getDesignStore()->designCountsUpdated(createMarkDesign(player, '1'));
+   Design* mark1 = createMarkDesign(player, '1');
+   mydesignids.insert(mark1->getDesignId());
 
    // and a transport (save the transport id for easy searching later)
    Design *trans = createTransportDesign(player);
    PlayerInfo::getPlayerInfo(player->getID()).setTransportId(trans->getDesignId());
-   game->getDesignStore()->designCountsUpdated(trans);
+   mydesignids.insert(trans->getDesignId());
 
    game->getObjectManager()->addObject(fleet);
 
@@ -597,6 +613,24 @@ void Rfts::onPlayerAdded(Player *player) {
    player->postToBoard(welcome);
 
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
+   
+   //let everyone see our designs
+   // Again, modify if this isn't the case
+   std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
+      if(*playerit == player->getID())
+        continue;
+      
+      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
+        DesignView* dv = new DesignView();
+        dv->setDesignId(*desid);
+        dv->setIsCompletelyVisible(true);
+        oplayer->getPlayerView()->addVisibleDesign(dv);
+      }
+      game->getPlayerManager()->updatePlayer(oplayer->getID());
+    }
+   
 }
 
 // make sure to start the player in a non-occupied area

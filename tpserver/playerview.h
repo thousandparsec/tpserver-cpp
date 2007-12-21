@@ -27,7 +27,7 @@
 #include <stdint.h>
 
 class Frame;
-class Design;
+class DesignView;
 class ComponentView;
 
 struct ModListItem{
@@ -56,7 +56,7 @@ public:
   uint32_t getNumberOwnedObjects() const;
   std::set<uint32_t> getOwnedObject() const;
 
-  void addVisibleDesign(Design* design);
+  void addVisibleDesign(DesignView* design);
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
   bool isUsableDesign(uint32_t designid) const;
@@ -86,7 +86,7 @@ private:
 
   std::set<uint32_t> visibleDesigns;
   std::set<uint32_t> usableDesigns;
-  std::map<uint32_t, Design*> cacheDesigns;
+  std::map<uint32_t, DesignView*> cacheDesigns;
   std::list<ModListItem> difflistDesigns;
   std::map<uint32_t, ModListItem> turnDesigndifflist;
   uint32_t currDesignSeq;

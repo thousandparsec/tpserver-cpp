@@ -48,6 +48,7 @@
 #include <tpserver/property.h>
 #include <tpserver/component.h>
 #include <tpserver/design.h>
+#include <tpserver/designview.h>
 #include <tpserver/category.h>
 #include <tpserver/logging.h>
 #include <tpserver/playermanager.h>
@@ -696,6 +697,18 @@ void MiniSec::onPlayerAdded(Player* player){
   if(std::string(player->getName()) == "guest"){
     player->setIsAlive(false);
   }else{
+    
+    //Can see all other designs
+    std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
+    for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
+      DesignView* dv = new DesignView();
+      dv->setDesignId(*desid);
+      dv->setIsCompletelyVisible(true);
+      playerview->addVisibleDesign(dv);
+    }
+    
+    std::set<uint32_t> mydesignids;
+    
     //temporarily add the components as usable to get the designs done
     playerview->addUsableComponent(1);
     playerview->addUsableComponent(2);
@@ -711,6 +724,7 @@ void MiniSec::onPlayerAdded(Player* player){
     scout->setComponents(cl);
     game->getDesignStore()->addDesign(scout);
     unsigned int scoutid = scout->getDesignId();
+    mydesignids.insert(scoutid);
   
       Design* design = new Design();
     design->setCategoryId(1);
@@ -721,6 +735,7 @@ void MiniSec::onPlayerAdded(Player* player){
       cl[2] = 1;
     design->setComponents(cl);
     game->getDesignStore()->addDesign(design);
+    mydesignids.insert(design->getDesignId());
   
     design = new Design();
     design->setCategoryId(1);
@@ -731,6 +746,7 @@ void MiniSec::onPlayerAdded(Player* player){
       cl[3] = 1;
     design->setComponents(cl);
     game->getDesignStore()->addDesign(design);
+    mydesignids.insert(design->getDesignId());
   
     //remove temporarily added usable components
     playerview->removeUsableComponent(1);
@@ -832,11 +848,28 @@ void MiniSec::onPlayerAdded(Player* player){
     game->getObjectManager()->addObject(fleet);
     playerview->addOwnedObject(fleet->getID());
 
+    std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
+      if(*playerit == player->getID())
+        continue;
+      
+      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
+        DesignView* dv = new DesignView();
+        dv->setDesignId(*desid);
+        dv->setIsCompletelyVisible(true);
+        oplayer->getPlayerView()->addVisibleDesign(dv);
+      }
+      game->getPlayerManager()->updatePlayer(oplayer->getID());
+    }
   }
 
   playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
   
   game->getPlayerManager()->updatePlayer(player->getID());
+  
+  
+  
 }
 
 // Create a random star system

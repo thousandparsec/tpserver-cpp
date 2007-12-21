@@ -85,15 +85,6 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         
         Game::getGame()->getRuleset()->onPlayerAdded(rtn);
         
-        //HACK
-        PlayerView* playerview = rtn->getPlayerView();
-        std::set<uint32_t> designs = Game::getGame()->getDesignStore()->getDesignIds();
-        for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
-          Design* d = Game::getGame()->getDesignStore()->getDesign(*desid);
-          playerview->addVisibleDesign(d->copy());
-        }
-        Game::getGame()->getPersistence()->updatePlayer(rtn);
-        
         //tell the other players about it
         msg = new Message();
         msg->setSubject("New Player");
@@ -110,17 +101,9 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
             }
             if(op != NULL && op != rtn){
                 op->postToBoard(new Message(*msg));
-                //HACK
-                playerview = op->getPlayerView();
-                playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
-                for(std::set<uint32_t>::const_iterator desid = designs.begin(); desid != designs.end(); ++desid){
-                  Design* d = Game::getGame()->getDesignStore()->getDesign(*desid);
-                  playerview->addVisibleDesign(d->copy());
-                }
                 //to update the difflist, etc
-                playerview->doOnceATurn();
+                op->getPlayerView()->doOnceATurn();
                 Game::getGame()->getPersistence()->updatePlayer(op);
-                //end HACK
             }
         }
 
