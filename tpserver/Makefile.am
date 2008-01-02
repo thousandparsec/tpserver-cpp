@@ -35,7 +35,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		velocity3dobjectparam.cpp sizeobjectparam.cpp integerobjectparam.cpp \
 		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp \
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
-		playerview.cpp componentview.cpp designview.cpp
+		playerview.cpp componentview.cpp designview.cpp objectview.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
@@ -57,7 +57,7 @@ headers_HEADERS = connection.h console.h \
 	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
-	designview.h
+	designview.h objectview.h
 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
