@@ -106,8 +106,16 @@ void ObjectParameterGroupDesc::setDescription(const std::string& nd){
   description = nd;
 }
 
-void ObjectParameterGroupDesc::addParameter(ObjectParameterDesc op){
+void ObjectParameterGroupDesc::addParameter(const ObjectParameterDesc &op){
   parameters.push_back(op);
+}
+
+void ObjectParameterGroupDesc::addParameter(uint32_t type, const std::string& name, const std::string& desc){
+  ObjectParameterDesc op;
+  op.setType(type);
+  op.setName(name);
+  op.setDescription(desc);
+  addParameter(op);
 }
 
 void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{

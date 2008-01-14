@@ -67,7 +67,8 @@ class ObjectParameterGroupDesc {
         void setName(const std::string& nn);
         void setDescription(const std::string& nd);
         
-        void addParameter(ObjectParameterDesc op);
+        void addParameter(const ObjectParameterDesc& op);
+        void addParameter(uint32_t type, const std::string& name, const std::string& desc);
         
         void packObjectDescFrame(Frame* f) const;
         ObjectParameterGroupPtr createObjectParameterGroup() const;
