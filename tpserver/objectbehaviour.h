@@ -1,6 +1,6 @@
-#ifndef OBJECTTYPE_H
-#define OBJECTTYPE_H
-/*  ObjectType base class
+#ifndef OBJECTBEHAVIOUR_H
+#define OBJECTBEHAVIOUR_H
+/*  ObjectBehaviour base class
  *
  *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
@@ -20,42 +20,24 @@
  *
  */
 
-#include <stdint.h>
-#include <map>
-#include <string>
-
 class Frame;
 class IGObject;
-class ObjectParameterGroupDesc;
-class ObjectBehaviour;
 
-class ObjectType {
-
-      public:
-	ObjectType();
-	virtual ~ObjectType();
-        
-        std::string getTypeName() const;
-        long long getModTime() const;
-
-        void packObjectDescFrame(Frame* frame);
-
-
-	void setupObject(IGObject* obj) const;
-
-
-      protected:
-        void addParameterGroupDesc(ObjectParameterGroupDesc* group);
-        virtual ObjectBehaviour* createObjectBehaviour() const = 0;
-
-        std::string nametype;
-        std::string typedesc;
-
-      private:
-        void touchModTime();
-	long long modtime;
-        uint32_t nextparamgroupid;
-        std::map<uint32_t, ObjectParameterGroupDesc*> paramgroups;
+class ObjectBehaviour{
+  public:
+    ObjectBehaviour();
+    virtual ~ObjectBehaviour();
+    
+    void setObject(IGObject* nobj);
+    
+    virtual void packExtraData(Frame * frame);
+    virtual void doOnceATurn() = 0;
+    virtual int getContainerType() = 0;
+    
+    virtual void signalRemoval();
+    
+  protected:
+    IGObject* obj;
 };
 
 #endif

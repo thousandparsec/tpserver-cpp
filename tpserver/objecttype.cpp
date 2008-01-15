@@ -45,8 +45,6 @@ long long ObjectType::getModTime() const{
   return modtime;
 }
 
-void ObjectType::packExtraData(Frame * frame, IGObject* obj){
-}
 
 void ObjectType::packObjectDescFrame(Frame* frame){
   frame->packString(nametype);
@@ -64,14 +62,9 @@ void ObjectType::setupObject(IGObject* obj) const{
       ++itcurr){
     //obj->setParameter((itcurr->second)->createObjectParameterGroup());
   }
-}
-
-
-void ObjectType::signalRemoval(IGObject* obj){
-  for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
-      ++itcurr){
-//    (itcurr->second)->signalRemoval();
-  }
+  ObjectBehaviour* ob = createObjectBehaviour();
+  ob->setObject(obj);
+  obj->setBehaviour(ob);
 }
 
 void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
@@ -84,3 +77,4 @@ void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
 void ObjectType::touchModTime(){
   modtime = time(NULL);
 }
+
