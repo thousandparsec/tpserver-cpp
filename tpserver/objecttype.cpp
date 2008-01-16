@@ -23,6 +23,7 @@
 #include "frame.h"
 #include "object.h"
 #include "objectparametergroupdesc.h"
+#include "objectbehaviour.h"
 
 #include "objecttype.h"
 
