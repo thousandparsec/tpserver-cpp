@@ -41,6 +41,13 @@ template <typename T> class SmartPointer{
       }
     }
     
+    SmartPointer(T* nd){
+      data = nd;
+      if(data != NULL){
+        data->ref++;
+      }
+    }
+    
     ~SmartPointer(){
       if(data != NULL){
         data->ref--;
@@ -58,6 +65,20 @@ template <typename T> class SmartPointer{
         }
       }
       data = rhs.data;
+      if(data != NULL){
+        data->ref++;
+      }
+      return *this;
+    }
+    
+    SmartPointer<T>& operator=(T* nd){
+      if(data != NULL){
+        data->ref--;
+        if(data->ref == 0){
+          delete data;
+        }
+      }
+      data = nd;
       if(data != NULL){
         data->ref++;
       }
