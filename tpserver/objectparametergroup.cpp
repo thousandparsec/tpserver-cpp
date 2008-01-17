@@ -1,6 +1,6 @@
 /*  ObjectParameterGroup class
  *
- *  Copyright (C) 2007 Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008 Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,78 +25,58 @@
 
 #include "objectparametergroup.h"
 
-ObjectParameterGroup::ObjectParameterGroup() : groupid(0), name(), description(), parameters(){
+ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(), ref(0){
 }
 
-ObjectParameterGroup::ObjectParameterGroup(const ObjectParameterGroup &rhs): parameters(){
+ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupData &rhs): parameters(){
   groupid = rhs.groupid;
-  name = rhs.name;
-  description = rhs.description;
   for(std::list<ObjectParameter*>::const_iterator itcurr = rhs.parameters.begin();
       itcurr != rhs.parameters.end(); ++itcurr){
     parameters.push_back((*itcurr)->clone());
   }
 }
 
-ObjectParameterGroup::~ObjectParameterGroup(){
+ObjectParameterGroupData::~ObjectParameterGroupData(){
   for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     delete *itcurr;
   }
 }
 
-uint32_t ObjectParameterGroup::getGroupId() const{
+uint32_t ObjectParameterGroupData::getGroupId() const{
   return groupid;
 }
 
-std::string ObjectParameterGroup::getName() const{
-  return name;
-}
-
-std::string ObjectParameterGroup::getDescription() const{
-  return description;
-}
-
-std::list<ObjectParameter*> ObjectParameterGroup::getParameters() const{
+std::list<ObjectParameter*> ObjectParameterGroupData::getParameters() const{
   return parameters;
 }
 
-void ObjectParameterGroup::setGroupId(uint32_t ni){
+ObjectParameter* ObjectParameterGroupData::getParameter(uint32_t paramid) const{
+  if(paramid < parameters.size() + 1 && paramid != 0){
+    paramid--;
+    std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
+    advance(itcurr, paramid);
+    return (*itcurr);
+  }
+  return NULL;
+}
+
+void ObjectParameterGroupData::setGroupId(uint32_t ni){
   groupid = ni;
 }
 
-void ObjectParameterGroup::setName(const std::string& nn){
-  name = nn;
-}
-
-void ObjectParameterGroup::setDescription(const std::string& nd){
-  description = nd;
-}
-
-void ObjectParameterGroup::addParameter(ObjectParameter* op){
+void ObjectParameterGroupData::addParameter(ObjectParameter* op){
   parameters.push_back(op);
 }
 
-void ObjectParameterGroup::packObjectFrame(Frame * f, uint32_t playerid){
+void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
   for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     (*itcurr)->packObjectFrame(f, playerid);
   }
 }
 
-void ObjectParameterGroup::packObjectDescFrame(Frame * f) const{
-
-  f->packInt(groupid);
-  f->packString(name);
-  f->packString(description);
-  f->packInt(parameters.size());
-  for(std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
-      itcurr != parameters.end(); ++itcurr){
-    (*itcurr)->packObjectDescFrame(f);
-  }
-}
-
-bool ObjectParameterGroup::unpackModifyObjectFrame(Frame * f, unsigned int playerid){
+bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, unsigned int playerid){
   bool rtn = true;
   for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
@@ -107,7 +87,7 @@ bool ObjectParameterGroup::unpackModifyObjectFrame(Frame * f, unsigned int playe
   return rtn;
 }
 
-void ObjectParameterGroup::signalRemoval(){
+void ObjectParameterGroupData::signalRemoval(){
   for(std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     (*itcurr)->signalRemoval();
