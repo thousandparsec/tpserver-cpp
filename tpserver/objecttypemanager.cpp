@@ -36,7 +36,10 @@ ObjectTypeManager::~ObjectTypeManager(){
 void ObjectTypeManager::setupObject(IGObject* obj, uint32_t type){
   if(checkValid(type)){
     ObjectType* prototype = typeStore[type];
-    //TODO stuff
+    obj->setType(type);
+    prototype->setupObject(obj);
+  }else{
+    //TODO throw exception?
   }
 }
 
