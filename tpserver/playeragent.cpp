@@ -571,7 +571,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -649,7 +649,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
         curConnection->sendFrame(of);
         return;
       }
-      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop == NULL){
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -715,7 +715,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -859,7 +859,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
