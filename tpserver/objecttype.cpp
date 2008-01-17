@@ -61,11 +61,12 @@ void ObjectType::packObjectDescFrame(Frame* frame){
 void ObjectType::setupObject(IGObject* obj) const{
   for(std::map<uint32_t, ObjectParameterGroupDesc*>::const_iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
-    //obj->setParameter((itcurr->second)->createObjectParameterGroup());
+    obj->setParameterGroup((itcurr->second)->createObjectParameterGroup());
   }
   ObjectBehaviour* ob = createObjectBehaviour();
   ob->setObject(obj);
-  obj->setBehaviour(ob);
+  obj->setObjectBehaviour(ob);
+  ob->setupObject();
 }
 
 void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
