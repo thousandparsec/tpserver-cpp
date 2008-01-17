@@ -1,6 +1,6 @@
 /*  ObjectParameter baseclass
  *
- *  Copyright (C) 2007 Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008 Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include "objectparameter.h"
 
-ObjectParameter::ObjectParameter() : type(0), name(), description(){
+ObjectParameter::ObjectParameter() : type(0){
 }
 
 ObjectParameter::~ObjectParameter(){
@@ -36,29 +36,6 @@ uint32_t ObjectParameter::getType() const
   return type;
 }
 
-std::string ObjectParameter::getName() const{
-  return name;
-}
-
-std::string ObjectParameter::getDescription() const{
-  return description;
-}
-
-void ObjectParameter::setName(const std::string& nn){
-  name = nn;
-}
-
-void ObjectParameter::setDescription(const std::string& nd){
-  description = nd;
-}
-
-void ObjectParameter::packObjectDescFrame(Frame * f) const{
-
-  f->packString(name);
-  f->packInt(type);
-  f->packString(description);
-  
-}
 
 void ObjectParameter::signalRemoval(){
 }
