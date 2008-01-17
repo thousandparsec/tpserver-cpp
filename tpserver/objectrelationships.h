@@ -45,8 +45,11 @@ class ObjectRelationshipsData {
     void removeChild(uint32_t oc);
     void setChildren(const std::set<uint32_t> nc);
 
-    void packFrame(Frame* f);
+    void packFrame(Frame* f, uint32_t playerid);
     void unpackModFrame(Frame* f);
+    
+    bool isDirty() const;
+    void setIsDirty(bool id);
 
   protected:
     uint32_t ref;
@@ -54,6 +57,7 @@ class ObjectRelationshipsData {
   private:
     uint32_t parentid;
     std::set<uint32_t> children;
+    bool dirty;
 
 };
 

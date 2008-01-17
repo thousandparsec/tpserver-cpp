@@ -19,10 +19,14 @@
  */
 
 #include "frame.h"
+#include "player.h"
+#include "playermanager.h"
+#include "playerview.h"
+#include "game.h"
 
 #include "objectrelationships.h"
 
-ObjectRelationshipsData::ObjectRelationshipsData() : ref(0), parentid(0), children(){
+ObjectRelationshipsData::ObjectRelationshipsData() : ref(0), parentid(0), children(), dirty(true){
 }
 
 ObjectRelationshipsData::~ObjectRelationshipsData(){
@@ -37,72 +41,40 @@ std::set<uint32_t> ObjectRelationshipsData::getChildren() const{
 }
 
 void ObjectRelationshipsData::setParent(uint32_t np){
+  dirty = (np != parentid);
   parentid = np;
 }
 
 void ObjectRelationshipsData::addChild(uint32_t nc){
-  children.insert(nc);
+  dirty = children.insert(nc).second;
 }
 
 void ObjectRelationshipsData::removeChild(uint32_t oc){
-  children.erase(oc);
+  dirty = (children.erase(oc) != 0);
 }
 
 void ObjectRelationshipsData::setChildren(const std::set<uint32_t> nc){
   children = nc;
+  dirty = true;
 }
 
-void ObjectRelationshipsData::packFrame(Frame* frame){
-  if(frame->getVersion() >= fv0_4){
-    frame->packInt(parentid);
-  }else{
-    //pre tp04
-//     if(myObjectData != NULL){
-//       SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(myObjectData->getParameterByType(obpT_Size));
-//       if(size != NULL){
-//        frame->packInt64(size->getSize());
-//       }else{
-//         frame->packInt64(0);
-//       }
-//     }else{
-//       frame->packInt64(0);
-//     }
-//     if(myObjectData != NULL){
-//       Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(myObjectData->getParameterByType(obpT_Position_3D));
-//       if(pos != NULL){
-//         pos->getPosition().pack(frame);
-//       }else{
-//         Vector3d(0,0,0).pack(frame);
-//       }
-//     }else{
-//       Vector3d(0,0,0).pack(frame);
-//     }
-//     if(myObjectData != NULL){
-//       Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(myObjectData->getParameterByType(obpT_Velocity));
-//       if(vel != NULL){
-//         vel->getVelocity().pack(frame);
-//       }else{
-//         Vector3d(0,0,0).pack(frame);
-//       }
-//     }else{
-//       Vector3d(0,0,0).pack(frame);
-//     }
-  }
+void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
+ 
  
   std::set<uint32_t> temp = children;
   std::set <uint32_t>::iterator itcurr, itend;
-//   itcurr = temp.begin();
-//   itend = temp.end();
-//   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-//   while(itcurr != itend){
-//     if(!player->getPlayerView()->isVisibleObject(*itcurr)){
-//       std::set<unsigned int>::iterator itemp = itcurr;
-//       ++itcurr;
-//       temp.erase(itemp);
-//     }else{
-//       ++itcurr;
-//     }
-//   }
+  itcurr = temp.begin();
+  itend = temp.end();
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
+  while(itcurr != itend){
+    if(!player->getPlayerView()->isVisibleObject(*itcurr)){
+      std::set<unsigned int>::iterator itemp = itcurr;
+      ++itcurr;
+      temp.erase(itemp);
+    }else{
+      ++itcurr;
+    }
+  }
 
   frame->packInt(temp.size());
   //for loop for children objects
@@ -119,4 +91,12 @@ void ObjectRelationshipsData::unpackModFrame(Frame* f){
   for(uint32_t i = 0; i < numchildren; i++){
     f->unpackInt();
   }
+}
+
+bool ObjectRelationshipsData::isDirty() const{
+  return dirty;
+}
+
+void ObjectRelationshipsData::setIsDirty(bool id){
+  dirty = id;
 }
