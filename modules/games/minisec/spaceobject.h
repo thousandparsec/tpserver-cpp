@@ -1,8 +1,8 @@
-#ifndef FLEET_H
-#define FLEET_H
-/*  Fleet Object class
+#ifndef SPACEOBJECT_H
+#define SPACEOBJECT_H
+/*  Space Object class
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,43 +24,31 @@
 #include <list>
 
 #include <tpserver/vector3d.h>
-#include "ownedobject.h"
+#include <tpserver/objecttype.h>
+#include <tpserver/objectbehaviour.h>
 
 class IGObject;
 
-class FleetType : public OwnedObjectType{
+class SpaceObjectType : public ObjectType{
   public:
-    FleetType();
-    virtual ~FleetType();
-    
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
+    SpaceObjectType();
+    virtual ~SpaceObjectType();
 };
 
-class Fleet : public OwnedObject {
+class SpaceObject : public ObjectBehaviour{
       public:
-	Fleet();
-	virtual ~Fleet();
+	SpaceObject();
+	virtual ~SpaceObject();
+        
+        Vector3d getPosition() const;
+        Vector3d getVelocity() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setVelocity(const Vector3d & nv);
+        void setSize(uint64_t ns);
         
 
-        void setDefaultOrderTypes();
-	void addShips(uint32_t type, uint32_t number);
-	bool removeShips(uint32_t type, uint32_t number);
-	uint32_t numShips(uint32_t type);
-	std::map<uint32_t, uint32_t> getShips() const;
-	uint32_t totalShips() const;
 
-	long long maxSpeed();
-
-        uint32_t getDamage() const;
-        void setDamage(uint32_t nd);
-
-	void packExtraData(Frame * frame);
-
-	void doOnceATurn();
-        void setupObject();
-
-	int getContainerType();
 };
 
 #endif

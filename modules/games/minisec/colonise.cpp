@@ -1,6 +1,6 @@
 /*  Colonise order
  *
- *  Copyright (C) 2004-2005,2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005,2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/game.h>
 #include <tpserver/logging.h>
 #include <tpserver/message.h>
@@ -53,7 +53,7 @@ Colonise::~Colonise(){
 bool Colonise::doOrder(IGObject * ob){
   //if not close, move
   IGObject* target = Game::getGame()->getObjectManager()->getObject(ob->getParent());
-  if(target == NULL || target->getType() != Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet")){
+  if(target == NULL || target->getType() != Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Planet")){
     
     Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target was not valid.", ob->getID());
     Game::getGame()->getObjectManager()->doneWithObject(ob->getParent());
@@ -62,13 +62,13 @@ bool Colonise::doOrder(IGObject * ob){
     msg->setBody("Not at a planet, colonisation canceled");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
 
     return true;
   }
   
-  Fleet* fleet = (Fleet*)(ob->getObjectData());
-  Planet* planet = (Planet*)(target->getObjectData());
+  Fleet* fleet = (Fleet*)(ob->getObjectBehaviour());
+  Planet* planet = (Planet*)(target->getObjectBehaviour());
   
   Message * msg = new Message();
   msg->addReference(rst_Object, ob->getID());
@@ -106,7 +106,7 @@ bool Colonise::doOrder(IGObject * ob){
         uint32_t oldowner = planet->getOwner();
 	planet->setOwner(fleet->getOwner());
         Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->addOwnedObject(target->getID());
-        uint32_t queueid = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue))->getQueueId();
+        uint32_t queueid = static_cast<OrderQueueObjectParam*>(target->getParameterByType(obpT_Order_Queue))->getQueueId();
         OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
         queue->removeOwner(oldowner);
         queue->addOwner(fleet->getOwner());

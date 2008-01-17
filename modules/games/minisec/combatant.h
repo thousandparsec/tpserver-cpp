@@ -2,7 +2,7 @@
 #define COMBATANT_H
 /*  Combatant class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <stdint.h>
 
 #include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
 
 
 class Combatant{

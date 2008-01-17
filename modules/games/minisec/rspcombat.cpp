@@ -1,6 +1,6 @@
 /*  Rock-Scissor-Paper combat
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <tpserver/object.h>
 #include "fleet.h"
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/message.h>
 #include <tpserver/game.h>
 #include <tpserver/player.h>
@@ -40,8 +40,8 @@
 #include "rspcombat.h"
 
 RSPCombat::RSPCombat() : objectcache(){
-  obT_Fleet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet");
-  obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+  obT_Fleet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
+  obT_Planet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Planet");
 }
 
 RSPCombat::~RSPCombat(){
@@ -63,7 +63,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
       IGObject* obj = Game::getGame()->getObjectManager()->getObject(*itset);
       objectcache[*itset] = obj;
       if(obj->getType() == obT_Fleet){
-        Fleet* f2 = (Fleet*)(obj->getObjectData());
+        Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
         std::map<uint32_t, uint32_t> shiplist = f2->getShips();
         for(std::map<uint32_t, uint32_t>::iterator itship = shiplist.begin(); itship != shiplist.end(); ++itship){
           f1->addShips(itship->first, itship->second);
@@ -75,7 +75,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
         itbs++;
         itbs++;
         f1->addShips(*itbs, 2);
-        if(((Planet*)(obj->getObjectData()))->getResource(2) == 1){
+        if(((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1){
           //two more for home planets
           f1->addShips(*itbs, 2);
         }
@@ -262,7 +262,7 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
       ++itob){
     IGObject* obj = objectcache[*itob];
     if(obj->getType() == obT_Fleet){
-      ((Fleet*)(obj->getObjectData()))->setDamage(0);
+      ((Fleet*)(obj->getObjectBehaviour()))->setDamage(0);
     }
   }
   
@@ -278,18 +278,18 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
       
       if(shiptype == planetshiptype && obj->getType() == obT_Planet){
         uint32_t shipquant = 2;
-        bool ishomeplanet = (((Planet*)(obj->getObjectData()))->getResource(2) == 1);
+        bool ishomeplanet = (((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1);
         if(ishomeplanet)
           shipquant += 2;
         
         if(squant == 0){
           //planet has fallen
           if(ishomeplanet){
-            ((Planet*)(obj->getObjectData()))->removeResource(2, 1);
+            ((Planet*)(obj->getObjectBehaviour()))->removeResource(2, 1);
           }
-          uint32_t oldowner = ((Planet*)(obj->getObjectData()))->getOwner();
-          ((Planet*)(obj->getObjectData()))->setOwner(0);
-          uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getObjectData()->getParameterByType(obpT_Order_Queue))->getQueueId();
+          uint32_t oldowner = ((Planet*)(obj->getObjectBehaviour()))->getOwner();
+          ((Planet*)(obj->getObjectBehaviour()))->setOwner(0);
+          uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
           OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
           queue->removeOwner(oldowner);
           queue->removeAllOrders();
@@ -309,7 +309,7 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
           }
         }
       }else if(obj->getType() == obT_Fleet){
-        Fleet* f2 = (Fleet*)(obj->getObjectData());
+        Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
         
         std::map<uint32_t, uint32_t> shiplist = f2->getShips();
         uint32_t shipquant = shiplist[shiptype];
@@ -346,9 +346,9 @@ void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
       ++itob){
     IGObject* obj = objectcache[*itob];
     if(obj->getType() == obT_Fleet){
-      if(((Fleet*)(obj->getObjectData()))->totalShips() == 0){
+      if(((Fleet*)(obj->getObjectBehaviour()))->totalShips() == 0){
         Game::getGame()->getObjectManager()->scheduleRemoveObject(*itob);
-        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(obj->getObjectData()))->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
+        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(obj->getObjectBehaviour()))->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
       }
     }
   }

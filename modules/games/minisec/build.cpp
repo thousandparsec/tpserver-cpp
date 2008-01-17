@@ -1,6 +1,6 @@
 /*  Build object for BuildFleet orders
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 
 #include "planet.h"
 
@@ -74,7 +74,7 @@ void Build::createFrame(Frame *f, int pos)
   IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   
   // number of turns
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectData())->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectBehaviour())->getResources();
   Game::getGame()->getObjectManager()->doneWithObject(planet->getID());
   uint32_t res_current;
   if(presources.find(1) != presources.end()){
@@ -101,7 +101,7 @@ void Build::createFrame(Frame *f, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData()))->getOwner())->getPlayerView()->getUsableDesigns();
+  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -166,7 +166,7 @@ Result Build::inputFrame(Frame *f, unsigned int playerid)
 bool Build::doOrder(IGObject *ob)
 {
   
-  Planet* planet = static_cast<Planet*>(ob->getObjectData());
+  Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
   uint32_t usedshipres = resources[1];
   
@@ -184,15 +184,18 @@ bool Build::doOrder(IGObject *ob)
   if(planet->removeResource(1, usedshipres)){
     //create fleet
     
-    IGObject *fleet = Game::getGame()->getObjectManager()->createNewObject();
-    fleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
+    Game* game = Game::getGame();
+    
+    
+    IGObject *fleet = game->getObjectManager()->createNewObject();
+    game->getObjectTypeManager()->setupObject(fleet, game->getObjectTypeManager()->getObjectTypeByName("Fleet"));
     
     //add fleet to container
     fleet->addToParent(ob->getID());
     
     fleet->setName(fleetname->getString().c_str());
     
-    Fleet * thefleet = ((Fleet*)(fleet->getObjectData()));
+    Fleet * thefleet = ((Fleet*)(fleet->getObjectBehaviour()));
     
     thefleet->setSize(2);
     thefleet->setOwner(ownerid); // set ownerid
@@ -203,7 +206,7 @@ bool Build::doOrder(IGObject *ob)
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(ownerid);
     Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
     

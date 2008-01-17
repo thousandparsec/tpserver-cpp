@@ -1,6 +1,6 @@
 /*  Fleet object
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,121 +26,43 @@
 #include "planet.h"
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/position3dobjectparam.h>
-#include <tpserver/velocity3dobjectparam.h>
-#include <tpserver/sizeobjectparam.h>
 #include <tpserver/referenceobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/refquantitylistobjectparam.h>
 #include <tpserver/integerobjectparam.h>
-#include <tpserver/objectparametergroup.h>
 #include <tpserver/refsys.h>
+#include <tpserver/objectparametergroupdesc.h>
 
 #include "fleet.h"
 
-Fleet::Fleet():ObjectData(){
-  pos = new Position3dObjectParam();
-  pos->setName("Position");
-  pos->setDescription("The position of the Fleet");
-  ObjectParameterGroup* group = new ObjectParameterGroup();
-  group->setGroupId(1);
-  group->setName("Positional");
-  group->setDescription("Positional information");
-  group->addParameter(pos);
-  vel = new Velocity3dObjectParam();
-  vel->setName("Velocity");
-  vel->setDescription("The velocity of the fleet");
-  group->addParameter(vel);
-  size = new SizeObjectParam();
-  size->setName("Size");
-  size->setDescription( "The size of the fleet");
-  size->setSize(2);
-  group->addParameter(size);
-  paramgroups.push_back(group);
-  
-  playerref = new ReferenceObjectParam();
-  playerref->setName("Owner");
-  playerref->setDescription("The owner of this object");
-  playerref->setReferenceType(rst_Player);
-  group = new ObjectParameterGroup();
-  group->setGroupId(2);
-  group->setName("Ownership");
-  group->setDescription("The ownership of this object");
-  group->addParameter(playerref);
-  paramgroups.push_back(group);
-  
-  group = new ObjectParameterGroup();
-  group->setGroupId(3);
-  group->setName("Orders");
-  group->setDescription("The order queues of the fleet");
-  orderqueue = new OrderQueueObjectParam();
-  orderqueue->setName("Order Queue");
-  orderqueue->setDescription("The queue of orders for this fleet");
-  OrderManager * om = Game::getGame()->getOrderManager();
-  group->addParameter(orderqueue);
-  paramgroups.push_back(group);
-  
-  group = new ObjectParameterGroup();
-  group->setGroupId(4);
+FleetType::FleetType():OwnedObjectType(){
+  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ships");
   group->setDescription("The information about ships in this fleet");
-  shiplist = new RefQuantityListObjectParam();
-  shiplist->setName("Ship List");
-  shiplist->setDescription("The list of ships");
-  group->addParameter(shiplist);
-  damage = new IntegerObjectParam();
-  damage->setName("Damage");
-  damage->setDescription("The damage done to the ships");
-  damage->setValue(0);
-  group->addParameter(damage);
-  paramgroups.push_back(group);
+  group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
+  group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
+  addParameterGroupDesc(group);
   
   nametype = "Fleet";
   typedesc = "Fleet of ships";
 }
 
+FleetType::~FleetType(){
+}
+
+ObjectBehaviour* FleetType::createObjectBehaviour() const{
+  return new Fleet();
+}
+
+Fleet::Fleet():OwnedObject(){
+}
+
 Fleet::~Fleet(){
-}
-
-Vector3d Fleet::getPosition() const{
-  return pos->getPosition();
-}
-
-Vector3d Fleet::getVelocity() const{
-  return vel->getVelocity();
-}
-
-uint64_t Fleet::getSize() const{
-  return size->getSize();
-}
-
-void Fleet::setPosition(const Vector3d & np){
-  pos->setPosition(np);
-  touchModTime();
-}
-
-void Fleet::setVelocity(const Vector3d & nv){
-  vel->setVelocity(nv);
-  touchModTime();
-}
-
-void Fleet::setSize(uint64_t ns){
-  size->setSize(ns);
-  touchModTime();
-}
-
-uint32_t Fleet::getOwner() const{
-  return playerref->getReferencedId();
-}
-
-void Fleet::setOwner(uint32_t no){
-  playerref->setReferencedId(no);
-  touchModTime();
 }
 
 void Fleet::setDefaultOrderTypes(){
@@ -150,31 +72,31 @@ void Fleet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("Move"));
   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
-  orderqueue->setAllowedOrders(allowedlist);
+  ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   ships[std::pair<int32_t, uint32_t>(rst_Design, type)] += number;
-  shiplist->setRefQuantityList(ships);
+  ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
   DesignStore* ds = Game::getGame()->getDesignStore();
   OrderManager* om = Game::getGame()->getOrderManager();
   if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-    std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
+    std::set<uint32_t> allowed = ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->getAllowedOrders();
     allowed.insert(om->getOrderTypeByName("Colonise"));
-    orderqueue->setAllowedOrders(allowed);
+    ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowed);
   }
-  touchModTime();
+  obj->touchModTime();
 }
 
 bool Fleet::removeShips(uint32_t type, uint32_t number){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] >= number){
     ships[std::pair<int32_t, uint32_t>(rst_Design, type)] -= number;
     if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] == 0){
       ships.erase(std::pair<int32_t, uint32_t>(rst_Design, type));
     }
-    shiplist->setRefQuantityList(ships);
+    ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
     DesignStore* ds = Game::getGame()->getDesignStore();
     bool colonise = false;
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
@@ -185,6 +107,7 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
       }
     }
     OrderManager* om = Game::getGame()->getOrderManager();
+    OrderQueueObjectParam* orderqueue = ((OrderQueueObjectParam*)(obj->getParameter(3,1)));
     if(colonise){
       std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
       allowed.insert(om->getOrderTypeByName("Colonise"));
@@ -194,20 +117,20 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
       allowed.erase(om->getOrderTypeByName("Colonise"));
       orderqueue->setAllowedOrders(allowed);
     }
-    touchModTime();
+    obj->touchModTime();
     return true;
   }
   return false;
 }
 
 uint32_t Fleet::numShips(uint32_t type){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
 std::map<uint32_t, uint32_t> Fleet::getShips() const{
   std::map<uint32_t, uint32_t> ships;
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = (( RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
       itcurr != shipsref.end(); ++itcurr){
     ships[itcurr->first.second] = itcurr->second;
@@ -217,7 +140,7 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
 
 uint32_t Fleet::totalShips() const{
   uint32_t num = 0;
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     num += itcurr->second;
@@ -228,7 +151,7 @@ uint32_t Fleet::totalShips() const{
 long long Fleet::maxSpeed(){
   double speed = 1e100;
   DesignStore* ds = Game::getGame()->getDesignStore();
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
         speed = fmin(speed, ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Speed")));
@@ -237,20 +160,18 @@ long long Fleet::maxSpeed(){
 }
 
 uint32_t Fleet::getDamage() const{
-    return damage->getValue();
+    return ((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue();
 }
 
 void Fleet::setDamage(uint32_t nd){
-    damage->setValue(nd);
-    touchModTime();
+    ((IntegerObjectParam*)(obj->getParameter(4,2)))->setValue(nd);
+    obj->touchModTime();
 }
 
 void Fleet::packExtraData(Frame * frame){
-  ObjectData::packExtraData(frame);
-  
-  frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
+  OwnedObject::packExtraData(frame);
 
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = shiplist->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
   frame->packInt(ships.size());
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
     //if(itcurr->second > 0){
@@ -259,23 +180,24 @@ void Fleet::packExtraData(Frame * frame){
       //}
   }
   
-  frame->packInt(damage->getValue());
+  frame->packInt(((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue());
 
 }
 
-void Fleet::doOnceATurn(IGObject * obj){
+void Fleet::doOnceATurn(){
   Game* game = Game::getGame();
   IGObject * pob = game->getObjectManager()->getObject(obj->getParent());
-  uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
-  if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectData()))->getOwner() == getOwner()){
+  uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
+  if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectBehaviour()))->getOwner() == getOwner()){
+    IntegerObjectParam* damage = ((IntegerObjectParam*)(obj->getParameter(4,2)));
     if(damage->getValue() != 0){
         damage->setValue(0);
-        touchModTime();
+        obj->touchModTime();
     }
   }
   game->getObjectManager()->doneWithObject(obj->getParent());
   
-  Order* order = game->getOrderManager()->getOrderQueue(orderqueue->getQueueId())->getFirstOrder();
+  Order* order = game->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(3,1)))->getQueueId())->getFirstOrder();
   if(order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")){
     setVelocity(Vector3d(0,0,0));
   }
@@ -285,6 +207,10 @@ int Fleet::getContainerType(){
   return 0;
 }
 
-ObjectData* Fleet::clone() const{
-  return new Fleet();
+void Fleet::setupObject(){
+  OwnedObject::setupObject();
+    
+  setSize(2);
+  //something about the orderqueue?
 }
+

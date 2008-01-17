@@ -2,7 +2,7 @@
 #define PLANET_H
 /*  Planet ObjectData class
  *
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,37 +22,31 @@
 
 #include <map>
 
-#include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
+#include "ownedobject.h"
 
-class Position3dObjectParam;
-class SizeObjectParam;
-class ReferenceObjectParam;
-class ResourceListObjectParam;
-class OrderQueueObjectParam;
+class PlanetType : public OwnedObjectType{
+  public:
+    PlanetType();
+    virtual ~PlanetType();
+    
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+  
+};
 
-class Planet:public ObjectData {
+class Planet:public OwnedObject {
       public:
 	Planet();
         virtual ~Planet();
 
-        Vector3d getPosition() const;
-        uint64_t getSize() const;
-        void setPosition(const Vector3d & np);
-        void setSize(uint64_t ns);
-        
-        uint32_t getOwner() const;
-        void setOwner(uint32_t no);
-        
         void setDefaultOrderTypes();
         
 	void packExtraData(Frame * frame);
 
-	void doOnceATurn(IGObject * obj);
+	void doOnceATurn();
 
 	int getContainerType();
 	
-	ObjectData* clone() const;
 
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
     uint32_t getResource(uint32_t restype) const;
@@ -60,13 +54,6 @@ class Planet:public ObjectData {
     void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
     void addResource(uint32_t restype, uint32_t amount);
     bool removeResource(uint32_t restype, uint32_t amount);
-
-  private:
-    Position3dObjectParam * pos;
-    SizeObjectParam * size;
-    ReferenceObjectParam * playerref;
-    ResourceListObjectParam* resources;
-    OrderQueueObjectParam * orderqueue;
 
 };
 

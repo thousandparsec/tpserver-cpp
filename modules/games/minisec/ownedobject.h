@@ -1,6 +1,6 @@
-#ifndef FLEET_H
-#define FLEET_H
-/*  Fleet Object class
+#ifndef OWNEDOBJECT_H
+#define OWNEDOBJECT_H
+/*  Owned Object class
  *
  *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
@@ -23,44 +23,31 @@
 #include <map>
 #include <list>
 
-#include <tpserver/vector3d.h>
-#include "ownedobject.h"
+#include "spaceobject.h"
 
 class IGObject;
 
-class FleetType : public OwnedObjectType{
+class OwnedObjectType : public SpaceObjectType{
   public:
-    FleetType();
-    virtual ~FleetType();
-    
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
+    OwnedObjectType();
+    virtual ~OwnedObjectType();
 };
 
-class Fleet : public OwnedObject {
+class OwnedObject : public SpaceObject {
       public:
-	Fleet();
-	virtual ~Fleet();
+	OwnedObject();
+	virtual ~OwnedObject();
         
+        uint32_t getOwner() const;
+        void setOwner(uint32_t no);
 
-        void setDefaultOrderTypes();
-	void addShips(uint32_t type, uint32_t number);
-	bool removeShips(uint32_t type, uint32_t number);
-	uint32_t numShips(uint32_t type);
-	std::map<uint32_t, uint32_t> getShips() const;
-	uint32_t totalShips() const;
-
-	long long maxSpeed();
-
-        uint32_t getDamage() const;
-        void setDamage(uint32_t nd);
-
+        virtual void setDefaultOrderTypes() = 0;
+	
 	void packExtraData(Frame * frame);
 
-	void doOnceATurn();
-        void setupObject();
 
-	int getContainerType();
+        virtual void setupObject();
+
 };
 
 #endif
