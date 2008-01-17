@@ -47,14 +47,22 @@ class ObjectInfoData {
 
     void packFrame(Frame* f);
     void unpackModFrame(Frame* f);
+    
+    uint64_t getModTime() const;
+    bool isDirty() const;
+    void setModTime(uint64_t nmt);
+    void setIsDirty(bool id);
 
   protected:
     uint32_t ref;
     
   private:
+    void touchModTime();
     uint32_t type;
     std::string name;
     std::string desc;
+    uint64_t modtime;
+    bool dirty;
 
 };
 

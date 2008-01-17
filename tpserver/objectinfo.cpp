@@ -18,11 +18,14 @@
  *
  */
 
+#include <time.h>
+
 #include "frame.h"
 
 #include "objectinfo.h"
 
 ObjectInfoData::ObjectInfoData() : ref(0), type(0), name(), desc(){
+  touchModTime();
 }
 
 ObjectInfoData::~ObjectInfoData(){
@@ -42,14 +45,17 @@ std::string ObjectInfoData::getDescription() const{
 
 void ObjectInfoData::setType(uint32_t nt){
   type = nt;
+  touchModTime();
 }
 
 void ObjectInfoData::setName(const std::string& nn){
   name = nn;
+  touchModTime();
 }
 
 void ObjectInfoData::setDescription(const std::string& nd){
   desc = nd;
+  touchModTime();
 }
 
 void ObjectInfoData::packFrame(Frame* frame){
@@ -66,9 +72,31 @@ void ObjectInfoData::unpackModFrame(Frame* f){
   std::string td = f->unpackStdString();
   if(tn != name){
     tn = name;
+    touchModTime();
   }
   if(td != desc){
     desc = td;
+    touchModTime();
   }
 }
 
+uint64_t ObjectInfoData::getModTime() const{
+  return modtime;
+}
+
+bool ObjectInfoData::isDirty() const{
+  return dirty;
+}
+
+void ObjectInfoData::setModTime(uint64_t nmt){
+  modtime = nmt;
+}
+
+void ObjectInfoData::setIsDirty(bool id){
+  dirty = id;
+}
+
+void ObjectInfoData::touchModTime(){
+  modtime = time(NULL);
+  dirty = true;
+}
