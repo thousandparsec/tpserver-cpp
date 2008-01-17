@@ -38,7 +38,6 @@
 #include "ordermanager.h"
 #include "boardmanager.h"
 #include "playermanager.h"
-#include "objectdata.h"
 #include "designstore.h"
 #include "category.h"
 #include "design.h"

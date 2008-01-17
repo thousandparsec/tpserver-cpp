@@ -25,8 +25,6 @@
 #include "logging.h"
 #include "game.h"
 #include "objectmanager.h"
-#include "objectdata.h"
-#include "objectdatamanager.h"
 #include "playermanager.h"
 #include "player.h"
 #include "playerview.h"
