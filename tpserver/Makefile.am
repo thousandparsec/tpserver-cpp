@@ -22,7 +22,7 @@ endif
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp objectdata.cpp \
-		vector3d.cpp board.cpp message.cpp ordermanager.cpp objectdatamanager.cpp \
+		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
 		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
 		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
@@ -44,7 +44,7 @@ headers_HEADERS = connection.h console.h \
 	player.h object.h \
 	order.h objectdata.h \
 	vector3d.h board.h message.h ordermanager.h \
-	objectdatamanager.h \
+	objecttypemanager.h \
 	playerconnection.h \
 	refsys.h property.h propertyvalue.h component.h \
 	design.h designstore.h \
