@@ -246,8 +246,16 @@ void IGObject::createFrame(Frame * frame, uint32_t playerid){
 
 }
 
+void IGObject::setParameterGroup(const ObjectParameterGroupPtr &ng){
+  parameters[ng->getGroupId()] = ng;
+}
+
 ObjectBehaviour* IGObject::getObjectBehaviour() const{
   return behaviour;
+}
+
+void IGObject::setObjectBehaviour(ObjectBehaviour* nob){
+  behaviour = nob;
 }
 
 void IGObject::touchModTime(){
