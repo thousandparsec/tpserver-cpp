@@ -43,7 +43,7 @@
 #include "vector3d.h"
 #include "objectmanager.h"
 #include "ordermanager.h"
-#include "objectdatamanager.h"
+#include "objecttypemanager.h"
 #include "boardmanager.h"
 #include "resourcemanager.h"
 #include "playermanager.h"
@@ -187,8 +187,8 @@ OrderManager* Game::getOrderManager() const{
   return ordermanager;
 }
 
-ObjectDataManager* Game::getObjectDataManager() const{
-  return objectdatamanager;
+ObjectTypeManager* Game::getObjectTypeManager() const{
+  return objecttypemanager;
 }
 
 BoardManager* Game::getBoardManager() const{
@@ -448,7 +448,7 @@ std::string Game::getKey() const{
 Game::Game() : ctime(0), turnNum(0), key(), turntimer(NULL){
   objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
-  objectdatamanager = new ObjectDataManager();
+  objecttypemanager = new ObjectTypeManager();
   boardmanager = new BoardManager();
   resourcemanager = new ResourceManager();
   playermanager = new PlayerManager();
@@ -474,7 +474,7 @@ Game::~Game()
 {
     delete objectmanager;
   delete ordermanager;
-  delete objectdatamanager;
+  delete objecttypemanager;
     delete boardmanager;
     delete resourcemanager;
     delete playermanager;
