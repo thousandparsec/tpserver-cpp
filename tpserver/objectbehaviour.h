@@ -34,6 +34,7 @@ class ObjectBehaviour{
     virtual void doOnceATurn() = 0;
     virtual int getContainerType() = 0;
     
+    virtual void setupObject();
     virtual void signalRemoval();
     
   protected:
