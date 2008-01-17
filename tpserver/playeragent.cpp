@@ -1,6 +1,6 @@
 /*  PlayerAgent object, processing and frame handling
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #include "board.h"
 #include "message.h"
 #include "objectmanager.h"
-#include "objectdatamanager.h"
+#include "objecttypemanager.h"
 #include "ordermanager.h"
 #include "boardmanager.h"
 #include "playermanager.h"
@@ -520,7 +520,7 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
 
     of = curConnection->createFrame(frame);
     
-    Game::getGame()->getObjectDataManager()->doGetObjectDesc(objecttype, of);
+    Game::getGame()->getObjectTypeManager()->doGetObjectDesc(objecttype, of);
     
     curConnection->sendFrame ( of );
   }
@@ -545,7 +545,7 @@ void PlayerAgent::processGetObjectTypes(Frame * frame){
     return;
   }
 
-  Game::getGame()->getObjectDataManager()->doGetObjectTypes(frame, of);
+  Game::getGame()->getObjectTypeManager()->doGetObjectTypes(frame, of);
   
   curConnection->sendFrame(of);
   
