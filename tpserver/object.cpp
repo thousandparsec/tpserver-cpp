@@ -111,6 +111,11 @@ void IGObject::setDescription(const std::string &newdesc){
   touchModTime();
 }
 
+void IGObject::setIsAlive(bool ia){
+  alive = ia;
+  touchModTime();
+}
+
 void IGObject::addToParent(uint32_t pid){
     relationships->setParent(pid);
     Game::getGame()->getObjectManager()->getObject(pid)->addContainedObject(id);
@@ -247,6 +252,7 @@ ObjectBehaviour* IGObject::getObjectBehaviour() const{
 
 void IGObject::touchModTime(){
   modtime = time(NULL);
+  dirty = true;
 }
 
 uint64_t IGObject::getModTime() const{
@@ -258,6 +264,10 @@ uint64_t IGObject::getModTime() const{
   return maxmodtime;
 }
 
+bool IGObject::isDirty() const{
+  bool dirtyparams = false; //TODO fix
+  return dirty || info->isDirty() || relationships->isDirty() || dirtyparams;
+}
 
 void IGObject::setParent(uint32_t pid){
   relationships->setParent(pid);
@@ -265,6 +275,10 @@ void IGObject::setParent(uint32_t pid){
 
 void IGObject::setModTime(uint64_t time){
   modtime = time;
+}
+
+void IGObject::setIsDirty(bool id){
+  dirty = id;
 }
 
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{

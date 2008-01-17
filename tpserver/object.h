@@ -72,6 +72,8 @@ class IGObject {
     void createFrame(Frame * frame, uint32_t playerid);
 
     ObjectParameter* getParameter(uint32_t groupnum, uint32_t paramnum) const;
+    ObjectParameter* getParameterByType(uint32_t type) const;
+    
     void setParameterGroup(const ObjectParameterGroupPtr &ng);
     
     ObjectBehaviour* getObjectBehaviour() const;
@@ -79,20 +81,19 @@ class IGObject {
     
     void touchModTime();
     uint64_t getModTime() const;
-    //bool isDirty() const;
+    bool isDirty() const;
 
     // Only Persistence classes should call these
     void setParent(uint32_t pid);
     void setModTime(uint64_t time);
-    //void setDirty(bool nd);
+    void setIsDirty(bool nd);
 
   private:
-    ObjectParameter* getParameterByType(uint32_t type) const;
-
     uint32_t id;
     uint32_t turn;
     uint64_t modtime;
     bool alive;
+    bool dirty;
     
     ObjectInfoPtr info;
     ObjectRelationshipsPtr relationships;
