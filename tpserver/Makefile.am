@@ -21,7 +21,7 @@ endif
 
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
-		order.cpp objectdata.cpp \
+		order.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
 		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
@@ -42,7 +42,7 @@ headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h console.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
-	order.h objectdata.h \
+	order.h \
 	vector3d.h board.h message.h ordermanager.h \
 	objecttypemanager.h \
 	playerconnection.h \
