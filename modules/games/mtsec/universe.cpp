@@ -55,6 +55,7 @@ void Universe::packExtraData(Frame * frame){
 
 void Universe::doOnceATurn(){
   ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue() + 1);
+  obj->touchModTime();
 }
 
 int Universe::getContainerType(){
