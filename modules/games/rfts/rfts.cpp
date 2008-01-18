@@ -1,6 +1,7 @@
 /*  RFTS rulesset
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,7 +36,7 @@
 #include <tpserver/designstore.h>
 
 #include <tpserver/object.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
@@ -122,24 +123,24 @@ void Rfts::setObjectTypes() const {
 
    DEBUG_FN_PRINT();
 
-   ObjectDataManager* obdm = Game::getGame()->getObjectDataManager();
-   StaticObject *eo;
+   ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
+   StaticObjectType *eo;
 
-   obdm->addNewObjectType(new Universe);
+   obdm->addNewObjectType(new UniverseType());
 
    // galaxy added for tp03
-   eo = new StaticObject();
+   eo = new StaticObjectType();
    eo->setTypeName("Galaxy");
    eo->setTypeDescription("Galaxy");
    obdm->addNewObjectType(eo);
 
-   eo = new StaticObject();
+   eo = new StaticObjectType();
    eo->setTypeName("Star System"); 
    eo->setTypeDescription("A system of stars!");
    obdm->addNewObjectType(eo);
 
-   obdm->addNewObjectType(new Planet);
-   obdm->addNewObjectType(new Fleet);
+   obdm->addNewObjectType(new PlanetType);
+   obdm->addNewObjectType(new FleetType);
 }
 
 void Rfts::setOrderTypes() const {
@@ -251,13 +252,14 @@ void Rfts::createUniverse() {
    DEBUG_FN_PRINT();
 
    ObjectManager *objman = Game::getGame()->getObjectManager();
+   ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
-   uint32_t uniType = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
+   uint32_t uniType = otypeman->getObjectTypeByName("Universe");
    IGObject *universe = objman->createNewObject();
 
-   universe->setType(uniType);
+   otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
-   StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectData());
+   StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setUnitPos(0,0);
    uniData->setSize(123456789123ll);
    objman->addObject(universe);
@@ -322,12 +324,13 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
                   double unitX, double unitY)
 {
    Game *game = Game::getGame();
+   ObjectTypeManager *otypeman = game->getObjectTypeManager();
    
    IGObject *starSys = game->getObjectManager()->createNewObject();
 
-   starSys->setType(game->getObjectDataManager()->getObjectTypeByName("Star System"));
+   otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
    starSys->setName(name);
-   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectData());
+   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
    starSysData->setUnitPos(unitX, unitY);
    
    starSys->addToParent(universe.getID());
@@ -350,12 +353,13 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
 IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
 
    Game *game = Game::getGame();
+   ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
    IGObject *planet = game->getObjectManager()->createNewObject();
 
-   planet->setType(game->getObjectDataManager()->getObjectTypeByName("Planet"));
+   otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
-   Planet* planetData = static_cast<Planet*>(planet->getObjectData());
+   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
    
@@ -364,7 +368,7 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const V
    planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
-                                       (planetData->getParameterByType(obpT_Order_Queue));
+                                       (planet->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
    planetData->setOrderTypes();
   
@@ -551,7 +555,7 @@ void Rfts::onPlayerAdded(Player *player) {
 
    // test : set the 2nd object - a planet - to be owned by the player
    IGObject *homePlanet = choosePlayerPlanet();
-   Planet* pData = dynamic_cast<Planet*>(homePlanet->getObjectData());
+   Planet* pData = dynamic_cast<Planet*>(homePlanet->getObjectBehaviour());
    pData->setOwner(player->getID());
 
    Logger::getLogger()->debug("Making player's fleet");
@@ -562,7 +566,7 @@ void Rfts::onPlayerAdded(Player *player) {
    // give 'em a scout to start
    Design* scout = createScoutDesign(player);
    
-   dynamic_cast<Fleet*>(fleet->getObjectData())->addShips( scout->getDesignId(), 1);
+   dynamic_cast<Fleet*>(fleet->getObjectBehaviour())->addShips( scout->getDesignId(), 1);
    scout->addUnderConstruction(2);
    scout->addComplete(2);
    game->getDesignStore()->designCountsUpdated(scout);
@@ -662,7 +666,7 @@ IGObject* Rfts::choosePlayerPlanet() const {
       
       for(set<uint32_t>::iterator i = planets.begin(); i != planets.end(); i++)
       {
-         ObjectData *objDataI = om->getObject(*i)->getObjectData();
+         ObjectBehaviour *objDataI = om->getObject(*i)->getObjectBehaviour();
          
          if(dynamic_cast<OwnedObject*>(objDataI)->getOwner() == 0) // no owner
             starSysClear++;
@@ -674,7 +678,7 @@ IGObject* Rfts::choosePlayerPlanet() const {
       if(planets.size() != 0 && starSysClear == planets.size() && primaryPlanet != -1)
       {
          homePlanet = om->getObject(primaryPlanet); // must be a planet because it's owner-less
-         Planet *homePlanetData =  dynamic_cast<Planet*>(homePlanet->getObjectData());
+         Planet *homePlanetData =  dynamic_cast<Planet*>(homePlanet->getObjectBehaviour());
          
          // set initial planet values
          homePlanetData->setResource("Resource Point", 200);

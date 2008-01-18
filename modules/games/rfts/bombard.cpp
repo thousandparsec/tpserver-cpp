@@ -1,6 +1,7 @@
 /*  bombard
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,9 +21,8 @@
 
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/frame.h>
 #include <tpserver/message.h>
 #include <tpserver/logging.h>
@@ -71,7 +71,7 @@ Result Bombard::inputFrame(Frame * f, unsigned int playerid) {
    ObjectManager *om = Game::getGame()->getObjectManager();
 
    IGObject *planetObj = om->getObject(planet->getObjectId());
-   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
+   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
 
    if(!planetData)
       planet->setObjectId(0);
@@ -85,7 +85,7 @@ bool Bombard::doOrder(IGObject *fleet) {
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
-   ObjectDataManager *odm = game->getObjectDataManager();
+   ObjectTypeManager *odm = game->getObjectTypeManager();
    Random *rand = game->getRandom();
 
    IGObject *planetObj = om->getObject(planet->getObjectId());
@@ -96,8 +96,8 @@ bool Bombard::doOrder(IGObject *fleet) {
       return true;
    }
 
-   Fleet *fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
-   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
+   Fleet *fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
+   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
    char planetShipTech = PlayerInfo::getPlayerInfo(planetData->getOwner()).getShipTechLevel();
    double attack = fleetData->getAttack();
    

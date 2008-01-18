@@ -1,6 +1,7 @@
 /*  mergefleet
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +23,6 @@
 #include <tpserver/message.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/objectorderparameter.h>
 #include <tpserver/player.h>
@@ -66,10 +66,10 @@ bool MergeFleet::doOrder(IGObject *obj) {
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    
-   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
+   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
    IGObject *otherFleetObj = om->getObject(otherFleet->getObjectId());
-   Fleet *otherFleetData = dynamic_cast<Fleet*>(otherFleetObj->getObjectData());
+   Fleet *otherFleetData = dynamic_cast<Fleet*>(otherFleetObj->getObjectBehaviour());
 
    Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    

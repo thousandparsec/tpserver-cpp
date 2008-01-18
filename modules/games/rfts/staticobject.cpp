@@ -1,6 +1,7 @@
 /*  static object
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,9 +19,10 @@
  *
  */
 
-#include <tpserver/objectparametergroup.h>
+#include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/object.h>
 
 #include "map.h"
 #include "containertypes.h"
@@ -31,22 +33,29 @@ namespace RFTS_ {
 
 using std::pair;
 
-StaticObject::StaticObject() : ObjectData(), unitX(0), unitY(0) {
-   pos = new Position3dObjectParam();
-   pos->setName("Position");
-   pos->setDescription("The position of the object");
-   
-   ObjectParameterGroup *group = new ObjectParameterGroup();
-   group->setGroupId(1);
-   group->setName("Positional");
-   group->setDescription("Describes the position");
-   group->addParameter(pos);
+StaticObjectType::StaticObjectType() : ObjectType(){
+  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
+  group->setName("Positional");
+  group->setDescription("Describes the position");
+  group->addParameter(obpT_Position_3D, "Position", "The position of the object");
+  group->addParameter(obpT_Size, "Size", "The diameter of the object");
+  addParameterGroupDesc(group);
+  
+}
 
-   size = new SizeObjectParam();
-   size->setName("Size");
-   size->setDescription("The diameter of the object");
-   group->addParameter(size);
-   paramgroups.push_back(group);
+void StaticObjectType::setTypeName(const std::string& nname){
+  nametype = nname;
+}
+
+void StaticObjectType::setTypeDescription(const std::string& ndesc){
+  typedesc = ndesc;
+}
+
+ObjectBehaviour* StaticObjectType::createObjectBehaviour() const{
+  return new StaticObject();
+}
+
+StaticObject::StaticObject() : ObjectBehaviour(), unitX(0), unitY(0) {
 }
 
 void StaticObject::setUnitPos(double x, double y) {
@@ -65,48 +74,33 @@ pair<double,double> StaticObject::getUnitPos() const {
 }
 
 Vector3d StaticObject::getPosition() const{
-  return pos->getPosition();
+  return ((Position3dObjectParam*)(obj->getParameter(1, 1)))->getPosition();
 }
 
 void StaticObject::setPosition(const Vector3d & np){
-  pos->setPosition(np);
-  touchModTime();
+  ((Position3dObjectParam*)(obj->getParameter(1, 1)))->setPosition(np);
+  obj->touchModTime();
 }
 
 uint64_t StaticObject::getSize() const{
-  return size->getSize();
+  return ((SizeObjectParam*)(obj->getParameter(1, 2)))->getSize();
 }
 
 void StaticObject::setSize(uint64_t ns){
-  size->setSize(ns);
-  touchModTime();
+  ((SizeObjectParam*)(obj->getParameter(1, 2)))->setSize(ns);
+  obj->touchModTime();
 }
 
 void StaticObject::packExtraData(Frame * frame) {
 
 }
 
-void StaticObject::doOnceATurn(IGObject * obj) {
+void StaticObject::doOnceATurn() {
 
-}
-
-ObjectData* StaticObject::clone() const {
-  StaticObject* eo = new StaticObject();
-  eo->nametype = nametype;
-  eo->typedesc = typedesc;
-  return eo;
 }
 
 int StaticObject::getContainerType(){
   return ContainerTypes_::StaticObject;
-}
-
-void StaticObject::setTypeName(const std::string& n){
-  nametype = n;
-}
-
-void StaticObject::setTypeDescription(const std::string& d){
-  typedesc = d;
 }
 
 }

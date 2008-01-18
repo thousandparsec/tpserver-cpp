@@ -19,7 +19,6 @@
  */
 
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 
 #include <tpserver/stringparameter.h>
 

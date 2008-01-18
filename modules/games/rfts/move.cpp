@@ -1,6 +1,7 @@
 /*  move
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,9 +25,8 @@
 #include <tpserver/objectorderparameter.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
@@ -82,12 +82,12 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
       
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
-   ObjectDataManager *odm = game->getObjectDataManager();
+   ObjectTypeManager *odm = game->getObjectTypeManager();
    
 
    IGObject *fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
-   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
    assert(fleetData != NULL);
 
    IGObject *starSysObj = om->getObject(starSys->getObjectId());
@@ -105,7 +105,7 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
       Logger::getLogger()->debug("Player made illogical move order, resetting move to current pos");
    }
 
-   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSysObj->getObjectData());
+   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSysObj->getObjectBehaviour());
    
    turns = static_cast<uint32_t>(getWrappingUnitDist(*fleetData, *starSysData) / fleetData->getSpeed()  + .5);
    
@@ -127,12 +127,12 @@ bool Move::doOrder(IGObject * obj) {
    if(turns <= 0)
    {
       ObjectManager* om = Game::getGame()->getObjectManager();
-      Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
+      Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
 
       IGObject *newStarSys = om->getObject(starSys->getObjectId());
       obj->addToParent(starSys->getObjectId());
-      fleetData->setUnitPos(dynamic_cast<StaticObject*>(newStarSys->getObjectData())->getUnitPos());
+      fleetData->setUnitPos(dynamic_cast<StaticObject*>(newStarSys->getObjectBehaviour())->getUnitPos());
 
       newStarSys->touchModTime();
       om->doneWithObject(newStarSys->getID());

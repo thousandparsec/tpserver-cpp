@@ -3,6 +3,7 @@
 /*  Planet class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,11 +27,15 @@
 #include "ownedobject.h"
 #include "resourcelistparam.h"
 
-class ReferenceObjectParam;
-class OrderQueueObjectParam;
-class IntegerObjectParam;
-
 namespace RFTS_ {
+
+class PlanetType : public StaticObjectType {
+  public:
+    PlanetType();
+    virtual ~PlanetType(){};
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
 
 class Planet : public StaticObject, public OwnedObject {
 
@@ -38,10 +43,8 @@ class Planet : public StaticObject, public OwnedObject {
    Planet();
    virtual ~Planet();
 
-   virtual ObjectData* clone() const;
-
    virtual void packExtraData(Frame * frame);
-   virtual void doOnceATurn(IGObject* obj);
+   virtual void doOnceATurn();
    virtual int getContainerType();
 
 
@@ -70,15 +73,13 @@ class Planet : public StaticObject, public OwnedObject {
    bool removeResource(uint32_t resTypeId, uint32_t amount);
    bool removeResource(const std::string& resTypeName, uint32_t amount);
 
+   void setupObject();
+   
  private:
 
    void calcRP();
    void calcPopuation();
    void upgradePdbs();
- 
-   ReferenceObjectParam * playerref;
-   ResourceListParam* resources;
-   OrderQueueObjectParam * orderqueue;
 
 };
 

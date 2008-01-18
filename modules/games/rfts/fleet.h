@@ -3,6 +3,7 @@
 /*  fleet class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,16 +27,19 @@
 #include "staticobject.h"
 #include "ownedobject.h"
 
-class Velocity3dObjectParam;
-class ReferenceObjectParam;
-class RefQuantityListObjectParam;
-class IntegerObjectParam;
-class OrderQueueObjectParam;
 class Player;
 
 namespace RFTS_ {
 
 class Planet;
+
+class FleetType : public StaticObjectType{
+  public:
+    FleetType();
+    virtual ~FleetType();
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
 
 class Fleet : public StaticObject, public OwnedObject
 {
@@ -69,10 +73,10 @@ class Fleet : public StaticObject, public OwnedObject
    const bool isDead() const;
          
    virtual void packExtraData(Frame * frame);   
-   virtual void doOnceATurn(IGObject * obj);   
+   virtual void doOnceATurn();   
    virtual int getContainerType();
    
-   virtual ObjectData* clone() const;
+   void setupObject();
 
  private:
 
@@ -83,12 +87,6 @@ class Fleet : public StaticObject, public OwnedObject
    bool doCombat(std::list<IGObject*>& fleets);
    void attackFleet(Fleet* opponent);
    void destroyShips(double intensity);
- 
-   Velocity3dObjectParam *velocity;
-   ReferenceObjectParam *player;
-   RefQuantityListObjectParam *shipList;
-   IntegerObjectParam *damage;
-   OrderQueueObjectParam * orders;
 
 };
 
