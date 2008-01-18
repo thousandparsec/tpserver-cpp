@@ -76,6 +76,13 @@ void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
   touchModTime();
 }
 
+ObjectParameterGroupDesc* ObjectType::getParameterGroupDesc(uint32_t groupid) const{
+  if(paramgroups.find(groupid) != paramgroups.end()){
+    return paramgroups.find(groupid)->second;
+  }
+  return NULL;
+}
+
 void ObjectType::touchModTime(){
   modtime = time(NULL);
 }

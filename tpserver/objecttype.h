@@ -46,6 +46,7 @@ class ObjectType {
 
       protected:
         void addParameterGroupDesc(ObjectParameterGroupDesc* group);
+        ObjectParameterGroupDesc* getParameterGroupDesc(uint32_t groupid) const;
         virtual ObjectBehaviour* createObjectBehaviour() const = 0;
 
         std::string nametype;
