@@ -1,6 +1,8 @@
-/*  Empty Object class
+#ifndef OWNEDOBJECT_H
+#define OWNEDOBJECT_H
+/*  Owned Object class
  *
- *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,34 +20,34 @@
  *
  */
 
+#include <map>
+#include <list>
 
-#include "emptyobject.h"
+#include "spaceobject.h"
 
-EmptyObjectType::EmptyObjectType() : SpaceObjectType(){
-}
+class IGObject;
 
-EmptyObjectType::~EmptyObjectType(){
-}
+class OwnedObjectType : public SpaceObjectType{
+  public:
+    OwnedObjectType();
+    virtual ~OwnedObjectType();
+};
 
-void EmptyObjectType::setTypeName(const std::string& n){
-  nametype = n;
-}
+class OwnedObject : public SpaceObject {
+      public:
+	OwnedObject();
+	virtual ~OwnedObject();
+        
+        uint32_t getOwner() const;
+        void setOwner(uint32_t no);
 
-void EmptyObjectType::setTypeDescription(const std::string& d){
-  typedesc = d;
-}
-
-ObjectBehaviour* EmptyObjectType::createObjectBehaviour() const{
-  return new EmptyObject();
-}
-
-EmptyObject::EmptyObject() : SpaceObject(){
-}
-
-void EmptyObject::doOnceATurn(){
-}
+        virtual void setDefaultOrderTypes() = 0;
+	
+	void packExtraData(Frame * frame);
 
 
-int EmptyObject::getContainerType(){
-  return 1;
-}
+        virtual void setupObject();
+
+};
+
+#endif

@@ -1,7 +1,7 @@
 /*
  *  AVA Combat
  *
- *  Copyright (C) 2004-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include "tpserver/object.h"
 #include "fleet.h"
 #include "planet.h"
-#include "tpserver/objectdatamanager.h"
+#include "tpserver/objecttypemanager.h"
 #include "tpserver/message.h"
 #include "tpserver/game.h"
 #include "tpserver/player.h"
@@ -127,27 +127,27 @@ void AVACombat::doCombat()
 {
     Fleet * f1, *f2;
 
-    uint32_t obT_Fleet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet");
-    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Fleet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
+    uint32_t obT_Planet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Planet");
 
     
     // If one combatant or the other is actually a planet,
     // simulate this with two battleships.
     if ( c1->getType() == obT_Fleet) {
-        f1 = ( Fleet*) ( c1->getObjectData());
+        f1 = ( Fleet*) ( c1->getObjectBehaviour());
     }
     else if ( c1->getType() == obT_Planet) {
         f1 = new Fleet();
         f1->addShips( 3, 2);
-        f1->setOwner( ( ( Planet*) c1->getObjectData())->getOwner());
+        f1->setOwner( ( ( Planet*) c1->getObjectBehaviour())->getOwner());
     }
     if ( c2->getType() == obT_Fleet) {
-        f2 = ( Fleet*) ( c2->getObjectData());
+        f2 = ( Fleet*) ( c2->getObjectBehaviour());
     }
     else if ( c2->getType() == obT_Planet) {
         f2 = new Fleet();
         f2->addShips( 3, 2);
-        f2->setOwner( ( ( Planet*) c2->getObjectData())->getOwner());
+        f2->setOwner( ( ( Planet*) c2->getObjectBehaviour())->getOwner());
     }
     if ( f1 == NULL || f2 == NULL) {
         return;
