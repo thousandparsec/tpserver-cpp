@@ -72,7 +72,7 @@ public:
   std::set<uint32_t> getVisibleComponents() const;
   std::set<uint32_t> getUsableComponents() const;
   void processGetComponent(uint32_t compid, Frame* frame) const;
-  void processGetComponentIds(Frame* in, Frame* out) const;
+  void processGetComponentIds(Frame* in, Frame* out);
 
   uint32_t getObjectSequenceKey() const;
 
@@ -94,8 +94,7 @@ private:
   std::set<uint32_t> visibleComponents;
   std::set<uint32_t> usableComponents;
   std::map<uint32_t, ComponentView*> cacheComponents;
-  std::list<ModListItem> difflistComponents;
-  std::map<uint32_t, ModListItem> turnCompdifflist;
+  std::map<uint32_t, uint64_t> modlistComp;
   uint32_t currCompSeq;
 
 };
