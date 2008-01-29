@@ -678,8 +678,12 @@ void PlayerAgent::processAddOrder(Frame * frame){
       Result r = ord->inputFrame(frame, player->getID());
       if (r){
         if(orderqueue->addOrder(ord, pos, player->getID())) {
-          of->setType(ft02_OK);
-          of->packString("Order Added");
+          if(of->getVersion() >= fv0_4){
+            ord->createFrame(of, pos);
+          }else{
+            of->setType(ft02_OK);
+            of->packString("Order Added");
+          }
         } else {
           of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
         }
