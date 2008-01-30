@@ -22,3 +22,5 @@ tpserver/tpserver-cpp
 tpserver/*.conf
 *.o
 *.loT
+.libs
+.deps
