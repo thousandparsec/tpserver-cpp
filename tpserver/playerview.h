@@ -27,8 +27,8 @@
 #include <stdint.h>
 
 class Frame;
-class Design;
-class Component;
+class DesignView;
+class ComponentView;
 
 struct ModListItem{
   ModListItem();
@@ -51,8 +51,12 @@ public:
   void removeVisibleObject(uint32_t objid);
   bool isVisibleObject(unsigned int objid);
   std::set<uint32_t> getVisibleObjects() const;
+  void addOwnedObject(uint32_t objid);
+  void removeOwnedObject(uint32_t objid);
+  uint32_t getNumberOwnedObjects() const;
+  std::set<uint32_t> getOwnedObject() const;
 
-  void addVisibleDesign(Design* design);
+  void addVisibleDesign(DesignView* design);
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
   bool isUsableDesign(uint32_t designid) const;
@@ -61,14 +65,14 @@ public:
   void processGetDesign(uint32_t designid, Frame* frame) const;
   void processGetDesignIds(Frame* in, Frame* out) const;
 
-  void addVisibleComponent(Component* comp);
+  void addVisibleComponent(ComponentView* comp);
   void addUsableComponent(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
   bool isUsableComponent(uint32_t compid) const;
   std::set<uint32_t> getVisibleComponents() const;
   std::set<uint32_t> getUsableComponents() const;
   void processGetComponent(uint32_t compid, Frame* frame) const;
-  void processGetComponentIds(Frame* in, Frame* out) const;
+  void processGetComponentIds(Frame* in, Frame* out);
 
   uint32_t getObjectSequenceKey() const;
 
@@ -76,20 +80,21 @@ private:
   uint32_t pid;
 
   std::set<uint32_t> visibleObjects;
+  std::set<uint32_t> ownedObjects;
+  
   uint32_t currObjSeq;
 
   std::set<uint32_t> visibleDesigns;
   std::set<uint32_t> usableDesigns;
-  std::map<uint32_t, Design*> cacheDesigns;
+  std::map<uint32_t, DesignView*> cacheDesigns;
   std::list<ModListItem> difflistDesigns;
   std::map<uint32_t, ModListItem> turnDesigndifflist;
   uint32_t currDesignSeq;
 
   std::set<uint32_t> visibleComponents;
   std::set<uint32_t> usableComponents;
-  std::map<uint32_t, Component*> cacheComponents;
-  std::list<ModListItem> difflistComponents;
-  std::map<uint32_t, ModListItem> turnCompdifflist;
+  std::map<uint32_t, ComponentView*> cacheComponents;
+  std::map<uint32_t, uint64_t> modlistComp;
   uint32_t currCompSeq;
 
 };

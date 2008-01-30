@@ -1,6 +1,6 @@
 /*  MergeFleet Order
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <tpserver/player.h>
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 
 #include "mergefleet.h"
 
@@ -43,7 +44,7 @@ MergeFleet::~MergeFleet(){
 bool MergeFleet::doOrder(IGObject * ob){
   IGObject* parent = Game::getGame()->getObjectManager()->getObject(ob->getParent());
   
-  Fleet *myfleet = (Fleet*)(ob->getObjectData());
+  Fleet *myfleet = (Fleet*)(ob->getObjectBehaviour());
   //find fleet to merge with
   
   uint32_t targetid = 0;
@@ -54,7 +55,7 @@ bool MergeFleet::doOrder(IGObject * ob){
       continue;
     IGObject* ptarget = Game::getGame()->getObjectManager()->getObject(*itcurr);
     if(ptarget->getType() == ob->getType()){
-      Fleet* pfleet = (Fleet*)(ptarget->getObjectData());
+      Fleet* pfleet = (Fleet*)(ptarget->getObjectBehaviour());
       if(pfleet->getOwner() == myfleet->getOwner()){
         if(pfleet->getSize() + myfleet->getSize() > pfleet->getPosition().getDistance(myfleet->getPosition())){
           targetid = *itcurr;
@@ -72,7 +73,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     msg->setBody("No targe fleet at this location");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
   }else{
   
     IGObject* target = Game::getGame()->getObjectManager()->getObject(targetid);
@@ -85,7 +86,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Object, target->getID());
 
     
-    Fleet *tfleet = (Fleet*)(target->getObjectData());
+    Fleet *tfleet = (Fleet*)(target->getObjectBehaviour());
       
 
     std::map<uint32_t, uint32_t> ships = myfleet->getShips();
@@ -98,6 +99,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     ob->removeFromParent();
     
     Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
+    Game::getGame()->getPlayerManager()->getPlayer(myfleet->getOwner())->getPlayerView()->removeOwnedObject(ob->getID());
 	
     Game::getGame()->getObjectManager()->doneWithObject(target->getID());
 

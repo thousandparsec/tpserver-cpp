@@ -49,6 +49,10 @@ private:
   void processGetObjectIds(Frame * frame);
   void processGetObjectIdsByPos(Frame * frame);
   void processGetObjectIdsByContainer(Frame * frame);
+  
+  void processGetObjectDesc(Frame * frame);
+  void processGetObjectTypes(Frame * frame);
+  
   void processGetOrder(Frame * frame);
   void processAddOrder(Frame * frame);
   void processRemoveOrder(Frame * frame);

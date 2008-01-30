@@ -1,6 +1,6 @@
 /*  Nop order
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,11 +24,9 @@
 #include <tpserver/game.h>
 #include <tpserver/player.h>
 #include <tpserver/message.h>
-#include "planet.h"
-#include "fleet.h"
+#include "ownedobject.h"
 #include <tpserver/playermanager.h>
 #include <tpserver/timeparameter.h>
-#include <tpserver/objectdatamanager.h>
 #include <tpserver/logging.h>
 
 #include "nop.h"
@@ -73,12 +71,11 @@ bool Nop::doOrder(IGObject * ob){
     msg->setBody("The object has finished it's delay and is now continuing");
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
-    if(ob->getType() == Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet")){
-      Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
-    }else if(ob->getType() == Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet")){
-      Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectData()))->getOwner())->postToBoard(msg);
+    OwnedObject* ownedobject = dynamic_cast<OwnedObject*>(    ob->getObjectBehaviour());
+    if(ownedobject != NULL){
+      Game::getGame()->getPlayerManager()->getPlayer(ownedobject->getOwner())->postToBoard(msg);
     }else{
-      Logger::getLogger()->debug("Nop order not on planet of fleet");
+      Logger::getLogger()->debug("Nop order not on Owned Object");
       delete msg;
     }
 

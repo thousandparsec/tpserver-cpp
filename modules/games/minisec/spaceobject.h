@@ -1,8 +1,8 @@
-#ifndef MYSQLOBJECTTYPE_H
-#define MYSQLOBJECTTYPE_H
-/*  MysqlObjectType class
+#ifndef SPACEOBJECT_H
+#define SPACEOBJECT_H
+/*  Space Object class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,28 +20,35 @@
  *
  */
 
-#include <stdint.h>
+#include <map>
+#include <list>
 
-typedef struct st_mysql MYSQL;
-class MysqlPersistence;
+#include <tpserver/vector3d.h>
+#include <tpserver/objecttype.h>
+#include <tpserver/objectbehaviour.h>
+
 class IGObject;
 
-class MysqlObjectType{
-public:
-    virtual ~MysqlObjectType();
-    
-    void setType(uint32_t nt);
-    uint32_t getType() const;
+class SpaceObjectType : public ObjectType{
+  public:
+    SpaceObjectType();
+    virtual ~SpaceObjectType();
+};
 
-    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob) = 0;
-    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob) = 0;
-    virtual bool retrieve(MYSQL* conn, IGObject* ob) = 0;
-    virtual bool remove(MYSQL* conn, uint32_t obid) = 0;
-    
-    virtual void initialise(MysqlPersistence* persistence, MYSQL* conn) = 0;
+class SpaceObject : public ObjectBehaviour{
+      public:
+	SpaceObject();
+	virtual ~SpaceObject();
+        
+        Vector3d getPosition() const;
+        Vector3d getVelocity() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setVelocity(const Vector3d & nv);
+        void setSize(uint64_t ns);
+        
 
-protected:
-    uint32_t type;
+
 };
 
 #endif

@@ -2,7 +2,7 @@
 #define EMPTYOBJECT_H
 /*  Empty Object ObjectData class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,34 +22,26 @@
 
 #include <string>
 
-#include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
+#include "spaceobject.h"
 
-class Position3dObjectParam;
-class SizeObjectParam;
+class EmptyObjectType : public SpaceObjectType{
+  public:
+    EmptyObjectType();
+    virtual ~EmptyObjectType();
 
-class EmptyObject:public ObjectData {
-      public:
-	EmptyObject();
-	virtual ~EmptyObject(){};
-        
-        Vector3d getPosition() const;
-        uint64_t getSize() const;
-        void setPosition(const Vector3d & np);
-        void setSize(uint64_t ns);
-        
-	void packExtraData(Frame * frame);
-	void doOnceATurn(IGObject * obj);
-	int getContainerType();
+    void setTypeName(const std::string& n);
+    void setTypeDescription(const std::string& d);
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
 
-	ObjectData* clone() const;
-        
-        void setTypeName(const std::string& n);
-        void setTypeDescription(const std::string& d);
-        
-    private:
-      Position3dObjectParam * pos;
-      SizeObjectParam * size;
+class EmptyObject:public SpaceObject {
+  public:
+    EmptyObject();
+    virtual ~EmptyObject(){};
+    
+    void doOnceATurn();
+    int getContainerType();
 
 };
 

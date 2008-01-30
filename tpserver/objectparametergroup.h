@@ -1,9 +1,9 @@
 #ifndef OBJECTPARAMETERGROUP_H
-#define OBJCETPARAMETERGROUP_H
+#define OBJECTPARAMETERGROUP_H
 /*  ObjectParameterGroup class
  * Collects Object Parameters together into a group.
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,41 +25,44 @@
 #include <string>
 #include <list>
 
+#include <tpserver/smartpointer.h>
+
 class Frame;
 class ObjectParameter;
+class ObjectParameterGroupData;
 
-class ObjectParameterGroup {
+typedef SmartPointer<ObjectParameterGroupData> ObjectParameterGroupPtr;
 
-      public:
-	ObjectParameterGroup();
-        ObjectParameterGroup(const ObjectParameterGroup& rhs);
-        ~ObjectParameterGroup();
+class ObjectParameterGroupData {
 
-	uint32_t getGroupId() const;
-	std::string getName() const;
-        std::string getDescription() const;
-        
-        std::list<ObjectParameter*> getParameters() const;
-        
-        void setGroupId(uint32_t ni);
-        void setName(const std::string& nn);
-        void setDescription(const std::string& nd);
-        
-        void addParameter(ObjectParameter* op);
-        
-	void packObjectFrame(Frame * f, uint32_t playerid);
-        void packObjectDescFrame(Frame* f) const;
-	bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
-        
-        void signalRemoval();
+  public:
+    friend class SmartPointer<ObjectParameterGroupData>;
+    
+    ObjectParameterGroupData();
+    ObjectParameterGroupData(const ObjectParameterGroupData& rhs);
+    ~ObjectParameterGroupData();
+
+    uint32_t getGroupId() const;
+    
+    std::list<ObjectParameter*> getParameters() const;
+    ObjectParameter* getParameter(uint32_t paramid) const;
+    
+    void setGroupId(uint32_t ni);
+    
+    void addParameter(ObjectParameter* op);
+    
+    void packObjectFrame(Frame * f, uint32_t playerid);
+    bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
+    
+    void signalRemoval();
 
 
-      protected:
-	 uint32_t groupid;
-	 std::string name;
-         std::string description;
-         std::list<ObjectParameter*> parameters;
+  protected:
+      uint32_t groupid;
+      std::list<ObjectParameter*> parameters;
+      uint32_t ref;
 
 };
+
 
 #endif

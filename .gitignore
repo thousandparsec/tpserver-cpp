@@ -21,3 +21,4 @@ tpserver/tpserver-cpp
 *.log
 tpserver/*.conf
 *.o
+*.loT

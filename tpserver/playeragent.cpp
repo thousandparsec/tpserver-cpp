@@ -1,6 +1,6 @@
 /*  PlayerAgent object, processing and frame handling
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@
 #include "board.h"
 #include "message.h"
 #include "objectmanager.h"
+#include "objecttypemanager.h"
 #include "ordermanager.h"
 #include "boardmanager.h"
 #include "playermanager.h"
-#include "objectdata.h"
 #include "designstore.h"
 #include "category.h"
 #include "design.h"
@@ -189,6 +189,14 @@ void PlayerAgent::processIGFrame(Frame * frame){
     processTurnFinished(frame);
     break;
     
+  case ft04_ObjectDesc_Get:
+    processGetObjectDesc(frame);
+    break;
+    
+  case ft04_ObjectTypes_Get:
+    processGetObjectTypes(frame);
+    break;
+    
   default:
     Logger::getLogger()->warning("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
 
@@ -230,8 +238,8 @@ void PlayerAgent::processGetObjectById (Frame * frame){
         unsigned int objectID = frame->unpackInt();
 
         of = curConnection->createFrame ( frame );
-        std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
-        if ( visibleObjects.find ( objectID ) != visibleObjects.end() ){
+
+        if ( player->getPlayerView()->isVisibleObject(objectID) ){
 
           IGObject* o = Game::getGame()->getObjectManager()->getObject ( objectID );
           if ( o != NULL ){
@@ -453,6 +461,95 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   curConnection->sendFrame(of);
 }
 
+void PlayerAgent::processGetObjectDesc(Frame * frame){
+  Logger::getLogger()->debug("Doing get OrderDesc");
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("Protocol version not high enough");
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Get ObjectDesc frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+  
+  Frame *of;
+  
+  if ( frame->getDataLength() < 4 ){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Frame too short");
+    curConnection->sendFrame(of);
+    
+    return;
+    
+  }
+  
+  int len = frame->unpackInt();
+
+  // Check we have enough data
+  if ( frame->getDataLength() < 4 + 4*len ){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "List length incorrect");
+    curConnection->sendFrame(of);
+    
+    return;
+    
+  }
+
+  if(len > 1) {
+    Logger::getLogger()->debug("Got multiple orders, returning a sequence");
+    Frame *seq = curConnection->createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(len);
+    curConnection->sendFrame(seq);
+  } else {
+    Logger::getLogger()->debug("Got single orders, returning one objectdesc");
+  }
+  
+  if(len == 0){
+    of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "No objecttype to get");
+    curConnection->sendFrame(of);
+    
+    return;
+  }
+
+  // Object frames
+  for ( int i=0 ; i < len; ++i ){
+    unsigned int objecttype = frame->unpackInt();
+
+    of = curConnection->createFrame(frame);
+    
+    Game::getGame()->getObjectTypeManager()->doGetObjectDesc(objecttype, of);
+    
+    curConnection->sendFrame ( of );
+  }
+  
+}
+
+void PlayerAgent::processGetObjectTypes(Frame * frame){
+  Logger::getLogger()->debug("Doing get OrderTypes list");
+  
+  Frame *of = curConnection->createFrame(frame);
+  
+  if(frame->getVersion() < fv0_4){
+    Logger::getLogger()->debug("Protocol version not high enough");
+    of->createFailFrame(fec_FrameError, "Get object type frame isn't supported in this protocol");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  if(frame->getDataLength() != 12){
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    curConnection->sendFrame(of);
+    return;
+  }
+
+  Game::getGame()->getObjectTypeManager()->doGetObjectTypes(frame, of);
+  
+  curConnection->sendFrame(of);
+  
+}
+
 void PlayerAgent::processGetOrder(Frame * frame){
   Logger::getLogger()->debug("Doing get order frame");
   
@@ -473,7 +570,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -551,7 +648,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
         curConnection->sendFrame(of);
         return;
       }
-      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop == NULL){
         Frame *of = curConnection->createFrame(frame);
         of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -581,8 +678,12 @@ void PlayerAgent::processAddOrder(Frame * frame){
       Result r = ord->inputFrame(frame, player->getID());
       if (r){
         if(orderqueue->addOrder(ord, pos, player->getID())) {
-          of->setType(ft02_OK);
-          of->packString("Order Added");
+          if(of->getVersion() >= fv0_4){
+            ord->createFrame(of, pos);
+          }else{
+            of->setType(ft02_OK);
+            of->packString("Order Added");
+          }
         } else {
           of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
         }
@@ -617,7 +718,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -761,7 +862,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
       curConnection->sendFrame(of);
       return;
     }
-    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
       Frame *of = curConnection->createFrame(frame);
       of->createFailFrame(fec_NonExistant, "No such Object OrderQueue");
@@ -1323,8 +1424,6 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
 void PlayerAgent::processGetDesign(Frame* frame){
   Logger::getLogger()->debug("doing Get Design frame");
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
-
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
@@ -1621,11 +1720,11 @@ void PlayerAgent::processTurnFinished(Frame* frame){
  Logger::getLogger()->debug("doing Done Turn frame");
   
   if(frame->getVersion() < fv0_4){
-    Logger::getLogger()->debug("protocol version not high enough");
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Finished Turn frame isn't supported in this protocol");
-    curConnection->sendFrame(of);
-    return;
+    Logger::getLogger()->debug("Turn Finished Frame: protocol version not high enough, but continuing anyway");
+//     Frame *of = curConnection->createFrame(frame);
+//     of->createFailFrame(fec_FrameError, "Finished Turn frame isn't supported in this protocol");
+//     curConnection->sendFrame(of);
+//     return;
   }
   
   Game::getGame()->getTurnTimer()->playerFinishedTurn(player->getID());

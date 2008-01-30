@@ -1,6 +1,7 @@
 /*  colonise
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,10 +66,10 @@ bool Colonise::doOrder(IGObject *obj) {
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    
-   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
+   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
    IGObject *planetObj = om->getObject(planet->getObjectId());
-   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectData());
+   Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
 
    Player *attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    Player *defender = NULL;

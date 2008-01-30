@@ -1,8 +1,8 @@
-#ifndef OBJECTDATA_H
-#define OBJECTDATA_H
-/*  ObjectData base class
+#ifndef OBJECTTYPE_H
+#define OBJECTTYPE_H
+/*  ObjectType base class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,54 +21,42 @@
  */
 
 #include <stdint.h>
-#include <list>
+#include <map>
 #include <string>
 
 class Frame;
 class IGObject;
-class ObjectParameter;
-class ObjectParameterGroup;
+class ObjectParameterGroupDesc;
+class ObjectBehaviour;
 
-class ObjectData {
+class ObjectType {
 
       public:
-	ObjectData();
-	virtual ~ObjectData();
+	ObjectType();
+	virtual ~ObjectType();
         
         std::string getTypeName() const;
+        long long getModTime() const;
 
-	virtual void packExtraData(Frame * frame);
-        void packObjectParameters(Frame* frame, uint32_t playerid);
-        bool unpackModifyObject(Frame* frame, uint32_t playerid);
-        
         void packObjectDescFrame(Frame* frame);
-        
-        ObjectParameter* getParameterByType(uint32_t ptype);
 
-	virtual void doOnceATurn(IGObject * obj) = 0;
 
-	virtual int getContainerType() = 0;
+	void setupObject(IGObject* obj) const;
 
-	virtual ObjectData* clone() const = 0;
-
-	void touchModTime();
-	long long getModTime() const;
-        bool isDirty() const;
-        //persistence only
-        void setModTime(uint64_t time);
-        void setDirty(bool nd);
-        //object only
-        void signalRemoval();
 
       protected:
-        std::list<ObjectParameterGroup*> paramgroups;
+        void addParameterGroupDesc(ObjectParameterGroupDesc* group);
+        ObjectParameterGroupDesc* getParameterGroupDesc(uint32_t groupid) const;
+        virtual ObjectBehaviour* createObjectBehaviour() const = 0;
+
         std::string nametype;
         std::string typedesc;
 
       private:
+        void touchModTime();
 	long long modtime;
-        bool dirty;
-
+        uint32_t nextparamgroupid;
+        std::map<uint32_t, ObjectParameterGroupDesc*> paramgroups;
 };
 
 #endif

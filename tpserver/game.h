@@ -2,7 +2,7 @@
 #define GAME_H
 /*  Game class
  *
- *  Copyright (C) 2004-2006, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class IGObject;
 class Vector3d;
 class ObjectManager;
 class OrderManager;
-class ObjectDataManager;
+class ObjectTypeManager;
 class BoardManager;
 class ResourceManager;
 class PlayerManager;
@@ -60,7 +60,7 @@ class Game {
 
     ObjectManager* getObjectManager() const;
     OrderManager* getOrderManager() const;
-    ObjectDataManager* getObjectDataManager() const;
+    ObjectTypeManager* getObjectTypeManager() const;
     BoardManager* getBoardManager() const;
     ResourceManager* getResourceManager() const;
     PlayerManager* getPlayerManager() const;
@@ -122,7 +122,7 @@ class Game {
 
     ObjectManager* objectmanager;
     OrderManager * ordermanager;
-    ObjectDataManager * objectdatamanager;
+    ObjectTypeManager * objecttypemanager;
     BoardManager* boardmanager;
     ResourceManager* resourcemanager;
     PlayerManager* playermanager;

@@ -1,6 +1,6 @@
 /*  SplitFleet order
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
+#include <tpserver/playerview.h>
 
 #include "splitfleet.h"
 
@@ -57,14 +58,14 @@ SplitFleet::~SplitFleet(){
 std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
-  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectData());
+  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour());
 
-  std::map<int, int> sotf = of->getShips();
+  std::map<uint32_t, uint32_t> sotf = of->getShips();
   Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
-  for(std::map<int, int>::const_iterator itcurr = sotf.begin();
+  for(std::map<uint32_t, uint32_t>::const_iterator itcurr = sotf.begin();
       itcurr != sotf.end(); ++itcurr){
     options[itcurr->first] = std::pair<std::string, uint32_t>(ds->getDesign(itcurr->first)->getName(), itcurr->second);
   }
@@ -74,15 +75,15 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOp
 
 bool SplitFleet::doOrder(IGObject * ob){
 
-  Fleet* of = (Fleet*)(ob->getObjectData());
+  Fleet* of = (Fleet*)(ob->getObjectBehaviour());
 
   Message * msg = new Message();
   msg->setSubject("Split Fleet order complete");
   msg->addReference(rst_Object, ob->getID());
   
   IGObject * nfleet = Game::getGame()->getObjectManager()->createNewObject();
-  nfleet->setType(Game::getGame()->getObjectDataManager()->getObjectTypeByName("Fleet"));
-  Fleet* nf = (Fleet*)(nfleet->getObjectData());
+  Game::getGame()->getObjectTypeManager()->setupObject(nfleet,Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet"));
+  Fleet* nf = (Fleet*)(nfleet->getObjectBehaviour());
   nf->setSize(2);
   nfleet->setName("A fleet");
   
@@ -93,7 +94,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     fleetoq->setObjectId(nfleet->getID());
     fleetoq->addOwner(nf->getOwner());
     Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nf->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nfleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     nf->setDefaultOrderTypes();
   
@@ -129,6 +130,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Action_Order, rsorav_Completion);
     nfleet->addToParent(ob->getParent());
     Game::getGame()->getObjectManager()->addObject(nfleet);
+    Game::getGame()->getPlayerManager()->getPlayer(of->getOwner())->getPlayerView()->addOwnedObject(nfleet->getID());
   }
   
   Game::getGame()->getPlayerManager()->getPlayer(nf->getOwner())->postToBoard(msg);

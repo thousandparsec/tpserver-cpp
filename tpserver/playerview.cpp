@@ -26,7 +26,9 @@
 #include "game.h"
 #include "designstore.h"
 #include "design.h"
+#include "designview.h"
 #include "component.h"
+#include "componentview.h"
 
 #include "playerview.h"
 
@@ -36,11 +38,11 @@ ModListItem::ModListItem() : id(0), modtime(0){
 ModListItem::ModListItem(uint32_t nid, uint64_t nmt) : id(nid), modtime(nmt){
 }
 
-PlayerView::PlayerView() : pid(0), visibleObjects(), currObjSeq(0), 
+PlayerView::PlayerView() : pid(0), visibleObjects(), ownedObjects(), currObjSeq(0), 
     visibleDesigns(), usableDesigns(), cacheDesigns(),
     difflistDesigns(), turnDesigndifflist(), currDesignSeq(0),
     visibleComponents(), usableComponents(), cacheComponents(),
-    difflistComponents(), turnCompdifflist(), currCompSeq(0){
+    modlistComp(), currCompSeq(0){
 }
 
 PlayerView::~PlayerView(){
@@ -59,7 +61,8 @@ void PlayerView::doOnceATurn(){
       itcurr != usableDesigns.end(); ++itcurr){
     Design* design = ds->getDesign(*itcurr);
     if(design->getModTime() > cacheDesigns[*itcurr]->getModTime()){
-      addVisibleDesign(design->copy());
+      currDesignSeq++;
+      turnDesigndifflist[*itcurr] = ModListItem(*itcurr, design->getModTime());
     }
   }
   // build new diff list
@@ -69,21 +72,7 @@ void PlayerView::doOnceATurn(){
   }
   turnDesigndifflist.clear();
   
-  //Components
-  // check for updated usable components
-  for(std::set<uint32_t>::iterator itcurr = usableComponents.begin();
-      itcurr != usableComponents.end(); ++itcurr){
-    Component* comp = ds->getComponent(*itcurr);
-    if(comp->getModTime() > cacheComponents[*itcurr]->getModTime()){
-      addVisibleComponent(comp->copy());
-    }
-  }
-  // build new diff list
-  for(std::map<uint32_t, ModListItem>::iterator itcurr = turnCompdifflist.begin();
-      itcurr != turnCompdifflist.end(); ++itcurr){
-    difflistComponents.push_back(itcurr->second);
-  }
-  turnCompdifflist.clear();
+  currCompSeq++;
 }
 
 void PlayerView::setVisibleObjects(std::set<unsigned int> vis){
@@ -108,45 +97,46 @@ std::set<uint32_t> PlayerView::getVisibleObjects() const{
   return visibleObjects;
 }
 
-void PlayerView::addVisibleDesign(Design* design){
-  bool needtoupdate = false;
+void PlayerView::addOwnedObject(uint32_t objid){
+  ownedObjects.insert(objid);
+}
+
+void PlayerView::removeOwnedObject(uint32_t objid){
+  ownedObjects.erase(objid);
+}
+
+uint32_t PlayerView::getNumberOwnedObjects() const{
+  return ownedObjects.size();
+}
+
+std::set<uint32_t> PlayerView::getOwnedObject() const{
+  return ownedObjects;
+}
+
+void PlayerView::addVisibleDesign(DesignView* design){
+  design->setModTime(time(NULL));
   uint32_t designid = design->getDesignId();
-  if(visibleDesigns.find(designid) != visibleDesigns.end()){
-    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
-      needtoupdate = true;
-    }
-  }else{
-    needtoupdate = true;
+  visibleDesigns.insert(designid);
+  if(cacheDesigns.find(designid) != cacheDesigns.end()){
+    delete cacheDesigns[designid];
   }
-  if(needtoupdate){
-    design->setModTime(time(NULL));
-    visibleDesigns.insert(designid);
-    if(cacheDesigns.find(designid) != cacheDesigns.end()){
-      delete cacheDesigns[designid];
-    }
-    cacheDesigns[designid] = design;
-    currDesignSeq++;
-    turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
-  }else{
-    delete design;
-  }
+  cacheDesigns[designid] = design;
+  currDesignSeq++;
+  turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
   usableDesigns.insert(designid);
-  bool needtoupdate = false;
-  Design* design = Game::getGame()->getDesignStore()->getDesign(designid);
   if(visibleDesigns.find(designid) == visibleDesigns.end()){
-    needtoupdate = true;
+    DesignView* designview = new DesignView();
+    designview->setDesignId(designid);
+    designview->setIsCompletelyVisible(true);
+    addVisibleDesign(designview);
   }else{
-    if(cacheDesigns[designid]->getModTime() < design->getModTime()){
-      needtoupdate = true;
-    }
+    cacheDesigns[designid]->setIsCompletelyVisible(true);
+    currCompSeq++;
+    turnDesigndifflist[designid] = ModListItem(designid, cacheDesigns[designid]->getModTime());
   }
-  if(needtoupdate){
-    addVisibleDesign(design->copy());
-  }
-  Logger::getLogger()->debug("Added valid design");
 }
 
 void PlayerView::removeUsableDesign(uint32_t designid){
@@ -171,7 +161,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame) const{
   if(visibleComponents.find(designid) == visibleDesigns.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
-    Design* design = cacheDesigns.find(designid)->second;
+    DesignView* design = cacheDesigns.find(designid)->second;
     design->packFrame(frame);
   }
 }
@@ -276,7 +266,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
   }
 }
 
-void PlayerView::addVisibleComponent(Component* comp){
+void PlayerView::addVisibleComponent(ComponentView* comp){
   comp->setModTime(time(NULL));
   uint32_t compid = comp->getComponentId();
   visibleComponents.insert(compid);
@@ -285,13 +275,18 @@ void PlayerView::addVisibleComponent(Component* comp){
   }
   cacheComponents[compid] = comp;
   currCompSeq++;
-  turnCompdifflist[compid] = ModListItem(compid, comp->getModTime());
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
   usableComponents.insert(compid);
   if(visibleComponents.find(compid) == visibleComponents.end()){
-    addVisibleComponent(Game::getGame()->getDesignStore()->getComponent(compid)->copy());
+    ComponentView* compview = new ComponentView();
+    compview->setComponentId(compid);
+    compview->setCompletelyVisible(true);
+    addVisibleComponent(compview);
+  }else{
+    cacheComponents[compid]->setCompletelyVisible(true);
+    currCompSeq++;
   }
 }
 
@@ -317,12 +312,12 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame) const{
   if(visibleComponents.find(compid) == visibleComponents.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
-    Component* component = cacheComponents.find(compid)->second;
+    ComponentView* component = cacheComponents.find(compid)->second;
     component->packFrame(frame);
   }
 }
 
-void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
+void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   Logger::getLogger()->debug("doing Get Component Ids frame");
   
   if(in->getVersion() < fv0_3){
@@ -346,86 +341,51 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out) const{
   
   if(seqnum != currCompSeq && seqnum != 0xffffffff){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    modlistComp.clear();
     return;
   }
   
-  
-  
-  if(fromtime == 0xffffffffffffffffULL){
-  
-    if(snum > visibleComponents.size()){
-      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleComponents.size());
-      out->createFailFrame(fec_NonExistant, "Starting number too high");
-      return;
-    }
-    if(numtoget > visibleComponents.size() - snum){
-      numtoget = visibleComponents.size() - snum;
-    }
-    
-    if(numtoget > 87379){
-      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-      return;
-    }
-    
-    out->setType(ft03_ComponentIds_List);
-    out->packInt(currCompSeq);
-    out->packInt(visibleComponents.size() - snum - numtoget);
-    out->packInt(numtoget);
-    std::set<uint32_t>::iterator itcurr = visibleComponents.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-      out->packInt(*itcurr);
-      out->packInt64(cacheComponents.find(*itcurr)->second->getModTime());
-    }
-    
-    if(out->getVersion() >= fv0_4){
-      out->packInt64(fromtime);
-    }
-    
-  }else{
-    
-    // get list of changes since fromtime
-    
-    std::list<ModListItem> difflist;
-    for(std::list<ModListItem>::const_iterator itcurr = difflistComponents.begin();
-        itcurr != difflistComponents.end(); ++itcurr){
-      if((*itcurr).modtime >= fromtime){
-        difflist.insert(difflist.end(), itcurr, difflistComponents.end());
-        break;
+  if(seqnum == 0xffffffff){
+    //clear current mod list in case it has stuff in it still
+    modlistComp.clear();
+    for(std::map<uint32_t, ComponentView*>::iterator itcurr = cacheComponents.begin();
+        itcurr != cacheComponents.end(); ++itcurr){
+      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+        modlistComp[itcurr->first] = (itcurr->second)->getModTime();
       }
     }
-    
-    if(snum > difflist.size()){
-      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, difflist.size());
-      out->createFailFrame(fec_NonExistant, "Starting number too high");
-      return;
-    }
-    if(numtoget > difflist.size() - snum){
-      numtoget = difflist.size() - snum;
-    }
-    
-    if(numtoget > 87379){
-      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-      return;
-    }
-    
-    out->setType(ft03_ComponentIds_List);
-    out->packInt(currCompSeq);
-    out->packInt(difflist.size() - snum - numtoget);
-    out->packInt(numtoget);
-    
-    std::list<ModListItem>::iterator itcurr = difflist.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-      out->packInt((*itcurr).id);
-      out->packInt64((*itcurr).modtime);
-    }
-    
-    out->packInt64(fromtime);
-    
   }
+  
+  if(snum > modlistComp.size()){
+    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, modlistComp.size());
+    out->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  if(numtoget > modlistComp.size() - snum){
+    numtoget = modlistComp.size() - snum;
+  }
+  
+  if(numtoget > 87379){
+    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
+  }
+  
+  out->setType(ft03_ComponentIds_List);
+  out->packInt(currCompSeq);
+  out->packInt(modlistComp.size() - snum - numtoget);
+  out->packInt(numtoget);
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlistComp.begin();
+  std::advance(itcurr, snum);
+  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+    out->packInt(itcurr->first);
+    out->packInt64(itcurr->second);
+  }
+  
+  if(out->getVersion() >= fv0_4){
+    out->packInt64(fromtime);
+  }
+  
 }
 
 uint32_t PlayerView::getObjectSequenceKey() const{

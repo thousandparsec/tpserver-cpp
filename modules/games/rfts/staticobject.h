@@ -3,6 +3,7 @@
 /*  static object class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,14 +26,27 @@
 #include <utility>
 
 #include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
+#include <tpserver/objectbehaviour.h>
+#include <tpserver/objecttype.h>
 
 class Position3dObjectParam;
 class SizeObjectParam;
 
 namespace RFTS_ {
 
-class StaticObject:public ObjectData {
+class StaticObjectType : public ObjectType{
+  public:
+    StaticObjectType();
+    virtual ~StaticObjectType(){};
+    
+    void setTypeName(const std::string& nname);
+    void setTypeDescription(const std::string& ndesc);
+    
+  protected:
+    virtual ObjectBehaviour* createObjectBehaviour() const;
+};
+  
+class StaticObject:public ObjectBehaviour {
  public:
    StaticObject();
    virtual ~StaticObject() {};
@@ -48,18 +62,12 @@ class StaticObject:public ObjectData {
    void setSize(uint64_t ns);
    
    virtual void packExtraData(Frame * frame);
-   virtual void doOnceATurn(IGObject * obj);
+   virtual void doOnceATurn();
    virtual int getContainerType();
 
-   virtual ObjectData* clone() const;
-   
-   void setTypeName(const std::string& n);
-   void setTypeDescription(const std::string& d);
    
  private:
    double unitX, unitY;
-   Position3dObjectParam * pos;
-   SizeObjectParam * size;
 
 };
 

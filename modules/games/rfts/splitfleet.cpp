@@ -1,6 +1,7 @@
 /*  splitfleet
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +21,6 @@
 
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/design.h>
@@ -74,12 +74,12 @@ bool SplitFleet::doOrder(IGObject *obj) {
    Game * game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
 
-   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectData());
+   Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
    Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    IGObject *starSys = om->getObject(obj->getParent());
    
    IGObject * newFleet = createFleet(player, starSys, "New fleet", shipList->getList());
-   Fleet *newFleetData = dynamic_cast<Fleet*>(newFleet->getObjectData());
+   Fleet *newFleetData = dynamic_cast<Fleet*>(newFleet->getObjectBehaviour());
 
    bool failed = false;
 
@@ -143,7 +143,7 @@ map<uint32_t, pair<string, uint32_t> > SplitFleet::generateListOptions() {
    OrderManager *orm = game->getOrderManager();
 
    IGObject* fleet = om->getObject(orm->getOrderQueue(orderqueueid)->getObjectId());
-   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectData());
+   Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
 
    map<int, int> ships = fleetData->getShips();
    

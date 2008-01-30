@@ -1,6 +1,7 @@
 /*  rftsturn
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@
 #include <tpserver/objectmanager.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
+#include <tpserver/objectbehaviour.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/player.h>
@@ -70,14 +71,14 @@ void RftsTurn::doTurn() {
    {
       IGObject * currObj = objectmanager->getObject(*i);
 
-      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getObjectData()->getParameterByType(obpT_Order_Queue));
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
       OrderQueue* oq;
       if(oqop != NULL && 
          (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
       {
          for(uint32_t j = 0; j < oq->getNumberOrders(); j++)
          {
-            OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectData());
+            OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
             assert(orderedObj);
 
             Order* order = oq->getOrder(j, orderedObj->getOwner());
@@ -106,7 +107,7 @@ void RftsTurn::doTurn() {
        i != objectsIds.end(); ++i)
    {
       IGObject * obj = objectmanager->getObject(*i);
-      obj->getObjectData()->doOnceATurn(obj);
+      obj->getObjectBehaviour()->doOnceATurn();
       objectmanager->doneWithObject(obj->getID());
    }
 
@@ -218,7 +219,7 @@ void findOwnedObjects(uint32_t playerId, set<uint32_t>& gameObjects, set<uint32_
    
    for(set<uint32_t>::const_iterator i = gameObjects.begin(); i != gameObjects.end(); ++i)
    {
-      OwnedObject *obj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectData());
+      OwnedObject *obj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectBehaviour());
       if(obj != NULL && obj->getOwner() == playerId)
       {
          ownedObjects.insert(*i);

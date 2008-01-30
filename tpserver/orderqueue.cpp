@@ -1,6 +1,6 @@
 /*  OrderQueue for managing Order objects
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include "order.h"
 #include "frame.h"
 #include "object.h"
-#include "objectdata.h"
 #include "game.h"
 #include "persistence.h"
 #include "objectmanager.h"
@@ -64,6 +63,10 @@ bool OrderQueue::isOwner(uint32_t playerid) const{
 
 std::set<uint32_t> OrderQueue::getOwner() const{
   return owner;
+}
+
+void OrderQueue::setOwners(std::set<uint32_t> no){
+  owner = no;
 }
 
 void OrderQueue::setObjectId(uint32_t oid){
@@ -119,8 +122,9 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
       orderlist.insert(inspos, orderid);
     }
     Game::getGame()->getPersistence()->saveOrder(queueid, orderid, ord);
-    Game::getGame()->getPersistence()->saveOrderQueue(this);
     touchModTime();
+    Game::getGame()->getPersistence()->updateOrderQueue(this);
+
     return true;
   }
 
@@ -148,8 +152,8 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
       orderlist.erase(itpos);
       ordercache.erase(orderid);
       Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
-      Game::getGame()->getPersistence()->saveOrderQueue(this);
       touchModTime();
+      Game::getGame()->getPersistence()->updateOrderQueue(this);
       return Success();
     }
     return Failure("No such Order");
@@ -193,8 +197,8 @@ void OrderQueue::removeFirstOrder(){
   uint32_t orderid = orderlist.front();
   orderlist.pop_front();
   Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
-  Game::getGame()->getPersistence()->saveOrderQueue(this);
   touchModTime();
+  Game::getGame()->getPersistence()->updateOrderQueue(this);
 }
 
 void OrderQueue::updateFirstOrder(){
@@ -202,6 +206,7 @@ void OrderQueue::updateFirstOrder(){
   Order* ord = ordercache[orderid];
   Game::getGame()->getPersistence()->updateOrder(queueid, orderid, ord);
   touchModTime();
+  Game::getGame()->getPersistence()->updateOrderQueue(this);
 }
 
 void OrderQueue::setActive(bool a){
@@ -258,8 +263,17 @@ void OrderQueue::removeAllOrders(){
   //clear orderlist/slots
   orderlist.clear();
   touchModTime();
+  Game::getGame()->getPersistence()->updateOrderQueue(this);
 }
 
 void OrderQueue::setNextOrderId(uint32_t next){
   nextOrderId = next;
+}
+
+void OrderQueue::setOrderSlots(std::list<uint32_t> nos){
+  orderlist = nos;
+}
+
+std::list<uint32_t> OrderQueue::getOrderSlots() const{
+  return orderlist;
 }

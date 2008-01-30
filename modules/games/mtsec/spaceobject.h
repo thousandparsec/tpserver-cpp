@@ -1,8 +1,8 @@
-#ifndef OBJECTDATAMANAGER_H
-#define OBJECTDATAMANAGER_H
-/*  ObjectDataManager class
+#ifndef SPACEOBJECT_H
+#define SPACEOBJECT_H
+/*  Space Object class
  *
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,27 +21,33 @@
  */
 
 #include <map>
-#include <string>
-#include <stdint.h>
+#include <list>
 
-class ObjectData;
+#include <tpserver/vector3d.h>
+#include <tpserver/objecttype.h>
+#include <tpserver/objectbehaviour.h>
 
-class ObjectDataManager{
- public:
-  ObjectDataManager();
-  ~ObjectDataManager();
+class IGObject;
 
-  ObjectData* createObjectData(uint32_t type);
-  bool checkValid(uint32_t type);
-  
-  uint32_t getObjectTypeByName(const std::string& name) const;
+class SpaceObjectType : public ObjectType{
+  public:
+    SpaceObjectType();
+    virtual ~SpaceObjectType();
+};
 
-  int addNewObjectType(ObjectData* od);
+class SpaceObject : public ObjectBehaviour{
+      public:
+	SpaceObject();
+	virtual ~SpaceObject();
+        
+        Vector3d getPosition() const;
+        Vector3d getVelocity() const;
+        uint64_t getSize() const;
+        void setPosition(const Vector3d & np);
+        void setVelocity(const Vector3d & nv);
+        void setSize(uint64_t ns);
+        
 
- private:
-  std::map<uint32_t, ObjectData*> prototypeStore;
-  std::map<std::string, uint32_t> stringmap;
-  uint32_t nextType;
 
 };
 

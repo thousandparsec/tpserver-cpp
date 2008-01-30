@@ -1,6 +1,7 @@
 /*  universe
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,10 +20,10 @@
  */
 
 #include <tpserver/frame.h>
-#include <tpserver/position3dobjectparam.h>
 #include <tpserver/integerobjectparam.h>
-#include <tpserver/objectparametergroup.h>
+#include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/object.h>
 
 #include "containertypes.h"
 
@@ -30,34 +31,30 @@
 
 namespace RFTS_ {
 
+UniverseType::UniverseType() : StaticObjectType() {
+  ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
+  group->setName("Informational");
+  group->setDescription("Information about the universe");
+  group->addParameter(obpT_Integer, "Turn", "The current turn number");
+  addParameterGroupDesc(group);
+  
+  nametype = "Universe";
+  typedesc = "The Universe";
+}
+
+ObjectBehaviour* UniverseType::createObjectBehaviour() const{
+  return new Universe();
+}
+
 Universe::Universe() : StaticObject() {
-
-   turn = new IntegerObjectParam();
-   turn->setName("Turn");
-   turn->setDescription("The current turn number");
-   ObjectParameterGroup *group = new ObjectParameterGroup();
-   group->setGroupId(2);
-   group->setName("Informational");
-   group->setDescription("Information about the universe");
-   group->addParameter(turn);
-   paramgroups.push_back(group);
-
-   setSize(0xffffffffffffffffULL);
-
-   nametype = "Universe";
-   typedesc = "The Universe";
 }
 
 void Universe::setTurn(int turn) {
-   this->turn->setValue(turn);
+   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(turn);
 }
 
 int Universe::getTurn() const {
-   return turn->getValue();
-}
-
-ObjectData* Universe::clone() const {
-   return new Universe();
+   return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
 }
 
 int Universe::getContainerType() {
@@ -65,12 +62,16 @@ int Universe::getContainerType() {
 }
 
 void Universe::packExtraData(Frame *frame) {
-   frame->packInt(turn->getValue());
+   frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
 }
 
-void Universe::doOnceATurn(IGObject *obj) {
-   turn->setValue(turn->getValue() + 1);
-   touchModTime();
+void Universe::doOnceATurn() {
+   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
+   obj->touchModTime();
+}
+
+void Universe::setupObject(){
+  setSize(0xffffffffffffffffULL);
 }
 
 }

@@ -2,7 +2,7 @@
 #define UNIVERSE_H
 /*  Universe ObjectData class
  *
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,38 +20,32 @@
  *
  */
 
-#include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
+#include "spaceobject.h"
 
-class IntegerObjectParam;
-class Position3dObjectParam;
-class SizeObjectParam;
+class UniverseType : public SpaceObjectType{
+  public:
+    UniverseType();
+    virtual ~UniverseType();
+  
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
 
-class Universe:public ObjectData {
+class Universe:public SpaceObject {
       public:
 	Universe();
         virtual ~Universe();
         
-        Vector3d getPosition() const;
-        uint64_t getSize() const;
-        void setPosition(const Vector3d & np);
-        void setSize(uint64_t ns);
 
 	void packExtraData(Frame * frame);
 
-	void doOnceATurn(IGObject * obj);
+	void doOnceATurn();
 
 	int getContainerType();
-
-	ObjectData* clone() const;
 
 	void setYear(int year);
 	int getYear();
 
-      private:
-	Position3dObjectParam * pos;
-        SizeObjectParam * size;
-        IntegerObjectParam * year;
 
 };
 

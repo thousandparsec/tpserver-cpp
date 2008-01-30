@@ -1,6 +1,7 @@
 /*  ownedobject
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,11 +21,11 @@
 
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/objectbehaviour.h>
 
 #include "ownedobject.h"
 
@@ -34,7 +35,7 @@ using std::set;
 
 void exploreStarSys(IGObject* obj) {
    // set the planets in this star sys to visible for my owner
-   OwnedObject *objData = dynamic_cast<OwnedObject*>(obj->getObjectData());
+   OwnedObject *objData = dynamic_cast<OwnedObject*>(obj->getObjectBehaviour());
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();

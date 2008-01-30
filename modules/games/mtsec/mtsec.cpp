@@ -1,6 +1,6 @@
 /*  MTSec ruleset
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include "emptyobject.h"
 #include "planet.h"
 #include "fleet.h"
-#include "tpserver/objectdatamanager.h"
+#include "tpserver/objecttypemanager.h"
 #include "tpserver/player.h"
 #include <tpserver/playerview.h>
 #include "avacombat.h"
@@ -112,18 +112,18 @@ void MTSec::initGame() {
     
     game->setTurnProcess(turn);
 
-    ObjectDataManager* obdm = game->getObjectDataManager();
-    obdm->addNewObjectType( new Universe());
-    EmptyObject * eo = new EmptyObject();
+    ObjectTypeManager* obdm = game->getObjectTypeManager();
+    obdm->addNewObjectType( new UniverseType());
+    EmptyObjectType * eo = new EmptyObjectType();
     eo->setTypeName("Galaxy");
     eo->setTypeDescription("The Galaxy Object type");
     obdm->addNewObjectType(eo);
-    eo = new EmptyObject();
+    eo = new EmptyObjectType();
     eo->setTypeName("Star System");
     eo->setTypeDescription("The Star System Object type");
     obdm->addNewObjectType(eo);
-    uint32_t pt = obdm->addNewObjectType( new Planet());
-    uint32_t ft = obdm->addNewObjectType( new Fleet());
+    uint32_t pt = obdm->addNewObjectType( new PlanetType());
+    uint32_t ft = obdm->addNewObjectType( new FleetType());
     
     turn->setPlanetType(pt);
     turn->setFleetType(ft);
@@ -997,21 +997,22 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     ResourceManager* resman = game->getResourceManager();
     IGObject*      ac = game->getObjectManager()->createNewObject();
     IGObject*      acprime = game->getObjectManager()->createNewObject();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
 
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
     
-    ac->setType(obT_Star_System);
-    EmptyObject* theac = (EmptyObject*)(ac->getObjectData());
+    otypeman->setupObject(ac, obT_Star_System);
+    EmptyObject* theac = (EmptyObject*)(ac->getObjectBehaviour());
     theac->setSize(800000ll);
     ac->setName("Alpha Centauri System");
     theac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
     ac->addToParent(mw_galaxy->getID());
     obman->addObject(ac);
 
-    acprime->setType(obT_Planet);
-    Planet* theacprime = (Planet*)(acprime->getObjectData());
+    otypeman->setupObject(acprime, obT_Planet);
+    Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
     theacprime->setSize(2);
     acprime->setName("Alpha Centauri Prime");
     theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
@@ -1029,7 +1030,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     planetoq->setQueueId(acprime->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theacprime->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     theacprime->setDefaultOrderTypes();
     
@@ -1048,20 +1049,21 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     ResourceManager* resman = game->getResourceManager();
     IGObject*      sirius = game->getObjectManager()->createNewObject();
     IGObject*      s1 = game->getObjectManager()->createNewObject();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
-    sirius->setType(obT_Star_System);
-    EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectData());
+    otypeman->setupObject(sirius, obT_Star_System);
+    EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectBehaviour());
     thesirius->setSize(2000000ll);
     sirius->setName("Sirius System");
     thesirius->setPosition(Vector3d(-250000000ll, -3800000000ll, 0ll));
     sirius->addToParent(mw_galaxy->getID());
     obman->addObject(sirius);
 
-    s1->setType(obT_Planet);
-    Planet* thes1 = (Planet*)(s1->getObjectData());
+    otypeman->setupObject(s1, obT_Planet);
+    Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
     thes1->setSize(2);
     s1->setName("Sirius 1");
     thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
@@ -1079,7 +1081,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     planetoq->setQueueId(s1->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(thes1->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     thes1->setDefaultOrderTypes();
     
@@ -1106,12 +1108,13 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     IGObject*      star = game->getObjectManager()->createNewObject();
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
-    star->setType( obT_Star_System);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
+    otypeman->setupObject(star, obT_Star_System);
+    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(1400000ll);
     unsigned int   thx = myRandom(45);
     star->setName(systemNames[thx-1]);
@@ -1127,8 +1130,8 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         formatter.str("");
         formatter << star->getName() << " " << nplanets;
 
-        planet->setType( obT_Planet);
-        Planet* theplanet = (Planet*)(planet->getObjectData());
+        otypeman->setupObject(planet, obT_Planet);
+        Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
         theplanet->setSize( 2);
         planet->setName( formatter.str().c_str());
         theplanet->setPosition( thestar->getPosition() + Vector3d( nplanets * 40000ll,
@@ -1151,7 +1154,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         planetoq->setQueueId(planet->getID());
         planetoq->addOwner(0);
         game->getOrderManager()->addOrderQueue(planetoq);
-        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));
+        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
         oqop->setQueueId(planetoq->getQueueId());
         theplanet->setDefaultOrderTypes();
 
@@ -1176,20 +1179,21 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     IGObject*      venus = game->getObjectManager()->createNewObject();
     IGObject*      mars = game->getObjectManager()->createNewObject();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+    uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
     
-    sol->setType(obT_Star_System);
-    EmptyObject* thesol = (EmptyObject*)(sol->getObjectData());
+    otypeman->setupObject(sol, obT_Star_System);
+    EmptyObject* thesol = (EmptyObject*)(sol->getObjectBehaviour());
     thesol->setSize(1400000ll);
     sol->setName("Sol/Terra System");
     thesol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
     sol->addToParent(mw_galaxy->getID());
     obman->addObject(sol);
 
-    earth->setType(obT_Planet);
-    Planet* theearth = (Planet*)(earth->getObjectData());
+    otypeman->setupObject(earth, obT_Planet);
+    Planet* theearth = (Planet*)(earth->getObjectBehaviour());
     theearth->setSize(2);
     earth->setName("Earth/Terra");
     theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
@@ -1200,13 +1204,13 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ((Planet*)(earth->getObjectData()))->setResources(ress);
+    ((Planet*)(earth->getObjectBehaviour()))->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
     planetoq->setObjectId(earth->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theearth->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     theearth->setDefaultOrderTypes();
     
@@ -1215,8 +1219,8 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 
     ress.clear();
 
-    venus->setType(obT_Planet);
-    Planet* thevenus = (Planet*)(venus->getObjectData());
+    otypeman->setupObject(venus, obT_Planet);
+    Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
     thevenus->setSize(2);
     venus->setName("Venus");
     thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
@@ -1233,7 +1237,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     planetoq->setQueueId(venus->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    oqop = static_cast<OrderQueueObjectParam*>(thevenus->getParameterByType(obpT_Order_Queue));
+    oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     thevenus->setDefaultOrderTypes();
     
@@ -1242,8 +1246,8 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 
     ress.clear();
 
-    mars->setType(obT_Planet);
-    Planet* themars = (Planet*)(mars->getObjectData());
+    otypeman->setupObject(mars, obT_Planet);
+    Planet* themars = (Planet*)(mars->getObjectBehaviour());
     themars->setSize(1);
     mars->setName("Mars");
     themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
@@ -1260,7 +1264,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     planetoq->setQueueId(mars->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    oqop = static_cast<OrderQueueObjectParam*>(themars->getParameterByType(obpT_Order_Queue));
+    oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     themars->setDefaultOrderTypes();
     
@@ -1383,22 +1387,23 @@ void MTSec::createGame()
     createResources();
 
     ObjectManager* obman = game->getObjectManager();
-
-    uint32_t obT_Universe = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
-    uint32_t obT_Galaxy = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Galaxy");
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
-    IGObject* universe = game->getObjectManager()->createNewObject();
-    universe->setType(obT_Universe);
-    Universe* theuniverse = (Universe*)(universe->getObjectData());
+    uint32_t obT_Universe = otypeman->getObjectTypeByName("Universe");
+    uint32_t obT_Galaxy = otypeman->getObjectTypeByName("Galaxy");
+    
+    IGObject* universe = obman->createNewObject();
+    otypeman->setupObject(universe, obT_Universe);
+    Universe* theuniverse = (Universe*)(universe->getObjectBehaviour());
     theuniverse->setSize(100000000000ll);
     universe->setName("The Universe");
     theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
     obman->addObject(universe);
 
     //add contained objects
-    IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
-    mw_galaxy->setType(obT_Galaxy);
-    EmptyObject* themw = (EmptyObject*)(mw_galaxy->getObjectData());
+    IGObject *mw_galaxy = obman->createNewObject();
+    otypeman->setupObject(mw_galaxy, obT_Galaxy);
+    EmptyObject* themw = (EmptyObject*)(mw_galaxy->getObjectBehaviour());
     themw->setSize(10000000000ll);
     mw_galaxy->setName("Milky Way Galaxy");
     themw->setPosition(Vector3d(0ll, -6000ll, 0ll));
@@ -1484,28 +1489,29 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
                                    std::string fleetName)
 {
     Game *game = Game::getGame();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     IGObject *fleet = game->getObjectManager()->createNewObject();
         
-    fleet->setType(game->getObjectDataManager()->getObjectTypeByName("Fleet"));
+    otypeman->setupObject(fleet, otypeman->getObjectTypeByName("Fleet"));
     
     Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
     
-    Fleet* thefleet = (Fleet*)(fleet->getObjectData());
+    Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize( 2);
     fleet->setName( fleetName.c_str());
     thefleet->setOwner(owner->getID());
 
     // Place the fleet in orbit around the given star
-    thefleet->setPosition( ((EmptyObject*)(star->getObjectData()))->getPosition() + offset);
+    thefleet->setPosition( ((EmptyObject*)(star->getObjectBehaviour()))->getPosition() + offset);
     thefleet->setVelocity( Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setQueueId(fleet->getID());
     fleetoq->addOwner(owner->getID());
     game->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(thefleet->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
 
@@ -1532,7 +1538,7 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     Design* scout = createBattleScoutDesign( player);
 
     // Start this fleet off with two battle scout ships
-    ((Fleet*)(fleet->getObjectData()))->addShips( scout->getDesignId(), 2);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips( scout->getDesignId(), 2);
     scout->addUnderConstruction(2);
     scout->addComplete(2);
     game->getDesignStore()->designCountsUpdated( scout);
@@ -1550,21 +1556,22 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
     Game *    game = Game::getGame();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     IGObject* planet = game->getObjectManager()->createNewObject();
     
     std::string planetName = player->getName() + " Planet";
 
-    uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
     
-    planet->setType( obT_Planet);
-    Planet* theplanet = (Planet*)(planet->getObjectData());
+    otypeman->setupObject(planet, obT_Planet);
+    Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
     Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(long long)((rand() % 10000) - 5000)*/ 0);
     theplanet->setSize( 2);
     planet->setName( planetName.c_str());
     theplanet->setOwner(player->getID());
-    theplanet->setPosition( ((EmptyObject*)(star->getObjectData()))->getPosition() + offset);
+    theplanet->setPosition( ((EmptyObject*)(star->getObjectBehaviour()))->getPosition() + offset);
 
     ResourceManager* resman = game->getResourceManager();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
@@ -1582,7 +1589,7 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     planetoq->setQueueId(planet->getID());
     planetoq->addOwner(0);
     game->getOrderManager()->addOrderQueue(planetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     theplanet->setDefaultOrderTypes();
 
@@ -1602,15 +1609,16 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
     Game *    game = Game::getGame();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
     IGObject* star = game->getObjectManager()->createNewObject();
     
     std::string starName = player->getName() + " Star System";
 
-    star->setType(game->getObjectDataManager()->getObjectTypeByName("Star System"));
+    otypeman->setupObject(star, otypeman->getObjectTypeByName("Star System"));
     Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
+    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize( 2000000ll);
     star->setName( starName.c_str());
     thestar->setPosition( location);

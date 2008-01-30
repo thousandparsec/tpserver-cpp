@@ -2,7 +2,7 @@
 #define FLEET_H
 /*  Fleet Object class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,60 +21,45 @@
  */
 
 #include <map>
+#include <list>
 
 #include <tpserver/vector3d.h>
-#include <tpserver/objectdata.h>
+#include "ownedobject.h"
 
-class Position3dObjectParam;
-class Velocity3dObjectParam;
-class SizeObjectParam;
-class ReferenceObjectParam;
-class RefQuantityListObjectParam;
-class IntegerObjectParam;
-class OrderQueueObjectParam;
+class IGObject;
 
-class Fleet:public ObjectData {
+class FleetType : public OwnedObjectType{
+  public:
+    FleetType();
+    virtual ~FleetType();
+    
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
+
+class Fleet : public OwnedObject {
       public:
 	Fleet();
 	virtual ~Fleet();
         
-        Vector3d getPosition() const;
-        Vector3d getVelocity() const;
-        uint64_t getSize() const;
-        void setPosition(const Vector3d & np);
-        void setVelocity(const Vector3d & nv);
-        void setSize(uint64_t ns);
-        
-        uint32_t getOwner() const;
-        void setOwner(uint32_t no);
 
         void setDefaultOrderTypes();
-	void addShips(int type, int number);
-	bool removeShips(int type, int number);
-	int numShips(int type);
-	std::map<int, int> getShips() const;
-	int totalShips() const;
+	void addShips(uint32_t type, uint32_t number);
+	bool removeShips(uint32_t type, uint32_t number);
+	uint32_t numShips(uint32_t type);
+	std::map<uint32_t, uint32_t> getShips() const;
+	uint32_t totalShips() const;
 
-        int getDamage() const;
-        void setDamage(int nd);
+
+        uint32_t getDamage() const;
+        void setDamage(uint32_t nd);
 
 	void packExtraData(Frame * frame);
 
-	void doOnceATurn(IGObject * obj);
+	void doOnceATurn();
+        void setupObject();
 
 	int getContainerType();
-
-	ObjectData* clone() const;
-
-      private:
-        Position3dObjectParam * pos;
-        Velocity3dObjectParam * vel;
-        SizeObjectParam * size;
-        ReferenceObjectParam * playerref;
-	RefQuantityListObjectParam * shiplist;
-	IntegerObjectParam * damage;
-        OrderQueueObjectParam * orderqueue;
-
 };
 
 #endif

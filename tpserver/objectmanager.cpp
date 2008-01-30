@@ -1,6 +1,6 @@
 /*  ObjectManager class
  *
- *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include "ordermanager.h"
 #include "sizeobjectparam.h"
 #include "position3dobjectparam.h"
-#include "objectdata.h"
+#include "objectbehaviour.h"
 
 #include "objectmanager.h"
 
@@ -63,7 +63,10 @@ void ObjectManager::discardNewObject(IGObject* obj){
     if(obj->getID() == nextid - 1){
         nextid = obj->getID();
     }
-    obj->signalRemoval();
+    ObjectBehaviour* behaviour = obj->getObjectBehaviour();
+    if(behaviour != NULL){
+      behaviour->signalRemoval();
+    }
     delete obj;
 }
 
@@ -97,7 +100,10 @@ void ObjectManager::scheduleRemoveObject(uint32_t id){
 void ObjectManager::clearRemovedObjects(){
     for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
-        objects[*itrm]->signalRemoval();
+        ObjectBehaviour* behaviour = objects[*itrm]->getObjectBehaviour();
+        if(behaviour != NULL){
+          behaviour->signalRemoval();
+        }
         Game::getGame()->getPersistence()->removeObject(*itrm);
         delete objects[*itrm];
         objects.erase(*itrm);
@@ -117,8 +123,8 @@ std::set<uint32_t> ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t
             }
         }
         if(ob != NULL){
-          SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Size));
-          Position3dObjectParam * obpos = dynamic_cast<Position3dObjectParam*>(ob->getObjectData()->getParameterByType(obpT_Position_3D));
+          SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(ob->getParameterByType(obpT_Size));
+          Position3dObjectParam * obpos = dynamic_cast<Position3dObjectParam*>(ob->getParameterByType(obpT_Position_3D));
           if(size != NULL && obpos != NULL){
             uint64_t br = size->getSize() / 2;
             uint64_t diff = obpos->getPosition().getDistance(pos); /*- r - br;*/

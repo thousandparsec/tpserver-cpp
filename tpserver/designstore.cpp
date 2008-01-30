@@ -21,6 +21,7 @@
 
 #include "category.h"
 #include "design.h"
+#include "designview.h"
 #include "component.h"
 #include "property.h"
 #include "game.h"
@@ -197,10 +198,16 @@ bool DesignStore::addDesign(Design* d){
   d->eval();
   designs[d->getDesignId()] = d;
   getCategory(d->getCategoryId())->doAddDesign(d);
-  playerview->addVisibleDesign(d->copy());
+  
   if(d->isValid()){
     playerview->addUsableDesign(d->getDesignId());
+  }else{
+    DesignView* designview = new DesignView();
+    designview->setIsCompletelyVisible(true);
+    designview->setDesignId(d->getDesignId());
+    playerview->addVisibleDesign(designview);
   }
+  
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
     Game::getGame()->getPersistence()->saveDesign(d);
   return true;

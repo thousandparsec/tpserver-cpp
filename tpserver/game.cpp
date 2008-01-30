@@ -1,6 +1,6 @@
 /*  Game controller for tpserver-cpp
  *
- *  Copyright (C) 2003-2006, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 #include "vector3d.h"
 #include "objectmanager.h"
 #include "ordermanager.h"
-#include "objectdatamanager.h"
+#include "objecttypemanager.h"
 #include "boardmanager.h"
 #include "resourcemanager.h"
 #include "playermanager.h"
@@ -149,6 +149,20 @@ bool Game::start(){
     if(turntimer == NULL){
       turntimer = new TurnTimer();
     }
+    
+    //set num of dead players in the TurnTimer for accurate threshold calcuation
+    std::set<uint32_t> players = playermanager->getAllIds();
+    uint32_t numdeadplayers = 0;
+    for(std::set<uint32_t>::iterator itcurr = players.begin();
+        itcurr != players.end(); ++itcurr){
+      Player* player = playermanager->getPlayer(*itcurr);
+      if(!player->isAlive()){
+        numdeadplayers++;
+      }
+    }
+    
+    turntimer->setNumberDeadPlayers(numdeadplayers);
+    
     turntimer->resetTimer();
 
     started = true;
@@ -173,8 +187,8 @@ OrderManager* Game::getOrderManager() const{
   return ordermanager;
 }
 
-ObjectDataManager* Game::getObjectDataManager() const{
-  return objectdatamanager;
+ObjectTypeManager* Game::getObjectTypeManager() const{
+  return objecttypemanager;
 }
 
 BoardManager* Game::getBoardManager() const{
@@ -275,11 +289,17 @@ void Game::doEndOfTurn(){
     turnprocess->doTurn();
 
     std::set<uint32_t> players = playermanager->getAllIds();
+    uint32_t numdeadplayers = 0;
     for(std::set<uint32_t>::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
       Player* player = playermanager->getPlayer(*itcurr);
       player->getPlayerView()->doOnceATurn();
+      if(!player->isAlive()){
+        numdeadplayers++;
+      }
     }
+    
+    turntimer->setNumberDeadPlayers(numdeadplayers);
 
     // save game info
     persistence->saveGameInfo();
@@ -428,7 +448,7 @@ std::string Game::getKey() const{
 Game::Game() : ctime(0), turnNum(0), key(), turntimer(NULL){
   objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
-  objectdatamanager = new ObjectDataManager();
+  objecttypemanager = new ObjectTypeManager();
   boardmanager = new BoardManager();
   resourcemanager = new ResourceManager();
   playermanager = new PlayerManager();
@@ -454,7 +474,7 @@ Game::~Game()
 {
     delete objectmanager;
   delete ordermanager;
-  delete objectdatamanager;
+  delete objecttypemanager;
     delete boardmanager;
     delete resourcemanager;
     delete playermanager;

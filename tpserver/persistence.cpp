@@ -79,6 +79,10 @@ bool Persistence::saveOrderQueue(const OrderQueue* oq){
   return false;
 }
 
+bool Persistence::updateOrderQueue(const OrderQueue* oq){
+  return false;
+}
+
 OrderQueue* Persistence::retrieveOrderQueue(uint32_t oqid){
   return NULL;
 }

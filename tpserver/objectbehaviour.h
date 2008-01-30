@@ -1,6 +1,8 @@
-/*  Mysql Object Type class
+#ifndef OBJECTBEHAVIOUR_H
+#define OBJECTBEHAVIOUR_H
+/*  ObjectBehaviour base class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,15 +20,25 @@
  *
  */
 
-#include "mysqlobjecttype.h"
+class Frame;
+class IGObject;
 
-MysqlObjectType::~MysqlObjectType(){
-}
+class ObjectBehaviour{
+  public:
+    ObjectBehaviour();
+    virtual ~ObjectBehaviour();
+    
+    void setObject(IGObject* nobj);
+    
+    virtual void packExtraData(Frame * frame);
+    virtual void doOnceATurn() = 0;
+    virtual int getContainerType() = 0;
+    
+    virtual void setupObject();
+    virtual void signalRemoval();
+    
+  protected:
+    IGObject* obj;
+};
 
-void MysqlObjectType::setType(uint32_t nt){
-    type = nt;
-}
-
-uint32_t MysqlObjectType::getType() const{
-    return type;
-}
+#endif

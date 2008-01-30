@@ -253,13 +253,6 @@ int Frame::setHeader(char *newhead)
     len = -1;
   }
 
-
-  if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max)) {
-    type = ft_Invalid;
-    len = -1;
-    
-  }
-
   return len;
 }
 
@@ -297,6 +290,7 @@ uint32_t Frame::getTypeVersion() const{
 
 bool Frame::setTypeVersion(uint32_t tv){
   typeversion = tv;
+  return true;
 }
 
 bool Frame::isPaddingStrings() const{

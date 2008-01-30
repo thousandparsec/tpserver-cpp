@@ -3,6 +3,7 @@
 /*  universe class
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +27,16 @@ class IntegerObjectParam;
 
 namespace RFTS_ {
 
+class UniverseType : public StaticObjectType
+{
+  public:
+    UniverseType();
+    virtual ~UniverseType(){};
+  
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
+  
 class Universe : public StaticObject 
 {
  public:
@@ -33,16 +44,15 @@ class Universe : public StaticObject
    virtual ~Universe() {}
 
    virtual void packExtraData(Frame* frame);
-   virtual void doOnceATurn(IGObject *obj);
+   virtual void doOnceATurn();
    virtual int getContainerType();
 
-   virtual ObjectData* clone() const;
 
    void setTurn(int turn);
    int getTurn() const;
+   
+   void setupObject();
 
- private:
-   IntegerObjectParam *turn;
 };
 
 }

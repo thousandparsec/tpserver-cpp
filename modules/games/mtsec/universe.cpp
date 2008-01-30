@@ -1,6 +1,6 @@
 /*  Universe object
  *
- *  Copyright (C) 2003-2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,84 +19,54 @@
  */
 
 #include <tpserver/frame.h>
-#include <tpserver/position3dobjectparam.h>
+#include <tpserver/object.h>
+#include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/integerobjectparam.h>
-#include <tpserver/objectparametergroup.h>
-#include <tpserver/sizeobjectparam.h>
 
 #include "universe.h"
 
-Universe::Universe() : ObjectData(){
-  year = new IntegerObjectParam();
-  year->setName("Year");
-  year->setDescription("The Age of the universe");
-  pos = new Position3dObjectParam();
-  pos->setName("Position");
-  pos->setDescription("The position of the universe");
-  ObjectParameterGroup *group = new ObjectParameterGroup();
-  group->setGroupId(1);
-  group->setName("Positional");
-  group->setDescription("Describes the position");
-  group->addParameter(pos);
-  size = new SizeObjectParam();
-  size->setName("Size");
-  size->setDescription("The diameter of the universe");
-  size->setSize(0xffffffffffffffffULL);
-  group->addParameter(size);
-  paramgroups.push_back(group);
-  group = new ObjectParameterGroup();
-  group->setGroupId(2);
+UniverseType::UniverseType() : SpaceObjectType(){
+  ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
   group->setName("Informational");
   group->setDescription("Information about the universe");
-  group->addParameter(year);
-  paramgroups.push_back(group);
+  group->addParameter(obpT_Integer, "Year", "The Age of the universe");
+  addParameterGroupDesc(group);
   nametype = "Universe";
   typedesc = "The Universe";
-  touchModTime();
+}
+
+UniverseType::~UniverseType(){
+}
+
+ObjectBehaviour* UniverseType::createObjectBehaviour() const{
+  return new Universe();
+}
+
+Universe::Universe(){
 }
 
 Universe::~Universe(){
 }
 
-Vector3d Universe::getPosition() const{
-  return pos->getPosition();
-}
-
-uint64_t Universe::getSize() const{
-  return size->getSize();
-}
-
-void Universe::setPosition(const Vector3d & np){
-  pos->setPosition(np);
-  touchModTime();
-}
-
-void Universe::setSize(uint64_t ns){
-  size->setSize(ns);
-  touchModTime();
-}
 
 void Universe::packExtraData(Frame * frame){
-  frame->packInt(year->getValue());
+  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue());
 }
 
-void Universe::doOnceATurn(IGObject * obj){
-  year->setValue(year->getValue() + 1);
-  touchModTime();
+void Universe::doOnceATurn(){
+  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue() + 1);
+  obj->touchModTime();
 }
 
 int Universe::getContainerType(){
   return 1;
 }
 
-ObjectData* Universe::clone() const{
-  return new Universe();
-}
 
 void Universe::setYear(int nyear){
-  year->setValue(nyear);
+  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(nyear);
 }
 
 int Universe::getYear(){
-  return year->getValue();
+  return ((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue();
 }

@@ -54,6 +54,7 @@ public:
     virtual std::set<uint32_t> getObjectIds();
 
     virtual bool saveOrderQueue(const OrderQueue* oq);
+    virtual bool updateOrderQueue(const OrderQueue* oq);
     virtual OrderQueue* retrieveOrderQueue(uint32_t oqid);
     virtual bool removeOrderQueue(uint32_t oqid);
     virtual std::set<uint32_t> getOrderQueueIds();

@@ -1,6 +1,6 @@
 /*  MiniSec ruleset
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <fstream>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -32,7 +33,7 @@
 #include "emptyobject.h"
 #include "planet.h"
 #include "fleet.h"
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
 #include "rspcombat.h"
@@ -47,6 +48,7 @@
 #include <tpserver/property.h>
 #include <tpserver/component.h>
 #include <tpserver/design.h>
+#include <tpserver/designview.h>
 #include <tpserver/category.h>
 #include <tpserver/logging.h>
 #include <tpserver/playermanager.h>
@@ -61,22 +63,177 @@
 
 #include "minisec.h"
 
-static char const * const systemNames[] = {
-    "Barnard's Star",  "Gielgud",             "Ventana",
-    "Aleph Prime",     "Ventil",              "Sagitaria",
-    "Drifter",         "Ptelemicus",          "Centanis",
-    "Mendelis",        "Cassious' Shadow",    "Llentim",
-    "Redoubt",         "Kelper",              "Cemara",
-    "Cilantarius",     "Kya",                 "Lanternis",
-    "Illatis",         "Rintim",              "Uvaharim",
-    "Plaetais",        "Denderis",            "Desiderata",
-    "Illuntara",       "Ivemteris",           "Wetcher",
-    "Monanara",        "Clesasia",            "RumRunner",
-    "Last Chance",     "Kiuper Shadow",       "NGC 42059",
-    "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
-    "Atlantis",        "Draconis",            "Muir's Gold",
-    "Fools Errand",    "Wrenganis",           "Humph",
-    "Byzantis",        "Torontis",            "Radiant Pool"};
+static char const * const defaultNames[] = {
+  "Barnard's Star",  "Gielgud",             "Ventana",
+  "Aleph Prime",     "Ventil",              "Sagitaria",
+  "Drifter",         "Ptelemicus",          "Centanis",
+  "Mendelis",        "Cassious' Shadow",    "Llentim",
+  "Redoubt",         "Kelper",              "Cemara",
+  "Cilantarius",     "Kya",                 "Lanternis",
+  "Illatis",         "Rintim",              "Uvaharim",
+  "Plaetais",        "Denderis",            "Desiderata",
+  "Illuntara",       "Ivemteris",           "Wetcher",
+  "Monanara",        "Clesasia",            "RumRunner",
+  "Last Chance",     "Kiuper Shadow",       "NGC 42059",
+  "Ceti Alpha",      "Surreptitious",       "Lupus Fold",
+  "Atlantis",        "Draconis",            "Muir's Gold",
+  "Fools Errand",    "Wrenganis",           "Humph",
+  "Byzantis",        "Torontis",            "Radiant Pool"};
+
+/**
+* Base class for various ways to get names for starsystems.
+*/
+class Names {
+	uint64_t systems;
+
+public:
+	Names() {
+		systems = 0;
+	}
+
+	/**
+	 * Get a name which is "System xx".
+	 */
+	virtual std::string getName() {
+			std::ostringstream name;
+			name.str("");
+			name << "System " << ++systems;
+
+			return name.str();
+  }
+	virtual ~Names() {};
+};
+
+/**
+ * Use a predefined list of names in this file and then fall back to "System xx" names.
+ */
+class NamesSet : public Names {
+
+  std::set<const char*> names;
+  Random* rand;
+
+public:
+  NamesSet(Random* r) :
+      Names(),
+      names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))) 
+  {
+    rand  = r;
+  }
+
+  std::string getName() {
+    if (names.size() > 0) {
+      // Choose a random name
+      unsigned int choice = rand->getInRange(0U, names.size() - 1);
+
+      std::set<const char*>::iterator name = names.begin();
+      advance(name, choice);
+      assert(name != names.end());
+
+      names.erase(name);
+
+      return std::string(*name);
+    } else {
+      // Opps we ran out of precreated names!
+      return Names::getName();
+    }
+  }
+};
+
+
+// FIXME: These belong in some type of string helper file
+#define WHITESPACE " \t\f\v\n\r"
+
+/**
+ * Strip any trailing or leading characters of a given type
+ * 
+ * @param str The string to strip (unmodified)
+ * @param sep The chars types to strip
+ * @return    A stripped string
+ */
+inline std::string strip(std::string const& str, char const* sep) {
+    std::string::size_type first = str.find_first_not_of(sep);
+    std::string::size_type last  = str.find_last_not_of(sep);
+    if ( first == std::string::npos || last  == std::string::npos )
+        return std::string("");
+
+    return str.substr(first, (last-first)+1);
+}
+/**
+ * Does a string start with another string?
+ * 
+ * @param str      The string to match against
+ * @param starting What the string should start with.
+ * @return Does the string start with starting?
+ */
+inline bool startswith(std::string const& str, std::string const& starting) {
+    if (str.length() < starting.length())
+        return false;
+
+    return str.substr(0, starting.length()) == starting;
+}
+
+
+#define BUFFERSIZE 1024
+
+/**
+ * Use a list of names from a file then fall back to "System xx" names.
+ */
+class NamesFile : public Names {
+  std::istream* m_file;
+
+  /**
+   * Read a line from a stream.
+   */ 
+  std::string readline() {
+    std::string buffer;    
+
+    // Get the next line
+    // Loop while the buffer is empty 
+    while (buffer.size() == 0 || m_file->fail()) {
+        // Temporary storage for the line
+        char cbuffer[BUFFERSIZE];
+        uint32_t cbuffer_amount = 0;
+
+        m_file->getline(cbuffer, BUFFERSIZE);
+        cbuffer_amount = m_file->gcount();      // The amount of data which was put in our buffer
+
+        if (cbuffer_amount > 0)
+            buffer.append(std::string(cbuffer, cbuffer_amount-1));
+
+        // Have we reached the end of the file
+        if (m_file->eof())
+            break;
+    }
+
+    return buffer;
+  }
+
+public:
+  NamesFile(std::istream* f) : Names() {
+    m_file = f;
+
+  }
+
+  ~NamesFile() {
+    delete m_file;
+  }
+
+  std::string getName() {
+    while (!m_file->eof()) {
+      // Choose a random name
+      std::string s = strip(readline(), WHITESPACE);
+      if (s.length() == 0)
+        continue;
+
+      return s;
+    }
+
+    // Opps we ran out of precreated names!
+    return Names::getName();
+  }
+
+};
+
 
 extern "C" {
   #define tp_init libminisec_LTX_tp_init
@@ -109,18 +266,18 @@ void MiniSec::initGame(){
   game->setTurnProcess(turn);
   
 
-  ObjectDataManager* obdm = game->getObjectDataManager();
-  obdm->addNewObjectType(new Universe());
-  EmptyObject * eo = new EmptyObject();
+  ObjectTypeManager* obdm = game->getObjectTypeManager();
+  obdm->addNewObjectType(new UniverseType());
+  EmptyObjectType * eo = new EmptyObjectType();
   eo->setTypeName("Galaxy");
   eo->setTypeDescription("The Galaxy Object type");
   obdm->addNewObjectType(eo);
-  eo = new EmptyObject();
+  eo = new EmptyObjectType();
   eo->setTypeName("Star System");
   eo->setTypeDescription("The Star System Object type");
   obdm->addNewObjectType(eo);
-  uint32_t pt = obdm->addNewObjectType(new Planet());
-  uint32_t ft = obdm->addNewObjectType(new Fleet());
+  uint32_t pt = obdm->addNewObjectType(new PlanetType());
+  uint32_t ft = obdm->addNewObjectType(new FleetType());
   
   turn->setPlanetType(pt);
   turn->setFleetType(ft);
@@ -281,25 +438,26 @@ void MiniSec::createGame(){
   
   
   ObjectManager* obman = game->getObjectManager();
+  ObjectTypeManager* otypeman = game->getObjectTypeManager();
   
-  uint32_t obT_Universe = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Universe");
-  uint32_t obT_Galaxy = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Galaxy");
-  uint32_t obT_Star_System = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Star System");
-  uint32_t obT_Planet = Game::getGame()->getObjectDataManager()->getObjectTypeByName("Planet");
+  uint32_t obT_Universe = otypeman->getObjectTypeByName("Universe");
+  uint32_t obT_Galaxy = otypeman->getObjectTypeByName("Galaxy");
+  uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+  uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
   IGObject* universe = game->getObjectManager()->createNewObject();
-  universe->setType(obT_Universe);
-  Universe* theuniverse = (Universe*)(universe->getObjectData());
-  theuniverse->setSize(100000000000ll);
+  otypeman->setupObject(universe, obT_Universe);
+  Universe* theuniverse = (Universe*)(universe->getObjectBehaviour());
+  theuniverse->setSize(1000000000000ll);
   universe->setName("The Universe");
   theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
   obman->addObject(universe);
   
   //add contained objects
   IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
-  mw_galaxy->setType(obT_Galaxy);
-  EmptyObject* eo = (EmptyObject*)(mw_galaxy->getObjectData());
-  eo->setSize(10000000000ll);
+  otypeman->setupObject(mw_galaxy, obT_Galaxy);
+  EmptyObject* eo = (EmptyObject*)(mw_galaxy->getObjectBehaviour());
+  eo->setSize(100000000000ll);
   mw_galaxy->setName("Milky Way Galaxy");
   eo->setPosition(Vector3d(0ll, -6000ll, 0ll));
   mw_galaxy->addToParent(universe->getID());
@@ -307,8 +465,8 @@ void MiniSec::createGame(){
   
   // star system 1
   IGObject *sol = game->getObjectManager()->createNewObject();
-  sol->setType(obT_Star_System);
-  EmptyObject* thesol = (EmptyObject*)(sol->getObjectData());
+  otypeman->setupObject(sol, obT_Star_System);
+  EmptyObject* thesol = (EmptyObject*)(sol->getObjectBehaviour());
   thesol->setSize(60000ll);
   sol->setName("Sol/Terra System");
   thesol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
@@ -317,8 +475,8 @@ void MiniSec::createGame(){
 
   // star system 2
   IGObject *ac = game->getObjectManager()->createNewObject();
-  ac->setType(obT_Star_System);
-  EmptyObject* theac = (EmptyObject*)(ac->getObjectData());
+  otypeman->setupObject(ac, obT_Star_System);
+  EmptyObject* theac = (EmptyObject*)(ac->getObjectBehaviour());
   theac->setSize(90000ll);
   ac->setName("Alpha Centauri System");
   theac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
@@ -327,8 +485,8 @@ void MiniSec::createGame(){
   
   // star system 3
   IGObject *sirius = game->getObjectManager()->createNewObject();
-  sirius->setType(obT_Star_System);
-  EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectData());
+  otypeman->setupObject(sirius, obT_Star_System);
+  EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectBehaviour());
   thesirius->setSize(60000ll);
   sirius->setName("Sirius System");
   thesirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
@@ -337,10 +495,9 @@ void MiniSec::createGame(){
 
   
   // now for some planets
-  
   IGObject *earth = game->getObjectManager()->createNewObject();
-  earth->setType(obT_Planet);
-  Planet * theearth = (Planet*)(earth->getObjectData());
+  otypeman->setupObject(earth, obT_Planet);
+  Planet * theearth = (Planet*)(earth->getObjectBehaviour());
   theearth->setSize(2);
   earth->setName("Earth/Terra");
   theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
@@ -348,15 +505,15 @@ void MiniSec::createGame(){
   planetoq->setObjectId(earth->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
-  OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theearth->getParameterByType(obpT_Order_Queue));
+  OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   theearth->setDefaultOrderTypes();
   earth->addToParent(sol->getID());
   obman->addObject(earth);
   
   IGObject *venus = game->getObjectManager()->createNewObject();
-  venus->setType(obT_Planet);
-  Planet* thevenus = (Planet*)(venus->getObjectData());
+  otypeman->setupObject(venus, obT_Planet);
+  Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
   thevenus->setSize(2);
   venus->setName("Venus");
   thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
@@ -364,15 +521,15 @@ void MiniSec::createGame(){
   planetoq->setObjectId(venus->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
-  oqop = static_cast<OrderQueueObjectParam*>(thevenus->getParameterByType(obpT_Order_Queue));
+  oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   thevenus->setDefaultOrderTypes();
   venus->addToParent(sol->getID());
   obman->addObject(venus);
   
   IGObject *mars = game->getObjectManager()->createNewObject();
-  mars->setType(obT_Planet);
-  Planet* themars = (Planet*)(mars->getObjectData());
+  otypeman->setupObject(mars, obT_Planet);
+  Planet* themars = (Planet*)(mars->getObjectBehaviour());
   themars->setSize(2);
   mars->setName("Mars");
   themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
@@ -380,15 +537,15 @@ void MiniSec::createGame(){
   planetoq->setObjectId(mars->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
-  oqop = static_cast<OrderQueueObjectParam*>(themars->getParameterByType(obpT_Order_Queue));
+  oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   themars->setDefaultOrderTypes();
   mars->addToParent(sol->getID());
   obman->addObject(mars);
   
   IGObject *acprime = game->getObjectManager()->createNewObject();
-  acprime->setType(obT_Planet);
-  Planet* theacprime = (Planet*)(acprime->getObjectData());
+  otypeman->setupObject(acprime, obT_Planet);
+  Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
   theacprime->setSize(2);
   acprime->setName("Alpha Centauri Prime");
   theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
@@ -396,15 +553,15 @@ void MiniSec::createGame(){
   planetoq->setObjectId(acprime->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
-  oqop = static_cast<OrderQueueObjectParam*>(theacprime->getParameterByType(obpT_Order_Queue));
+  oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   theacprime->setDefaultOrderTypes();
   acprime->addToParent(ac->getID());
   obman->addObject(acprime);
   
   IGObject *s1 = game->getObjectManager()->createNewObject();
-  s1->setType(obT_Planet);
-  Planet* thes1 = (Planet*)(s1->getObjectData());
+  otypeman->setupObject(s1, obT_Planet);
+  Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
   thes1->setSize(2);
   s1->setName("Sirius 1");
   thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
@@ -412,24 +569,41 @@ void MiniSec::createGame(){
   planetoq->setObjectId(s1->getID());
   planetoq->addOwner(0);
   game->getOrderManager()->addOrderQueue(planetoq);
-  oqop = static_cast<OrderQueueObjectParam*>(thes1->getParameterByType(obpT_Order_Queue));
+  oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   thes1->setDefaultOrderTypes();
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
-  
-  std::set<const char*> sys_names(systemNames, systemNames + (sizeof(systemNames) / sizeof(systemNames[0])));
-  
+ 
   //create random systems
   Random * currandom;
-  if(Settings::getSettings()->get("minisec_debug_random_seed") != ""){
+
+  std::string randomseed = Settings::getSettings()->get("minisec_debug_random_seed");
+  if( randomseed != ""){
     random = new Random();
-    random->seed(atoi(Settings::getSettings()->get("minisec_debug_random_seed").c_str()));
+    random->seed(atoi(randomseed.c_str()));
     currandom = random;
-  }else{
+  } else {
     currandom = game->getRandom();
   }
-  
+
+  std::string namesfile  = Settings::getSettings()->get("minisec_system_names");
+
+  Names* names;
+  if(namesfile == ""){
+    names = new NamesSet(currandom);
+  } else {
+    std::ifstream* f = new std::ifstream(namesfile.c_str());
+    if (f->fail()) {
+      Logger::getLogger()->error("Could not open system names file %s", namesfile.c_str());
+      delete f;
+      // Fall back to the names set
+      names = new NamesSet(currandom);
+    } else {
+      names = new NamesFile(new std::ifstream(namesfile.c_str()));
+    }
+  }
+
   uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
   uint32_t max_systems = atoi(Settings::getSettings()->get("minisec_max_systems").c_str());
   uint32_t num_systems;
@@ -438,13 +612,12 @@ void MiniSec::createGame(){
   }else{
     num_systems =  currandom->getInRange(min_systems ,max_systems);
   }
-  if(num_systems > sys_names.size()) 
-    num_systems = sys_names.size();
+
   uint32_t total_planets = atoi(Settings::getSettings()->get("minisec_total_planets").c_str());
   if(total_planets == 0)
     total_planets = 0x0fffffff;
   for (uint32_t counter = 0; counter < num_systems; counter++) {
-    createStarSystem( mw_galaxy, total_planets, sys_names);
+    createStarSystem( mw_galaxy, total_planets, names);
     if(total_planets <= 0)
       break;
   }
@@ -471,7 +644,8 @@ void MiniSec::createGame(){
     game->getResourceManager()->addResourceDescription(res);
   
     game->getPlayerManager()->createNewPlayer("guest", "guest");
-    
+
+  delete names;    
 }
 
 void MiniSec::startGame(){
@@ -520,54 +694,71 @@ void MiniSec::onPlayerAdded(Player* player){
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
   
   PlayerView* playerview = player->getPlayerView();
-
-  //temporarily add the components as usable to get the designs done
-  playerview->addUsableComponent(1);
-  playerview->addUsableComponent(2);
-  playerview->addUsableComponent(3);
-
-  Design* scout = new Design();
-  scout->setCategoryId(1);
-  scout->setName("Scout");
-  scout->setDescription("Scout ship");
-  scout->setOwner(player->getID());
-    std::map<unsigned int, unsigned int> cl;
-    cl[1] = 1;
-  scout->setComponents(cl);
-  game->getDesignStore()->addDesign(scout);
-  unsigned int scoutid = scout->getDesignId();
-
-    Design* design = new Design();
-  design->setCategoryId(1);
-  design->setName("Frigate");
-  design->setDescription("Frigate ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[2] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
-
-  design = new Design();
-  design->setCategoryId(1);
-  design->setName("Battleship");
-  design->setDescription("Battleship ship");
-  design->setOwner(player->getID());
-  cl.clear();
-    cl[3] = 1;
-  design->setComponents(cl);
-  game->getDesignStore()->addDesign(design);
-
-  //remove temporarily added usable components
-  playerview->removeUsableComponent(1);
-  playerview->removeUsableComponent(2);
-  playerview->removeUsableComponent(3);
-  // the components are still visible
-
-  if(std::string(player->getName()) != "guest"){
+  
+  if(std::string(player->getName()) == "guest"){
+    player->setIsAlive(false);
+  }else{
     
-    uint32_t obT_Fleet = game->getObjectDataManager()->getObjectTypeByName("Fleet");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
+    //Can see all other designs
+    std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
+    for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
+      DesignView* dv = new DesignView();
+      dv->setDesignId(*desid);
+      dv->setIsCompletelyVisible(true);
+      playerview->addVisibleDesign(dv);
+    }
+    
+    std::set<uint32_t> mydesignids;
+    
+    //temporarily add the components as usable to get the designs done
+    playerview->addUsableComponent(1);
+    playerview->addUsableComponent(2);
+    playerview->addUsableComponent(3);
+  
+    Design* scout = new Design();
+    scout->setCategoryId(1);
+    scout->setName("Scout");
+    scout->setDescription("Scout ship");
+    scout->setOwner(player->getID());
+      std::map<unsigned int, unsigned int> cl;
+      cl[1] = 1;
+    scout->setComponents(cl);
+    game->getDesignStore()->addDesign(scout);
+    unsigned int scoutid = scout->getDesignId();
+    mydesignids.insert(scoutid);
+  
+      Design* design = new Design();
+    design->setCategoryId(1);
+    design->setName("Frigate");
+    design->setDescription("Frigate ship");
+    design->setOwner(player->getID());
+    cl.clear();
+      cl[2] = 1;
+    design->setComponents(cl);
+    game->getDesignStore()->addDesign(design);
+    mydesignids.insert(design->getDesignId());
+  
+    design = new Design();
+    design->setCategoryId(1);
+    design->setName("Battleship");
+    design->setDescription("Battleship ship");
+    design->setOwner(player->getID());
+    cl.clear();
+      cl[3] = 1;
+    design->setComponents(cl);
+    game->getDesignStore()->addDesign(design);
+    mydesignids.insert(design->getDesignId());
+  
+    //remove temporarily added usable components
+    playerview->removeUsableComponent(1);
+    playerview->removeUsableComponent(2);
+    playerview->removeUsableComponent(3);
+    // the components are still visible
+    
+    
+    uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
+    uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = game->getObjectTypeManager()->getObjectTypeByName("Star System");
   
     Random * currandom;
     if(random != NULL){
@@ -576,10 +767,12 @@ void MiniSec::onPlayerAdded(Player* player){
       currandom = game->getRandom();
     }
     
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
+    
     const char* name = player->getName().c_str();
     IGObject *star = game->getObjectManager()->createNewObject();
-    star->setType(obT_Star_System);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
+    otypeman->setupObject(star, obT_Star_System);
+    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(80000ll);
     char* temp = new char[strlen(name) + 13];
     strncpy(temp, name, strlen(name));
@@ -595,7 +788,7 @@ void MiniSec::onPlayerAdded(Player* player){
     game->getObjectManager()->addObject(star);
     
     IGObject *planet = game->getObjectManager()->createNewObject();
-    planet->setType(obT_Planet);
+    otypeman->setupObject(planet, obT_Planet);
     
     temp = new char[strlen(name) + 8];
     strncpy(temp, name, strlen(name));
@@ -604,7 +797,7 @@ void MiniSec::onPlayerAdded(Player* player){
     planet->setName(temp);
     delete[] temp;
     
-    Planet* theplanet = (Planet*)(planet->getObjectData());
+    Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
     
     theplanet->setSize(2);
     
@@ -618,16 +811,17 @@ void MiniSec::onPlayerAdded(Player* player){
     planetoq->setObjectId(planet->getID());
     planetoq->addOwner(player->getID());
     game->getOrderManager()->addOrderQueue(planetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     theplanet->setDefaultOrderTypes();
     
     planet->addToParent(star->getID());
     game->getObjectManager()->addObject(planet);
+    playerview->addOwnedObject(planet->getID());
     
     IGObject *fleet = game->getObjectManager()->createNewObject();
-    fleet->setType(obT_Fleet);
-    Fleet* thefleet = (Fleet*)(fleet->getObjectData());
+    otypeman->setupObject(fleet, obT_Fleet);
+    Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
     temp = new char[strlen(name) + 13];
     strncpy(temp, name, strlen(name));
@@ -649,30 +843,50 @@ void MiniSec::onPlayerAdded(Player* player){
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(player->getID());
     game->getOrderManager()->addOrderQueue(fleetoq);
-    oqop = static_cast<OrderQueueObjectParam*>(thefleet->getParameterByType(obpT_Order_Queue));
+    oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
     
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
+    playerview->addOwnedObject(fleet->getID());
 
+    std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
+      if(*playerit == player->getID())
+        continue;
+      
+      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
+        DesignView* dv = new DesignView();
+        dv->setDesignId(*desid);
+        dv->setIsCompletelyVisible(true);
+        oplayer->getPlayerView()->addVisibleDesign(dv);
+      }
+      game->getPlayerManager()->updatePlayer(oplayer->getID());
+    }
   }
 
   playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
   
   game->getPlayerManager()->updatePlayer(player->getID());
+  
+  
+  
 }
 
 // Create a random star system
-IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, std::set<const char*>& systemnames)
+IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* names)
 {
     Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
-    Game*          game = Game::getGame();
+    Game*          game  = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    IGObject*      star = game->getObjectManager()->createNewObject();
+    ObjectTypeManager* otypeman = game->getObjectTypeManager();
+    IGObject*      star  = obman->createNewObject();
     unsigned int   nplanets = 0;
     std::ostringstream     formatter;
-    
+   
+    // FIXME: This is repeated everywhere put it in a getter
     Random * currandom;
     if(random != NULL){
       currandom = random;
@@ -681,8 +895,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     }
 
     // Create a variable number of planets for each star system
-    uint maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
-    uint minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
+    uint32_t maxplanets = atoi(Settings::getSettings()->get("minisec_max_planets").c_str());
+    uint32_t minplanets = atoi(Settings::getSettings()->get("minisec_min_planets").c_str());
     if(minplanets == maxplanets){
       nplanets = minplanets;
     }else{
@@ -691,19 +905,18 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     if(max_planets < nplanets)
       nplanets = max_planets;
 
-    uint32_t obT_Star_System = game->getObjectDataManager()->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = game->getObjectDataManager()->getObjectTypeByName("Planet");
+    uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
+    uint32_t obT_Planet      = otypeman->getObjectTypeByName("Planet");
     
-    star->setType( obT_Star_System);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectData());
+    otypeman->setupObject(star, obT_Star_System );
+    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(nplanets * 60000ll);
-    unsigned int   thx = currandom->getInRange(0U, systemnames.size() - 1);
-    std::set<const char*>::iterator name = systemnames.begin();
-    advance(name, thx);
-    if(name == systemnames.end())
-      name = systemnames.begin();
-    star->setName(*name);
-    systemnames.erase(name);
+
+    std::string name = names->getName();
+
+    // FIXME: Would it not be better that this method takes a std::string?
+    star->setName(name.c_str());
+
     thestar->setPosition( Vector3d( currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  0ll));
@@ -713,11 +926,16 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     for(uint i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
-        formatter << star->getName() << " " << i;
 
-        planet->setType( obT_Planet);
+				if (startswith(star->getName(), std::string("System"))) {
+						formatter << star->getName() << ", Planet " << i;
+				} else {
+						formatter << star->getName() << " " << i;
+				}
+
+        otypeman->setupObject(planet, obT_Planet);
         
-        Planet* theplanet = (Planet*)(planet->getObjectData());
+        Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
         
         theplanet->setSize( 2);
         planet->setName( formatter.str().c_str());
@@ -728,7 +946,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
         planetoq->setObjectId(planet->getID());
         planetoq->addOwner(0);
         game->getOrderManager()->addOrderQueue(planetoq);
-        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(theplanet->getParameterByType(obpT_Order_Queue));
+        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
         oqop->setQueueId(planetoq->getQueueId());
         theplanet->setDefaultOrderTypes();
         

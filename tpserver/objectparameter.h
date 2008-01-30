@@ -2,7 +2,7 @@
 #define OBJECTPARAMETER_H
 /*  ObjectParameter base class
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
  */
 
 #include <stdint.h>
-#include <string>
 
 typedef enum {
 	obpT_Invalid = -1,
@@ -49,14 +48,8 @@ class ObjectParameter {
         virtual ~ObjectParameter();
 
 	uint32_t getType() const;
-	std::string getName() const;
-        std::string getDescription() const;
-        
-        void setName(const std::string& nn);
-        void setDescription(const std::string& nd);
         
 	virtual void packObjectFrame(Frame * f, uint32_t playerid) = 0;
-        virtual void packObjectDescFrame(Frame* f) const;
 	virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid) = 0;
 
         virtual void signalRemoval();
@@ -65,8 +58,6 @@ class ObjectParameter {
 
       protected:
 	 uint32_t type;
-	 std::string name;
-         std::string description;
 
 };
 

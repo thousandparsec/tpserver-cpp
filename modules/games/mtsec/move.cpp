@@ -1,6 +1,6 @@
 /*  Move order
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,10 +64,11 @@ void Move::setDest(const Vector3d & ndest)
 }
 
 int Move::getETA(IGObject *ob) const{
-  unsigned long long distance = coords->getPosition().getDistance(((Fleet*)(ob->getObjectData()))->getPosition());
+  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
+  unsigned long long distance = coords->getPosition().getDistance(fleet->getPosition());
   unsigned long max_speed = 3000000;
   
-  if(distance == 0)
+  if(distance == 0) 
     return 1;
   return (int)((distance - 1) / max_speed) + 1;
 }
@@ -94,7 +95,7 @@ Result Move::inputFrame(Frame * f, unsigned int playerid)
 
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
-  Fleet* fleet = ((Fleet*)(ob->getObjectData()));
+  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
   unsigned long long distance = dest.getDistance(fleet->getPosition());
   unsigned long long max_speed = 3000000;
 
@@ -119,8 +120,8 @@ bool Move::doOrder(IGObject * ob){
       for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
-        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Position_3D));
-        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Size));
+        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getParameterByType(obpT_Position_3D));
+        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getParameterByType(obpT_Size));
         if(pos == NULL || size == NULL){
           Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
           continue;
@@ -185,8 +186,8 @@ bool Move::doOrder(IGObject * ob){
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
-        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Position_3D));
-        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getObjectData()->getParameterByType(obpT_Size));
+        Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getParameterByType(obpT_Position_3D));
+        SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getParameterByType(obpT_Size));
         if(pos == NULL || size == NULL){
           Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
           continue;

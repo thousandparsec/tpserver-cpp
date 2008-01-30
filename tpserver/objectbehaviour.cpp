@@ -1,8 +1,6 @@
-#ifndef MYSQLUNIVERSE_H
-#define MYSQLUNIVERSE_H
-/*  MysqlUniverse class
+/*  ObjectBehaviour base class
  *
- *  Copyright (C) 2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,19 +18,32 @@
  *
  */
 
-#include "mysqlobjecttype.h"
+#include "frame.h"
+#include "object.h"
 
-class MysqlUniverse : public MysqlObjectType{
-public:
-    virtual ~MysqlUniverse();
+#include "objectbehaviour.h"
 
-    virtual bool save(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
-    virtual bool update(MysqlPersistence* persistence, MYSQL* conn, IGObject* ob);
-    virtual bool retrieve(MYSQL* conn, IGObject* ob);
-    virtual bool remove(MYSQL* conn, uint32_t obid);
-    
-    virtual void initialise(MysqlPersistence* persistence, MYSQL* conn);
 
-};
+ObjectBehaviour::ObjectBehaviour() : obj(NULL){
+}
 
-#endif
+ObjectBehaviour::~ObjectBehaviour(){
+}
+
+void ObjectBehaviour::setObject(IGObject* nobj){
+  obj = nobj;
+}
+
+void ObjectBehaviour::packExtraData(Frame * frame){
+}
+
+void ObjectBehaviour::setupObject(){
+}
+
+void ObjectBehaviour::signalRemoval(){
+  //for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+ //     ++itcurr){
+//    (itcurr->second)->signalRemoval();
+ // }
+}
+

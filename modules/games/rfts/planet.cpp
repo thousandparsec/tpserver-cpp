@@ -1,6 +1,7 @@
 /*  Planet
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,13 +31,14 @@
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/integerobjectparam.h>
-#include <tpserver/objectparametergroup.h>
+#include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/prng.h>
+#include <tpserver/object.h>
 
 #include "resourcelistparam.h"
 #include "containertypes.h"
@@ -54,45 +56,34 @@ using std::pair;
 using std::map;
 using std::set;
 
-Planet::Planet() : StaticObject() {
-   nametype = "Planet";
-   typedesc = "A planet object";
-   setSize(2);
+PlanetType::PlanetType() : StaticObjectType(){
+  nametype = "Planet";
+  typedesc = "A planet object";
+  
+  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
+  group->setName("Ownership");
+  group->setDescription("The ownership of this object");
+  group->addParameter(obpT_Reference, "Owner", "The owner of this object");
+  addParameterGroupDesc(group);
+  
+  group = new ObjectParameterGroupDesc();
+  group->setName("Resources");
+  group->setDescription("The planets stats");
+  group->addParameter(obpT_Resource_List, "Resource List", "The for this planet");
+  addParameterGroupDesc(group);
+  
+  group = new ObjectParameterGroupDesc();
+  group->setName("Orders");
+  group->setDescription("The order queues of the planet");
+  group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this planet");
+  addParameterGroupDesc(group);
+}
 
-   ObjectParameterGroup* group = new ObjectParameterGroup();
-   
-   playerref = new ReferenceObjectParam();
-   playerref->setName("Owner");
-   playerref->setDescription("The owner of this object");
-   playerref->setReferenceType(rst_Player);
-   group = new ObjectParameterGroup();
-   group->setGroupId(2);
-   group->setName("Ownership");
-   group->setDescription("The ownership of this object");
-   group->addParameter(playerref);
-   paramgroups.push_back(group);
-      
-   group = new ObjectParameterGroup();
-   group->setGroupId(3);
-   group->setName("Resources");
-   group->setDescription("The planets stats");
-   resources = new ResourceListParam();
-   resources->setName("Resource List");
-   resources->setDescription("The stats for this planet");
-   group->addParameter(resources);
-   paramgroups.push_back(group);
-   
-   group = new ObjectParameterGroup();
-   group->setGroupId(4);
-   group->setName("Orders");
-   group->setDescription("The order queues of the planet");
-   orderqueue = new OrderQueueObjectParam();
-   orderqueue->setName("Order Queue");
-   orderqueue->setDescription("The queue of orders for this planet");
-   
-   group->addParameter(orderqueue);
-   paramgroups.push_back(group); 
-   
+ObjectBehaviour* PlanetType::createObjectBehaviour() const{
+  return new Planet();
+}
+
+Planet::Planet() : StaticObject() {
 }
 
 Planet::~Planet() {
@@ -114,10 +105,10 @@ void Planet::setOrderTypes() {
       allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
    }
       
-   orderqueue->setAllowedOrders(allowedlist);
+   ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
 
-void Planet::doOnceATurn(IGObject* obj) {
+void Planet::doOnceATurn() {
 
    unsigned turn = Game::getGame()->getTurnNumber() % 3;
 
@@ -134,16 +125,17 @@ void Planet::doOnceATurn(IGObject* obj) {
          upgradePdbs();
       }
 
-      resources->setResource("Ship Technology", 0,
+      ((ResourceListParam*)(obj->getParameter(3,1)))->setResource("Ship Technology", 0,
                            PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
    }
 
    setOrderTypes();
 
-   touchModTime();
+   obj->touchModTime();
 }
 
 void Planet::calcRP() {
+   ResourceListParam* resources = ((ResourceListParam*)(obj->getParameter(3,1)));
    pair<uint32_t,uint32_t> popn = resources->getResource("Population");
    resources->setResource("Resource Point",
          ( std::min(popn.first, popn.second) * 2) +
@@ -155,6 +147,7 @@ void Planet::calcPopuation() {
 
    Random *rand = Game::getGame()->getRandom();
 
+   ResourceListParam* resources = ((ResourceListParam*)(obj->getParameter(3,1)));
    int newPop = resources->getResource("Population").first;
    const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
    pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
@@ -192,12 +185,12 @@ void Planet::upgradePdbs() {
       // just in case they skip a tech level, make sure we upgrade any/all pdbs
       for(char oldTech = static_cast<char>(techLevel - 1); oldTech >= '1'; oldTech--)
       {
-         uint32_t oldPdbs = resources->getResource(string("PDB") + oldTech).first;
-         resources->setResource(string("PDB") + oldTech, 0);
+         uint32_t oldPdbs = ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(string("PDB") + oldTech).first;
+         ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(string("PDB") + oldTech, 0);
          totalPdbs += oldPdbs;
       }
 
-      resources->setResource(string("PDB") + techLevel, totalPdbs);
+      ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(string("PDB") + techLevel, totalPdbs);
    }
 }
 
@@ -205,16 +198,11 @@ int Planet::getContainerType() {
    return ContainerTypes_::Planet;
 }
 
-ObjectData* Planet::clone() const {
-   return new Planet();
-}
-
 void Planet::packExtraData(Frame * frame){
-  ObjectData::packExtraData(frame);
-  
+  ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
   frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
   
-  map<uint32_t, pair<uint32_t, uint32_t> > reslist = resources->getResources();
+  map<uint32_t, pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(3,1)))->getResources();
     frame->packInt(reslist.size());
     for(map<uint32_t, pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
             itcurr != reslist.end(); ++itcurr){
@@ -226,14 +214,14 @@ void Planet::packExtraData(Frame * frame){
 }
 
 uint32_t Planet::getOwner() const{
-  return playerref->getReferencedId();
+  return ((ReferenceObjectParam*)(obj->getParameter(2,1)))->getReferencedId();
 }
 
 void Planet::setOwner(uint32_t no){
-  playerref->setReferencedId(no);
-  Game::getGame()->getOrderManager()->getOrderQueue(orderqueue->getQueueId())->addOwner(no);
+  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferencedId(no);
+  Game::getGame()->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(4,1)))->getQueueId())->addOwner(no);
 
-  touchModTime();
+  obj->touchModTime();
 }
 
 void Planet::setDefaultResources() {
@@ -254,52 +242,52 @@ void Planet::setDefaultResources() {
 }
 
 const uint32_t Planet::getCurrentRP() const {
-   return resources->getResource("Resource Point").first;
+   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource("Resource Point").first;
 }
 
 const pair<uint32_t, uint32_t> Planet::getResource(uint32_t resTypeId) const {
-   return resources->getResource(resTypeId);
+   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeId);
 }
 
 const pair<uint32_t, uint32_t> Planet::getResource(const string& resTypeName) const {
-   return resources->getResource(resTypeName);
+   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeName);
 }
 
 void Planet::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
-   resources->setResource(resTypeId, currVal, maxVal);
+   ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(resTypeId, currVal, maxVal);
 }
 
 void Planet::setResource(const string& resType, uint32_t currVal, uint32_t maxVal) {
-   resources->setResource(resType, currVal, maxVal);
+   ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(resType, currVal, maxVal);
 }
 
 const map<uint32_t, pair<uint32_t, uint32_t> > Planet::getResources() const{
-    return resources->getResources();
+    return ((ResourceListParam*)(obj->getParameter(3,1)))->getResources();
 }
 
 void Planet::addResource(uint32_t resTypeId, uint32_t amount){
-   resources->getResource(resTypeId).first += amount;
-   touchModTime();
+   ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeId).first += amount;
+   obj->touchModTime();
 }
 
 void Planet::addResource(const string& resType, uint32_t amount){
-   resources->getResource(resType).first += amount;
-   touchModTime();
+   ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resType).first += amount;
+   obj->touchModTime();
 }
 
 bool Planet::removeResource(uint32_t resTypeId, uint32_t amount){
-   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = resources->getResources();
+   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListParam*)(obj->getParameter(3,1)))->getResources();
    
       if(reslist.find(resTypeId) != reslist.end()){
-         touchModTime();
+         obj->touchModTime();
          if(reslist[resTypeId].first >= amount){
             std::pair<uint32_t, uint32_t> respair = reslist[resTypeId];
             respair.first -= amount;
             reslist[resTypeId] = respair;
-            resources->setResources(reslist);
+            ((ResourceListObjectParam*)(obj->getParameter(3,1)))->setResources(reslist);
          } else {
             reslist[resTypeId].first = 0;
-            resources->setResources(reslist);
+            ((ResourceListObjectParam*)(obj->getParameter(3,1)))->setResources(reslist);
          }
          return true;
       }
@@ -311,6 +299,11 @@ bool Planet::removeResource(const string& resTypeName, uint32_t amount){
    return removeResource(Game::getGame()->getResourceManager()->
                         getResourceDescription(resTypeName)->getResourceType(),
                         amount);
+}
+
+void Planet::setupObject(){
+  setSize(2);
+  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
 }
 
 }

@@ -1,6 +1,7 @@
 /*  buildfleet
  *
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,13 +26,12 @@
 #include <tpserver/stringparameter.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
-#include <tpserver/objectdata.h>
 #include <tpserver/game.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectdatamanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/player.h>
@@ -96,7 +96,7 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
 
    IGObject *selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectData());
+   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
 
    assert(planetData);
 
@@ -144,7 +144,7 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
    IGObject *selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectData());
+   Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    
    map<uint32_t, uint32_t> localShipList = shipList->getList();
    uint32_t fleetCostRP = 0;
@@ -189,7 +189,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    
    Game *game = Game::getGame();
 
-   Planet* planet = dynamic_cast<Planet*>(ob->getObjectData());
+   Planet* planet = dynamic_cast<Planet*>(ob->getObjectBehaviour());
    Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
 
 
