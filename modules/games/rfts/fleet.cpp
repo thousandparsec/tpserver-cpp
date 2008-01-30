@@ -89,6 +89,9 @@ FleetType::FleetType() : StaticObjectType() {
    addParameterGroupDesc(group);
 }
 
+FleetType::~FleetType(){
+}
+
 ObjectBehaviour* FleetType::createObjectBehaviour() const{
   return new Fleet();
 }
