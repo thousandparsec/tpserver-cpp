@@ -36,6 +36,7 @@ class ObjectView{
   uint32_t getObjectId() const;
   uint64_t getModTime() const;
   bool isCompletelyVisible() const;
+  bool isDead() const;
   
   bool canSeeName() const;
   std::string getVisibleName() const;
@@ -46,6 +47,7 @@ class ObjectView{
   void setObjectId(uint32_t id);
   void setModTime(uint64_t nmt);
   void setCompletelyVisible(bool ncv);
+  void setDead(bool nid);
   
   void setCanSeeName(bool csn);
   void setVisibleName(const std::string& nvn);
@@ -60,6 +62,7 @@ class ObjectView{
   uint32_t objid;
   uint64_t timestamp;
   bool completelyvisible;
+  bool dead;
   
   bool seename;
   std::string visiblename;
