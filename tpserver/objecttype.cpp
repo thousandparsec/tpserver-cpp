@@ -48,6 +48,7 @@ long long ObjectType::getModTime() const{
 
 
 void ObjectType::packObjectDescFrame(Frame* frame){
+  frame->setType(ft04_ObjectDesc);
   frame->packString(nametype);
   frame->packString(typedesc);
   frame->packInt64(modtime);

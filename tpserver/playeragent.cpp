@@ -518,7 +518,6 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
     unsigned int objecttype = frame->unpackInt();
 
     of = curConnection->createFrame(frame);
-    of->setType(ft04_ObjectDesc);
     
     Game::getGame()->getObjectTypeManager()->doGetObjectDesc(objecttype, of);
     
