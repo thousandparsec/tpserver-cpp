@@ -318,7 +318,7 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
     return;
   }
 
-  if(frame->getDataLength() != 12){
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
@@ -538,7 +538,7 @@ void PlayerAgent::processGetObjectTypes(Frame * frame){
     return;
   }
 
-  if(frame->getDataLength() != 12){
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
     return;
@@ -823,7 +823,7 @@ void PlayerAgent::processGetOrderTypes(Frame * frame){
     return;
   }
 
-  if(frame->getDataLength() != 12){
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
     return;
@@ -965,7 +965,7 @@ void PlayerAgent::processGetBoardIds(Frame * frame){
     return;
   }
 
-   if(frame->getDataLength() != 12){
+   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
