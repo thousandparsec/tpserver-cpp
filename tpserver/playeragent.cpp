@@ -1679,38 +1679,66 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
     return;
   }
   
-  if(frame->getDataLength() != 12){
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Invalid frame");
     curConnection->sendFrame(of);
     return;
   }
 
-  std::set<unsigned int> propids = Game::getGame()->getDesignStore()->getPropertyIds();
-    frame->unpackInt(); //seqnum
-    uint32_t snum = frame->unpackInt();
-    uint32_t numtoget = frame->unpackInt();
-    if(snum > propids.size()){
-        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, propids.size());
-        Frame *of = curConnection->createFrame(frame);
-        of->createFailFrame(fec_NonExistant, "Starting number too high");
-        curConnection->sendFrame(of);
-        return;
+  std::set<uint32_t> propids = Game::getGame()->getDesignStore()->getPropertyIds();
+  frame->unpackInt(); //seqnum
+  uint32_t snum = frame->unpackInt();
+  uint32_t numtoget = frame->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffffULL;
+  if(frame->getVersion() >= fv0_4){
+    fromtime = frame->unpackInt64();
+  }
+  
+  DesignStore *ds = Game::getGame()->getDesignStore();
+  
+  std::map<uint32_t, uint64_t> modlist;
+  for(std::set<uint32_t>::iterator itcurr = propids.begin();
+      itcurr != propids.end(); ++itcurr){
+    Property * prop = ds->getProperty(*itcurr);
+    if(fromtime == 0xffffffffffffffffULL || prop->getModTime() < fromtime){
+      modlist[*itcurr] = prop->getModTime();
     }
-    if(numtoget > propids.size() - snum){
-        numtoget = propids.size() - snum;
-    }
+  }
+  
+  if(snum > modlist.size()){
+    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, modlist.size());
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_NonExistant, "Starting number too high");
+    curConnection->sendFrame(of);
+    return;
+  }
+  if(numtoget > modlist.size() - snum){
+    numtoget = modlist.size() - snum;
+  }
+  
+  if(numtoget > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+    Frame *of = curConnection->createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    curConnection->sendFrame(of);
+    return;
+  }
     
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_PropertyIds_List);
   of->packInt(0);
-    of->packInt(propids.size() - snum - numtoget);
-    of->packInt(numtoget);
-    std::set<unsigned int>::iterator itcurr = propids.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(*itcurr);
-    of->packInt64(0ll);
+  of->packInt(modlist.size() - snum - numtoget);
+  of->packInt(numtoget);
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
+  std::advance(itcurr, snum);
+  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+    of->packInt(itcurr->first);
+    of->packInt64(itcurr->second);
+  }
+  
+  if(of->getVersion() >= fv0_4){
+    of->packInt64(fromtime);
   }
  
   curConnection->sendFrame(of);
