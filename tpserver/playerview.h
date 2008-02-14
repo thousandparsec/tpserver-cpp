@@ -2,7 +2,7 @@
 #define PLAYERVIEW_H
 /*  PlayerView class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,13 +30,6 @@ class Frame;
 class DesignView;
 class ComponentView;
 
-struct ModListItem{
-  ModListItem();
-  ModListItem(uint32_t nid, uint64_t nmt);
-  uint32_t id;
-  uint64_t modtime;
-};
-
 class PlayerView {
 public:
   PlayerView();
@@ -63,7 +56,7 @@ public:
   std::set<uint32_t> getUsableDesigns() const;
   std::set<uint32_t> getVisibleDesigns() const;
   void processGetDesign(uint32_t designid, Frame* frame) const;
-  void processGetDesignIds(Frame* in, Frame* out) const;
+  void processGetDesignIds(Frame* in, Frame* out);
 
   void addVisibleComponent(ComponentView* comp);
   void addUsableComponent(uint32_t compid);
@@ -87,8 +80,7 @@ private:
   std::set<uint32_t> visibleDesigns;
   std::set<uint32_t> usableDesigns;
   std::map<uint32_t, DesignView*> cacheDesigns;
-  std::list<ModListItem> difflistDesigns;
-  std::map<uint32_t, ModListItem> turnDesigndifflist;
+  std::map<uint32_t, uint64_t> modlistDesign;
   uint32_t currDesignSeq;
 
   std::set<uint32_t> visibleComponents;

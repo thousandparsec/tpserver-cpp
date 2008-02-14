@@ -1,6 +1,6 @@
 /*  PlayerView object, holding the player's view of the universe
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,15 +32,9 @@
 
 #include "playerview.h"
 
-ModListItem::ModListItem() : id(0), modtime(0){
-}
-
-ModListItem::ModListItem(uint32_t nid, uint64_t nmt) : id(nid), modtime(nmt){
-}
-
 PlayerView::PlayerView() : pid(0), visibleObjects(), ownedObjects(), currObjSeq(0), 
     visibleDesigns(), usableDesigns(), cacheDesigns(),
-    difflistDesigns(), turnDesigndifflist(), currDesignSeq(0),
+    modlistDesign(), currDesignSeq(0),
     visibleComponents(), usableComponents(), cacheComponents(),
     modlistComp(), currCompSeq(0){
 }
@@ -53,25 +47,8 @@ void PlayerView::setPlayerId(uint32_t newid){
 }
 
 void PlayerView::doOnceATurn(){
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  
-  //Designs
-  // check for updated usable designs
-  for(std::set<uint32_t>::iterator itcurr = usableDesigns.begin();
-      itcurr != usableDesigns.end(); ++itcurr){
-    Design* design = ds->getDesign(*itcurr);
-    if(design->getModTime() > cacheDesigns[*itcurr]->getModTime()){
-      currDesignSeq++;
-      turnDesigndifflist[*itcurr] = ModListItem(*itcurr, design->getModTime());
-    }
-  }
-  // build new diff list
-  for(std::map<uint32_t, ModListItem>::iterator itcurr = turnDesigndifflist.begin();
-      itcurr != turnDesigndifflist.end(); ++itcurr){
-    difflistDesigns.push_back(itcurr->second);
-  }
-  turnDesigndifflist.clear();
-  
+  currObjSeq++;
+  currDesignSeq++;
   currCompSeq++;
 }
 
@@ -122,7 +99,6 @@ void PlayerView::addVisibleDesign(DesignView* design){
   }
   cacheDesigns[designid] = design;
   currDesignSeq++;
-  turnDesigndifflist[designid] = ModListItem(designid, design->getModTime());
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
@@ -135,7 +111,6 @@ void PlayerView::addUsableDesign(uint32_t designid){
   }else{
     cacheDesigns[designid]->setIsCompletelyVisible(true);
     currCompSeq++;
-    turnDesigndifflist[designid] = ModListItem(designid, cacheDesigns[designid]->getModTime());
   }
 }
 
@@ -166,7 +141,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame) const{
   }
 }
 
-void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
+void PlayerView::processGetDesignIds(Frame* in, Frame* out){
   Logger::getLogger()->debug("doing Get Design Ids frame");
   
   if(in->getVersion() < fv0_3){
@@ -190,80 +165,50 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out) const{
   
   if(seqnum != currDesignSeq && seqnum != 0xffffffff){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    modlistDesign.clear();
     return;
   }
   
-  
-  
-  if(fromtime == 0xffffffffffffffffULL){
-  
-    if(snum > visibleDesigns.size()){
-      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
-      out->createFailFrame(fec_NonExistant, "Starting number too high");
-      return;
-    }
-    if(numtoget > visibleDesigns.size() - snum){
-      numtoget = visibleDesigns.size() - snum;
-    }
-    
-    if(numtoget > 87379){
-      Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-      out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-      return;
-    }
-    
-    out->setType(ft03_DesignIds_List);
-    out->packInt(currDesignSeq);
-    out->packInt(visibleDesigns.size() - snum - numtoget);
-    out->packInt(numtoget);
-    std::set<uint32_t>::iterator itcurr = visibleDesigns.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-      out->packInt(*itcurr);
-      out->packInt64(cacheDesigns.find(*itcurr)->second->getModTime());
-    }
-    
-    if(out->getVersion() >= fv0_4){
-      out->packInt64(fromtime);
-    }
-    
-  }else{
-    
-    // get list of changes since fromtime
-    
-    std::list<ModListItem> difflist;
-    for(std::list<ModListItem>::const_iterator itcurr = difflistDesigns.begin();
-        itcurr != difflistDesigns.end(); ++itcurr){
-      if((*itcurr).modtime >= fromtime){
-        difflist.insert(difflist.end(), itcurr, difflistDesigns.end());
-        break;
+  if(seqnum == 0xffffffff){
+    modlistDesign.clear();
+    for(std::map<uint32_t, DesignView*>::iterator itcurr = cacheDesigns.begin();
+        itcurr != cacheDesigns.end(); ++itcurr){
+      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+        modlistDesign[itcurr->first] = (itcurr->second)->getModTime();
       }
     }
-    
-    if(snum > difflist.size()){
-      Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, difflist.size());
-      out->createFailFrame(fec_NonExistant, "Starting number too high");
-      return;
-    }
-    if(numtoget > difflist.size() - snum){
-      numtoget = difflist.size() - snum;
-    }
-    
-    out->setType(ft03_DesignIds_List);
-    out->packInt(currDesignSeq);
-    out->packInt(difflist.size() - snum - numtoget);
-    out->packInt(numtoget);
-    
-    std::list<ModListItem>::iterator itcurr = difflist.begin();
-    std::advance(itcurr, snum);
-    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-      out->packInt((*itcurr).id);
-      out->packInt64((*itcurr).modtime);
-    }
-    
-    out->packInt64(fromtime);
-    
   }
+  
+  if(snum > modlistDesign.size()){
+    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, visibleDesigns.size());
+    out->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  if(numtoget > modlistDesign.size() - snum){
+    numtoget = modlistDesign.size() - snum;
+  }
+    
+  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
+    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
+  }
+    
+  out->setType(ft03_DesignIds_List);
+  out->packInt(currDesignSeq);
+  out->packInt(modlistDesign.size() - snum - numtoget);
+  out->packInt(numtoget);
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlistDesign.begin();
+  std::advance(itcurr, snum);
+  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+    out->packInt(itcurr->first);
+    out->packInt64(itcurr->second);
+  }
+  
+  if(out->getVersion() >= fv0_4){
+    out->packInt64(fromtime);
+  }
+  
 }
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
@@ -365,7 +310,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
     numtoget = modlistComp.size() - snum;
   }
   
-  if(numtoget > 87379){
+  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
