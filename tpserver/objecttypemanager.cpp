@@ -64,39 +64,63 @@ uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
 }
 
 void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
-  unsigned int lseqkey = frame->unpackInt();
+  uint32_t lseqkey = frame->unpackInt();
   if(lseqkey == 0xffffffff){
     //start new seqkey
     lseqkey = seqkey;
   }
 
-  unsigned int start = frame->unpackInt();
-  unsigned int num = frame->unpackInt();
+  uint32_t start = frame->unpackInt();
+  uint32_t num = frame->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffffULL;
+  if(frame->getVersion() >= fv0_4){
+    fromtime = frame->unpackInt64();
+  }
 
   if(lseqkey != seqkey){
     of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
     return;
   }
 
-  unsigned int num_remain;
-  if(num == 0xffffffff || start + num > typeStore.size()){
-    num = typeStore.size() - start;
-    num_remain = 0;
-  }else{
-    num_remain = typeStore.size() - start - num;
+  std::map<uint32_t, uint64_t> modlist;
+  for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
+      itcurr != typeStore.end(); ++itcurr){
+    uint32_t otmodtime = itcurr->second->getModTime();
+    if(fromtime == 0xffffffffffffffffULL || otmodtime < fromtime){
+      modlist[itcurr->first] = otmodtime;
+    }
+  }
+  
+  if(start > modlist.size()){
+    of->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  
+  if(num > modlist.size() - start){
+      num = modlist.size() - start;
+  }
+  
+  if(num > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
   }
 
   of->setType(ft04_ObjectTypes_List);
   of->packInt(lseqkey);
-  of->packInt(num_remain);
+  of->packInt(modlist.size() - start - num);
   of->packInt(num);
-  std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
   advance(itcurr, start);
-  for(unsigned int i = 0; i < num; i++){
+  for(uint32_t i = 0; i < num; i++){
     of->packInt(itcurr->first);
-    of->packInt64(itcurr->second->getModTime());
+    of->packInt64(itcurr->second);
     ++itcurr;
   }
+  
+  if(of->getVersion() >= fv0_4){
+    of->packInt64(fromtime);
+  }
+  
 }
 
 void ObjectTypeManager::doGetObjectDesc(uint32_t type, Frame* of){
