@@ -27,7 +27,7 @@
 
 #include "objectview.h"
 
-ObjectView::ObjectView(): objid(0), completelyvisible(false), dead(false), seename(false),
+ObjectView::ObjectView(): objid(0), completelyvisible(false), gone(false), seename(false),
                               visiblename(), seedesc(false), visibledesc(){
   timestamp = time(NULL);
 }
@@ -37,7 +37,7 @@ ObjectView::~ObjectView(){
 }
 
 void ObjectView::packFrame(Frame* frame) const{
-  if(dead){
+  if(gone){
     frame->createFailFrame(fec_NonExistant, "No such object");
   }else{
      //TODO write this function
@@ -53,8 +53,8 @@ bool ObjectView::isCompletelyVisible() const{
   return completelyvisible;
 }
 
-bool ObjectView::isDead() const{
-  return dead;
+bool ObjectView::isGone() const{
+  return gone;
 }
 
 bool ObjectView::canSeeName() const{
@@ -88,10 +88,10 @@ void ObjectView::setCompletelyVisible(bool ncv){
   completelyvisible = ncv;
 }
 
-void ObjectView::setDead(bool nid){
-  if(nid != dead){
+void ObjectView::setGone(bool nid){
+  if(nid != gone){
     touchModTime();
-    dead = nid;
+    gone = nid;
   }
 }
 
