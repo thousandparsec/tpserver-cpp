@@ -24,6 +24,7 @@
 #include <set>
 #include <list>
 #include <string>
+#include <stdint.h>
 
 class Order;
 class Frame;
@@ -35,13 +36,13 @@ class OrderManager{
   ~OrderManager();
 
   
-  bool checkOrderType(int type);
-  void describeOrder(int ordertype, Frame * f);
+  bool checkOrderType(uint32_t type);
+  void describeOrder(uint32_t ordertype, Frame * f);
   void addOrderType(Order* prototype);
   uint32_t getOrderTypeByName(const std::string &name);
   void doGetOrderTypes(Frame * frame, Frame * result);
 
-  Order* createOrder(int ot);
+  Order* createOrder(uint32_t ot);
   
   bool addOrderQueue(OrderQueue* oq);
   bool removeOrderQueue(uint32_t oqid);
@@ -50,14 +51,14 @@ class OrderManager{
   void init();
 
  private:
-  std::map<int, Order*> prototypeStore;
+  std::map<uint32_t, Order*> prototypeStore;
   std::map<std::string, uint32_t> typeNames;
-  int nextType;
+  uint32_t nextType;
   uint32_t nextOrderQueueId;
 
-  unsigned int seqkey;
+  uint32_t seqkey;
 
-    std::map<uint32_t, OrderQueue*> orderqueues;
+  std::map<uint32_t, OrderQueue*> orderqueues;
 
 };
 

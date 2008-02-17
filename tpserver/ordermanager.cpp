@@ -35,17 +35,17 @@ OrderManager::OrderManager(){
 
 OrderManager::~OrderManager(){
   // I should clear the prototypeStore
-  for(std::map<int, Order*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
+  for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
     delete itcurr->second;
   }
 
 }
 
-bool OrderManager::checkOrderType(int type){
+bool OrderManager::checkOrderType(uint32_t type){
   return (type >= 0 && type <= nextType - 1);
 }
 
-void OrderManager::describeOrder(int ordertype, Frame * f){
+void OrderManager::describeOrder(uint32_t ordertype, Frame * f){
   if(prototypeStore.find(ordertype) != prototypeStore.end()){
     prototypeStore[ordertype]->describeOrder(f);
   }else{
@@ -53,7 +53,7 @@ void OrderManager::describeOrder(int ordertype, Frame * f){
   }
 }
 
-Order* OrderManager::createOrder(int ot){
+Order* OrderManager::createOrder(uint32_t ot){
   if(prototypeStore.find(ot) != prototypeStore.end()){
     return prototypeStore[ot]->clone();
   }
@@ -75,40 +75,63 @@ uint32_t OrderManager::getOrderTypeByName(const std::string& name){
 }
 
 void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
-   unsigned int lseqkey = frame->unpackInt();
+  uint32_t lseqkey = frame->unpackInt();
   if(lseqkey == 0xffffffff){
     //start new seqkey
     lseqkey = seqkey;
   }
 
-  unsigned int start = frame->unpackInt();
-  unsigned int num = frame->unpackInt();
-
+  uint32_t start = frame->unpackInt();
+  uint32_t num = frame->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffffULL;
+  if(frame->getVersion() >= fv0_4){
+    fromtime = frame->unpackInt64();
+  }
+  
   if(lseqkey != seqkey){
     of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
     return;
   }
 
-  unsigned int num_remain;
-  if(num == 0xffffffff || start + num > prototypeStore.size()){
-    num = prototypeStore.size() - start;
-    num_remain = 0;
-  }else{
-    num_remain = prototypeStore.size() - start - num;
+  std::map<uint32_t, uint64_t> modlist;
+  for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin();
+      itcurr != prototypeStore.end(); ++itcurr){
+    Order* type = itcurr->second;
+    if(fromtime == 0xffffffffffffffffULL || type->getDescriptionModTime() < fromtime){
+      modlist[itcurr->first] = type->getDescriptionModTime();
+    }
+  }
+  
+  if(start > modlist.size()){
+    of->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  
+  if(num > modlist.size() - start){
+    num = modlist.size() - start;
+  }
+  
+  if(num > 87378 + ((of->getVersion() < fv0_4) ? 1 : 0)){
+    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
   }
 
   of->setType(ft03_OrderTypes_List);
   of->packInt(lseqkey);
-  of->packInt(num_remain);
+  of->packInt(modlist.size() - start - num);
   of->packInt(num);
-  std::map<int, Order*>::iterator itcurr = prototypeStore.begin();
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
   advance(itcurr, start);
-  for(unsigned int i = 0; i < num; i++){
+  for(uint32_t i = 0; i < num; i++){
     of->packInt(itcurr->first);
-    of->packInt64(itcurr->second->getDescriptionModTime());
+    of->packInt64(itcurr->second);
     ++itcurr;
   }
 
+  if(of->getVersion() >= fv0_4){
+    of->packInt64(fromtime);
+  }
+  
 }
 
 bool OrderManager::addOrderQueue(OrderQueue* oq){
