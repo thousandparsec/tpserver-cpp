@@ -26,7 +26,7 @@
 
 #include "objectrelationships.h"
 
-ObjectRelationshipsData::ObjectRelationshipsData() : ref(0), parentid(0), children(), dirty(true){
+ObjectRelationshipsData::ObjectRelationshipsData() : parentid(0), children(), dirty(true){
 }
 
 ObjectRelationshipsData::~ObjectRelationshipsData(){

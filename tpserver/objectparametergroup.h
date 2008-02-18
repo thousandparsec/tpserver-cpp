@@ -36,8 +36,6 @@ typedef SmartPointer<ObjectParameterGroupData> ObjectParameterGroupPtr;
 class ObjectParameterGroupData {
 
   public:
-    friend class SmartPointer<ObjectParameterGroupData>;
-    
     ObjectParameterGroupData();
     ObjectParameterGroupData(const ObjectParameterGroupData& rhs);
     ~ObjectParameterGroupData();
@@ -60,7 +58,6 @@ class ObjectParameterGroupData {
   protected:
       uint32_t groupid;
       std::list<ObjectParameter*> parameters;
-      uint32_t ref;
 
 };
 

@@ -24,7 +24,7 @@
 
 #include "objectinfo.h"
 
-ObjectInfoData::ObjectInfoData() : ref(0), type(0), name(), desc(){
+ObjectInfoData::ObjectInfoData() : type(0), name(), desc(){
   touchModTime();
 }
 

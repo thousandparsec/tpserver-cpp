@@ -33,7 +33,6 @@ typedef SmartPointer<ObjectInfoData> ObjectInfoPtr;
 
 class ObjectInfoData {
   public:
-    friend class SmartPointer<ObjectInfoData>;
     ObjectInfoData();
     ~ObjectInfoData();
     
@@ -52,9 +51,6 @@ class ObjectInfoData {
     bool isDirty() const;
     void setModTime(uint64_t nmt);
     void setIsDirty(bool id);
-
-  protected:
-    uint32_t ref;
     
   private:
     void touchModTime();

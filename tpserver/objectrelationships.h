@@ -33,7 +33,6 @@ typedef SmartPointer<ObjectRelationshipsData> ObjectRelationshipsPtr;
 
 class ObjectRelationshipsData {
   public:
-    friend class SmartPointer<ObjectRelationshipsData>;
     ObjectRelationshipsData();
     ~ObjectRelationshipsData();
     
@@ -51,9 +50,6 @@ class ObjectRelationshipsData {
     bool isDirty() const;
     void setIsDirty(bool id);
 
-  protected:
-    uint32_t ref;
-    
   private:
     uint32_t parentid;
     std::set<uint32_t> children;

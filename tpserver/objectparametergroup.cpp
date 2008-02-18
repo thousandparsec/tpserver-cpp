@@ -25,7 +25,7 @@
 
 #include "objectparametergroup.h"
 
-ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(), ref(0){
+ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(){
 }
 
 ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupData &rhs): parameters(){
