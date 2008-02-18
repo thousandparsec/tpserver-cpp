@@ -131,7 +131,7 @@ void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{
 }
 
 ObjectParameterGroupPtr ObjectParameterGroupDesc::createObjectParameterGroup() const{
-  ObjectParameterGroupPtr pg;
+  ObjectParameterGroupPtr pg(new ObjectParameterGroupData());
   pg->setGroupId(groupid);
   for(std::list<ObjectParameterDesc>::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){

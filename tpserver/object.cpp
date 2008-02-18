@@ -41,6 +41,8 @@
 
 IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), info(), relationships(), parameters(),
                    behaviour(NULL){
+  info = new ObjectInfoData();
+  relationships = new ObjectRelationshipsData();
   touchModTime();
 }
 
