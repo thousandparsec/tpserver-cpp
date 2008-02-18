@@ -99,7 +99,11 @@ template <typename T> class SmartPointer{
     }
     
     T* operator->() const{
-      return data->data;
+      if(data != NULL){
+        return data->data;
+      }else{
+        return NULL;
+      }
     }
     
   private:
