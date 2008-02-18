@@ -25,13 +25,19 @@
 #include <string>
 #include <list>
 
+template <typename T> class SmartPointerImpl;
+
+template <typename T> class SmartPointerImpl{
+  public:
+    uint32_t ref;
+    T* data;
+};
+
 template <typename T> class SmartPointer;
 
 template <typename T> class SmartPointer{
   public:
-    SmartPointer(){
-      data = new T();
-      data->ref++;
+    SmartPointer(): data(NULL){
     }
     
     SmartPointer(const SmartPointer<T>& rhs){
@@ -42,9 +48,10 @@ template <typename T> class SmartPointer{
     }
     
     SmartPointer(T* nd){
-      data = nd;
-      if(data != NULL){
-        data->ref++;
+      if(nd != NULL){
+        data = new SmartPointerImpl<T>();
+        data->ref = 1;
+        data->data = nd;
       }
     }
     
@@ -52,6 +59,7 @@ template <typename T> class SmartPointer{
       if(data != NULL){
         data->ref--;
         if(data->ref == 0){
+          delete data->data;
           delete data;
         }
       }
@@ -61,6 +69,7 @@ template <typename T> class SmartPointer{
       if(data != NULL){
         data->ref--;
         if(data->ref == 0){
+          delete data->data;
           delete data;
         }
       }
@@ -75,22 +84,26 @@ template <typename T> class SmartPointer{
       if(data != NULL){
         data->ref--;
         if(data->ref == 0){
+          delete data->data;
           delete data;
         }
       }
-      data = nd;
-      if(data != NULL){
-        data->ref++;
+      if(nd == NULL){
+        data = NULL;
+      }else{
+        data = new SmartPointerImpl<T>();
+        data->ref = 1;
+        data->data = nd;
       }
       return *this;
     }
     
     T* operator->() const{
-      return data;
+      return data->data;
     }
     
   private:
-    T* data;
+    SmartPointerImpl<T>* data;
 };
 
 #endif
