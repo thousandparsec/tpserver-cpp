@@ -97,7 +97,7 @@ void PlayerView::processGetObject(uint32_t objid, Frame* frame) const{
     frame->createFailFrame(fec_NonExistant, "No Such Object");
   }else{
     ObjectView* object = cacheObjects.find(objid)->second;
-    object->packFrame(frame);
+    object->packFrame(frame, pid);
   }
 }
 

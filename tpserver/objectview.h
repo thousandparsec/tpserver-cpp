@@ -31,7 +31,7 @@ class ObjectView{
   ObjectView();
   virtual ~ObjectView();
 
-  void packFrame(Frame* frame) const;
+  void packFrame(Frame* frame, uint32_t playerid) const;
 
   uint32_t getObjectId() const;
   uint64_t getModTime() const;

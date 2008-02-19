@@ -22,8 +22,22 @@
 
 #include "frame.h"
 #include "game.h"
+#include "objectmanager.h"
+#include "object.h"
+#include "objectbehaviour.h"
+#include "playermanager.h"
+#include "player.h"
+#include "playerview.h"
+#include "objectparametergroup.h"
 #include "component.h"
 #include "designstore.h"
+#include "ordermanager.h"
+#include "position3dobjectparam.h"
+#include "velocity3dobjectparam.h"
+#include "orderqueueobjectparam.h"
+#include "orderqueue.h"
+#include "sizeobjectparam.h"
+
 
 #include "objectview.h"
 
@@ -36,12 +50,125 @@ ObjectView::~ObjectView(){
 
 }
 
-void ObjectView::packFrame(Frame* frame) const{
+void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
   if(gone){
     frame->createFailFrame(fec_NonExistant, "No such object");
   }else{
-     //TODO write this function
+    frame->setType(ft02_Object);
+    frame->packInt(objid);
     
+    IGObject* object = Game::getGame()->getObjectManager()->getObject(objid);
+    PlayerView* playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
+    
+    //type
+    frame->packInt(object->getType());
+    if(completelyvisible || seename){
+      frame->packString(object->getName());
+    }else{
+      frame->packString(visiblename);
+    }
+    if(frame->getVersion() >= fv0_4){
+      if(completelyvisible || seedesc){
+        frame->packString(object->getDescription());
+      }else{
+        frame->packString(visibledesc);
+      }
+    }
+    
+    if(frame->getVersion() >= fv0_4){
+      // should be moved to ObjectRelationshipsData::packFrame once TP03 support is removed
+      frame->packInt(object->getParent());
+    }else{
+      //pre tp04
+    
+      SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(object->getParameterByType(obpT_Size));
+      if(size != NULL){
+        frame->packInt64(size->getSize());
+      }else{
+        frame->packInt64(0);
+      }
+    
+      Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(object->getParameterByType(obpT_Position_3D));
+      if(pos != NULL){
+        pos->getPosition().pack(frame);
+      }else{
+        Vector3d(0,0,0).pack(frame);
+      }
+    
+      Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(object->getParameterByType(obpT_Velocity));
+      if(vel != NULL){
+        vel->getVelocity().pack(frame);
+      }else{
+        Vector3d(0,0,0).pack(frame);
+      }
+    
+    }
+    
+    std::set<uint32_t> children = object->getContainedObjects();
+    std::set<uint32_t>::iterator itcurr, itend;
+    itcurr = children.begin();
+    itend = children.end();
+    
+    while(itcurr != itend){
+      if(!playerview->isVisibleObject(*itcurr)){
+        std::set<unsigned int>::iterator itemp = itcurr;
+        ++itcurr;
+        children.erase(itemp);
+      }else{
+        ++itcurr;
+      }
+    }
+    
+    frame->packInt(children.size());
+    //for loop for children objects
+    itend = children.end();
+    for (itcurr = children.begin(); itcurr != itend; itcurr++) {
+      frame->packInt(*itcurr);
+    }
+  
+    if(frame->getVersion() <= fv0_3){
+    
+      
+      OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(object->getParameterByType(obpT_Order_Queue));
+      if(oq != NULL){
+        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
+        if(queue->isOwner(playerid)){
+          std::set<uint32_t> allowedtypes = queue->getAllowedOrderTypes();
+          frame->packInt(allowedtypes.size());
+          for(std::set<uint32_t>::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
+              ++itcurr){
+            frame->packInt(*itcurr);
+          }
+          frame->packInt(queue->getNumberOrders());
+        }else{
+          frame->packInt(0);
+          frame->packInt(0);
+        }
+      }else{
+        frame->packInt(0);
+        frame->packInt(0);
+      }
+        
+    }
+    frame->packInt64(getModTime());
+    frame->packInt(0);
+    frame->packInt(0);
+    if(frame->getVersion() >= fv0_4){
+      frame->packInt(0);
+      frame->packInt(0);
+
+      std::map<uint32_t, ObjectParameterGroupPtr> parameters = object->getParameterGroups();
+      for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+          ++itcurr){
+        (itcurr->second)->packObjectFrame(frame, playerid);
+      }
+    }else{
+      ObjectBehaviour* behaviour = object->getObjectBehaviour();
+      if(behaviour != NULL){
+        behaviour->packExtraData(frame);
+      }
+    }
+
   }
 }
 
