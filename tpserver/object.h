@@ -75,6 +75,7 @@ class IGObject {
     ObjectParameter* getParameterByType(uint32_t type) const;
     
     void setParameterGroup(const ObjectParameterGroupPtr &ng);
+    std::map<uint32_t, ObjectParameterGroupPtr> getParameterGroups() const;
     
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);

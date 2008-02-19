@@ -258,6 +258,10 @@ void IGObject::setParameterGroup(const ObjectParameterGroupPtr &ng){
   parameters[ng->getGroupId()] = ng;
 }
 
+std::map<uint32_t, ObjectParameterGroupPtr> IGObject::getParameterGroups() const{
+  return parameters;
+}
+
 ObjectBehaviour* IGObject::getObjectBehaviour() const{
   return behaviour;
 }
