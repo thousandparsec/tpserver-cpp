@@ -133,7 +133,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     modlistObject.clear();
     for(std::map<uint32_t, ObjectView*>::iterator itcurr = cacheObjects.begin();
         itcurr != cacheObjects.end(); ++itcurr){
-      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+      if((fromtime == 0xffffffffffffffffULL && !((itcurr->second)->isGone()))|| (itcurr->second)->getModTime() < fromtime){
         modlistObject[itcurr->first] = (itcurr->second)->getModTime();
       }
     }
