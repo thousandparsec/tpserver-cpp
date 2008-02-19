@@ -27,6 +27,7 @@
 #include <stdint.h>
 
 class Frame;
+class ObjectView;
 class DesignView;
 class ComponentView;
 
@@ -48,6 +49,8 @@ public:
   void removeOwnedObject(uint32_t objid);
   uint32_t getNumberOwnedObjects() const;
   std::set<uint32_t> getOwnedObject() const;
+  void processGetObject(uint32_t objid, Frame* frame) const;
+  void processGetObjectIds(Frame* in, Frame* out);
 
   void addVisibleDesign(DesignView* design);
   void addUsableDesign(uint32_t designid);
@@ -74,7 +77,8 @@ private:
 
   std::set<uint32_t> visibleObjects;
   std::set<uint32_t> ownedObjects;
-  
+  std::map<uint32_t, ObjectView*> cacheObjects;
+  std::map<uint32_t, uint64_t> modlistObject;
   uint32_t currObjSeq;
 
   std::set<uint32_t> visibleDesigns;

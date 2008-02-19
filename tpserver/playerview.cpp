@@ -24,6 +24,7 @@
 #include "logging.h"
 #include "frame.h"
 #include "game.h"
+#include "objectview.h"
 #include "designstore.h"
 #include "design.h"
 #include "designview.h"
@@ -32,7 +33,8 @@
 
 #include "playerview.h"
 
-PlayerView::PlayerView() : pid(0), visibleObjects(), ownedObjects(), currObjSeq(0), 
+PlayerView::PlayerView() : pid(0), visibleObjects(), ownedObjects(),
+    cacheObjects(), modlistObject(), currObjSeq(0),
     visibleDesigns(), usableDesigns(), cacheDesigns(),
     modlistDesign(), currDesignSeq(0),
     visibleComponents(), usableComponents(), cacheComponents(),
@@ -88,6 +90,85 @@ uint32_t PlayerView::getNumberOwnedObjects() const{
 
 std::set<uint32_t> PlayerView::getOwnedObject() const{
   return ownedObjects;
+}
+
+void PlayerView::processGetObject(uint32_t objid, Frame* frame) const{
+  if(visibleObjects.find(objid) == visibleObjects.end()){
+    frame->createFailFrame(fec_NonExistant, "No Such Object");
+  }else{
+    ObjectView* object = cacheObjects.find(objid)->second;
+    object->packFrame(frame);
+  }
+}
+
+void PlayerView::processGetObjectIds(Frame* in, Frame* out){
+  Logger::getLogger()->debug("doing Get Object Ids frame");
+  
+  if(in->getVersion() < fv0_3){
+    Logger::getLogger()->debug("protocol version not high enough");
+    out->createFailFrame(fec_FrameError, "Get Object ids isn't supported in this protocol");
+    return;
+  }
+  
+  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
+    out->createFailFrame(fec_FrameError, "Invalid frame");
+    return;
+  }
+  
+  uint32_t seqnum = in->unpackInt();
+  uint32_t snum = in->unpackInt();
+  uint32_t numtoget = in->unpackInt();
+  uint64_t fromtime = 0xffffffffffffffffULL;
+  if(in->getVersion() >= fv0_4){
+    fromtime = in->unpackInt64();
+  }
+  
+  if(seqnum != currDesignSeq && seqnum != 0xffffffff){
+    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    modlistObject.clear();
+    return;
+  }
+  
+  if(seqnum == 0xffffffff){
+    modlistObject.clear();
+    for(std::map<uint32_t, ObjectView*>::iterator itcurr = cacheObjects.begin();
+        itcurr != cacheObjects.end(); ++itcurr){
+      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+        modlistObject[itcurr->first] = (itcurr->second)->getModTime();
+      }
+    }
+  }
+  
+  if(snum > modlistObject.size()){
+    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, modlistObject.size());
+    out->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  if(numtoget > modlistObject.size() - snum){
+    numtoget = modlistObject.size() - snum;
+  }
+    
+  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
+    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
+  }
+    
+  out->setType(ft03_ObjectIds_List);
+  out->packInt(currObjSeq);
+  out->packInt(modlistObject.size() - snum - numtoget);
+  out->packInt(numtoget);
+  std::map<uint32_t, uint64_t>::iterator itcurr = modlistObject.begin();
+  std::advance(itcurr, snum);
+  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+    out->packInt(itcurr->first);
+    out->packInt64(itcurr->second);
+  }
+  
+  if(out->getVersion() >= fv0_4){
+    out->packInt64(fromtime);
+  }
+  
 }
 
 void PlayerView::addVisibleDesign(DesignView* design){
