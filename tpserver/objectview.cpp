@@ -51,13 +51,14 @@ ObjectView::~ObjectView(){
 }
 
 void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
-  if(gone){
+  IGObject* object = Game::getGame()->getObjectManager()->getObject(objid);
+  
+  if(gone || completelyvisible && !object->isAlive()){
     frame->createFailFrame(fec_NonExistant, "No such object");
   }else{
     frame->setType(ft02_Object);
     frame->packInt(objid);
     
-    IGObject* object = Game::getGame()->getObjectManager()->getObject(objid);
     PlayerView* playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
     
     //type
