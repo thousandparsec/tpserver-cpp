@@ -3,7 +3,7 @@
  * This connection is a little odd, because it is a client connection
  * to the metaserver, not a server connection of this server.
  *
- *  Copyright (C) 2006,2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2006,2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "playermanager.h"
 #include "objectmanager.h"
 #include "turntimer.h"
+#include "prng.h"
 
 #include "metaserverconnection.h"
 
@@ -306,6 +307,10 @@ bool MetaserverConnection::sendUpdate(){
     formater << "&ip" << servicenumber << "=" << localip;
     servicenumber++;
   }
+  
+  //make sure each request is unique to stop transparent proxies from caching
+  Random* random = Game::getGame()->getRandom();
+  formater << "&reqid=" << random->getInt32();
 
   formater << " HTTP/1.0\r\nUser-agent: tpserver-cpp/" VERSION "\r\n";
   formater << "Host: " << host << "\r\n";
