@@ -24,6 +24,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
+#include <tpserver/objectview.h>
 #include "planet.h"
 #include "fleet.h"
 #include <tpserver/player.h>
@@ -242,7 +243,21 @@ void MinisecTurn::doTurn(){
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
     Player* player = playermanager->getPlayer(*itplayer);
     PlayerView* playerview = player->getPlayerView();
-    playerview->setVisibleObjects(vis);
+    
+    for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
+      ObjectView* obv = playerview->getObjectView(*itob);
+      if(obv == NULL){
+        obv = new ObjectView();
+        obv->setObjectId(*itob);
+        playerview->addVisibleObject(obv);
+      }else{
+        uint64_t obmt = objectmanager->getObject(*itob)->getModTime();
+        objectmanager->doneWithObject(*itob);
+        if(obmt > obv->getModTime()){
+          obv->setModTime(obmt);
+        }
+      }
+    }
     
     if(!player->isAlive() || playerview->getNumberOwnedObjects() == 0){
       if(player->isAlive()){

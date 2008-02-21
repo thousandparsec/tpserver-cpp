@@ -28,6 +28,7 @@
 
 #include <tpserver/game.h>
 #include <tpserver/object.h>
+#include <tpserver/objectview.h>
 #include <tpserver/objectmanager.h>
 #include "universe.h"
 #include "emptyobject.h"
@@ -867,7 +868,14 @@ void MiniSec::onPlayerAdded(Player* player){
     }
   }
 
-  playerview->setVisibleObjects(game->getObjectManager()->getAllIds());
+  std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
+  for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+      ++itcurr){
+    ObjectView* obv = new ObjectView();
+    obv->setObjectId(*itcurr);
+    obv->setCompletelyVisible(true);
+    playerview->addVisibleObject(obv);
+  }
   
   game->getPlayerManager()->updatePlayer(player->getID());
   
