@@ -203,7 +203,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    //add fleet to universe
    game->getObjectManager()->addObject(fleet);
 
-   player->getPlayerView()->addVisibleObject( fleet->getID() );
+   player->getPlayerView()->addOwnedObject( fleet->getID() );
    
    // post completion message
    Message * msg = new Message();

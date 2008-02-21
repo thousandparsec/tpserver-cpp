@@ -21,6 +21,7 @@
 
 #include <tpserver/game.h>
 #include <tpserver/object.h>
+#include <tpserver/objectview.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
@@ -43,13 +44,34 @@ void exploreStarSys(IGObject* obj) {
    IGObject *starSys = om->getObject(obj->getParent());
    PlayerView *pview = game->getPlayerManager()->getPlayer(objData->getOwner())->getPlayerView();
 
-   pview->addVisibleObject(obj->getID());
+   ObjectView* obv = pview->getObjectView(obj->getID());
+   if(obv != NULL){
+      if(!obv->isCompletelyVisible()){
+        obv->setCompletelyVisible(true);
+      }
+   }else{
+      obv = new ObjectView();
+      obv->setObjectId(obj->getID());
+      obv->setCompletelyVisible(true);
+      pview->addVisibleObject(obv);
+   }
 
    if(starSys->getID() == 0) return; // don't explore the universe
 
    set<uint32_t> planets = starSys->getContainedObjects();
-   for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i)
-      pview->addVisibleObject(*i);
+   for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i){
+      obv = pview->getObjectView(*i);
+      if(obv != NULL){
+          if(!obv->isCompletelyVisible()){
+            obv->setCompletelyVisible(true);
+          }
+      }else{
+          obv = new ObjectView();
+          obv->setObjectId(*i);
+          obv->setCompletelyVisible(true);
+          pview->addVisibleObject(obv);
+      }
+   }
 }
 
 }

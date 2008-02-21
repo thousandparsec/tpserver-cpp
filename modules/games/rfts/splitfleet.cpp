@@ -126,7 +126,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
       
       newFleet->addToParent(obj->getParent());
       om->addObject(newFleet);
-      player->getPlayerView()->addVisibleObject(newFleet->getID());
+      player->getPlayerView()->addOwnedObject(newFleet->getID());
    }
 
    

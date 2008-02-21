@@ -28,6 +28,7 @@
 #include <tpserver/order.h>
 #include <tpserver/object.h>
 #include <tpserver/objectbehaviour.h>
+#include <tpserver/objectview.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/player.h>
@@ -202,8 +203,24 @@ void setVisibleObjects(Player *player, const set<uint32_t>& ownedObjects) {
    PlayerView *pv = player->getPlayerView();
 
    // add universe and star systems
-   pv->setVisibleObjects(universe->getContainedObjects());
-   pv->addVisibleObject(universe->getID());
+   ObjectView* obv = pv->getObjectView(universe->getID());
+   if(obv == NULL){
+      obv = new ObjectView();
+      obv->setObjectId(universe->getID());
+      obv->setCompletelyVisible(true);
+      pv->addVisibleObject(obv);
+   }
+   
+   set<uint32_t> containedObjects = universe->getContainedObjects();
+   for(set<uint32_t>::const_iterator i = containedObjects.begin(); i != containedObjects.end(); ++i){
+     obv = pv->getObjectView(*i);
+     if(obv == NULL){
+        obv = new ObjectView();
+        obv->setObjectId(*i);
+        obv->setCompletelyVisible(true);
+        pv->addVisibleObject(obv);
+     }
+   }
 
    for(set<uint32_t>::const_iterator i = ownedObjects.begin(); i != ownedObjects.end(); ++i)
    {
