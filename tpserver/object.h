@@ -69,8 +69,6 @@ class IGObject {
     void addContainedObject(uint32_t addObjectID);
     void removeContainedObject(uint32_t removeObjectID);
 
-    void createFrame(Frame * frame, uint32_t playerid);
-
     ObjectParameter* getParameter(uint32_t groupnum, uint32_t paramnum) const;
     ObjectParameter* getParameterByType(uint32_t type) const;
     
