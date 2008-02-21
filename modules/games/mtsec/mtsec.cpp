@@ -28,6 +28,7 @@
 
 #include "tpserver/game.h"
 #include "tpserver/object.h"
+#include <tpserver/objectview.h>
 #include "tpserver/objectmanager.h"
 #include "universe.h"
 #include "emptyobject.h"
@@ -1642,7 +1643,14 @@ void MTSec::setNewPlayerTech( Player* player)
     Game *game = Game::getGame();
 
     PlayerView* playerview = player->getPlayerView();
-    playerview->setVisibleObjects( game->getObjectManager()->getAllIds());
+    std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
+    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+        ++itcurr){
+      ObjectView* obv = new ObjectView();
+      obv->setObjectId(*itcurr);
+      obv->setCompletelyVisible(true);
+      playerview->addVisibleObject(obv);
+    }
 
     for(uint32_t itcurr = 1; itcurr <= compMax; ++itcurr){
       playerview->addUsableComponent(itcurr);
@@ -1667,7 +1675,14 @@ void MTSec::onPlayerAdded(Player* player)
     Game::getGame()->getPlayerManager()->updatePlayer( player->getID());
     
     PlayerView* playerview = player->getPlayerView();
-    playerview->setVisibleObjects(Game::getGame()->getObjectManager()->getAllIds());
+    std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
+    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+        ++itcurr){
+      ObjectView* obv = new ObjectView();
+      obv->setObjectId(*itcurr);
+      obv->setCompletelyVisible(true);
+      playerview->addVisibleObject(obv);
+    }
 
     Logger::getLogger()->debug( "Exit MTSec::onPlayerAdded");
     return;
