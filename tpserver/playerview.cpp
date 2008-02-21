@@ -54,21 +54,28 @@ void PlayerView::doOnceATurn(){
   currCompSeq++;
 }
 
-void PlayerView::setVisibleObjects(std::set<unsigned int> vis){
-  visibleObjects = vis;
+
+void PlayerView::addVisibleObject(ObjectView* obj){
+  visibleObjects.insert(obj->getObjectId());
+  cacheObjects[obj->getObjectId()] = obj;
   currObjSeq++;
 }
 
-void PlayerView::addVisibleObject(uint32_t objid){
-  visibleObjects.insert(objid);
-  currObjSeq++;
+ObjectView* PlayerView::getObjectView(uint32_t objid) const{
+  if(isVisibleObject(objid)){
+    return cacheObjects.find(objid)->second;
+  }else{
+    return NULL;
+  }
 }
 
 void PlayerView::removeVisibleObject(uint32_t objid){
-  visibleObjects.erase(objid);
+  if(isVisibleObject(objid)){
+    cacheObjects[objid]->setGone(true);
+  }
 }
 
-bool PlayerView::isVisibleObject(unsigned int objid){
+bool PlayerView::isVisibleObject(unsigned int objid) const{
   return visibleObjects.find(objid) != visibleObjects.end();
 }
 
@@ -78,6 +85,14 @@ std::set<uint32_t> PlayerView::getVisibleObjects() const{
 
 void PlayerView::addOwnedObject(uint32_t objid){
   ownedObjects.insert(objid);
+  if(isVisibleObject(objid)){
+    cacheObjects[objid]->setCompletelyVisible(true);
+  }else{
+    ObjectView* ov = new ObjectView();
+    ov->setObjectId(objid);
+    ov->setCompletelyVisible(true);
+    addVisibleObject(ov);
+  }
 }
 
 void PlayerView::removeOwnedObject(uint32_t objid){

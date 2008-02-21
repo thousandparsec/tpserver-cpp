@@ -40,10 +40,10 @@ public:
   
   void doOnceATurn();
 
-  void setVisibleObjects(std::set<unsigned int> vis);
-  void addVisibleObject(uint32_t objid);
+  void addVisibleObject(ObjectView* obj);
+  ObjectView* getObjectView(uint32_t objid) const;
   void removeVisibleObject(uint32_t objid);
-  bool isVisibleObject(unsigned int objid);
+  bool isVisibleObject(unsigned int objid) const;
   std::set<uint32_t> getVisibleObjects() const;
   void addOwnedObject(uint32_t objid);
   void removeOwnedObject(uint32_t objid);
