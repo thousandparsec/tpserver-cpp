@@ -238,19 +238,9 @@ void PlayerAgent::processGetObjectById (Frame * frame){
         unsigned int objectID = frame->unpackInt();
 
         of = curConnection->createFrame ( frame );
+        
+        player->getPlayerView()->processGetObject(objectID, of);
 
-        if ( player->getPlayerView()->isVisibleObject(objectID) ){
-
-          IGObject* o = Game::getGame()->getObjectManager()->getObject ( objectID );
-          if ( o != NULL ){
-            o->createFrame ( of, player->getID() );
-            Game::getGame()->getObjectManager()->doneWithObject ( objectID );
-          }else{
-            of->createFailFrame ( fec_NonExistant, "No such object" );
-          }
-        }else{
-          of->createFailFrame ( fec_NonExistant, "No such object" );
-        }
         curConnection->sendFrame ( of );
       }
 
@@ -296,8 +286,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
     std::set<unsigned int>::iterator obCurr = oblist.begin();
     for( ; obCurr != oblist.end(); ++obCurr) {
       of = curConnection->createFrame(frame);
-      Game::getGame()->getObjectManager()->getObject(*obCurr)->createFrame(of, player->getID());
-      Game::getGame()->getObjectManager()->doneWithObject(*obCurr);
+      player->getPlayerView()->processGetObject(*obCurr, of);
       curConnection->sendFrame(of);
     }
 
@@ -309,68 +298,8 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
 void PlayerAgent::processGetObjectIds(Frame * frame){
   Logger::getLogger()->debug("Doing get object ids frame");
-
-  if(frame->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Get Object Ids isn't supported in this protocol");
-    curConnection->sendFrame(of);
-    return;
-  }
-
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    curConnection->sendFrame(of);
-    return;
-  }
-
-  PlayerView* playerview = player->getPlayerView();
-  uint32_t currObjSeq = playerview->getObjectSequenceKey();
-  
-  unsigned int seqkey = frame->unpackInt();
-  if(seqkey == 0xffffffff){
-    //start new seqkey
-    seqkey = currObjSeq;
-  }
-  
-  unsigned int start = frame->unpackInt();
-  unsigned int num = frame->unpackInt();
-  
-  if(seqkey != currObjSeq){
-    Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
-    curConnection->sendFrame(of);
-    return;
-  }
-  
-  unsigned int num_remain;
-  std::set<uint32_t> visibleObjects = playerview->getVisibleObjects();
-  if(num == 0xffffffff || start + num > visibleObjects.size()){
-    num = visibleObjects.size() - start;
-    num_remain = 0;
-  }else{
-    num_remain = visibleObjects.size() - start - num;
-  }
-  
   Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_ObjectIds_List);
-  of->packInt(seqkey);
-  of->packInt(num_remain);
-  of->packInt(num);
-  std::set<unsigned int>::iterator itcurr = visibleObjects.begin();
-  advance(itcurr, start);
-  for(unsigned int i = 0; i < num; i++){
-    of->packInt(*itcurr);
-    IGObject* obj = Game::getGame()->getObjectManager()->getObject(*itcurr);
-    if(obj != NULL){
-      of->packInt64(obj->getModTime());
-    }else{
-      of->packInt64(time(NULL));
-    }
-    Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
-    ++itcurr;
-  }
+  player->getPlayerView()->processGetObjectIds(frame, of);
   curConnection->sendFrame(of);
 }
 
