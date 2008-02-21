@@ -425,13 +425,13 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
   }
 
   if(len > 1) {
-    Logger::getLogger()->debug("Got multiple orders, returning a sequence");
+    Logger::getLogger()->debug("Got multiple ObjectDesc, returning a sequence");
     Frame *seq = curConnection->createFrame(frame);
     seq->setType(ft02_Sequence);
     seq->packInt(len);
     curConnection->sendFrame(seq);
   } else {
-    Logger::getLogger()->debug("Got single orders, returning one objectdesc");
+    Logger::getLogger()->debug("Got single ObjectDesc, returning one objectdesc");
   }
   
   if(len == 0){
