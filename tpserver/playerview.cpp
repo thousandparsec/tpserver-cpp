@@ -138,7 +138,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     fromtime = in->unpackInt64();
   }
   
-  if(seqnum != currDesignSeq && seqnum != 0xffffffff){
+  if(seqnum != currObjSeq && seqnum != 0xffffffff){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
     modlistObject.clear();
     return;
