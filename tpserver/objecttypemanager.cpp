@@ -56,6 +56,7 @@ uint32_t ObjectTypeManager::getObjectTypeByName(const std::string& name) const{
 }
 
 uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
+  od->setType(nextType);
   typeStore[nextType] = od;
   stringmap[od->getTypeName()] = nextType;
   nextType++;

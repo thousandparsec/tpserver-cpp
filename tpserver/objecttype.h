@@ -35,9 +35,12 @@ class ObjectType {
 	ObjectType();
 	virtual ~ObjectType();
         
+        uint32_t getType() const;
         std::string getTypeName() const;
-        long long getModTime() const;
+        uint64_t getModTime() const;
 
+        void setType(uint32_t nt);
+        
         void packObjectDescFrame(Frame* frame);
 
 
@@ -54,7 +57,8 @@ class ObjectType {
 
       private:
         void touchModTime();
-	long long modtime;
+        uint32_t type;
+	uint64_t modtime;
         uint32_t nextparamgroupid;
         std::map<uint32_t, ObjectParameterGroupDesc*> paramgroups;
 };

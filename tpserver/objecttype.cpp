@@ -27,7 +27,7 @@
 
 #include "objecttype.h"
 
-ObjectType::ObjectType() : nextparamgroupid(1){
+ObjectType::ObjectType() : nametype(), typedesc(), type(0), nextparamgroupid(1){
   touchModTime();
 }
 
@@ -38,17 +38,25 @@ ObjectType::~ObjectType(){
   }
 }
 
+uint32_t ObjectType::getType() const{
+  return type;
+}
+
 std::string ObjectType::getTypeName() const{
   return nametype;
 }
 
-long long ObjectType::getModTime() const{
+uint64_t ObjectType::getModTime() const{
   return modtime;
 }
 
+void ObjectType::setType(uint32_t nt){
+  type = nt;
+}
 
 void ObjectType::packObjectDescFrame(Frame* frame){
   frame->setType(ft04_ObjectDesc);
+  frame->packInt(type);
   frame->packString(nametype);
   frame->packString(typedesc);
   frame->packInt64(modtime);
