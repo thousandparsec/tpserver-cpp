@@ -326,7 +326,7 @@ void Avahi::createServices(){
   AvahiStringList * txtfields = avahi_string_list_new(
       "server=" VERSION,
       "sertype=tpserver-cpp", 
-      "tp=0.3,0.2",
+      "tp=0.3,0.4",
       NULL);
   txtfields = avahi_string_list_add(txtfields, (std::string("rule=") + Game::getGame()->getRuleset()->getName()).c_str());
   txtfields = avahi_string_list_add(txtfields,(std::string("rulever=") + Game::getGame()->getRuleset()->getVersion()).c_str());
