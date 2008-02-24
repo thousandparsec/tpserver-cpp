@@ -62,9 +62,7 @@ Result Nop::inputFrame(Frame * f, unsigned int playerid)
 }
 
 bool Nop::doOrder(IGObject * ob){
-  turns--;
-  timeparam->setTime(timeparam->getTime() - 1);
-  if(timeparam->getTime() <= 0){
+  if(timeparam->getTime() <= 1){
     
     Message * msg = new Message();
     msg->setSubject("NOp order complete");
@@ -81,6 +79,8 @@ bool Nop::doOrder(IGObject * ob){
 
     return true;
   }else{
+    turns--;
+    timeparam->setTime(timeparam->getTime() - 1);
     return false;
   }
 }
