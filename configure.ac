@@ -102,6 +102,13 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
    AC_MSG_RESULT(no)
 ])
 
+
+#check for boost
+# Random and smartpointer are in base
+AX_BOOST_BASE([1.32.1])
+# Signal tested separately
+AX_BOOST_SIGNALS
+
 PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
   [
     AC_DEFINE(HAVE_LIBGNUTLS, 1, Define to 1 if libgnutls is available)

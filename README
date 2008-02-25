@@ -9,6 +9,8 @@ REQUIRES (to build also requires the dev packages/headers)
 ========
 pthreads (part of libc, standard)
 libtprl 0.1.2 or later (replaces/uses readline) (www.thousandparsec.net/tp/) [GPL]
+Boost 1.32.1 or later (www.boost.org) [Boost License]
+Boost.Signals (as above)
 
 OPTIONAL
 ========
