@@ -39,10 +39,9 @@
 #include "object.h"
 
 
-IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), info(), relationships(), parameters(),
-                   behaviour(NULL){
-  info = new ObjectInfoData();
-  relationships = new ObjectRelationshipsData();
+IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), info(new ObjectInfoData()), 
+                   relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
+
   touchModTime();
 }
 

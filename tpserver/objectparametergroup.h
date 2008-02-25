@@ -24,14 +24,13 @@
 #include <stdint.h>
 #include <string>
 #include <list>
-
-#include <tpserver/smartpointer.h>
+#include <boost/shared_ptr.hpp>
 
 class Frame;
 class ObjectParameter;
 class ObjectParameterGroupData;
 
-typedef SmartPointer<ObjectParameterGroupData> ObjectParameterGroupPtr;
+typedef boost::shared_ptr<ObjectParameterGroupData> ObjectParameterGroupPtr;
 
 class ObjectParameterGroupData {
 

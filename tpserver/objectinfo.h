@@ -22,14 +22,13 @@
 
 #include <stdint.h>
 #include <string>
-
-#include <tpserver/smartpointer.h>
+#include <boost/shared_ptr.hpp>
 
 class Frame;
 
 class ObjectInfoData;
 
-typedef SmartPointer<ObjectInfoData> ObjectInfoPtr;
+typedef boost::shared_ptr<ObjectInfoData> ObjectInfoPtr;
 
 class ObjectInfoData {
   public:

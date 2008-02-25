@@ -22,14 +22,13 @@
 
 #include <stdint.h>
 #include <set>
-
-#include <tpserver/smartpointer.h>
+#include <boost/shared_ptr.hpp>
 
 class Frame;
 
 class ObjectRelationshipsData;
 
-typedef SmartPointer<ObjectRelationshipsData> ObjectRelationshipsPtr;
+typedef boost::shared_ptr<ObjectRelationshipsData> ObjectRelationshipsPtr;
 
 class ObjectRelationshipsData {
   public:
