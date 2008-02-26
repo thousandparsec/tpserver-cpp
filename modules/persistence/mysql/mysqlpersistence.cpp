@@ -1,6 +1,6 @@
 /*  Mysql persistence class
  *
- *  Copyright (C) 2005,2006,2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -141,17 +141,17 @@ bool MysqlPersistence::init(){
                     "(NULL, 'property', 0), (NULL, 'propertycat', 0), (NULL, 'resourcedesc', 0);") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE gameinfo (metakey varchar(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE gameinfo (metakey VARCHAR(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL PRIMARY KEY, type INT UNSIGNED NOT NULL, " 
-                    "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
+                    "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turnnum));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CRATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CRATE TABLE orderqueueowner (queueid INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderqueueowner (queueid INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE ordertype (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL, PRIMARY KEY(queueid, orderid));") != 0){
@@ -197,7 +197,7 @@ bool MysqlPersistence::init(){
                               throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE player (playerid INT UNSIGNED NOT NULL PRIMARY KEY, name TEXT NOT NULL, "
-                    "password TEXT NOT NULL, boardid INT UNSIGNED NOT NULL, UNIQUE (name(255)));") != 0){
+                    "password TEXT NOT NULL, email TEXT NOT NULL, comment TEXT NOT NULL, boardid INT UNSIGNED NOT NULL, alive TINYINT UNSIGNED NOT NULL, UNIQUE (name(255)));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE playerdesignvisible (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
@@ -2184,7 +2184,14 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     PlayerView* playerview = player->getPlayerView();
     
     while((row = mysql_fetch_row(res)) != NULL){
-        playerview->addVisibleDesign(atoi(row[0]));
+      DesignView* dv = new DesignView();
+      dv->setDesignId(atoi(row[0]));
+//       dv->setIsCompletelyVisible();
+//       dv->setModTime();
+//       dv->setVisibleName();
+//       dv->setCanSeeName();
+      //etc
+      playerview->addVisibleDesign(dv);
     }
     mysql_free_result(res);
     
