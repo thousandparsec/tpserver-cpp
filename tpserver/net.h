@@ -97,7 +97,7 @@ class Network {
 	//pthread_t master;
 
 
-	bool halt;
+	volatile bool halt;
 
 	 std::map < int, Connection * >connections;
          std::map<int, Connection*> writequeue;
