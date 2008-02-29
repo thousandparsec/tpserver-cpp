@@ -70,8 +70,6 @@ public:
   void processGetComponent(uint32_t compid, Frame* frame) const;
   void processGetComponentIds(Frame* in, Frame* out);
 
-  uint32_t getObjectSequenceKey() const;
-
 private:
   uint32_t pid;
 

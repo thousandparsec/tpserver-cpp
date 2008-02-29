@@ -428,7 +428,3 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   }
   
 }
-
-uint32_t PlayerView::getObjectSequenceKey() const{
-  return currObjSeq;
-}
