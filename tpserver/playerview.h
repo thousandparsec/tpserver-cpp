@@ -48,7 +48,7 @@ public:
   void addOwnedObject(uint32_t objid);
   void removeOwnedObject(uint32_t objid);
   uint32_t getNumberOwnedObjects() const;
-  std::set<uint32_t> getOwnedObject() const;
+  std::set<uint32_t> getOwnedObjects() const;
   void processGetObject(uint32_t objid, Frame* frame) const;
   void processGetObjectIds(Frame* in, Frame* out);
 
@@ -69,6 +69,14 @@ public:
   std::set<uint32_t> getUsableComponents() const;
   void processGetComponent(uint32_t compid, Frame* frame) const;
   void processGetComponentIds(Frame* in, Frame* out);
+  
+  //for persistence only!
+  void setVisibleObjects(const std::set<uint32_t>& obids);
+  void setOwnedObjects(const std::set<uint32_t>& obids);
+  void setVisibleDesigns(const std::set<uint32_t>& dids);
+  void setUsableDesigns(const std::set<uint32_t>& dids);
+  void setVisibleComponents(const std::set<uint32_t>& cids);
+  void setUsableComponents(const std::set<uint32_t>& cids);
 
 private:
   uint32_t pid;

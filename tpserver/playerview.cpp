@@ -103,7 +103,7 @@ uint32_t PlayerView::getNumberOwnedObjects() const{
   return ownedObjects.size();
 }
 
-std::set<uint32_t> PlayerView::getOwnedObject() const{
+std::set<uint32_t> PlayerView::getOwnedObjects() const{
   return ownedObjects;
 }
 
@@ -427,4 +427,28 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
     out->packInt64(fromtime);
   }
   
+}
+
+void PlayerView::setVisibleObjects(const std::set<uint32_t>& obids){
+  visibleObjects = obids;
+}
+
+void PlayerView::setOwnedObjects(const std::set<uint32_t>& obids){
+  ownedObjects = obids;
+}
+
+void PlayerView::setVisibleDesigns(const std::set<uint32_t>& dids){
+  visibleDesigns = dids;
+}
+
+void PlayerView::setUsableDesigns(const std::set<uint32_t>& dids){
+  usableDesigns = dids;
+}
+
+void PlayerView::setVisibleComponents(const std::set<uint32_t>& cids){
+  visibleComponents = cids;
+}
+
+void PlayerView::setUsableComponents(const std::set<uint32_t>& cids){
+  usableComponents = cids;
 }
