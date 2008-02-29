@@ -1,7 +1,7 @@
 /*  Persistence Interface
  * All methods return false or NULL, except init().
  *
- *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -262,4 +262,28 @@ uint32_t Persistence::getMaxPropertyId(){
 
 std::set<uint32_t> Persistence::getPropertyIds(){
     return std::set<uint32_t>();
+}
+
+bool Persistence::saveObjectView(uint32_t playerid, ObjectView*){
+  return false;
+}
+
+ObjectView* Persistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
+  return NULL;
+}
+
+bool Persistence::saveDesignView(uint32_t playerid, DesignView*){
+  return false;
+}
+
+DesignView* Persistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
+  return NULL;
+}
+
+bool Persistence::saveComponentView(uint32_t playerid, ComponentView*){
+  return false;
+}
+
+ComponentView* Persistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
+  return NULL;
 }

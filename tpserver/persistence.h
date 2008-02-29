@@ -2,7 +2,7 @@
 #define PERSISTENCE_H
 /*  Persistence class
  *
- *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ class Category;
 class Design;
 class Component;
 class Property;
+class ObjectView;
+class DesignView;
+class ComponentView;
 
 class Persistence{
 public:
@@ -110,6 +113,15 @@ public:
     virtual Property* retrieveProperty(uint32_t propid);
     virtual uint32_t getMaxPropertyId();
     virtual std::set<uint32_t> getPropertyIds();
+    
+    virtual bool saveObjectView(uint32_t playerid, ObjectView*);
+    virtual ObjectView* retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
+    
+    virtual bool saveDesignView(uint32_t playerid, DesignView*);
+    virtual DesignView* retrieveDesignView(uint32_t playerid, uint32_t designid);
+    
+    virtual bool saveComponentView(uint32_t playerid, ComponentView*);
+    virtual ComponentView* retrieveComponentView(uint32_t playerid, uint32_t componentid);
 
 };
 
