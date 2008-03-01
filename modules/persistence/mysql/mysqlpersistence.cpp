@@ -3062,6 +3062,30 @@ std::set<uint32_t> MysqlPersistence::getPropertyIds(){
     return vis;
 }
 
+bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView*){
+  //TODO
+}
+
+ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
+  //TODO
+}
+
+bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView*){
+  //TODO
+}
+
+DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
+  //TODO
+}
+
+bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView*){
+  //TODO
+}
+
+ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
+  //TODO
+}
+
 std::string MysqlPersistence::addslashes(const std::string& in) const{
     char* buf = new char[in.length() * 2 + 1];
     uint len = mysql_real_escape_string(conn, buf, in.c_str(), in.length());
@@ -3092,29 +3116,6 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
     }
 }
 
-bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView*){
-  //TODO
-}
-
-ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
-  //TODO
-}
-
-bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView*){
-  //TODO
-}
-
-DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
-  //TODO
-}
-
-bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView*){
-  //TODO
-}
-
-ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
-  //TODO
-}
 
 
 void MysqlPersistence::lock(){
