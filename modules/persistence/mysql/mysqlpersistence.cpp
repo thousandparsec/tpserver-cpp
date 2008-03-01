@@ -48,6 +48,8 @@
 #include <tpserver/component.h>
 #include <tpserver/property.h>
 
+#include <tpserver/componentview.h>
+
 
 #include "mysqlpersistence.h"
 
@@ -135,6 +137,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'orderparamlist', 0), "
                     "(NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messagereference', 0), (NULL, 'messageslot', 0), "
                     "(NULL, 'player', 0), (NULL, 'playerscore', 0), (NULL, 'playerdesignview', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentview', 0), "
+                    "(NULL, 'playercomponentviewcat', 0), (NULL, 'playercomponentviewproperty', 0), "
                     "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectview', 0), (NULL, 'playerobjectowned', 0), "
                     "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), "
                     "(NULL, 'component', 0), (NULL, 'componentcat', 0), (NULL, 'componentproperty', 0), "
@@ -217,6 +220,14 @@ bool MysqlPersistence::init(){
                   "completelyvisible TINYINT NOT NULL, namevisible TINYINT NOT NULL, visname TEXT NOT NULL, "
                   "descvisible TINYINT NOT NULL, visdesc TEXT NOT NULL, reqfuncvis TINYINT NOT NULL, "
                   "modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY (playerid, componentid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playercomponentviewcat (playerid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
+                    "categoryid INT UNSIGNED NOT NULL, PRIMARY KEY (playerid, componentid, categoryid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playercomponentviewproperty (playerid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
+                    "propertyid INT UNSIGNED NOT NULL, PRIMARY KEY (playerid, componentid, propertyid));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE playercomponentusable (playerid INT UNSIGNED NOT NULL, componentid INT UNSIGNED NOT NULL, "
@@ -3062,7 +3073,7 @@ std::set<uint32_t> MysqlPersistence::getPropertyIds(){
     return vis;
 }
 
-bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView*){
+bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView* ov){
   //TODO
 }
 
@@ -3070,7 +3081,7 @@ ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t obj
   //TODO
 }
 
-bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView*){
+bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
   //TODO
 }
 
@@ -3078,12 +3089,178 @@ DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t des
   //TODO
 }
 
-bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView*){
-  //TODO
+bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView* cv){
+    std::ostringstream querybuilder;
+    querybuilder << "DELECT FROM playercomponentview WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove componentview %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playercomponentviewcat WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove componentview categories %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playercomponentviewproperty WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove componentview properties %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    unlock();
+    
+    querybuilder.str("");
+    querybuilder << "INSERT INTO playercomponentview VALUES (" << playerid << ", " << cv->getComponentId() << ", ";
+    querybuilder << ((cv->isCompletelyVisible()) ? 1 : 0) << ", " << ((cv->canSeeName()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(cv->getVisibleName()) << "', " << ((cv->canSeeDescription()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(cv->getVisibleDescription()) << "', " << ((cv->canSeeRequirementsFunc()) ? 1 : 0) << ", ";
+    querybuilder << cv->getModTime() << ");";
+    
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store componentview %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    
+    std::set<uint32_t> catlist = cv->getVisibleCategories();
+    if(!catlist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO playercomponentviewcat VALUES ";
+      for(std::set<uint32_t>::iterator itcurr = catlist.begin(); itcurr != catlist.end();
+          ++itcurr){
+        if(itcurr != catlist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << playerid << ", " << cv->getComponentId() << ", " << (*itcurr) << ")";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store componentview catergories %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
+    std::set<uint32_t> proplist = cv->getVisiblePropertyFuncs();
+    if(!proplist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO playercomponentviewproperty VALUES ";
+      for(std::set<uint32_t>::iterator itcurr = proplist.begin(); itcurr != proplist.end();
+          ++itcurr){
+        if(itcurr != proplist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << playerid << ", " << cv->getComponentId() << ", " << (*itcurr) << ")";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store componentview properties %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
+    return true;
 }
 
 ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
-  //TODO
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM playercomponentview WHERE playerid = " << playerid << " AND componentid = " << componentid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve componentview %d,%d - %s", playerid, componentid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve componentview: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such componentview %d,%d", playerid, componentid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    ComponentView* comp = new ComponentView();
+    comp->setComponentId(componentid);
+    comp->setCompletelyVisible(atoi(row[2]) == 1);
+    comp->setCanSeeName(atoi(row[3]) == 1);
+    comp->setVisibleName(row[4]);
+    comp->setCanSeeDescription(atoi(row[5]) == 1);
+    comp->setVisibleDescription(row[6]);
+    comp->setCanSeeRequirementsFunc(atoi(row[7]) == 1);
+    uint64_t modtime = strtoull(row[8], NULL, 10);
+    mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT categoryid FROM playercomponentviewcat WHERE playerid = " << playerid << " AND componentid = " << componentid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not retrieve componentview categories %d,%d - %s", playerid, componentid, mysql_error(conn));
+      unlock();
+      delete comp;
+      return NULL;
+    }
+    MYSQL_RES *catresult = mysql_store_result(conn);
+    if(catresult == NULL){
+      Logger::getLogger()->error("Mysql: retrieve componentview categories: Could not store result - %s", mysql_error(conn));
+      unlock();
+      delete comp;
+      return NULL;
+    }
+    unlock();
+    std::set<uint32_t> catids;
+    while((row = mysql_fetch_row(catresult)) != NULL){
+      catids.insert(atoi(row[0]));
+    }
+    comp->setVisibleCategories(catids);
+    mysql_free_result(catresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT propertyid FROM playercomponentviewproperty WHERE playerid = " << playerid << " AND componentid = " << componentid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve component properties %d - %s", componentid, mysql_error(conn));
+        unlock();
+        delete comp;
+        return NULL;
+    }
+    MYSQL_RES *propresult = mysql_store_result(conn);
+    if(propresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve component properties: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete comp;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::set<uint32_t> pvlist;
+    while((row = mysql_fetch_row(propresult)) != NULL){
+        pvlist.insert(atoi(row[0]));
+    }
+    comp->setVisiblePropertyFuncs(pvlist);
+    mysql_free_result(propresult);
+    
+    comp->setModTime(modtime);
+    
+    return comp;
 }
 
 std::string MysqlPersistence::addslashes(const std::string& in) const{

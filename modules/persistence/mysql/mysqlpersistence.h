@@ -108,13 +108,13 @@ public:
     virtual uint32_t getMaxPropertyId();
     virtual std::set<uint32_t> getPropertyIds();
     
-    virtual bool saveObjectView(uint32_t playerid, ObjectView*);
+    virtual bool saveObjectView(uint32_t playerid, ObjectView* ov);
     virtual ObjectView* retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
     
-    virtual bool saveDesignView(uint32_t playerid, DesignView*);
+    virtual bool saveDesignView(uint32_t playerid, DesignView* dv);
     virtual DesignView* retrieveDesignView(uint32_t playerid, uint32_t designid);
     
-    virtual bool saveComponentView(uint32_t playerid, ComponentView*);
+    virtual bool saveComponentView(uint32_t playerid, ComponentView* cv);
     virtual ComponentView* retrieveComponentView(uint32_t playerid, uint32_t componentid);
 
     std::string addslashes(const std::string& in) const;
