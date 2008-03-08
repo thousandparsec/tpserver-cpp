@@ -54,10 +54,9 @@ class ObjectView{
   void setCanSeeDescription(bool csd);
   void setVisibleDescription(const std::string& nvd);
   
-  
+  void touchModTime();
   
  protected:
-   void touchModTime();
    
   uint32_t objid;
   uint64_t timestamp;
