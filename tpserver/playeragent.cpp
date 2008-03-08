@@ -694,6 +694,12 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
     if (orderqueue->removeOrder(ordpos, player->getID())) {
       of->setType(ft02_OK);
       of->packString("Order removed");
+       //update ObjectView
+      uint32_t objid = orderqueue->getObjectId();
+      if(objid != 0){
+        ObjectView* obv = player->getPlayerView()->getObjectView(objid);
+        obv->touchModTime();
+      }
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
     }
