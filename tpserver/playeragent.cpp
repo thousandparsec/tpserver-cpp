@@ -28,6 +28,7 @@
 #include "logging.h"
 #include "game.h"
 #include "object.h"
+#include "objectview.h"
 #include "orderqueue.h"
 #include "order.h"
 #include "vector3d.h"
@@ -613,6 +614,12 @@ void PlayerAgent::processAddOrder(Frame * frame){
             of->setType(ft02_OK);
             of->packString("Order Added");
           }
+          //update ObjectView
+          uint32_t objid = orderqueue->getObjectId();
+          if(objid != 0){
+            ObjectView* obv = player->getPlayerView()->getObjectView(objid);
+            obv->touchModTime();
+          }
         } else {
           of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
         }
@@ -687,6 +694,12 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
     if (orderqueue->removeOrder(ordpos, player->getID())) {
       of->setType(ft02_OK);
       of->packString("Order removed");
+       //update ObjectView
+      uint32_t objid = orderqueue->getObjectId();
+      if(objid != 0){
+        ObjectView* obv = player->getPlayerView()->getObjectView(objid);
+        obv->touchModTime();
+      }
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
     }
