@@ -76,10 +76,13 @@ bool Colonise::doOrder(IGObject *obj) {
    
    Message *msg = new Message();
    
-   if(planetData == NULL)
+   if(planetData == NULL || planetObj->getParent() != obj->getParent())
    {
       msg->setSubject("Colonise failed!");
-      msg->setBody("Tried to colonise a non-planet!");
+		if( planetObj->getParent() != obj->getParent() )
+			msg->setBody(string("Fleet, ") + obj->getName()  +" is not in this planet's system!");
+		else
+			msg->setBody("Tried to colonise a non-planet!");
       msg->addReference(rst_Action_Order, rsorav_Canceled);
    }
    else

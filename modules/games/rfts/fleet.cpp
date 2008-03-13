@@ -118,7 +118,7 @@ void Fleet::setDamage(int newDmg) {
 }
 
 void Fleet::takeDamage(int dmg) {
-   setDamage( ((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue() + dmg );
+   setDamage( getDamage() + dmg );
 }
 
 void Fleet::setVelocity(const Vector3d& nv) {
