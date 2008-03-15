@@ -45,9 +45,11 @@
 #include <tpserver/playerview.h>
 #include <tpserver/category.h>
 #include <tpserver/design.h>
+#include <tpserver/propertyvalue.h>
 #include <tpserver/component.h>
 #include <tpserver/property.h>
 
+#include <tpserver/designview.h>
 #include <tpserver/componentview.h>
 
 
@@ -136,7 +138,8 @@ bool MysqlPersistence::init(){
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
                     "(NULL, 'orderparamlist', 0), "
                     "(NULL, 'board', 0), (NULL, 'message', 0), (NULL, 'messagereference', 0), (NULL, 'messageslot', 0), "
-                    "(NULL, 'player', 0), (NULL, 'playerscore', 0), (NULL, 'playerdesignview', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentview', 0), "
+                    "(NULL, 'player', 0), (NULL, 'playerscore', 0), (NULL, 'playerdesignview', 0), (NULL, 'playerdesignviewcomp', 0), "
+                    "(NULL, 'playerdesignviewprop', 0), (NULL, 'playerdesignusable', 0), (NULL, 'playercomponentview', 0), "
                     "(NULL, 'playercomponentviewcat', 0), (NULL, 'playercomponentviewproperty', 0), "
                     "(NULL, 'playercomponentusable', 0), (NULL, 'playerobjectview', 0), (NULL, 'playerobjectowned', 0), "
                     "(NULL, 'category', 0), (NULL, 'design',0), (NULL, 'designcomponent', 0), (NULL, 'designproperty', 0), "
@@ -210,6 +213,16 @@ bool MysqlPersistence::init(){
             if(mysql_query(conn, "CREATE TABLE playerdesignview (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
                     "completelyvisible TINYINT NOT NULL, namevisible TINYINT NOT NULL,"
                     "visname TEXT NOT NULL, descvisible TINYINT NOT NULL, visdesc TEXT NOT NULL, existvisible TINYINT NOT NULL, visexist INT UNSIGNED NOT NULL, ownervisible TINYINT NOT NULL, visowner INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY (playerid, designid, turnnum));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playerdesignviewcomp (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
+                    "componentid INT UNSIGNED NOT NULL, quantity INT UNSIGNED NOT NULL, "
+                    "PRIMARY KEY (playerid, designid, componentid));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE playerdesignviewprop (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
+                    "propertyid INT UNSIGNED NOT NULL, value TEXT NOT NULL, "
+                    "PRIMARY KEY (playerid, designid, propertyid));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE playerdesignusable (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
@@ -3082,16 +3095,190 @@ ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t obj
 }
 
 bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
-  //TODO
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM playerdesignview WHERE playerid=" << playerid << " AND designid=" << dv->getDesignId() << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove designview %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playerdesignviewcomp WHERE playerid=" << playerid << " AND designid=" << dv->getDesignId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove designview ccomponents %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    querybuilder.str("");
+    querybuilder << "DELETE FROM playerdesignviewprop WHERE playerid=" << playerid << " AND designid=" << dv->getDesignId() << ";";
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove designview properties %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    unlock();
+    
+    querybuilder.str("");
+    querybuilder << "INSERT INTO playerdesignview VALUES (" << playerid << ", " << dv->getDesignId() << ", ";
+    querybuilder << ((dv->isCompletelyVisible()) ? 1 : 0) << ", " << ((dv->canSeeName()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(dv->getVisibleName()) << "', " << ((dv->canSeeDescription()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(dv->getVisibleDescription()) << "', " << ((dv->canSeeNumExist()) ? 1 : 0) << ", ";
+    querybuilder << dv->getVisibleNumExist() << ", " << ((dv->canSeeOwner()) ? 1 : 0) << ", ";
+    querybuilder << dv->getVisibleOwner() << ", " << dv->getModTime() << ");";
+    
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store designview %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    
+    std::map<uint32_t, uint32_t> complist = dv->getVisibleComponents();
+    if(!complist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO playerdesignviewcomp VALUES ";
+      for(std::map<uint32_t,uint32_t>::iterator itcurr = complist.begin(); itcurr != complist.end();
+          ++itcurr){
+        if(itcurr != complist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << playerid << ", " << dv->getDesignId() << ", " << (itcurr->first) << ", " << (itcurr->second) << ")";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store designview catergories %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
+    std::map<uint32_t, PropertyValue> proplist = dv->getVisiblePropertyValues();
+    if(!proplist.empty()){
+      querybuilder.str("");
+      querybuilder << "INSERT INTO playerdesignviewprop VALUES ";
+      for(std::map<uint32_t, PropertyValue>::iterator itcurr = proplist.begin(); itcurr != proplist.end();
+          ++itcurr){
+        if(itcurr != proplist.begin())
+          querybuilder << ", ";
+        querybuilder << "(" << playerid << ", " << dv->getDesignId() << ", " << (itcurr->second.getPropertyId());
+        querybuilder << ", '" << addslashes(itcurr->second.getDisplayString()) << "')";
+      }
+      querybuilder << ";";
+      lock();
+      if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store designview properties %d,%d - %s", playerid, dv->getDesignId(), mysql_error(conn));
+        unlock();
+        return false;
+      }
+      unlock();
+    }
+    
+    return true;
 }
 
 DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
-  //TODO
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM playerdesignview WHERE playerid = " << playerid << " AND designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve designview %d,%d - %s", playerid, designid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve designview: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such designview %d,%d", playerid, designid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    DesignView* design = new DesignView();
+    design->setDesignId(designid);
+    design->setIsCompletelyVisible(atoi(row[2]) == 1);
+    design->setCanSeeName(atoi(row[3]) == 1);
+    design->setVisibleName(row[4]);
+    design->setCanSeeDescription(atoi(row[5]) == 1);
+    design->setVisibleDescription(row[6]);
+    design->setCanSeeNumExist(atoi(row[7]) == 1);
+    design->setVisibleNumExist(atoi(row[8]));
+    design->setCanSeeOwner(atoi(row[9]) == 1);
+    design->setVisibleOwner(atoi(row[10]));
+    uint64_t modtime = strtoull(row[11], NULL, 10);
+    mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT componentid,quantity FROM playerdesignviewcomp WHERE playerid = " << playerid << " AND designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not retrieve designview components %d,%d - %s", playerid, designid, mysql_error(conn));
+      unlock();
+      delete design;
+      return NULL;
+    }
+    MYSQL_RES *compresult = mysql_store_result(conn);
+    if(compresult == NULL){
+      Logger::getLogger()->error("Mysql: retrieve designview components: Could not store result - %s", mysql_error(conn));
+      unlock();
+      delete design;
+      return NULL;
+    }
+    unlock();
+    std::map<uint32_t,uint32_t> comps;
+    while((row = mysql_fetch_row(compresult)) != NULL){
+      comps[atoi(row[0])] = atoi(row[1]);
+    }
+    design->setVisibleComponents(comps);
+    mysql_free_result(compresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT propertyid,value FROM playerdesignviewprop WHERE playerid = " << playerid << " AND designid = " << designid << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve designview properties %d,%d - %s", playerid, designid, mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    MYSQL_RES *propresult = mysql_store_result(conn);
+    if(propresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve designview properties: Could not store result - %s", mysql_error(conn));
+        unlock();
+        delete design;
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    std::map<uint32_t, PropertyValue> pvlist;
+    while((row = mysql_fetch_row(propresult)) != NULL){
+        PropertyValue pv;
+        pv.setPropertyId(atoi(row[0]));
+        pv.setDisplayString(row[1]);
+        pvlist[pv.getPropertyId()] = pv;
+    }
+    design->setVisiblePropertyValues(pvlist);
+    mysql_free_result(propresult);
+    
+    design->setModTime(modtime);
+    
+    return design;
 }
 
 bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView* cv){
     std::ostringstream querybuilder;
-    querybuilder << "DELECT FROM playercomponentview WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
+    querybuilder << "DELETE FROM playercomponentview WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not remove componentview %d,%d - %s", playerid, cv->getComponentId(), mysql_error(conn));
@@ -3237,14 +3424,14 @@ ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32
     querybuilder << "SELECT propertyid FROM playercomponentviewproperty WHERE playerid = " << playerid << " AND componentid = " << componentid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not retrieve component properties %d - %s", componentid, mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not retrieve componentview properties %d,%d - %s", playerid, componentid, mysql_error(conn));
         unlock();
         delete comp;
         return NULL;
     }
     MYSQL_RES *propresult = mysql_store_result(conn);
     if(propresult == NULL){
-        Logger::getLogger()->error("Mysql: retrieve component properties: Could not store result - %s", mysql_error(conn));
+        Logger::getLogger()->error("Mysql: retrieve componentview properties: Could not store result - %s", mysql_error(conn));
         unlock();
         delete comp;
         return NULL;
