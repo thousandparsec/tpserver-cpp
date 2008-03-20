@@ -288,7 +288,8 @@ void Network::masterLoop()
 		//sleep(1);
 	  bool netstat = active;
 
-                while(!timers.empty() && (timers.top().getExpireTime() <= time(NULL) || !(timers.top().isValid()))){
+                while(!timers.empty() && (timers.top().getExpireTime() <= static_cast<uint64_t>(time(NULL)) ||
+							 !(timers.top().isValid()))){
                   TimerCallback callback = timers.top();
                   timers.pop();
                   if(callback.isValid())

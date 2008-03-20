@@ -270,7 +270,7 @@ void PlayerConnection::inGameFrame()
       Logger::getLogger()->debug("Processing Ping frame");
       // check for the time of the last frame, ignore this if
       //  less than 60 seconds ago.
-      if(lastpingtime < time(NULL) - 60){
+      if(lastpingtime < static_cast<uint64_t>(time(NULL)) - 60){
         lastpingtime = time(NULL);
         Frame *pong = createFrame(frame);
         pong->setType(ft02_OK);
