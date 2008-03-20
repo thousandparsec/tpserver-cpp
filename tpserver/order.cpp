@@ -42,7 +42,7 @@ Order::~Order(){
   }
 }
 
-int Order::getType() const
+uint32_t Order::getType() const
 {
 	return type;
 }
