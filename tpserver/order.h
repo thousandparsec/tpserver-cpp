@@ -38,7 +38,7 @@ class Order {
         virtual ~Order();
 
 	uint32_t getType() const;
-	void setType(int ntype);
+	void setType(uint32_t ntype);
         std::string getName() const;
         uint32_t getTurns() const;
         void setTurns(uint32_t nturns);

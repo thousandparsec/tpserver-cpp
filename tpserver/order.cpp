@@ -47,7 +47,7 @@ uint32_t Order::getType() const
 	return type;
 }
 
-void Order::setType(int ntype){
+void Order::setType(uint32_t ntype){
   type = ntype;
 }
 
