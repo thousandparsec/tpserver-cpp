@@ -49,6 +49,7 @@
 #include <tpserver/component.h>
 #include <tpserver/property.h>
 
+#include <tpserver/objectview.h>
 #include <tpserver/designview.h>
 #include <tpserver/componentview.h>
 
@@ -3087,11 +3088,76 @@ std::set<uint32_t> MysqlPersistence::getPropertyIds(){
 }
 
 bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView* ov){
-  //TODO
+    std::ostringstream querybuilder;
+    uint32_t turnnum =  Game::getGame()->getTurnNumber();
+    querybuilder << "DELETE FROM playerobjectview WHERE playerid=" << playerid << " AND objectid=" << ov->getObjectId() << " AND turnnum = " << turnnum << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove objectview %d,%d - %s", playerid, ov->getObjectId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    
+    unlock();
+    
+    querybuilder.str("");
+    querybuilder << "INSERT INTO playerobjectview VALUES (" << playerid << ", " << ov->getObjectId() << ", ";
+    querybuilder << turnnum << ", " << ((ov->isCompletelyVisible()) ? 1 : 0) << ", "; 
+    querybuilder << ((ov->isGone()) ? 1 : 0) << ", " << ((ov->canSeeName()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(ov->getVisibleName()) << "', " << ((ov->canSeeDescription()) ? 1 : 0) << ", '";
+    querybuilder << addslashes(ov->getVisibleDescription()) << "', " << ov->getModTime() << ");";
+    
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not store objectview %d,%d - %s", playerid, ov->getObjectId(), mysql_error(conn));
+        unlock();
+        return false;
+    }
+    unlock();
+    
+    //params?
+    
+    return true;
 }
 
 ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
-  //TODO
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT * FROM playerobjectview WHERE playerid = " << playerid << " AND objectid = " << objectid << " AND turnnum <= " << turn << " ORDER BY turnnum DESC LIMIT 1;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve objectview %d,%d - %s", playerid, objectid, mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve objectview: Could not store result - %s", mysql_error(conn));
+        unlock();
+        return NULL;
+    }
+    unlock(); // finished with mysql for a bit
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No suchobjectview %d,%d", playerid, objectid);
+        mysql_free_result(obresult);
+        return NULL;
+    }
+    ObjectView* obj = new ObjectView();
+    obj->setObjectId(objectid);
+    obj->setCompletelyVisible(atoi(row[3]) == 1);
+    obj->setGone(atoi(row[4]) == 1);
+    obj->setCanSeeName(atoi(row[5]) == 1);
+    obj->setVisibleName(row[6]);
+    obj->setCanSeeDescription(atoi(row[7]) == 1);
+    obj->setVisibleDescription(row[8]);
+    uint64_t modtime = strtoull(row[9], NULL, 10);
+    mysql_free_result(obresult);
+    
+    //params?
+    
+    obj->setModTime(modtime);
+    return obj;
 }
 
 bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
