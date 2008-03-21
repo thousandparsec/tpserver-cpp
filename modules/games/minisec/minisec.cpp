@@ -725,21 +725,21 @@ void MiniSec::onPlayerAdded(Player* player){
       cl[1] = 1;
     scout->setComponents(cl);
     game->getDesignStore()->addDesign(scout);
-    unsigned int scoutid = scout->getDesignId();
-    mydesignids.insert(scoutid);
+    mydesignids.insert(scout->getDesignId());
   
-      Design* design = new Design();
-    design->setCategoryId(1);
-    design->setName("Frigate");
-    design->setDescription("Frigate ship");
-    design->setOwner(player->getID());
+      Design* frigate = new Design();
+    frigate->setCategoryId(1);
+    frigate->setName("Frigate");
+    frigate->setDescription("Frigate ship");
+    frigate->setOwner(player->getID());
     cl.clear();
       cl[2] = 1;
-    design->setComponents(cl);
-    game->getDesignStore()->addDesign(design);
-    mydesignids.insert(design->getDesignId());
+    frigate->setComponents(cl);
+    game->getDesignStore()->addDesign(frigate);
+    unsigned int frigateid = frigate->getDesignId();
+    mydesignids.insert(frigate->getDesignId());
   
-    design = new Design();
+    Design* design = new Design();
     design->setCategoryId(1);
     design->setName("Battleship");
     design->setDescription("Battleship ship");
@@ -834,10 +834,7 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
-    thefleet->addShips(scoutid, 2);
-      scout->addUnderConstruction(2);
-      scout->addComplete(2);
-      game->getDesignStore()->designCountsUpdated(scout);
+    thefleet->addShips(frigateid, 1);
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
@@ -851,8 +848,73 @@ void MiniSec::onPlayerAdded(Player* player){
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
     playerview->addOwnedObject(fleet->getID());
+    
+    //number 2
+    fleet = game->getObjectManager()->createNewObject();
+    otypeman->setupObject(fleet, obT_Fleet);
+    thefleet = (Fleet*)(fleet->getObjectBehaviour());
+    thefleet->setSize(2);
+    temp = new char[strlen(name) + 14];
+    strncpy(temp, name, strlen(name));
+    strncpy(temp + strlen(name), " Second Fleet", 13);
+    temp[strlen(name) + 13] = '\0';
+    fleet->setName(temp);
+    delete[] temp;
+    thefleet->setOwner(player->getID());
+    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    thefleet->addShips(frigateid, 1);
+    thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
+    
+    fleetoq = new OrderQueue();
+    fleetoq->setObjectId(fleet->getID());
+    fleetoq->addOwner(player->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    thefleet->setDefaultOrderTypes();
+    
+    fleet->addToParent(star->getID());
+    game->getObjectManager()->addObject(fleet);
+    playerview->addOwnedObject(fleet->getID());
 
-    std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    //number 3
+    fleet = game->getObjectManager()->createNewObject();
+    otypeman->setupObject(fleet, obT_Fleet);
+    thefleet = (Fleet*)(fleet->getObjectBehaviour());
+    thefleet->setSize(2);
+    temp = new char[strlen(name) + 13];
+    strncpy(temp, name, strlen(name));
+    strncpy(temp + strlen(name), " Thrid Fleet", 12);
+    temp[strlen(name) + 12] = '\0';
+    fleet->setName(temp);
+    delete[] temp;
+    thefleet->setOwner(player->getID());
+    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    thefleet->addShips(frigateid, 1);
+    thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
+    
+    fleetoq = new OrderQueue();
+    fleetoq->setObjectId(fleet->getID());
+    fleetoq->addOwner(player->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    thefleet->setDefaultOrderTypes();
+    
+    fleet->addToParent(star->getID());
+    game->getObjectManager()->addObject(fleet);
+    playerview->addOwnedObject(fleet->getID());
+    
+    
+    frigate->addUnderConstruction(3);
+    frigate->addComplete(3);
+    game->getDesignStore()->designCountsUpdated(frigate);
+    
+      std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
       if(*playerit == player->getID())
         continue;
