@@ -258,11 +258,16 @@ bool MetaserverConnection::sendUpdate(){
   while((pos = tname.find(' ')) != tname.npos){
     tname.replace(pos,1, "%20");
   }
+  
+  std::string rulename = Game::getGame()->getRuleset()->getName();
+  while((pos = rulename.find(' ')) != rulename.npos){
+    rulename.replace(pos,1, "%20");
+  }
 
   std::ostringstream formater;
   formater << "GET /?action=update&sertype=tpserver-cpp&server=" VERSION;
   formater << "&tp=0.3,0.4&key=" << Game::getGame()->getKey();
-  formater << "&rule=" << Game::getGame()->getRuleset()->getName();
+  formater << "&rule=" << rulename;
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
   formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
