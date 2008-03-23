@@ -3555,8 +3555,16 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
 
 bool MysqlPersistence::updatePosition3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Position3dObjectParam* pob){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO objectparamposition VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << pob->getPosition().getX() << ", " << pob->getPosition().getY() << ", " << pob->getPosition().getZ() << ", " << pob->getRelative() << ");";
+    querybuilder << "DELETE FROM objectparamposition WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
     lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not delete old position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    
+    querybuilder << "INSERT INTO objectparamposition VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << pob->getPosition().getX() << ", " << pob->getPosition().getY() << ", " << pob->getPosition().getZ() << ", " << pob->getRelative() << ");";
+    
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
