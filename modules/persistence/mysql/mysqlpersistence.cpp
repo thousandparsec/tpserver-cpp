@@ -53,6 +53,9 @@
 #include <tpserver/designview.h>
 #include <tpserver/componentview.h>
 
+//Objectparameters
+#include <tpserver/position3dobjectparam.h>
+
 
 #include "mysqlpersistence.h"
 
@@ -133,7 +136,8 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
-                    "(NULL, 'object', 0), (NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
+                    "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), "
+                    "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
@@ -153,6 +157,9 @@ bool MysqlPersistence::init(){
             }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
                     "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turnnum));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE objectparamposition (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
@@ -3546,7 +3553,47 @@ uint32_t MysqlPersistence::getTableVersion(const std::string& name){
     }
 }
 
+bool MysqlPersistence::updatePosition3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Position3dObjectParam* pob){
+    std::ostringstream querybuilder;
+    querybuilder << "INSERT INTO objectparamposition VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << pob->getPosition().getX() << ", " << pob->getPosition().getY() << ", " << pob->getPosition().getZ() << ", " << pob->getRelative() << ");";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not insert position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock();
+    return true;
+}
 
+bool MysqlPersistence::retrievePosition3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Position3dObjectParam* pob){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT posx,posy,posz,relative FROM objectparamposition WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve podition3d param: Could not store result - %s", mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock(); // finished with mysql
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such position3d param %d,%d", objid, pgroup);
+        mysql_free_result(obresult);
+        throw new std::exception();
+    }
+    pob->setPosition(Vector3d(strtoll(row[0], NULL, 10), strtoll(row[1], NULL, 10), strtoll(row[2], NULL, 10)));
+    pob->setRelative(atoi(row[3]));
+    mysql_free_result(obresult);
+    return true;
+}
 
 void MysqlPersistence::lock(){
 }

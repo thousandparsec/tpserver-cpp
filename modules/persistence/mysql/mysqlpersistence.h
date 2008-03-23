@@ -32,6 +32,8 @@ class ListParameter;
 class StringParameter;
 class TimeParameter;
 
+class Position3dObjectParam;
+
 class MysqlPersistence : public Persistence{
 public:
     MysqlPersistence();
@@ -137,6 +139,9 @@ private:
   bool updateTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp);
   bool retrieveTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos, TimeParameter* tp);
   bool removeTimeParameter(uint32_t queueid, uint32_t ordid, uint32_t pos);
+  
+  bool updatePosition3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Position3dObjectParam* pob);
+  bool retrievePosition3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Position3dObjectParam* pob);
   
     void lock();
     void unlock();
