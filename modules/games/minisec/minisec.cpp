@@ -834,7 +834,6 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
-    thefleet->addShips(frigateid, 1);
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
@@ -844,6 +843,7 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
@@ -864,7 +864,6 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
-    thefleet->addShips(frigateid, 1);
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     fleetoq = new OrderQueue();
@@ -874,6 +873,7 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
@@ -894,7 +894,6 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       /*(long long)((rand() % 10000) - 5000)*/ 0));
-    thefleet->addShips(frigateid, 1);
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     fleetoq = new OrderQueue();
@@ -904,6 +903,7 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
