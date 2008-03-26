@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <string>
-#include <list>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
 class Frame;
@@ -40,8 +40,10 @@ class ObjectParameterGroupData {
     ~ObjectParameterGroupData();
 
     uint32_t getGroupId() const;
+
+		typedef std::vector<ObjectParameter*> ParameterList;
     
-    std::list<ObjectParameter*> getParameters() const;
+    ParameterList getParameters() const;
     ObjectParameter* getParameter(uint32_t paramid) const;
     
     void setGroupId(uint32_t ni);
@@ -53,10 +55,9 @@ class ObjectParameterGroupData {
     
     void signalRemoval();
 
-
   protected:
       uint32_t groupid;
-      std::list<ObjectParameter*> parameters;
+		ParameterList parameters;
 
 };
 

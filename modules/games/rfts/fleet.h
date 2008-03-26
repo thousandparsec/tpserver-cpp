@@ -22,6 +22,7 @@
  */
 
 #include <map>
+#include <list>
 #include <utility>
 
 #include "staticobject.h"

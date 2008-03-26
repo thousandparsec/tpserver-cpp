@@ -215,8 +215,8 @@ void IGObject::setIsDirty(bool id){
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
   for(std::map<uint32_t, ObjectParameterGroupPtr>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
-    std::list<ObjectParameter*> params = (itcurr->second)->getParameters();
-    for(std::list<ObjectParameter*>::iterator opitcurr = params.begin(); opitcurr != params.end();
+    ObjectParameterGroupData::ParameterList params = (itcurr->second)->getParameters();
+    for(ObjectParameterGroupData::ParameterList ::iterator opitcurr = params.begin(); opitcurr != params.end();
         ++opitcurr){
       if((*opitcurr)->getType() == ptype){
         return (*opitcurr);

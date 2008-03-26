@@ -30,14 +30,14 @@ ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(){
 
 ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupData &rhs): parameters(){
   groupid = rhs.groupid;
-  for(std::list<ObjectParameter*>::const_iterator itcurr = rhs.parameters.begin();
+  for(ParameterList::const_iterator itcurr = rhs.parameters.begin();
       itcurr != rhs.parameters.end(); ++itcurr){
     parameters.push_back((*itcurr)->clone());
   }
 }
 
 ObjectParameterGroupData::~ObjectParameterGroupData(){
-  for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
+  for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     delete *itcurr;
   }
@@ -47,16 +47,13 @@ uint32_t ObjectParameterGroupData::getGroupId() const{
   return groupid;
 }
 
-std::list<ObjectParameter*> ObjectParameterGroupData::getParameters() const{
+ObjectParameterGroupData::ParameterList ObjectParameterGroupData::getParameters() const{
   return parameters;
 }
 
 ObjectParameter* ObjectParameterGroupData::getParameter(uint32_t paramid) const{
   if(paramid < parameters.size() + 1 && paramid != 0){
-    paramid--;
-    std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
-    advance(itcurr, paramid);
-    return (*itcurr);
+    return parameters[--paramid];
   }
   return NULL;
 }
@@ -70,7 +67,7 @@ void ObjectParameterGroupData::addParameter(ObjectParameter* op){
 }
 
 void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
-  for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
+  for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     (*itcurr)->packObjectFrame(f, playerid);
   }
@@ -78,7 +75,7 @@ void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
 
 bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, unsigned int playerid){
   bool rtn = true;
-  for(std::list<ObjectParameter*>::iterator itcurr = parameters.begin();
+  for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     rtn = rtn & (*itcurr)->unpackModifyObjectFrame(f, playerid);
     if(!rtn)
@@ -88,7 +85,7 @@ bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, unsigned int p
 }
 
 void ObjectParameterGroupData::signalRemoval(){
-  for(std::list<ObjectParameter*>::const_iterator itcurr = parameters.begin();
+  for(ParameterList::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     (*itcurr)->signalRemoval();
   }

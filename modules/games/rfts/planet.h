@@ -32,7 +32,8 @@ namespace RFTS_ {
 class PlanetType : public StaticObjectType {
   public:
     PlanetType();
-    virtual ~PlanetType(){};
+    virtual ~PlanetType(){}
+
   protected:
     ObjectBehaviour* createObjectBehaviour() const;
 };
