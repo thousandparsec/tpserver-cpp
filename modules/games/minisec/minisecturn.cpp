@@ -249,6 +249,7 @@ void MinisecTurn::doTurn(){
       if(obv == NULL){
         obv = new ObjectView();
         obv->setObjectId(*itob);
+        obv->setCompletelyVisible(true);
         playerview->addVisibleObject(obv);
       }else{
         uint64_t obmt = objectmanager->getObject(*itob)->getModTime();
