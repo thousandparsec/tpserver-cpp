@@ -452,7 +452,7 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     
     //TODO objectparameters
     
-    ob->setDirty(!rtv);
+    ob->setIsDirty(!rtv);
     unlock();
     return rtv;
 }
@@ -477,7 +477,7 @@ bool MysqlPersistence::updateObject(IGObject* ob){
     
     //TODO objectparameters
     
-    ob->setDirty(!rtv);
+    ob->setIsDirty(!rtv);
     unlock();
     return rtv;
 }
@@ -548,7 +548,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     //TODO objectparameters
     
     object->setModTime(strtoull(row[5], NULL, 10));
-    object->setDirty(false);
+    object->setIsDirty(false);
     
     mysql_free_result(obresult);
     return object;
