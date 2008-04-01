@@ -55,6 +55,7 @@
 
 //Objectparameters
 #include <tpserver/position3dobjectparam.h>
+#include <tpserver/velocity3dobjectparam.h>
 
 
 #include "mysqlpersistence.h"
@@ -136,7 +137,7 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
-                    "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), "
+                    "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), (NULL, 'objectparamvelocity', 0), "
                     "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
@@ -160,6 +161,9 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE objectparamposition (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE objectparamvelocity (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
@@ -3585,7 +3589,7 @@ bool MysqlPersistence::retrievePosition3dObjectParam(uint32_t objid, uint32_t tu
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
-        Logger::getLogger()->error("Mysql: retrieve podition3d param: Could not store result - %s", mysql_error(conn));
+        Logger::getLogger()->error("Mysql: retrieve position3d param: Could not store result - %s", mysql_error(conn));
         unlock();
         throw new std::exception();
     }
@@ -3599,6 +3603,56 @@ bool MysqlPersistence::retrievePosition3dObjectParam(uint32_t objid, uint32_t tu
     }
     pob->setPosition(Vector3d(strtoll(row[0], NULL, 10), strtoll(row[1], NULL, 10), strtoll(row[2], NULL, 10)));
     pob->setRelative(atoi(row[3]));
+    mysql_free_result(obresult);
+    return true;
+}
+
+bool MysqlPersistence::updateVelocity3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Velocity3dObjectParam* vob){
+  std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM objectparamvelocity WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not delete old velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    
+    querybuilder << "INSERT INTO objectparamvelocity VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << vob->getVelocity().getX() << ", " << vob->getVelocity().getY() << ", " << vob->getVelocity().getZ() << ", " << vob->getRelative() << ");";
+    
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not insert velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock();
+    return true;
+}
+
+bool MysqlPersistence::retrieveVelocity3dObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, Velocity3dObjectParam* vob){
+  std::ostringstream querybuilder;
+    querybuilder << "SELECT velx,vely,velz,relative FROM objectparamvelocity WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve velocity3d param: Could not store result - %s", mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock(); // finished with mysql
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such velocity3d param %d,%d", objid, pgroup);
+        mysql_free_result(obresult);
+        throw new std::exception();
+    }
+    vob->setVelocity(Vector3d(strtoll(row[0], NULL, 10), strtoll(row[1], NULL, 10), strtoll(row[2], NULL, 10)));
+    vob->setRelative(atoi(row[3]));
     mysql_free_result(obresult);
     return true;
 }
