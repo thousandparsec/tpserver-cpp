@@ -50,9 +50,7 @@ public:
 
 protected:
   uint32_t queueid;
-  uint32_t numorders;
-  
-  std::set<uint32_t> ordertypes;
+
 
 };
 

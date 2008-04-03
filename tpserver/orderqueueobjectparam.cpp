@@ -25,7 +25,7 @@
 
 #include "orderqueueobjectparam.h"
 
-OrderQueueObjectParam::OrderQueueObjectParam() : ObjectParameter(), queueid(0), numorders(0), ordertypes(){
+OrderQueueObjectParam::OrderQueueObjectParam() : ObjectParameter(), queueid(0){
   type = obpT_Order_Queue;
 }
 
