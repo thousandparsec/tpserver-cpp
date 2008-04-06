@@ -89,22 +89,21 @@ IGObject *ObjectManager::getObject(uint32_t id){
 
 void ObjectManager::doneWithObject(uint32_t id){
     if(objects[id]->isDirty()){
-        Game::getGame()->getPersistence()->updateObject(objects[id]);
+        Game::getGame()->getPersistence()->saveObject(objects[id]);
     }
 }
 
 void ObjectManager::scheduleRemoveObject(uint32_t id){
     scheduleRemove.insert(id);
+    IGObject* ob = objects[id];
+    ob->setIsAlive(false);
+    Game::getGame()->getPersistence()->saveObject(ob);
 }
 
 void ObjectManager::clearRemovedObjects(){
     for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
-        ObjectBehaviour* behaviour = objects[*itrm]->getObjectBehaviour();
-        if(behaviour != NULL){
-          behaviour->signalRemoval();
-        }
-        Game::getGame()->getPersistence()->removeObject(*itrm);
+        objects[*itrm]->getObjectBehaviour()->signalRemoval();
         delete objects[*itrm];
         objects.erase(*itrm);
     }

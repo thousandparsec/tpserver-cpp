@@ -545,31 +545,6 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     return rtv;
 }
 
-//#include <iostream>
-
-bool MysqlPersistence::updateObject(IGObject* ob){
-    std::ostringstream querybuilder;
-    querybuilder << "UPDATE object SET type=" << ob->getType() << ", name='";
-    querybuilder << addslashes(ob->getName()) << "', description='", addslashes(ob->getDescription());
-    querybuilder << "', parentid=" << ob->getParent() << ", modtime=" << ob->getModTime() << " WHERE objectid=" << ob->getID() << ";";
-    lock();
-    std::string query = querybuilder.str();
-    //std::cout << "Query: " << query << std::endl;
-    if(mysql_query(conn, query.c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update object %d - %s", ob->getID(), mysql_error(conn));
-        unlock();
-        return false;
-    }
-    bool rtv;
-    //store type-specific information
-    
-    //TODO objectparameters
-    
-    ob->setIsDirty(!rtv);
-    unlock();
-    return rtv;
-}
-
 IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     std::ostringstream querybuilder;
     uint32_t turn = Game::getGame()->getTurnNumber();
@@ -690,52 +665,6 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     
     mysql_free_result(obresult);
     return object;
-}
-
-bool MysqlPersistence::removeObject(uint32_t obid){
-    std::ostringstream querybuilder;
-    querybuilder << "SELECT type FROM object WHERE objectid=" << obid <<";";
-    uint32_t objecttype;
-    lock();
-    try{
-        if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-            Logger::getLogger()->error("Mysql: remove object query error: %s", mysql_error(conn));
-            throw std::exception();
-        }else{
-            MYSQL_RES *objtyperes = mysql_store_result(conn);
-            if(objtyperes == NULL){
-                Logger::getLogger()->error("Mysql: remove object query result error: %s", mysql_error(conn));
-                throw std::exception();
-            }
-            unlock();
-    
-            MYSQL_ROW row = mysql_fetch_row(objtyperes);
-            if(row == NULL || row[0] == NULL){ 
-                Logger::getLogger()->warning("Mysql remove object: object not found");
-                throw std::exception();
-            }
-            objecttype = atoi(row[0]);
-            mysql_free_result(objtyperes);
-        }
-    }catch(std::exception e){
-        unlock();
-        return false;
-    }
-    querybuilder.str("");
-    querybuilder << "DELETE FROM object WHERE objectid=" << obid << ";";
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not remove object %d - %s", obid, mysql_error(conn));
-        unlock();
-        return false;
-    }
-    bool rtv;
-    //store type-specific information
-    
-    //TODO objectparameters
-    
-    unlock();
-    return rtv;
-    
 }
 
 uint32_t MysqlPersistence::getMaxObjectId(){
