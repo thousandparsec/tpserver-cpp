@@ -193,7 +193,8 @@ bool DesignStore::addDesign(Design* d){
       std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);
       if(itcomp == components.end())
           return false;
-      itcomp->second->setInUse();
+      Component* comp = getComponent(itcurr->first);
+      comp->setInUse();
   }
   d->eval();
   designs[d->getDesignId()] = d;
