@@ -39,6 +39,7 @@ class ResourceListObjectParam;
 class ReferenceObjectParam;
 
 class IntegerObjectParam;
+class SizeObjectParam;
 
 class MysqlPersistence : public Persistence{
 public:
@@ -159,6 +160,8 @@ private:
   
   bool updateIntegerObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, IntegerObjectParam* iob);
   bool retrieveIntegerObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, IntegerObjectParam* iob);
+  bool updateSizeObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, SizeObjectParam* sob);
+  bool retrieveSizeObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, SizeObjectParam* sob);
   
     void lock();
     void unlock();
