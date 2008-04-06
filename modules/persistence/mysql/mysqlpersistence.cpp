@@ -57,6 +57,7 @@
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/resourcelistobjectparam.h>
 
 
 #include "mysqlpersistence.h"
@@ -139,7 +140,7 @@ bool MysqlPersistence::init(){
             }
             if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
                     "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), (NULL, 'objectparamvelocity', 0), "
-                    "(NULL, 'objectparamorderqueue', 0), "
+                    "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
                     "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
@@ -169,6 +170,9 @@ bool MysqlPersistence::init(){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE objectparamorderqueue (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, queueid INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+                throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE objectparamorderqueue (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, resid INT UNSIGNED NOT NULL, available INT UNSIGNED NOT NULL, possible INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos, resid));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
@@ -3708,6 +3712,99 @@ bool MysqlPersistence::retrieveOrderQueueObjectParam(uint32_t objid, uint32_t tu
     }
     oob->setQueueId(atoi(row[0]));
     mysql_free_result(obresult);
+    return true;
+}
+
+bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, ResourceListObjectParam* rob){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM objectparamresourcelist WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not delete old resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock();
+    
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = rob->getResources();
+    querybuilder << "INSERT INTO objectparamresourcelist VALUES ";
+    for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
+            itcurr != reslist.end(); ++itcurr){
+        if(itcurr != reslist.begin()){
+            querybuilder << ", ";
+        }
+        querybuilder << "(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << itcurr->first << ", " << itcurr->second.first << ", " << itcurr->second.second << ")";
+    }
+    if(reslist.size() == 0){
+        //fake resource to make sure there is something, removed when retreived.
+        querybuilder << "(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", 0, 0, 0)";
+    }
+    querybuilder << ";";
+    
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not insert resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock();
+    return true;
+}
+bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, ResourceListObjectParam* rob){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT turn FROM objectparamresourselist WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param turn number %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve resourcelist param turn number: Could not store result - %s", mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock(); // finished with mysql for a moment
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such resourcelist param %d,%d", objid, pgroup);
+        mysql_free_result(obresult);
+        throw new std::exception();
+    }
+    uint32_t realturn = atoi(row[0]);
+    mysql_free_result(obresult);
+    
+    querybuilder.str("");
+    querybuilder << "SELECT resid, available, possible FROM objectparamresourselist WHERE objectid = " << objid << " AND turn = " << realturn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve resourcelist param: Could not store result - %s", mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock(); // finished with mysql
+    
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist;
+    while((row = mysql_fetch_row(obresult)) != NULL){
+        uint32_t available = atoi(row[1]);
+        uint32_t possible = atoi(row[2]);
+        if(available != 0 && possible != 0){
+          reslist[atoi(row[0])] = std::pair<uint32_t, uint32_t>(available, possible);
+        }
+    }
+    
+    rob->setResources(reslist);
+    
+    mysql_free_result(obresult);
+    
     return true;
 }
 
