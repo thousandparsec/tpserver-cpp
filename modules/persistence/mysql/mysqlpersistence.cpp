@@ -469,20 +469,28 @@ bool MysqlPersistence::retrieveGameInfo(){
 
 bool MysqlPersistence::saveObject(IGObject* ob){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO object VALUES (" << ob->getID() << ", " << ob->getType() << ", ";
+    uint32_t turn = Game::getGame()->getTurnNumber();
+    uint32_t obid = ob->getID();
+    querybuilder << "DELETE FROM OBJECT WHERE objectid = " << obid << " AND turnnum = " << turn << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not remove old object %d - %s", obid, mysql_error(conn));
+        unlock();
+        return false;
+    }
+    querybuilder.str("");
+    querybuilder << "INSERT INTO object VALUES (" << obid << ", " << turn << ", " << ob->getType() << ", ";
     querybuilder << "'" << addslashes(ob->getName()) << "', '" << addslashes(ob->getDescription()) << "', ";
     querybuilder << ob->getParent() << ", " << ob->getModTime() << ");";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not store object %d - %s", ob->getID(), mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not store object %d - %s", obid, mysql_error(conn));
         unlock();
         return false;
     }
     unlock();
     bool rtv = true;
     //store type-specific information
-    uint32_t turn = Game::getGame()->getTurnNumber();
-    uint32_t obid = ob->getID();
     
     try{
         std::map<uint32_t, ObjectParameterGroupPtr> groups = ob->getParameterGroups();
@@ -562,7 +570,9 @@ bool MysqlPersistence::updateObject(IGObject* ob){
 
 IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT * FROM object WHERE objectid = " << obid << ";";
+    uint32_t turn = Game::getGame()->getTurnNumber();
+    querybuilder << "SELECT * FROM object WHERE objectid = " << obid << " AND turnnum <= " << turn;
+    querybuilder << " ORDER BY turnnum DESC LIMIT 1;";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve object %d - %s", obid, mysql_error(conn));
@@ -622,8 +632,6 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     mysql_free_result(childres);
 
     // fetch type-specific information
-    
-    uint32_t turn = Game::getGame()->getTurnNumber();
     
     try{
         std::map<uint32_t, ObjectParameterGroupPtr> groups = object->getParameterGroups();
