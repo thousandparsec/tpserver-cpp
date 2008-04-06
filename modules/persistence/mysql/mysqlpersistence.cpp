@@ -28,6 +28,7 @@
 #include <tpserver/settings.h>
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/objecttypemanager.h>
 
 #include <tpserver/object.h>
 #include <tpserver/orderqueue.h>
@@ -147,7 +148,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
                     "(NULL, 'objectparamreference', 0), (NULL, 'objectparamrefquantitylist', 0), "
                     "(NULL, 'objectparaminteger', 0), (NULL, 'objectparamsize', 0), "
-                    "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
+                    "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0), "
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
@@ -166,31 +167,31 @@ bool MysqlPersistence::init(){
               throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, alive TINYINT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
-                    "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turnnum));") != 0){
+                    "name TEXT NOT NULL, description TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turnnum));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamposition (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamposition (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, posx BIGINT NOT NULL, posy BIGINT NOT NULL, posz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamvelocity (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamvelocity (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, velx BIGINT NOT NULL, vely BIGINT NOT NULL, velz BIGINT NOT NULL, relative INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamorderqueue (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, queueid INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamorderqueue (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, queueid INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamresourcelist (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, resid INT UNSIGNED NOT NULL, available INT UNSIGNED NOT NULL, possible INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos, resid));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamresourcelist (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, resid INT UNSIGNED NOT NULL, available INT UNSIGNED NOT NULL, possible INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos, resid));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamreference (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, reftype INT NOT NULL, refval INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamreference (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, reftype INT NOT NULL, refval INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamrefquantitylist (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, reftype INT NOT NULL, refid INT UNSIGNED NOT NULL, quant INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos, reftype, refid));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamrefquantitylist (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, reftype INT NOT NULL, refid INT UNSIGNED NOT NULL, quant INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos, reftype, refid));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparaminteger (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, val INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparaminteger (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, val INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE objectparamsize (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+            if(mysql_query(conn, "CREATE TABLE objectparamsize (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
@@ -221,7 +222,7 @@ bool MysqlPersistence::init(){
               throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE orderslot (queueid INT UNSIGNED NOT NULL, slot INT UNSIGNED NOT NULL, "
-                        "orderid INT UNSIGNED NOT NULL UNIQUE, PRIMARY KEY (queueid, slot));") != 0){
+                        "orderid INT UNSIGNED NOT NULL, PRIMARY KEY (queueid, slot, orderid), UNIQUE (queueid, slot), UNIQUE(queueid, orderid));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE board (boardid INT UNSIGNED NOT NULL PRIMARY KEY, "
@@ -251,7 +252,7 @@ bool MysqlPersistence::init(){
             }
             if(mysql_query(conn, "CREATE TABLE playerdesignview (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
                     "completelyvisible TINYINT NOT NULL, namevisible TINYINT NOT NULL,"
-                    "visname TEXT NOT NULL, descvisible TINYINT NOT NULL, visdesc TEXT NOT NULL, existvisible TINYINT NOT NULL, visexist INT UNSIGNED NOT NULL, ownervisible TINYINT NOT NULL, visowner INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY (playerid, designid, turnnum));") != 0){
+                    "visname TEXT NOT NULL, descvisible TINYINT NOT NULL, visdesc TEXT NOT NULL, existvisible TINYINT NOT NULL, visexist INT UNSIGNED NOT NULL, ownervisible TINYINT NOT NULL, visowner INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY (playerid, designid));") != 0){
                 throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE playerdesignviewcomp (playerid INT UNSIGNED NOT NULL, designid INT UNSIGNED NOT NULL, "
@@ -325,7 +326,7 @@ bool MysqlPersistence::init(){
                            "tpclvaluefunc TEXT NOT NULL, PRIMARY KEY (componentid, propertyid));") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE property (propertyid INT UNSIGNED NOT NULL PRIMARY KEY, categoryid INT UNSIGNED NOT NULL,"
+            if(mysql_query(conn, "CREATE TABLE property (propertyid INT UNSIGNED NOT NULL PRIMARY KEY,"
                     "rank INT UNSIGNED NOT NULL, name TEXT NOT NULL, displayname TEXT NOT NULL, description TEXT NOT NULL, "
                     "tpcldisplayfunc TEXT NOT NULL, tpclrequiresfunc TEXT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
@@ -471,7 +472,7 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     std::ostringstream querybuilder;
     uint32_t turn = Game::getGame()->getTurnNumber();
     uint32_t obid = ob->getID();
-    querybuilder << "DELETE FROM OBJECT WHERE objectid = " << obid << " AND turnnum = " << turn << ";";
+    querybuilder << "DELETE FROM object WHERE objectid = " << obid << " AND turnnum = " << turn << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not remove old object %d - %s", obid, mysql_error(conn));
@@ -593,11 +594,11 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     }
     IGObject* object = new IGObject();
     object->setID(obid);
-    object->setType(atoi(row[1]));
+    Game::getGame()->getObjectTypeManager()->setupObject(object, atoi(row[3]));
     object->setIsAlive(atoi(row[2]) == 1);
-    object->setName(row[3]);
-    object->setDescription(row[4]);
-    object->setParent(atoi(row[5]));
+    object->setName(row[4]);
+    object->setDescription(row[5]);
+    object->setParent(atoi(row[6]));
     
     MYSQL_ROW children;
     while((children = mysql_fetch_row(childres)) != NULL){
@@ -660,7 +661,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
       }
     }
     
-    object->setModTime(strtoull(row[6], NULL, 10));
+    object->setModTime(strtoull(row[7], NULL, 10));
     object->setIsDirty(false);
     
     mysql_free_result(obresult);
@@ -768,7 +769,7 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
 bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
   std::ostringstream querybuilder;
   querybuilder << "UPDATE orderqueue set objectid=" << oq->getObjectId() << ", active=" << (oq->isActive() ? 1 : 0);
-  querybuilder << ", repeating=" << (oq->isRepeating() ? 1 : 0) << ", modtime=" << oq->getModTime()<< " WHERE queueid=" << oq->getQueueId() << ");";
+  querybuilder << ", repeating=" << (oq->isRepeating() ? 1 : 0) << ", modtime=" << oq->getModTime()<< " WHERE queueid=" << oq->getQueueId() << ";";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
     Logger::getLogger()->error("Mysql: Could not update orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
@@ -3629,7 +3630,7 @@ bool MysqlPersistence::updatePosition3dObjectParam(uint32_t objid, uint32_t turn
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparamposition VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << pob->getPosition().getX() << ", " << pob->getPosition().getY() << ", " << pob->getPosition().getZ() << ", " << pob->getRelative() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -3679,7 +3680,7 @@ bool MysqlPersistence::updateVelocity3dObjectParam(uint32_t objid, uint32_t turn
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparamvelocity VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << vob->getVelocity().getX() << ", " << vob->getVelocity().getY() << ", " << vob->getVelocity().getZ() << ", " << vob->getRelative() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -3729,7 +3730,7 @@ bool MysqlPersistence::updateOrderQueueObjectParam(uint32_t objid, uint32_t turn
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparamorderqueue VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << oob->getQueueId() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -3779,7 +3780,7 @@ bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t tu
         throw new std::exception();
     }
     unlock();
-    
+    querybuilder.str("");
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = rob->getResources();
     querybuilder << "INSERT INTO objectparamresourcelist VALUES ";
     for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
@@ -3807,7 +3808,7 @@ bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t tu
 
 bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, ResourceListObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT turn FROM objectparamresourselist WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    querybuilder << "SELECT turn FROM objectparamresourcelist WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param turn number %d,%d - %s", objid, pgroup, mysql_error(conn));
@@ -3832,7 +3833,7 @@ bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t 
     mysql_free_result(obresult);
     
     querybuilder.str("");
-    querybuilder << "SELECT resid, available, possible FROM objectparamresourselist WHERE objectid = " << objid << " AND turn = " << realturn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    querybuilder << "SELECT resid, available, possible FROM objectparamresourcelist WHERE objectid = " << objid << " AND turn = " << realturn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
@@ -3865,14 +3866,14 @@ bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t 
 
 bool MysqlPersistence::updateReferenceObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, ReferenceObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "DELETE FROM objectparamreferemce WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    querybuilder << "DELETE FROM objectparamreference WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old reference param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparamreference VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << rob->getReferenceType() << ", " << rob->getReferencedId() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -3915,7 +3916,7 @@ bool MysqlPersistence::retrieveReferenceObjectParam(uint32_t objid, uint32_t tur
 
 bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, RefQuantityListObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "DELETE FROM objectparamresfquantitylist WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    querybuilder << "DELETE FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old refquantitylist param %d,%d - %s", objid, pgroup, mysql_error(conn));
@@ -3923,7 +3924,7 @@ bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t
         throw new std::exception();
     }
     unlock();
-    
+    querybuilder.str("");
     std::map<std::pair<int32_t, uint32_t>, uint32_t> reflist = rob->getRefQuantityList();
     querybuilder << "INSERT INTO objectparamrefquantitylist VALUES ";
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = reflist.begin();
@@ -4017,7 +4018,7 @@ bool MysqlPersistence::updateIntegerObjectParam(uint32_t objid, uint32_t turn, u
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparaminteger VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << iob->getValue() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -4066,7 +4067,7 @@ bool MysqlPersistence::updateSizeObjectParam(uint32_t objid, uint32_t turn, uint
         unlock();
         throw new std::exception();
     }
-    
+    querybuilder.str("");
     querybuilder << "INSERT INTO objectparamsize VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << sob->getSize() << ");";
     
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
