@@ -478,13 +478,60 @@ bool MysqlPersistence::saveObject(IGObject* ob){
         unlock();
         return false;
     }
-    bool rtv;
-    //store type-specific information
-    
-    //TODO objectparameters
-    
-    ob->setIsDirty(!rtv);
     unlock();
+    bool rtv = true;
+    //store type-specific information
+    uint32_t turn = Game::getGame()->getTurnNumber();
+    uint32_t obid = ob->getID();
+    
+    try{
+        std::map<uint32_t, ObjectParameterGroupPtr> groups = ob->getParameterGroups();
+        for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = groups.begin();
+                itcurr != groups.end(); ++itcurr){
+            ObjectParameterGroupData::ParameterList params = itcurr->second->getParameters();
+            uint32_t ppos = 0;
+            for(ObjectParameterGroupData::ParameterList::iterator paramcurr = params.begin();
+                    paramcurr != params.end(); ++paramcurr){
+                ObjectParameter* parameter = *(paramcurr);
+                switch(parameter->getType()){
+                  case obpT_Position_3D:
+                    updatePosition3dObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<Position3dObjectParam*>(parameter));
+                    break;
+                  case obpT_Velocity:
+                    updateVelocity3dObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<Velocity3dObjectParam*>(parameter));
+                    break;
+                  case obpT_Order_Queue:
+                    updateOrderQueueObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<OrderQueueObjectParam*>(parameter));
+                    break;
+                  case obpT_Resource_List:
+                    updateResourceListObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<ResourceListObjectParam*>(parameter));
+                    break;
+                  case obpT_Reference:
+                    updateReferenceObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<ReferenceObjectParam*>(parameter));
+                    break;
+                  case obpT_Reference_Quantity_List:
+                    updateRefQuantityListObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<RefQuantityListObjectParam*>(parameter));
+                    break;
+                  case obpT_Integer:
+                    updateIntegerObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<IntegerObjectParam*>(parameter));
+                    break;
+                  case obpT_Size:
+                    updateSizeObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<SizeObjectParam*>(parameter));
+                    break;
+                  default:
+                    Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
+                    throw new std::exception();
+                    break;
+                }
+                ppos++;
+            }
+        }
+        
+        ob->setIsDirty(!rtv);
+    }catch(std::exception* e){
+      rtv = false;
+    }
+
     return rtv;
 }
 
@@ -576,7 +623,55 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
 
     // fetch type-specific information
     
-    //TODO objectparameters
+    uint32_t turn = Game::getGame()->getTurnNumber();
+    
+    try{
+        std::map<uint32_t, ObjectParameterGroupPtr> groups = object->getParameterGroups();
+        for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = groups.begin();
+                itcurr != groups.end(); ++itcurr){
+            ObjectParameterGroupData::ParameterList params = itcurr->second->getParameters();
+            uint32_t ppos = 0;
+            for(ObjectParameterGroupData::ParameterList::iterator paramcurr = params.begin();
+                    paramcurr != params.end(); ++paramcurr){
+                ObjectParameter* parameter = *(paramcurr);
+                switch(parameter->getType()){
+                  case obpT_Position_3D:
+                    retrievePosition3dObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<Position3dObjectParam*>(parameter));
+                    break;
+                  case obpT_Velocity:
+                    retrieveVelocity3dObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<Velocity3dObjectParam*>(parameter));
+                    break;
+                  case obpT_Order_Queue:
+                    retrieveOrderQueueObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<OrderQueueObjectParam*>(parameter));
+                    break;
+                  case obpT_Resource_List:
+                    retrieveResourceListObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<ResourceListObjectParam*>(parameter));
+                    break;
+                  case obpT_Reference:
+                    retrieveReferenceObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<ReferenceObjectParam*>(parameter));
+                    break;
+                  case obpT_Reference_Quantity_List:
+                    retrieveRefQuantityListObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<RefQuantityListObjectParam*>(parameter));
+                    break;
+                  case obpT_Integer:
+                    retrieveIntegerObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<IntegerObjectParam*>(parameter));
+                    break;
+                  case obpT_Size:
+                    retrieveSizeObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<SizeObjectParam*>(parameter));
+                    break;
+                  default:
+                    Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
+                    throw new std::exception();
+                    break;
+                }
+                ppos++;
+            }
+        }
+      
+    }catch(std::exception* e){
+      delete object;
+      return NULL;
+    }
     
     object->setModTime(strtoull(row[5], NULL, 10));
     object->setIsDirty(false);
