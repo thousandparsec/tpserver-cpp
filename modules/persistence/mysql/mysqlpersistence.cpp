@@ -165,7 +165,7 @@ bool MysqlPersistence::init(){
             if(mysql_query(conn, "CREATE TABLE gameinfo (metakey VARCHAR(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
+            if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, alive TINYINT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
                     "name TEXT NOT NULL, desc TEXT NOT NULL, parentid INT UNSIGNED NOT NULL, modtime BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turnnum));") != 0){
                 throw std::exception();
             }
@@ -479,7 +479,8 @@ bool MysqlPersistence::saveObject(IGObject* ob){
         return false;
     }
     querybuilder.str("");
-    querybuilder << "INSERT INTO object VALUES (" << obid << ", " << turn << ", " << ob->getType() << ", ";
+    querybuilder << "INSERT INTO object VALUES (" << obid << ", " << turn << ", ";
+    querybuilder << (ob->isAlive() ? 1 : 0) << ", " << ob->getType() << ", ";
     querybuilder << "'" << addslashes(ob->getName()) << "', '" << addslashes(ob->getDescription()) << "', ";
     querybuilder << ob->getParent() << ", " << ob->getModTime() << ");";
     lock();
@@ -491,8 +492,8 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     unlock();
     bool rtv = true;
     //store type-specific information
-    
-    try{
+    if(ob->isAlive()){
+      try{
         std::map<uint32_t, ObjectParameterGroupPtr> groups = ob->getParameterGroups();
         for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = groups.begin();
                 itcurr != groups.end(); ++itcurr){
@@ -536,8 +537,9 @@ bool MysqlPersistence::saveObject(IGObject* ob){
         }
         
         ob->setIsDirty(!rtv);
-    }catch(std::exception* e){
-      rtv = false;
+      }catch(std::exception* e){
+        rtv = false;
+      }
     }
 
     return rtv;
@@ -617,9 +619,10 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     IGObject* object = new IGObject();
     object->setID(obid);
     object->setType(atoi(row[1]));
-    object->setName(row[2]);
-    object->setDescription(row[3]);
-    object->setParent(atoi(row[4]));
+    object->setIsAlive(atoi(row[2]) == 1);
+    object->setName(row[3]);
+    object->setDescription(row[4]);
+    object->setParent(atoi(row[5]));
     
     MYSQL_ROW children;
     while((children = mysql_fetch_row(childres)) != NULL){
@@ -632,8 +635,8 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     mysql_free_result(childres);
 
     // fetch type-specific information
-    
-    try{
+    if(object->isAlive()){
+      try{
         std::map<uint32_t, ObjectParameterGroupPtr> groups = object->getParameterGroups();
         for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = groups.begin();
                 itcurr != groups.end(); ++itcurr){
@@ -676,12 +679,13 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
             }
         }
       
-    }catch(std::exception* e){
-      delete object;
-      return NULL;
+      }catch(std::exception* e){
+        delete object;
+        return NULL;
+      }
     }
     
-    object->setModTime(strtoull(row[5], NULL, 10));
+    object->setModTime(strtoull(row[6], NULL, 10));
     object->setIsDirty(false);
     
     mysql_free_result(obresult);
