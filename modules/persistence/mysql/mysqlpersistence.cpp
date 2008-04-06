@@ -60,6 +60,8 @@
 #include <tpserver/resourcelistobjectparam.h>
 #include <tpserver/referenceobjectparam.h>
 
+#include <tpserver/integerobjectparam.h>
+
 
 #include "mysqlpersistence.h"
 
@@ -143,6 +145,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), (NULL, 'objectparamvelocity', 0), "
                     "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
                     "(NULL, 'objectparamreference', 0), "
+                    "(NULL, 'objectparaminteger', 0), "
                     "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0)"
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
@@ -180,6 +183,11 @@ bool MysqlPersistence::init(){
             if(mysql_query(conn, "CREATE TABLE objectparamreference (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, reftype INT UNSIGNED NOT NULL, refval INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
                 throw std::exception();
             }
+            
+            if(mysql_query(conn, "CREATE TABLE objectparaminteger (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, val INT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, pgroup, pgpos));") != 0){
+                throw std::exception();
+            }
+            
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
@@ -3859,6 +3867,57 @@ bool MysqlPersistence::retrieveReferenceObjectParam(uint32_t objid, uint32_t tur
     }
     rob->setReferenceType(atoi(row[0]));
     rob->setReferencedId(atoi(row[1]));
+    mysql_free_result(obresult);
+    return true;
+}
+
+
+
+bool MysqlPersistence::updateIntegerObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, IntegerObjectParam* iob){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM objectparaminteger WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not delete old integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    
+    querybuilder << "INSERT INTO objectparaminteger VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << iob->getValue() << ");";
+    
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not insert integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock();
+    return true;
+}
+
+bool MysqlPersistence::retrieveIntegerObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, IntegerObjectParam* iob){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT val FROM objectparaminteger WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+        Logger::getLogger()->error("Mysql: Could not retrieve integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    if(obresult == NULL){
+        Logger::getLogger()->error("Mysql: retrieve integer param: Could not store result - %s", mysql_error(conn));
+        unlock();
+        throw new std::exception();
+    }
+    unlock(); // finished with mysql
+    
+    MYSQL_ROW row = mysql_fetch_row(obresult);
+    if(row == NULL){
+        Logger::getLogger()->warning("Mysql: No such intger param %d,%d", objid, pgroup);
+        mysql_free_result(obresult);
+        throw new std::exception();
+    }
+    iob->setValue(atoi(row[0]));
     mysql_free_result(obresult);
     return true;
 }
