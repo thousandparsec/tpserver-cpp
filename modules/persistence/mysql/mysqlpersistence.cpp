@@ -3995,9 +3995,9 @@ bool MysqlPersistence::retrieveRefQuantityListObjectParam(uint32_t objid, uint32
     
     std::map<std::pair<int32_t, uint32_t>, uint32_t> reflist;
     while((row = mysql_fetch_row(obresult)) != NULL){
-        int32_t reftype = atoi(row[1]);
-        uint32_t refid = atoi(row[2]);
-        uint32_t quant = atoi(row[3]);
+        int32_t reftype = atoi(row[0]);
+        uint32_t refid = atoi(row[1]);
+        uint32_t quant = atoi(row[2]);
         if(reftype != 0 && refid != 0 && quant != 0){
           reflist[std::pair<int32_t, uint32_t>(reftype, refid)] = quant;
         }
