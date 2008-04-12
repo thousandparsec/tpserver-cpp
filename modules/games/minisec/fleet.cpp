@@ -214,3 +214,28 @@ void Fleet::setupObject(){
   //something about the orderqueue?
 }
 
+void Fleet::postPersistenceSetup(){
+  OrderManager * om = Game::getGame()->getOrderManager();
+  std::set<uint32_t> allowedlist;
+  allowedlist.insert(om->getOrderTypeByName("No Operation"));
+  allowedlist.insert(om->getOrderTypeByName("Move"));
+  allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
+  allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
+  
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  DesignStore* ds = Game::getGame()->getDesignStore();
+  bool colonise = false;
+  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+    if(ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
+      colonise = true;
+      break;
+    }
+  }
+  
+  if(colonise){
+    allowedlist.insert(om->getOrderTypeByName("Colonise"));
+  }
+  
+  ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+}

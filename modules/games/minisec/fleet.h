@@ -59,6 +59,7 @@ class Fleet : public OwnedObject {
 
 	void doOnceATurn();
         void setupObject();
+        void postPersistenceSetup();
 
 	int getContainerType();
 };
