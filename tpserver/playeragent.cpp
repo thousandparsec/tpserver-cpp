@@ -619,6 +619,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
           if(objid != 0){
             ObjectView* obv = player->getPlayerView()->getObjectView(objid);
             obv->touchModTime();
+            player->getPlayerView()->updateObjectView(objid);
           }
         } else {
           of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
@@ -699,6 +700,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
       if(objid != 0){
         ObjectView* obv = player->getPlayerView()->getObjectView(objid);
         obv->touchModTime();
+        player->getPlayerView()->updateObjectView(objid);
       }
     } else {
       of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
