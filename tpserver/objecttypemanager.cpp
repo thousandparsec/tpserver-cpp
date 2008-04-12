@@ -52,7 +52,7 @@ uint32_t ObjectTypeManager::getObjectTypeByName(const std::string& name) const{
     return stringmap.find(name)->second;
   }
   //TODO throw exception?
-  return 0xffffffff;
+  return UINT32_NEG_ONE;
 }
 
 uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
@@ -66,14 +66,14 @@ uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
 
 void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
   uint32_t lseqkey = frame->unpackInt();
-  if(lseqkey == 0xffffffff){
+  if(lseqkey == UINT32_NEG_ONE){
     //start new seqkey
     lseqkey = seqkey;
   }
 
   uint32_t start = frame->unpackInt();
   uint32_t num = frame->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
@@ -87,7 +87,7 @@ void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
   for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
       itcurr != typeStore.end(); ++itcurr){
     uint32_t otmodtime = itcurr->second->getModTime();
-    if(fromtime == 0xffffffffffffffffULL || otmodtime < fromtime){
+    if(fromtime == UINT64_NEG_ONE || otmodtime < fromtime){
       modlist[itcurr->first] = otmodtime;
     }
   }
@@ -101,7 +101,7 @@ void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
       num = modlist.size() - start;
   }
   
-  if(num > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+  if(num > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
   }

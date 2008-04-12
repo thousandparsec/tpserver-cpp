@@ -1,6 +1,6 @@
 /*  BoardManager
  *
- *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "persistence.h"
 #include "message.h"
 #include "logging.h"
+#include "frame.h"
 
 #include "boardmanager.h"
 
@@ -94,7 +95,7 @@ bool BoardManager::addMessage(Message* msg, Board* board, uint32_t pos){
             bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
             boardmessages[board->getBoardID()] = bmlist;
         }
-        if (pos == 0xffffffff) {
+        if (pos == UINT32_NEG_ONE) {
             bmlist.push_back(msgid);
         } else {
             std::list<uint32_t>::iterator inspos = bmlist.begin();

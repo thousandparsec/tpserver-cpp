@@ -915,7 +915,7 @@ void PlayerAgent::processGetBoardIds(Frame * frame){
   }
 
   unsigned int seqkey = frame->unpackInt();
-  if(seqkey == 0xffffffff){
+  if(seqkey == UINT32_NEG_ONE){
     //start new seqkey
     seqkey = 0;
   }
@@ -1177,14 +1177,14 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   }
 
   unsigned int seqkey = frame->unpackInt();
-  if(seqkey == 0xffffffff){
+  if(seqkey == UINT32_NEG_ONE){
     //start new seqkey
     seqkey = 0;
   }
 
   uint32_t snum = frame->unpackInt();
   uint32_t numtoget = frame->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
@@ -1196,7 +1196,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const ResourceDescription * res = rm->getResourceDescription(*itcurr);
-    if(fromtime == 0xffffffffffffffffULL || res->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || res->getModTime() < fromtime){
       modlist[*itcurr] = res->getModTime();
     }
   }
@@ -1212,7 +1212,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
     numtoget = modlist.size() - snum;
   }
   
-  if(numtoget > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
@@ -1361,7 +1361,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   frame->unpackInt(); //seqnum
   uint32_t snum = frame->unpackInt();
   uint32_t numtoget = frame->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
@@ -1374,7 +1374,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = cids.begin();
       itcurr != cids.end(); ++itcurr){
     Category * cat = ds->getCategory(*itcurr);
-    if(fromtime == 0xffffffffffffffffULL || cat->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || cat->getModTime() < fromtime){
       modlist[*itcurr] = cat->getModTime();
     }
   }
@@ -1391,7 +1391,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
       numtoget = modlist.size() - snum;
   }
   
-  if(numtoget > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
@@ -1687,7 +1687,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   frame->unpackInt(); //seqnum
   uint32_t snum = frame->unpackInt();
   uint32_t numtoget = frame->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
@@ -1698,7 +1698,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = propids.begin();
       itcurr != propids.end(); ++itcurr){
     Property * prop = ds->getProperty(*itcurr);
-    if(fromtime == 0xffffffffffffffffULL || prop->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || prop->getModTime() < fromtime){
       modlist[*itcurr] = prop->getModTime();
     }
   }
@@ -1714,7 +1714,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
     numtoget = modlist.size() - snum;
   }
   
-  if(numtoget > 87378 + ((frame->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");

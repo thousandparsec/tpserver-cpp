@@ -141,7 +141,18 @@ std::set<uint32_t> ObjectManager::getAllIds(){
     std::set<uint32_t> vis;
     for(std::map<uint32_t, IGObject*>::const_iterator itid = objects.begin();
         itid != objects.end(); ++itid){
-        vis.insert(itid->first);
+      IGObject* obj = itid->second;
+      if(obj == NULL){
+        obj = Game::getGame()->getPersistence()->retrieveObject(itid->first);
+        if(obj != NULL){
+          objects[itid->first] = obj;
+        }
+      }
+      if(obj != NULL){
+        if(obj->isAlive()){
+          vis.insert(itid->first);
+        }
+      }
     }
 
     return vis;

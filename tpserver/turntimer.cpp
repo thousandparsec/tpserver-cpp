@@ -1,6 +1,6 @@
 /*  TurnTimer class
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ uint32_t TurnTimer::secondsToEOT() const{
   if(timer != NULL){
     return timer->getExpireTime() - time(NULL);
   }
-  return 0xffffffff;
+  return UINT32_NEG_ONE;
 }
 
 uint32_t TurnTimer::getTurnLength() const{
@@ -77,7 +77,7 @@ uint32_t TurnTimer::getTurnLength() const{
     return len_over_thres;
   }else{
     if(len_under_thres == 0){
-      return 0xffffff;
+      return UINT32_NEG_ONE;
     }
     return (len_over_thres > len_under_thres) ? len_over_thres : len_under_thres;
   }

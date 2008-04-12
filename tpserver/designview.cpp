@@ -1,6 +1,6 @@
 /*  DesignView class
  *
- *  Copyright (C) 2005,2006, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ void DesignView::packFrame(Frame* frame) const{
     frame->packString(description);
   }
   if(completelyvisible || seenum){
-    frame->packInt(design->isValid() ? design->getInUse() : 0xFFFFFFFF);
+    frame->packInt(design->isValid() ? design->getInUse() : UINT32_NEG_ONE);
   }else{
     frame->packInt(exist);
   }

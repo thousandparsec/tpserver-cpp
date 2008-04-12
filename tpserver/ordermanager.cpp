@@ -69,21 +69,21 @@ void OrderManager::addOrderType(Order* prototype){
 
 uint32_t OrderManager::getOrderTypeByName(const std::string& name){
   if(typeNames.find(name) == typeNames.end()){
-    return 0xffffffff;
+    return UINT32_NEG_ONE;
   }else
     return typeNames[name];
 }
 
 void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   uint32_t lseqkey = frame->unpackInt();
-  if(lseqkey == 0xffffffff){
+  if(lseqkey == UINT32_NEG_ONE){
     //start new seqkey
     lseqkey = seqkey;
   }
 
   uint32_t start = frame->unpackInt();
   uint32_t num = frame->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
@@ -97,7 +97,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin();
       itcurr != prototypeStore.end(); ++itcurr){
     Order* type = itcurr->second;
-    if(fromtime == 0xffffffffffffffffULL || type->getDescriptionModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() < fromtime){
       modlist[itcurr->first] = type->getDescriptionModTime();
     }
   }
@@ -111,7 +111,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
     num = modlist.size() - start;
   }
   
-  if(num > 87378 + ((of->getVersion() < fv0_4) ? 1 : 0)){
+  if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
   }
