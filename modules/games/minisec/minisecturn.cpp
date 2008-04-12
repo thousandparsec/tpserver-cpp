@@ -231,7 +231,9 @@ void MinisecTurn::doTurn(){
   objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
     IGObject * ob = objectmanager->getObject(*itcurr);
-    ob->getObjectBehaviour()->doOnceATurn();
+    if(ob->isAlive()){
+      ob->getObjectBehaviour()->doOnceATurn();
+    }
     objectmanager->doneWithObject(ob->getID());
   }
 
@@ -247,15 +249,24 @@ void MinisecTurn::doTurn(){
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
       ObjectView* obv = playerview->getObjectView(*itob);
       if(obv == NULL){
-        obv = new ObjectView();
-        obv->setObjectId(*itob);
-        obv->setCompletelyVisible(true);
-        playerview->addVisibleObject(obv);
-      }else{
-        uint64_t obmt = objectmanager->getObject(*itob)->getModTime();
+        if(objectmanager->getObject(*itob)->isAlive()){
+          obv = new ObjectView();
+          obv->setObjectId(*itob);
+          obv->setCompletelyVisible(true);
+          playerview->addVisibleObject(obv);
+        }
         objectmanager->doneWithObject(*itob);
+      }else{
+        IGObject* ro = objectmanager->getObject(*itob);
+        uint64_t obmt = ro->getModTime();
+        bool alive = ro->isAlive();
+        objectmanager->doneWithObject(*itob);
+        if(obv->isCompletelyVisible() && alive == obv->isGone()){
+          obv->setGone(!alive);
+        }
         if(obmt > obv->getModTime()){
           obv->setModTime(obmt);
+          playerview->updateObjectView(*itob);
         }
       }
     }

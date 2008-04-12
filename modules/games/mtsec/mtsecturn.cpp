@@ -239,6 +239,7 @@ void MTSecTurn::doTurn(){
         objectmanager->doneWithObject(*itob);
         if(obmt > obv->getModTime()){
           obv->setModTime(obmt);
+          pv->updateObjectView(*itob);
         }
       }
     }

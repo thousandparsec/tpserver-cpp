@@ -48,6 +48,7 @@ void exploreStarSys(IGObject* obj) {
    if(obv != NULL){
       if(!obv->isCompletelyVisible()){
         obv->setCompletelyVisible(true);
+        pview->updateObjectView(obj->getID());
       }
    }else{
       obv = new ObjectView();
@@ -64,6 +65,7 @@ void exploreStarSys(IGObject* obj) {
       if(obv != NULL){
           if(!obv->isCompletelyVisible()){
             obv->setCompletelyVisible(true);
+            pview->updateObjectView(*i);
           }
       }else{
           obv = new ObjectView();
