@@ -30,6 +30,7 @@
 #include "designview.h"
 #include "component.h"
 #include "componentview.h"
+#include "persistence.h"
 
 #include "playerview.h"
 
@@ -58,20 +59,35 @@ void PlayerView::doOnceATurn(){
 void PlayerView::addVisibleObject(ObjectView* obj){
   visibleObjects.insert(obj->getObjectId());
   cacheObjects[obj->getObjectId()] = obj;
+  Game::getGame()->getPersistence()->saveObjectView(pid, obj);
   currObjSeq++;
 }
 
-ObjectView* PlayerView::getObjectView(uint32_t objid) const{
+ObjectView* PlayerView::getObjectView(uint32_t objid){
   if(isVisibleObject(objid)){
-    return cacheObjects.find(objid)->second;
+    ObjectView* obj = cacheObjects[objid];
+    if(obj == NULL){
+      obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
+      if(obj != NULL){
+        cacheObjects[objid] = obj;
+      }
+    }
+    return obj;
   }else{
     return NULL;
   }
 }
 
+void PlayerView::updateObjectView(uint32_t objid){
+  ObjectView* obj = cacheObjects[objid];
+  Game::getGame()->getPersistence()->saveObjectView(pid, obj);
+}
+
 void PlayerView::removeVisibleObject(uint32_t objid){
-  if(isVisibleObject(objid)){
+  ObjectView* obj = getObjectView(objid);
+  if(obj != NULL){
     cacheObjects[objid]->setGone(true);
+    Game::getGame()->getPersistence()->saveObjectView(pid, cacheObjects[objid]);
   }
 }
 
@@ -85,8 +101,10 @@ std::set<uint32_t> PlayerView::getVisibleObjects() const{
 
 void PlayerView::addOwnedObject(uint32_t objid){
   ownedObjects.insert(objid);
-  if(isVisibleObject(objid)){
-    cacheObjects[objid]->setCompletelyVisible(true);
+  ObjectView* obj = getObjectView(objid);
+  if(obj != NULL){
+    obj->setCompletelyVisible(true);
+    Game::getGame()->getPersistence()->saveObjectView(pid, cacheObjects[objid]);
   }else{
     ObjectView* ov = new ObjectView();
     ov->setObjectId(objid);
@@ -107,11 +125,11 @@ std::set<uint32_t> PlayerView::getOwnedObjects() const{
   return ownedObjects;
 }
 
-void PlayerView::processGetObject(uint32_t objid, Frame* frame) const{
+void PlayerView::processGetObject(uint32_t objid, Frame* frame){
   if(visibleObjects.find(objid) == visibleObjects.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Object");
   }else{
-    ObjectView* object = cacheObjects.find(objid)->second;
+    ObjectView* object = getObjectView(objid);
     object->packFrame(frame, pid);
   }
 }
@@ -133,23 +151,30 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
   uint32_t seqnum = in->unpackInt();
   uint32_t snum = in->unpackInt();
   uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(in->getVersion() >= fv0_4){
     fromtime = in->unpackInt64();
   }
   
-  if(seqnum != currObjSeq && seqnum != 0xffffffff){
+  if(seqnum != currObjSeq && seqnum != UINT32_NEG_ONE){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
     modlistObject.clear();
     return;
   }
   
-  if(seqnum == 0xffffffff){
+  if(seqnum == UINT32_NEG_ONE){
     modlistObject.clear();
     for(std::map<uint32_t, ObjectView*>::iterator itcurr = cacheObjects.begin();
         itcurr != cacheObjects.end(); ++itcurr){
-      if((fromtime == 0xffffffffffffffffULL && !((itcurr->second)->isGone()))|| (itcurr->second)->getModTime() < fromtime){
-        modlistObject[itcurr->first] = (itcurr->second)->getModTime();
+      ObjectView* obj = itcurr->second;
+      if(obj == NULL){
+        obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, itcurr->first);
+        if(obj != NULL){
+          cacheObjects[itcurr->first] = obj;
+        }
+      }
+      if((fromtime == UINT64_NEG_ONE && !(obj->isGone()))|| obj->getModTime() < fromtime){
+        modlistObject[itcurr->first] = obj->getModTime();
       }
     }
   }
@@ -163,7 +188,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     numtoget = modlistObject.size() - snum;
   }
     
-  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
@@ -254,22 +279,22 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
   uint32_t seqnum = in->unpackInt();
   uint32_t snum = in->unpackInt();
   uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(in->getVersion() >= fv0_4){
     fromtime = in->unpackInt64();
   }
   
-  if(seqnum != currDesignSeq && seqnum != 0xffffffff){
+  if(seqnum != currDesignSeq && seqnum != UINT32_NEG_ONE){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
     modlistDesign.clear();
     return;
   }
   
-  if(seqnum == 0xffffffff){
+  if(seqnum == UINT32_NEG_ONE){
     modlistDesign.clear();
     for(std::map<uint32_t, DesignView*>::iterator itcurr = cacheDesigns.begin();
         itcurr != cacheDesigns.end(); ++itcurr){
-      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+      if(fromtime == UINT64_NEG_ONE || (itcurr->second)->getModTime() < fromtime){
         modlistDesign[itcurr->first] = (itcurr->second)->getModTime();
       }
     }
@@ -284,7 +309,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
     numtoget = modlistDesign.size() - snum;
   }
     
-  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
@@ -375,23 +400,23 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   uint32_t seqnum = in->unpackInt();
   uint32_t snum = in->unpackInt();
   uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = 0xffffffffffffffffULL;
+  uint64_t fromtime = UINT64_NEG_ONE;
   if(in->getVersion() >= fv0_4){
     fromtime = in->unpackInt64();
   }
   
-  if(seqnum != currCompSeq && seqnum != 0xffffffff){
+  if(seqnum != currCompSeq && seqnum != UINT32_NEG_ONE){
     out->createFailFrame(fec_FrameError, "Invalid Sequence number");
     modlistComp.clear();
     return;
   }
   
-  if(seqnum == 0xffffffff){
+  if(seqnum == UINT32_NEG_ONE){
     //clear current mod list in case it has stuff in it still
     modlistComp.clear();
     for(std::map<uint32_t, ComponentView*>::iterator itcurr = cacheComponents.begin();
         itcurr != cacheComponents.end(); ++itcurr){
-      if(fromtime == 0xffffffffffffffffULL || (itcurr->second)->getModTime() < fromtime){
+      if(fromtime == UINT64_NEG_ONE || (itcurr->second)->getModTime() < fromtime){
         modlistComp[itcurr->first] = (itcurr->second)->getModTime();
       }
     }
@@ -406,7 +431,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
     numtoget = modlistComp.size() - snum;
   }
   
-  if(numtoget > 87378 + ((out->getVersion() < fv0_4)? 1 : 0)){
+  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
     Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
     out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;

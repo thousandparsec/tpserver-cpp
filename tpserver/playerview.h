@@ -41,7 +41,8 @@ public:
   void doOnceATurn();
 
   void addVisibleObject(ObjectView* obj);
-  ObjectView* getObjectView(uint32_t objid) const;
+  ObjectView* getObjectView(uint32_t objid);
+  void updateObjectView(uint32_t objid);
   void removeVisibleObject(uint32_t objid);
   bool isVisibleObject(unsigned int objid) const;
   std::set<uint32_t> getVisibleObjects() const;
@@ -49,7 +50,7 @@ public:
   void removeOwnedObject(uint32_t objid);
   uint32_t getNumberOwnedObjects() const;
   std::set<uint32_t> getOwnedObjects() const;
-  void processGetObject(uint32_t objid, Frame* frame) const;
+  void processGetObject(uint32_t objid, Frame* frame);
   void processGetObjectIds(Frame* in, Frame* out);
 
   void addVisibleDesign(DesignView* design);
