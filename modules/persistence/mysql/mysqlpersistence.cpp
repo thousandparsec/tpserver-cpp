@@ -50,6 +50,8 @@
 #include <tpserver/component.h>
 #include <tpserver/property.h>
 
+#include <tpserver/objectbehaviour.h>
+
 #include <tpserver/objectview.h>
 #include <tpserver/designview.h>
 #include <tpserver/componentview.h>
@@ -663,6 +665,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     
     object->setModTime(strtoull(row[7], NULL, 10));
     object->setIsDirty(false);
+    object->getObjectBehaviour()->postPersistenceSetup();
     
     mysql_free_result(obresult);
     return object;
