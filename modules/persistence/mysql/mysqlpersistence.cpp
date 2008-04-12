@@ -1151,6 +1151,7 @@ Order* MysqlPersistence::retrieveOrder(uint32_t queueid, uint32_t ordid){
     mysql_free_result(ordresult);
     Order* order = Game::getGame()->getOrderManager()->createOrder(ordertype);
     order->setTurns(turns);
+    order->setOrderQueueId(queueid);
     //fetch resources
     querybuilder.str("");
     querybuilder << "SELECT resourceid, amount FROM orderresource WHERE queueid=" << queueid << " AND orderid=" << ordid << ";";
