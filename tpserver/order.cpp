@@ -79,7 +79,11 @@ void Order::createFrame(Frame * f, int pos)
 {
 
   f->setType(ft02_Order);
-  f->packInt(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  if(f->getVersion() <= fv0_3){
+    f->packInt(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  }else{
+    f->packInt(orderqueueid);
+  }
   f->packInt(pos);
   f->packInt(type);
   f->packInt(turns);
