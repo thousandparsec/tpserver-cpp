@@ -3928,7 +3928,7 @@ bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t 
     while((row = mysql_fetch_row(obresult)) != NULL){
         uint32_t available = atoi(row[1]);
         uint32_t possible = atoi(row[2]);
-        if(available != 0 && possible != 0){
+        if(available != 0 || possible != 0){
           reslist[atoi(row[0])] = std::pair<uint32_t, uint32_t>(available, possible);
         }
     }
