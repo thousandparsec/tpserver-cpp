@@ -114,7 +114,7 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
     ordercache[orderid] = ord;
     ord->setOrderQueueId(queueid);
 
-    if (pos == 0xffffffff) {
+    if (pos == UINT32_NEG_ONE) {
       orderlist.push_back(orderid);
     } else {
       std::list<uint32_t>::iterator inspos = orderlist.begin();
