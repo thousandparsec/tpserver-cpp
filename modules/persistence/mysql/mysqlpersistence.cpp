@@ -148,7 +148,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
                     "(NULL, 'objectparamreference', 0), (NULL, 'objectparamrefquantitylist', 0), "
                     "(NULL, 'objectparaminteger', 0), (NULL, 'objectparamsize', 0), "
-                    "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0), "
+                    "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0), (NULL, 'orderqueueallowedtype', 0), "
                     "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
                     "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
                     "(NULL, 'orderparamstring', 0), (NULL, 'orderparamtime', 0), "
@@ -197,8 +197,11 @@ bool MysqlPersistence::init(){
             if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
               throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE orderqueueowner (queueid INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE orderqueueowner (queueid INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, PRIMARY KEY(queueid, playerid));") != 0){
               throw std::exception();
+            }
+            if(mysql_query(conn, "CREATE TABLE orderqueueallowedtype (queueid INT UNSIGNED NOT NULL, ordertype INT UNSIGNED NOT NULL, PRIMARY KEY(queueid, ordertype));") != 0){
+                throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE ordertype (queueid INT UNSIGNED NOT NULL, orderid INT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, turns INT UNSIGNED NOT NULL, PRIMARY KEY(queueid, orderid));") != 0){
                 throw std::exception();
@@ -763,6 +766,25 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
     }
     unlock();
   }
+  std::set<uint32_t> ordertypes = oq->getAllowedOrderTypes();
+  if(!ordertypes.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderqueueallowedtype VALUES ";
+    for(std::set<uint32_t>::iterator itcurr = ordertypes.begin(); itcurr != ordertypes.end(); ++itcurr){
+      if(itcurr != ordertypes.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
+    }
+    querybuilder << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not store orderqueue allowed types - %s", mysql_error(conn));
+      unlock();
+      return false;
+    }
+    unlock();
+  }
   return true;
 }
 
@@ -788,6 +810,13 @@ bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
   querybuilder << "DELETE FROM orderqueueowner WHERE queueid=" << oq->getQueueId() <<";";
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
     Logger::getLogger()->error("Mysql: Could not remove owners for orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
+    unlock();
+    return false;
+  }
+  querybuilder.str("");
+  querybuilder << "DELETE FROM orderqueueallowedtype WHERE queueid=" << oq->getQueueId() <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+    Logger::getLogger()->error("Mysql: Could not remove allowed types for orderqueue %d - %s", oq->getQueueId(), mysql_error(conn));
     unlock();
     return false;
   }
@@ -825,6 +854,25 @@ bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
       Logger::getLogger()->error("Mysql: Could not store orderqueue owners - %s", mysql_error(conn));
+      unlock();
+      return false;
+    }
+    unlock();
+  }
+  std::set<uint32_t> ordertypes = oq->getAllowedOrderTypes();
+  if(!ordertypes.empty()){
+    querybuilder.str("");
+    querybuilder << "INSERT INTO orderqueueallowedtype VALUES ";
+    for(std::set<uint32_t>::iterator itcurr = ordertypes.begin(); itcurr != ordertypes.end(); ++itcurr){
+      if(itcurr != ordertypes.begin()){
+        querybuilder << ", ";
+      }
+      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
+    }
+    querybuilder << ";";
+    lock();
+    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not store orderqueue allowed types - %s", mysql_error(conn));
       unlock();
       return false;
     }
@@ -881,6 +929,25 @@ OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
       mysql_free_result(ordresult);
       return NULL;
   }
+  querybuilder.str("");
+  querybuilder << "SELECT ordertype FROM orderqueueallowedtype WHERE queueid=" << oqid <<";";
+  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
+      Logger::getLogger()->error("Mysql: Could not query orderqueue allowed types - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      mysql_free_result(ordresult);
+      mysql_free_result(ownerresult);
+      return NULL;
+  }
+  MYSQL_RES *allowedresult = mysql_store_result(conn);
+  if(allowedresult == NULL){
+      Logger::getLogger()->error("Mysql: get order queue allowed types: Could not store result - %s", mysql_error(conn));
+      unlock();
+      mysql_free_result(oqresult);
+      mysql_free_result(ordresult);
+      mysql_free_result(ownerresult);
+      return NULL;
+  }
   unlock();
   
   
@@ -898,9 +965,6 @@ OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
   oq->setObjectId(atoi(oqrow[1]));
   oq->setActive(atoi(oqrow[2]) == 1);
   oq->setRepeating(atoi(oqrow[3]) == 1);
-  oq->setModTime(strtoull(oqrow[4], NULL, 10));
-  
-  mysql_free_result(oqresult);
   
   uint32_t max = 0;
   MYSQL_ROW olrow;
@@ -923,6 +987,17 @@ OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
   mysql_free_result(ownerresult);
   oq->setOwners(owners);
   
+  MYSQL_ROW allowrow;
+  std::set<uint32_t> allowedorders;
+  while((allowrow = mysql_fetch_row(allowedresult)) != NULL){
+    allowedorders.insert(atoi(allowrow[0]));
+  }
+  mysql_free_result(allowedresult);
+  oq->setAllowedOrderTypes(allowedorders);
+  
+  oq->setModTime(strtoull(oqrow[4], NULL, 10));
+  
+  mysql_free_result(oqresult);
   
   return oq;
 }

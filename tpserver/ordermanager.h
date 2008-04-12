@@ -45,6 +45,7 @@ class OrderManager{
   Order* createOrder(uint32_t ot);
   
   bool addOrderQueue(OrderQueue* oq);
+  void updateOrderQueue(uint32_t oqid);
   bool removeOrderQueue(uint32_t oqid);
   OrderQueue* getOrderQueue(uint32_t oqid);
 

@@ -141,6 +141,11 @@ bool OrderManager::addOrderQueue(OrderQueue* oq){
   return true;
 }
 
+void OrderManager::updateOrderQueue(uint32_t oqid){
+  OrderQueue *oq = orderqueues[oqid];
+  Game::getGame()->getPersistence()->updateOrderQueue(oq);
+}
+
 bool OrderManager::removeOrderQueue(uint32_t oqid){
   OrderQueue *oq = orderqueues[oqid];
   if(oq == NULL){

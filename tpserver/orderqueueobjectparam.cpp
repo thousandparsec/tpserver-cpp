@@ -102,4 +102,5 @@ std::set<uint32_t> OrderQueueObjectParam::getAllowedOrders() const{
 void OrderQueueObjectParam::setAllowedOrders(std::set<uint32_t> ao){
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   orderqueue->setAllowedOrderTypes(ao);
+  Game::getGame()->getOrderManager()->updateOrderQueue(queueid);
 }
