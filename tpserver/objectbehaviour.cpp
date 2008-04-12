@@ -40,6 +40,9 @@ void ObjectBehaviour::packExtraData(Frame * frame){
 void ObjectBehaviour::setupObject(){
 }
 
+void ObjectBehaviour::postPersistenceSetup(){
+}
+
 void ObjectBehaviour::signalRemoval(){
   //for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
  //     ++itcurr){
