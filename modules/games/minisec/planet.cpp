@@ -128,7 +128,3 @@ bool Planet::removeResource(uint32_t restype, uint32_t amount){
     }
     return false;
 }
-
-void Planet::postPersistenceSetup(){
-  setDefaultOrderTypes();
-}

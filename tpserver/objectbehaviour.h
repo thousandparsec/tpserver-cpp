@@ -35,7 +35,6 @@ class ObjectBehaviour{
     virtual int getContainerType() = 0;
     
     virtual void setupObject();
-    virtual void postPersistenceSetup();
     virtual void signalRemoval();
     
   protected:

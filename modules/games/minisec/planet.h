@@ -55,7 +55,6 @@ class Planet:public OwnedObject {
     void addResource(uint32_t restype, uint32_t amount);
     bool removeResource(uint32_t restype, uint32_t amount);
     
-    void postPersistenceSetup();
 
 };
 
