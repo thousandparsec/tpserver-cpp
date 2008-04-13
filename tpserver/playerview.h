@@ -59,7 +59,7 @@ public:
   bool isUsableDesign(uint32_t designid) const;
   std::set<uint32_t> getUsableDesigns() const;
   std::set<uint32_t> getVisibleDesigns() const;
-  void processGetDesign(uint32_t designid, Frame* frame) const;
+  void processGetDesign(uint32_t designid, Frame* frame);
   void processGetDesignIds(Frame* in, Frame* out);
 
   void addVisibleComponent(ComponentView* comp);
@@ -68,7 +68,7 @@ public:
   bool isUsableComponent(uint32_t compid) const;
   std::set<uint32_t> getVisibleComponents() const;
   std::set<uint32_t> getUsableComponents() const;
-  void processGetComponent(uint32_t compid, Frame* frame) const;
+  void processGetComponent(uint32_t compid, Frame* frame);
   void processGetComponentIds(Frame* in, Frame* out);
   
   //for persistence only!

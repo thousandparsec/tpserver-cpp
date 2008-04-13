@@ -253,7 +253,7 @@ std::set<uint32_t> PlayerView::getVisibleDesigns() const{
   return visibleDesigns;
 }
 
-void PlayerView::processGetDesign(uint32_t designid, Frame* frame) const{
+void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
   if(visibleComponents.find(designid) == visibleDesigns.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
@@ -374,7 +374,7 @@ std::set<uint32_t> PlayerView::getUsableComponents() const{
   return usableComponents;
 }
 
-void PlayerView::processGetComponent(uint32_t compid, Frame* frame) const{
+void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
   if(visibleComponents.find(compid) == visibleComponents.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
