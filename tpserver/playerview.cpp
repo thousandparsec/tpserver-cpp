@@ -216,9 +216,12 @@ void PlayerView::addVisibleDesign(DesignView* design){
   uint32_t designid = design->getDesignId();
   visibleDesigns.insert(designid);
   if(cacheDesigns.find(designid) != cacheDesigns.end()){
-    delete cacheDesigns[designid];
+    if(cacheDesigns[designid] != NULL){
+      delete cacheDesigns[designid];
+    }
   }
   cacheDesigns[designid] = design;
+  Game::getGame()->getPersistence()->saveDesignView(pid, design);
   currDesignSeq++;
 }
 
@@ -230,7 +233,15 @@ void PlayerView::addUsableDesign(uint32_t designid){
     designview->setIsCompletelyVisible(true);
     addVisibleDesign(designview);
   }else{
-    cacheDesigns[designid]->setIsCompletelyVisible(true);
+    DesignView* design = cacheDesigns[designid];
+    if(design == NULL){
+      design = Game::getGame()->getPersistence()->retrieveDesignView(pid, designid);
+      if(design != NULL){
+        cacheDesigns[designid] = design;
+      }
+    }
+    design->setIsCompletelyVisible(true);
+    Game::getGame()->getPersistence()->saveDesignView(pid, design);
     currCompSeq++;
   }
 }
@@ -258,6 +269,12 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
     DesignView* design = cacheDesigns.find(designid)->second;
+    if(design == NULL){
+      design = Game::getGame()->getPersistence()->retrieveDesignView(pid, designid);
+      if(design != NULL){
+        cacheDesigns[designid] = design;
+      }
+    }
     design->packFrame(frame);
   }
 }
@@ -294,8 +311,15 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
     modlistDesign.clear();
     for(std::map<uint32_t, DesignView*>::iterator itcurr = cacheDesigns.begin();
         itcurr != cacheDesigns.end(); ++itcurr){
-      if(fromtime == UINT64_NEG_ONE || (itcurr->second)->getModTime() < fromtime){
-        modlistDesign[itcurr->first] = (itcurr->second)->getModTime();
+      DesignView* designv = itcurr->second;
+      if(designv == NULL){
+        designv = Game::getGame()->getPersistence()->retrieveDesignView(pid, itcurr->first);
+        if(designv != NULL){
+          cacheDesigns[itcurr->first] = designv;
+        }
+      }
+      if(fromtime == UINT64_NEG_ONE || designv->getModTime() < fromtime){
+        modlistDesign[itcurr->first] = designv->getModTime();
       }
     }
   }
