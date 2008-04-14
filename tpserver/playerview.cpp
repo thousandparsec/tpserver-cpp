@@ -361,9 +361,12 @@ void PlayerView::addVisibleComponent(ComponentView* comp){
   uint32_t compid = comp->getComponentId();
   visibleComponents.insert(compid);
   if(cacheComponents.find(compid) != cacheComponents.end()){
-    delete cacheComponents[compid];
+    if(cacheComponents[compid] != NULL){
+      delete cacheComponents[compid];
+    }
   }
   cacheComponents[compid] = comp;
+  Game::getGame()->getPersistence()->saveComponentView(pid, comp);
   currCompSeq++;
 }
 
@@ -375,7 +378,15 @@ void PlayerView::addUsableComponent(uint32_t compid){
     compview->setCompletelyVisible(true);
     addVisibleComponent(compview);
   }else{
-    cacheComponents[compid]->setCompletelyVisible(true);
+    ComponentView* compv = cacheComponents[compid];
+    if(compv == NULL){
+      compv = Game::getGame()->getPersistence()->retrieveComponentView(pid, compid);
+      if(compv != NULL){
+        cacheComponents[compid] = compv;
+      }
+    }
+    compv->setCompletelyVisible(true);
+    Game::getGame()->getPersistence()->saveComponentView(pid, compv);
     currCompSeq++;
   }
 }
@@ -403,6 +414,12 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
     ComponentView* component = cacheComponents.find(compid)->second;
+    if(component == NULL){
+      component = Game::getGame()->getPersistence()->retrieveComponentView(pid, compid);
+      if(component != NULL){
+        cacheComponents[compid] = component;
+      }
+    }
     component->packFrame(frame);
   }
 }
@@ -440,8 +457,15 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
     modlistComp.clear();
     for(std::map<uint32_t, ComponentView*>::iterator itcurr = cacheComponents.begin();
         itcurr != cacheComponents.end(); ++itcurr){
-      if(fromtime == UINT64_NEG_ONE || (itcurr->second)->getModTime() < fromtime){
-        modlistComp[itcurr->first] = (itcurr->second)->getModTime();
+      ComponentView* component = itcurr->second;
+      if(component == NULL){
+        component = Game::getGame()->getPersistence()->retrieveComponentView(pid, itcurr->first);
+        if(component != NULL){
+          cacheComponents[itcurr->first] = component;
+        }
+      }
+      if(fromtime == UINT64_NEG_ONE || component->getModTime() < fromtime){
+        modlistComp[itcurr->first] = component->getModTime();
       }
     }
   }
