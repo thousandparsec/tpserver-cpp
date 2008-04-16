@@ -91,6 +91,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         msg->setBody("New player " + name + " has joined the game.");
         msg->addReference(rst_Special, rssv_System);
         msg->addReference(rst_Action_Player, rspav_Joined);
+        msg->addReference(rst_Player, rtn->getID());
         
         for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
                 itid != players.end(); ++itid){
