@@ -91,8 +91,18 @@ void PlayerView::removeVisibleObject(uint32_t objid){
   }
 }
 
-bool PlayerView::isVisibleObject(unsigned int objid) const{
-  return visibleObjects.find(objid) != visibleObjects.end();
+bool PlayerView::isVisibleObject(unsigned int objid){
+  if(visibleObjects.find(objid) != visibleObjects.end()){
+    ObjectView* obj = cacheObjects[objid];
+    if(obj == NULL){
+      obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
+      if(obj != NULL){
+        cacheObjects[objid] = obj;
+      }
+    }
+    return !(obj->isGone());
+  }
+  return false;
 }
 
 std::set<uint32_t> PlayerView::getVisibleObjects() const{
