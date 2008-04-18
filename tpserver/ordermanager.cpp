@@ -171,5 +171,5 @@ OrderQueue* OrderManager::getOrderQueue(uint32_t oqid){
 }
 
 void OrderManager::init(){
-  
+  nextOrderQueueId = Game::getGame()->getPersistence()->getMaxOrderQueueId() + 1;
 }
