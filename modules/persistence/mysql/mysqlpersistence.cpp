@@ -3884,39 +3884,20 @@ bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t tu
 
 bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, ResourceListObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT turn FROM objectparamresourcelist WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
-    lock();
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param turn number %d,%d - %s", objid, pgroup, mysql_error(conn));
-        unlock();
-        throw new std::exception();
-    }
-    MYSQL_RES *obresult = mysql_store_result(conn);
-    if(obresult == NULL){
-        Logger::getLogger()->error("Mysql: retrieve resourcelist param turn number: Could not store result - %s", mysql_error(conn));
-        unlock();
-        throw new std::exception();
-    }
-    unlock(); // finished with mysql for a moment
-    
-    MYSQL_ROW row = mysql_fetch_row(obresult);
-    if(row == NULL){
-        Logger::getLogger()->warning("Mysql: No such resourcelist param %d,%d", objid, pgroup);
-        mysql_free_result(obresult);
-        throw new std::exception();
-    }
-    uint32_t realturn = atoi(row[0]);
-    mysql_free_result(obresult);
-    
-    querybuilder.str("");
-    querybuilder << "SELECT resid, available, possible FROM objectparamresourcelist WHERE objectid = " << objid << " AND turn = " << realturn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    querybuilder << "SELECT resid, available, possible FROM objectparamresourcelist WHERE objectid = " << objid;
+    querybuilder << " AND turn = (SELECT MAX(turn) FROM objectparamresourcelist WHERE objectid = " << objid;
+    querybuilder << " AND turn <= " << turn << " AND playerid = " << plid;
+    querybuilder << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos;
+    querybuilder << ") AND playerid = " << plid << " AND paramgroupid = " << pgroup;
+    querybuilder << " AND paramgrouppos = " << pgpos << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
         throw new std::exception();
     }
-    obresult = mysql_store_result(conn);
+    MYSQL_RES *obresult = mysql_store_result(conn);
+    
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve resourcelist param: Could not store result - %s", mysql_error(conn));
         unlock();
@@ -3925,6 +3906,7 @@ bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t 
     unlock(); // finished with mysql
     
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist;
+    MYSQL_ROW row;
     while((row = mysql_fetch_row(obresult)) != NULL){
         uint32_t available = atoi(row[1]);
         uint32_t possible = atoi(row[2]);
@@ -4028,39 +4010,17 @@ bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t
 
 bool MysqlPersistence::retrieveRefQuantityListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, RefQuantityListObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT turn FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
-    lock();
-    if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not retrieve refquantitylist param turn number %d,%d - %s", objid, pgroup, mysql_error(conn));
-        unlock();
-        throw new std::exception();
-    }
-    MYSQL_RES *obresult = mysql_store_result(conn);
-    if(obresult == NULL){
-        Logger::getLogger()->error("Mysql: retrieve refquantitylist param turn number: Could not store result - %s", mysql_error(conn));
-        unlock();
-        throw new std::exception();
-    }
-    unlock(); // finished with mysql for a moment
-    
-    MYSQL_ROW row = mysql_fetch_row(obresult);
-    if(row == NULL){
-        Logger::getLogger()->warning("Mysql: No such refquantitylist param %d,%d", objid, pgroup);
-        mysql_free_result(obresult);
-        throw new std::exception();
-    }
-    uint32_t realturn = atoi(row[0]);
-    mysql_free_result(obresult);
-    
-    querybuilder.str("");
-    querybuilder << "SELECT reftype, refid, quant FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn = " << realturn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    querybuilder << "SELECT reftype, refid, quant FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn = (SELECT MAX(turn) FROM objectparamresourcelist WHERE objectid = " << objid;
+    querybuilder << " AND turn <= " << turn << " AND playerid = " << plid;
+    querybuilder << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos;
+    querybuilder << ") AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve refquantitylist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
         throw new std::exception();
     }
-    obresult = mysql_store_result(conn);
+    MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve refquantitylist param: Could not store result - %s", mysql_error(conn));
         unlock();
@@ -4069,6 +4029,7 @@ bool MysqlPersistence::retrieveRefQuantityListObjectParam(uint32_t objid, uint32
     unlock(); // finished with mysql
     
     std::map<std::pair<int32_t, uint32_t>, uint32_t> reflist;
+    MYSQL_ROW row;
     while((row = mysql_fetch_row(obresult)) != NULL){
         int32_t reftype = atoi(row[0]);
         uint32_t refid = atoi(row[1]);
