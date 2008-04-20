@@ -25,6 +25,7 @@
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
 #include <tpserver/objectbehaviour.h>
@@ -209,21 +210,35 @@ void setVisibleObjects(Player *player) {
       pv->addVisibleObject(obv);
    }
    
+   uint32_t fleettype = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
    set<uint32_t> containedObjects = universe->getContainedObjects();
    for(set<uint32_t>::const_iterator i = containedObjects.begin(); i != containedObjects.end(); ++i){
-     obv = pv->getObjectView(*i);
-     if(obv == NULL){
-        obv = new ObjectView();
-        obv->setObjectId(*i);
-        obv->setCompletelyVisible(true);
-        pv->addVisibleObject(obv);
+     IGObject* object = om->getObject(*i);
+     if(object->getType() == fleettype){
+      obv = pv->getObjectView(*i);
+      if(obv == NULL){
+          obv = new ObjectView();
+          obv->setObjectId(*i);
+          obv->setCompletelyVisible(true);
+          pv->addVisibleObject(obv);
+      }
+     }else{
+       obv = pv->getObjectView(*i);
+       if(!obv->isGone()){
+         obv->setGone(true);
+         pv->updateObjectView(*i);
+       }
      }
+     om->doneWithObject(*i);
    }
 
    for(set<uint32_t>::const_iterator i = ownedObjects.begin(); i != ownedObjects.end(); ++i)
    {
       IGObject *obj = om->getObject(*i);
-      exploreStarSys(obj);
+      if(obj->getType() != fleettype || obj->getParent() != 0){
+        exploreStarSys(obj);
+      }
+      om->doneWithObject(*i);
    }
       
    

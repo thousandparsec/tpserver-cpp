@@ -55,8 +55,6 @@ Move::Move() : Order() {
    starSys->setName("Star System");
    starSys->setDescription("The star system to move to");
    addOrderParameter(starSys);
-
-   firstTurn = true, calcTurns = true;
 }
 
 Move::~Move() {
@@ -77,7 +75,6 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
    Result r = Order::inputFrame(f, playerid);
    if(!r) return r;
 
-   firstTurn = true;
    turns = 0;
       
    Game *game = Game::getGame();
@@ -117,10 +114,10 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
 bool Move::doOrder(IGObject * obj) {
    turns--;
 
-   if(firstTurn)
+   if(obj->getParent() != 0)
    {
-      firstTurn = false;
       obj->removeFromParent();
+      obj->addToParent(0);
    }
 
 
