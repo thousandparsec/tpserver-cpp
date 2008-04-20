@@ -240,7 +240,18 @@ void setVisibleObjects(Player *player) {
       }
       om->doneWithObject(*i);
    }
-      
+   
+   set<uint32_t> visobjects = pv->getVisibleObjects();
+   for(set<uint32_t>::const_iterator i = visobjects.begin(); i != visobjects.end(); ++i)
+   {
+      IGObject *obj = om->getObject(*i);
+      obv = pv->getObjectView(*i);
+      if((!obv->isGone()) && obv->isCompletelyVisible() && obj->getModTime() > obv->getModTime()){
+        obv->setModTime(obj->getModTime());
+        pv->updateObjectView(*i);
+      }
+      om->doneWithObject(*i);
+   }
    
 }
 
