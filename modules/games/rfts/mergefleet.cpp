@@ -93,6 +93,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
       
       //otherFleetObj->removeFromParent(); CHECK
       om->scheduleRemoveObject(otherFleetObj->getID());
+      player->getPlayerView()->removeOwnedObject(otherFleetObj->getID());
    }
 
    om->doneWithObject(otherFleetObj->getID());

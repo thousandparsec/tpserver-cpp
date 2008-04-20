@@ -27,6 +27,7 @@
 #include <tpserver/objectmanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/playerview.h>
 
 #include "fleet.h"
 #include "planet.h"
@@ -95,8 +96,11 @@ bool Colonise::doOrder(IGObject *obj) {
          defender = game->getPlayerManager()->getPlayer(planetData->getOwner());
       string msgBody = string("Colonists from ") + attacker->getName() + "'s fleet " + obj->getName();
 
-      if(fleetData->totalShips() == 0)
+      if(fleetData->totalShips() == 0){
+         obj->removeFromParent();
          om->scheduleRemoveObject(obj->getID());
+         attacker->getPlayerView()->removeOwnedObject(obj->getID());
+      }
 
       // colonists attack planet
       planetData->removeResource("Population", static_cast<uint32_t>(colonists * 4.f/3));

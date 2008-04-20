@@ -246,11 +246,18 @@ void setVisibleObjects(Player *player) {
    {
       IGObject *obj = om->getObject(*i);
       obv = pv->getObjectView(*i);
-      if((!obv->isGone()) && obv->isCompletelyVisible() && obj->getModTime() > obv->getModTime()){
+      if(obj == NULL){
+        if(!obv->isGone()){
+          obv->setGone(true);
+          pv->updateObjectView(*i);
+        }
+      }else if((!obv->isGone()) && obv->isCompletelyVisible() && obj->getModTime() > obv->getModTime()){
         obv->setModTime(obj->getModTime());
         pv->updateObjectView(*i);
       }
-      om->doneWithObject(*i);
+      if(obj != NULL){
+        om->doneWithObject(*i);
+      }
    }
    
 }
