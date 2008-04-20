@@ -571,6 +571,7 @@ void Rfts::onPlayerAdded(Player *player) {
    scout->addComplete(2);
    game->getDesignStore()->designCountsUpdated(scout);
    mydesignids.insert(scout->getDesignId());
+   playerview->addOwnedObject(fleet->getID());
 
    // start them out with access to mark1
    Design* mark1 = createMarkDesign(player, '1');
