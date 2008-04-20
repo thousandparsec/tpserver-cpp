@@ -64,7 +64,7 @@ void PlayerView::addVisibleObject(ObjectView* obj){
 }
 
 ObjectView* PlayerView::getObjectView(uint32_t objid){
-  if(isVisibleObject(objid)){
+  if(visibleObjects.find(objid) != visibleObjects.end()){
     ObjectView* obj = cacheObjects[objid];
     if(obj == NULL){
       obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
