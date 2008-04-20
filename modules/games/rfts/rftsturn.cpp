@@ -214,7 +214,7 @@ void setVisibleObjects(Player *player) {
    set<uint32_t> containedObjects = universe->getContainedObjects();
    for(set<uint32_t>::const_iterator i = containedObjects.begin(); i != containedObjects.end(); ++i){
      IGObject* object = om->getObject(*i);
-     if(object->getType() == fleettype){
+     if(object->getType() != fleettype){
       obv = pv->getObjectView(*i);
       if(obv == NULL){
           obv = new ObjectView();
@@ -224,7 +224,7 @@ void setVisibleObjects(Player *player) {
       }
      }else{
        obv = pv->getObjectView(*i);
-       if(!obv->isGone()){
+       if(obv != NULL && !obv->isGone()){
          obv->setGone(true);
          pv->updateObjectView(*i);
        }
