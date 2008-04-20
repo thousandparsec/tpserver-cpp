@@ -36,9 +36,7 @@ class RftsTurn : public TurnProcess {
    Player* getWinner();
 };
 
-void setVisibleObjects(Player *player, const std::set<uint32_t>& ownedObjects);
-void findOwnedObjects(uint32_t playerId, std::set<uint32_t>& gameObjects,
-                      std::set<uint32_t>& ownedObjects);
+void setVisibleObjects(Player *player);
 
 }
 

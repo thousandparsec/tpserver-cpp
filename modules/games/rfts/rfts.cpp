@@ -586,10 +586,7 @@ void Rfts::onPlayerAdded(Player *player) {
    Logger::getLogger()->debug( "done making fleet");
 
    // set visible objects
-   set<uint32_t> gameObjects = om->getAllIds();
-   set<uint32_t> ownedObjects;
-   findOwnedObjects(player->getID(), gameObjects, ownedObjects);
-   setVisibleObjects(player, ownedObjects);
+   setVisibleObjects(player);
 
    Message *welcome = new Message();
    welcome->setSubject("Welcome to TP RFTS! Here's a brief reminder of some rules");

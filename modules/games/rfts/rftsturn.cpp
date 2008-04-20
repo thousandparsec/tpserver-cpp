@@ -150,11 +150,8 @@ void RftsTurn::setPlayerVisibleObjects() {
    
    for(set<uint32_t>::const_iterator i = players.begin(); i != players.end(); i++)
    {
-      set<uint32_t> ownedObjects;
-      findOwnedObjects(*i, gameObjects, ownedObjects);
-      
       Player *player = pm->getPlayer(*i);
-      setVisibleObjects(player, ownedObjects);
+      setVisibleObjects(player);
    }
 }
 
@@ -196,11 +193,12 @@ Player* RftsTurn::getWinner() {
 
 // helpers
 
-void setVisibleObjects(Player *player, const set<uint32_t>& ownedObjects) {
+void setVisibleObjects(Player *player) {
    ObjectManager *om = Game::getGame()->getObjectManager();
    
    IGObject *universe = om->getObject(0);
    PlayerView *pv = player->getPlayerView();
+   set<uint32_t> ownedObjects = pv->getOwnedObjects();
 
    // add universe and star systems
    ObjectView* obv = pv->getObjectView(universe->getID());
@@ -231,18 +229,5 @@ void setVisibleObjects(Player *player, const set<uint32_t>& ownedObjects) {
    
 }
 
-void findOwnedObjects(uint32_t playerId, set<uint32_t>& gameObjects, set<uint32_t>& ownedObjects) {
-   ObjectManager *om = Game::getGame()->getObjectManager();
-   
-   for(set<uint32_t>::const_iterator i = gameObjects.begin(); i != gameObjects.end(); ++i)
-   {
-      OwnedObject *obj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectBehaviour());
-      if(obj != NULL && obj->getOwner() == playerId)
-      {
-         ownedObjects.insert(*i);
-         gameObjects.erase(*i);
-      }
-   }
-}
 
 }
