@@ -1376,7 +1376,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = cids.begin();
       itcurr != cids.end(); ++itcurr){
     Category * cat = ds->getCategory(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || cat->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || cat->getModTime() > fromtime){
       modlist[*itcurr] = cat->getModTime();
     }
   }
