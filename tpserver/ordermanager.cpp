@@ -97,7 +97,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin();
       itcurr != prototypeStore.end(); ++itcurr){
     Order* type = itcurr->second;
-    if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() > fromtime){
       modlist[itcurr->first] = type->getDescriptionModTime();
     }
   }

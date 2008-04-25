@@ -1198,7 +1198,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const ResourceDescription * res = rm->getResourceDescription(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || res->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || res->getModTime() > fromtime){
       modlist[*itcurr] = res->getModTime();
     }
   }
@@ -1700,7 +1700,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = propids.begin();
       itcurr != propids.end(); ++itcurr){
     Property * prop = ds->getProperty(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || prop->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || prop->getModTime() > fromtime){
       modlist[*itcurr] = prop->getModTime();
     }
   }
