@@ -183,7 +183,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
           cacheObjects[itcurr->first] = obj;
         }
       }
-      if((fromtime == UINT64_NEG_ONE && !(obj->isGone()))|| obj->getModTime() < fromtime){
+      if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
         modlistObject[itcurr->first] = obj->getModTime();
       }
     }
