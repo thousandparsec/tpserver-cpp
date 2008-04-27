@@ -4010,7 +4010,7 @@ bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t
 
 bool MysqlPersistence::retrieveRefQuantityListObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, RefQuantityListObjectParam* rob){
     std::ostringstream querybuilder;
-    querybuilder << "SELECT reftype, refid, quant FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn = (SELECT MAX(turn) FROM objectparamresourcelist WHERE objectid = " << objid;
+    querybuilder << "SELECT reftype, refid, quant FROM objectparamrefquantitylist WHERE objectid = " << objid << " AND turn = (SELECT MAX(turn) FROM objectparamrefquantitylist WHERE objectid = " << objid;
     querybuilder << " AND turn <= " << turn << " AND playerid = " << plid;
     querybuilder << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos;
     querybuilder << ") AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
