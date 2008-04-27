@@ -129,6 +129,16 @@ void Planet::doOnceATurn() {
                            PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
    }
 
+	if(dynamic_cast<ResourceListParam*>(obj->getParameter(3,1))->getResource("Population").first <= 0)
+	{
+		Message *msg = new Message();
+		msg->setSubject("Planet population dead!");
+		msg->setBody( "The population on planet, " + obj->getName() + ", has completely died.<br/>\
+				Recolonisation and social environment buffing is recommended." );
+		msg->addReference(rst_Object, obj->getID());
+		Game::getGame()->getPlayerManager()->getPlayer(getOwner())->postToBoard(msg);
+	}
+
    setOrderTypes();
 
    obj->touchModTime();
