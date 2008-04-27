@@ -39,6 +39,9 @@
 #include <tpserver/resourcedescription.h>
 #include <tpserver/prng.h>
 #include <tpserver/object.h>
+#include <tpserver/message.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/player.h>
 
 #include "resourcelistparam.h"
 #include "containertypes.h"
@@ -127,7 +130,6 @@ void Planet::doOnceATurn() {
 
       ((ResourceListParam*)(obj->getParameter(3,1)))->setResource("Ship Technology", 0,
                            PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
-   }
 
 	if(dynamic_cast<ResourceListParam*>(obj->getParameter(3,1))->getResource("Population").first <= 0)
 	{
@@ -137,7 +139,12 @@ void Planet::doOnceATurn() {
 				Recolonisation and social environment buffing is recommended." );
 		msg->addReference(rst_Object, obj->getID());
 		Game::getGame()->getPlayerManager()->getPlayer(getOwner())->postToBoard(msg);
+                
+                // no population, not the owner
+                // also stops message being repeated every turn
+                setOwner(0);
 	}
+   }
 
    setOrderTypes();
 
