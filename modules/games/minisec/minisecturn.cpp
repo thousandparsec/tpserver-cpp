@@ -18,6 +18,8 @@
  *
  */
 
+#include <algorithm>
+
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
@@ -259,17 +261,27 @@ void MinisecTurn::doTurn(){
       }else{
         IGObject* ro = objectmanager->getObject(*itob);
         uint64_t obmt = ro->getModTime();
-        bool alive = ro->isAlive();
         objectmanager->doneWithObject(*itob);
-        if(obv->isCompletelyVisible() && alive == obv->isGone()){
-          obv->setGone(!alive);
-        }
         if(obmt > obv->getModTime()){
           obv->setModTime(obmt);
           playerview->updateObjectView(*itob);
         }
       }
     }
+    
+    // remove dead objects
+    std::set<uint32_t> goneobjects;
+    std::set<uint32_t> knownobjects = playerview->getVisibleObjects();
+    set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
+    
+    for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
+        ObjectView* obv = playerview->getObjectView(*itob);
+        if(!obv->isGone()){
+            obv->setGone(true);
+            playerview->updateObjectView(*itob);
+        }
+    }
+
     
     if(!player->isAlive() || playerview->getNumberOwnedObjects() == 0){
       if(player->isAlive()){
