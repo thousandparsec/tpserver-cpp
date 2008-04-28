@@ -540,11 +540,12 @@ bool MysqlPersistence::saveObject(IGObject* ob){
             }
         }
         
-        ob->setIsDirty(!rtv);
+        
       }catch(std::exception* e){
         rtv = false;
       }
     }
+    ob->setIsDirty(!rtv);
 
     return rtv;
 }
