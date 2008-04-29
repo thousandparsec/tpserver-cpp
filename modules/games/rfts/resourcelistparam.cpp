@@ -30,6 +30,7 @@ namespace RFTS_ {
 
 using std::string;
 using std::pair;
+using std::make_pair;
 
 ResourceListParam::ResourceListParam(ObjectParameter* resList)
 	: resources(dynamic_cast<ResourceListObjectParam*>(resList)) {
@@ -46,16 +47,17 @@ ResourceListParam::operator ResourceListObjectParam&() { return *resources; }
 ResourceListParam::operator const ResourceListObjectParam&() const  { return *resources; }
 
 const bool ResourceListParam::hasResource(uint32_t resTypeId) const {
-	return resources->getResources().find(resTypeId) != resources->getResources().end();
+	std::map<uint32_t, std::pair<uint32_t, uint32_t> > res = resources->getResources();
+	return res.find(resTypeId) != res.end();
 }
 
 const pair<uint32_t, uint32_t> ResourceListParam::getResource(uint32_t resTypeId) const {
-   return resources->getResources().find(resTypeId)->second;
+   return hasResource(resTypeId)? resources->getResources().find(resTypeId)->second : make_pair(0u, 0u);
 }
 
 void ResourceListParam::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
 	
-	pair<uint32_t,uint32_t> res = resources->getResources()[resTypeId];
+	pair<uint32_t,uint32_t> res = getResource(resTypeId);
 
 	if(currVal != KEEP_VAL)
    	res.first = currVal;

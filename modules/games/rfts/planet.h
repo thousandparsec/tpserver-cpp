@@ -79,7 +79,7 @@ class Planet : public StaticObject, public OwnedObject {
  private:
 
    void calcRP();
-   void calcPopuation();
+   void calcPopulation();
    void upgradePdbs();
 
 };

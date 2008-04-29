@@ -99,14 +99,14 @@ void Planet::setOrderTypes() {
    
    std::set<uint32_t> allowedlist;
 
-   if(turn == 0) // 1st turn - allow production
-   {
-      allowedlist.insert(om->getOrderTypeByName("Produce"));
-   }
-   if(turn == 0 || turn == 1) // non-first turn, allow build
-   {
-      allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
-   }
+	if(turn == 0) // 1st turn - allow production
+	{
+		allowedlist.insert(om->getOrderTypeByName("Produce"));
+	}
+	if(turn == 0 || turn == 1) // non-first turn, allow build
+	{
+		allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
+	}
       
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
@@ -124,29 +124,13 @@ void Planet::doOnceATurn() {
       }
       else if(turn == 1) // just did a prod. turn
       {
-         calcPopuation();
+			calcPopulation();
          upgradePdbs();
       }
-
-		ResourceListParam res = ResourceListParam(obj->getParameter(3,1));
-
+		
 		this->setResource("Ship Technology", 0, PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
-
-		if( hasResource(res, "Population") && this->getResource("Population").first <= 0)
-		{
-			Message *msg = new Message();
-			msg->setSubject("Planet population dead!");
-			msg->setBody( "The population on planet, " + obj->getName() + ", has completely died.<br/>\
-					Recolonisation and social environment buffing is recommended." );
-			msg->addReference(rst_Object, obj->getID());
-			Game::getGame()->getPlayerManager()->getPlayer(getOwner())->postToBoard(msg);
-						
-						// no population, not the owner
-						// also stops message being repeated every turn
-						setOwner(0);
-		}
    }
-
+	
    setOrderTypes();
 
    obj->touchModTime();
@@ -160,7 +144,7 @@ void Planet::calcRP() {
                                              / 16);
 }
 
-void Planet::calcPopuation() {
+void Planet::calcPopulation() {
 
    Random *rand = Game::getGame()->getRandom();
 
@@ -181,17 +165,29 @@ void Planet::calcPopuation() {
 
    if(newPop != 0 && static_cast<int>(popMaint) < newPop)
       newPop -= (newPop - popMaint ) / 3;
-
    
       // social < 40 => pop goes down, else goes up
    newPop += static_cast<int>( newPop * ((social.first - 40) / 9.) );
 
    if(newPop < 0)
+	{
       newPop = 0;
+		Message *msg = new Message();
+		msg->setSubject("Planet population dead!");
+		msg->setBody( "The population on planet, " + obj->getName() + ", has completely died.<br/>\
+				Recolonisation and social environment buffing is recommended." );
+		msg->addReference(rst_Object, obj->getID());
+		Game::getGame()->getPlayerManager()->getPlayer(getOwner())->postToBoard(msg);
+						
+		// no population, no the owner
+		// also stops message being repeated every turn
+		setOwner(0);
+	}
 
    RFTS_::setResource(res, "Population", static_cast<uint32_t>(newPop) );
 	RFTS_::setResource(res, "Social Environment", social.first);
 	RFTS_::setResource(res, "Population Maintenance", 0); // use up pop maint
+
 }
 
 void Planet::upgradePdbs() {
@@ -293,7 +289,7 @@ void Planet::addResource(uint32_t resTypeId, uint32_t amount){
 }
 
 void Planet::addResource(const string& resType, uint32_t amount){
-	ResourceListParam((obj->getParameter(3,1))).addResource(getTypeId(resType), amount);
+	addResource( getTypeId(resType), amount );
    obj->touchModTime();
 }
 
