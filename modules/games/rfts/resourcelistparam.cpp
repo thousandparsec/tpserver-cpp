@@ -31,39 +31,65 @@ namespace RFTS_ {
 using std::string;
 using std::pair;
 
-ResourceListParam::ResourceListParam() : ResourceListObjectParam() {
+ResourceListParam::ResourceListParam(ObjectParameter* resList)
+	: resources(dynamic_cast<ResourceListObjectParam*>(resList)) {
+}
 
+ResourceListParam::ResourceListParam(ResourceListObjectParam& resList)
+	:resources(&resList) {
 }
 
 ResourceListParam::~ResourceListParam() {
-
 }
 
-pair<uint32_t, uint32_t>& ResourceListParam::getResource(uint32_t resTypeId) {
-   return resources[ resTypeId ];
+ResourceListParam::operator ResourceListObjectParam&() { return *resources; }
+ResourceListParam::operator const ResourceListObjectParam&() const  { return *resources; }
+
+const bool ResourceListParam::hasResource(uint32_t resTypeId) const {
+	return resources->getResources().find(resTypeId) != resources->getResources().end();
 }
 
-pair<uint32_t, uint32_t>& ResourceListParam::getResource(const string& resTypeName) {
-   return getResource( Game::getGame()->getResourceManager()->
-                       getResourceDescription(resTypeName)->getResourceType() );
+const pair<uint32_t, uint32_t> ResourceListParam::getResource(uint32_t resTypeId) const {
+   return resources->getResources().find(resTypeId)->second;
 }
 
 void ResourceListParam::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
-   pair<uint32_t,uint32_t> &res = getResource(resTypeId);
-   
-   res.first = currVal;
+	
+	pair<uint32_t,uint32_t> res = resources->getResources()[resTypeId];
+
+	if(currVal != KEEP_VAL)
+   	res.first = currVal;
    
    if(maxVal != KEEP_VAL)
       res.second = maxVal;
+
+	std::map<uint32_t, std::pair<uint32_t, uint32_t> > newRes = resources->getResources();
+	newRes[resTypeId] = res;
+	resources->setResources(newRes);
 }
 
-void ResourceListParam::setResource(const string& resTypeName, uint32_t currVal, uint32_t maxVal) {
-   pair<uint32_t,uint32_t> &res = getResource(resTypeName);
-   
-   res.first = currVal;
-   
-   if(maxVal != KEEP_VAL)
-      res.second = maxVal;
+void ResourceListParam::addResource(uint32_t resTypeId, uint32_t val) {
+	setResource( resTypeId, getResource(resTypeId).first + val );
+}
+
+// std::string helper versions
+
+const uint32_t getTypeId(const std::string& resTypeName) {
+	return Game::getGame()->getResourceManager()->
+			getResourceDescription(resTypeName)->getResourceType();
+}
+
+const bool hasResource(const ResourceListParam& res, const std::string& resTypeName) {
+	return res.hasResource( getTypeId(resTypeName) );
+}
+
+const std::pair<uint32_t,uint32_t> getResource(const ResourceListParam& resources,
+															   const std::string& resTypeName) {
+	return resources.getResource(getTypeId(resTypeName));
+}
+void setResource( ResourceListParam& resources,	const std::string& resTypeName,
+						 uint32_t currVal, uint32_t maxVal) {
+	resources.setResource(getTypeId(resTypeName), currVal, maxVal);
 }
 
 }
