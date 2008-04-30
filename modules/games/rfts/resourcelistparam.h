@@ -24,21 +24,38 @@
 
 namespace RFTS_ {
 
-class ResourceListParam : public ::ResourceListObjectParam
-{
- public:
-   ResourceListParam();
-   virtual ~ResourceListParam();
+class ResourceListParam {
 
-   std::pair<uint32_t,uint32_t>& getResource(uint32_t resTypeId);
-   std::pair<uint32_t,uint32_t>& getResource(const std::string& resTypeName);
-   
-   void setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal = KEEP_VAL);
-   void setResource(const std::string& resTypeName, uint32_t currVal, uint32_t maxVal = KEEP_VAL);
+	ResourceListObjectParam* resources;
+			
+public:
 
-   static const uint32_t KEEP_VAL = 0xFFFFFFFF;
+	ResourceListParam(ObjectParameter* resList);
+	ResourceListParam(ResourceListObjectParam& resList);
+	~ResourceListParam();
+	
+	operator ResourceListObjectParam&();
+	operator const ResourceListObjectParam&() const;
+
+	const bool hasResource(uint32_t resTypeid) const;
+
+	const std::pair<uint32_t,uint32_t> getResource(uint32_t resTypeId) const;
+
+	void setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal = KEEP_VAL);
+	
+	void addResource(uint32_t resTypeId, uint32_t val);
+
+	static const uint32_t KEEP_VAL = 0xFFFFFFFF;
 };
 
+// std::string convenience fns
+const uint32_t getTypeId(const std::string& resTypeName);
+
+const bool hasResource(const ResourceListParam& resources, const std::string& resTypeName);
+const std::pair<uint32_t,uint32_t> getResource(const ResourceListParam& resources,
+															   const std::string& resTypeName);
+void setResource( ResourceListParam& resources, const std::string& resTypeName,
+						uint32_t currVal, uint32_t maxVal = ResourceListParam::KEEP_VAL);
 
 }
 
