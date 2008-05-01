@@ -1,3 +1,18 @@
+01 May 08 - Lee
+    * Version 0.5.0
+    * RFTS ruleset added, xdotx GSoC project 2007
+    * TP04 support
+    * ObjectParameters, ObjectTypes and ObjectBehaviour instead of ObjectData
+    * Split PlayerView from Player
+    * Added ObjectView, DesignView and ComponentView to PlayerView
+    * Rewrite of Object parts of Mysql Persistence Module
+    * Victory conditions and messages in Minisec
+    * Status command on console
+    * Moved turn processing from core to rulesets
+    * Split OrderQueues into its own class
+    * Much, much more
+    * Total commits: 548
+
 01 Mar 07 - Lee
     * Version 0.4.1
     * Metaserver setting for turning on sending updates
