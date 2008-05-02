@@ -197,8 +197,8 @@ void PlayerTcpConnection::verCheck(){
     if(rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P'){
       //assume we have TP procotol
       if(rheaderbuff[2] == '0'){
-        if(rheaderbuff[3] <= '1'){
-          Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
+        if(rheaderbuff[3] <= '2'){
+          Logger::getLogger()->warning("Client did not show correct version of protocol (version 2 or less)");
           sendDataAndClose("You are not running the right version of TP, please upgrade\n", 60);
           rtn = false;
         }else if(rheaderbuff[3] > '3'){
