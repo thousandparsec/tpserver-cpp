@@ -270,7 +270,21 @@ void PlayerConnection::inGameFrame()
 void PlayerConnection::processGetFeaturesFrame(Frame* frame){
     Logger::getLogger()->debug("Processing Get Features frame");
     Frame *features = createFrame(frame);
-    Network::getNetwork()->createFeaturesFrame(features);
+    features->setType(ft03_Features);
+    std::set<uint32_t> fids;
+    fids.insert(fid_keep_alive);
+    fids.insert(fid_serverside_property);
+    if(frame->getVersion() >= fv0_4){
+        fids.insert(fid_filter_stringpad);
+    }
+    if(Settings::getSettings()->get("add_players") == "yes"){
+        fids.insert(fid_account_register);
+    }
+    
+    features->packInt(fids.size());
+    for(std::set<uint32_t>::iterator itcurr = fids.begin(); itcurr != fids.end(); ++itcurr){
+      features->packInt(*itcurr);
+    }
     sendFrame(features);
 }
 
