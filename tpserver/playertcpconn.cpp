@@ -1,6 +1,6 @@
 /*  Player Tcp Connection object, supports ipv4 and ipv6
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -279,12 +279,8 @@ void PlayerTcpConnection::verCheck(){
             okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
             sendFrame(okframe);
           }else if(recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get){
-            Logger::getLogger()->debug("Get Features request");
-            Frame* features = createFrame(recvframe);
-
-            Network::getNetwork()->createFeaturesFrame(features);
-
-            sendFrame(features);
+            Logger::getLogger()->warning("Get Features request before Connect frame, continuing anyway");
+            processGetFeaturesFrame(recvframe);
           }else{
             Logger::getLogger()->warning("First frame wasn't Connect or GetFeatures, was %d", recvframe->getType());
             Frame* fe = createFrame(recvframe);
