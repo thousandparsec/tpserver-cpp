@@ -61,10 +61,10 @@ ObjectParameter* RefQuantityListObjectParam::clone() const{
   return new RefQuantityListObjectParam();
 }
 
-std::map<std::pair<int32_t, uint32_t>, uint32_t> RefQuantityListObjectParam::getRefQuantityList() const{
+RefQuantityListObjectParam::RefQuanitityList RefQuantityListObjectParam::getRefQuantityList() const{
   return refquant;
 }
 
-void RefQuantityListObjectParam::setRefQuantityList(std::map<std::pair<int32_t, uint32_t>, uint32_t> nt){
+void RefQuantityListObjectParam::setRefQuantityList(RefQuanitityList nt){
   refquant = nt;
 }
