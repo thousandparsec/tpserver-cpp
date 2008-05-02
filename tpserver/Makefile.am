@@ -59,7 +59,7 @@ headers_HEADERS = connection.h console.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
-	objectbehaviour.h objectinfo.h objectrelationships.h
+	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h
 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \

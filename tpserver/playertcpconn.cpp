@@ -219,11 +219,11 @@ void PlayerTcpConnection::verCheck(){
           char ver[] = {'\0','\0','\0'};
           memcpy(ver, rheaderbuff+2 , 2);
           int nversion = atoi(ver);
-          version = (FrameVersion)nversion;
+          version = (ProtocolVersion)nversion;
         }
       }else if(rheaderbuff[2] >= 4 && rheaderbuff[2] < '0'){
         //tp04 and later
-        version = (FrameVersion)rheaderbuff[2];
+        version = (ProtocolVersion)rheaderbuff[2];
         if(version > fv0_4){
           Frame *f = new Frame(fv0_4);
           f->setSequence(0);

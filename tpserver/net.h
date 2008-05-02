@@ -32,18 +32,6 @@ class AsyncFrame;
 
 class TimerCallback;
 
-enum FeatureIDs {
-  fid_sec_conn_this = 1,
-  fid_sec_conn_other = 2,
-  fid_http_this = 3,
-  fid_http_other = 4,
-  fid_keep_alive = 5,
-  fid_serverside_property = 6,
-  fid_account_register = 1000,
-  fid_filter_tls = 0x1000,
-  fid_filter_stringpad = 0x1D00
-};
-
 class Network {
 
       public:

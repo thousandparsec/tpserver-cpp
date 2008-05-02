@@ -43,7 +43,7 @@ class PlayerConnection: public Connection {
   
   Frame* createFrame(Frame* oldframe = NULL);
   
-  FrameVersion getProtocolVersion();
+  ProtocolVersion getProtocolVersion();
   
  protected:
   
@@ -61,7 +61,7 @@ class PlayerConnection: public Connection {
   
   PlayerAgent *playeragent;
   
-  FrameVersion version;
+  ProtocolVersion version;
   uint64_t lastpingtime;
   bool paddingfilter;
 };
