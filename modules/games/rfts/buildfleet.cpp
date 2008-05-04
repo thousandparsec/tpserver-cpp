@@ -132,6 +132,17 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
    return options;
 }
 
+void BuildFleet::createFrame(Frame *f, int pos) {
+	unsigned turn = Game::getGame()->getTurnNumber() % 3;
+
+	if(turn == 2) // account for move only turn
+		turns = 2;
+	else
+		turns = 1;
+	
+	Order::createFrame(f, pos);
+}
+
 Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
    Result r = Order::inputFrame(f, playerid);
@@ -183,6 +194,8 @@ Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
 
 bool BuildFleet::doOrder(IGObject *ob)
 {
+	if(--turns != 0)
+		return false;
 
    if(shipList->getList().size() == 0)
       return true;

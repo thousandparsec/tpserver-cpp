@@ -37,6 +37,8 @@ class BuildFleet : public Order {
    virtual ~BuildFleet();
 
    virtual Order *clone() const;
+	
+	virtual void createFrame(Frame *f, int pos);
 
    virtual Result inputFrame(Frame * f, unsigned int playerid);
 
