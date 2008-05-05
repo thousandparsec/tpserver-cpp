@@ -153,6 +153,9 @@ if test "$mzscheme_option" != "no"; then
 
    SAVE_CXXFLAGS=$CXXFLAGS
    SAVE_LDFLAGS=$LDFLAGS
+   
+   CXXFLAGS="$CXXFLAGS $MZSCHEME_CFLAGS"
+   LDFLAGS="$LDFLAGS $MZSCHEME_LDFLAGS"
 
    AC_CHECK_HEADER(scheme.h, AC_DEFINE(HAVE_SCHEME_H, 1, [Define to 1 if scheme.h is present]))
    AC_CHECK_HEADER(plt/scheme.h, AC_DEFINE(HAVE_PLT_SCHEME_H, 1, [Define to 1 if plt/scheme.h is present]))
@@ -190,8 +193,15 @@ if test "$mzscheme_option" != "no"; then
           AM_CONDITIONAL(MZSCHEME, true)
           mzscheme_use="yes"
       ],[
-          AC_MSG_RESULT(no, not going to build MzScheme module)
-          AM_CONDITIONAL(MZSCHEME, false)
+          AC_CHECK_LIB(mzscheme3m, scheme_basic_env, [
+                MZSCHEME_LIBS="$MZSCHEME_LIBS -lmzscheme3m"
+                AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+                AM_CONDITIONAL(MZSCHEME, true)
+                mzscheme_use="yes"
+            ],[
+                AC_MSG_WARN(Not going to build MzScheme module)
+                AM_CONDITIONAL(MZSCHEME, false)
+            ])
       ])
     else
       AM_CONDITIONAL(MZSCHEME, false)
