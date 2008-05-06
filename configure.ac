@@ -64,10 +64,8 @@ PKG_CHECK_MODULES(libtprl, libtprl >= 0.1.2,
 	,
 	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
 )
-AC_SUBST([
-libtprl_LIBS
-libtprl_CFLAGS
-])
+AC_SUBST([libtprl_LIBS])
+AC_SUBST([libtprl_CFLAGS])
 
 PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
     [
@@ -77,10 +75,8 @@ PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
     AM_CONDITIONAL(AVAHI, false)
     ]
 )
-AC_SUBST([
-avahiclient_LIBS
-avahiclient_CFLAGS
-])
+AC_SUBST([avahiclient_LIBS])
+AC_SUBST([avahiclient_CFLAGS])
 
 #check byte order
 AC_C_BIGENDIAN
@@ -118,10 +114,8 @@ PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
     AM_CONDITIONAL(GNUTLS, false)
   ]
 )
-AC_SUBST([
-libgnutls_LIBS
-libgnutls_CFLAGS
-])
+AC_SUBST([libgnutls_LIBS])
+AC_SUBST([libgnutls_CFLAGS])
 
 # ===================================================
 # Scheme Interpreter tests
@@ -211,10 +205,8 @@ if test "$mzscheme_option" != "no"; then
 else
   AM_CONDITIONAL(MZSCHEME, false)
 fi
-AC_SUBST([
-MZSCHEME_CFLAGS
-MZSCHEME_LIBS
-])
+AC_SUBST([MZSCHEME_CFLAGS])
+AC_SUBST([MZSCHEME_LIBS])
 
 
 if test "$guile_option" != "no"; then
@@ -252,10 +244,8 @@ else
   AM_CONDITIONAL(GUILE, false)
 fi
 
-AC_SUBST([
-GUILE_CFLAGS
-GUILE_LIBS
-])
+AC_SUBST([GUILE_CFLAGS])
+AC_SUBST([GUILE_LIBS])
 
 # We need a scheme interpreter.  Require either MzScheme or Guile.
 if test "$mzscheme_use" != "yes" -a "$guile_use" != "yes"; then
@@ -304,10 +294,8 @@ else
     fi
 fi
 
-AC_SUBST([
-MYSQL_CFLAGS
-MYSQL_LIBS
-])
+AC_SUBST([MYSQL_CFLAGS])
+AC_SUBST([MYSQL_LIBS])
 
 
 dnl @synopsis AC_DEFINE_DIR(VARNAME, DIR [, DESCRIPTION])
