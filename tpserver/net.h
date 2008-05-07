@@ -24,6 +24,7 @@
 #include <map>
 #include <queue>
 #include <functional>
+#include <algorithm>
 
 class Connection;
 class Frame;

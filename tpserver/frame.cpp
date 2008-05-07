@@ -21,6 +21,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <string>
+#include <cstdlib>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
