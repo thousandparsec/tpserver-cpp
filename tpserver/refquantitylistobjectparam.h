@@ -35,12 +35,15 @@ public:
   virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
 
   virtual ObjectParameter *clone() const;
+
+  typedef std::pair<int32_t, uint32_t> RefTypeAndId;
+  typedef std::map<RefTypeAndId, uint32_t> RefQuanitityList;
   
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> getRefQuantityList() const;
-  void setRefQuantityList(std::map<std::pair<int32_t, uint32_t>, uint32_t> nt);
+  RefQuanitityList getRefQuantityList() const;
+  void setRefQuantityList(RefQuanitityList nt);
 
 protected:
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> refquant;
+	RefQuanitityList refquant;
 
 };
 

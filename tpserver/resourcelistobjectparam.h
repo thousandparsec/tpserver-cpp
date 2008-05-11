@@ -35,12 +35,15 @@ public:
   virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
 
   virtual ObjectParameter *clone() const;
+
+  typedef std::pair<uint32_t, uint32_t> ResourceValues;
+  typedef std::map<uint32_t, ResourceValues> ResourceMap;
   
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources() const;
-  void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > nt);
+  ResourceMap getResources() const;
+  void setResources(ResourceMap nt);
 
 protected:
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > resources;
+	ResourceMap resources;
 
 };
 

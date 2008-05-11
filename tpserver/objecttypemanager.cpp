@@ -87,7 +87,7 @@ void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
   for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
       itcurr != typeStore.end(); ++itcurr){
     uint32_t otmodtime = itcurr->second->getModTime();
-    if(fromtime == UINT64_NEG_ONE || otmodtime < fromtime){
+    if(fromtime == UINT64_NEG_ONE || otmodtime > fromtime){
       modlist[itcurr->first] = otmodtime;
     }
   }

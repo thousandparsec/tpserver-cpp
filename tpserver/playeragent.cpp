@@ -198,6 +198,12 @@ void PlayerAgent::processIGFrame(Frame * frame){
     processGetObjectTypes(frame);
     break;
     
+    //object_modify
+    
+    case ft04_PlayerIds_Get:
+        processGetPlayerIds(frame);
+        break;
+    
   default:
     Logger::getLogger()->warning("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
 
@@ -1198,7 +1204,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const ResourceDescription * res = rm->getResourceDescription(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || res->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || res->getModTime() > fromtime){
       modlist[*itcurr] = res->getModTime();
     }
   }
@@ -1295,6 +1301,84 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   }
 }
 
+void PlayerAgent::processGetPlayerIds(Frame* frame){
+    Logger::getLogger()->debug("doing Get Resource Types frame");
+  
+    if(frame->getVersion() < fv0_4){
+        Logger::getLogger()->debug("protocol version not high enough");
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_FrameError, "Get Playerids isn't supported in this protocol");
+        curConnection->sendFrame(of);
+        return;
+    }
+    
+    if(frame->getDataLength() != 20){
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_FrameError, "Invalid frame");
+        curConnection->sendFrame(of);
+        return;
+    }
+    
+    unsigned int seqkey = frame->unpackInt();
+    if(seqkey == UINT32_NEG_ONE){
+        //start new seqkey
+        seqkey = 0;
+    }
+    
+    uint32_t snum = frame->unpackInt();
+    uint32_t numtoget = frame->unpackInt();
+    uint64_t fromtime = UINT64_NEG_ONE;
+    
+    fromtime = frame->unpackInt64();
+    
+    PlayerManager* pm = Game::getGame()->getPlayerManager();
+    std::set<playerid_t> idset = pm->getAllIds();
+    
+    std::map<uint32_t, uint64_t> modlist;
+    for(std::set<playerid_t>::iterator itcurr = idset.begin();
+        itcurr != idset.end(); ++itcurr){
+        const Player * pl = pm->getPlayer(*itcurr);
+        if(fromtime == UINT64_NEG_ONE || pl->getModTime() > fromtime){
+            modlist[*itcurr] = pl->getModTime();
+        }
+    }
+    
+    if(snum > modlist.size()){
+        Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, modlist.size());
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        curConnection->sendFrame(of);
+        return;
+    }
+    if(numtoget > modlist.size() - snum){
+        numtoget = modlist.size() - snum;
+    }
+    
+    if(numtoget > MAX_ID_LIST_SIZE){
+        Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
+        Frame *of = curConnection->createFrame(frame);
+        of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+        curConnection->sendFrame(of);
+        return;
+    }
+    
+    Frame *of = curConnection->createFrame(frame);
+    of->setType(ft04_PlayerIds_List);
+    of->packInt(seqkey);
+    of->packInt(modlist.size() - snum - numtoget);
+    of->packInt(numtoget);
+    std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
+    std::advance(itcurr, snum);
+    for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+        of->packInt(itcurr->first);
+        of->packInt64(itcurr->second);
+    }
+    
+    of->packInt64(fromtime);
+    
+    curConnection->sendFrame(of);
+}
+
 void PlayerAgent::processGetCategory(Frame* frame){
   Logger::getLogger()->debug("doing Get Category frame");
 
@@ -1376,7 +1460,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = cids.begin();
       itcurr != cids.end(); ++itcurr){
     Category * cat = ds->getCategory(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || cat->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || cat->getModTime() > fromtime){
       modlist[*itcurr] = cat->getModTime();
     }
   }
@@ -1700,7 +1784,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   for(std::set<uint32_t>::iterator itcurr = propids.begin();
       itcurr != propids.end(); ++itcurr){
     Property * prop = ds->getProperty(*itcurr);
-    if(fromtime == UINT64_NEG_ONE || prop->getModTime() < fromtime){
+    if(fromtime == UINT64_NEG_ONE || prop->getModTime() > fromtime){
       modlist[*itcurr] = prop->getModTime();
     }
   }

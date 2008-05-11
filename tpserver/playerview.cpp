@@ -174,17 +174,17 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
   
   if(seqnum == UINT32_NEG_ONE){
     modlistObject.clear();
-    for(std::map<uint32_t, ObjectView*>::iterator itcurr = cacheObjects.begin();
-        itcurr != cacheObjects.end(); ++itcurr){
-      ObjectView* obj = itcurr->second;
+    for(std::set<uint32_t>::iterator itcurr = visibleObjects.begin();
+        itcurr != visibleObjects.end(); ++itcurr){
+      ObjectView* obj = cacheObjects[*itcurr];
       if(obj == NULL){
-        obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, itcurr->first);
+        obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, *itcurr);
         if(obj != NULL){
-          cacheObjects[itcurr->first] = obj;
+          cacheObjects[*itcurr] = obj;
         }
       }
-      if((fromtime == UINT64_NEG_ONE && !(obj->isGone()))|| obj->getModTime() < fromtime){
-        modlistObject[itcurr->first] = obj->getModTime();
+      if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
+        modlistObject[*itcurr] = obj->getModTime();
       }
     }
   }
@@ -319,17 +319,17 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
   
   if(seqnum == UINT32_NEG_ONE){
     modlistDesign.clear();
-    for(std::map<uint32_t, DesignView*>::iterator itcurr = cacheDesigns.begin();
-        itcurr != cacheDesigns.end(); ++itcurr){
-      DesignView* designv = itcurr->second;
+    for(std::set<uint32_t>::iterator itcurr = visibleDesigns.begin();
+        itcurr != visibleDesigns.end(); ++itcurr){
+      DesignView* designv = cacheDesigns[*itcurr];
       if(designv == NULL){
-        designv = Game::getGame()->getPersistence()->retrieveDesignView(pid, itcurr->first);
+        designv = Game::getGame()->getPersistence()->retrieveDesignView(pid, *itcurr);
         if(designv != NULL){
-          cacheDesigns[itcurr->first] = designv;
+          cacheDesigns[*itcurr] = designv;
         }
       }
-      if(fromtime == UINT64_NEG_ONE || designv->getModTime() < fromtime){
-        modlistDesign[itcurr->first] = designv->getModTime();
+      if(fromtime == UINT64_NEG_ONE || designv->getModTime() > fromtime){
+        modlistDesign[*itcurr] = designv->getModTime();
       }
     }
   }
@@ -465,17 +465,17 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   if(seqnum == UINT32_NEG_ONE){
     //clear current mod list in case it has stuff in it still
     modlistComp.clear();
-    for(std::map<uint32_t, ComponentView*>::iterator itcurr = cacheComponents.begin();
-        itcurr != cacheComponents.end(); ++itcurr){
-      ComponentView* component = itcurr->second;
+    for(std::set<uint32_t>::iterator itcurr = visibleComponents.begin();
+        itcurr != visibleComponents.end(); ++itcurr){
+      ComponentView* component = cacheComponents[*itcurr];
       if(component == NULL){
-        component = Game::getGame()->getPersistence()->retrieveComponentView(pid, itcurr->first);
+        component = Game::getGame()->getPersistence()->retrieveComponentView(pid, *itcurr);
         if(component != NULL){
-          cacheComponents[itcurr->first] = component;
+          cacheComponents[*itcurr] = component;
         }
       }
-      if(fromtime == UINT64_NEG_ONE || component->getModTime() < fromtime){
-        modlistComp[itcurr->first] = component->getModTime();
+      if(fromtime == UINT64_NEG_ONE || component->getModTime() > fromtime){
+        modlistComp[*itcurr] = component->getModTime();
       }
     }
   }

@@ -1,6 +1,6 @@
 /*  Player Tcp Connection object, supports ipv4 and ipv6
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -197,8 +197,8 @@ void PlayerTcpConnection::verCheck(){
     if(rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P'){
       //assume we have TP procotol
       if(rheaderbuff[2] == '0'){
-        if(rheaderbuff[3] <= '1'){
-          Logger::getLogger()->warning("Client did not show correct version of protocol (version 1)");
+        if(rheaderbuff[3] <= '2'){
+          Logger::getLogger()->warning("Client did not show correct version of protocol (version 2 or less)");
           sendDataAndClose("You are not running the right version of TP, please upgrade\n", 60);
           rtn = false;
         }else if(rheaderbuff[3] > '3'){
@@ -219,11 +219,11 @@ void PlayerTcpConnection::verCheck(){
           char ver[] = {'\0','\0','\0'};
           memcpy(ver, rheaderbuff+2 , 2);
           int nversion = atoi(ver);
-          version = (FrameVersion)nversion;
+          version = (ProtocolVersion)nversion;
         }
       }else if(rheaderbuff[2] >= 4 && rheaderbuff[2] < '0'){
         //tp04 and later
-        version = (FrameVersion)rheaderbuff[2];
+        version = (ProtocolVersion)rheaderbuff[2];
         if(version > fv0_4){
           Frame *f = new Frame(fv0_4);
           f->setSequence(0);
@@ -279,12 +279,8 @@ void PlayerTcpConnection::verCheck(){
             okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
             sendFrame(okframe);
           }else if(recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get){
-            Logger::getLogger()->debug("Get Features request");
-            Frame* features = createFrame(recvframe);
-
-            Network::getNetwork()->createFeaturesFrame(features);
-
-            sendFrame(features);
+            Logger::getLogger()->warning("Get Features request before Connect frame, continuing anyway");
+            processGetFeaturesFrame(recvframe);
           }else{
             Logger::getLogger()->warning("First frame wasn't Connect or GetFeatures, was %d", recvframe->getType());
             Frame* fe = createFrame(recvframe);

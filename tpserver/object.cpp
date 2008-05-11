@@ -210,6 +210,8 @@ void IGObject::setModTime(uint64_t time){
 
 void IGObject::setIsDirty(bool id){
   dirty = id;
+  info->setIsDirty(id);
+  relationships->setIsDirty(id);
 }
 
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
