@@ -73,9 +73,9 @@
 
 //the libtool magic required
 extern "C" { 
-    #define tp_init libmygame_LTX_tp_init 
+    #define tp_init librisk_LTX_tp_init 
     bool tp_init(){ 
-        return Game::getGame()->setRuleset(new MyGame::MyGameRuleset());
+        return Game::getGame()->setRuleset(new Risk::MyRisk());
     } 
 }
 
@@ -96,15 +96,15 @@ std::string Risk::getVersion(){
 }
 
 void Risk::initGame(){
-    Logger::getLogger()->info("Risk initialised"};
+    Logger::getLogger()->info("Risk initialised");
 }
 
 void Risk::createGame(){
-    Logger::getLogger()->info("Risk created"};
+    Logger::getLogger()->info("Risk created");
 }
 
 void Risk::startGame(){
-    Logger::getLogger()->info("Risk started"};
+    Logger::getLogger()->info("Risk started");
 }
 
 bool Risk::onAddPlayer(Player* player){
