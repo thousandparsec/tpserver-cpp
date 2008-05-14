@@ -102,8 +102,11 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #check for boost
 # Random and smartpointer are in base
 AX_BOOST_BASE([1.32.1])
+
+#COMMENTED OUT FOR RYAN NEUFELD (JPHR). WAS RUNNING INTO ISSUES COMPILING ON MAC OS X
+
 # Signal tested separately
-AX_BOOST_SIGNALS
+# AX_BOOST_SIGNALS
 
 PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
   [
@@ -341,6 +344,7 @@ modules/persistence/mysql/Makefile
 modules/tpcl/Makefile
 modules/tpcl/guile/Makefile
 modules/tpcl/mzscheme/Makefile
+modules/games/risk/Makefile
 ]) 
 
 AC_OUTPUT
