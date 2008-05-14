@@ -22,7 +22,7 @@
 
 #include <tpserver/ruleset.h> 
 
-namespace Risk{
+namespace RiskRuleset {
 	
 class Risk : public Ruleset {
 public:
@@ -39,5 +39,5 @@ public:
 		
 };// class Risk : public Ruleset
 	
-} // namespace Risk
+} // namespace RiskRuleset
 #endif

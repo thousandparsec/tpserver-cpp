@@ -75,9 +75,11 @@
 extern "C" { 
     #define tp_init librisk_LTX_tp_init 
     bool tp_init(){ 
-        return Game::getGame()->setRuleset(new Risk());
+        return Game::getGame()->setRuleset(new RiskRuleset::Risk());
     } 
 }
+
+namespace RiskRuleset {
 
 Risk::Risk(){
 	
@@ -115,3 +117,4 @@ bool Risk::onAddPlayer(Player* player){
 void Risk::onPlayerAdded(Player* player){
     Logger::getLogger()->debug("Risk onPlayerAdded");
 }
+} //end namespace RiskRuleset
