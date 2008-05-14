@@ -25,9 +25,10 @@
 namespace Risk{
 	
 class Risk : public Ruleset {
+public:
 	Risk();
 	virtual ~Risk();
-public:
+
 	std::string getName(); 
 	std::string getVersion(); 
 	void initGame(); 
