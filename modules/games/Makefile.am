@@ -1,2 +1,2 @@
-SUBDIRS = mtsec minisec rfts
+SUBDIRS = mtsec minisec rfts risk
 
