@@ -75,7 +75,7 @@
 extern "C" { 
     #define tp_init librisk_LTX_tp_init 
     bool tp_init(){ 
-        return Game::getGame()->setRuleset(new Risk::MyRisk());
+        return Game::getGame()->setRuleset(new Risk::Risk());
     } 
 }
 
