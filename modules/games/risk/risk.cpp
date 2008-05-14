@@ -24,7 +24,7 @@
 // tpserver includes 
 #include <tpserver/game.h> 
 #include <tpserver/logging.h> 
-#include <tpserver/objectdatamanager.h> 
+#include <tpserver/objectmanager.h> 
 #include <tpserver/ordermanager.h> 
 #include <tpserver/player.h> 
 
