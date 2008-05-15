@@ -71,7 +71,7 @@ INCLUDES = $(LTDLINCL)
 # FIXME: the dlopens should be dependent on what is configured to run.
 tpserver_cpp_LDADD = @libgnutls_LIBS@ @libtprl_LIBS@ @avahiclient_LIBS@ @BOOST_LDFLAGS@ @BOOST_SIGNALS_LIB@ $(LIBLTDL) "-dlopen" self
 tpserver_cpp_DEPENDENCIES = $(LIBLTDL) 
-AM_CXXFLAGS = @libgnutls_CFLAGS@ @libtprl_CFLAGS@ @avahiclient_CFLAGS@ @BOOST_CPPFLAGS@
+AM_CXXFLAGS = @libgnutls_CFLAGS@ @libtprl_CFLAGS@ @avahiclient_CFLAGS@
 tpserver_cpp_LDFLAGS = -export-dynamic 
 
 
