@@ -105,6 +105,8 @@ AX_BOOST_BASE([1.32.1])
 # Signal tested separately
 AX_BOOST_SIGNALS
 
+CXXFLAGS="$CXXFLAGS $BOOST_CPPFLAGS"
+
 PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
   [
     AC_DEFINE(HAVE_LIBGNUTLS, 1, Define to 1 if libgnutls is available)
