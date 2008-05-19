@@ -28,6 +28,8 @@
 
 struct AvahiEntryGroup;
 
+class TimerCallback;
+
 /**
 Avahi mDNS-SD implementation for tpserver-cpp
  
@@ -47,11 +49,14 @@ public:
 
 private:
   void createServices();
+  void reset();
   
   AvahiPoll *pollapi;
   AvahiEntryGroup *group;
   AvahiClient *client;
   char* name;
+  
+  TimerCallback* resetTimer;
 
 };
 
