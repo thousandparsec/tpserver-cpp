@@ -263,7 +263,7 @@ void timeout_free(AvahiTimeout *t){
   delete t;
 }
 
-Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL){
+Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(NULL){
   
   std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
