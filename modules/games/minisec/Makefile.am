@@ -18,3 +18,4 @@ noinst_HEADERS = planet.h fleet.h nop.h move.h build.h colonise.h splitfleet.h m
 		universe.h emptyobject.h rspcombat.h minisec.h minisecturn.h \
 		combatant.h spaceobject.h ownedobject.h
 
+EXTRA_DIST = sample.conf

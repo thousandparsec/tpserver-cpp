@@ -21,6 +21,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <string>
+#include <cstdlib>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -50,7 +51,7 @@ Frame::Frame()
   Frame::Frame(fv0_3);
 }
 
-Frame::Frame(FrameVersion v)
+Frame::Frame(ProtocolVersion v)
 {
   type = ft_Invalid;
   typeversion = 0;
@@ -177,7 +178,7 @@ bool Frame::setSequence(int s)
   return true;
 }
 
-FrameVersion Frame::getVersion() const
+ProtocolVersion Frame::getVersion() const
 {
 	return version;
 }
@@ -222,11 +223,11 @@ int Frame::setHeader(char *newhead)
       char ver[] = {'\0','\0','\0'};
       memcpy(ver, temp, 2);
       int nversion = atoi(ver);
-      version = (FrameVersion)nversion;
+      version = (ProtocolVersion)nversion;
       temp += 2;
     }else{
       // version 4 and above
-      version = (FrameVersion)(*temp);
+      version = (ProtocolVersion)(*temp);
       temp++;
       typeversion = (uint32_t)(*temp);
       temp++;

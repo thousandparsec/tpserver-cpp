@@ -33,7 +33,7 @@ ResourceListObjectParam::~ResourceListObjectParam(){
 
 void ResourceListObjectParam::packObjectFrame(Frame * f, uint32_t objID){
   f->packInt(resources.size());
-  for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = resources.begin();
+  for(ResourceMap::const_iterator itcurr = resources.begin();
       itcurr != resources.end(); ++itcurr){
     f->packInt(itcurr->first);
     f->packInt(itcurr->second.first);
@@ -63,10 +63,10 @@ ObjectParameter* ResourceListObjectParam::clone() const{
   return new ResourceListObjectParam();
 }
 
-std::map<uint32_t, std::pair<uint32_t, uint32_t> > ResourceListObjectParam::getResources() const{
+ResourceListObjectParam::ResourceMap ResourceListObjectParam::getResources() const{
   return resources;
 }
 
-void ResourceListObjectParam::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > nt){
+void ResourceListObjectParam::setResources(ResourceMap nt){
   resources = nt;
 }

@@ -260,8 +260,8 @@ void Rfts::createUniverse() {
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
-   uniData->setUnitPos(0,0);
-   uniData->setSize(123456789123ll);
+	uniData->setSize(123456789123ll);
+   uniData->setUnitPos(.5,.5);
    objman->addObject(universe);
    
    createStarSystem(*universe, "Acrux", .875, .87);

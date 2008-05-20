@@ -1,9 +1,9 @@
-AC_INIT([tpserver-cpp],[0.4.1],[lee@thousandparsec.net])
+AC_INIT([tpserver-cpp],[0.5.0],[lee@thousandparsec.net])
 AC_CONFIG_SRCDIR(tpserver/main.cpp)
 
 AC_CANONICAL_TARGET([])
 
-AM_INIT_AUTOMAKE(tpserver-cpp, 0.4.1)
+AM_INIT_AUTOMAKE(tpserver-cpp, 0.5.0)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE
@@ -64,10 +64,8 @@ PKG_CHECK_MODULES(libtprl, libtprl >= 0.1.2,
 	,
 	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
 )
-AC_SUBST([
-libtprl_LIBS
-libtprl_CFLAGS
-])
+AC_SUBST([libtprl_LIBS])
+AC_SUBST([libtprl_CFLAGS])
 
 PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
     [
@@ -77,10 +75,8 @@ PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
     AM_CONDITIONAL(AVAHI, false)
     ]
 )
-AC_SUBST([
-avahiclient_LIBS
-avahiclient_CFLAGS
-])
+AC_SUBST([avahiclient_LIBS])
+AC_SUBST([avahiclient_CFLAGS])
 
 #check byte order
 AC_C_BIGENDIAN
@@ -109,6 +105,8 @@ AX_BOOST_BASE([1.32.1])
 # Signal tested separately
 AX_BOOST_SIGNALS
 
+CXXFLAGS="$CXXFLAGS $BOOST_CPPFLAGS"
+
 PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
   [
     AC_DEFINE(HAVE_LIBGNUTLS, 1, Define to 1 if libgnutls is available)
@@ -118,10 +116,8 @@ PKG_CHECK_MODULES(libgnutls, gnutls >= 1.2.10,
     AM_CONDITIONAL(GNUTLS, false)
   ]
 )
-AC_SUBST([
-libgnutls_LIBS
-libgnutls_CFLAGS
-])
+AC_SUBST([libgnutls_LIBS])
+AC_SUBST([libgnutls_CFLAGS])
 
 # ===================================================
 # Scheme Interpreter tests
@@ -153,6 +149,9 @@ if test "$mzscheme_option" != "no"; then
 
    SAVE_CXXFLAGS=$CXXFLAGS
    SAVE_LDFLAGS=$LDFLAGS
+   
+   CXXFLAGS="$CXXFLAGS $MZSCHEME_CFLAGS"
+   LDFLAGS="$LDFLAGS $MZSCHEME_LDFLAGS"
 
    AC_CHECK_HEADER(scheme.h, AC_DEFINE(HAVE_SCHEME_H, 1, [Define to 1 if scheme.h is present]))
    AC_CHECK_HEADER(plt/scheme.h, AC_DEFINE(HAVE_PLT_SCHEME_H, 1, [Define to 1 if plt/scheme.h is present]))
@@ -190,8 +189,15 @@ if test "$mzscheme_option" != "no"; then
           AM_CONDITIONAL(MZSCHEME, true)
           mzscheme_use="yes"
       ],[
-          AC_MSG_RESULT(no, not going to build MzScheme module)
-          AM_CONDITIONAL(MZSCHEME, false)
+          AC_CHECK_LIB(mzscheme3m, scheme_basic_env, [
+                MZSCHEME_LIBS="$MZSCHEME_LIBS -lmzscheme3m"
+                AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+                AM_CONDITIONAL(MZSCHEME, true)
+                mzscheme_use="yes"
+            ],[
+                AC_MSG_WARN(Not going to build MzScheme module)
+                AM_CONDITIONAL(MZSCHEME, false)
+            ])
       ])
     else
       AM_CONDITIONAL(MZSCHEME, false)
@@ -201,10 +207,8 @@ if test "$mzscheme_option" != "no"; then
 else
   AM_CONDITIONAL(MZSCHEME, false)
 fi
-AC_SUBST([
-MZSCHEME_CFLAGS
-MZSCHEME_LIBS
-])
+AC_SUBST([MZSCHEME_CFLAGS])
+AC_SUBST([MZSCHEME_LIBS])
 
 
 if test "$guile_option" != "no"; then
@@ -242,10 +246,8 @@ else
   AM_CONDITIONAL(GUILE, false)
 fi
 
-AC_SUBST([
-GUILE_CFLAGS
-GUILE_LIBS
-])
+AC_SUBST([GUILE_CFLAGS])
+AC_SUBST([GUILE_LIBS])
 
 # We need a scheme interpreter.  Require either MzScheme or Guile.
 if test "$mzscheme_use" != "yes" -a "$guile_use" != "yes"; then
@@ -294,10 +296,8 @@ else
     fi
 fi
 
-AC_SUBST([
-MYSQL_CFLAGS
-MYSQL_LIBS
-])
+AC_SUBST([MYSQL_CFLAGS])
+AC_SUBST([MYSQL_LIBS])
 
 
 dnl @synopsis AC_DEFINE_DIR(VARNAME, DIR [, DESCRIPTION])

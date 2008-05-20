@@ -116,7 +116,21 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
 }
 
 void ProductionOrder::createFrame(Frame *f, int pos) {
-   turns = 1;
+	unsigned turn = Game::getGame()->getTurnNumber() % 3;
+
+	// produce on(at the end of) turn 0
+	switch(turn)
+	{
+		case 0:
+			this->turns = 1; // production turn
+			break;
+		case 1:
+			this->turns = 3; 
+			break;
+		case 2:
+			this->turns = 2;
+			break;
+	}
    Order::createFrame(f, pos);
 }
 
@@ -125,6 +139,9 @@ Result ProductionOrder::inputFrame(Frame *f, unsigned int playerid) {
 }
 
 bool ProductionOrder::doOrder(IGObject *obj) {
+
+	if(--turns != 0)
+		return false;
 
    Game *game = Game::getGame();
    ResourceManager *resMan = game->getResourceManager();
