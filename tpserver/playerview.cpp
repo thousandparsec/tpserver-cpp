@@ -183,7 +183,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
           cacheObjects[itcurr->first] = obj;
         }
       }
-      if((fromtime == UINT64_NEG_ONE && !(obj->isGone()))|| obj->getModTime() < fromtime){
+      if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
         modlistObject[itcurr->first] = obj->getModTime();
       }
     }
@@ -328,7 +328,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
           cacheDesigns[itcurr->first] = designv;
         }
       }
-      if(fromtime == UINT64_NEG_ONE || designv->getModTime() < fromtime){
+      if(fromtime == UINT64_NEG_ONE || designv->getModTime() > fromtime){
         modlistDesign[itcurr->first] = designv->getModTime();
       }
     }
@@ -474,7 +474,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
           cacheComponents[itcurr->first] = component;
         }
       }
-      if(fromtime == UINT64_NEG_ONE || component->getModTime() < fromtime){
+      if(fromtime == UINT64_NEG_ONE || component->getModTime() > fromtime){
         modlistComp[itcurr->first] = component->getModTime();
       }
     }
