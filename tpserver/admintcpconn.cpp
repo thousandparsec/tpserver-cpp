@@ -36,6 +36,7 @@
 
 #include "logging.h"
 #include "net.h"
+#include "frame.h"
 
 #include "admintcpconn.h"
 
@@ -77,6 +78,200 @@ void AdminTcpConnection::close()
   }else{
     sendandclose = true;
   }
+}
+
+void AdminTcpConnection::sendFrame(Frame * frame)
+{
+  if(version != frame->getVersion()){
+    Logger::getLogger()->warning("Version mis-match, packet %d, connection %d", frame->getVersion(), version);
+
+  }
+  if(frame->getType() < ftad_LogMessage){  // TODO - perhaps not the best way to check
+    Logger::getLogger()->error("Tried to send a non-admin frame on an admin connection, not sending frame");
+  }else{
+    if(status != 0 && !sendandclose){
+      sendqueue.push(frame);
+
+      processWrite();
+    }
+  }
+}
+
+void AdminTcpConnection::processWrite(){
+  bool ok = !sendqueue.empty();
+  while(ok){
+    if(sbuff == NULL){
+      sbuff = sendqueue.front()->getPacket();
+      sbuffused = 0;
+      sbuffsize = sendqueue.front()->getLength();
+    }
+    if(sbuff != NULL){
+      int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
+      if(len > 0){
+        sbuffused += len;
+        if(sbuffused == sbuffsize){
+          delete[] sbuff;
+          sbuff = NULL;
+          delete sendqueue.front();
+          sendqueue.pop();
+          ok = !sendqueue.empty();
+        }
+      }else{
+        ok = false;
+        if(len != -2){
+          Logger::getLogger()->error("Socket error writing");
+          while(!sendqueue.empty()){
+            delete sendqueue.front();
+            sendqueue.pop();
+          }
+          close();
+        }
+      }
+    }else{
+      Logger::getLogger()->error("Could not get packet from frame to send");
+      delete sendqueue.front();
+      sendqueue.pop();
+      ok = false;
+    }
+  }
+  if(!sendqueue.empty()){
+    Network::getNetwork()->addToWriteQueue(this);
+  }else if(sendandclose){
+    close();
+  }
+}
+
+void AdminTcpConnection::verCheck(){
+
+}
+
+bool AdminTcpConnection::readFrame(Frame * recvframe)
+{
+  bool rtn = !sendandclose;
+
+  if (!rtn)
+    return rtn;
+
+  uint32_t hlen = recvframe->getHeaderLength();
+
+  if(rheaderbuff == NULL){
+    rbuffused = 0;
+    rheaderbuff = new char[hlen];
+  }
+
+  if(rdatabuff == NULL && rbuffused != hlen){
+    int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
+    if(len == 0){
+      Logger::getLogger()->info("Client disconnected");
+      close();
+      rtn = false;
+    }else if(len > 0){
+      rbuffused += len;
+      if(rbuffused != hlen){
+        Logger::getLogger()->debug("Read header not the length needed, delaying read");
+        rtn = false;
+      }
+    }else{
+      if(len != -2){
+        Logger::getLogger()->warning("Socket error");
+        while(!sendqueue.empty()){
+          delete sendqueue.front();
+          sendqueue.pop();
+        }
+        close();
+      }
+      rtn = false;
+    }
+  }
+
+  uint32_t datalen;
+
+  if(rtn && ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL)){
+    int32_t signeddatalen = recvframe->setHeader(rheaderbuff);
+    //check that the length field is probably valid
+    // length could be negative from wire or from having no synchronisation symbol
+    if (signeddatalen >= 0 && signeddatalen < 1048576) {
+      datalen = signeddatalen;
+
+    }else{
+      Frame *failframe;
+      if(signeddatalen < 1048576) {
+        Logger::getLogger()->debug("Incorrect header");
+        // protocol error
+        failframe = createFrame();
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, could not decode header");
+      }else{
+        Logger::getLogger()->debug("Frame too large");
+        failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, frame length too large");
+      }
+      sendFrame(failframe);
+      close();
+      rtn = false;
+    }
+  }
+
+  if(rtn && datalen != 0){
+
+    if(rdatabuff == NULL && rbuffused == hlen){
+      rbuffused = 0;
+      rdatabuff = new char[datalen];
+    }
+
+    if(rbuffused != datalen){
+      int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
+      if(len == 0){
+        Logger::getLogger()->info("Client disconnected");
+        close();
+        rtn = false;
+      }else if(len > 0){
+        rbuffused += len;
+        if(rbuffused != datalen){
+          Logger::getLogger()->debug("Read data not the length needed, delaying read");
+          rtn = false;
+        }
+      }else{
+        if(len != -2){
+          Logger::getLogger()->warning("Socket error");
+          while(!sendqueue.empty()){
+            delete sendqueue.front();
+            sendqueue.pop();
+          }
+          close();
+        }
+        rtn = false;
+      }
+    }
+
+    if(rtn && rbuffused == datalen){
+      recvframe->setData(rdatabuff, datalen);
+      delete[] rheaderbuff;
+      delete[] rdatabuff;
+      rheaderbuff = NULL;
+      rdatabuff = NULL;
+
+      //sanity checks
+      if(version != recvframe->getVersion()){
+        Logger::getLogger()->warning("Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, wrong version number");
+        sendFrame(failframe);
+        rtn = false;
+      }
+      FrameType type = recvframe->getType();
+      if (type < ftad_LogMessage || type >= ftad_Max) {  // TODO - perhaps not the best way to check
+        Logger::getLogger()->warning("Client has sent wrong frame type (%d)", type);
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_ProtocolError, "Protocol Error, non-admin frame type or frame type not known");
+        sendFrame(failframe);
+        rtn = false;
+      }
+    }
+  }else if(rtn){
+    delete[] rheaderbuff;
+    rheaderbuff = NULL;
+  }
+  return rtn;
 }
 
 void AdminTcpConnection::sendDataAndClose(const char* data, uint32_t size){

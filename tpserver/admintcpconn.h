@@ -32,7 +32,15 @@ class AdminTcpConnection : public AdminConnection {
   
   void setFD(int fd);
 
+  void close();
+  void sendFrame(Frame * frame);
+  void processWrite();
+
  protected:
+  void verCheck();
+
+  bool readFrame(Frame * recvframe);
+
   void sendData(const char* data, uint32_t size);
   void sendDataAndClose(const char* data, uint32_t size);
   
