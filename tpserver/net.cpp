@@ -116,7 +116,7 @@ void Network::start()
 	  Logger::getLogger()->info("Starting Network");
           
 
-	  uint numsocks = 0;
+	  uint32_t numsocks = 0;
 	  TcpSocket* listensocket = new TcpSocket();
             listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
 	  if(listensocket->getStatus() != 0){
