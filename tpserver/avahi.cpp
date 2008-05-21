@@ -88,6 +88,7 @@ void client_callback(AvahiClient *c, AvahiClientState state, void * userdata) {
             
             Logger::getLogger()->warning("Client failure: %s", avahi_strerror(avahi_client_errno(c)));
 //            avahi_simple_poll_quit(avahi->simple_poll);
+            avahi->reset();
             
             break;
 
@@ -262,7 +263,7 @@ void timeout_free(AvahiTimeout *t){
   delete t;
 }
 
-Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL){
+Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(NULL){
   
   std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
@@ -279,26 +280,25 @@ Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client
   pollapi->timeout_update = timeout_update;
   pollapi->timeout_free = timeout_free;
   
-  int error;
-  
-   /* Allocate a new client */
-  client = avahi_client_new(pollapi, (AvahiClientFlags)0, client_callback, this, &error);
-  
-  /* Check wether creating the client object succeeded */
-  if (!client) {
-      Logger::getLogger()->warning("Failed to create client: %s", avahi_strerror(error));
-      throw std::exception();
-  }
+  reset();
 
 }
 
 
 Avahi::~Avahi(){
+    if(group)
+        avahi_entry_group_free(group);
+    
   if (client)
         avahi_client_free(client);
 
   if (pollapi)
       delete pollapi;
+  
+  if(resetTimer != NULL){
+      resetTimer->setValid(false);
+      delete resetTimer;
+  }
   
 }
 
@@ -392,4 +392,26 @@ void Avahi::createServices(){
 fail:
 //  avahi_simple_poll_quit(simple_poll);
     ;
+}
+
+void Avahi::reset(){
+    
+    if(client != NULL){
+        if(group != NULL){
+            avahi_entry_group_free(group);
+            group = NULL;
+        }
+        avahi_client_free(client);
+    }
+    int error;
+    
+    /* Allocate a new client */
+    client = avahi_client_new(pollapi, AVAHI_CLIENT_NO_FAIL, client_callback, this, &error);
+    
+    /* Check wether creating the client object succeeded */
+    if (!client) {
+        Logger::getLogger()->warning("Failed to create avahi client: %s", avahi_strerror(error));
+        resetTimer = new TimerCallback(this, &Avahi::reset, 60);
+        Network::getNetwork()->addTimer(*resetTimer);
+    }
 }
