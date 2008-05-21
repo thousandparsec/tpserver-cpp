@@ -27,10 +27,11 @@
 
 #include "logging.h"
 #include "net.h"
+#include "frame.h"
 
 #include "adminconnection.h"
 
-AdminConnection::AdminConnection() : Connection(){
+AdminConnection::AdminConnection() : Connection(), version(fv0_4){
 }
 
 
@@ -46,4 +47,113 @@ AdminConnection::~AdminConnection(){
 void AdminConnection::setFD(int fd){
   sockfd = fd;
   status = 1;
+}
+
+void AdminConnection::process(){
+  Logger::getLogger()->debug("About to Process");
+  switch (status) {
+  case 1:
+    //check if user is really a TP protocol verNN client
+    Logger::getLogger()->debug("Stage1 : pre-connect");
+    verCheck();
+    break;
+  case 2:
+    //authorise the user
+    Logger::getLogger()->debug("Stage2 : connected");
+    login();
+    break;
+  case 3:
+    //process as normal
+    Logger::getLogger()->debug("Stage3 : logged in");
+    inGameFrame();
+    break;
+  case 0:
+  default:
+    //do nothing
+    Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
+    if (status != 0)
+            close();
+    status = 0;
+    break;
+  }
+  Logger::getLogger()->debug("Finished Processing");
+}
+
+Frame* AdminConnection::createFrame(Frame* oldframe)
+{
+  Frame* newframe;
+  if(oldframe != NULL) {
+    newframe = new Frame(oldframe->getVersion());
+    newframe->setSequence(oldframe->getSequence());
+  } else {
+    newframe = new Frame(version);
+    newframe->setSequence(0);
+  }
+  newframe->enablePaddingStrings(paddingfilter);
+  return newframe;
+}
+
+void AdminConnection::login(){
+  Frame *recvframe = createFrame();
+  if (readFrame(recvframe)) {
+    if(recvframe->getType() == ft02_Login){
+      std::string username, password;
+      try{
+        if(!recvframe->isEnoughRemaining(10))
+          throw std::exception();
+        username = recvframe->unpackStdString();
+        if(!recvframe->isEnoughRemaining(5))
+          throw std::exception();
+        password = recvframe->unpackStdString();
+      }catch(std::exception e){
+        Logger::getLogger()->debug("Admin Login: not enough data");
+        Frame *failframe = createFrame(recvframe);
+        failframe->createFailFrame(fec_FrameError, "Admin Login Error - missing username or password");
+        sendFrame(failframe);
+        delete recvframe;
+        return;
+      }
+      username = username.substr(0, username.find('@'));
+      if (username.length() > 0 && password.length() > 0) {
+        try{
+	  // TODO - check username & password authentication
+        }catch(std::exception e){
+          Logger::getLogger()->debug("Admin Login: bad username or password");
+          Frame *failframe = createFrame(recvframe);
+          failframe->createFailFrame(fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
+          sendFrame(failframe);
+          delete recvframe;
+          return;
+        }
+        if(/*TODO - authenticated*/){
+          Frame *okframe = createFrame(recvframe);
+          okframe->setType(ft02_OK);
+          okframe->packString("Welcome");
+          sendFrame(okframe);
+          Logger::getLogger()->info("Admin login ok by %s", username.c_str());
+          status = 3;
+        } else {
+          Logger::getLogger()->info("Bad username or password");
+          Frame *failframe = createFrame(recvframe);
+          failframe->createFailFrame(fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
+          sendFrame(failframe);
+        }
+      } else {
+              Logger::getLogger()->debug("username or password == NULL");
+              Frame *failframe = createFrame(recvframe);
+              failframe->createFailFrame(fec_FrameError, "Admin Login Error - no username or password");      // TODO - should be a const or enum, Login error
+              sendFrame(failframe);
+              //close();
+      }
+
+
+    }else{
+      Logger::getLogger()->warning("In connected state but did not receive login");
+      Frame *failframe = createFrame(recvframe);
+      failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login");
+      sendFrame(failframe);
+    }
+  }
+  delete recvframe;
+
 }

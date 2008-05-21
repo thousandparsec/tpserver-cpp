@@ -32,6 +32,23 @@ class AdminConnection: public Connection {
   virtual ~AdminConnection();
   
   void setFD(int fd);
+
+  void process();
+  virtual void close() = 0;
+  virtual void sendFrame(Frame * frame) = 0;
+
+  Frame* createFrame(Frame* oldframe = NULL);
+
+  ProtocolVersion getProcotolVersion();
+
+ prottected:
+
+  virtual void verCheck() = 0;
+  void login();
+
+  virtual bool readFrame(Frame * recvframe) = 0;
+
+  ProtocolVersion version;
 };
 
 #endif
