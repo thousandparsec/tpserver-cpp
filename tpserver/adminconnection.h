@@ -46,6 +46,8 @@ class AdminConnection: public Connection {
   virtual void verCheck() = 0;
   void login();
 
+  void adminFrame();
+
   virtual bool readFrame(Frame * recvframe) = 0;
 
   ProtocolVersion version;

@@ -53,7 +53,7 @@ void AdminConnection::process(){
   Logger::getLogger()->debug("About to Process");
   switch (status) {
   case 1:
-    //check if user is really a TP protocol verNN client
+    //check if user is really an admin client
     Logger::getLogger()->debug("Stage1 : pre-connect");
     verCheck();
     break;
@@ -65,7 +65,7 @@ void AdminConnection::process(){
   case 3:
     //process as normal
     Logger::getLogger()->debug("Stage3 : logged in");
-    inGameFrame();
+    adminFrame();
     break;
   case 0:
   default:
@@ -156,4 +156,16 @@ void AdminConnection::login(){
   }
   delete recvframe;
 
+}
+
+void AdminConnection::adminFrame()
+{
+  Frame *frame = createFrame();
+  if (readFrame(frame)) {
+    // TODO - do stuff with frames
+  } else {
+    Logger::getLogger()->debug("noFrame :(");
+    // client closed
+  }
+  delete frame;
 }
