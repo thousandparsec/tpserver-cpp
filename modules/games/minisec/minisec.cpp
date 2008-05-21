@@ -994,7 +994,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     star->addToParent( mw_galaxy->getID());
     obman->addObject( star);
 
-    for(uint i = 1; i <= nplanets; i++){
+    for(uint32_t i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
 

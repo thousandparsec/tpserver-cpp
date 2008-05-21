@@ -130,7 +130,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
     }else if(r1 == 1){
       //pa win
       d1 = f1->firepower(false);
-      uint nscout = 0;
+      uint32_t nscout = 0;
       for(std::list<uint32_t>::iterator itcurr = d1.begin(); itcurr != d1.end(); ++itcurr){
         if((*itcurr) == 0)
           nscout++;
@@ -153,7 +153,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
       d2 = f2->firepower(false);
       if(d2.empty())
         Logger::getLogger()->debug("Empty shot list from fleet 2");
-      uint nscout = 0;
+      uint32_t nscout = 0;
       for(std::list<uint32_t>::iterator itcurr = d2.begin(); itcurr != d2.end(); ++itcurr){
         if((*itcurr) == 0)
           nscout++;
