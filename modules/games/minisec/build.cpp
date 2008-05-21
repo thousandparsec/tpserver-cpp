@@ -101,12 +101,12 @@ void Build::createFrame(Frame *f, int pos)
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<unsigned int> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
+  std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<Design*> usable;
-  for(std::set<uint>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
+  for(std::set<uint32_t>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
       Design* design = ds->getDesign(*itcurr);
       if(design->getCategoryId() == 1){
           usable.insert(design);
