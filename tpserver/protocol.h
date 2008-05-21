@@ -173,6 +173,8 @@ typedef uint32_t designid_t;
 typedef uint32_t componentid_t;
 typedef uint32_t propertyid_t;
 
+typedef uint32_t commandtypeid_t;
+
 typedef int32_t reftype_t;
 typedef uint32_t refvalue_t;
 
