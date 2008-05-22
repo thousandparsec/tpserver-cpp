@@ -1,6 +1,6 @@
 /*  Frame class, the network packets for the TP procotol
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -494,18 +494,26 @@ void Frame::unpackData(unsigned int len, char* bdata){
   }
 }
 
-void Frame::createFailFrame(FrameErrorCode code, const char *reason)
-{
-  
+void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){
+    createFailFrame(code, reason, std::list<std::pair<reftype_t, refvalue_t> >());
+}
+
+void Frame::createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> >& refs){
     setType(ft02_Fail);
 
-  if (data != NULL) {
-    free(data);
-    length = 0;
-    data = NULL;
-    unpackptr = 0;
-  }
-  packInt(code);
-  packString(reason);
-  
+    if (data != NULL) {
+        free(data);
+        length = 0;
+        data = NULL;
+        unpackptr = 0;
+    }
+    packInt(code);
+    packString(reason);
+    if(version >= fv0_4){
+        packInt(refs.size());
+        for(std::list<std::pair<reftype_t, refvalue_t> >::const_iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
+            packInt(itcurr->first);
+            packInt(itcurr->second);
+        }
+    }
 }
