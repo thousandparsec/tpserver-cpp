@@ -27,6 +27,7 @@
 #include <tpserver/objectmanager.h> 
 #include <tpserver/ordermanager.h> 
 #include <tpserver/player.h> 
+#include <tpserver/settings.h>
 
 /* Minisec Includes
 #include <tpserver/game.h>
@@ -58,7 +59,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/resourcemanager.h>
-#include <tpserver/settings.h>
+
 #include <tpserver/prng.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/orderqueue.h>
@@ -67,9 +68,8 @@
 */
 
 // risk includes 
-
-// header include 
-#include "risk.h" 
+#include "risk.h"
+#include "riskturn.h" 
 
 //the libtool magic required
 extern "C" { 
@@ -156,6 +156,7 @@ void Risk::createGame(){
 
 void Risk::startGame(){
     Logger::getLogger()->info("Risk started");
+    
     //Modelling minisec
     /*
     There is some resource setup that is not applicable to risk
@@ -172,7 +173,20 @@ void Risk::startGame(){
 
 bool Risk::onAddPlayer(Player* player){
     Logger::getLogger()->debug("Risk onAddPlayer"); 
-    return true; 
+    Game* game = Game::getGame();
+
+    bool canJoin = true;            
+    uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
+    bool isStarted = game->isStarted();
+    uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
+    
+
+    //If ( max players exceeded OR (game's started AND there are no open spaces))    
+        //disallow joining
+    if ( (cur_players >= max_players)||(isStarted && noOpenSpacesExist()) )
+        canJoin = false;        
+
+    return canJoin; 
 }
 
 void Risk::onPlayerAdded(Player* player){
@@ -195,4 +209,14 @@ void Risk::onPlayerAdded(Player* player){
         
     */   
 }
+
+bool Risk::isBoardClaimed(){
+    //This method will run through board and check if all territories
+        //are claimed or not
+
+    //TODO: Check board to determine "claimedness"
+
+    return false;
+}
+
 } //end namespace RiskRuleset

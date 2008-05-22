@@ -26,17 +26,19 @@
 namespace RiskRuleset {
 	
 class Risk : public Ruleset {
-public:
-	Risk();
-	virtual ~Risk();
+    public:
+    	Risk();
+    	virtual ~Risk();
 
-	std::string getName(); 
-	std::string getVersion(); 
-	void initGame(); 
-	void createGame(); 
-	void startGame(); 
-	bool onAddPlayer(Player* player); 
-	void onPlayerAdded(Player* player);
+    	std::string getName(); 
+    	std::string getVersion(); 
+    	void initGame(); 
+    	void createGame(); 
+    	void startGame(); 
+    	bool onAddPlayer(Player* player); 
+    	void onPlayerAdded(Player* player);
+    private:
+        bool isBoardClaimed();  //returns true/false board is completely claimed
 		
 };// class Risk : public Ruleset
 	
