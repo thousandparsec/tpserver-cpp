@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <list>
 
 #include <tpserver/protocol.h>
 
@@ -82,7 +83,8 @@ class Frame {
     char unpackInt8();
     void unpackData(unsigned int len, char* bdata);
   
-    void createFailFrame(FrameErrorCode code, const char *reason);
+    void createFailFrame(FrameErrorCode code, const std::string& reason);
+    void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);
   
   private:
     ProtocolVersion version;
