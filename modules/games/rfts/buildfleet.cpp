@@ -100,13 +100,13 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
 
    assert(planetData);
 
-   set<unsigned int> designs = game->getPlayerManager()->getPlayer(
+   set<uint32_t> designs = game->getPlayerManager()->getPlayer(
                            planetData->getOwner())->getPlayerView()->getUsableDesigns();
 
    Game::getGame()->getObjectManager()->doneWithObject(selectedObj->getID());
    DesignStore* ds = Game::getGame()->getDesignStore();
    
-   for(set<uint>::iterator i = designs.begin(); i != designs.end(); ++i)
+   for(set<uint32_t>::iterator i = designs.begin(); i != designs.end(); ++i)
    {
       Design* design = ds->getDesign(*i);
       if(design->getCategoryId() == ds->getCategoryByName("Ships"))
