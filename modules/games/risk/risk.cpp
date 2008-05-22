@@ -175,7 +175,7 @@ bool Risk::onAddPlayer(Player* player){
     Logger::getLogger()->debug("Risk onAddPlayer"); 
     Game* game = Game::getGame();
 
-    bool canJoin = true;            
+    bool canJoin;            
     uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
     bool isStarted = game->isStarted();
     uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
@@ -184,7 +184,9 @@ bool Risk::onAddPlayer(Player* player){
     //If ( max players exceeded OR (game's started AND there are no open spaces))    
         //disallow joining
     if ( (cur_players >= max_players)||(isStarted && noOpenSpacesExist()) )
-        canJoin = false;        
+        canJoin = false;  
+    else
+        canJoin = true
 
     return canJoin; 
 }
