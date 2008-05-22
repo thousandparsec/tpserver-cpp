@@ -139,13 +139,10 @@ char *Frame::getPacket() const{
       *temp = (char)(0xff & typeversion);
       temp++;
     }
-    
-    // Sequence number is only present in version 2 and above
-    if (version > 1) {
-      int nseq = htonl(sequence);
-      memcpy(temp, &nseq, 4);
-      temp += 4;
-    }
+
+    int nseq = htonl(sequence);
+    memcpy(temp, &nseq, 4);
+    temp += 4;
     
     int ntype = htonl(type);
     memcpy(temp, &ntype, 4);
