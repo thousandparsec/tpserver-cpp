@@ -28,7 +28,7 @@
 #include <tpserver/ordermanager.h> 
 #include <tpserver/player.h> 
 #include <tpserver/settings.h>
-
+#include <tpserver/playermanager.h>
 /* Minisec Includes
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -175,7 +175,7 @@ bool Risk::onAddPlayer(Player* player){
     Logger::getLogger()->debug("Risk onAddPlayer"); 
     Game* game = Game::getGame();
 
-    bool canJoin;            
+    bool canJoin = true;            
     uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
     bool isStarted = game->isStarted();
     uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
@@ -183,11 +183,12 @@ bool Risk::onAddPlayer(Player* player){
 
     //If ( max players exceeded OR (game's started AND there are no open spaces))    
         //disallow joining
+    /*
     if ( (cur_players >= max_players)||(isStarted && noOpenSpacesExist()) )
         canJoin = false;  
     else
-        canJoin = true
-
+        canJoin = true;
+    */
     return canJoin; 
 }
 
@@ -222,3 +223,4 @@ bool Risk::isBoardClaimed(){
 }
 
 } //end namespace RiskRuleset
+
