@@ -1,9 +1,9 @@
-#ifndef RISKTURN_H
-#define RISKTURN_H
-/*  RiskTurn class, the end of turn process for risk
- * 
+#ifndef REINFORCE_H
+#define REINFORCE_H
+/*  Reinforce class
+ *
  *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,23 +21,27 @@
  *
  */
  
- //Do I need these two?
- #include <stdint.h>
- #include <set>
- 
- #include <tpserver/turnprocess.h>
- namespace RiskRuleset{
-     
- class RiskTurn : public TurnProcess{
- public:
-     RiskTurn();
-     virtual ~RiskTurn();
-     
-     virtual void doTurn();
-     
- };//class RiskTurn : public TurnProcess
- 
- } //namespace RiskRuleset
- #endif
+#include <tpserver/order.h>
 
+class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
+class IGObject;
  
+namespace RiskRuleset {
+
+class Reinforce : public ::Order {
+  
+  public:
+    
+    Reinforce();
+    virtual ~Reinforce();
+    
+    virtual Order* clone() const; //not sure what this does
+    
+    virtual bool doOrder(IGObject* obj);
+  
+  private:
+    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
+    
+};//class Reinforce
+} //namespace RiskRuleset
+#endif

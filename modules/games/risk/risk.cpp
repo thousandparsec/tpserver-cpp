@@ -1,5 +1,6 @@
 /*  Risk rulesset class
  *
+ *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -100,21 +101,56 @@ std::string Risk::getVersion(){
 void Risk::initGame(){
     Logger::getLogger()->info("Risk initialised");
 
+    Game::getGame()->setTurnProcess(new RiskTurn());
+    
+    setObjectTypes();
+
+    setOrderTypes();
+    
     //Just modelling after minisec here, to give myself an idea of what goes on
     /*
-    Game* game = Game::getGame(); <- Obviously required, a reference to the actual game
-    
-    MinisecTurn* turn = new MinisecTurn();
-    game->setTurnProcess(turn) <-tells game to process turn using created reference
-    
     SET OF CALLS RELATING TO ObjectTypeManager
-    >minisec runs through creating empty object types, setting name/description, then adding to a
-        >type manager
+    >minisec runs through creating empty object types, setting name/description, then adding 
+        >to a type manager
     >At the end he creates two uint32_t's that are newObjectTypes PlanetType() and FleetType()
         >These are then passed as arguments in setters for turn
         
     SET OF CALLS RELATING TO OrderManager
     >I'm seeing a set of OrderTypes added to an OrderManager, seems straight forward
+    */
+}
+
+void Risk::setObjectTypes() const{
+    ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
+    
+//The question is... Do I "poach" a lot of tylers work? Is that how OSS works?
+/*
+
+    StaticObjectType *eo    
+    
+    obdm->addNewObjectType(new UniverseType());
+    
+    eo = new StaticObjectType();
+    eo->setTypeName("Galaxy");
+    eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
+    obdm->addNewObjectType(eo);
+    
+    eo = new StaticObjectType();
+    eo->setTypeName("Star System");
+    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.")
+    obdm->addNewObjectType(eo);
+    
+    obdm->addNewObjectType(new PlanetType);
+*/
+}
+
+void Risk::setOrderTypes() const{
+    OrderManager* orm = Game::getGame()->getOrderManager();
+    
+    /*
+    orm->addOrderType(new Colonize());
+    orm->addOrderType(new Reinforce());
+    orm->addOrderType(new Move());
     */
 }
 
@@ -148,9 +184,11 @@ void Risk::createGame(){
     Its also notable that the method of getting settings from a conf is shown as:
       std::string thing  = Settings::getSettings()->get(SettingName)
      A number is grabbed like so:
-      uint32_t min_systems = atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
+      uint32_t min_systems = 
+          atoi(Settings::getSettings()->get("minisec_min_systems").c_str());
       
-     Some resources are set up afterwards, and a little clean up of names used(not applicable to me)
+     Some resources are set up afterwards, and a little clean up of names used(not applicable 
+     to me)
     */
 }
 
@@ -180,16 +218,23 @@ bool Risk::onAddPlayer(Player* player){
     bool isStarted = game->isStarted();
     uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
     
-
     //If ( max players exceeded OR (game's started AND there are no open spaces))    
         //disallow joining
-    /*
-    if ( (cur_players >= max_players)||(isStarted && noOpenSpacesExist()) )
+    if ( (cur_players >= max_players)||(isStarted && !isBoardClaimed()) )
         canJoin = false;  
     else
         canJoin = true;
-    */
+    
     return canJoin; 
+}
+
+bool Risk::isBoardClaimed() const{
+    //This method will run through board and check if all territories
+        //are claimed or not
+
+    //TODO: Check board to determine "claimedness"
+
+    return false;
 }
 
 void Risk::onPlayerAdded(Player* player){
@@ -203,7 +248,8 @@ void Risk::onPlayerAdded(Player* player){
     
     if player is guest, set IsAlive to false, otherwise 
     
-    set the player to see other designs (not sure what this does -- believe it relates to ships)
+    set the player to see other designs (not sure what this does -- believe it relates 
+        to ships)
     Player gets some default objects created for them (NA to risk)
     (risk) -> should simply indicate the player gets some resources to spend 
         (ideally players won't join midgame thogh)
@@ -211,15 +257,6 @@ void Risk::onPlayerAdded(Player* player){
     create a system for player (NA to risk)
         
     */   
-}
-
-bool Risk::isBoardClaimed(){
-    //This method will run through board and check if all territories
-        //are claimed or not
-
-    //TODO: Check board to determine "claimedness"
-
-    return false;
 }
 
 } //end namespace RiskRuleset

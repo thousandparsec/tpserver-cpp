@@ -1,9 +1,9 @@
-#ifndef RISK_H
-#define RISK_H
-/*  Risk rulesset class
+#ifndef COLONIZE_H
+#define COLONIZE_H
+/*  Colonize class
  *
  *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
- *  Copyright (C) 2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,30 +20,29 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+ 
+#include <tpserver/order.h>
 
-//small change
-#include <tpserver/ruleset.h> 
-
+class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
+class IGObject;
+ 
 namespace RiskRuleset {
-	
-class Risk : public Ruleset {
-    public:
-    	Risk();
-    	virtual ~Risk();
 
-    	std::string getName(); 
-    	std::string getVersion(); 
-    	void initGame(); 
-    	void createGame(); 
-    	void startGame(); 
-    	bool onAddPlayer(Player* player); 
-    	void onPlayerAdded(Player* player);
-    private:
-        void setObjectTypes() const;  //used during initGame
-        void setOrderTypes() const;   //used during initGame
-        bool isBoardClaimed() const;  //returns true/false board is completely claimed
-		
-};// class Risk : public Ruleset
-	
-} // namespace RiskRuleset
+class Colonize : public ::Order {
+  
+  public:
+    
+    Colonize();
+    virtual ~Colonize();
+    
+    virtual Order* clone() const; //not sure what this does
+    
+    virtual bool doOrder(IGObject* obj);
+  
+  private:
+    //I am assuming these are...parameters required for order 
+    ObjectOrderParameter* units;    //# of units to colonize a target planet with.
+    //ObjectOrderParameter* planet; //not sure about this one, or how colonize orders will be issued
+};//class Colonize
+} //namespace RiskRuleset
 #endif

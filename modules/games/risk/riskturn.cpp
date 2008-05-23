@@ -1,5 +1,6 @@
 /*  RiskTurn object
  *
+ *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,7 +44,7 @@
 
 namespace RiskRuleset{
 
-RiskTurn::RiskTurn() : TurnProcess(), /*containerids()*/{
+RiskTurn::RiskTurn() : TurnProcess()/*, containerids()*/{
     //minisec has containerids() as a parent, look into this
 } 
     
