@@ -37,7 +37,9 @@
 #include "settingscallback.h"
 #include "connection.h"
 #include "playerconnection.h"
+#include "adminconnection.h"
 #include "tcpsocket.h"
+#include "admintcpsocket.h"
 #include "game.h"
 #include "frame.h"
 #include "httpsocket.h"
@@ -224,6 +226,21 @@ void Network::stop()
 
 bool Network::isStarted() const{
   return active;
+}
+
+void Network::adminStart(){
+  if(Settings::getSettings()->get("admin_tcp") == "yes"){
+    AdminTcpSocket* admintcpsocket = new AdminTcpSocket();
+    admintcpsocket->openListen(Settings::getSettings()->get("admin_tcp_addr"), Settings::getSettings()->get("admin_tcp_port"));
+    if(admintcpsocket->getStatus() != 0){
+      addConnection(admintcpsocket);
+    }else{
+      delete admintcpsocket;
+      Logger::getLogger()->warning("Could not listen on admin TCP socket");
+    }
+  }else{
+    Logger::getLogger()->info("Not configured to start admin TCP socket");
+  }
 }
 
 void Network::sendToAll(AsyncFrame* aframe){

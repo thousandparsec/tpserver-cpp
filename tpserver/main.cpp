@@ -131,6 +131,7 @@ int main(int argc, char **argv)
               myNetwork->start();
             }
 
+	    myNetwork->adminStart();
 
             myNetwork->masterLoop();
 

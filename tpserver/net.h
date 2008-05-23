@@ -53,6 +53,8 @@ class Network {
         
         bool isStarted() const;
 
+	void adminStart();
+
         void sendToAll(AsyncFrame* aframe);
         void doneEOT();
         
