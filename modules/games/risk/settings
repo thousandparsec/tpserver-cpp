@@ -1,7 +1,0 @@
-Used:
-risk_max_players -> determines max # of players allowed to join game
-
-
-Up in the air:
-persistence on?
-allow join after start? -> what triggers start, I wouldn't want a turn 1 game denying players from joining
