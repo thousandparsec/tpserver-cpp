@@ -24,7 +24,7 @@
 
 #include <tpserver/connection.h>
 
-class PlayerConnection;
+//class PlayerConnection;
 
 class ListenSocket : public Connection {
  public:
@@ -38,7 +38,7 @@ class ListenSocket : public Connection {
   uint16_t getPort() const;
 
 protected:
-    virtual PlayerConnection* acceptConnection(int fd) = 0;
+    virtual Connection* acceptConnection(int fd) = 0;
     
 private:
   uint16_t portnum;

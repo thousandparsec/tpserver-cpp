@@ -89,7 +89,7 @@ Frame* AdminConnection::createFrame(Frame* oldframe)
     newframe = new Frame(version);
     newframe->setSequence(0);
   }
-  newframe->enablePaddingStrings(paddingfilter);
+  newframe->enablePaddingStrings(false);  // TODO - what does this do?
   return newframe;
 }
 
@@ -115,8 +115,11 @@ void AdminConnection::login(){
       }
       username = username.substr(0, username.find('@'));
       if (username.length() > 0 && password.length() > 0) {
+      int temp_auth = 0; // TODO - this should be a useful object
         try{
-	  // TODO - check username & password authentication
+	  //TODO - real authentication
+	  if(username == "admin" && password == "admin")
+            temp_auth = 1;
         }catch(std::exception e){
           Logger::getLogger()->debug("Admin Login: bad username or password");
           Frame *failframe = createFrame(recvframe);
@@ -125,7 +128,7 @@ void AdminConnection::login(){
           delete recvframe;
           return;
         }
-        if(/*TODO - authenticated*/){
+        if(temp_auth){
           Frame *okframe = createFrame(recvframe);
           okframe->setType(ft02_OK);
           okframe->packString("Welcome");

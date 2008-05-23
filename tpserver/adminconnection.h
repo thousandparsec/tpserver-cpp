@@ -22,6 +22,8 @@
 
 #include <stdint.h>
 
+#include <tpserver/frame.h>
+
 #include <tpserver/connection.h>
 
 class AdminConnection: public Connection {
@@ -41,7 +43,7 @@ class AdminConnection: public Connection {
 
   ProtocolVersion getProcotolVersion();
 
- prottected:
+ protected:
 
   virtual void verCheck() = 0;
   void login();
