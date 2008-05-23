@@ -215,7 +215,7 @@ AC_SUBST([MZSCHEME_LIBS])
 
 
 if test "$guile_option" != "no"; then
-   AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:/sw/share/guile/*/scripts/binoverride:$PATH)
+   AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:/sw/share/guile/1.8/scripts/binoverride:$PATH)
    if test "$GUILE_CONFIG" != "no"; then
       dnl autoconf Guile version test adapted from SWIG test in xapian-bindings
       v=`$GUILE_CONFIG --version 2>&1|sed 's/^guile-config - Guile version \([[0-9\.]]*\).*/\1/p;d'`
