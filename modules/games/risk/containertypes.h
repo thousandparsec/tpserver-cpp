@@ -1,8 +1,7 @@
-#ifndef REINFORCE_H
-#define REINFORCE_H
-/*  Reinforce class
+#ifndef containertypes_H
+#define containertypes_H
+/*  containertypes enum
  *
- *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,28 +19,21 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
-#include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
-class IGObject;
- 
 namespace RiskRuleset {
 
-class Reinforce : public::Order {
-  
-  public:
-    
-    Reinforce();
-    virtual ~Reinforce();
-    
-    virtual Order* clone() const; //not sure what this does
-    
-    virtual bool doOrder(IGObject* obj);
-  
-  private:
-    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
-    
-};//class Reinforce
-} //namespace RiskRuleset
+namespace ContainerTypes_ {
+   
+typedef enum {
+   StaticObject = 1,
+   Universe = 1,
+   Galaxy,
+   StarSystem,
+   Planet
+} ContainerType;
+
+}
+
+}
+
 #endif

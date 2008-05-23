@@ -1,8 +1,7 @@
-#ifndef REINFORCE_H
-#define REINFORCE_H
-/*  Reinforce class
+#ifndef map_H
+#define map_H
+/*  map class
  *
- *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,28 +19,23 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
-#include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
-class IGObject;
- 
+
+#include <tpserver/vector3d.h>
+
 namespace RiskRuleset {
 
-class Reinforce : public::Order {
-  
-  public:
-    
-    Reinforce();
-    virtual ~Reinforce();
-    
-    virtual Order* clone() const; //not sure what this does
-    
-    virtual bool doOrder(IGObject* obj);
-  
-  private:
-    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
-    
-};//class Reinforce
-} //namespace RiskRuleset
+class StaticObject;
+
+
+const Vector3d getUniverseCoord(double unitX, double unitY);
+const Vector3d getUniverseCoord(const std::pair<double,double>& unitPos);
+
+const Vector3d getRandPlanetOffset();
+
+const double getWrappingUnitDist(const StaticObject& obj1, const StaticObject& obj2);
+const unsigned getWrappingDistSq(const StaticObject& obj1, const StaticObject& obj2);
+
+}
+
 #endif

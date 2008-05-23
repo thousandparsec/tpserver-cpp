@@ -30,6 +30,8 @@
 #include <tpserver/player.h> 
 #include <tpserver/settings.h>
 #include <tpserver/playermanager.h>
+#include <tpserver/objecttypemanager.h>
+
 /* Minisec Includes
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -39,7 +41,7 @@
 #include "emptyobject.h"
 #include "planet.h"
 #include "fleet.h"
-#include <tpserver/objecttypemanager.h>
+
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
 #include "rspcombat.h"
@@ -71,6 +73,18 @@
 // risk includes 
 #include "risk.h"
 #include "riskturn.h" 
+#include "colonize.h"
+#include "move.h"
+#include "reinforce.h"
+#include "containertypes.h"
+#include "map.h"
+#include "staticobject.h"
+#include "universe.h"
+#include "ownedobject.h"
+#include "planet.h"
+
+//Tyler's "hacky define :p"
+#define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
 
 //the libtool magic required
 extern "C" { 
@@ -122,11 +136,7 @@ void Risk::initGame(){
 
 void Risk::setObjectTypes() const{
     ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
-    
-//The question is... Do I "poach" a lot of tylers work? Is that how OSS works?
-/*
-
-    StaticObjectType *eo    
+    StaticObjectType* eo;    
     
     obdm->addNewObjectType(new UniverseType());
     
@@ -137,21 +147,20 @@ void Risk::setObjectTypes() const{
     
     eo = new StaticObjectType();
     eo->setTypeName("Star System");
-    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.")
+    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
     obdm->addNewObjectType(eo);
     
-    obdm->addNewObjectType(new PlanetType);
-*/
+    obdm->addNewObjectType(new PlanetType);   //may need to special some stuff here
+    
 }
 
 void Risk::setOrderTypes() const{
     OrderManager* orm = Game::getGame()->getOrderManager();
     
-    /*
     orm->addOrderType(new Colonize());
     orm->addOrderType(new Reinforce());
     orm->addOrderType(new Move());
-    */
+    
 }
 
 void Risk::createGame(){

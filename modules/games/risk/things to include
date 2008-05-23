@@ -1,7 +1,7 @@
 ObjectTypes:
 Universe -> Holds everything
 Galaxie -> Held by Universe, holds territories
-"Territory"/Star System -> Held by galaxie, holds 1 planet?
+Star System -> Held by galaxie, holds 1 planet?
 Planet? -> Held by Star, holds/has Armies property
 
 Order Types
@@ -21,6 +21,13 @@ Galaxie
 	
 	
 Do I grab a few of Tyler's pieces to use?
-universe
-staticobject
+
 planet? -> has resources, which my planet/territories will not
+
+included:
+containertypes -> no modifications other than namespace and removed "fleet"
+staticobject -> no mods
+universe -> changed namespace should be ok with nothing.
+planet -> massive changes
+ownedobject -> may need revision
+map	-> not sure yet

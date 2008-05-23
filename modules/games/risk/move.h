@@ -27,7 +27,7 @@ class IGObject;
 
 namespace RiskRuleset {
 
-class Move : public Order{
+class Move : public::Order{
   public:
     Move();
     virtual ~Move();

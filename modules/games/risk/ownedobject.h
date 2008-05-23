@@ -1,9 +1,9 @@
-#ifndef REINFORCE_H
-#define REINFORCE_H
-/*  Reinforce class
+#ifndef ownedobject_H
+#define ownedobject_H
+/*  ownedobject class
  *
- *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,28 +20,22 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
-#include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
-class IGObject;
- 
 namespace RiskRuleset {
 
-class Reinforce : public::Order {
-  
-  public:
-    
-    Reinforce();
-    virtual ~Reinforce();
-    
-    virtual Order* clone() const; //not sure what this does
-    
-    virtual bool doOrder(IGObject* obj);
-  
-  private:
-    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
-    
-};//class Reinforce
-} //namespace RiskRuleset
+class OwnedObject
+{
+ public:
+   OwnedObject() {}
+   virtual ~OwnedObject() {}
+
+   virtual uint32_t getOwner() const = 0;
+   virtual void setOwner(uint32_t no) = 0;
+};
+
+void exploreStarSys(IGObject* obj);
+
+
+}
+
 #endif

@@ -1,9 +1,9 @@
-#ifndef REINFORCE_H
-#define REINFORCE_H
-/*  Reinforce class
+#ifndef UNIVERSE_H
+#define UNIVERSE_H
+/*  universe class
  *
- *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,28 +20,41 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
-#include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
-class IGObject;
- 
+#include "staticobject.h"
+
+class IntegerObjectParam;
+
 namespace RiskRuleset {
 
-class Reinforce : public::Order {
-  
+class UniverseType : public StaticObjectType
+{
   public:
-    
-    Reinforce();
-    virtual ~Reinforce();
-    
-    virtual Order* clone() const; //not sure what this does
-    
-    virtual bool doOrder(IGObject* obj);
+    UniverseType();
+    virtual ~UniverseType(){};
   
-  private:
-    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
-    
-};//class Reinforce
-} //namespace RiskRuleset
+  protected:
+    ObjectBehaviour* createObjectBehaviour() const;
+};
+  
+class Universe : public StaticObject 
+{
+ public:
+   Universe();
+   virtual ~Universe() {}
+
+   virtual void packExtraData(Frame* frame);
+   virtual void doOnceATurn();
+   virtual int getContainerType();
+
+
+   void setTurn(int turn);
+   int getTurn() const;
+   
+   void setupObject();
+
+};
+
+}
+
 #endif

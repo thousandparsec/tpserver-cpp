@@ -28,7 +28,7 @@ class IGObject;
  
 namespace RiskRuleset {
 
-class Colonize : public ::Order {
+class Colonize : public::Order {
   
   public:
     
