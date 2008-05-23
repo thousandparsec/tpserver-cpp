@@ -67,14 +67,12 @@ PlanetType::PlanetType() : StaticObjectType(){
   group->addParameter(obpT_Reference, "Owner", "The owner of this object");
   addParameterGroupDesc(group);
   
-  //Need to find out how to make # armies a property
-  /*
+  //Need to find out how to make # armies a property PROPERLY
   group = new ObjectParameterGroupDesc();
   group->setName("Armies");
   group->setDescription("The planets stats");
-  group->addParameter(obpT_Armies, "Number of Armies", "The number of armies for this planet.");
+  group->addParameter(obpT_Resource_List, "Number of Armies", "The number of armies for this planet.");
   addParameterGroupDesc(group);
-  */
   
   group = new ObjectParameterGroupDesc();
   group->setName("Orders");

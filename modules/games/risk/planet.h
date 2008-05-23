@@ -2,6 +2,7 @@
 #define PLANET_H
 /*  Planet class
  *
+ *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project 
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
