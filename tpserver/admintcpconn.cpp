@@ -142,7 +142,7 @@ void AdminTcpConnection::processWrite(){
 }
 
 void AdminTcpConnection::verCheck(){
-
+  status = 2;
 }
 
 bool AdminTcpConnection::readFrame(Frame * recvframe)

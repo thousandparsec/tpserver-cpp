@@ -252,6 +252,8 @@ void Network::adminStop(){
       ac->close();
       removeConnection(ac);
       delete ac;
+    }else{
+      ++itcurr;
     }
   }
 }
