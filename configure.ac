@@ -102,8 +102,11 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #check for boost
 # Random and smartpointer are in base
 AX_BOOST_BASE([1.32.1])
+
 # Signal tested separately
-AX_BOOST_SIGNALS
+ AX_BOOST_SIGNALS
+
+CXXFLAGS="$CXXFLAGS $BOOST_CPPFLAGS"
 
 CXXFLAGS="$CXXFLAGS $BOOST_CPPFLAGS"
 
@@ -212,7 +215,7 @@ AC_SUBST([MZSCHEME_LIBS])
 
 
 if test "$guile_option" != "no"; then
-   AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:$PATH)
+   AC_PATH_PROG(GUILE_CONFIG,guile-config,no,$guile_option:/sw/share/guile/1.8/scripts/binoverride:$PATH)
    if test "$GUILE_CONFIG" != "no"; then
       dnl autoconf Guile version test adapted from SWIG test in xapian-bindings
       v=`$GUILE_CONFIG --version 2>&1|sed 's/^guile-config - Guile version \([[0-9\.]]*\).*/\1/p;d'`
