@@ -139,10 +139,11 @@ int main(int argc, char **argv)
               myNetwork->stop();
             }
 
-
             if(myGame->isLoaded()){
               myGame->saveAndClose();
             }
+
+	    myNetwork->adminStop();
             
             }catch(std::exception e){
                 myLogger->debug("Caught exception");

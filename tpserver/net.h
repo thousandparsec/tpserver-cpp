@@ -55,6 +55,8 @@ class Network {
 
 	void adminStart();
 
+	void adminStop();
+
         void sendToAll(AsyncFrame* aframe);
         void doneEOT();
         

@@ -243,6 +243,19 @@ void Network::adminStart(){
   }
 }
 
+void Network::adminStop(){
+  std::map<int, Connection*>::iterator itcurr = connections.begin();
+  while (itcurr != connections.end()) {
+    AdminConnection* ac = dynamic_cast<AdminConnection*>(itcurr->second);
+    if(ac != NULL){
+      ++itcurr;
+      ac->close();
+      removeConnection(ac);
+      delete ac;
+    }
+  }
+}
+
 void Network::sendToAll(AsyncFrame* aframe){
   std::map < int, Connection * >::iterator itcurr;
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
