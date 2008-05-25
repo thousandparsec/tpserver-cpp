@@ -25,6 +25,7 @@
 #include "config.h"
 #endif
 
+#include "settings.h"
 #include "logging.h"
 #include "net.h"
 #include "frame.h"
@@ -115,11 +116,10 @@ void AdminConnection::login(){
       }
       username = username.substr(0, username.find('@'));
       if (username.length() > 0 && password.length() > 0) {
-      int temp_auth = 0; // TODO - this should be a useful object
+      bool authenticated = false;
         try{
-	  //TODO - real authentication
-	  if(username == "admin" && password == "admin")
-            temp_auth = 1;
+	  if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
+            authenticated = true;
         }catch(std::exception e){
           Logger::getLogger()->debug("Admin Login: bad username or password");
           Frame *failframe = createFrame(recvframe);
@@ -128,7 +128,7 @@ void AdminConnection::login(){
           delete recvframe;
           return;
         }
-        if(temp_auth){
+        if(authenticated){
           Frame *okframe = createFrame(recvframe);
           okframe->setType(ft02_OK);
           okframe->packString("Welcome");
