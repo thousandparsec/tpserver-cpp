@@ -37,8 +37,12 @@ class ListenSocket : public Connection {
   
   uint16_t getPort() const;
 
+  bool isPlayer();
+
 protected:
     virtual Connection* acceptConnection(int fd) = 0;
+
+  bool player;
     
 private:
   uint16_t portnum;

@@ -31,6 +31,7 @@
 #include "admintcpsocket.h"
 
 AdminTcpSocket::AdminTcpSocket() : ListenSocket(){
+  player = false;
 }
 
 AdminTcpSocket::~AdminTcpSocket(){

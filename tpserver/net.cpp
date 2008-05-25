@@ -205,7 +205,7 @@ void Network::stop()
 		      delete pc;
 		    }else{
                         ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
-		      if(ts != NULL){
+		      if(ts != NULL && ts->isPlayer()){
 			++itcurr;
 			removeConnection(ts);
 			delete ts;
@@ -253,7 +253,14 @@ void Network::adminStop(){
       removeConnection(ac);
       delete ac;
     }else{
-      ++itcurr;
+      ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
+      if(ts != NULL){
+        ++itcurr;
+        removeConnection(ts);
+        delete ts;
+      }else{
+        ++itcurr;
+      }
     }
   }
 }
