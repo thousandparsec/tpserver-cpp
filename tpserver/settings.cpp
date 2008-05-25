@@ -262,4 +262,7 @@ void Settings::setDefaultValues(){
   store["NEVER_START"] = "0";
   store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
   store["logfile_name"] = "/var/log/tpserver-cpp.log";
+  store["admin_user"] = "admin";
+  store["admin_pass"] = "admin";
+  store["admin_tcp"] = "yes";
 }
