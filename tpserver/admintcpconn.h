@@ -38,6 +38,8 @@ class AdminTcpConnection : public AdminConnection {
 
  protected:
   void verCheck();
+  virtual int32_t verCheckPreChecks();
+  virtual int32_t verCheckLastChance();
 
   bool readFrame(Frame * recvframe);
 
