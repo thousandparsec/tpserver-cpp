@@ -39,19 +39,19 @@ class UniverseType : public StaticObjectType
   
 class Universe : public StaticObject 
 {
- public:
-   Universe();
-   virtual ~Universe() {}
+  public:
+    Universe();
+    virtual ~Universe() {}
 
-   virtual void packExtraData(Frame* frame);
-   virtual void doOnceATurn();
-   virtual int getContainerType();
+    virtual void packExtraData(Frame* frame);
+    virtual void doOnceATurn();
+    virtual int getContainerType();
 
 
-   void setTurn(int turn);
-   int getTurn() const;
-   
-   void setupObject();
+    void setTurn(int turn);
+    int getTurn() const;
+
+    void setupObject();
 
 };
 

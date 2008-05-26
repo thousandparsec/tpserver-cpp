@@ -1,4 +1,33 @@
-Add list of adjacent planets to planets class -- also create these
-Figure out scaling of planets... (i.e their positions)
-May create placeholder objects for keeping track of player reinforcements
-Create bonus property for constellations
+GENERAL:
+	Maybe create placeholder objects for keeping track of player reinforcements
+
+RISK:
+	Create bonus property for constellations -> size? or resource?
+	Figure out scaling of planets... (i.e their positions)
+
+RISKTURN:
+	look into containerids in constructor
+	Implement turn logic
+	
+ALL ORDERS:
+	Check if parameters are correct
+	
+REINFORCE:
+	Implement order
+
+COLONIZE:
+	Implement order
+
+MOVE:
+	Implement order
+	
+MAP:
+
+OWNED OBJECT:
+
+PLANETS:
+	Add list of adjacent planets to planets class -- also create these
+	Add any doOnceATurn logic
+	
+QUESTIONS FOR TYLER:
+	How do I access property Armies for planet?

@@ -44,7 +44,6 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/player.h>
 
-//modified these include - jphr
 #include "containertypes.h"
 #include "risk.h"
 #include "planet.h"
@@ -93,11 +92,10 @@ Planet::~Planet() {
 }
 
 void Planet::setOrderTypes() {
-   OrderManager *om = Game::getGame()->getOrderManager();
+  OrderManager *om = Game::getGame()->getOrderManager();
    
-   std::set<uint32_t> allowedlist;
+  std::set<uint32_t> allowedlist;
 
-   //modified here - jphr
 	allowedlist.insert(om->getOrderTypeByName("Colonize"));
 	allowedlist.insert(om->getOrderTypeByName("Move"));
 	allowedlist.insert(om->getOrderTypeByName("Reinforce"));
@@ -107,31 +105,11 @@ void Planet::setOrderTypes() {
 
 void Planet::doOnceATurn() {
   
-    //TODO: insert logic (if any)
+  //TODO: insert logic (if any)
   
-   /* NOT APPLICABLE TO RISK AT ALL
-   unsigned turn = Game::getGame()->getTurnNumber() % 3;
-   
+  setOrderTypes();
 
-   if(getOwner() != 0)
-   {
-      if(turn == 0) // next turn is 0 - do RP production
-      {
-         // calc RP for next turn
-         calcRP();
-      }
-      else if(turn == 1) // just did a prod. turn
-      {
-			calcPopulation();
-         upgradePdbs();
-      }
-		
-		this->setResource("Ship Technology", 0, PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
-   }
-	  */
-   setOrderTypes();
-
-   obj->touchModTime();
+  obj->touchModTime();
 }
 
 int Planet::getContainerType() {
@@ -141,18 +119,7 @@ int Planet::getContainerType() {
 void Planet::packExtraData(Frame * frame){
   ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
   frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
-  
-  /* No need to pack resource list that doesn't exist - may not need to pack any extra data
-  map<uint32_t, pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(3,1)))->getResources();
-    frame->packInt(reslist.size());
-    for(map<uint32_t, pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
-            itcurr != reslist.end(); ++itcurr){
-        frame->packInt(itcurr->first);
-        frame->packInt(itcurr->second.first);
-        frame->packInt(itcurr->second.second);
-        frame->packInt(0);
-    }
-    */
+
 }
 
 uint32_t Planet::getOwner() const{

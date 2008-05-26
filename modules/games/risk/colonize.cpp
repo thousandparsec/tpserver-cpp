@@ -32,7 +32,6 @@
 
 #include "colonize.h"
 
-//include "playerinfo.h"
 namespace RiskRuleset {
 
 using std::string;

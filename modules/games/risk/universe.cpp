@@ -50,24 +50,24 @@ Universe::Universe() : StaticObject() {
 }
 
 void Universe::setTurn(int turn) {
-   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(turn);
+  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(turn);
 }
 
 int Universe::getTurn() const {
-   return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
+  return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
 }
 
 int Universe::getContainerType() {
-   return ContainerTypes_::Universe;
+  return ContainerTypes_::Universe;
 }
 
 void Universe::packExtraData(Frame *frame) {
-   frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
+  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
 }
 
 void Universe::doOnceATurn() {
-   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
-   obj->touchModTime();
+  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
+  obj->touchModTime();
 }
 
 void Universe::setupObject(){

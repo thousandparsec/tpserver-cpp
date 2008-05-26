@@ -20,24 +20,21 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <stdint.h>
+#include <set>
  
- //Do I need these two?
- #include <stdint.h>
- #include <set>
- 
- #include <tpserver/turnprocess.h>
- namespace RiskRuleset{
+#include <tpserver/turnprocess.h>
+namespace RiskRuleset{
      
- class RiskTurn : public TurnProcess{
- public:
-     RiskTurn();
-     virtual ~RiskTurn();
+class RiskTurn : public TurnProcess{
+public:
+  RiskTurn();
+  virtual ~RiskTurn();
+   
+  virtual void doTurn();
      
-     virtual void doTurn();
-     
- };//class RiskTurn : public TurnProcess
- 
- } //namespace RiskRuleset
- #endif
+};//class RiskTurn : public TurnProcess
+} //namespace RiskRuleset
+#endif
 
  

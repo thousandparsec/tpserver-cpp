@@ -45,7 +45,7 @@
 namespace RiskRuleset{
 
 RiskTurn::RiskTurn() : TurnProcess()/*, containerids()*/{
-    //minisec has containerids() as a parent, look into this
+    //TODO: minisec has containerids() as a parent, look into this
 } 
     
 RiskTurn::~RiskTurn(){
@@ -53,7 +53,7 @@ RiskTurn::~RiskTurn(){
 }
 
 void RiskTurn::doTurn(){
-    //turn processing goes here
+    //TODO: turn processing goes here
     
 } //RiskTurn::RiskTurn() : TurnProcess()
 } //namespace RiskRuleset

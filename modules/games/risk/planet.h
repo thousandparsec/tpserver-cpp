@@ -40,21 +40,20 @@ class PlanetType : public StaticObjectType {
 
 class Planet : public StaticObject, public OwnedObject {
 
-//snipped out references to "resources" - jphr
- public:
-   Planet();
-   virtual ~Planet();
+  public:
+    Planet();
+    virtual ~Planet();
 
-   virtual void packExtraData(Frame * frame);
-   virtual void doOnceATurn();
-   virtual int getContainerType();
+    virtual void packExtraData(Frame * frame);
+    virtual void doOnceATurn();
+    virtual int getContainerType();
 
-   uint32_t getOwner() const;
-   void setOwner(uint32_t no);
+    uint32_t getOwner() const;
+    void setOwner(uint32_t no);
 
-   void setOrderTypes();
+    void setOrderTypes();
 
-   void setupObject();
+    void setupObject();
 
 };
 

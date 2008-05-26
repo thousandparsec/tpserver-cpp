@@ -49,44 +49,6 @@
 #include <tpserver/settings.h>
 #include <tpserver/message.h>
 
-/* Minisec Includes
-#include <tpserver/game.h>
-#include <tpserver/object.h>
-#include <tpserver/objectview.h>
-#include <tpserver/objectmanager.h>
-#include "universe.h"
-#include "emptyobject.h"
-#include "planet.h"
-#include "fleet.h"
-
-#include <tpserver/player.h>
-#include <tpserver/playerview.h>
-#include "rspcombat.h"
-#include <tpserver/designstore.h>
-#include <tpserver/ordermanager.h>
-#include "nop.h"
-#include "move.h"
-#include "build.h"
-#include "colonise.h"
-#include "splitfleet.h"
-#include "mergefleet.h"
-#include <tpserver/property.h>
-#include <tpserver/component.h>
-#include <tpserver/design.h>
-#include <tpserver/designview.h>
-#include <tpserver/category.h>
-#include <tpserver/logging.h>
-#include <tpserver/playermanager.h>
-#include <tpserver/resourcedescription.h>
-#include <tpserver/resourcemanager.h>
-
-#include <tpserver/prng.h>
-#include <tpserver/playermanager.h>
-#include <tpserver/orderqueue.h>
-#include <tpserver/orderqueueobjectparam.h>
-#include "minisecturn.h"
-*/
-
 // risk includes 
 #include "risk.h"
 #include "riskturn.h" 
@@ -105,10 +67,10 @@
 
 //the libtool magic required
 extern "C" { 
-    #define tp_init librisk_LTX_tp_init 
-    bool tp_init(){ 
-        return Game::getGame()->setRuleset(new RiskRuleset::Risk());
-    } 
+  #define tp_init librisk_LTX_tp_init 
+  bool tp_init(){ 
+    return Game::getGame()->setRuleset(new RiskRuleset::Risk());
+  } 
 }
 
 namespace RiskRuleset {
@@ -121,74 +83,73 @@ using std::advance;
 using std::pair;
 
 Risk::Risk(){
-//Minisec has a parent of random(NULL), whats with that?	
+  //Minisec has a parent of random(NULL), whats with that?	
 }
 
 Risk::~Risk(){
-//minisec simply deletes the random if not NULL    
+  //minisec simply deletes the random if not NULL    
 }
 
 std::string Risk::getName(){
-    return "Risk";
+  return "Risk";
 }
 
 std::string Risk::getVersion(){
-    return "0.0";
+  return "0.0";
 }
 
 void Risk::initGame(){
-    Logger::getLogger()->info("Risk initialised");
+  Logger::getLogger()->info("Risk initialised");
 
-    Game::getGame()->setTurnProcess(new RiskTurn());
-    
-    setObjectTypes();
+  Game::getGame()->setTurnProcess(new RiskTurn());
+  
+  setObjectTypes();
 
-    setOrderTypes();
+  setOrderTypes();
 }
 
 void Risk::setObjectTypes() const{
-    ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
-    StaticObjectType* eo;    
-    
-    obdm->addNewObjectType(new UniverseType());
-    
-    eo = new StaticObjectType();
-    eo->setTypeName("Galaxy");
-    eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
-    obdm->addNewObjectType(eo);
-    //Need to add the constellation bonus for complete ownership
-    
-    eo = new StaticObjectType();
-    eo->setTypeName("Star System");
-    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
-    obdm->addNewObjectType(eo);
-    
-    obdm->addNewObjectType(new PlanetType);   //may need to special some stuff here
-    //There are no fleets in risk - hence no fleet type
+  ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
+  StaticObjectType* eo;    
+  
+  obdm->addNewObjectType(new UniverseType());
+  
+  eo = new StaticObjectType();
+  eo->setTypeName("Galaxy");
+  eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
+  obdm->addNewObjectType(eo);
+  //Need to add the constellation bonus for complete ownership
+  
+  eo = new StaticObjectType();
+  eo->setTypeName("Star System");
+  eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
+  obdm->addNewObjectType(eo);
+  
+  obdm->addNewObjectType(new PlanetType);   //may need to special some stuff here
+  //There are no fleets in risk - hence no fleet type
 }
 
 void Risk::setOrderTypes() const{
-    OrderManager* orm = Game::getGame()->getOrderManager();
-    
-    //To be an action availible on all unowned planets
-    //With planet selected order is to colonize with NUMBER armies
-    orm->addOrderType(new Colonize());
-    
-    //To be an action availible on all player owned planets
-    //With planet selected order is to reinforce with NUMBER armies
-    orm->addOrderType(new Reinforce());
-    
-    //To be an action availible on all player owned planets
-    //With planet selected order is to reinforce with NUMBER armies
-    orm->addOrderType(new Move());
-    
+  OrderManager* orm = Game::getGame()->getOrderManager();
+  
+  //To be an action availible on all unowned planets
+  //With planet selected order is to colonize with NUMBER armies
+  orm->addOrderType(new Colonize());
+  
+  //To be an action availible on all player owned planets
+  //With planet selected order is to reinforce with NUMBER armies
+  orm->addOrderType(new Reinforce());
+  
+  //To be an action availible on all player owned planets
+  //With planet selected order is to reinforce with NUMBER armies
+  orm->addOrderType(new Move());
 }
 
 void Risk::createGame(){
-    Logger::getLogger()->info("Risk created");
-    
-    //set up universe (universe->galaxies->star sys->planet)
-    createUniverse();
+  Logger::getLogger()->info("Risk created");
+  
+  //set up universe (universe->galaxies->star sys->planet)
+  createUniverse();
 }
 
 void Risk::createUniverse() {
@@ -335,70 +296,70 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
 }
 
 void Risk::startGame(){
-    Logger::getLogger()->info("Risk started");
-    
-    //Modelling minisec
-    /*
-    There is some resource setup that is not applicable to risk
-    followed by getting settings, this will be applicable and as such here is the snippet:
-    Settings* settings = Settings::getSettings();
-    if(settings->get("turn_length_over_threshold") == ""){
-      settings->set("turn_length_over_threshold", "600");
-      settings->set("turn_player_threshold", "0");
-      settings->set("turn_length_under_threshold", "600");
-      
-     They look to be defaults if a turnlength isn't set
-    */
+  Logger::getLogger()->info("Risk started");
+
+  //Modelling minisec
+  /*
+  There is some resource setup that is not applicable to risk
+  followed by getting settings, this will be applicable and as such here is the snippet:
+  Settings* settings = Settings::getSettings();
+  if(settings->get("turn_length_over_threshold") == ""){
+    settings->set("turn_length_over_threshold", "600");
+    settings->set("turn_player_threshold", "0");
+    settings->set("turn_length_under_threshold", "600");
+  
+   They look to be defaults if a turnlength isn't set
+  */
 }
 
 bool Risk::onAddPlayer(Player* player){
-    Logger::getLogger()->debug("Risk onAddPlayer"); 
-    Game* game = Game::getGame();
+  Logger::getLogger()->debug("Risk onAddPlayer"); 
+  Game* game = Game::getGame();
 
-    bool canJoin = true;            
-    uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
-    bool isStarted = game->isStarted();
-    uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
-    
-    //If ( max players exceeded OR (game's started AND there are no open spaces))    
-        //disallow joining
-    if ( (cur_players >= max_players)||(isStarted && !isBoardClaimed()) )
-        canJoin = false;  
-    else
-        canJoin = true;
-    
-    return canJoin; 
+  bool canJoin = true;            
+  uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
+  bool isStarted = game->isStarted();
+  uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
+
+  //If ( max players exceeded OR (game's started AND there are no open spaces))    
+      //disallow joining
+  if ( (cur_players >= max_players)||(isStarted && !isBoardClaimed()) )
+      canJoin = false;  
+  else
+      canJoin = true;
+
+  return canJoin; 
 }
 
 bool Risk::isBoardClaimed() const{
-    //This method will run through board and check if all territories
-        //are claimed or not
+  //This method w  ill run through board and check if all territories
+    //are claimed or not
 
-    //TODO: Check board to determine "claimedness"
+  //TODO: Check board to determine "claimedness"
 
-    return false;
+  return false;
 }
 
 void Risk::onPlayerAdded(Player* player){
-    Logger::getLogger()->debug("Risk onPlayerAdded");
+  Logger::getLogger()->debug("Risk onPlayerAdded");
+
+  //Modelling minisec
+  /*
+  Game reference is grabed
+
+  playerview reference is grabbed
+
+  if player is guest, set IsAlive to false, otherwise 
+
+  set the player to see other designs (not sure what this does -- believe it relates 
+      to ships)
+  Player gets some default objects created for them (NA to risk)
+  (risk) -> should simply indicate the player gets some resources to spend 
+      (ideally players won't join midgame thogh)
     
-    //Modelling minisec
-    /*
-    Game reference is grabed
+  create a system for player (NA to risk)
     
-    playerview reference is grabbed
-    
-    if player is guest, set IsAlive to false, otherwise 
-    
-    set the player to see other designs (not sure what this does -- believe it relates 
-        to ships)
-    Player gets some default objects created for them (NA to risk)
-    (risk) -> should simply indicate the player gets some resources to spend 
-        (ideally players won't join midgame thogh)
-        
-    create a system for player (NA to risk)
-        
-    */   
+  */   
 }
 
 } //end namespace RiskRuleset

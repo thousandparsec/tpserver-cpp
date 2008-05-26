@@ -23,7 +23,7 @@
  
 #include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
+class ObjectOrderParameter;
 class IGObject;
  
 namespace RiskRuleset {
@@ -35,7 +35,7 @@ class Reinforce : public::Order {
     Reinforce();
     virtual ~Reinforce();
     
-    virtual Order* clone() const; //not sure what this does
+    virtual Order* clone() const;
     
     virtual bool doOrder(IGObject* obj);
   

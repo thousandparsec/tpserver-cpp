@@ -29,33 +29,33 @@ class IGObject;
 namespace RiskRuleset {
 	
 class Risk : public Ruleset {
-    public:
-    	Risk();
-    	virtual ~Risk();
+  public:
+    Risk();
+  	virtual ~Risk();
 
-    	std::string getName(); 
-    	std::string getVersion(); 
-    	void initGame(); 
-    	void createGame(); 
-    	void startGame(); 
-    	bool onAddPlayer(Player* player); 
-    	void onPlayerAdded(Player* player);
-    private:
-        //initGame methods
-        void setObjectTypes() const;
-        void setOrderTypes() const;
-        
-        //createGame methods
-        void createUniverse();
-        IGObject* createGalaxy(IGObject& parent, const std::string& name);
-        IGObject* createStarSystem(IGObject& parent, const std::string& name,
-                                double unitX, double unitY);
-        IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
-                                 const Vector3d& location);
-        
-        //onAddPlayer methods
-        bool isBoardClaimed() const;
-		
+  	std::string getName(); 
+  	std::string getVersion(); 
+  	void initGame(); 
+  	void createGame(); 
+  	void startGame(); 
+  	bool onAddPlayer(Player* player); 
+  	void onPlayerAdded(Player* player);
+  private:
+    //initGame methods
+    void setObjectTypes() const;
+    void setOrderTypes() const;
+  
+    //createGame methods
+    void createUniverse();
+    IGObject* createGalaxy(IGObject& parent, const std::string& name);
+    IGObject* createStarSystem(IGObject& parent, const std::string& name,
+                            double unitX, double unitY);
+    IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
+                             const Vector3d& location);
+  
+    //onAddPlayer methods
+    bool isBoardClaimed() const;
+
 };// class Risk : public Ruleset
 	
 } // namespace RiskRuleset

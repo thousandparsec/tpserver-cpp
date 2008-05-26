@@ -59,18 +59,18 @@ StaticObject::StaticObject() : ObjectBehaviour(), unitX(0), unitY(0) {
 }
 
 void StaticObject::setUnitPos(double x, double y) {
-   unitX = x, unitY = y;
-   setPosition(getUniverseCoord(x,y));
+  unitX = x, unitY = y;
+  setPosition(getUniverseCoord(x,y));
 }
 
 void StaticObject::setUnitPos(const std::pair<double,double>& unitPos) {
-   unitX = unitPos.first;
-   unitY = unitPos.second;
-   setPosition(getUniverseCoord(unitPos));
+  unitX = unitPos.first;
+  unitY = unitPos.second;
+  setPosition(getUniverseCoord(unitPos));
 }
 
 pair<double,double> StaticObject::getUnitPos() const {
-   return pair<double,double>(unitX, unitY);
+  return pair<double,double>(unitX, unitY);
 }
 
 Vector3d StaticObject::getPosition() const{

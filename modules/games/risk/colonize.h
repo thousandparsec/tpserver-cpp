@@ -23,7 +23,7 @@
  
 #include <tpserver/order.h>
 
-class ObjectOrderParameter;    //Tyler's class had these, not sure the syntax/but I do get the purpose
+class ObjectOrderParameter;
 class IGObject;
  
 namespace RiskRuleset {
@@ -40,9 +40,8 @@ class Colonize : public::Order {
     virtual bool doOrder(IGObject* obj);
   
   private:
-    //I am assuming these are...parameters required for order 
     ObjectOrderParameter* units;    //# of units to colonize a target planet with.
-    //ObjectOrderParameter* planet; //not sure about this one, or how colonize orders will be issued
+    
 };//class Colonize
 } //namespace RiskRuleset
 #endif
