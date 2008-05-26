@@ -1,0 +1,4 @@
+Add list of adjacent planets to planets class -- also create these
+Figure out scaling of planets... (i.e their positions)
+May create placeholder objects for keeping track of player reinforcements
+Create bonus property for constellations
