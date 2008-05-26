@@ -278,6 +278,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
   return starSys;
 }
 
+
 IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
 
    Game *game = Game::getGame();
@@ -289,6 +290,7 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
    planet->setName(name);
    Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
+   planetData->setArmies(0);
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
