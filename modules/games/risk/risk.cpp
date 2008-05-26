@@ -308,18 +308,19 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
 void Risk::startGame(){
   Logger::getLogger()->info("Risk started");
 
-  //Modelling minisec
-  /*
-  There is some resource setup that is not applicable to risk
-  followed by getting settings, this will be applicable and as such here is the snippet:
   Settings* settings = Settings::getSettings();
-  if(settings->get("turn_length_over_threshold") == ""){
-    settings->set("turn_length_over_threshold", "600");
-    settings->set("turn_player_threshold", "0");
-    settings->set("turn_length_under_threshold", "600");
+  if(settings->get("turn_length_over_threshold") == "")
+  {
+     settings->set("turn_length_over_threshold", "180");
+     settings->set("turn_player_threshold", "0");
+     settings->set("turn_length_under_threshold", "180");
+  }
   
-   They look to be defaults if a turnlength isn't set
-  */
+  if(settings->get("max_players") == "")
+     settings->set("max_players", "4");
+     
+  if(settings->get("game_length") == "")
+     settings->set("game_length", "60");
 }
 
 bool Risk::onAddPlayer(Player* player){
@@ -353,23 +354,21 @@ bool Risk::isBoardClaimed() const{
 void Risk::onPlayerAdded(Player* player){
   Logger::getLogger()->debug("Risk onPlayerAdded");
 
-  //Modelling minisec
-  /*
-  Game reference is grabed
+   //where is this in rfts?
+   //setVisibleObjects(player);
 
-  playerview reference is grabbed
+   Message *welcome = new Message();
+   welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
+   welcome->setBody("<b><u>3 Turn Order</b></u>:<br />\
+                     Part 1: Colonization orders are processed<br />\
+                     Part 2: Reinforce orders are processed<br />\
+                     Part 3: Non-attack movement orders are processed<br />\
+                     Part 4: Attack movement orders are processed<br />\
+                     *repeat*<br /><br />");
 
-  if player is guest, set IsAlive to false, otherwise 
+   player->postToBoard(welcome);
 
-  set the player to see other designs (not sure what this does -- believe it relates 
-      to ships)
-  Player gets some default objects created for them (NA to risk)
-  (risk) -> should simply indicate the player gets some resources to spend 
-      (ideally players won't join midgame thogh)
-    
-  create a system for player (NA to risk)
-    
-  */   
+   Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
 }
 
 } //end namespace RiskRuleset

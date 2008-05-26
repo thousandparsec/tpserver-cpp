@@ -4,7 +4,8 @@ GENERAL:
 RISK:
 	-Create bonus property for constellations -> size? or resource?
 	Figure out scaling of planets... (i.e their positions)
-
+	Modify Defaults for turn length
+	
 RISKTURN:
 	look into containerids in constructor
 	Implement turn logic
