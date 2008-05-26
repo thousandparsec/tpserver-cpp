@@ -47,7 +47,7 @@ class Risk : public Ruleset {
   
     //createGame methods
     void createUniverse();
-    IGObject* createGalaxy(IGObject& parent, const std::string& name);
+    IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus);
     IGObject* createStarSystem(IGObject& parent, const std::string& name,
                             double unitX, double unitY);
     IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,

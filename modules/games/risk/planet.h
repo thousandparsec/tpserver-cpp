@@ -50,6 +50,9 @@ class Planet : public StaticObject, public OwnedObject {
 
     uint32_t getOwner() const;
     void setOwner(uint32_t no);
+    
+    int getArmies() const;
+    void setArmies(int numArmies);
 
     void setOrderTypes();
 

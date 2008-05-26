@@ -69,8 +69,8 @@ PlanetType::PlanetType() : StaticObjectType(){
   //Need to find out how to make # armies a property PROPERLY
   group = new ObjectParameterGroupDesc();
   group->setName("Armies");
-  group->setDescription("The planets stats");
-  group->addParameter(obpT_Resource_List, "Number of Armies", "The number of armies for this planet.");
+  group->setDescription("The planets strength");
+  group->addParameter(obpT_Integer, "Number of Armies", "The number of armies for this planet.");
   addParameterGroupDesc(group);
   
   group = new ObjectParameterGroupDesc();
@@ -131,6 +131,14 @@ void Planet::setOwner(uint32_t no){
   Game::getGame()->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(4,1)))->getQueueId())->addOwner(no);
 
   obj->touchModTime();
+}
+
+int Planet::getArmies() const {  
+  return ((IntegerObjectParam*)(obj->getParameter(3, 1)))->getValue();
+}
+
+void Planet::setArmies(int numArmies) {
+  ((IntegerObjectParam*)(obj->getParameter(3,1)))->setValue(numArmies);
 }
 
 void Planet::setupObject(){

@@ -61,6 +61,7 @@
 #include "universe.h"
 #include "ownedobject.h"
 #include "planet.h"
+#include "galaxy.h"
 
 //Tyler's "hacky define :p"
 #define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
@@ -114,11 +115,17 @@ void Risk::setObjectTypes() const{
   
   obdm->addNewObjectType(new UniverseType());
   
-  eo = new StaticObjectType();
+  //old
+/*  eo = new StaticObjectType();
   eo->setTypeName("Galaxy");
   eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
-  obdm->addNewObjectType(eo);
-  //Need to add the constellation bonus for complete ownership
+  obdm->addNewObjectType(eo); */
+  //new
+  obdm->addNewObjectType(new GalaxyType());
+
+
+  //TODO:Need to add the constellation bonus for complete ownership
+
   
   eo = new StaticObjectType();
   eo->setTypeName("Star System");
@@ -168,12 +175,12 @@ void Risk::createUniverse() {
   objman->addObject(universe);
    
   //create galaxies and keep reference for system creation
-  IGObject *gal_cassiopea = createGalaxy(*universe, "Cassiopea"); //North America
-  IGObject *gal_cygnus = createGalaxy(*universe, "Cygnus"); //South America
-  IGObject *gal_cepheus = createGalaxy(*universe, "Cepheus"); //Europe
-  IGObject *gal_orion = createGalaxy(*universe, "Orion"); //Africa
-  IGObject *gal_scorpius = createGalaxy(*universe, "Scorpius"); //Russia
-  IGObject *gal_crux = createGalaxy(*universe, "Crux Australis"); //Australia
+  IGObject *gal_cassiopea = createGalaxy(*universe, "Cassiopea", 5); //North America
+  IGObject *gal_cygnus = createGalaxy(*universe, "Cygnus", 2); //South America
+  IGObject *gal_cepheus = createGalaxy(*universe, "Cepheus", 5); //Europe
+  IGObject *gal_orion = createGalaxy(*universe, "Orion",3); //Africa
+  IGObject *gal_scorpius = createGalaxy(*universe, "Scorpius", 7); //Russia
+  IGObject *gal_crux = createGalaxy(*universe, "Crux Australis", 2); //Australia
   
   //create systems
   // Cassiopea Systems (North America, Bonus 5)
@@ -224,14 +231,14 @@ void Risk::createUniverse() {
   createStarSystem(*gal_scorpius, "cassiopea11", .5, 1.1);
   createStarSystem(*gal_scorpius, "cassiopea12", .5, 1.2);
   
-  // Crux Systens
+  // Crux Systens (Australia, Bonus 2)
   createStarSystem(*gal_crux, "crux01", .6, .1);  //SOME TEST VALUES
   createStarSystem(*gal_crux, "crux02", .6, .2);
   createStarSystem(*gal_crux, "crux03", .6, .3);
   createStarSystem(*gal_crux, "crux04", .6, .4);
 }
 
-IGObject* Risk::createGalaxy(IGObject& parent, const string& name) {
+IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
   DEBUG_FN_PRINT();
   Game *game = Game::getGame();
   ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -240,6 +247,9 @@ IGObject* Risk::createGalaxy(IGObject& parent, const string& name) {
   
   otypeman->setupObject(galaxy, otypeman->getObjectTypeByName("Galaxy"));
   galaxy->setName(name);
+  
+  Galaxy* galaxyData = static_cast<Galaxy*>(galaxy->getObjectBehaviour());
+  galaxyData->setBonus(bonus);
   
   galaxy->addToParent(parent.getID());
   game->getObjectManager()->addObject(galaxy);

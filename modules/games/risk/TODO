@@ -2,7 +2,7 @@ GENERAL:
 	Maybe create placeholder objects for keeping track of player reinforcements
 
 RISK:
-	Create bonus property for constellations -> size? or resource?
+	-Create bonus property for constellations -> size? or resource?
 	Figure out scaling of planets... (i.e their positions)
 
 RISKTURN:
@@ -26,8 +26,10 @@ MAP:
 OWNED OBJECT:
 
 PLANETS:
+	-make getter/setters for Armies parameter
 	Add list of adjacent planets to planets class -- also create these
 	Add any doOnceATurn logic
 	
 QUESTIONS FOR TYLER:
 	How do I access property Armies for planet?
+	Packing extra data in galaxy,universe?
