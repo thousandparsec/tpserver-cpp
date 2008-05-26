@@ -34,3 +34,7 @@ PLANETS:
 QUESTIONS FOR TYLER:
 	How do I access property Armies for planet?
 	Packing extra data in galaxy,universe?
+	
+Help:
+The client connected to the host but could not login because the username or password was incorrect.
+This could be because you are connecting to the wrong server or mistyped the username or password.

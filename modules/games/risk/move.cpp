@@ -71,4 +71,5 @@ bool Move::doOrder(IGObject* obj) {
   //TODO: Implement order
   return result;
 }
+
 } //end namespace RiskRuleset

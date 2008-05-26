@@ -36,5 +36,3 @@ public:
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset
 #endif
-
- 

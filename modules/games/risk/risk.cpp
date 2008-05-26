@@ -372,4 +372,3 @@ void Risk::onPlayerAdded(Player* player){
 }
 
 } //end namespace RiskRuleset
-
