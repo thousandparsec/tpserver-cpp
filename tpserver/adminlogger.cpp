@@ -39,18 +39,6 @@ void AdminLogger::doLogging(int level, const char* msg) const
 {
     char        timeStr[30];
     time_t      currTime = time( NULL);
-    std::ostringstream levelStr;
-    static const std::string levelStrings[] = { " < Debug > ",
-                                                " < Info  > ",
-                                                " <Warning> ",
-                                                " < Error > "};
-
-    strftime( timeStr, 30, "%F %H:%M:%S", localtime( &currTime));
-
-    if ( level <= 3)
-        levelStr << levelStrings[level];
-    else
-        levelStr << " <  " << level << "  > ";
 
     // TODO - build and send a logging frame
 
