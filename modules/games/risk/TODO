@@ -38,5 +38,11 @@ QUESTIONS FOR TYLER:
 Help:
 The client connected to the host but could not login because the username or password was incorrect.
 This could be because you are connecting to the wrong server or mistyped the username or password.
--one small change
+
+BIG TASK:
+Implement orders
+Implement end of turn order processing
+Arrange systems properly
+Implement winning/losing
+
 

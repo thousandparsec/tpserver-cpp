@@ -44,7 +44,6 @@ class Galaxy : public StaticObject
     Galaxy();
     virtual ~Galaxy() {}
 
-    virtual void packExtraData(Frame* frame);
     virtual void doOnceATurn();
     virtual int getContainerType();
 

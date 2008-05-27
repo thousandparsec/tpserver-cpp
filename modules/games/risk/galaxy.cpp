@@ -62,11 +62,6 @@ int Galaxy::getContainerType() {
   return ContainerTypes_::Galaxy;
 }
 
-//TODO: Ask Tyler about this
-void Galaxy::packExtraData(Frame *frame) {
-  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
-}
-
 void Galaxy::doOnceATurn() {
   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
   obj->touchModTime();
