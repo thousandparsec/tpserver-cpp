@@ -31,6 +31,9 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
+#include <tpserver/design.h>
+#include <tpserver/designstore.h>
+#include <tpserver/designview.h>
 
 //tae includes
 #include "universe.h"
@@ -64,12 +67,17 @@ void taeRuleset::initGame() {
     obtm->addNewObjectType(new UniverseType());
     Logger::getLogger()->info("TaE initialised");
 
-    //Add Solar system object type
+    //Add Galaxy object type
     EmptyObjectType * eo = new EmptyObjectType();
-    eo->setTypeName("Solar System");
-    eo->setTypeDescription("The Solar System Object type");
+    eo->setTypeName("Galaxy");
+    eo->setTypeDescription("The Galaxy Object type");
     obtm->addNewObjectType(eo);
 
+    //Add Solar system object type
+    EmptyObjectType * eo2 = new EmptyObjectType();
+    eo2->setTypeName("Solar System");
+    eo2->setTypeDescription("The Solar System Object type");
+    obtm->addNewObjectType(eo2);
 }
 
 void taeRuleset::createGame() {
@@ -78,6 +86,7 @@ void taeRuleset::createGame() {
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
+    uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
     uint32_t obT_Solar_System = obtm->getObjectTypeByName("Solar System");
 
     //Create the universe
@@ -89,16 +98,33 @@ void taeRuleset::createGame() {
     theUniverse->setPosition(Vector3d(0ll,0ll,0ll));
     obm->addObject(universe);
 
-    //Create a solar system
-    IGObject* sys1 = obm->createNewObject();
-    obtm->setupObject(sys1, obT_Solar_System);
-    EmptyObject* sys1ob = (EmptyObject*)(sys1->getObjectBehaviour());
-    sys1ob->setSize(60000ll);
-    sys1->setName("Solar System 1");
-    sys1ob->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
-    sys1->addToParent(universe->getID());
-    obm->addObject(sys1);
+    //Create the galaxy
+    IGObject* gal = obm->createNewObject();
+    obtm->setupObject(gal, obT_Galaxy);
+    EmptyObject* galob = (EmptyObject*)(gal->getObjectBehaviour());
+    galob->setSize(100000000000ll);
+    gal->setName("The Fertile Galaxy");
+    galob->setPosition(Vector3d(0ll, -6000ll, 0ll));
+    gal->addToParent(universe->getID());
+    obm->addObject(gal);
 
+    //Create the "Board" of solar systems
+    for(int i = 0; i < 11; i++) {
+        for(int j = 0; j < 16; j++) {
+            //Create a solar system
+            IGObject* sys1 = obm->createNewObject();
+            obtm->setupObject(sys1, obT_Solar_System);
+            EmptyObject* sys1ob = (EmptyObject*)(sys1->getObjectBehaviour());
+            sys1ob->setSize(60000ll);
+            char* name = new char[20];
+            sprintf(name, "Solar System %d,%d", j, i);
+            sys1->setName(name);
+            sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*i, 0ll));
+            sys1->addToParent(gal->getID());
+            obm->addObject(sys1);
+        }
+    }
+    
     Logger::getLogger()->info("TaE created");
 }
 
@@ -116,6 +142,14 @@ void taeRuleset::onPlayerAdded(Player* player) {
 
     Game *game = Game::getGame();
     PlayerView* playerview = player->getPlayerView();
+
+    std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
+    for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
+        DesignView* dv = new DesignView();
+        dv->setDesignId(*desid);
+        dv->setIsCompletelyVisible(true);
+        playerview->addVisibleDesign(dv);
+    }
 
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
