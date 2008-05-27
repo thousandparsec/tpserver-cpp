@@ -258,6 +258,7 @@ IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
 }
 
 IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
+  DEBUG_FN_PRINT();
   Game *game = Game::getGame();
   ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
@@ -280,7 +281,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 
 
 IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
-
+  DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
