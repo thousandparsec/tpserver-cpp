@@ -330,6 +330,9 @@ bool Risk::onAddPlayer(Player* player){
   Game* game = Game::getGame();
 
   bool canJoin = true;            
+  
+  /* Commented out for the time being until things start working properly
+  
   uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
   bool isStarted = game->isStarted();
   uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
@@ -340,7 +343,7 @@ bool Risk::onAddPlayer(Player* player){
       canJoin = false;  
   else
       canJoin = true;
-
+  */
   return canJoin; 
 }
 
