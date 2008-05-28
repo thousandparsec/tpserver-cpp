@@ -24,8 +24,8 @@
 #include "config.h"
 #endif
 
-#include "frame.h"
 #include "adminlogger.h"
+#include "frame.h"
 
 AdminLogger::AdminLogger()
 {
@@ -37,13 +37,9 @@ AdminLogger::~AdminLogger()
 
 void AdminLogger::doLogging(int level, const char* msg) const
 {
-    uint64_t    currTime = time( NULL);
-    std::string message(msg);
+    char        timeStr[30];
+    time_t      currTime = time( NULL);
 
-    Frame *logframe = createFrame();
-    logframe->setType(ftad_LogMessage);
-    logframe->packInt64(currTime);
-    logframe->packInt(level);
-    logframe->packString(message);
-    sendFrame(logframe);
+    // TODO - build and send a logging frame
+
 }
