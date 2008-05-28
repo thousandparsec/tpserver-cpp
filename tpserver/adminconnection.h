@@ -26,6 +26,8 @@
 
 #include <tpserver/connection.h>
 
+class AdminLogger;
+
 class AdminConnection: public Connection {
   
  public:
@@ -51,6 +53,9 @@ class AdminConnection: public Connection {
   void adminFrame();
 
   virtual bool readFrame(Frame * recvframe) = 0;
+
+  AdminLogger* logsink;
+  int logextid;
 
   ProtocolVersion version;
 };

@@ -35,8 +35,8 @@ class Logger {
 	void warning(const char *msg, ...);
 	void error(const char *msg, ...);
 
-	//void addLog(Log* newlog);
-	//void removeLog(Log* newlog);
+	int addLog(LogSink* newlog);
+	void removeLog(int extid);
 
 	void flush();
 
@@ -52,6 +52,9 @@ class Logger {
 	void doLogging( int level, const char *msg);
 
     std::map<std::string, LogSink*>  logSinkMap;
+
+        int extcount;
+        
 	int loglevel;
 
 	static Logger *myInstance;

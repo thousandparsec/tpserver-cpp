@@ -27,12 +27,15 @@
 
 #include "settings.h"
 #include "logging.h"
+#include "adminlogger.h"
 #include "net.h"
 #include "frame.h"
 
 #include "adminconnection.h"
 
 AdminConnection::AdminConnection() : Connection(), version(fv0_4){
+  logsink = new AdminLogger();
+  logextid = Logger::getLogger()->addLog(logsink);
 }
 
 
@@ -42,6 +45,7 @@ AdminConnection::AdminConnection(int fd) : Connection(){
 }
 
 AdminConnection::~AdminConnection(){
+  Logger::getLogger()->removeLog(logextid);
 }
 
 

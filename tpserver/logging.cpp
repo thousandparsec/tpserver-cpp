@@ -35,7 +35,6 @@
 #include "filelogger.h"
 #include "syslogger.h"
 #include "consolelogger.h"
-#include "adminlogger.h"
 
 Logger *Logger::myInstance = NULL;
 
@@ -134,6 +133,27 @@ void Logger::error(const char *msg, ...)
 }
 
 
+int Logger::addLog(LogSink* newlog)
+{
+    std::ostringstream extname;
+
+    extname << "ext" << extcount;
+    logSinkMap[extname.str()] = newlog;
+    return extcount++;
+}
+
+void Logger::removeLog(int extid)
+{
+    std::ostringstream extname;
+
+    extname << "ext" << extid;
+    if (logSinkMap.find(extname.str()) != logSinkMap.end()) {
+        delete logSinkMap[extname.str()];
+	logSinkMap.erase(extname.str());
+    }
+}
+
+
 void Logger::flush()
 {
 	info("Logger stopped");
@@ -184,20 +204,9 @@ void Logger::reconfigure(const std::string & item, const std::string & value)
             logSinkMap.erase("sys");
         }
     }
-
-    if ( Settings::getSettings()->get("log_admin") == "yes") {
-        if ( logSinkMap.find( "admin") == logSinkMap.end())
-            logSinkMap["admin"] = new AdminLogger();
-    }
-    else {
-        if ( logSinkMap.find( "admin") != logSinkMap.end()) {
-            delete logSinkMap["admin"];
-            logSinkMap.erase("admin");
-        }
-    }
 }
 
-Logger::Logger()
+Logger::Logger() : extcount(0)
 {
     reconfigure("","");
 	info("Logger started");
@@ -205,7 +214,6 @@ Logger::Logger()
   Settings::getSettings()->setCallback("log_console", SettingsCallback(this, &Logger::reconfigure));
   Settings::getSettings()->setCallback("log_syslog", SettingsCallback(this, &Logger::reconfigure));
   Settings::getSettings()->setCallback("log_file", SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_admin", SettingsCallback(this, &Logger::reconfigure));
 }
 
 Logger::~Logger()
