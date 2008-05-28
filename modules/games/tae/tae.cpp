@@ -39,6 +39,7 @@
 #include "universe.h"
 #include "emptyobject.h"
 #include "spaceobject.h"
+#include "starsystem.h"
 
 //header includes
 #include "tae.h"
@@ -65,7 +66,6 @@ void taeRuleset::initGame() {
     //Add universe object type
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     obtm->addNewObjectType(new UniverseType());
-    Logger::getLogger()->info("TaE initialised");
 
     //Add Galaxy object type
     EmptyObjectType * eo = new EmptyObjectType();
@@ -74,10 +74,12 @@ void taeRuleset::initGame() {
     obtm->addNewObjectType(eo);
 
     //Add Solar system object type
-    EmptyObjectType * eo2 = new EmptyObjectType();
-    eo2->setTypeName("Solar System");
-    eo2->setTypeDescription("The Solar System Object type");
-    obtm->addNewObjectType(eo2);
+    StarSystemType * sys = new StarSystemType();
+    /*sys->setTypeName("Star System");
+    sys->setTypeDescription("The Star System Object type");*/
+    obtm->addNewObjectType(sys);
+
+    Logger::getLogger()->info("TaE initialised");
 }
 
 void taeRuleset::createGame() {
@@ -87,7 +89,9 @@ void taeRuleset::createGame() {
 
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
     uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
-    uint32_t obT_Solar_System = obtm->getObjectTypeByName("Solar System");
+    uint32_t obT_Star_System = obtm->getObjectTypeByName("Star System");
+
+    Logger::getLogger()->info("types retreived");
 
     //Create the universe
     IGObject* universe = obm->createNewObject();
@@ -108,18 +112,20 @@ void taeRuleset::createGame() {
     gal->addToParent(universe->getID());
     obm->addObject(gal);
 
-    //Create the "Board" of solar systems
+    //Create the "Board" of star systems
     for(int i = 0; i < 11; i++) {
         for(int j = 0; j < 16; j++) {
-            //Create a solar system
+            //Create a star system
             IGObject* sys1 = obm->createNewObject();
-            obtm->setupObject(sys1, obT_Solar_System);
-            EmptyObject* sys1ob = (EmptyObject*)(sys1->getObjectBehaviour());
+            obtm->setupObject(sys1, obT_Star_System);
+            StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
             sys1ob->setSize(60000ll);
             char* name = new char[20];
-            sprintf(name, "Solar System %d,%d", j, i);
+            sprintf(name, "Star System %d,%d", j, i);
             sys1->setName(name);
             sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*i, 0ll));
+            sys1ob->setInhabitable(true);
+            sys1ob->setDestroyed(true);
             sys1->addToParent(gal->getID());
             obm->addObject(sys1);
         }
