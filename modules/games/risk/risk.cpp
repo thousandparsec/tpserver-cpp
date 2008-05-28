@@ -37,6 +37,7 @@
 #include <tpserver/designstore.h>
 
 #include <tpserver/object.h>
+#include <tpserver/objectview.h>
 #include <tpserver/objecttypemanager.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
@@ -96,7 +97,7 @@ std::string Risk::getName(){
 }
 
 std::string Risk::getVersion(){
-  return "0.0";
+  return "0.1";
 }
 
 void Risk::initGame(){
@@ -106,7 +107,7 @@ void Risk::initGame(){
   
   setObjectTypes();
 
-  setOrderTypes();
+   setOrderTypes();
 }
 
 void Risk::setObjectTypes() const{
@@ -182,6 +183,8 @@ void Risk::createUniverse() {
   IGObject *gal_scorpius = createGalaxy(*universe, "Scorpius", 7); //Russia
   IGObject *gal_crux = createGalaxy(*universe, "Crux Australis", 2); //Australia
   
+  Logger::getLogger()->info("Galaxies Created");
+  
   //create systems
   // Cassiopea Systems (North America, Bonus 5)
   createStarSystem(*gal_cassiopea, "cassiopea01", .1, .1);  //SOME TEST VALUES
@@ -235,7 +238,7 @@ void Risk::createUniverse() {
   createStarSystem(*gal_crux, "crux01", .6, .1);  //SOME TEST VALUES
   createStarSystem(*gal_crux, "crux02", .6, .2);
   createStarSystem(*gal_crux, "crux03", .6, .3);
-  createStarSystem(*gal_crux, "crux04", .6, .4);
+  createStarSystem(*gal_crux, "crux04", .6, .4); 
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
@@ -282,30 +285,30 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 
 IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
+  Game *game = Game::getGame();
+  ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
-   IGObject *planet = game->getObjectManager()->createNewObject();
+  IGObject *planet = game->getObjectManager()->createNewObject();
 
-   otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
-   planet->setName(name);
-   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
-   planetData->setPosition(location); // OK because unit pos isn't useful for planets
-   planetData->setArmies(0);
+  otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
+  planet->setName(name);
+  Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
+  planetData->setPosition(location); // OK because unit pos isn't useful for planets
+  planetData->setArmies(0);
    
-   OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setObjectId(planet->getID());
-   planetOrders->addOwner(0);
-   game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
+  OrderQueue *planetOrders = new OrderQueue();
+  planetOrders->setObjectId(planet->getID());
+  planetOrders->addOwner(0);
+  game->getOrderManager()->addOrderQueue(planetOrders);
+  OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
                                        (planet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
-   planetData->setOrderTypes();
+  oqop->setQueueId(planetOrders->getQueueId());
+  planetData->setOrderTypes();
   
-   planet->addToParent(parentStarSys.getID());
-   game->getObjectManager()->addObject(planet);
+  planet->addToParent(parentStarSys.getID());
+  game->getObjectManager()->addObject(planet);
 
-   return planet;
+  return planet;
 }
 
 void Risk::startGame(){
@@ -349,7 +352,7 @@ bool Risk::onAddPlayer(Player* player){
 }
 
 bool Risk::isBoardClaimed() const{
-  //This method w  ill run through board and check if all territories
+  //This method will run through board and check if all territories
     //are claimed or not
 
   //TODO: Check board to determine "claimedness"
@@ -360,21 +363,33 @@ bool Risk::isBoardClaimed() const{
 void Risk::onPlayerAdded(Player* player){
   Logger::getLogger()->debug("Risk onPlayerAdded");
 
-   //where is this in rfts?
-   //setVisibleObjects(player);
+  //where is this in rfts?
+  //setVisibleObjects(player);
 
-   Message *welcome = new Message();
-   welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
-   welcome->setBody("<b><u>3 Turn Order</b></u>:<br />\
+  Message *welcome = new Message();
+  welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
+  welcome->setBody("<b><u>3 Turn Order</b></u>:<br />\
                      Part 1: Colonization orders are processed<br />\
                      Part 2: Reinforce orders are processed<br />\
                      Part 3: Non-attack movement orders are processed<br />\
                      Part 4: Attack movement orders are processed<br />\
                      *repeat*<br /><br />");
 
-   player->postToBoard(welcome);
+  player->postToBoard(welcome);
 
-   Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
+  Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
+   
+  //This should make every object visible to an added player
+  PlayerView* playerview = player->getPlayerView();
+  std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
+  for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+       ++itcurr){
+    ObjectView* obv = new ObjectView();
+    obv->setObjectId(*itcurr);
+    obv->setCompletelyVisible(true);
+    playerview->addVisibleObject(obv);
+  }
+   
 }
 
 } //end namespace RiskRuleset
