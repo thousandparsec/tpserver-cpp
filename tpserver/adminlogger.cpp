@@ -37,9 +37,14 @@ AdminLogger::~AdminLogger()
 
 void AdminLogger::doLogging(int level, const char* msg) const
 {
-    char        timeStr[30];
-    time_t      currTime = time( NULL);
+    uint64_t    currTime = time( NULL);
+    std::string message(msg);
 
-    // TODO - build and send a logging frame
-
+    //TODO - how can this send frames without accessing the parent AdminConnection?
+    //Frame *logmessage = createFrame();
+    //logmessage->setType(ftad_LogMessage);
+    //logmessage->packInt64(currTime);
+    //logmessage->packInt(level);
+    //logmessage->packString(message);
+    //sendFrame(logmessage);
 }
