@@ -247,10 +247,10 @@ void Risk::createUniverse() {
   createStarSystem(*gal_scorpius, "cassiopea12", .5, 1.2);
   
   // Crux Systens (Australia, Bonus 2)
-  createStarSystem(*gal_crux, "crux01", .6, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_crux, "crux02", .6, .2);
-  createStarSystem(*gal_crux, "crux03", .6, .3);
-  createStarSystem(*gal_crux, "crux04", .6, .4); 
+  createStarSystem(*gal_crux, "Acrux", .6, .1);  //SOME TEST VALUES
+  createStarSystem(*gal_crux, "Becrux", .6, .2);
+  createStarSystem(*gal_crux, "Gacrux", .6, .3);
+  createStarSystem(*gal_crux, "delta Cru", .6, .4); 
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
@@ -294,6 +294,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
   return starSys;
 }
 
+//TODO: Figure out how to get planet to display resources.
 IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
   DEBUG_FN_PRINT();
   Game *game = Game::getGame();
@@ -305,7 +306,7 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
   planet->setName(name);
   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
   planetData->setPosition(location); // OK because unit pos isn't useful for planets
-  //planetData->setArmies(0);
+  planetData->setDefaultResources();
   //TODO: Fix this to reflect changes of armies to resource
    
   OrderQueue *planetOrders = new OrderQueue();
