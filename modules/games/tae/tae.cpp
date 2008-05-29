@@ -36,6 +36,8 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/designview.h>
+#include <tpserver/resourcemanager.h>
+#include <tpserver/resourcedescription.h>
 
 //tae includes
 #include "universe.h"
@@ -89,6 +91,8 @@ void taeRuleset::createGame() {
     Game* game = Game::getGame();
     ObjectManager* obm = game->getObjectManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
+
+    setupResources();
 
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
     uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
@@ -145,15 +149,116 @@ void taeRuleset::createGame() {
             OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
             oqop->setQueueId(planetoq->getQueueId());
             pob->setDefaultOrderTypes();
+            //add resources, for testing purposes
+            for(int k = 1; k < 8; k++) {
+                pob->addResource(k,1);
+            }
             p->addToParent(sys1->getID());
             obm->addObject(p);
         }
     }
-    
+
+
     Logger::getLogger()->info("TaE created");
 }
 
+void taeRuleset::setupResources() {
+    ResourceManager* rman = Game::getGame()->getResourceManager();
+    //Setup Inhabitable resource
+    if(rman->getResourceDescription(1) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Inhabitable");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Inhabitable planet");
+        res->setNamePlural("Inhabitable planets");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Planets that can be colonized by humans");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Destroyed resource
+    if(rman->getResourceDescription(2) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Destroyed");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Destroyed Star System");
+        res->setNamePlural("Destroyed Star Systems");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Star systems that have been destroyed");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Artifact resource
+    if(rman->getResourceDescription(3) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Artifact");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Alien Artifact");
+        res->setNamePlural("Alien Artifacts");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Ancient alien artifacts of great value");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Technology resource
+    if(rman->getResourceDescription(4) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Technology");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Technological Advancement");
+        res->setNamePlural("Technological Advancements");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Advances in technology produced by brilliant scientists");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup People resource
+    if(rman->getResourceDescription(5) == NULL){
+        Logger::getLogger()->info("Setting up Resource: People");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Team of People");
+        res->setNamePlural("Teams of People");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Eager manpower produced by loyal colonists");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Money resource
+    if(rman->getResourceDescription(6) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Money");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Monetary Asset");
+        res->setNamePlural("Monetary Assets");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Valuable investments in successful merchant colonies");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Raw Material resource
+    if(rman->getResourceDescription(7) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Raw Materials");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Raw Material");
+        res->setNamePlural("Raw Materials");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Essential raw materials harvested by mining robots");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+}
+
 void taeRuleset::startGame() {
+    setupResources();
     Logger::getLogger()->info("TaE started");
 }
 
@@ -186,7 +291,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
 }
 
 extern "C" {
-    #define tp_init libtae_LTX_tp_init
+#define tp_init libtae_LTX_tp_init
     bool tp_init() {
         return Game::getGame()->setRuleset(new tae::taeRuleset());
     }

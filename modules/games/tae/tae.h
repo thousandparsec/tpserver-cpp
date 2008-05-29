@@ -39,6 +39,8 @@ class taeRuleset : public Ruleset {
         bool onAddPlayer(Player* player);
         void onPlayerAdded(Player* player);
 
+        void setupResources();
+
 };
 
 }
