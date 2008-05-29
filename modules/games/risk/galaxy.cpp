@@ -37,7 +37,7 @@ GalaxyType::GalaxyType() : StaticObjectType() {
   group->setName("Informational");
   group->setDescription("Information about the galaxy");
   group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire galaxy");
-  addParameterGroupDesc(group);
+  addParameterGroupDesc(group);                   //(2,1)
   
   nametype = "Galaxy";
   typedesc = "The Galaxy";
@@ -52,6 +52,7 @@ Galaxy::Galaxy() : StaticObject() {
 
 void Galaxy::setBonus(int bonus) {
   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(bonus);
+  obj->touchModTime();
 }
 
 int Galaxy::getBonus() const {
@@ -63,12 +64,12 @@ int Galaxy::getContainerType() {
 }
 
 void Galaxy::doOnceATurn() {
-  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
+  
   obj->touchModTime();
 }
 
 void Galaxy::setupObject(){
-  //TODO: insert setup here
+  //TODO: insert any setup here
 }
 
 }

@@ -123,10 +123,6 @@ void Risk::setObjectTypes() const{
   obdm->addNewObjectType(eo); */
   //new
   obdm->addNewObjectType(new GalaxyType());
-
-
-  //TODO:Need to add the constellation bonus for complete ownership
-
   
   eo = new StaticObjectType();
   eo->setTypeName("Star System");
@@ -155,9 +151,25 @@ void Risk::setOrderTypes() const{
 
 void Risk::createGame(){
   Logger::getLogger()->info("Risk created");
-  
+
+  createResources();
+    
   //set up universe (universe->galaxies->star sys->planet)
   createUniverse();
+}
+
+void Risk::createResources() {
+  ResourceManager* resMan = Game::getGame()->getResourceManager();
+
+  ResourceDescription* res = new ResourceDescription();
+  res->setNameSingular("Army");
+  res->setNamePlural("Armies");
+  res->setUnitSingular("unit");
+  res->setUnitPlural("units");
+  res->setDescription("Armies");
+  res->setMass(0);
+  res->setVolume(0);
+  resMan->addResourceDescription(res);
 }
 
 void Risk::createUniverse() {
@@ -264,24 +276,23 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
   DEBUG_FN_PRINT();
   Game *game = Game::getGame();
   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
+ 
   IGObject *starSys = game->getObjectManager()->createNewObject();
-
+ 
   otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
   starSys->setName(name);
   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
   starSysData->setUnitPos(unitX, unitY);
-  
+   
   starSys->addToParent(parent.getID());
   game->getObjectManager()->addObject(starSys);
-
+ 
   string planetName;
-  
+   
   planetName = starSys->getName() + " Prime";
   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset());
   return starSys;
 }
-
 
 IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
   DEBUG_FN_PRINT();
@@ -294,7 +305,8 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
   planet->setName(name);
   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
   planetData->setPosition(location); // OK because unit pos isn't useful for planets
-  planetData->setArmies(0);
+  //planetData->setArmies(0);
+  //TODO: Fix this to reflect changes of armies to resource
    
   OrderQueue *planetOrders = new OrderQueue();
   planetOrders->setObjectId(planet->getID());
@@ -314,6 +326,7 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
 void Risk::startGame(){
   Logger::getLogger()->info("Risk started");
 
+  //Establish some defaults if user does not specify any in config
   Settings* settings = Settings::getSettings();
   if(settings->get("turn_length_over_threshold") == "")
   {
@@ -362,9 +375,6 @@ bool Risk::isBoardClaimed() const{
 
 void Risk::onPlayerAdded(Player* player){
   Logger::getLogger()->debug("Risk onPlayerAdded");
-
-  //where is this in rfts?
-  //setVisibleObjects(player);
 
   Message *welcome = new Message();
   welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
