@@ -29,6 +29,8 @@
 #include <tpserver/objectmanager.h>
 #include <tpserver/objecttypemanager.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
 #include <tpserver/design.h>
@@ -40,6 +42,7 @@
 #include "emptyobject.h"
 #include "spaceobject.h"
 #include "starsystem.h"
+#include "planet.h"
 
 //header includes
 #include "tae.h"
@@ -74,10 +77,10 @@ void taeRuleset::initGame() {
     obtm->addNewObjectType(eo);
 
     //Add Solar system object type
-    StarSystemType * sys = new StarSystemType();
-    /*sys->setTypeName("Star System");
-    sys->setTypeDescription("The Star System Object type");*/
-    obtm->addNewObjectType(sys);
+    obtm->addNewObjectType(new StarSystemType());
+
+    //Add Planet object type
+    obtm->addNewObjectType(new PlanetType());
 
     Logger::getLogger()->info("TaE initialised");
 }
@@ -90,8 +93,7 @@ void taeRuleset::createGame() {
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
     uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
     uint32_t obT_Star_System = obtm->getObjectTypeByName("Star System");
-
-    Logger::getLogger()->info("types retreived");
+    uint32_t obT_Planet = obtm->getObjectTypeByName("Planet");
 
     //Create the universe
     IGObject* universe = obm->createNewObject();
@@ -128,6 +130,23 @@ void taeRuleset::createGame() {
             sys1ob->setDestroyed(true);
             sys1->addToParent(gal->getID());
             obm->addObject(sys1);
+
+            //Create a planet
+            IGObject *p = obm->createNewObject();
+            obtm->setupObject(p, obT_Planet);
+            Planet * pob = (Planet*)(p->getObjectBehaviour());
+            pob->setSize(2);
+            p->setName("Alpha");
+            pob->setPosition(sys1ob->getPosition());
+            OrderQueue *planetoq = new OrderQueue();
+            planetoq->setObjectId(p->getID());
+            planetoq->addOwner(0);
+            game->getOrderManager()->addOrderQueue(planetoq);
+            OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
+            oqop->setQueueId(planetoq->getQueueId());
+            pob->setDefaultOrderTypes();
+            p->addToParent(sys1->getID());
+            obm->addObject(p);
         }
     }
     
