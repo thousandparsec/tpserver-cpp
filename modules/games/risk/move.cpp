@@ -42,7 +42,6 @@ Move::Move() : Order() {
   name = "Move";
   description = "Move any number of units to a planet";
   
-  //TODO: Check validity of order parameters
   starSys = new ObjectOrderParameter();
   starSys->setName("Star System");
   starSys->setDescription("The star system to move to.");
@@ -52,7 +51,7 @@ Move::Move() : Order() {
   units->setDescription("The number of units to colonize with.");
   addOrderParameter(units);
   
-  //need this?
+  //TODO: Check if I need to include "turns"?
   turns = 1;
 }
 

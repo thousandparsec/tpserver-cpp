@@ -322,8 +322,6 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
   return planet;
 }
 
-//TODO: Phase Star Systems out
-//TODO: Planet should display resources, check minisec. Check resource overlays
 IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
   DEBUG_FN_PRINT();
   Game *game = Game::getGame();

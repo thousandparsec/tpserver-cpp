@@ -56,6 +56,7 @@ using std::pair;
 using std::map;
 using std::set;
 
+//TODO: Add list of adjacent planets, way to set list
 PlanetType::PlanetType() : StaticObjectType(){
   nametype = "Planet";
   typedesc = "A planet object";
@@ -71,7 +72,6 @@ PlanetType::PlanetType() : StaticObjectType(){
   group->setDescription("The planets stats");
   group->addParameter(obpT_Resource_List, "Resource List", "The for this planet");
   addParameterGroupDesc(group);               //(3,1)
-  //TODO: utilize resources to implement "Armies"
   
   group = new ObjectParameterGroupDesc();
   group->setName("Orders");
@@ -209,7 +209,7 @@ bool Planet::removeResource(const string& resTypeName, uint32_t amount){
 
 
 void Planet::setupObject(){
-  setSize(2);   //TODO: Check if this is necessary
+  setSize(2);
   ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
 }
 
