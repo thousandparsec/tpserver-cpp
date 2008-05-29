@@ -1,0 +1,48 @@
+Cassiopeia:
+	Shedir (Alpha Cas)
+	Caph (Beta Cas)
+	Ruchbah (Delta Cas)
+	gamma Cas
+	Segin (Epsilon Cas)
+	zeta Cas
+	Marfak (Theta Cas)
+	xi Cas
+	sigma Cas
+Crux Australis:
+	Acrux (alpha Cru)
+	Becrux (beta Cru)
+	Gacrux (gamma Cru)
+	delta Cru
+Cygnus:
+	Deneb (alpha Cyg)
+	Albireo (Beta cyg)
+	Sadr	(gamma cyg)
+	Gienah Cygni (epsilon)
+Orion:
+	Betelgeuse (alpha)
+	Rigel (beta)
+	Bellatrix (gamma)
+	Mintaka (delta)
+	Alnitak (zeta)
+	Saiph (kappa)
+Cepheus
+	Alderamin (alpha)
+	Alfirk (beta)
+	Al Kalb al Rai (rho 2 Cep)
+	Alrai (gamma)
+	Herschel's Garnet Star (mu)
+	Alkurhah (xi)
+	iota Cep
+Draco (http://www.seasky.org/pictures/sky7b07.html)
+	Etamin
+	Rastaban
+	Arrakis
+	Kuma
+	Grumium
+	Nodus Secundus
+	Tyl
+	Dsibin
+	Aldhibah
+	Ed Asiach
+	Thubah
+	Gianfar

@@ -188,69 +188,70 @@ void Risk::createUniverse() {
   objman->addObject(universe);
    
   //create galaxies and keep reference for system creation
-  IGObject *gal_cassiopea = createGalaxy(*universe, "Cassiopea", 5); //North America
+  IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia", 5); //North America
   IGObject *gal_cygnus = createGalaxy(*universe, "Cygnus", 2); //South America
   IGObject *gal_cepheus = createGalaxy(*universe, "Cepheus", 5); //Europe
   IGObject *gal_orion = createGalaxy(*universe, "Orion",3); //Africa
-  IGObject *gal_scorpius = createGalaxy(*universe, "Scorpius", 7); //Russia
+  IGObject *gal_draco = createGalaxy(*universe, "Draco", 7); //Russia
   IGObject *gal_crux = createGalaxy(*universe, "Crux Australis", 2); //Australia
   
   Logger::getLogger()->info("Galaxies Created");
   
+  //TODO: Rename open clusters to names of what they resemble
   //create systems
-  // Cassiopea Systems (North America, Bonus 5)
-  createStarSystem(*gal_cassiopea, "cassiopea01", .1, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_cassiopea, "cassiopea02", .1, .2);
-  createStarSystem(*gal_cassiopea, "cassiopea03", .1, .3);
-  createStarSystem(*gal_cassiopea, "cassiopea04", .1, .4);
-  createStarSystem(*gal_cassiopea, "cassiopea05", .1, .5);
-  createStarSystem(*gal_cassiopea, "cassiopea06", .1, .6);
-  createStarSystem(*gal_cassiopea, "cassiopea07", .1, .7);
-  createStarSystem(*gal_cassiopea, "cassiopea08", .1, .8);
-  createStarSystem(*gal_cassiopea, "cassiopea09", .1, .9);
+  // Cassiopeia Systems (North America, Bonus 5)
+  createPlanet(*gal_cassiopeia, "Shedir", .1, .1);
+  createPlanet(*gal_cassiopeia, "Caph", .1, .2);
+  createPlanet(*gal_cassiopeia, "Ruchbah", .1, .3);
+  createPlanet(*gal_cassiopeia, "Gamma Cas", .1, .4);
+  createPlanet(*gal_cassiopeia, "Segin", .1, .5);
+  createPlanet(*gal_cassiopeia, "Zeta Cas", .1, .6);
+  createPlanet(*gal_cassiopeia, "Marfak", .1, .7);
+  createPlanet(*gal_cassiopeia, "Xi Cas", .1, .8);  
+  createPlanet(*gal_cassiopeia, "Sigma Cas", .1, .9);
 
   // Cygnus Systems (South America, Bonus 2)
-  createStarSystem(*gal_cygnus, "cygnus01", .2, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_cygnus, "cygnus02", .2, .2);
-  createStarSystem(*gal_cygnus, "cygnus03", .2, .3);
-  createStarSystem(*gal_cygnus, "cygnus04", .2, .4);
+  createPlanet(*gal_cygnus, "Deneb", .2, .1);
+  createPlanet(*gal_cygnus, "Albireo", .2, .2);
+  createPlanet(*gal_cygnus, "Sadr", .2, .3);
+  createPlanet(*gal_cygnus, "Gienah Cygni", .2, .4);
     
   // Cepheus Systems (Europe, Bonus 5)
-  createStarSystem(*gal_cepheus, "cepheus01", .3, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_cepheus, "cepheus02", .3, .2);
-  createStarSystem(*gal_cepheus, "cepheus03", .3, .3);
-  createStarSystem(*gal_cepheus, "cepheus04", .3, .4);
-  createStarSystem(*gal_cepheus, "cepheus05", .3, .5);
-  createStarSystem(*gal_cepheus, "cepheus06", .3, .6);
-  createStarSystem(*gal_cepheus, "cepheus07", .3, .7);
+  createPlanet(*gal_cepheus, "Alderamin", .3, .1);
+  createPlanet(*gal_cepheus, "Alfirk", .3, .2);
+  createPlanet(*gal_cepheus, "Al Kalb al Rai", .3, .3);
+  createPlanet(*gal_cepheus, "Alrai", .3, .4);
+  createPlanet(*gal_cepheus, "Herchel's Garnet Star", .3, .5);
+  createPlanet(*gal_cepheus, "Alkurhah", .3, .6);
+  createPlanet(*gal_cepheus, "iota Cep", .3, .7);
 
   // Orion Systens (Africa, Bonus 3)
-  createStarSystem(*gal_orion, "orion01", .4, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_orion, "orion02", .4, .2);
-  createStarSystem(*gal_orion, "orion03", .4, .3);
-  createStarSystem(*gal_orion, "orion04", .4, .4);
-  createStarSystem(*gal_orion, "orion05", .4, .5);
-  createStarSystem(*gal_orion, "orion06", .4, .6);
+  createPlanet(*gal_orion, "Betelgeuse", .4, .1);
+  createPlanet(*gal_orion, "Rigel", .4, .2);
+  createPlanet(*gal_orion, "Bellatrix", .4, .3);
+  createPlanet(*gal_orion, "Mintaka", .4, .4);
+  createPlanet(*gal_orion, "Alnitak", .4, .5);
+  createPlanet(*gal_orion, "Saiph", .4, .6);
   
-  // Scorpius Systems (Russia, Bonus 7)
-  createStarSystem(*gal_scorpius, "cassiopea01", .5, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_scorpius, "cassiopea02", .5, .2);
-  createStarSystem(*gal_scorpius, "cassiopea03", .5, .3);
-  createStarSystem(*gal_scorpius, "cassiopea04", .5, .4);
-  createStarSystem(*gal_scorpius, "cassiopea05", .5, .5);
-  createStarSystem(*gal_scorpius, "cassiopea06", .5, .6);
-  createStarSystem(*gal_scorpius, "cassiopea07", .5, .7);
-  createStarSystem(*gal_scorpius, "cassiopea08", .5, .8);
-  createStarSystem(*gal_scorpius, "cassiopea09", .5, .9);
-  createStarSystem(*gal_scorpius, "cassiopea10", .5, 1.0);
-  createStarSystem(*gal_scorpius, "cassiopea11", .5, 1.1);
-  createStarSystem(*gal_scorpius, "cassiopea12", .5, 1.2);
+  // Draco Systems (Russia, Bonus 7)
+  createPlanet(*gal_draco, "Etamin", .5, .1);
+  createPlanet(*gal_draco, "Rastaban", .5, .2);
+  createPlanet(*gal_draco, "Arrakis", .5, .3);
+  createPlanet(*gal_draco, "Kuma", .5, .4);
+  createPlanet(*gal_draco, "Grumium", .5, .5);
+  createPlanet(*gal_draco, "Nodus Secundus", .5, .6);
+  createPlanet(*gal_draco, "Tyl", .5, .7);
+  createPlanet(*gal_draco, "Dsibin", .5, .8);
+  createPlanet(*gal_draco, "Aldhibah", .5, .9);
+  createPlanet(*gal_draco, "Ed Asiach", .5, 1.0);
+  createPlanet(*gal_draco, "Thubah", .5, 1.1);
+  createPlanet(*gal_draco, "Gianfar", .5, 1.2);
   
   // Crux Systens (Australia, Bonus 2)
-  createStarSystem(*gal_crux, "Acrux", .6, .1);  //SOME TEST VALUES
-  createStarSystem(*gal_crux, "Becrux", .6, .2);
-  createStarSystem(*gal_crux, "Gacrux", .6, .3);
-  createStarSystem(*gal_crux, "delta Cru", .6, .4); 
+  createPlanet(*gal_crux, "Acrux", .6, .1);
+  createPlanet(*gal_crux, "Becrux", .6, .2);
+  createPlanet(*gal_crux, "Gacrux", .6, .3);
+  createPlanet(*gal_crux, "delta Cru", .6, .4); 
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
@@ -293,9 +294,37 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset());
   return starSys;
 }
+IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
+  DEBUG_FN_PRINT();
+  Game *game = Game::getGame();
+  ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
-//TODO: Figure out how to get planet to display resources.
-IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
+  IGObject *planet = game->getObjectManager()->createNewObject();
+
+  otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
+  planet->setName(name);
+  Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
+  planetData->setUnitPos(unitX, unitY);
+  planetData->setDefaultResources();
+
+  OrderQueue *planetOrders = new OrderQueue();
+  planetOrders->setObjectId(planet->getID());
+  planetOrders->addOwner(0);
+  game->getOrderManager()->addOrderQueue(planetOrders);
+  OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
+                                        (planet->getParameterByType(obpT_Order_Queue));
+  oqop->setQueueId(planetOrders->getQueueId());
+  planetData->setOrderTypes();
+
+  planet->addToParent(parent.getID());
+  game->getObjectManager()->addObject(planet);
+
+  return planet;
+}
+
+//TODO: Phase Star Systems out
+//TODO: Planet should display resources, check minisec. Check resource overlays
+IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
   DEBUG_FN_PRINT();
   Game *game = Game::getGame();
   ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -307,7 +336,6 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
   planetData->setPosition(location); // OK because unit pos isn't useful for planets
   planetData->setDefaultResources();
-  //TODO: Fix this to reflect changes of armies to resource
    
   OrderQueue *planetOrders = new OrderQueue();
   planetOrders->setObjectId(planet->getID());
@@ -318,7 +346,7 @@ IGObject* Risk::createPlanet(IGObject& parentStarSys, const string& name,const V
   oqop->setQueueId(planetOrders->getQueueId());
   planetData->setOrderTypes();
   
-  planet->addToParent(parentStarSys.getID());
+  planet->addToParent(parent.getID());
   game->getObjectManager()->addObject(planet);
 
   return planet;
