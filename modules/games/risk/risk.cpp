@@ -197,61 +197,61 @@ void Risk::createUniverse() {
   
   Logger::getLogger()->info("Galaxies Created");
   
-  //TODO: Rename open clusters to names of what they resemble
+  //TODO: Planets do not display, while systems do? Switched back to systems for mean time
   //create systems
   // Cassiopeia Systems (North America, Bonus 5)
-  createPlanet(*gal_cassiopeia, "Shedir", .1, .1);
-  createPlanet(*gal_cassiopeia, "Caph", .1, .2);
-  createPlanet(*gal_cassiopeia, "Ruchbah", .1, .3);
-  createPlanet(*gal_cassiopeia, "Gamma Cas", .1, .4);
-  createPlanet(*gal_cassiopeia, "Segin", .1, .5);
-  createPlanet(*gal_cassiopeia, "Zeta Cas", .1, .6);
-  createPlanet(*gal_cassiopeia, "Marfak", .1, .7);
-  createPlanet(*gal_cassiopeia, "Xi Cas", .1, .8);  
-  createPlanet(*gal_cassiopeia, "Sigma Cas", .1, .9);
+  createStarSystem(*gal_cassiopeia, "Shedir", .1, .1);
+  createStarSystem(*gal_cassiopeia, "Caph", .1, .2);
+  createStarSystem(*gal_cassiopeia, "Ruchbah", .1, .3);
+  createStarSystem(*gal_cassiopeia, "Gamma Cas", .1, .4);
+  createStarSystem(*gal_cassiopeia, "Segin", .1, .5);
+  createStarSystem(*gal_cassiopeia, "Zeta Cas", .1, .6);
+  createStarSystem(*gal_cassiopeia, "Marfak", .1, .7);
+  createStarSystem(*gal_cassiopeia, "Xi Cas", .1, .8);  
+  createStarSystem(*gal_cassiopeia, "Sigma Cas", .1, .9);
 
   // Cygnus Systems (South America, Bonus 2)
-  createPlanet(*gal_cygnus, "Deneb", .2, .1);
-  createPlanet(*gal_cygnus, "Albireo", .2, .2);
-  createPlanet(*gal_cygnus, "Sadr", .2, .3);
-  createPlanet(*gal_cygnus, "Gienah Cygni", .2, .4);
+  createStarSystem(*gal_cygnus, "Deneb", .2, .1);
+  createStarSystem(*gal_cygnus, "Albireo", .2, .2);
+  createStarSystem(*gal_cygnus, "Sadr", .2, .3);
+  createStarSystem(*gal_cygnus, "Gienah Cygni", .2, .4);
     
   // Cepheus Systems (Europe, Bonus 5)
-  createPlanet(*gal_cepheus, "Alderamin", .3, .1);
-  createPlanet(*gal_cepheus, "Alfirk", .3, .2);
-  createPlanet(*gal_cepheus, "Al Kalb al Rai", .3, .3);
-  createPlanet(*gal_cepheus, "Alrai", .3, .4);
-  createPlanet(*gal_cepheus, "Herchel's Garnet Star", .3, .5);
-  createPlanet(*gal_cepheus, "Alkurhah", .3, .6);
-  createPlanet(*gal_cepheus, "iota Cep", .3, .7);
+  createStarSystem(*gal_cepheus, "Alderamin", .3, .1);
+  createStarSystem(*gal_cepheus, "Alfirk", .3, .2);
+  createStarSystem(*gal_cepheus, "Al Kalb al Rai", .3, .3);
+  createStarSystem(*gal_cepheus, "Alrai", .3, .4);
+  createStarSystem(*gal_cepheus, "Herchel's Garnet Star", .3, .5);
+  createStarSystem(*gal_cepheus, "Alkurhah", .3, .6);
+  createStarSystem(*gal_cepheus, "iota Cep", .3, .7);
 
   // Orion Systens (Africa, Bonus 3)
-  createPlanet(*gal_orion, "Betelgeuse", .4, .1);
-  createPlanet(*gal_orion, "Rigel", .4, .2);
-  createPlanet(*gal_orion, "Bellatrix", .4, .3);
-  createPlanet(*gal_orion, "Mintaka", .4, .4);
-  createPlanet(*gal_orion, "Alnitak", .4, .5);
-  createPlanet(*gal_orion, "Saiph", .4, .6);
+  createStarSystem(*gal_orion, "Betelgeuse", .4, .1);
+  createStarSystem(*gal_orion, "Rigel", .4, .2);
+  createStarSystem(*gal_orion, "Bellatrix", .4, .3);
+  createStarSystem(*gal_orion, "Mintaka", .4, .4);
+  createStarSystem(*gal_orion, "Alnitak", .4, .5);
+  createStarSystem(*gal_orion, "Saiph", .4, .6);
   
   // Draco Systems (Russia, Bonus 7)
-  createPlanet(*gal_draco, "Etamin", .5, .1);
-  createPlanet(*gal_draco, "Rastaban", .5, .2);
-  createPlanet(*gal_draco, "Arrakis", .5, .3);
-  createPlanet(*gal_draco, "Kuma", .5, .4);
-  createPlanet(*gal_draco, "Grumium", .5, .5);
-  createPlanet(*gal_draco, "Nodus Secundus", .5, .6);
-  createPlanet(*gal_draco, "Tyl", .5, .7);
-  createPlanet(*gal_draco, "Dsibin", .5, .8);
-  createPlanet(*gal_draco, "Aldhibah", .5, .9);
-  createPlanet(*gal_draco, "Ed Asiach", .5, 1.0);
-  createPlanet(*gal_draco, "Thubah", .5, 1.1);
-  createPlanet(*gal_draco, "Gianfar", .5, 1.2);
+  createStarSystem(*gal_draco, "Etamin", .5, .1);
+  createStarSystem(*gal_draco, "Rastaban", .5, .2);
+  createStarSystem(*gal_draco, "Arrakis", .5, .3);
+  createStarSystem(*gal_draco, "Kuma", .5, .4);
+  createStarSystem(*gal_draco, "Grumium", .5, .5);
+  createStarSystem(*gal_draco, "Nodus Secundus", .5, .6);
+  createStarSystem(*gal_draco, "Tyl", .5, .7);
+  createStarSystem(*gal_draco, "Dsibin", .5, .8);
+  createStarSystem(*gal_draco, "Aldhibah", .5, .9);
+  createStarSystem(*gal_draco, "Ed Asiach", .5, 1.0);
+  createStarSystem(*gal_draco, "Thubah", .5, 1.1);
+  createStarSystem(*gal_draco, "Gianfar", .5, 1.2);
   
   // Crux Systens (Australia, Bonus 2)
-  createPlanet(*gal_crux, "Acrux", .6, .1);
-  createPlanet(*gal_crux, "Becrux", .6, .2);
-  createPlanet(*gal_crux, "Gacrux", .6, .3);
-  createPlanet(*gal_crux, "delta Cru", .6, .4); 
+  createStarSystem(*gal_crux, "Acrux", .6, .1);
+  createStarSystem(*gal_crux, "Becrux", .6, .2);
+  createStarSystem(*gal_crux, "Gacrux", .6, .3);
+  createStarSystem(*gal_crux, "delta Cru", .6, .4); 
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {

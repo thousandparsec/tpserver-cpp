@@ -143,8 +143,10 @@ void Planet::setOwner(uint32_t no){
 }
 
 void Planet::setDefaultResources() {
-  //set resource army to 0 total with a max of 500
- setResource("Army", 0, 500);
+  //set resource army to 0 total with a max "minable" of 0
+  //There is potential to use this "minable" number as an indicator of availible units
+    //The only special case where it doesn't work is when colonizing
+ setResource("Army", 0, 0);
 }
 
 const pair<uint32_t, uint32_t> Planet::getResource(uint32_t resTypeId) const {
