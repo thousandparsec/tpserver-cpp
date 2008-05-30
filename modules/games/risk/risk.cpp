@@ -218,7 +218,7 @@ void Risk::createUniverse() {
     
   // Cepheus Systems (Europe, Bonus 5)
   createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472);
-  createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.325);
+  createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.625);
   createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
   createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724);
   createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445);
