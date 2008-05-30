@@ -180,6 +180,8 @@ void Risk::createUniverse() {
   uint32_t uniType = otypeman->getObjectTypeByName("Universe");
   IGObject *universe = objman->createNewObject();
 
+  //TODO: Adjust default position of universe
+  //TODO: Perhaps push constellations away from eachother for visibility 
   otypeman->setupObject(universe, uniType);
   universe->setName("The Universe");
   StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
