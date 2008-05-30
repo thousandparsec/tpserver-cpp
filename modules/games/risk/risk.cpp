@@ -186,7 +186,8 @@ void Risk::createUniverse() {
 	uniData->setSize(123456789123ll);
   uniData->setUnitPos(.5,.5);
   objman->addObject(universe);
-   
+  
+  //TODO: LATER: create some sort of import function to create map from file 
   //create galaxies and keep reference for system creation
   IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia", 5); //North America
   IGObject *gal_cygnus = createGalaxy(*universe, "Cygnus", 2); //South America
@@ -197,61 +198,60 @@ void Risk::createUniverse() {
   
   Logger::getLogger()->info("Galaxies Created");
   
-  //TODO: Planets do not display, while systems do? Switched back to systems for mean time
-  //create systems
+  //create systems - (I don't know why I chose to do numbers from -1 to 1!?)
   // Cassiopeia Systems (North America, Bonus 5)
-  createStarSystem(*gal_cassiopeia, "Shedir", .1, .1);
-  createStarSystem(*gal_cassiopeia, "Caph", .1, .2);
-  createStarSystem(*gal_cassiopeia, "Ruchbah", .1, .3);
-  createStarSystem(*gal_cassiopeia, "Gamma Cas", .1, .4);
-  createStarSystem(*gal_cassiopeia, "Segin", .1, .5);
-  createStarSystem(*gal_cassiopeia, "Zeta Cas", .1, .6);
-  createStarSystem(*gal_cassiopeia, "Marfak", .1, .7);
-  createStarSystem(*gal_cassiopeia, "Xi Cas", .1, .8);  
-  createStarSystem(*gal_cassiopeia, "Sigma Cas", .1, .9);
+  createStarSystem(*gal_cassiopeia, "Shedir",         -0.321, 0.670);
+  createStarSystem(*gal_cassiopeia, "Caph",           -0.213, 0.751);
+  createStarSystem(*gal_cassiopeia, "Ruchbah",        -0.447, 0.724);
+  createStarSystem(*gal_cassiopeia, "Gamma Cas",      -0.339, 0.760);
+  createStarSystem(*gal_cassiopeia, "Segin",          -0.519, 0.807);
+  createStarSystem(*gal_cassiopeia, "Zeta Cas",       -0.303, 0.571);
+  createStarSystem(*gal_cassiopeia, "Marfak",         -0.420, 0.616);
+  createStarSystem(*gal_cassiopeia, "Xi Cas",         -0.357, 0.481);  
+  createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643);
 
   // Cygnus Systems (South America, Bonus 2)
-  createStarSystem(*gal_cygnus, "Deneb", .2, .1);
-  createStarSystem(*gal_cygnus, "Albireo", .2, .2);
-  createStarSystem(*gal_cygnus, "Sadr", .2, .3);
-  createStarSystem(*gal_cygnus, "Gienah Cygni", .2, .4);
+  createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.373);
+  createStarSystem(*gal_cygnus, "Albireo",            -0.249, 0.049);
+  createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.256);
+  createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.238);
     
   // Cepheus Systems (Europe, Bonus 5)
-  createStarSystem(*gal_cepheus, "Alderamin", .3, .1);
-  createStarSystem(*gal_cepheus, "Alfirk", .3, .2);
-  createStarSystem(*gal_cepheus, "Al Kalb al Rai", .3, .3);
-  createStarSystem(*gal_cepheus, "Alrai", .3, .4);
-  createStarSystem(*gal_cepheus, "Herchel's Garnet Star", .3, .5);
-  createStarSystem(*gal_cepheus, "Alkurhah", .3, .6);
-  createStarSystem(*gal_cepheus, "iota Cep", .3, .7);
+  createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472);
+  createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.325);
+  createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
+  createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724);
+  createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445);
+  createStarSystem(*gal_cepheus, "Alkurhah",          -0.036, 0.499);
+  createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598);
 
   // Orion Systens (Africa, Bonus 3)
-  createStarSystem(*gal_orion, "Betelgeuse", .4, .1);
-  createStarSystem(*gal_orion, "Rigel", .4, .2);
-  createStarSystem(*gal_orion, "Bellatrix", .4, .3);
-  createStarSystem(*gal_orion, "Mintaka", .4, .4);
-  createStarSystem(*gal_orion, "Alnitak", .4, .5);
-  createStarSystem(*gal_orion, "Saiph", .4, .6);
+  createStarSystem(*gal_orion, "Betelgeuse",          -0.069, 0.328);
+  createStarSystem(*gal_orion, "Rigel",               0.126,  0.094);
+  createStarSystem(*gal_orion, "Bellatrix",           0.084,  0.337);
+  createStarSystem(*gal_orion, "Mintaka",             0.048,  0.220);
+  createStarSystem(*gal_orion, "Alnitak",             -0.015, 0.202);
+  createStarSystem(*gal_orion, "Saiph",               -0.015, 0.058);
   
   // Draco Systems (Russia, Bonus 7)
-  createStarSystem(*gal_draco, "Etamin", .5, .1);
-  createStarSystem(*gal_draco, "Rastaban", .5, .2);
-  createStarSystem(*gal_draco, "Arrakis", .5, .3);
-  createStarSystem(*gal_draco, "Kuma", .5, .4);
-  createStarSystem(*gal_draco, "Grumium", .5, .5);
-  createStarSystem(*gal_draco, "Nodus Secundus", .5, .6);
-  createStarSystem(*gal_draco, "Tyl", .5, .7);
-  createStarSystem(*gal_draco, "Dsibin", .5, .8);
-  createStarSystem(*gal_draco, "Aldhibah", .5, .9);
-  createStarSystem(*gal_draco, "Ed Asiach", .5, 1.0);
-  createStarSystem(*gal_draco, "Thubah", .5, 1.1);
-  createStarSystem(*gal_draco, "Gianfar", .5, 1.2);
+  createStarSystem(*gal_draco, "Etamin",              0.147, 0.382);
+  createStarSystem(*gal_draco, "Rastaban",            0.246, 0.382);
+  createStarSystem(*gal_draco, "Arrakis",             0.300, 0.402);
+  createStarSystem(*gal_draco, "Kuma",                0.246, 0.436);
+  createStarSystem(*gal_draco, "Grumium",             0.147, 0.454);
+  createStarSystem(*gal_draco, "Nodus Secundus",      0.111, 0.634);
+  createStarSystem(*gal_draco, "Tyl",                 0.102, 0.697);
+  createStarSystem(*gal_draco, "Dsibin",              0.204, 0.670);
+  createStarSystem(*gal_draco, "Aldhibah",            0.273, 0.544);
+  createStarSystem(*gal_draco, "Ed Asiach",           0.399, 0.472);
+  createStarSystem(*gal_draco, "Thubah",              0.444, 0.634);
+  createStarSystem(*gal_draco, "Gianfar",             0.498, 0.778);
   
   // Crux Systens (Australia, Bonus 2)
-  createStarSystem(*gal_crux, "Acrux", .6, .1);
-  createStarSystem(*gal_crux, "Becrux", .6, .2);
-  createStarSystem(*gal_crux, "Gacrux", .6, .3);
-  createStarSystem(*gal_crux, "delta Cru", .6, .4); 
+  createStarSystem(*gal_crux, "Acrux",                0.506, 0.049);
+  createStarSystem(*gal_crux, "Becrux",               0.366, 0.148);
+  createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292);
+  createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211); 
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
