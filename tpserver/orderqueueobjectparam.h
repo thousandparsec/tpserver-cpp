@@ -32,7 +32,6 @@ public:
   virtual ~OrderQueueObjectParam();
 
   virtual void packObjectFrame(Frame * f, uint32_t playerid);
-  virtual void packObjectDescFrame(Frame * f);
   virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
 
   virtual void signalRemoval();
