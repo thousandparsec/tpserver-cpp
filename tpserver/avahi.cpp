@@ -330,11 +330,15 @@ void Avahi::createServices(){
       NULL);
   txtfields = avahi_string_list_add(txtfields, (std::string("rule=") + Game::getGame()->getRuleset()->getName()).c_str());
   txtfields = avahi_string_list_add(txtfields,(std::string("rulever=") + Game::getGame()->getRuleset()->getVersion()).c_str());
-  txtfields = avahi_string_list_add_printf(txtfields, "next=%ld", Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
+  TurnTimer* turntimer = Game::getGame()->getTurnTimer();
+  if(turntimer != NULL){
+    txtfields = avahi_string_list_add_printf(txtfields, "next=%ld", turntimer->secondsToEOT() + time(NULL));
+    txtfields = avahi_string_list_add_printf(txtfields, "prd=%d", turntimer->getTurnLength());
+  }
   txtfields = avahi_string_list_add_printf(txtfields, "objs=%d", Game::getGame()->getObjectManager()->getNumObjects());
   txtfields = avahi_string_list_add_printf(txtfields, "plys=%d", Game::getGame()->getPlayerManager()->getNumPlayers());
   txtfields = avahi_string_list_add_printf(txtfields, "turn=%d", Game::getGame()->getTurnNumber());
-  txtfields = avahi_string_list_add_printf(txtfields, "prd=%d", Game::getGame()->getTurnTimer()->getTurnLength());
+  
   
   Settings* settings = Settings::getSettings();
   
