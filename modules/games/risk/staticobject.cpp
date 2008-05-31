@@ -34,61 +34,61 @@ namespace RiskRuleset {
 using std::pair;
 
 StaticObjectType::StaticObjectType() : ObjectType(){
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Positional");
-  group->setDescription("Describes the position");
-  group->addParameter(obpT_Position_3D, "Position", "The position of the object");
-  group->addParameter(obpT_Size, "Size", "The diameter of the object");
-  addParameterGroupDesc(group);
-  
+   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
+   group->setName("Positional");
+   group->setDescription("Describes the position");
+   group->addParameter(obpT_Position_3D, "Position", "The position of the object");
+   group->addParameter(obpT_Size, "Size", "The diameter of the object");
+   addParameterGroupDesc(group);
+
 }
 
 void StaticObjectType::setTypeName(const std::string& nname){
-  nametype = nname;
+   nametype = nname;
 }
 
 void StaticObjectType::setTypeDescription(const std::string& ndesc){
-  typedesc = ndesc;
+   typedesc = ndesc;
 }
 
 ObjectBehaviour* StaticObjectType::createObjectBehaviour() const{
-  return new StaticObject();
+   return new StaticObject();
 }
 
 StaticObject::StaticObject() : ObjectBehaviour(), unitX(0), unitY(0) {
 }
 
 void StaticObject::setUnitPos(double x, double y) {
-  unitX = x, unitY = y;
-  setPosition(getUniverseCoord(x,y));
+   unitX = x, unitY = y;
+   setPosition(getUniverseCoord(x,y));
 }
 
 void StaticObject::setUnitPos(const std::pair<double,double>& unitPos) {
-  unitX = unitPos.first;
-  unitY = unitPos.second;
-  setPosition(getUniverseCoord(unitPos));
+   unitX = unitPos.first;
+   unitY = unitPos.second;
+   setPosition(getUniverseCoord(unitPos));
 }
 
 pair<double,double> StaticObject::getUnitPos() const {
-  return pair<double,double>(unitX, unitY);
+   return pair<double,double>(unitX, unitY);
 }
 
 Vector3d StaticObject::getPosition() const{
-  return ((Position3dObjectParam*)(obj->getParameter(1, 1)))->getPosition();
+   return ((Position3dObjectParam*)(obj->getParameter(1, 1)))->getPosition();
 }
 
 void StaticObject::setPosition(const Vector3d & np){
-  ((Position3dObjectParam*)(obj->getParameter(1, 1)))->setPosition(np);
-  obj->touchModTime();
+   ((Position3dObjectParam*)(obj->getParameter(1, 1)))->setPosition(np);
+   obj->touchModTime();
 }
 
 uint64_t StaticObject::getSize() const{
-  return ((SizeObjectParam*)(obj->getParameter(1, 2)))->getSize();
+   return ((SizeObjectParam*)(obj->getParameter(1, 2)))->getSize();
 }
 
 void StaticObject::setSize(uint64_t ns){
-  ((SizeObjectParam*)(obj->getParameter(1, 2)))->setSize(ns);
-  obj->touchModTime();
+   ((SizeObjectParam*)(obj->getParameter(1, 2)))->setSize(ns);
+   obj->touchModTime();
 }
 
 void StaticObject::packExtraData(Frame * frame) {
@@ -100,7 +100,7 @@ void StaticObject::doOnceATurn() {
 }
 
 int StaticObject::getContainerType(){
-  return ContainerTypes_::StaticObject;
+   return ContainerTypes_::StaticObject;
 }
 
 }

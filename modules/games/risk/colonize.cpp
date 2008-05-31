@@ -35,34 +35,34 @@
 namespace RiskRuleset {
 
 using std::string;
- 
+
 Colonize::Colonize() {
-  name = "Colonize";
-  description = "Colonize a planet";
-  
-  //Check on validity of these parameters
-  units = new ObjectOrderParameter();
-  units->setName("Units");
-  units->setDescription("The number of units to colonize with.");
-  addOrderParameter(units);
-  
-  turns = 1;  //do I pay any head to # of turns for an action?
+   name = "Colonize";
+   description = "Colonize a planet";
+
+//Check on validity of these parameters
+   units = new ObjectOrderParameter();
+   units->setName("Units");
+   units->setDescription("The number of units to colonize with.");
+   addOrderParameter(units);
+
+   turns = 1;  //do I pay any head to # of turns for an action?
 }
 
 Colonize::~Colonize() {
-  
+
 }
 
 Order* Colonize::clone() const {
-  Colonize *c = new Colonize();
-  c->type = this->type;
-  return c;
+   Colonize *c = new Colonize();
+   c->type = this->type;
+   return c;
 }
 
 bool Colonize::doOrder(IGObject *obj) {
-  bool result = true;
-  //TODO: Implement order
-  return result;
+   bool result = true;
+//TODO: Implement order
+   return result;
 }
 
 }

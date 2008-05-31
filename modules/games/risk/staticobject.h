@@ -35,38 +35,38 @@ class SizeObjectParam;
 namespace RiskRuleset {
 
 class StaticObjectType : public ObjectType{
-  public:
-    StaticObjectType();
-    virtual ~StaticObjectType(){};
-    
-    void setTypeName(const std::string& nname);
-    void setTypeDescription(const std::string& ndesc);
-    
-  protected:
-    virtual ObjectBehaviour* createObjectBehaviour() const;
+public:
+   StaticObjectType();
+   virtual ~StaticObjectType(){};
+
+   void setTypeName(const std::string& nname);
+   void setTypeDescription(const std::string& ndesc);
+
+protected:
+   virtual ObjectBehaviour* createObjectBehaviour() const;
 };
-  
+
 class StaticObject:public ObjectBehaviour {
- public:
+public:
    StaticObject();
    virtual ~StaticObject() {};
 
    void setUnitPos(double unitX, double unitY);
    void setUnitPos(const std::pair<double,double>& unitPos);
    std::pair<double,double> getUnitPos() const;
-   
+
    Vector3d getPosition() const;
    void setPosition(const Vector3d & np);
 
    uint64_t getSize() const;
    void setSize(uint64_t ns);
-   
+
    virtual void packExtraData(Frame * frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 
-   
- private:
+
+private:
    double unitX, unitY;
 
 };

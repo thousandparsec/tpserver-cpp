@@ -31,47 +31,47 @@
 namespace RiskRuleset {
 
 class PlanetType : public StaticObjectType {
-  public:
-    PlanetType();
-    virtual ~PlanetType(){}
+public:
+   PlanetType();
+   virtual ~PlanetType(){}
 
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
+protected:
+   ObjectBehaviour* createObjectBehaviour() const;
 };
 
 class Planet : public StaticObject, public OwnedObject {
 
-  public:
-    Planet();
-    virtual ~Planet();
+public:
+   Planet();
+   virtual ~Planet();
 
-    virtual void packExtraData(Frame * frame);
-    virtual void doOnceATurn();
-    virtual int getContainerType();
+   virtual void packExtraData(Frame * frame);
+   virtual void doOnceATurn();
+   virtual int getContainerType();
 
-    uint32_t getOwner() const;
-    void setOwner(uint32_t no);
-    
-    void setDefaultResources();
-    const std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources() const;
+   uint32_t getOwner() const;
+   void setOwner(uint32_t no);
 
-    const std::pair<uint32_t, uint32_t> getResource(uint32_t resTypeId) const;
-    const std::pair<uint32_t, uint32_t> getResource(const std::string& resTypName) const;
+   void setDefaultResources();
+   const std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources() const;
 
-    void setResource(uint32_t resTypeId, uint32_t currentVal,
-                      uint32_t maxVal = ResourceListParam::KEEP_VAL);
-    void setResource(const std::string& resType, uint32_t currentVal,
-                      uint32_t maxVal = ResourceListParam::KEEP_VAL);
+   const std::pair<uint32_t, uint32_t> getResource(uint32_t resTypeId) const;
+   const std::pair<uint32_t, uint32_t> getResource(const std::string& resTypName) const;
 
-    void addResource(uint32_t resTypeId, uint32_t amount);
-    void addResource(const std::string& resTypeName, uint32_t amount);
+   void setResource(uint32_t resTypeId, uint32_t currentVal,
+      uint32_t maxVal = ResourceListParam::KEEP_VAL);
+   void setResource(const std::string& resType, uint32_t currentVal,
+      uint32_t maxVal = ResourceListParam::KEEP_VAL);
 
-    bool removeResource(uint32_t resTypeId, uint32_t amount);
-    bool removeResource(const std::string& resTypeName, uint32_t amount);
+   void addResource(uint32_t resTypeId, uint32_t amount);
+   void addResource(const std::string& resTypeName, uint32_t amount);
 
-    void setOrderTypes();
+   bool removeResource(uint32_t resTypeId, uint32_t amount);
+   bool removeResource(const std::string& resTypeName, uint32_t amount);
 
-    void setupObject();
+   void setOrderTypes();
+
+   void setupObject();
 
 };
 

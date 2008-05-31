@@ -29,19 +29,19 @@ class IGObject;
 namespace RiskRuleset {
 
 class Reinforce : public::Order {
-  
-  public:
-    
-    Reinforce();
-    virtual ~Reinforce();
-    
-    virtual Order* clone() const;
-    
-    virtual bool doOrder(IGObject* obj);
-  
-  private:
-    ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
-    
+
+public:
+
+   Reinforce();
+   virtual ~Reinforce();
+
+   virtual Order* clone() const;
+
+   virtual bool doOrder(IGObject* obj);
+
+private:
+   ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
+
 };//class Reinforce
 } //namespace RiskRuleset
 #endif

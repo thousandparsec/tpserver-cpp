@@ -35,7 +35,7 @@ namespace RiskRuleset {
 using std::set;
 
 void exploreStarSys(IGObject* obj) {
-   // set the planets in this star sys to visible for my owner
+// set the planets in this star sys to visible for my owner
    OwnedObject *objData = dynamic_cast<OwnedObject*>(obj->getObjectBehaviour());
 
    Game *game = Game::getGame();
@@ -47,12 +47,12 @@ void exploreStarSys(IGObject* obj) {
    ObjectView* obv = pview->getObjectView(obj->getID());
    if(obv != NULL){
       if(!obv->isCompletelyVisible()){
-        obv->setCompletelyVisible(true);
-        pview->updateObjectView(obj->getID());
+         obv->setCompletelyVisible(true);
+         pview->updateObjectView(obj->getID());
       }
       if(obv->isGone()){
-        obv->setGone(false);
-        pview->updateObjectView(obj->getID());
+         obv->setGone(false);
+         pview->updateObjectView(obj->getID());
       }
    }else{
       obv = new ObjectView();
@@ -67,15 +67,15 @@ void exploreStarSys(IGObject* obj) {
    for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i){
       obv = pview->getObjectView(*i);
       if(obv != NULL){
-          if(!obv->isCompletelyVisible()){
+         if(!obv->isCompletelyVisible()){
             obv->setCompletelyVisible(true);
             pview->updateObjectView(*i);
-          }
+         }
       }else{
-          obv = new ObjectView();
-          obv->setObjectId(*i);
-          obv->setCompletelyVisible(true);
-          pview->addVisibleObject(obv);
+         obv = new ObjectView();
+         obv->setObjectId(*i);
+         obv->setCompletelyVisible(true);
+         pview->addVisibleObject(obv);
       }
    }
 }

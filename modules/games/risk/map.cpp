@@ -42,23 +42,23 @@ namespace {
 
 const Vector3d getUniverseCoord(double unitX, double unitY) {
    return Vector3d( static_cast<uint64_t>(UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE * unitX),
-                    static_cast<uint64_t>(UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE * unitY),
-                    0 );
+      static_cast<uint64_t>(UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE * unitY),
+      0 );
 }
 
 const Vector3d getUniverseCoord(const pair<double,double>& unitPos) {
    return Vector3d( static_cast<uint64_t>(UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE * unitPos.first),
-                    static_cast<uint64_t>(UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE * unitPos.second),
-                    0 );
+      static_cast<uint64_t>(UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE * unitPos.second),
+      0 );
 }
 
 const Vector3d getRandPlanetOffset() {
    Random *rand = Game::getGame()->getRandom();
    return Vector3d( static_cast<int64_t>( UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE *
-                        (rand->getInRange(-100,100)/10000.) ),
-                    static_cast<int64_t>( UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE *
-                        (rand->getInRange(-100,100)/10000.) ),
-                    0 );
+      (rand->getInRange(-100,100)/10000.) ),
+      static_cast<int64_t>( UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE *
+      (rand->getInRange(-100,100)/10000.) ),
+      0 );
 }
 
 const double getWrappingUnitDist(const StaticObject& obj1, const StaticObject& obj2) {

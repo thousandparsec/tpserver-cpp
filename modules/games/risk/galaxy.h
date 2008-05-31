@@ -30,28 +30,28 @@ namespace RiskRuleset {
 
 class GalaxyType : public StaticObjectType
 {
-  public:
-    GalaxyType();
-    virtual ~GalaxyType(){};
-  
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
+public:
+   GalaxyType();
+   virtual ~GalaxyType(){};
+
+protected:
+   ObjectBehaviour* createObjectBehaviour() const;
 };
-  
+
 class Galaxy : public StaticObject 
 {
-  public:
-    Galaxy();
-    virtual ~Galaxy() {}
+public:
+   Galaxy();
+   virtual ~Galaxy() {}
 
-    virtual void doOnceATurn();
-    virtual int getContainerType();
+   virtual void doOnceATurn();
+   virtual int getContainerType();
 
 
-    void setBonus(int bonus);
-    int getBonus() const;
+   void setBonus(int bonus);
+   int getBonus() const;
 
-    void setupObject();
+   void setupObject();
 
 };
 

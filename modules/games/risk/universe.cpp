@@ -32,46 +32,46 @@
 namespace RiskRuleset {
 
 UniverseType::UniverseType() : StaticObjectType() {
-  ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
-  group->setName("Informational");
-  group->setDescription("Information about the universe");
-  group->addParameter(obpT_Integer, "Turn", "The current turn number");
-  addParameterGroupDesc(group);
-  
-  nametype = "Universe";
-  typedesc = "The Universe";
+   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
+   group->setName("Informational");
+   group->setDescription("Information about the universe");
+   group->addParameter(obpT_Integer, "Turn", "The current turn number");
+   addParameterGroupDesc(group);
+
+   nametype = "Universe";
+   typedesc = "The Universe";
 }
 
 ObjectBehaviour* UniverseType::createObjectBehaviour() const{
-  return new Universe();
+   return new Universe();
 }
 
 Universe::Universe() : StaticObject() {
 }
 
 void Universe::setTurn(int turn) {
-  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(turn);
+   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(turn);
 }
 
 int Universe::getTurn() const {
-  return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
+   return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
 }
 
 int Universe::getContainerType() {
-  return ContainerTypes_::Universe;
+   return ContainerTypes_::Universe;
 }
 
 void Universe::packExtraData(Frame *frame) {
-  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
+   frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
 }
 
 void Universe::doOnceATurn() {
-  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
-  obj->touchModTime();
+   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue() + 1);
+   obj->touchModTime();
 }
 
 void Universe::setupObject(){
-  setSize(0xffffffffffffffffULL);
+   setSize(0xffffffffffffffffULL);
 }
 
 }

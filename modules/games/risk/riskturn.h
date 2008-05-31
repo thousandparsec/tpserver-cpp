@@ -25,14 +25,14 @@
  
 #include <tpserver/turnprocess.h>
 namespace RiskRuleset{
-     
+
 class RiskTurn : public TurnProcess{
 public:
-  RiskTurn();
-  virtual ~RiskTurn();
-   
-  virtual void doTurn();
-     
+   RiskTurn();
+   virtual ~RiskTurn();
+
+   virtual void doTurn();
+
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset
 #endif

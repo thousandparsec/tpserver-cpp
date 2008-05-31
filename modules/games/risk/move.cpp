@@ -37,26 +37,26 @@
 namespace RiskRuleset {
 
 using std::string;
-  
+
 Move::Move() : Order() {
-  name = "Move";
-  description = "Move any number of units to a planet";
-  
-  starSys = new ObjectOrderParameter();
-  starSys->setName("Star System");
-  starSys->setDescription("The star system to move to.");
-  addOrderParameter(starSys);
-  units = new ObjectOrderParameter();
-  units->setName("Units");
-  units->setDescription("The number of units to colonize with.");
-  addOrderParameter(units);
-  
-  //TODO: Check if I need to include "turns"?
-  turns = 1;
+   name = "Move";
+   description = "Move any number of units to a planet";
+
+   starSys = new ObjectOrderParameter();
+   starSys->setName("Star System");
+   starSys->setDescription("The star system to move to.");
+   addOrderParameter(starSys);
+   units = new ObjectOrderParameter();
+   units->setName("Units");
+   units->setDescription("The number of units to colonize with.");
+   addOrderParameter(units);
+
+//TODO: Check if I need to include "turns"?
+   turns = 1;
 }
 
 Move::~Move() {
-  
+
 }
 
 Order* Move::clone() const {
@@ -66,9 +66,9 @@ Order* Move::clone() const {
 }
 
 bool Move::doOrder(IGObject* obj) {
-  bool result = true;
-  //TODO: Implement order
-  return result;
+   bool result = true;
+//TODO: Implement order
+   return result;
 }
 
 } //end namespace RiskRuleset

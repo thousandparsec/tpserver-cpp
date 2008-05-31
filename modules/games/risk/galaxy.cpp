@@ -33,43 +33,43 @@
 namespace RiskRuleset {
 
 GalaxyType::GalaxyType() : StaticObjectType() {
-  ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
-  group->setName("Informational");
-  group->setDescription("Information about the galaxy");
-  group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire galaxy");
-  addParameterGroupDesc(group);                   //(2,1)
-  
-  nametype = "Galaxy";
-  typedesc = "The Galaxy";
+   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
+   group->setName("Informational");
+   group->setDescription("Information about the galaxy");
+   group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire galaxy");
+   addParameterGroupDesc(group);                   //(2,1)
+
+   nametype = "Galaxy";
+   typedesc = "The Galaxy";
 }
 
 ObjectBehaviour* GalaxyType::createObjectBehaviour() const{
-  return new Galaxy();
+   return new Galaxy();
 }
 
 Galaxy::Galaxy() : StaticObject() {
 }
 
 void Galaxy::setBonus(int bonus) {
-  ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(bonus);
-  obj->touchModTime();
+   ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(bonus);
+   obj->touchModTime();
 }
 
 int Galaxy::getBonus() const {
-  return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
+   return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
 }
 
 int Galaxy::getContainerType() {
-  return ContainerTypes_::Galaxy;
+   return ContainerTypes_::Galaxy;
 }
 
 void Galaxy::doOnceATurn() {
-  
-  obj->touchModTime();
+
+   obj->touchModTime();
 }
 
 void Galaxy::setupObject(){
-  //TODO: insert any setup here
+//TODO: insert any setup here
 }
 
 }

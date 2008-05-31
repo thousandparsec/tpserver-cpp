@@ -28,17 +28,17 @@ class IGObject;
 namespace RiskRuleset {
 
 class Move : public::Order{
-  public:
-    Move();
-    virtual ~Move();
-    
-    virtual Order* clone() const;
-  
-    virtual bool doOrder(IGObject* obj);
-    
-  private:
-    ObjectOrderParameter* starSys;
-    ObjectOrderParameter* units;
+public:
+   Move();
+   virtual ~Move();
+
+   virtual Order* clone() const;
+
+   virtual bool doOrder(IGObject* obj);
+
+private:
+   ObjectOrderParameter* starSys;
+   ObjectOrderParameter* units;
 };
 
 }

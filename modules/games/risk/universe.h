@@ -29,29 +29,29 @@ namespace RiskRuleset {
 
 class UniverseType : public StaticObjectType
 {
-  public:
-    UniverseType();
-    virtual ~UniverseType(){};
-  
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
+public:
+   UniverseType();
+   virtual ~UniverseType(){};
+
+protected:
+   ObjectBehaviour* createObjectBehaviour() const;
 };
-  
+
 class Universe : public StaticObject 
 {
-  public:
-    Universe();
-    virtual ~Universe() {}
+public:
+   Universe();
+   virtual ~Universe() {}
 
-    virtual void packExtraData(Frame* frame);
-    virtual void doOnceATurn();
-    virtual int getContainerType();
+   virtual void packExtraData(Frame* frame);
+   virtual void doOnceATurn();
+   virtual int getContainerType();
 
 
-    void setTurn(int turn);
-    int getTurn() const;
+   void setTurn(int turn);
+   int getTurn() const;
 
-    void setupObject();
+   void setupObject();
 
 };
 

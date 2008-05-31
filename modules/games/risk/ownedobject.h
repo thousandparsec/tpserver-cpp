@@ -25,7 +25,7 @@ namespace RiskRuleset {
 
 class OwnedObject
 {
- public:
+public:
    OwnedObject() {}
    virtual ~OwnedObject() {}
 

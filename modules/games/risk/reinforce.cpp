@@ -36,34 +36,34 @@
 namespace RiskRuleset {
 
 using std::string;
- 
+
 Reinforce::Reinforce() {
-  name = "Reinforce";
-  description = "Reinforce a planet";
-  
-  //Check on validity of these parameters
-  units = new ObjectOrderParameter();
-  units->setName("Units");
-  units->setDescription("The number of units to reinforce with.");
-  addOrderParameter(units);
-  
-  turns = 1;  //do I pay any head to # of turns for an action?
+   name = "Reinforce";
+   description = "Reinforce a planet";
+
+//Check on validity of these parameters
+   units = new ObjectOrderParameter();
+   units->setName("Units");
+   units->setDescription("The number of units to reinforce with.");
+   addOrderParameter(units);
+
+   turns = 1;  //do I pay any head to # of turns for an action?
 }
 
 Reinforce::~Reinforce() {
-  
+
 }
 
 Order* Reinforce::clone() const {
-  Reinforce *c = new Reinforce();
-  c->type = this->type;
-  return c;
+   Reinforce *c = new Reinforce();
+   c->type = this->type;
+   return c;
 }
 
 bool Reinforce::doOrder(IGObject *obj) {
-  bool result = true;
-  //TODO: Implement order
-  return result;
+   bool result = true;
+//TODO: Implement order
+   return result;
 }
 
 } //namespace RiskRuleset

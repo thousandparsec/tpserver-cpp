@@ -29,19 +29,19 @@ class IGObject;
 namespace RiskRuleset {
 
 class Colonize : public::Order {
-  
-  public:
-    
-    Colonize();
-    virtual ~Colonize();
-    
-    virtual Order* clone() const; //not sure what this does
-    
-    virtual bool doOrder(IGObject* obj);
-  
-  private:
-    ObjectOrderParameter* units;    //# of units to colonize a target planet with.
-    
+
+public:
+
+   Colonize();
+   virtual ~Colonize();
+
+   virtual Order* clone() const; //not sure what this does
+
+   virtual bool doOrder(IGObject* obj);
+
+private:
+   ObjectOrderParameter* units;    //# of units to colonize a target planet with.
+
 };//class Colonize
 } //namespace RiskRuleset
 #endif
