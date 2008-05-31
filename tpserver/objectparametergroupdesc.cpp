@@ -74,6 +74,11 @@ void ObjectParameterDesc::packObjectDescFrame(Frame* f)const {
   f->packString(name);
   f->packInt(type);
   f->packString(description);
+  //HACK: probably should be made configurable
+  // Maybe have subclasses of ObjectParamDesc, or add field of ObjectParamDesc.
+  if(type == obpT_Order_Queue){
+      f->packInt(100);
+  }
 }
 
 ObjectParameterGroupDesc::ObjectParameterGroupDesc() : groupid(0), name(), description(), parameters(){
