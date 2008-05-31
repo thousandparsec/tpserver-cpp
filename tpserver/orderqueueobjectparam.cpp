@@ -54,11 +54,6 @@ void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
   }
 }
 
-void OrderQueueObjectParam::packObjectDescFrame(Frame * f){
-  f->packInt(1000); // max order slots.
-}
-
-
 bool OrderQueueObjectParam::unpackModifyObjectFrame(Frame *f, unsigned int playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(12))
