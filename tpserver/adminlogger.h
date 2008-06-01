@@ -22,14 +22,21 @@
 
 #include "logsink.h"
 
+class AdminConnection;
+
 class AdminLogger : public LogSink {
  public:
     AdminLogger();
     virtual ~AdminLogger();
 
+    void setConnection(AdminConnection * newcon);
+    AdminConnection *getConnection() const;
+
     virtual void doLogging(int level, const char* msg) const;
 
  private:
+
+    AdminConnection *curConnection;
 
 };
 

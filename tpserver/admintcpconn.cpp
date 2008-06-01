@@ -88,7 +88,7 @@ void AdminTcpConnection::sendFrame(Frame * frame)
   }
   FrameType type = frame->getType();
   if(type < ftad_LogMessage && type != ft02_OK && type != ft02_Fail && type != ft02_Sequence){  // TODO - perhaps not the best way to check
-    Logger::getLogger()->error("Tried to send a non-admin frame on an admin connection, not sending frame");
+    Logger::getLogger()->error("Tried to send a non-admin frame (%d) on an admin connection, not sending frame", type);
   }else{
     if(status != 0 && !sendandclose){
       sendqueue.push(frame);

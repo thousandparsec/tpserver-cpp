@@ -1,4 +1,6 @@
-/*  Logging for tpserver-cpp
+#ifndef ASYNCTIMEREMAINING_H
+#define ASYNCTIMEREMAINING_H
+/*  AsyncLogMessage class
  *
  *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
@@ -18,43 +20,21 @@
  *
  */
 
-#include <time.h>
+#include <stdint.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <tpserver/asyncframe.h>
+
+class AsyncLogMessage: public AsyncFrame{
+  public:
+    AsyncLogMessage(uint64_t ts, uint32_t lv, const char* msg);
+    virtual ~AsyncLogMessage();
+    
+    virtual bool createFrame(Frame* f);
+    
+  private:
+    uint64_t timestamp;
+    uint32_t level;
+    std::string message;
+};
+
 #endif
-
-#include "adminconnection.h"
-#include "asynclogmessage.h"
-#include "adminlogger.h"
-
-AdminLogger::AdminLogger()
-{
-}
-
-AdminLogger::~AdminLogger()
-{
-}
-
-void AdminLogger::setConnection(AdminConnection * newcon)
-{
-    curConnection = newcon;
-}
-
-AdminConnection *AdminLogger::getConnection() const
-{
-    return curConnection;
-}
-
-void AdminLogger::doLogging(int level, const char* msg) const
-{
-    uint64_t    currTime = time( NULL);
-
-    AsyncLogMessage *logmessage = new AsyncLogMessage(currTime, level, msg);
-    if(curConnection->getStatus() == 3){
-      Frame * curFrame = curConnection->createFrame(NULL);
-      if(logmessage->createFrame(curFrame)){
-        curConnection->sendFrame(curFrame);
-      }
-    }
-}

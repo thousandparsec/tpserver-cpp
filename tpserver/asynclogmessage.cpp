@@ -1,4 +1,4 @@
-/*  Logging for tpserver-cpp
+/*  AsyncLogMessage class
  *
  *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
@@ -18,43 +18,21 @@
  *
  */
 
-#include <time.h>
+#include "frame.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "adminconnection.h"
 #include "asynclogmessage.h"
-#include "adminlogger.h"
 
-AdminLogger::AdminLogger()
-{
+AsyncLogMessage::AsyncLogMessage(uint64_t ts, uint32_t lv, const char* msg): AsyncFrame(), timestamp(ts), level(lv){
+  message = msg;
 }
 
-AdminLogger::~AdminLogger()
-{
+AsyncLogMessage::~AsyncLogMessage(){
 }
 
-void AdminLogger::setConnection(AdminConnection * newcon)
-{
-    curConnection = newcon;
-}
-
-AdminConnection *AdminLogger::getConnection() const
-{
-    return curConnection;
-}
-
-void AdminLogger::doLogging(int level, const char* msg) const
-{
-    uint64_t    currTime = time( NULL);
-
-    AsyncLogMessage *logmessage = new AsyncLogMessage(currTime, level, msg);
-    if(curConnection->getStatus() == 3){
-      Frame * curFrame = curConnection->createFrame(NULL);
-      if(logmessage->createFrame(curFrame)){
-        curConnection->sendFrame(curFrame);
-      }
-    }
+bool AsyncLogMessage::createFrame(Frame* f){
+  f->setType(ftad_LogMessage);
+  f->packInt64(timestamp);
+  f->packInt(level);
+  f->packString(message);
+  return true;
 }

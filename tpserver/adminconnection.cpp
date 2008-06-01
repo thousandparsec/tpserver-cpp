@@ -34,8 +34,6 @@
 #include "adminconnection.h"
 
 AdminConnection::AdminConnection() : Connection(), version(fv0_4){
-  logsink = new AdminLogger();
-  logextid = Logger::getLogger()->addLog(logsink);
 }
 
 
@@ -138,6 +136,9 @@ void AdminConnection::login(){
           okframe->packString("Welcome");
           sendFrame(okframe);
           Logger::getLogger()->info("Admin login ok by %s", username.c_str());
+          logsink = new AdminLogger();
+	  logsink->setConnection(this);
+          logextid = Logger::getLogger()->addLog(logsink);
           status = 3;
         } else {
           Logger::getLogger()->info("Bad username or password");
