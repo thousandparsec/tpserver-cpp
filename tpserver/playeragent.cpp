@@ -892,8 +892,8 @@ void PlayerAgent::processGetBoards(Frame * frame){
 
   for(int i = 0; i < numboards; i++){
     Frame *of = curConnection->createFrame(frame);
-    int boardnum = frame->unpackInt();
-    if(boardnum == 0){
+    uint32_t boardnum = frame->unpackInt();
+    if(boardnum == 0 || boardnum == player->getBoardId()){
       Board* board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
       board->packBoard(of);
     }else{
