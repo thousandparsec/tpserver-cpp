@@ -86,7 +86,8 @@ void AdminTcpConnection::sendFrame(Frame * frame)
     Logger::getLogger()->warning("Version mis-match, packet %d, connection %d", frame->getVersion(), version);
 
   }
-  if(frame->getType() < ftad_LogMessage){  // TODO - perhaps not the best way to check
+  FrameType type = frame->getType();
+  if(type < ftad_LogMessage && type != ft02_OK && type != ft02_Fail && type != ft02_Sequence){  // TODO - perhaps not the best way to check
     Logger::getLogger()->error("Tried to send a non-admin frame on an admin connection, not sending frame");
   }else{
     if(status != 0 && !sendandclose){
@@ -431,7 +432,7 @@ bool AdminTcpConnection::readFrame(Frame * recvframe)
         rtn = false;
       }
       FrameType type = recvframe->getType();
-      if (type < ftad_LogMessage || type >= ftad_Max) {  // TODO - perhaps not the best way to check
+      if (type < ftad_LogMessage && type != ft02_Connect && type != ft02_Login) {  // TODO - perhaps not the best way to check
         Logger::getLogger()->warning("Client has sent wrong frame type (%d)", type);
         Frame *failframe = createFrame(recvframe);
         failframe->createFailFrame(fec_ProtocolError, "Protocol Error, non-admin frame type or frame type not known");
