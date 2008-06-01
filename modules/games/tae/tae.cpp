@@ -166,13 +166,13 @@ void taeRuleset::setupResources() {
     ResourceManager* rman = Game::getGame()->getResourceManager();
     //Setup Inhabitable resource
     if(rman->getResourceDescription(1) == NULL){
-        Logger::getLogger()->info("Setting up Resource: Inhabitable");
+        Logger::getLogger()->info("Setting up Resource: Uninhabitable");
         ResourceDescription* res = new ResourceDescription();
-        res->setNameSingular("Inhabitable planet");
-        res->setNamePlural("Inhabitable planets");
+        res->setNameSingular("Uninhabitable planet");
+        res->setNamePlural("Uninhabitable planets");
         res->setUnitSingular("unit");
         res->setUnitPlural("units");
-        res->setDescription("Planets that can be colonized by humans");
+        res->setDescription("Planets that can only be colonized by mining robots");
         res->setMass(0);
         res->setVolume(0);
         rman->addResourceDescription(res);
