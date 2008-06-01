@@ -170,10 +170,83 @@ void AdminConnection::adminFrame()
 {
   Frame *frame = createFrame();
   if (readFrame(frame)) {
-    // TODO - do stuff with frames
+    switch (frame->getType()) {
+    case ftad_CommandDesc_Get:
+      processDescribeCommand(frame);
+      break;
+    case ftad_CommandTypes_Get:
+      processGetCommandTypes(frame);
+      break;
+    case ftad_Command:
+      processCommand(frame);
+      break;
+    default:
+      Logger::getLogger()->warning("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
+      Frame *of = createFrame(frame);
+      of->createFailFrame(fec_ProtocolError, "Did not understand that frame type.");
+      sendFrame(of);
+      break;
+    }
   } else {
     Logger::getLogger()->debug("noFrame :(");
     // client closed
   }
   delete frame;
+}
+
+void AdminConnection::processDescribeCommand(Frame * frame)
+{
+  Logger::getLogger()->debug("doing describe command frame");
+
+  if(frame->getDataLength() < 4){
+    Frame *of = createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    sendFrame(of);
+    return;
+  }
+
+  int numdesc = frame->unpackInt();
+
+  if(frame->getDataLength() < 4 + 4 * numdesc){
+    Frame *of = createFrame(frame);
+    of->createFailFrame(fec_FrameError, "Invalid frame");
+    sendFrame(of);
+  }
+
+  if(numdesc > 1){
+    Frame *seq = createFrame(frame);
+    seq->setType(ft02_Sequence);
+    seq->packInt(numdesc);
+    sendFrame(seq);
+  }
+
+  if(numdesc == 0){
+    Frame *of = createFrame(frame);
+    Logger::getLogger()->debug("asked for no commands to describe");
+    of->createFailFrame(fec_NonExistant, "You didn't ask for any command descriptions, try again");
+    sendFrame(of);
+  }
+
+  for(int i = 0; i < numdesc; i++){
+    Frame *of = createFrame(frame);
+    int cmdtype = frame->unpackInt();
+    // TODO - build of as command description frame
+    sendFrame(of);
+  }
+}
+
+void AdminConnection::processGetCommandTypes(Frame * frame){
+  Logger::getLogger()->debug("doing get command types frame");
+
+  Frame *of = createFrame(frame);
+  // TODO - build of as command types frame
+  sendFrame(of);
+}
+
+void AdminConnection::processCommand(Frame * frame){
+  Logger::getLogger()->debug("doing command frame");
+
+  Frame *of = createFrame(frame);
+  // TODO - build of as command result frame
+  sendFrame(of);
 }

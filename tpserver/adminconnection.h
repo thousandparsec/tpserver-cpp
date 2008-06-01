@@ -54,6 +54,10 @@ class AdminConnection: public Connection {
 
   virtual bool readFrame(Frame * recvframe) = 0;
 
+  void processDescribeCommand(Frame * frame);
+  void processGetCommandTypes(Frame * frame);
+  void processCommand(Frame * frame);
+
   AdminLogger* logsink;
   int logextid;
 
