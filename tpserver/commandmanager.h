@@ -32,10 +32,10 @@ class CommandManager{
     static CommandManager *getCommandManager();
 
     bool checkCommandType(uint32_t type);
-    void describeCommand(uint32_t cmdtype, Frame * f);
+    void describeCommand(uint32_t cmdtype, Frame * of);
     void addCommandType(Command* cmd);
     void doGetCommandTypes(Frame * frame, Frame * of);
-    void executeCommand(Frame * frame);
+    void executeCommand(Frame * frame, Frame * of);
 
   private:
     CommandManager();

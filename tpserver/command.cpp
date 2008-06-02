@@ -50,10 +50,10 @@ std::string Command::getHelp()
     return help;
 }
 
-void Command::describeCommand(Frame * f) const
+void Command::describeCommand(Frame * of) const
 {
-  f->setType(ftad_CommandDesc);
-  f->packInt(type);
-  f->packString(name.c_str());
-  // TODO - the rest of the command description, including parameters
+    of->setType(ftad_CommandDesc);
+    of->packInt(type);
+    of->packString(name.c_str());
+    // TODO - the rest of the command description, including parameters
 }

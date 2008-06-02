@@ -29,6 +29,7 @@
 #include "logging.h"
 #include "adminlogger.h"
 #include "net.h"
+#include "commandmanager.h"
 #include "frame.h"
 
 #include "adminconnection.h"
@@ -230,7 +231,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   for(int i = 0; i < numdesc; i++){
     Frame *of = createFrame(frame);
     int cmdtype = frame->unpackInt();
-    // TODO - build of as command description frame
+    CommandManager::getCommandManager()->describeCommand(cmdtype, of);
     sendFrame(of);
   }
 }
@@ -239,7 +240,7 @@ void AdminConnection::processGetCommandTypes(Frame * frame){
   Logger::getLogger()->debug("doing get command types frame");
 
   Frame *of = createFrame(frame);
-  // TODO - build of as command types frame
+  CommandManager::getCommandManager()->doGetCommandTypes(frame, of);
   sendFrame(of);
 }
 
@@ -247,6 +248,6 @@ void AdminConnection::processCommand(Frame * frame){
   Logger::getLogger()->debug("doing command frame");
 
   Frame *of = createFrame(frame);
-  // TODO - build of as command result frame
+  CommandManager::getCommandManager()->executeCommand(frame, of);
   sendFrame(of);
 }

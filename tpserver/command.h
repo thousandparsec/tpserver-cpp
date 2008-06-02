@@ -35,9 +35,9 @@ class Command {
     std::string getName();
     std::string getHelp();
 
-    void describeCommand(Frame * f) const;
+    void describeCommand(Frame * of) const;
 
-    virtual void action() = 0;
+    virtual void action(Frame * frame, Frame * of) = 0;
 
   protected:
     uint32_t type;

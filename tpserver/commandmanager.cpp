@@ -19,18 +19,31 @@
  */
 
 #include "command.h"
+#include "net.h"
 #include "frame.h"
 
 #include "commandmanager.h"
+
+class QuitCommand : public Command{
+  public:
+    QuitCommand() : Command(){
+        name = "quit";
+        help = "Quit and shutdown the server.";
+    }
+    void action(Frame * frame, Frame * of){
+        Network::getNetwork()->stopMainLoop();
+        // TODO - finish populating of
+    }
+};
 
 CommandManager *CommandManager::myInstance = NULL;
 
 CommandManager *CommandManager::getCommandManager()
 {
-  if(myInstance == NULL)
-    myInstance = new CommandManager();
+    if(myInstance == NULL)
+      myInstance = new CommandManager();
 
-  return myInstance;
+    return myInstance;
 }
 
 bool CommandManager::checkCommandType(uint32_t type)
@@ -38,70 +51,83 @@ bool CommandManager::checkCommandType(uint32_t type)
     return (type >= 0 && type < nextType);
 }
 
-void CommandManager::describeCommand(uint32_t cmdtype, Frame * f)
+void CommandManager::describeCommand(uint32_t cmdtype, Frame * of)
 {
     if(commandStore.find(cmdtype) != commandStore.end()){
-        commandStore[cmdtype]->describeCommand(f);
+        commandStore[cmdtype]->describeCommand(of);
     }else{
-        f->createFailFrame(fec_NonExistant, "Command type does not exist");
+        of->createFailFrame(fec_NonExistant, "Command type does not exist");
     }
 }
 
 void CommandManager::addCommandType(Command* cmd){
-  cmd->setType(nextType);
-  commandStore[nextType++] = cmd;
-  seqkey++;
+    cmd->setType(nextType);
+    commandStore[nextType++] = cmd;
+    seqkey++;
 }
 
 void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
-  uint32_t lseqkey = frame->unpackInt();
-  if(lseqkey == UINT32_NEG_ONE){
-    //start new seqkey
-    lseqkey = seqkey;
-  }
+    uint32_t lseqkey = frame->unpackInt();
+    if(lseqkey == UINT32_NEG_ONE){
+        //start new seqkey
+        lseqkey = seqkey;
+    }
 
-  uint32_t start = frame->unpackInt();
-  uint32_t num = frame->unpackInt();
+    uint32_t start = frame->unpackInt();
+    uint32_t num = frame->unpackInt();
   
-  if(lseqkey != seqkey){
-    of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
-    return;
-  }
+    if(lseqkey != seqkey){
+        of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
+        return;
+    }
 
-  if(start > commandStore.size()){
-    of->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
-  }
+    if(start > commandStore.size()){
+        of->createFailFrame(fec_NonExistant, "Starting number too high");
+        return;
+    }
   
-  if(num > commandStore.size() - start){
-    num = commandStore.size() - start;
-  }
+    if(num > commandStore.size() - start){
+        num = commandStore.size() - start;
+    }
   
-  if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
-    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
+    if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
+        of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+        return;
+    }
 
-  of->setType(ftad_CommandTypes_List);
-  of->packInt(lseqkey);
-  of->packInt(commandStore.size() - start - num);
-  of->packInt(num);
-  std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin();
-  advance(itcurr, start);
-  for(uint32_t i = 0; i < num; i++){
-    of->packInt(itcurr->first);
-    ++itcurr;
-  }
+    of->setType(ftad_CommandTypes_List);
+    of->packInt(lseqkey);
+    of->packInt(commandStore.size() - start - num);
+    of->packInt(num);
+    std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin();
+    advance(itcurr, start);
+    for(uint32_t i = 0; i < num; i++){
+        of->packInt(itcurr->first);
+        ++itcurr;
+    }
+}
+
+void CommandManager::executeCommand(Frame * frame, Frame * of)
+{
+    uint32_t cmdtype = frame->unpackInt();
+    if(commandStore.find(cmdtype) != commandStore.end()){
+        of->setType(ftad_CommandResult);
+        commandStore[cmdtype]->action(frame, of);
+    }else{
+        of->createFailFrame(fec_NonExistant, "Command type does not exist");
+    }
 }
 
 CommandManager::CommandManager()
 {
     nextType = 0;
+
+    addCommandType(new QuitCommand());
 }
 
 CommandManager::~CommandManager()
 {
     for(std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin(); itcurr != commandStore.end(); ++itcurr){
-      delete itcurr->second;
+        delete itcurr->second;
     }
 }

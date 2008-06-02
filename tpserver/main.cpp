@@ -28,6 +28,7 @@
 #endif
 
 #include "console.h"
+#include "commandmanager.h"
 #include "logging.h"
 #include "game.h"
 #include "net.h"
@@ -55,6 +56,9 @@ int main(int argc, char **argv)
       mySettings->set("log_level", savedloglevel);
       mySettings->set("log_console", savedlogconsole);
     }
+
+    // TODO - is this in the right place?
+    CommandManager *myCommandManager = CommandManager::getCommandManager();
 
 	Logger *myLogger = Logger::getLogger();
 
