@@ -219,10 +219,10 @@ void Risk::createUniverse() {
    createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643, 9);
 
    // Cygnus Systems (South America, Bonus 2)
-   createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.373, 10);
-   createStarSystem(*gal_cygnus, "Albireo",            -0.249, 0.049, 11);
-   createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.256, 12);
-   createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.238, 13);
+   createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.273, 10);
+   createStarSystem(*gal_cygnus, "Albireo",            -0.249, -0.051, 11);
+   createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.156, 12);
+   createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.138, 13);
  
    // Cepheus Systems (Europe, Bonus 5)
    createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472, 14);
@@ -234,32 +234,32 @@ void Risk::createUniverse() {
    createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598, 20);
 
    // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*gal_orion, "Betelgeuse",          -0.069, 0.328, 21);
-   createStarSystem(*gal_orion, "Rigel",               0.126,  0.094, 22);
-   createStarSystem(*gal_orion, "Bellatrix",           0.084,  0.337, 23);
-   createStarSystem(*gal_orion, "Mintaka",             0.048,  0.220, 24);
-   createStarSystem(*gal_orion, "Alnitak",             -0.015, 0.202, 25);
-   createStarSystem(*gal_orion, "Saiph",               -0.015, 0.058, 26);
+   createStarSystem(*gal_orion, "Betelgeuse",          0.031, 0.228, 21);
+   createStarSystem(*gal_orion, "Rigel",               0.226, -0.006, 22);
+   createStarSystem(*gal_orion, "Bellatrix",           0.184, 0.237, 23);
+   createStarSystem(*gal_orion, "Mintaka",             0.148, 0.120, 24);
+   createStarSystem(*gal_orion, "Alnitak",             0.085, 0.102, 25);
+   createStarSystem(*gal_orion, "Saiph",               0.085, -0.042, 26);
 
    // Draco Systems (Russia, Bonus 7)
-   createStarSystem(*gal_draco, "Etamin",              0.147, 0.382, 27);
-   createStarSystem(*gal_draco, "Rastaban",            0.246, 0.382, 28);
-   createStarSystem(*gal_draco, "Arrakis",             0.300, 0.402, 29);
-   createStarSystem(*gal_draco, "Kuma",                0.246, 0.436, 30);
-   createStarSystem(*gal_draco, "Grumium",             0.147, 0.454, 31);
-   createStarSystem(*gal_draco, "Nodus Secundus",      0.111, 0.634, 32);
-   createStarSystem(*gal_draco, "Tyl",                 0.102, 0.697, 33);
-   createStarSystem(*gal_draco, "Dsibin",              0.204, 0.670, 34);
-   createStarSystem(*gal_draco, "Aldhibah",            0.273, 0.544, 35);
-   createStarSystem(*gal_draco, "Ed Asiach",           0.399, 0.472, 36);
-   createStarSystem(*gal_draco, "Thubah",              0.444, 0.634, 37);
-   createStarSystem(*gal_draco, "Gianfar",             0.498, 0.778, 38);
+   createStarSystem(*gal_draco, "Etamin",              0.247, 0.382, 27);
+   createStarSystem(*gal_draco, "Rastaban",            0.346, 0.382, 28);
+   createStarSystem(*gal_draco, "Arrakis",             0.400, 0.402, 29);
+   createStarSystem(*gal_draco, "Kuma",                0.346, 0.436, 30);
+   createStarSystem(*gal_draco, "Grumium",             0.247, 0.454, 31);
+   createStarSystem(*gal_draco, "Nodus Secundus",      0.211, 0.634, 32);
+   createStarSystem(*gal_draco, "Tyl",                 0.202, 0.697, 33);
+   createStarSystem(*gal_draco, "Dsibin",              0.304, 0.670, 34);
+   createStarSystem(*gal_draco, "Aldhibah",            0.373, 0.544, 35);
+   createStarSystem(*gal_draco, "Ed Asiach",           0.499, 0.472, 36);
+   createStarSystem(*gal_draco, "Thubah",              0.544, 0.634, 37);
+   createStarSystem(*gal_draco, "Gianfar",             0.598, 0.778, 38);
 
    // Crux Systens (Australia, Bonus 2)
-   createStarSystem(*gal_crux, "Acrux",                0.506, 0.049, 39);
-   createStarSystem(*gal_crux, "Becrux",               0.366, 0.148, 40);
-   createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292, 41);
-   createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211, 42); 
+   createStarSystem(*gal_crux, "Acrux",                0.606, 0.000, 39);
+   createStarSystem(*gal_crux, "Becrux",               0.466, 0.100, 40);
+   createStarSystem(*gal_crux, "Gacrux",               0.534, 0.252, 41);
+   createStarSystem(*gal_crux, "Delta Cru",            0.690, 0.161, 42); 
    
    //Construct Adjacency Matrix
    //ASK: how to include Boost/Graphs
