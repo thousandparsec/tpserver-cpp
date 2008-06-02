@@ -8,16 +8,19 @@ Cassiopeia:
 	Marfak (Theta Cas)
 	xi Cas
 	sigma Cas
-Crux Australis:
-	Acrux (alpha Cru)
-	Becrux (beta Cru)
-	Gacrux (gamma Cru)
-	delta Cru
 Cygnus:
 	Deneb (alpha Cyg)
 	Albireo (Beta cyg)
 	Sadr	(gamma cyg)
 	Gienah Cygni (epsilon)
+Cepheus
+	Alderamin (alpha)
+	Alfirk (beta)
+	Al Kalb al Rai (rho 2 Cep)
+	Alrai (gamma)
+	The Garnet Star (mu)
+	Alkurhah (xi)
+	iota Cep
 Orion:
 	Betelgeuse (alpha)
 	Rigel (beta)
@@ -25,14 +28,6 @@ Orion:
 	Mintaka (delta)
 	Alnitak (zeta)
 	Saiph (kappa)
-Cepheus
-	Alderamin (alpha)
-	Alfirk (beta)
-	Al Kalb al Rai (rho 2 Cep)
-	Alrai (gamma)
-	Herschel's Garnet Star (mu)
-	Alkurhah (xi)
-	iota Cep
 Draco (http://www.seasky.org/pictures/sky7b07.html)
 	Etamin
 	Rastaban
@@ -46,3 +41,52 @@ Draco (http://www.seasky.org/pictures/sky7b07.html)
 	Ed Asiach
 	Thubah
 	Gianfar
+Crux Australis:
+	Acrux (alpha Cru)
+	Becrux (beta Cru)
+	Gacrux (gamma Cru)
+	delta Cru	
+
+//A backup copy here, I used it to create the adjacency matrix
+createStarSystem(*gal_cassiopeia, "Shedir",         -0.321, 0.670, 0);
+createStarSystem(*gal_cassiopeia, "Caph",           -0.213, 0.751, 1);
+createStarSystem(*gal_cassiopeia, "Ruchbah",        -0.447, 0.724, 2);
+createStarSystem(*gal_cassiopeia, "Gamma Cas",      -0.339, 0.760, 3);
+createStarSystem(*gal_cassiopeia, "Segin",          -0.519, 0.807, 4);
+createStarSystem(*gal_cassiopeia, "Zeta Cas",       -0.303, 0.571, 5);
+createStarSystem(*gal_cassiopeia, "Marfak",         -0.420, 0.616, 6);
+createStarSystem(*gal_cassiopeia, "Xi Cas",         -0.357, 0.481, 7);  
+createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643, 8);
+createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.373, 9);
+createStarSystem(*gal_cygnus, "Albireo",            -0.249, 0.049, 10);
+createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.256, 11);
+createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.238, 12);
+createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472, 13);
+createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.625, 14);
+createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724, 15);
+createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724, 16);
+createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445, 17);
+createStarSystem(*gal_cepheus, "Alkurhah",          -0.036, 0.499, 18);
+createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598, 19);
+createStarSystem(*gal_orion, "Betelgeuse",          -0.069, 0.328, 20);
+createStarSystem(*gal_orion, "Rigel",               0.126,  0.094, 21);
+createStarSystem(*gal_orion, "Bellatrix",           0.084,  0.337, 22);
+createStarSystem(*gal_orion, "Mintaka",             0.048,  0.220, 23);
+createStarSystem(*gal_orion, "Alnitak",             -0.015, 0.202, 24);
+createStarSystem(*gal_orion, "Saiph",               -0.015, 0.058, 25);
+createStarSystem(*gal_draco, "Etamin",              0.147, 0.382, 26);
+createStarSystem(*gal_draco, "Rastaban",            0.246, 0.382, 27);
+createStarSystem(*gal_draco, "Arrakis",             0.300, 0.402, 28);
+createStarSystem(*gal_draco, "Kuma",                0.246, 0.436, 29);
+createStarSystem(*gal_draco, "Grumium",             0.147, 0.454, 30);
+createStarSystem(*gal_draco, "Nodus Secundus",      0.111, 0.634, 31);
+createStarSystem(*gal_draco, "Tyl",                 0.102, 0.697, 32);
+createStarSystem(*gal_draco, "Dsibin",              0.204, 0.670, 33);
+createStarSystem(*gal_draco, "Aldhibah",            0.273, 0.544, 34);
+createStarSystem(*gal_draco, "Ed Asiach",           0.399, 0.472, 35);
+createStarSystem(*gal_draco, "Thubah",              0.444, 0.634, 36);
+createStarSystem(*gal_draco, "Gianfar",             0.498, 0.778, 37);
+createStarSystem(*gal_crux, "Acrux",                0.506, 0.049, 38);
+createStarSystem(*gal_crux, "Becrux",               0.366, 0.148, 39);
+createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292, 40);
+createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211, 41);

@@ -49,16 +49,18 @@ class Risk : public Ruleset {
       void createResources();
 
       void createUniverse();
-      IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus);
+      IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus, uint32_t id);
       IGObject* createStarSystem(IGObject& parent, const std::string& name,
-         double unitX, double unitY);
+         double unitX, double unitY, uint32_t id);
       IGObject* createPlanet(IGObject& parent, const std::string& name,
-         double unitX, double unitY);                        
+         double unitX, double unitY, uint32_t id);                        
       IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
-         const Vector3d& location);
+         const Vector3d& location, uint32_t id);
 
        //onAddPlayer methods
       bool isBoardClaimed() const;
+      
+      int num_planets;
 
 };// class Risk : public Ruleset
 	

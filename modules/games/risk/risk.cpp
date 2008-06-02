@@ -172,8 +172,13 @@ void Risk::createResources() {
    resMan->addResourceDescription(res);
 }
 
+//Universe is ID 0
+//Galaxies are ID #Planets + 1 and up
+//Planets Systems are ID 1 - #Planets
+//Planets are #planets*2 + PlanetSys ID
 void Risk::createUniverse() {
-    DEBUG_FN_PRINT();
+   DEBUG_FN_PRINT();
+   num_planets = 42;    //FIXME: This may not be the best way to "get" the total # of planets
    ObjectManager *objman = Game::getGame()->getObjectManager();
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
@@ -184,6 +189,7 @@ void Risk::createUniverse() {
    //TODO: Perhaps push constellations away from eachother for visibility 
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
+   universe->setID(0);
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setSize(123456789123ll);
    uniData->setUnitPos(.5,.5);
@@ -191,72 +197,72 @@ void Risk::createUniverse() {
 
    //TODO: LATER: create some sort of import function to create map from file 
    //create galaxies and keep reference for system creation
-   IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia", 5); //North America
-   IGObject *gal_cygnus = createGalaxy(*universe, "Cygnus", 2); //South America
-   IGObject *gal_cepheus = createGalaxy(*universe, "Cepheus", 5); //Europe
-   IGObject *gal_orion = createGalaxy(*universe, "Orion",3); //Africa
-   IGObject *gal_draco = createGalaxy(*universe, "Draco", 7); //Russia
-   IGObject *gal_crux = createGalaxy(*universe, "Crux Australis", 2); //Australia
+   IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia", 5, 1 + num_planets); //North America
+   IGObject *gal_cygnus     = createGalaxy(*universe, "Cygnus", 2, 2 + num_planets); //South America
+   IGObject *gal_cepheus    = createGalaxy(*universe, "Cepheus", 5, 3 + num_planets); //Europe
+   IGObject *gal_orion      = createGalaxy(*universe, "Orion",3, 4 + num_planets); //Africa
+   IGObject *gal_draco      = createGalaxy(*universe, "Draco", 7, 5 + num_planets); //Russia
+   IGObject *gal_crux       = createGalaxy(*universe, "Crux Australis", 2, 6 + num_planets); //Australia
 
    Logger::getLogger()->info("Galaxies Created");
 
-   //create systems - (I don't know why I chose to do numbers from -1 to 1!?)
+   //create systems
    // Cassiopeia Systems (North America, Bonus 5)
-   createStarSystem(*gal_cassiopeia, "Shedir",         -0.321, 0.670);
-   createStarSystem(*gal_cassiopeia, "Caph",           -0.213, 0.751);
-   createStarSystem(*gal_cassiopeia, "Ruchbah",        -0.447, 0.724);
-   createStarSystem(*gal_cassiopeia, "Gamma Cas",      -0.339, 0.760);
-   createStarSystem(*gal_cassiopeia, "Segin",          -0.519, 0.807);
-   createStarSystem(*gal_cassiopeia, "Zeta Cas",       -0.303, 0.571);
-   createStarSystem(*gal_cassiopeia, "Marfak",         -0.420, 0.616);
-   createStarSystem(*gal_cassiopeia, "Xi Cas",         -0.357, 0.481);  
-   createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643);
+   createStarSystem(*gal_cassiopeia, "Shedir",         -0.321, 0.670, 1);
+   createStarSystem(*gal_cassiopeia, "Caph",           -0.213, 0.751, 2);
+   createStarSystem(*gal_cassiopeia, "Ruchbah",        -0.447, 0.724, 3);
+   createStarSystem(*gal_cassiopeia, "Gamma Cas",      -0.339, 0.760, 4);
+   createStarSystem(*gal_cassiopeia, "Segin",          -0.519, 0.807, 5);
+   createStarSystem(*gal_cassiopeia, "Zeta Cas",       -0.303, 0.571, 6);
+   createStarSystem(*gal_cassiopeia, "Marfak",         -0.420, 0.616, 7);
+   createStarSystem(*gal_cassiopeia, "Xi Cas",         -0.357, 0.481, 8);  
+   createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643, 9);
 
    // Cygnus Systems (South America, Bonus 2)
-   createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.373);
-   createStarSystem(*gal_cygnus, "Albireo",            -0.249, 0.049);
-   createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.256);
-   createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.238);
+   createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.373, 10);
+   createStarSystem(*gal_cygnus, "Albireo",            -0.249, 0.049, 11);
+   createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.256, 12);
+   createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.238, 13);
  
    // Cepheus Systems (Europe, Bonus 5)
-   createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472);
-   createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.625);
-   createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
-   createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724);
-   createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445);
-   createStarSystem(*gal_cepheus, "Alkurhah",          -0.036, 0.499);
-   createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598);
+   createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472, 14);
+   createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.625, 15);
+   createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724, 16);
+   createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724, 17);
+   createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445, 18);
+   createStarSystem(*gal_cepheus, "Alkurhah",          -0.036, 0.499, 19);
+   createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598, 20);
 
    // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*gal_orion, "Betelgeuse",          -0.069, 0.328);
-   createStarSystem(*gal_orion, "Rigel",               0.126,  0.094);
-   createStarSystem(*gal_orion, "Bellatrix",           0.084,  0.337);
-   createStarSystem(*gal_orion, "Mintaka",             0.048,  0.220);
-   createStarSystem(*gal_orion, "Alnitak",             -0.015, 0.202);
-   createStarSystem(*gal_orion, "Saiph",               -0.015, 0.058);
+   createStarSystem(*gal_orion, "Betelgeuse",          -0.069, 0.328, 21);
+   createStarSystem(*gal_orion, "Rigel",               0.126,  0.094, 22);
+   createStarSystem(*gal_orion, "Bellatrix",           0.084,  0.337, 23);
+   createStarSystem(*gal_orion, "Mintaka",             0.048,  0.220, 24);
+   createStarSystem(*gal_orion, "Alnitak",             -0.015, 0.202, 25);
+   createStarSystem(*gal_orion, "Saiph",               -0.015, 0.058, 26);
 
    // Draco Systems (Russia, Bonus 7)
-   createStarSystem(*gal_draco, "Etamin",              0.147, 0.382);
-   createStarSystem(*gal_draco, "Rastaban",            0.246, 0.382);
-   createStarSystem(*gal_draco, "Arrakis",             0.300, 0.402);
-   createStarSystem(*gal_draco, "Kuma",                0.246, 0.436);
-   createStarSystem(*gal_draco, "Grumium",             0.147, 0.454);
-   createStarSystem(*gal_draco, "Nodus Secundus",      0.111, 0.634);
-   createStarSystem(*gal_draco, "Tyl",                 0.102, 0.697);
-   createStarSystem(*gal_draco, "Dsibin",              0.204, 0.670);
-   createStarSystem(*gal_draco, "Aldhibah",            0.273, 0.544);
-   createStarSystem(*gal_draco, "Ed Asiach",           0.399, 0.472);
-   createStarSystem(*gal_draco, "Thubah",              0.444, 0.634);
-   createStarSystem(*gal_draco, "Gianfar",             0.498, 0.778);
+   createStarSystem(*gal_draco, "Etamin",              0.147, 0.382, 27);
+   createStarSystem(*gal_draco, "Rastaban",            0.246, 0.382, 28);
+   createStarSystem(*gal_draco, "Arrakis",             0.300, 0.402, 29);
+   createStarSystem(*gal_draco, "Kuma",                0.246, 0.436, 30);
+   createStarSystem(*gal_draco, "Grumium",             0.147, 0.454, 31);
+   createStarSystem(*gal_draco, "Nodus Secundus",      0.111, 0.634, 32);
+   createStarSystem(*gal_draco, "Tyl",                 0.102, 0.697, 33);
+   createStarSystem(*gal_draco, "Dsibin",              0.204, 0.670, 34);
+   createStarSystem(*gal_draco, "Aldhibah",            0.273, 0.544, 35);
+   createStarSystem(*gal_draco, "Ed Asiach",           0.399, 0.472, 36);
+   createStarSystem(*gal_draco, "Thubah",              0.444, 0.634, 37);
+   createStarSystem(*gal_draco, "Gianfar",             0.498, 0.778, 38);
 
    // Crux Systens (Australia, Bonus 2)
-   createStarSystem(*gal_crux, "Acrux",                0.506, 0.049);
-   createStarSystem(*gal_crux, "Becrux",               0.366, 0.148);
-   createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292);
-   createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211); 
+   createStarSystem(*gal_crux, "Acrux",                0.506, 0.049, 39);
+   createStarSystem(*gal_crux, "Becrux",               0.366, 0.148, 40);
+   createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292, 41);
+   createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211, 42); 
 }
 
-IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
+IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus, uint32_t id) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -265,6 +271,7 @@ IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
 
    otypeman->setupObject(galaxy, otypeman->getObjectTypeByName("Galaxy"));
    galaxy->setName(name);
+   galaxy->setID(id);
 
    Galaxy* galaxyData = static_cast<Galaxy*>(galaxy->getObjectBehaviour());
    galaxyData->setBonus(bonus);
@@ -275,7 +282,7 @@ IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
    return galaxy;
 }
 
-IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
+IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY, uint32_t id) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -284,6 +291,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 
    otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
    starSys->setName(name);
+   starSys->setID(id);
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
    starSysData->setUnitPos(unitX, unitY);
 
@@ -292,11 +300,11 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 
    string planetName;
 
-   planetName = starSys->getName() + " Prime";
-   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset());
+   planetName = starSys->getName();
+   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset(), id + 2*num_planets);
    return starSys;
 }
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
+IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY, uint32_t id) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -305,6 +313,7 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
 
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
+   planet->setID(id);
    Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setUnitPos(unitX, unitY);
    planetData->setDefaultResources();
@@ -324,33 +333,34 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
    return planet;
 }
 
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
+IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location, uint32_t id) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
+   
    IGObject *planet = game->getObjectManager()->createNewObject();
-
+   
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
+   planet->setID(id);
    Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
-
+   
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
    planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
-                                       (planet->getParameterByType(obpT_Order_Queue));
+   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*> 
+         (planet->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
    planetData->setOrderTypes();
-
+   
    planet->addToParent(parent.getID());
    game->getObjectManager()->addObject(planet);
-
+   
    return planet;
-}
+}   
 
 void Risk::startGame(){
    Logger::getLogger()->info("Risk started");
