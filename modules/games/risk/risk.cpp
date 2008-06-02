@@ -174,8 +174,8 @@ void Risk::createResources() {
 
 //Universe is ID 0
 //Galaxies are ID #Planets + 1 and up
-//Planets Systems are ID 1 - #Planets
-//Planets are #planets*2 + PlanetSys ID
+//Planets  are ID 1 - #Planets
+//Planets systems are #planets*2 + PlanetSys ID
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
    num_planets = 42;    //FIXME: This may not be the best way to "get" the total # of planets
@@ -291,7 +291,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 
    otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
    starSys->setName(name);
-   starSys->setID(id);
+   starSys->setID(id+2*num_planets);
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
    starSysData->setUnitPos(unitX, unitY);
 
@@ -301,7 +301,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
    string planetName;
 
    planetName = starSys->getName();
-   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset(), id + 2*num_planets);
+   createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset(), id);
    return starSys;
 }
 IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY, uint32_t id) {
