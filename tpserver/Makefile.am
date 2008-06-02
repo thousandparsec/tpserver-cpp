@@ -28,7 +28,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp \
-		admintcpsocket.cpp adminconnection.cpp admintcpconn.cpp adminlogger.cpp asynclogmessage.cpp \
+		admintcpsocket.cpp adminconnection.cpp admintcpconn.cpp adminlogger.cpp \
+		asynclogmessage.cpp command.cpp commandmanager.cpp \
 		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp \
 		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectorderparameter.cpp \
 		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp turnprocess.cpp \
@@ -60,7 +61,8 @@ headers_HEADERS = connection.h console.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
-	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h
+	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h \
+	command.h commandmanager.h
 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
