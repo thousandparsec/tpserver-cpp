@@ -195,7 +195,7 @@ void Risk::createUniverse() {
    uniData->setUnitPos(.5,.5);
    objman->addObject(universe);
 
-   //TODO: LATER: create some sort of import function to create map from file 
+   //LATER: create some sort of import function to create map from file 
    //create galaxies and keep reference for system creation
    IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia", 5, 1 + num_planets); //North America
    IGObject *gal_cygnus     = createGalaxy(*universe, "Cygnus", 2, 2 + num_planets); //South America
@@ -260,6 +260,11 @@ void Risk::createUniverse() {
    createStarSystem(*gal_crux, "Becrux",               0.366, 0.148, 40);
    createStarSystem(*gal_crux, "Gacrux",               0.434, 0.292, 41);
    createStarSystem(*gal_crux, "Delta Cru",            0.590, 0.211, 42); 
+   
+   //Construct Adjacency Matrix
+   //ASK: how to include Boost/Graphs
+   //boost::adjacency_matrix<boost::undirectedS> adjMatrix;
+   
 }
 
 IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus, uint32_t id) {
@@ -408,7 +413,7 @@ bool Risk::isBoardClaimed() const{
     //are claimed or not
 
    //TODO: Check board to determine "claimedness"
-
+   //ASK: how to iterate over whole board
    return false;
 }
 

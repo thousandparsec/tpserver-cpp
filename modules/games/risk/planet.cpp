@@ -56,7 +56,6 @@ using std::pair;
 using std::map;
 using std::set;
 
-//TODO: Add list of adjacent planets, way to set list
 PlanetType::PlanetType() : StaticObjectType(){
    nametype = "Planet";
    typedesc = "A planet object";
