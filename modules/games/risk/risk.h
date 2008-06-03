@@ -23,6 +23,7 @@
 
 //small change
 #include <tpserver/ruleset.h> 
+#include <boost/graph/adjacency_matrix.hpp>
 
 class IGObject;
 
@@ -60,7 +61,12 @@ class Risk : public Ruleset {
        //onAddPlayer methods
       bool isBoardClaimed() const;
       
+      //The number of planets to be on the board
       int num_planets;
+      
+      //TODO: Change to adacency_list: The graph of planets is more than likely far to sparse to warrant a matrix
+      typedef boost::adjacency_matrix<boost::undirectedS> UGraph; 
+      UGraph matrix;
 
 };// class Risk : public Ruleset
 	

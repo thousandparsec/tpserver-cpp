@@ -84,8 +84,11 @@ using std::vector;
 using std::advance;
 using std::pair;
 
-Risk::Risk(){
+//TODO: Dynamically resize matrix to number of planets - 42 is an arbitrary number (default map # of planets)
+//It appears as if adjacency list, the likely replacement for matrix, supports no size initilization
+Risk::Risk() :matrix(42) {
    //Minisec has a parent of random(NULL), whats with that?	
+   
 }
 
 Risk::~Risk(){
@@ -174,11 +177,11 @@ void Risk::createResources() {
 
 //Universe is ID 0
 //Galaxies are ID #Planets + 1 and up
-//Planets  are ID 1 - #Planets
-//Planets systems are #planets*2 + PlanetSys ID
+//Planets  are ID 1 - num_planets
+//Planets systems are num_planets*2 + Planet ID
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
-   num_planets = 42;    //FIXME: This may not be the best way to "get" the total # of planets
+   num_planets = 42;    //CHECK: This may not be the best way to "get/set" the total # of planets
    ObjectManager *objman = Game::getGame()->getObjectManager();
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
@@ -303,8 +306,8 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
    starSys->addToParent(parent.getID());
    game->getObjectManager()->addObject(starSys);
 
+   //CHECK: Do i really need to regrab the name?
    string planetName;
-
    planetName = starSys->getName();
    createPlanet(*starSys, planetName, starSysData->getPosition() + getRandPlanetOffset(), id);
    return starSys;

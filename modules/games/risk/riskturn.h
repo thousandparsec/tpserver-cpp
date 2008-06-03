@@ -32,6 +32,9 @@ public:
    virtual ~RiskTurn();
 
    virtual void doTurn();
+   void setPlayerVisibleObjects();
+   
+   Player* getWinner();
 
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset
