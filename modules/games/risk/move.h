@@ -33,7 +33,7 @@ public:
    virtual ~Move();
 
    virtual Order* clone() const;
-
+   //ASK: about the createFrame and inputFrame functions
    virtual bool doOrder(IGObject* obj);
 
 private:

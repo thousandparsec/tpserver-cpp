@@ -23,7 +23,7 @@
 
 //small change
 #include <tpserver/ruleset.h> 
-#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/adjacency_matrix.hpp> //FIXME: This only works on my (jphr) OSX box, not ubuntu
 
 class IGObject;
 

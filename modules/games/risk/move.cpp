@@ -51,8 +51,6 @@ Move::Move() : Order() {
    units->setDescription("The number of units to colonize with.");
    addOrderParameter(units);
 
-//ASK: Check if I need to include "turns"?
-   turns = 1;
 }
 
 Move::~Move() {
