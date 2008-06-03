@@ -23,7 +23,7 @@
 
 //small change
 #include <tpserver/ruleset.h> 
-#include <boost/graph/adjacency_matrix.hpp> //FIXME: This only works on my (jphr) OSX box, not ubuntu
+//#include <boost/graph/adjacency_matrix.hpp> //FIXME: This only works on my (jphr) OSX box, not ubuntu
 
 class IGObject;
 
@@ -65,8 +65,9 @@ class Risk : public Ruleset {
       int num_planets;
       
       //TODO: Change to adacency_list: The graph of planets is more than likely far to sparse to warrant a matrix
-      typedef boost::adjacency_matrix<boost::undirectedS> UGraph; 
-      UGraph matrix;
+      //disabled for the time being, since I have to fix the include
+      /*typedef boost::adjacency_matrix<boost::undirectedS> UGraph; 
+      UGraph matrix;*/
 
 };// class Risk : public Ruleset
 	

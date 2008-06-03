@@ -86,7 +86,7 @@ using std::pair;
 
 //TODO: Dynamically resize matrix to number of planets - 42 is an arbitrary number (default map # of planets)
 //It appears as if adjacency list, the likely replacement for matrix, supports no size initilization
-Risk::Risk() :matrix(42) {
+Risk::Risk() /*:matrix(42) */{
    //Minisec has a parent of random(NULL), whats with that?	
    
 }
