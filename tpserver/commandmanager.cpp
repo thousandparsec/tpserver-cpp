@@ -18,21 +18,304 @@
  *
  */
 
+#include <sstream>
+
 #include "command.h"
+#include "logging.h"
+#include "game.h"
+#include "turntimer.h"
 #include "net.h"
+#include "pluginmanager.h"
 #include "frame.h"
 
 #include "commandmanager.h"
 
-class QuitCommand : public Command{
+class EndTurnCommand : public Command{
   public:
-    QuitCommand() : Command(){
-        name = "quit";
-        help = "Quit and shutdown the server.";
+    EndTurnCommand() : Command(){
+        name = "turn-end";
+        help = "End the current turn now and start processing.";
     }
     void action(Frame * frame, Frame * of){
-        Network::getNetwork()->stopMainLoop();
-        // TODO - finish populating of
+        Logger::getLogger()->info("End of turn initiated by administrator.");
+        Game::getGame()->getTurnTimer()->manuallyRunEndOfTurn();
+        of->packInt(0);
+        of->packString("End of turn initiated.");
+    }
+};
+
+class TurnTimeCommand : public Command{
+  public:
+    TurnTimeCommand() : Command(){
+        name = "turn-time";
+        help = "The amount of time until the next turn.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        msg << Game::getGame()->getTurnTimer()->secondsToEOT() << " of "
+            << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds remain until EOT.";
+        of->packInt(0);
+        of->packString(msg.str().c_str());
+    }
+};
+
+class TurnResetCommand : public Command{
+  public:
+    TurnResetCommand() : Command(){
+        name = "turn-reset";
+        help = "Reset the timer for the next turn.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        Game::getGame()->getTurnTimer()->resetTimer();
+        msg << "Reset EOT timer, " << Game::getGame()->getTurnTimer()->secondsToEOT() << " seconds remain until EOT.";
+        of->packInt(0);
+        of->packString(msg.str().c_str());
+    }
+};
+
+class TurnNumberCommand : public Command{
+  public:
+    TurnNumberCommand() : Command(){
+        name = "turn-number";
+        help = "Gets the current turn number.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        msg << "The current turn number is " << Game::getGame()->getTurnNumber() << ".";
+        of->packInt(0);
+        of->packString(msg.str().c_str());
+    }
+};
+
+class NetworkStartCommand : public Command{
+  public:
+    NetworkStartCommand() : Command(){
+        name = "network-start";
+        help = "Starts the network listeners and accepts connections.";
+    }
+    void action(Frame * frame, Frame * of){
+        Network::getNetwork()->start();
+        if(Network::getNetwork()->isStarted()){
+            of->packInt(0);
+            of->packString("Network started.");
+        }else{
+            of->packInt(1);
+            of->packString("Starting network failed, see log.");
+        }
+    }
+};
+
+class NetworkStopCommand : public Command{
+  public:
+    NetworkStopCommand() : Command(){
+        name = "network-stop";
+        help = "Stops the network listeners and drops all connections.";
+    }
+    void action(Frame * frame, Frame * of){
+        Network::getNetwork()->stop();
+        of->packInt(0);
+        of->packString("Network stopped.");
+    }
+};
+
+class NetworkIsStartedCommand : public Command{
+  public:
+    NetworkIsStartedCommand() : Command(){
+        name = "network-isstarted";
+        help = "Queries whether the network is started.";
+    }
+    void action(Frame * frame, Frame * of){
+        if(Network::getNetwork()->isStarted()){
+            of->packInt(0);
+            of->packString("The network is started.");
+        }else{
+            of->packInt(1);
+            of->packString("The network is stopped.");
+        }
+    }
+};
+/*
+class SettingsSetCommand : public Command{
+  public:
+    SettingsSetCommand() : Command(){
+        name = "set";
+        help = "Sets a setting.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string key = frame->unpackStdString();
+        std::string value = frame->unpackStdString();
+        Settings::getSettings()->set(key, value);
+        msg << "Setting value of \"" << key << "\" to \"" << value << "\".";
+        of->packInt(0);
+        of->packString(msg.str().c_str());
+    }
+};
+
+class SettingsGetCommand : public Command{
+  public:
+    SettingsGetCommand() : Command(){
+        name = "get";
+        help = "Gets a setting.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string key = frame->unpackStdString();
+        msg << "Setting \"" << key << "\" is set to \"" << Settings::getSettings()->get(key) << "\".";
+        of->packInt(1);
+        of->packString(msg.str().c_str());
+    }
+};
+
+class PluginLoadCommand : public Command{
+  public:
+    PluginLoadCommand() : Command(){
+        name = "plugin-load";
+        help = "Loads a plugin.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string plugin = frame->unpackStdString();
+        if(PluginManager::getPluginManager()->load(plugin)){
+            msg << "Plugin \"" << plugin << "\" was loaded.";
+            of->packInt(0);
+        }else{
+            msg << "Plugin \"" << plugin << "\" was not loaded.";
+            of->packInt(1);
+        }
+        of->packString(msg.str().c_str());
+    }
+};
+*/
+class PluginListCommand : public Command{
+  public:
+    PluginListCommand() : Command(){
+        name = "plugin-list";
+        help = "Lists the plugins that are loaded.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        msg << "These plugins are loaded: " << PluginManager::getPluginManager()->getLoadedLibraryNames();
+        of->packInt(0);
+        of->packString(msg.str().c_str());
+    }
+};
+/*
+class RulesetCommand : public Command{
+  public:
+    RulesetCommand() : Command(){
+        name = "ruleset";
+        help = "Sets the ruleset to be used by the server.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string ruleset = frame->unpackStdString();
+        if(PluginManager::getPluginManager()->loadRuleset(ruleset)){
+            msg << "Ruleset \"" << ruleset << "\" was loaded.";
+            of->packInt(0);
+        }else{
+            msg << "Ruleset \"" << ruleset << "\" was not loaded.";
+            of->packInt(1);
+        }
+        of->packString(msg.str().c_str());
+    }
+};
+
+class TpschemeCommand : public Command{
+  public:
+    TpschemeCommand() : Command(){
+        name = "tpscheme";
+        help = "Sets the TpScheme implementation to be used by the server.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string tpscheme = frame->unpackStdString();
+        if(PluginManager::getPluginManager()->loadTpScheme(tpscheme)){
+            msg << "TpScheme implementation \"" << tpscheme << "\" was loaded.";
+            of->packInt(0);
+        }else{
+            msg << "TpScheme implementation \"" << tpscheme << "\" was not loaded.";
+            of->packInt(1);
+        }
+        of->packString(msg.str().c_str());
+    }
+};
+
+class PersistenceCommand : public Command{
+  public:
+    PersistenceCommand() : Command(){
+        name = "persistence";
+        help = "Sets the persistence method to be used by the server.";
+    }
+    action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        // TODO - unpack parameter stuff
+        std::string persist = frame->unpackStdString();
+        if(PluginManager::getPluginManager()->loadPersistence(persist)){
+            msg << "Persistence method \"" << persist << "\" was loaded.";
+            of->packInt(0);
+        }else{
+            msg << "Persistence method \"" << persist << "\" was not loaded.";
+            of->packInt(1);
+        }
+        of->packString(msg.str().c_str());
+    }
+};
+*/
+class GameLoadCommand : public Command{
+  public:
+    GameLoadCommand() : Command(){
+        name = "game-load";
+        help = "Loads the initial data for the game.";
+    }
+    void action(Frame * frame, Frame * of){
+        if(Game::getGame()->load()){
+            of->packInt(0);
+            of->packString("Game loaded.");
+        }else{
+            of->packInt(1);
+            of->packString("Loading game failed, see log.");
+        }
+    }
+};
+
+class GameStartCommand : public Command{
+  public:
+    GameStartCommand() : Command(){
+        name = "game-start";
+        help = "Starts the game and the EOT timer.";
+    }
+    void action(Frame * frame, Frame * of){
+        if(Game::getGame()->start()){
+            of->packInt(0);
+            of->packString("Game started.");
+        }else{
+            of->packInt(1);
+            of->packString("Starting game failed, see log.");
+        }
+    }
+};
+
+class GameIsStartedCommand : public Command{
+  public:
+    GameIsStartedCommand() : Command(){
+        name = "game-isstarted";
+        help = "Queries whether the game is started.";
+    }
+    void action(Frame * frame, Frame * of){
+        if(Game::getGame()->isStarted()){
+            of->packInt(0);
+            of->packString("The game is started.");
+        }else{
+            of->packInt(1);
+            of->packString("The game is not started.");
+        }
     }
 };
 
@@ -122,7 +405,23 @@ CommandManager::CommandManager()
 {
     nextType = 0;
 
-    addCommandType(new QuitCommand());
+    addCommandType(new EndTurnCommand());
+    addCommandType(new TurnTimeCommand());
+    addCommandType(new TurnResetCommand());
+    addCommandType(new TurnNumberCommand());
+    addCommandType(new NetworkStartCommand());
+    addCommandType(new NetworkStopCommand());
+    addCommandType(new NetworkIsStartedCommand());
+    //addCommandType(new SettingsSetCommand());
+    //addCommandType(new SettingsGetCommand());
+    //addCommandType(new PluginLoadCommand());
+    addCommandType(new PluginListCommand());
+    //addCommandType(new RulesetCommand());
+    //addCommandType(new TpschemeCommand());
+    //addCommandType(new PersistenceCommand());
+    addCommandType(new GameLoadCommand());
+    addCommandType(new GameStartCommand());
+    addCommandType(new GameIsStartedCommand());
 }
 
 CommandManager::~CommandManager()
