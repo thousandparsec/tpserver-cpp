@@ -22,6 +22,38 @@
 
 #include "command.h"
 
+CommandParameter::CommandParameter(uint32_t cpt, const char* cpn, const char* cpd) : type(cpt)
+{
+    name = cpn;
+    description = cpd;
+}
+
+CommandParameter::~CommandParameter()
+{
+}
+
+uint32_t CommandParameter::getType() const
+{
+    return type;
+}
+
+std::string CommandParameter::getName() const
+{
+    return name;
+}
+
+std::string CommandParameter::getDescription() const
+{
+    return description;
+}
+
+void CommandParameter::packCommandDescFrame(Frame * of) const
+{
+    of->packString(name.c_str());
+    of->packInt(type);
+    of->packString(description.c_str());
+}
+
 Command::Command() : name(), help()
 {
 }
@@ -40,14 +72,18 @@ void Command::setType(uint32_t ntype)
     type = ntype;
 }
 
-std::string Command::getName()
+std::string Command::getName() const
 {
     return name;
 }
 
-std::string Command::getHelp()
+std::string Command::getHelp() const
 {
     return help;
+}
+
+std::list<CommandParameter*> Command::getParameters() const{
+    return parameters;
 }
 
 void Command::describeCommand(Frame * of) const
@@ -55,5 +91,14 @@ void Command::describeCommand(Frame * of) const
     of->setType(ftad_CommandDesc);
     of->packInt(type);
     of->packString(name.c_str());
-    // TODO - the rest of the command description, including parameters
+    of->packString(help.c_str());
+    of->packInt(parameters.size());
+    for(std::list<CommandParameter*>::const_iterator itcurr = parameters.begin(); itcurr !=parameters.end(); ++itcurr){
+        (*itcurr)->packCommandDescFrame(of);
+    }
+}
+
+void Command::addCommandParameter(CommandParameter* cp)
+{
+    parameters.push_back(cp);
 }

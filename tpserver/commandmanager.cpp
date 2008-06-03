@@ -22,6 +22,7 @@
 
 #include "command.h"
 #include "logging.h"
+#include "settings.h"
 #include "game.h"
 #include "turntimer.h"
 #include "net.h"
@@ -135,20 +136,21 @@ class NetworkIsStartedCommand : public Command{
         }
     }
 };
-/*
+
 class SettingsSetCommand : public Command{
   public:
     SettingsSetCommand() : Command(){
         name = "set";
         help = "Sets a setting.";
+        addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to set."));
+        addCommandParameter(new CommandParameter(cpT_String, "value", "Value to set setting to."));
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
-        std::string key = frame->unpackStdString();
+        std::string setting = frame->unpackStdString();
         std::string value = frame->unpackStdString();
-        Settings::getSettings()->set(key, value);
-        msg << "Setting value of \"" << key << "\" to \"" << value << "\".";
+        Settings::getSettings()->set(setting, value);
+        msg << "Setting value of \"" << setting << "\" to \"" << value << "\".";
         of->packInt(0);
         of->packString(msg.str().c_str());
     }
@@ -159,13 +161,13 @@ class SettingsGetCommand : public Command{
     SettingsGetCommand() : Command(){
         name = "get";
         help = "Gets a setting.";
+        addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to get."));
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
-        std::string key = frame->unpackStdString();
-        msg << "Setting \"" << key << "\" is set to \"" << Settings::getSettings()->get(key) << "\".";
-        of->packInt(1);
+        std::string setting = frame->unpackStdString();
+        msg << "Setting \"" << setting << "\" is set to \"" << Settings::getSettings()->get(setting) << "\".";
+        of->packInt(0);
         of->packString(msg.str().c_str());
     }
 };
@@ -175,10 +177,10 @@ class PluginLoadCommand : public Command{
     PluginLoadCommand() : Command(){
         name = "plugin-load";
         help = "Loads a plugin.";
+        addCommandParameter(new CommandParameter(cpT_String, "plugin", "Plugin to load."));
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
         std::string plugin = frame->unpackStdString();
         if(PluginManager::getPluginManager()->load(plugin)){
             msg << "Plugin \"" << plugin << "\" was loaded.";
@@ -190,7 +192,7 @@ class PluginLoadCommand : public Command{
         of->packString(msg.str().c_str());
     }
 };
-*/
+
 class PluginListCommand : public Command{
   public:
     PluginListCommand() : Command(){
@@ -204,16 +206,16 @@ class PluginListCommand : public Command{
         of->packString(msg.str().c_str());
     }
 };
-/*
+
 class RulesetCommand : public Command{
   public:
     RulesetCommand() : Command(){
         name = "ruleset";
         help = "Sets the ruleset to be used by the server.";
+        addCommandParameter(new CommandParameter(cpT_String, "ruleset", "Ruleset to load."));
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
         std::string ruleset = frame->unpackStdString();
         if(PluginManager::getPluginManager()->loadRuleset(ruleset)){
             msg << "Ruleset \"" << ruleset << "\" was loaded.";
@@ -231,10 +233,10 @@ class TpschemeCommand : public Command{
     TpschemeCommand() : Command(){
         name = "tpscheme";
         help = "Sets the TpScheme implementation to be used by the server.";
+        addCommandParameter(new CommandParameter(cpT_String, "tpscheme", "TpScheme implementation to load."));
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
         std::string tpscheme = frame->unpackStdString();
         if(PluginManager::getPluginManager()->loadTpScheme(tpscheme)){
             msg << "TpScheme implementation \"" << tpscheme << "\" was loaded.";
@@ -252,10 +254,10 @@ class PersistenceCommand : public Command{
     PersistenceCommand() : Command(){
         name = "persistence";
         help = "Sets the persistence method to be used by the server.";
+        addCommandParameter(new CommandParameter(cpT_String, "persist", "Persistence method to load."));
     }
-    action(Frame * frame, Frame * of){
+    void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        // TODO - unpack parameter stuff
         std::string persist = frame->unpackStdString();
         if(PluginManager::getPluginManager()->loadPersistence(persist)){
             msg << "Persistence method \"" << persist << "\" was loaded.";
@@ -267,7 +269,7 @@ class PersistenceCommand : public Command{
         of->packString(msg.str().c_str());
     }
 };
-*/
+
 class GameLoadCommand : public Command{
   public:
     GameLoadCommand() : Command(){
@@ -412,13 +414,13 @@ CommandManager::CommandManager()
     addCommandType(new NetworkStartCommand());
     addCommandType(new NetworkStopCommand());
     addCommandType(new NetworkIsStartedCommand());
-    //addCommandType(new SettingsSetCommand());
-    //addCommandType(new SettingsGetCommand());
-    //addCommandType(new PluginLoadCommand());
+    addCommandType(new SettingsSetCommand());
+    addCommandType(new SettingsGetCommand());
+    addCommandType(new PluginLoadCommand());
     addCommandType(new PluginListCommand());
-    //addCommandType(new RulesetCommand());
-    //addCommandType(new TpschemeCommand());
-    //addCommandType(new PersistenceCommand());
+    addCommandType(new RulesetCommand());
+    addCommandType(new TpschemeCommand());
+    addCommandType(new PersistenceCommand());
     addCommandType(new GameLoadCommand());
     addCommandType(new GameStartCommand());
     addCommandType(new GameIsStartedCommand());

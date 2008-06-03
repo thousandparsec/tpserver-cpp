@@ -20,9 +20,35 @@
  *
  */
 
+#include <list>
 #include <string>
 
+typedef enum {
+    cpT_Invalid = -1,
+    cpT_String = 0,
+    cpT_Integer = 1,
+    cpT_Max
+} CommandParamType;
+
 class Frame;
+
+class CommandParameter {
+  public:
+    CommandParameter(uint32_t cpt, const char* cpn, const char* cpd);
+    virtual ~CommandParameter();
+
+    uint32_t getType() const;
+    std::string getName() const;
+    std::string getDescription() const;
+
+    void packCommandDescFrame(Frame * of) const;
+
+  protected:
+    uint32_t type;
+    std::string name;
+    std::string description;
+
+};
 
 class Command {
   public:
@@ -32,17 +58,23 @@ class Command {
     uint32_t getType() const;
     void setType(uint32_t ntype);
 
-    std::string getName();
-    std::string getHelp();
+    std::string getName() const;
+    std::string getHelp() const;
+    std::list<CommandParameter*> getParameters() const;
 
     void describeCommand(Frame * of) const;
 
     virtual void action(Frame * frame, Frame * of) = 0;
 
   protected:
+    void addCommandParameter(CommandParameter* cp);
+
     uint32_t type;
     std::string name;
     std::string help;
+  
+  private:
+    std::list<CommandParameter*> parameters;
 
 };
 
