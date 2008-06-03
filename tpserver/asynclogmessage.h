@@ -1,5 +1,5 @@
-#ifndef ASYNCTIMEREMAINING_H
-#define ASYNCTIMEREMAINING_H
+#ifndef ASYNCLOGMESSAGE_H
+#define ASYNCLOGMESSAGE_H
 /*  AsyncLogMessage class
  *
  *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
