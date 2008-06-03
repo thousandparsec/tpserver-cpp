@@ -57,6 +57,7 @@ RiskTurn::~RiskTurn(){
     
 }
 
+//ASK: Is there order culling for orders with turns = 0?
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    OrderManager* ordermanager = game->getOrderManager();
@@ -64,6 +65,9 @@ void RiskTurn::doTurn(){
    PlayerManager *pm = game->getPlayerManager();
 
    set<uint32_t> objectsIds = objectmanager->getAllIds();
+
+   //TODO: Calculate new reinforcements for players, add to their total.
+   //Send message to player about updated total
 
    // currently just go through each obj and do each order
    // will be prioritized/sorted soon 

@@ -37,7 +37,7 @@ public:
    virtual bool doOrder(IGObject* obj);
 
 private:
-   ObjectOrderParameter* starSys;
+   ObjectOrderParameter* planet;
    ObjectOrderParameter* units;
 };
 

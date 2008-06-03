@@ -40,13 +40,14 @@ Colonize::Colonize() {
    name = "Colonize";
    description = "Colonize a planet";
 
-//Check on validity of these parameters
+   //ASK: how to ensure colonize order is availible on unowned planets
+   //CHECK: on validity of these parameters
    units = new ObjectOrderParameter();
    units->setName("Units");
    units->setDescription("The number of units to colonize with.");
    addOrderParameter(units);
 
-   turns = 1;  //do I pay any head to # of turns for an action?
+   turns = 1;  //CHECK: do I need # of turns for this action?
 }
 
 Colonize::~Colonize() {
@@ -61,7 +62,14 @@ Order* Colonize::clone() const {
 
 bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
-//TODO: Implement order
+   //TODO: Implement order
+ 
+   //--turns; 
+   //Check object for other Colonize orders, pick the largest VERIFIED bid (must check player has reinforcements availible)
+   //Change object owner to owner of largest "bid"
+   //Add # of armies in bid to planet
+   //Clear all remaining colonize orders (there shouldn't be other order types on the planet though)
+   //Inform colonize winner, as well as other bidders, of the results. Inform winner of new reinforcement total.
    return result;
 }
 

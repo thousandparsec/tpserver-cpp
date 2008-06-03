@@ -41,13 +41,13 @@ Reinforce::Reinforce() {
    name = "Reinforce";
    description = "Reinforce a planet";
 
-//Check on validity of these parameters
+   //Check on validity of these parameters
    units = new ObjectOrderParameter();
    units->setName("Units");
    units->setDescription("The number of units to reinforce with.");
    addOrderParameter(units);
 
-   turns = 1;  //do I pay any head to # of turns for an action?
+   turns = 1;  //CHECK: do I need # of turns for this action?
 }
 
 Reinforce::~Reinforce() {
@@ -62,7 +62,13 @@ Order* Reinforce::clone() const {
 
 bool Reinforce::doOrder(IGObject *obj) {
    bool result = true;
-//TODO: Implement order
+   //TODO: Implement order
+
+   //--turns;   
+   //Check if player has enough reinforcements availible to perform the reinforcement.
+   //Add smallest of (All reinforcements requested || Total reinforcements availible) to planet
+   //Decrement players reinforcements total.
+   //Inform player how many reinforcements were added, their new reinforcement total.
    return result;
 }
 

@@ -73,6 +73,7 @@ public:
 
    void setupObject();
 
+   //TODO: add getAdjacent method to return a set IDs of adjacent planets
 };
 
 

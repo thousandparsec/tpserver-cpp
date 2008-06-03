@@ -42,15 +42,16 @@ Move::Move() : Order() {
    name = "Move";
    description = "Move any number of units to a planet";
 
-   starSys = new ObjectOrderParameter();
-   starSys->setName("Star System");
-   starSys->setDescription("The star system to move to.");
-   addOrderParameter(starSys);
+   planet = new ObjectOrderParameter();
+   planet->setName("Planet");
+   planet->setDescription("The Planet to move to.");
+   addOrderParameter(planet);   //TODO: Check how to populate this parameter with only adjacent planets
    units = new ObjectOrderParameter();
    units->setName("Units");
-   units->setDescription("The number of units to colonize with.");
+   units->setDescription("The number of units to move (or attack with.)");
    addOrderParameter(units);
 
+   turns = 1;  //CHECK: do I need # of turns for this action?
 }
 
 Move::~Move() {
@@ -65,7 +66,24 @@ Order* Move::clone() const {
 
 bool Move::doOrder(IGObject* obj) {
    bool result = true;
-//TODO: Implement order
+   //TODO: Implement order
+   
+   //--turns;
+   //Double check if target planet is in list of adjacent planets?
+
+   //If planet is friendly - simply transfer units to planet
+   //Else
+      //Check to see if target planet has an order for attacking base planet
+      //if so execute "balanced" roll (i.e. 3-3)
+      //else execute "attacker-favored" roll (i.e. 3-2)
+   
+      //apply results of battle to base and target planets
+   
+      //if target planet is conquerred (no more armies on surface)
+         //change owner of target planet to current planet owner
+   //ASK: is the order removed at this point?
+   //Send message to players (and target planet owner if applicable)
+   
    return result;
 }
 
