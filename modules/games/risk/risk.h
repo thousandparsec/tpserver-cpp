@@ -23,11 +23,18 @@
 
 //small change
 #include <tpserver/ruleset.h> 
-//#include <boost/graph/adjacency_matrix.hpp> //FIXME: This only works on my (jphr) OSX box, not ubuntu
-
+#include <boost/graph/adjacency_list.hpp> //FIXME: May not work properly, fix if different include is found
 class IGObject;
 
 namespace RiskRuleset {
+
+//vecS is used over listS because adding vectors is done only once at the beginning and thus quick add-remove operations are not required
+//Boost graphs CAN have internal properties, so when it comes to using graphviz to import maps we MAY be able to do it all in one graph
+
+//typedef an undirected (bidirected) graph that uses std::vector to store Vertex and Edge list
+   //The trade off of using vecS is that vecS uses less space but takes longer to add vertexs
+   using namespace boost::graph;
+typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::bidirectionalS> UGraph;
 	
 class Risk : public Ruleset {
    public:
@@ -35,7 +42,7 @@ class Risk : public Ruleset {
       virtual ~Risk();
 
       std::string getName(); 
-      std::string getVersion(); 
+      std::string getVersion();
       void initGame(); 
       void createGame(); 
       void startGame(); 
@@ -50,13 +57,13 @@ class Risk : public Ruleset {
       void createResources();
 
       void createUniverse();
-      IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus, uint32_t id);
+      IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus);
       IGObject* createStarSystem(IGObject& parent, const std::string& name,
-         double unitX, double unitY, uint32_t id);
+         double unitX, double unitY);
       IGObject* createPlanet(IGObject& parent, const std::string& name,
-         double unitX, double unitY, uint32_t id);                        
+         double unitX, double unitY);                        
       IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
-         const Vector3d& location, uint32_t id);
+         const Vector3d& location);
 
        //onAddPlayer methods
       bool isBoardClaimed() const;
@@ -64,10 +71,8 @@ class Risk : public Ruleset {
       //The number of planets to be on the board
       int num_planets;
       
-      //TODO: Change to adacency_list: The graph of planets is more than likely far to sparse to warrant a matrix
-      //disabled for the time being, since I have to fix the include
-      /*typedef boost::adjacency_matrix<boost::undirectedS> UGraph; 
-      UGraph matrix;*/
+
+      UGraph graph;
 
 };// class Risk : public Ruleset
 	

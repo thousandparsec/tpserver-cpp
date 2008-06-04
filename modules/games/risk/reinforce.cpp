@@ -47,7 +47,6 @@ Reinforce::Reinforce() {
    units->setDescription("The number of units to reinforce with.");
    addOrderParameter(units);
 
-   turns = 1;  //CHECK: do I need # of turns for this action?
 }
 
 Reinforce::~Reinforce() {
