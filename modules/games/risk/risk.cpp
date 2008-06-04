@@ -462,7 +462,3 @@ void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
 }
 
 } //end namespace RiskRuleset
-
-uint32_t starID(uint32_t g, uint32_t k) {
-   return g + 2*k;
-}
