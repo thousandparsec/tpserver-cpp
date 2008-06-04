@@ -86,7 +86,7 @@ using std::pair;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
 Risk::Risk() :graph() {
-   num_galaxies = 0;
+   num_constellations = 0;
    num_planets = 0;
 }
 
@@ -156,7 +156,7 @@ void Risk::createGame(){
 
    createResources();
  
-   //set up universe (universe->galaxies->star sys->planet)
+   //set up universe (universe->constellations->star sys->planet)
    createUniverse();
 }
 
@@ -175,10 +175,10 @@ void Risk::createResources() {
 }
 
 //Universe is ID 0
-//Galaxies are ID 1 through num_galaxies 
-//Planets Systems are num_galaxies+1 through num_galaxies*2 - 1. System 'k' is at num_galaxies+(2k-1)
-//Planets are num_galaxies+2 through num_galaxies+2*num_planets. Planet 'k' is at num_galaxies+2k
-   //Helper function starID(galaxies,planet #) returns the ID of the star
+//Galaxies are ID 1 through num_constellations 
+//Planets Systems are num_constellations+1 through num_constellations*2 - 1. System 'k' is at num_constellations+(2k-1)
+//Planets are num_constellations+2 through num_constellations+2*num_planets. Planet 'k' is at num_constellations+2k
+   //Helper function starID(constellations,planet #) returns the ID of the star
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
    IGObject* id;  //to temporarily hold an object to get its id
@@ -198,7 +198,7 @@ void Risk::createUniverse() {
    objman->addObject(universe);
 
    //LATER: create some sort of import function to create map from file 
-   //create galaxies and keep reference for system creation
+   //create constellations and keep reference for system creation
    IGObject *con_cassiopeia = createConstellation(*universe, "Cassiopeia",     5); //North America
    IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
    IGObject *con_cepheus    = createConstellation(*universe, "Cepheus",        5); //Europe
@@ -285,7 +285,7 @@ IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bo
    constellation->addToParent(parent.getID());
    game->getObjectManager()->addObject(constellation);
 
-   ++num_galaxies;
+   ++num_constellations;
    return constellation;
 }
 

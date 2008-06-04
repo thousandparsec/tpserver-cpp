@@ -74,7 +74,7 @@ class Risk : public Ruleset {
       
       //The number of planets to be on the board
       uint32_t num_planets;
-      uint32_t num_galaxies;
+      uint32_t num_constellations;
       std::map<uint32_t, uint32_t> reinforcements;
 
       UGraph graph;
