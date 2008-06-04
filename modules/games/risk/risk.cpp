@@ -328,7 +328,6 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
 
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
-   planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
                                         (planet->getParameterByType(obpT_Order_Queue));
@@ -357,7 +356,6 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
-   planetOrders->addOwner(0);
    game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*> 
          (planet->getParameterByType(obpT_Order_Queue));
