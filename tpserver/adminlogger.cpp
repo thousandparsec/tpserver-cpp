@@ -25,7 +25,8 @@
 #endif
 
 #include "adminconnection.h"
-#include "asynclogmessage.h"
+#include "frame.h"
+
 #include "adminlogger.h"
 
 AdminLogger::AdminLogger()
@@ -48,13 +49,14 @@ AdminConnection *AdminLogger::getConnection() const
 
 void AdminLogger::doLogging(int level, const char* msg) const
 {
-    uint64_t    currTime = time( NULL);
+    uint64_t    timestamp = time( NULL);
 
-    AsyncLogMessage *logmessage = new AsyncLogMessage(currTime, level, msg);
     if(curConnection->getStatus() == 3){
-      Frame * curFrame = curConnection->createFrame(NULL);
-      if(logmessage->createFrame(curFrame)){
-        curConnection->sendFrame(curFrame);
-      }
+        Frame * logmessage = curConnection->createFrame(NULL);
+        logmessage->setType(ftad_LogMessage);
+        logmessage->packInt64(timestamp);
+        logmessage->packInt(level);
+        logmessage->packString(msg);
+        curConnection->sendFrame(logmessage);
     }
 }
