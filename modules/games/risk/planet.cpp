@@ -103,9 +103,14 @@ void Planet::setOrderTypes() {
 }
 
 void Planet::doOnceATurn() {
-
-//TODO: insert turn logic (if any)
-
+   uint32_t owner = getOwner(); 
+   //uint32_t rfmnts = Risk::getPlayerReinforcements(owner); //get owners resources from std::map Risk::getResources(owner)
+   //ASK: how to get reference to Risk, why "Army" doesn't count as a string?
+   //CHECK: if the first element of the std::pair is the number on surface
+   //uint32_t current = (getResources("Army")).first;    //get planets current resources
+   
+   //setResource("Army", current, rfmnts);  //Update the display of resources to show new army and max count (max is total availible reinforcements)
+   
    setOrderTypes();
 
    obj->touchModTime();

@@ -86,8 +86,8 @@ using std::pair;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
 Risk::Risk() :graph() {
-   //Minisec has a parent of random(NULL), whats with that?	
-   
+   num_galaxies = 0;
+   num_planets = 0;
 }
 
 Risk::~Risk(){
@@ -174,14 +174,14 @@ void Risk::createResources() {
    resMan->addResourceDescription(res);
 }
 
-//TODO: Redo
 //Universe is ID 0
-//Galaxies are ID #Planets + 1 and up
-//Planets  are ID 1 - num_planets
-//Planets systems are num_planets*2 + Planet ID
+//Galaxies are ID 1 through num_galaxies 
+//Planets Systems are num_galaxies+1 through num_galaxies*2 - 1. System 'k' is at num_galaxies+(2k-1)
+//Planets are num_galaxies+2 through num_galaxies*2. Planet 'k' is at num_galaxies+2k
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
-   num_planets = 42;    //CHECK: This may not be the best way to "get/set" the total # of planets
+   IGObject* id;  //to temporarily hold an object to get its id
+
    ObjectManager *objman = Game::getGame()->getObjectManager();
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
@@ -189,7 +189,6 @@ void Risk::createUniverse() {
    IGObject *universe = objman->createNewObject();
 
    //TODO: Adjust default position of universe
-   //TODO: Perhaps push constellations away from eachother for visibility 
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
    StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
@@ -199,69 +198,69 @@ void Risk::createUniverse() {
 
    //LATER: create some sort of import function to create map from file 
    //create galaxies and keep reference for system creation
-   IGObject *gal_cassiopeia = createConstellation(*universe, "Cassiopeia",     5); //North America
-   IGObject *gal_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
-   IGObject *gal_cepheus    = createConstellation(*universe, "Cepheus",        5); //Europe
-   IGObject *gal_orion      = createConstellation(*universe, "Orion",          3); //Africa
-   IGObject *gal_draco      = createConstellation(*universe, "Draco",          7); //Russia
-   IGObject *gal_crux       = createConstellation(*universe, "Crux Australis", 2); //Australia
+   IGObject *con_cassiopeia = createConstellation(*universe, "Cassiopeia",     5); //North America
+   IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
+   IGObject *con_cepheus    = createConstellation(*universe, "Cepheus",        5); //Europe
+   IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
+   IGObject *con_draco      = createConstellation(*universe, "Draco",          7); //Russia
+   IGObject *con_crux       = createConstellation(*universe, "Crux Australis", 2); //Australia
 
    Logger::getLogger()->info("Galaxies Created");
 
    //create systems
    // Cassiopeia Systems (North America, Bonus 5)
-   createStarSystem(*gal_cassiopeia, "Shedir",         -0.321, 0.670);
-   createStarSystem(*gal_cassiopeia, "Caph",           -0.213, 0.751);
-   createStarSystem(*gal_cassiopeia, "Ruchbah",        -0.447, 0.724);
-   createStarSystem(*gal_cassiopeia, "Gamma Cas",      -0.339, 0.760);
-   createStarSystem(*gal_cassiopeia, "Segin",          -0.519, 0.807);
-   createStarSystem(*gal_cassiopeia, "Zeta Cas",       -0.303, 0.571);
-   createStarSystem(*gal_cassiopeia, "Marfak",         -0.420, 0.616);
-   createStarSystem(*gal_cassiopeia, "Xi Cas",         -0.357, 0.481);   
-   createStarSystem(*gal_cassiopeia, "Sigma Cas",      -0.222, 0.643);
+   createStarSystem(*con_cassiopeia, "Shedir",         -0.321, 0.670);
+   createStarSystem(*con_cassiopeia, "Caph",           -0.213, 0.751);
+   createStarSystem(*con_cassiopeia, "Ruchbah",        -0.447, 0.724);
+   createStarSystem(*con_cassiopeia, "Gamma Cas",      -0.339, 0.760);
+   createStarSystem(*con_cassiopeia, "Segin",          -0.519, 0.807);
+   createStarSystem(*con_cassiopeia, "Zeta Cas",       -0.303, 0.571);
+   createStarSystem(*con_cassiopeia, "Marfak",         -0.420, 0.616);
+   createStarSystem(*con_cassiopeia, "Xi Cas",         -0.357, 0.481);   
+   createStarSystem(*con_cassiopeia, "Sigma Cas",      -0.222, 0.643);
 
    // Cygnus Systems (South America, Bonus 2)
-   createStarSystem(*gal_cygnus, "Deneb",              -0.321, 0.273);
-   createStarSystem(*gal_cygnus, "Albireo",            -0.249, -0.051);
-   createStarSystem(*gal_cygnus, "Sadr",               -0.294, 0.156);
-   createStarSystem(*gal_cygnus, "Gienah Cygni",       -0.402, 0.138);
+   createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);
+   createStarSystem(*con_cygnus, "Albireo",            -0.249, -0.051);
+   createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);
+   createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);
  
    // Cepheus Systems (Europe, Bonus 5)
-   createStarSystem(*gal_cepheus, "Alderamin",         0.045,  0.472);
-   createStarSystem(*gal_cepheus, "Alfirk",            0.063,  0.625);
-   createStarSystem(*gal_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
-   createStarSystem(*gal_cepheus, "Alrai",             -0.081, 0.724);
-   createStarSystem(*gal_cepheus, "The Garnet Star",   -0.045, 0.445);
-   createStarSystem(*gal_cepheus, "Alkurhah",          -0.036, 0.499);
-   createStarSystem(*gal_cepheus, "Iota Cep",          -0.090, 0.598);
+   createStarSystem(*con_cepheus, "Alderamin",         0.045,  0.472);
+   createStarSystem(*con_cepheus, "Alfirk",            0.063,  0.625);
+   createStarSystem(*con_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
+   createStarSystem(*con_cepheus, "Alrai",             -0.081, 0.724);
+   createStarSystem(*con_cepheus, "The Garnet Star",   -0.045, 0.445);
+   createStarSystem(*con_cepheus, "Alkurhah",          -0.036, 0.499);
+   createStarSystem(*con_cepheus, "Iota Cep",          -0.090, 0.598);
 
    // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*gal_orion, "Betelgeuse",          0.031, 0.228);
-   createStarSystem(*gal_orion, "Rigel",               0.226, -0.006);
-   createStarSystem(*gal_orion, "Bellatrix",           0.184, 0.237);
-   createStarSystem(*gal_orion, "Mintaka",             0.148, 0.120);
-   createStarSystem(*gal_orion, "Alnitak",             0.085, 0.102);
-   createStarSystem(*gal_orion, "Saiph",               0.085, -0.042);
+   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);
+   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);
+   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);
+   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);
+   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);
+   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);
 
    // Draco Systems (Russia, Bonus 7)
-   createStarSystem(*gal_draco, "Etamin",              0.247, 0.382);
-   createStarSystem(*gal_draco, "Rastaban",            0.346, 0.382);
-   createStarSystem(*gal_draco, "Arrakis",             0.400, 0.402);
-   createStarSystem(*gal_draco, "Kuma",                0.346, 0.436);
-   createStarSystem(*gal_draco, "Grumium",             0.247, 0.454);
-   createStarSystem(*gal_draco, "Nodus Secundus",      0.211, 0.634);
-   createStarSystem(*gal_draco, "Tyl",                 0.202, 0.697);
-   createStarSystem(*gal_draco, "Dsibin",              0.304, 0.670);
-   createStarSystem(*gal_draco, "Aldhibah",            0.373, 0.544);
-   createStarSystem(*gal_draco, "Ed Asiach",           0.499, 0.472);
-   createStarSystem(*gal_draco, "Thubah",              0.544, 0.634);
-   createStarSystem(*gal_draco, "Gianfar",             0.598, 0.778);
+   createStarSystem(*con_draco, "Etamin",              0.247, 0.382);
+   createStarSystem(*con_draco, "Rastaban",            0.346, 0.382);
+   createStarSystem(*con_draco, "Arrakis",             0.400, 0.402);
+   createStarSystem(*con_draco, "Kuma",                0.346, 0.436);
+   createStarSystem(*con_draco, "Grumium",             0.247, 0.454);
+   createStarSystem(*con_draco, "Nodus Secundus",      0.211, 0.634);
+   createStarSystem(*con_draco, "Tyl",                 0.202, 0.697);
+   createStarSystem(*con_draco, "Dsibin",              0.304, 0.670);
+   createStarSystem(*con_draco, "Aldhibah",            0.373, 0.544);
+   createStarSystem(*con_draco, "Ed Asiach",           0.499, 0.472);
+   createStarSystem(*con_draco, "Thubah",              0.544, 0.634);
+   createStarSystem(*con_draco, "Gianfar",             0.598, 0.778);
 
    // Crux Systens (Australia, Bonus 2)
-   createStarSystem(*gal_crux, "Acrux",                0.606, 0.000);
-   createStarSystem(*gal_crux, "Becrux",               0.466, 0.100);
-   createStarSystem(*gal_crux, "Gacrux",               0.534, 0.252);
-   createStarSystem(*gal_crux, "Delta Cru",            0.690, 0.161); 
+   createStarSystem(*con_crux, "Acrux",                0.606, 0.000);
+   createStarSystem(*con_crux, "Becrux",               0.466, 0.100);
+   createStarSystem(*con_crux, "Gacrux",               0.534, 0.252);
+   createStarSystem(*con_crux, "Delta Cru",            0.690, 0.161); 
    
 }
 
@@ -281,6 +280,7 @@ IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bo
    constellation->addToParent(parent.getID());
    game->getObjectManager()->addObject(constellation);
 
+   ++num_galaxies;
    return constellation;
 }
 
@@ -305,6 +305,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
    createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset());
    return starSys;
 }
+
 IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
@@ -329,6 +330,7 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
    planet->addToParent(parent.getID());
    game->getObjectManager()->addObject(planet);
 
+   ++num_planets;
    return planet;
 }
 
@@ -356,6 +358,7 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d
    planet->addToParent(parent.getID());
    game->getObjectManager()->addObject(planet);
    
+   ++num_planets;
    return planet;
 }   
 
@@ -384,6 +387,7 @@ bool Risk::onAddPlayer(Player* player){
 
       bool canJoin = true;            
 
+      //TODO: implement restrictions for adding players
       /* Commented out for the time being until things start working properly
 
       uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
@@ -405,7 +409,6 @@ bool Risk::isBoardClaimed() const{
     //are claimed or not
 
    //TODO: Check board to determine "claimedness"
-   //ASK: how to iterate over whole board
    return false;
 }
 
@@ -414,12 +417,14 @@ void Risk::onPlayerAdded(Player* player){
 
    Message *welcome = new Message();
    welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
-   welcome->setBody("<b><u>3 Turn Order</b></u>:<br />\
+   welcome->setBody("<b><u>Turn Order</b></u>:<br />\
                      Part 1: Colonization orders are processed<br />\
                      Part 2: Reinforce orders are processed<br />\
                      Part 3: Non-attack movement orders are processed<br />\
                      Part 4: Attack movement orders are processed<br />\
-                     *repeat*<br /><br />");
+                     <br /><br />\
+                     Once you have colonized a planet your total number<br />\
+                     of reinforcements will be displayed as the number minable.<br /><br />");
 
    player->postToBoard(welcome);
 
@@ -435,7 +440,20 @@ void Risk::onPlayerAdded(Player* player){
       obv->setCompletelyVisible(true);
     playerview->addVisibleObject(obv);
    }
+   
+   //Create a spot in the reinforcements map for the player.
+   reinforcements[player->getID()] = 0;
  
+}
+
+uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
+   //ASK: do I need to check for out of bounds
+   //CHECK: Won't compile as a const function
+   return reinforcements[owner];
+}
+
+void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
+   reinforcements[owner] = units;
 }
 
 } //end namespace RiskRuleset

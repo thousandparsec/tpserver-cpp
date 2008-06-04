@@ -67,20 +67,21 @@ bool Move::doOrder(IGObject* obj) {
    bool result = true;
    //TODO: Implement order
    
-   //--turns;
    //Double check if target planet is in list of adjacent planets?
 
    //If planet is friendly - simply transfer units to planet
    //Else
       //Check to see if target planet has an order for attacking base planet
       //if so execute "balanced" roll (i.e. 3-3)
+         //remove order on target planet to attack current planet
       //else execute "attacker-favored" roll (i.e. 3-2)
-   
+
       //apply results of battle to base and target planets
    
       //if target planet is conquerred (no more armies on surface)
          //change owner of target planet to current planet owner
-   //ASK: is the order removed at this point?
+         //remove all orders on target planet
+
    //Send message to players (and target planet owner if applicable)
    
    return result;

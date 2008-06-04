@@ -33,7 +33,7 @@ namespace RiskRuleset {
 
 //typedef an undirected (bidirected) graph that uses std::vector to store Vertex and Edge list
    //The trade off of using vecS is that vecS uses less space but takes longer to add vertexs
-   using namespace boost::graph;
+using namespace boost::graph;
 typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::bidirectionalS> UGraph;
 	
 class Risk : public Ruleset {
@@ -48,6 +48,10 @@ class Risk : public Ruleset {
       void startGame(); 
       bool onAddPlayer(Player* player); 
       void onPlayerAdded(Player* player);
+      
+      //TODO: add getters/setters for graph, etc.
+      uint32_t getPlayerReinforcements(uint32_t owner);
+      void setPlayerReinforcements(uint32_t owner, uint32_t units);
    private:
        //initGame methods
       void setObjectTypes() const;
@@ -71,6 +75,7 @@ class Risk : public Ruleset {
       //The number of planets to be on the board
       int num_planets;
       int num_galaxies;
+      std::map<uint32_t, uint32_t> reinforcements;
 
       UGraph graph;
 

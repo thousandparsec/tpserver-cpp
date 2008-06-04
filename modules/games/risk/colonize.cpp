@@ -63,7 +63,6 @@ bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
    //TODO: Implement order
  
-   //--turns; 
    //Check object for other Colonize orders, pick the largest VERIFIED bid (must check player has reinforcements availible)
    //Change object owner to owner of largest "bid"
    //Add # of armies in bid to planet

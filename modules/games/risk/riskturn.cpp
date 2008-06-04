@@ -57,7 +57,6 @@ RiskTurn::~RiskTurn(){
     
 }
 
-//ASK: Is there order culling for orders with turns = 0?
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    OrderManager* ordermanager = game->getOrderManager();
@@ -77,7 +76,8 @@ void RiskTurn::doTurn(){
       // Process every objects Move orders
       // Process every objects remaining orders
    //TODO: BIG: figure out some way to keep track of a players availible reinforcements
-      
+  
+   /*   
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
       IGObject * currObj = objectmanager->getObject(*i);
@@ -107,10 +107,8 @@ void RiskTurn::doTurn(){
    }
    
    objectmanager->clearRemovedObjects();
+   */
    
-   
-
-   //CHECK: re-explore new area
    setPlayerVisibleObjects();
 
    // to once a turn (right at the end)
