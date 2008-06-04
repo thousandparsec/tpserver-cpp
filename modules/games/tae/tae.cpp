@@ -38,6 +38,9 @@
 #include <tpserver/designview.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
+#include <tpserver/category.h>
+#include <tpserver/property.h>
+#include <tpserver/component.h>
 
 //tae includes
 #include "universe.h"
@@ -50,6 +53,8 @@
 #include "tae.h"
 
 using namespace tae;
+using std::map;
+using std::string;
 
 taeRuleset::taeRuleset() {
 }
@@ -92,6 +97,19 @@ void taeRuleset::createGame() {
     ObjectManager* obm = game->getObjectManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
+    //Create ship design category
+    Category* cat = new Category();
+    cat->setName("Ships");
+    cat->setDescription("Ship components");
+    game->getDesignStore()->addCategory(cat);
+    
+    //Create properties
+    createProperties();
+
+    //Create components
+    createComponents();
+
+    //Create resources
     setupResources();
 
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
@@ -255,6 +273,162 @@ void taeRuleset::setupResources() {
         res->setVolume(0);
         rman->addResourceDescription(res);
     }
+}
+
+// Create properties for use with components.  This function is based off the
+// function of the same name implemented in RFTS.
+void taeRuleset::createProperties() {
+    Property* prop = new Property();
+    DesignStore* ds = Game::getGame()->getDesignStore();
+
+    // Passengers
+    prop = new Property();
+    prop->addCategoryId(ds->getCategoryByName("Ships"));
+    prop->setRank(0);
+    prop->setName("Passengers");
+    prop->setDisplayName("Passengers");
+    prop->setDescription("The passengers aboard the ship");
+    // Value of property -> String to display:
+    // 1 -> Merchants
+    // 2 -> Scientists
+    // 3 -> Settlers
+    // 4 -> Mining Robots
+    // 5 -> Merchant Leader
+    // 6 -> Lead Scientist
+    // 7 -> Government Official
+    // 8 -> Mining Foreman
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits)))"
+        "(cond "
+            "((= n 1) \"Merchants\") "
+            "((= n 2) \"Scientists\") "
+            "((= n 3) \"Settlers\") "
+            "((= n 4) \"Mining Robots\") "
+            "((= n 5) \"Merchant Leader\") "
+            "((= n 6) \"Lead Scientist\") "
+            "((= n 7) \"Government Official\") "
+            "((= n 8) \"Mining Foreman\") "
+            "((< n 1) (cons n \"ERROR: value too low!\")) "
+            "((> n 8) (cons n \"ERROR: value too high!\")))))");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+}
+
+void taeRuleset::createComponents() {
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    Component* comp = new Component();
+    map<unsigned int, string> propList;
+
+    //Merchants
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("MerchantCargo");
+    comp->setDescription("A cargo hold outfitted to carry businessmen");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 1)";
+    comp->setPropertyList(propList);
+    ds->addComponent(comp);
+
+    //Scientists
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("ScientistCargo");
+    comp->setDescription("A cargo hold outfitted to carry scientists");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 2)";
+    comp->setPropertyList(propList);
+
+    //Settlers
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("SettlerCargo");
+    comp->setDescription("A cargo hold outfitted to carry settlers");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 3)";
+    comp->setPropertyList(propList);
+
+    //Mining Robots
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("MiningCargo");
+    comp->setDescription("A cargo hold outfitted to carry mining robots");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 4)";
+    comp->setPropertyList(propList);
+
+    //Merchant Leader
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("MerchantLeaderCargo");
+    comp->setDescription("A cargo hold outfitted to carry powerful business leaders");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 5)";
+    comp->setPropertyList(propList);
+
+    //Lead Scientist
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("ScientistLeaderCargo");
+    comp->setDescription("A cargo hold outfitted to carry a lead scientist");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 6)";
+    comp->setPropertyList(propList);
+
+    //Government Official
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("SettlerLeaderCargo");
+    comp->setDescription("A cargo hold outfitted to a government leader");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 7)";
+    comp->setPropertyList(propList);
+
+    //Mining Foreman
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("MiningLeaderCargo");
+    comp->setDescription("A cargo hold outfitted to a highly specialized mining robot leader");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 8)";
+    comp->setPropertyList(propList);
 }
 
 void taeRuleset::startGame() {

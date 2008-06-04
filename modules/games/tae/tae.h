@@ -39,7 +39,14 @@ class taeRuleset : public Ruleset {
         bool onAddPlayer(Player* player);
         void onPlayerAdded(Player* player);
 
+    private:
         void setupResources();
+        void createProperties();
+        void createComponents();
+    
+        Design* createPassengerShip(Player *owner, int type);
+        Design* createVIPTransport(Player *owner, int type);
+        Design* createBomber(Player *owner);
 
 };
 
