@@ -25,7 +25,7 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/playermanager.h>
-#include "tpserver/objectbehaviour.h"
+#include <tpserver/objectbehaviour.h>
 #include <tpserver/order.h>
 #include <tpserver/object.h>
 #include <tpserver/objectview.h>
@@ -62,20 +62,11 @@ void RiskTurn::doTurn(){
    PlayerManager *pm = game->getPlayerManager();
    set<uint32_t> objectsIds = objM->getAllIds();
 
-
    //TODO: Calculate new reinforcements for players, add to their total.
    //Send message to player about updated total
 
-   // currently just go through each obj and do each order
-   // will be prioritized/sorted soon 
-   //TODO: Process orders like so:
-      // Process every objects colonize orders - Check for conflicts, pick a "winner"
-      // Process every objects Reinforce orders
-      // Process every objects Move orders
-      // Process every objects remaining orders
    //TODO: BIG: figure out some way to keep track of a players availible reinforcements
   
-
    processOrdersOfGivenType(objM,"Colonize");
    processOrdersOfGivenType(objM,"Reinforce");
    processOrdersOfGivenType(objM,"Move");

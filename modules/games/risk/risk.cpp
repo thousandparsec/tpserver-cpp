@@ -177,7 +177,8 @@ void Risk::createResources() {
 //Universe is ID 0
 //Galaxies are ID 1 through num_galaxies 
 //Planets Systems are num_galaxies+1 through num_galaxies*2 - 1. System 'k' is at num_galaxies+(2k-1)
-//Planets are num_galaxies+2 through num_galaxies*2. Planet 'k' is at num_galaxies+2k
+//Planets are num_galaxies+2 through num_galaxies+2*num_planets. Planet 'k' is at num_galaxies+2k
+   //Helper function starID(galaxies,planet #) returns the ID of the star
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
    IGObject* id;  //to temporarily hold an object to get its id
@@ -261,7 +262,11 @@ void Risk::createUniverse() {
    createStarSystem(*con_crux, "Becrux",               0.466, 0.100);
    createStarSystem(*con_crux, "Gacrux",               0.534, 0.252);
    createStarSystem(*con_crux, "Delta Cru",            0.690, 0.161); 
-   
+
+   //The question is: refer to planets as 1 to num_planets or as their actual ids?
+   //It will be easier to access them by id but harder to create
+   //and vica versa
+
 }
 
 IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
@@ -457,3 +462,7 @@ void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
 }
 
 } //end namespace RiskRuleset
+
+uint32_t starID(uint32_t g, uint32_t k) {
+   return g + 2*k;
+}

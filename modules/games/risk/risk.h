@@ -73,8 +73,8 @@ class Risk : public Ruleset {
       bool isBoardClaimed() const;
       
       //The number of planets to be on the board
-      int num_planets;
-      int num_galaxies;
+      uint32_t num_planets;
+      uint32_t num_galaxies;
       std::map<uint32_t, uint32_t> reinforcements;
 
       UGraph graph;
