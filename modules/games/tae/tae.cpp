@@ -482,7 +482,7 @@ IGObject* taeRuleset::createEmptyFleet(Player* owner, IGObject* parent, string n
     fleetoq->addOwner(owner->getID());
     game->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetow->getQueueId());
+    oqop->setQueueId(fleetoq->getQueueId());
     theFleet->setDefaultOrderTypes();
 
     fleet->addToParent(parent->getID());
