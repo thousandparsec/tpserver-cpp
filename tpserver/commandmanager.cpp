@@ -56,7 +56,7 @@ class TurnTimeCommand : public Command{
         msg << Game::getGame()->getTurnTimer()->secondsToEOT() << " of "
             << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds remain until EOT.";
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -71,7 +71,7 @@ class TurnResetCommand : public Command{
         Game::getGame()->getTurnTimer()->resetTimer();
         msg << "Reset EOT timer, " << Game::getGame()->getTurnTimer()->secondsToEOT() << " seconds remain until EOT.";
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -85,7 +85,7 @@ class TurnNumberCommand : public Command{
         std::ostringstream msg;
         msg << "The current turn number is " << Game::getGame()->getTurnNumber() << ".";
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -152,7 +152,7 @@ class SettingsSetCommand : public Command{
         Settings::getSettings()->set(setting, value);
         msg << "Setting value of \"" << setting << "\" to \"" << value << "\".";
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -168,7 +168,7 @@ class SettingsGetCommand : public Command{
         std::string setting = frame->unpackStdString();
         msg << "Setting \"" << setting << "\" is set to \"" << Settings::getSettings()->get(setting) << "\".";
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -189,7 +189,7 @@ class PluginLoadCommand : public Command{
             msg << "Plugin \"" << plugin << "\" was not loaded.";
             of->packInt(1);
         }
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -203,7 +203,7 @@ class PluginListCommand : public Command{
         std::ostringstream msg;
         msg << "These plugins are loaded: " << PluginManager::getPluginManager()->getLoadedLibraryNames();
         of->packInt(0);
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -224,7 +224,7 @@ class RulesetCommand : public Command{
             msg << "Ruleset \"" << ruleset << "\" was not loaded.";
             of->packInt(1);
         }
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -245,7 +245,7 @@ class TpschemeCommand : public Command{
             msg << "TpScheme implementation \"" << tpscheme << "\" was not loaded.";
             of->packInt(1);
         }
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 
@@ -266,7 +266,7 @@ class PersistenceCommand : public Command{
             msg << "Persistence method \"" << persist << "\" was not loaded.";
             of->packInt(1);
         }
-        of->packString(msg.str().c_str());
+        of->packString(msg.str());
     }
 };
 

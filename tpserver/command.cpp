@@ -49,9 +49,9 @@ std::string CommandParameter::getDescription() const
 
 void CommandParameter::packCommandDescFrame(Frame * of) const
 {
-    of->packString(name.c_str());
+    of->packString(name);
     of->packInt(type);
-    of->packString(description.c_str());
+    of->packString(description);
 }
 
 Command::Command() : name(), help()
@@ -90,8 +90,8 @@ void Command::describeCommand(Frame * of) const
 {
     of->setType(ftad_CommandDesc);
     of->packInt(type);
-    of->packString(name.c_str());
-    of->packString(help.c_str());
+    of->packString(name);
+    of->packString(help);
     of->packInt(parameters.size());
     for(std::list<CommandParameter*>::const_iterator itcurr = parameters.begin(); itcurr !=parameters.end(); ++itcurr){
         (*itcurr)->packCommandDescFrame(of);
