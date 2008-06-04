@@ -191,7 +191,7 @@ void Risk::createUniverse() {
    //TODO: Adjust default position of universe
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
-   StaticObject* uniData = static_cast<StaticObject*>(universe->getObjectBehaviour());
+   StaticObject* uniData = dynamic_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setSize(123456789123ll);
    uniData->setUnitPos(.5,.5);
    objman->addObject(universe);
@@ -274,7 +274,7 @@ IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bo
    otypeman->setupObject(constellation, otypeman->getObjectTypeByName("Constellation"));
    constellation->setName(name);
 
-   Constellation* constellationData = static_cast<Constellation*>(constellation->getObjectBehaviour());
+   Constellation* constellationData = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
    constellationData->setBonus(bonus);
 
    constellation->addToParent(parent.getID());
@@ -315,14 +315,14 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, 
 
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
-   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
+   Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setUnitPos(unitX, unitY);
    planetData->setDefaultResources();
 
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
    game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
+   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>
                                         (planet->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
    planetData->setOrderTypes();
@@ -343,14 +343,14 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d
    
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
-   Planet* planetData = static_cast<Planet*>(planet->getObjectBehaviour());
+   Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
    
    OrderQueue *planetOrders = new OrderQueue();
    planetOrders->setObjectId(planet->getID());
    game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*> 
+   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*> 
          (planet->getParameterByType(obpT_Order_Queue));
    oqop->setQueueId(planetOrders->getQueueId());
    planetData->setOrderTypes();

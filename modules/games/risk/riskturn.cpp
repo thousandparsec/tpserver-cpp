@@ -37,7 +37,6 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/ordermanager.h>
 #include <tpserver/message.h>
 #include <stdint.h>
 
@@ -59,11 +58,10 @@ RiskTurn::~RiskTurn(){
 
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
-   OrderManager* ordermanager = game->getOrderManager();
-   ObjectManager* objectmanager = game->getObjectManager();
+   ObjectManager* objM = game->getObjectManager();
    PlayerManager *pm = game->getPlayerManager();
+   set<uint32_t> objectsIds = objM->getAllIds();
 
-   set<uint32_t> objectsIds = objectmanager->getAllIds();
 
    //TODO: Calculate new reinforcements for players, add to their total.
    //Send message to player about updated total
@@ -77,53 +75,86 @@ void RiskTurn::doTurn(){
       // Process every objects remaining orders
    //TODO: BIG: figure out some way to keep track of a players availible reinforcements
   
-   /*   
+
+   processOrdersOfGivenType(objM,"Colonize");
+   processOrdersOfGivenType(objM,"Reinforce");
+   processOrdersOfGivenType(objM,"Move");
+   processOrdersOfGivenType(objM);
+
+   //objM->clearRemovedObjects(); //CHECK: no objects are ever removed in Risk
+   
+   setPlayerVisibleObjects();
+
+   // do once a turn (right at the end)
+   objectsIds = objM->getAllIds();
+
+   for(std::set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   {
+      IGObject * obj = objM->getObject(*i);
+      obj->getObjectBehaviour()->doOnceATurn();
+      objM->doneWithObject(obj->getID());
+   }
+
+   objM->clearRemovedObjects();
+    
+} //RiskTurn::RiskTurn() : TurnProcess()
+
+//ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird
+/** processOrdersOfGivenType
+* This function iterates over all objects the objM holds and process only orders of a given type 
+* that are in the front of the queue.
+* I.E. if the type passed is P and the queue for an object is P->P->Q->P
+*   only the first two P will be procesed
+*NOTE: If no type is specified then all orders in queue will be processed
+*/
+void RiskTurn::processOrdersOfGivenType(ObjectManager* objM, string type) {
+   Game* game = Game::getGame();
+   OrderManager* ordM = game->getOrderManager();
+   
+   //Get all objects frobjM object manager
+   set<uint32_t> objectsIds = objM->getAllIds();
+   
+   //Iterate over every object
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
-      IGObject * currObj = objectmanager->getObject(*i);
-
+      IGObject * currObj = objM->getObject(*i);
+      
+      //Get order queue from object
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
       OrderQueue* oq;
 
-      if(oqop != NULL && (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
+      if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL)
       {
-         for(uint32_t j = 0; j < oq->getNumberOrders(); j++)
+         //Iterate over all orders
+         for (uint32_t j = 0; j < oq->getNumberOrders(); j++)
          {
+            //Taken from RFTS
             OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
             assert(orderedObj);
 
             Order* order = oq->getOrder(j, orderedObj->getOwner());
-            if(order->doOrder(currObj))
+            //if order is of type asked for then process it
+            if(type != "" && order->getName() == type)
             {
-               oq->removeOrder(j, orderedObj->getOwner());
-               j--; // list has been reordered
+               //CHECK: taken directly from RFTS code
+               if(order->doOrder(currObj))
+               {
+                  oq->removeOrder(j, orderedObj->getOwner());
+                  j--; // list has been reordered
+               }
+               else
+                  oq->updateFirstOrder(); // CHECK
             }
             else
-               oq->updateFirstOrder(); // CHECK
+            {
+               j = oq->getNumberOrders() + 1;   //force the loop to exit, we have encountered an order not of given type
+            }
          }
          currObj->touchModTime();
       }
-      objectmanager->doneWithObject(currObj->getID());
+      objM->doneWithObject(currObj->getID());
    }
-   
-   objectmanager->clearRemovedObjects();
-   */
-   
-   setPlayerVisibleObjects();
-
-   // to once a turn (right at the end)
-   objectsIds = objectmanager->getAllIds();
-
-   for(std::set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
-   {
-      IGObject * obj = objectmanager->getObject(*i);
-      obj->getObjectBehaviour()->doOnceATurn();
-      objectmanager->doneWithObject(obj->getID());
-   }
-
-   objectmanager->clearRemovedObjects();
-    
-} //RiskTurn::RiskTurn() : TurnProcess()
+}
 
 void RiskTurn::setPlayerVisibleObjects() {
    //CHECK: If I need to reset any views. Its my belief I don't need to, since no objects are ever created.
