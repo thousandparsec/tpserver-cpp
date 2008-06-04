@@ -6,13 +6,13 @@ rulesetlib_LTLIBRARIES = librisk.la
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
 #All .cpp's
-librisk_la_SOURCES = risk.cpp colonize.cpp move.cpp reinforce.cpp riskturn.cpp map.cpp staticobject.cpp universe.cpp ownedobject.cpp planet.cpp galaxy.cpp resourcelistparam.cpp
+librisk_la_SOURCES = risk.cpp colonize.cpp move.cpp reinforce.cpp riskturn.cpp map.cpp staticobject.cpp universe.cpp ownedobject.cpp planet.cpp constellation.cpp resourcelistparam.cpp
 
 
 librisk_la_LDFLAGS = -module
 
 #All the .h's
-noinst_HEADERS = risk.h colonize.h move.h reinforce.h riskturn.h map.h staticobject.h containertypes.h universe.h ownedobject.h planet.h galaxy.h resourcelistparam.h
+noinst_HEADERS = risk.h colonize.h move.h reinforce.h riskturn.h map.h staticobject.h containertypes.h universe.h ownedobject.h planet.h constellation.h resourcelistparam.h
 
 #minisec has this in it
 #EXTRA_DIST = sample.conf

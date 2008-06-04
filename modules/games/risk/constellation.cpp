@@ -1,8 +1,8 @@
-/*  galaxy
+/*  Constellation
  *
  *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
- *  Copyright (C) 2008  LeGalaxye Begg and the Thousand Parsec Project
+ *  Copyright (C) 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,48 +28,48 @@
 
 #include "containertypes.h"
 
-#include "galaxy.h"
+#include "constellation.h"
 
 namespace RiskRuleset {
 
-GalaxyType::GalaxyType() : StaticObjectType() {
+ConstellationType::ConstellationType() : StaticObjectType() {
    ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
    group->setName("Informational");
-   group->setDescription("Information about the galaxy");
-   group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire galaxy");
+   group->setDescription("Information about the constellation");
+   group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire onstellation");
    addParameterGroupDesc(group);                   //(2,1)
 
-   nametype = "Galaxy";
-   typedesc = "The Galaxy";
+   nametype = "Constellation";
+   typedesc = "A Constellation";
 }
 
-ObjectBehaviour* GalaxyType::createObjectBehaviour() const{
-   return new Galaxy();
+ObjectBehaviour* ConstellationType::createObjectBehaviour() const{
+   return new Constellation();
 }
 
-Galaxy::Galaxy() : StaticObject() {
+Constellation::Constellation() : StaticObject() {
 }
 
-void Galaxy::setBonus(int bonus) {
+void Constellation::setBonus(int bonus) {
    ((IntegerObjectParam*)(obj->getParameter(2, 1)))->setValue(bonus);
    obj->touchModTime();
 }
 
-int Galaxy::getBonus() const {
+int Constellation::getBonus() const {
    return ((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue();
 }
 
-int Galaxy::getContainerType() {
-   return ContainerTypes_::Galaxy;
+int Constellation::getContainerType() {
+   return ContainerTypes_::Constellation;
 }
 
-void Galaxy::doOnceATurn() {
+void Constellation::doOnceATurn() {
 
    obj->touchModTime();
 }
 
-void Galaxy::setupObject(){
-//TODO: insert any setup here
+void Constellation::setupObject(){
+   //CHECK: I don't believe any setup is required for constellations
 }
 
 }

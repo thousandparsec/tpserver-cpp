@@ -62,7 +62,7 @@
 #include "universe.h"
 #include "ownedobject.h"
 #include "planet.h"
-#include "galaxy.h"
+#include "constellation.h"
 
 //Tyler's "hacky define :p"
 #define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
@@ -120,11 +120,11 @@ void Risk::setObjectTypes() const{
 
    //old
    /*  eo = new StaticObjectType();
-   eo->setTypeName("Galaxy");
+   eo->setTypeName("Constellation");
    eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
    obdm->addNewObjectType(eo); */
    //new
-   obdm->addNewObjectType(new GalaxyType());
+   obdm->addNewObjectType(new ConstellationType());
 
    eo = new StaticObjectType();
    eo->setTypeName("Star System");
@@ -199,12 +199,12 @@ void Risk::createUniverse() {
 
    //LATER: create some sort of import function to create map from file 
    //create galaxies and keep reference for system creation
-   IGObject *gal_cassiopeia = createGalaxy(*universe, "Cassiopeia",     5); //North America
-   IGObject *gal_cygnus     = createGalaxy(*universe, "Cygnus",         2); //South America
-   IGObject *gal_cepheus    = createGalaxy(*universe, "Cepheus",        5); //Europe
-   IGObject *gal_orion      = createGalaxy(*universe, "Orion",          3); //Africa
-   IGObject *gal_draco      = createGalaxy(*universe, "Draco",          7); //Russia
-   IGObject *gal_crux       = createGalaxy(*universe, "Crux Australis", 2); //Australia
+   IGObject *gal_cassiopeia = createConstellation(*universe, "Cassiopeia",     5); //North America
+   IGObject *gal_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
+   IGObject *gal_cepheus    = createConstellation(*universe, "Cepheus",        5); //Europe
+   IGObject *gal_orion      = createConstellation(*universe, "Orion",          3); //Africa
+   IGObject *gal_draco      = createConstellation(*universe, "Draco",          7); //Russia
+   IGObject *gal_crux       = createConstellation(*universe, "Crux Australis", 2); //Australia
 
    Logger::getLogger()->info("Galaxies Created");
 
@@ -265,23 +265,23 @@ void Risk::createUniverse() {
    
 }
 
-IGObject* Risk::createGalaxy(IGObject& parent, const string& name, int bonus) {
+IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
-   IGObject *galaxy = game->getObjectManager()->createNewObject();
+   IGObject *constellation = game->getObjectManager()->createNewObject();
 
-   otypeman->setupObject(galaxy, otypeman->getObjectTypeByName("Galaxy"));
-   galaxy->setName(name);
+   otypeman->setupObject(constellation, otypeman->getObjectTypeByName("Constellation"));
+   constellation->setName(name);
 
-   Galaxy* galaxyData = static_cast<Galaxy*>(galaxy->getObjectBehaviour());
-   galaxyData->setBonus(bonus);
+   Constellation* constellationData = static_cast<Constellation*>(constellation->getObjectBehaviour());
+   constellationData->setBonus(bonus);
 
-   galaxy->addToParent(parent.getID());
-   game->getObjectManager()->addObject(galaxy);
+   constellation->addToParent(parent.getID());
+   game->getObjectManager()->addObject(constellation);
 
-   return galaxy;
+   return constellation;
 }
 
 IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {

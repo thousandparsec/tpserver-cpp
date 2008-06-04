@@ -1,6 +1,6 @@
-#ifndef GALAXY_H
-#define GALAXY_H
-/*  universe class
+#ifndef CONSTELLATION_H
+#define CONSTELLATION_H
+/*  constellation class
  *
  *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
  *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
@@ -28,21 +28,21 @@ class IntegerObjectParam;
 
 namespace RiskRuleset {
 
-class GalaxyType : public StaticObjectType
+class ConstellationType : public StaticObjectType
 {
 public:
-   GalaxyType();
-   virtual ~GalaxyType(){};
+   ConstellationType();
+   virtual ~ConstellationType(){};
 
 protected:
    ObjectBehaviour* createObjectBehaviour() const;
 };
 
-class Galaxy : public StaticObject 
+class Constellation : public StaticObject 
 {
 public:
-   Galaxy();
-   virtual ~Galaxy() {}
+   Constellation();
+   virtual ~Constellation() {}
 
    virtual void doOnceATurn();
    virtual int getContainerType();

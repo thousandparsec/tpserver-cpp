@@ -27,7 +27,7 @@ namespace ContainerTypes_ {
 typedef enum {
    StaticObject = 1,
    Universe = 1,
-   Galaxy,
+   Constellation,
    StarSystem,
    Planet
 } ContainerType;

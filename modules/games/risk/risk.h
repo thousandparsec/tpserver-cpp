@@ -57,7 +57,7 @@ class Risk : public Ruleset {
       void createResources();
 
       void createUniverse();
-      IGObject* createGalaxy(IGObject& parent, const std::string& name, int bonus);
+      IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
       IGObject* createStarSystem(IGObject& parent, const std::string& name,
          double unitX, double unitY);
       IGObject* createPlanet(IGObject& parent, const std::string& name,
@@ -70,7 +70,7 @@ class Risk : public Ruleset {
       
       //The number of planets to be on the board
       int num_planets;
-      
+      int num_galaxies;
 
       UGraph graph;
 
