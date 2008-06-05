@@ -106,6 +106,7 @@ void Risk::initGame(){
    Logger::getLogger()->info("Risk initialised");
 
    Game::getGame()->setTurnProcess(new RiskTurn());
+   Game::getGame()->setRuleset(this);
 
    setObjectTypes();
 
@@ -189,80 +190,24 @@ void Risk::createUniverse() {
    uint32_t uniType = otypeman->getObjectTypeByName("Universe");
    IGObject *universe = objman->createNewObject();
 
-   //TODO: Adjust default position of universe
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
    StaticObject* uniData = dynamic_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setSize(123456789123ll);
-   uniData->setUnitPos(.5,.5);
+   //The field of view for the universe is approximately -1 to 1 X and 0 to 1 Y.
+   uniData->setUnitPos(0,.5);
    objman->addObject(universe);
 
    //LATER: create some sort of import function to create map from file 
-   //create constellations and keep reference for system creation
-   IGObject *con_cassiopeia = createConstellation(*universe, "Cassiopeia",     5); //North America
-   IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
-   IGObject *con_cepheus    = createConstellation(*universe, "Cepheus",        5); //Europe
-   IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
-   IGObject *con_draco      = createConstellation(*universe, "Draco",          7); //Russia
-   IGObject *con_crux       = createConstellation(*universe, "Crux Australis", 2); //Australia
-
-   Logger::getLogger()->info("Galaxies Created");
-
-   //create systems
-   // Cassiopeia Systems (North America, Bonus 5)
-   createStarSystem(*con_cassiopeia, "Shedir",         -0.321, 0.670);
-   createStarSystem(*con_cassiopeia, "Caph",           -0.213, 0.751);
-   createStarSystem(*con_cassiopeia, "Ruchbah",        -0.447, 0.724);
-   createStarSystem(*con_cassiopeia, "Gamma Cas",      -0.339, 0.760);
-   createStarSystem(*con_cassiopeia, "Segin",          -0.519, 0.807);
-   createStarSystem(*con_cassiopeia, "Zeta Cas",       -0.303, 0.571);
-   createStarSystem(*con_cassiopeia, "Marfak",         -0.420, 0.616);
-   createStarSystem(*con_cassiopeia, "Xi Cas",         -0.357, 0.481);   
-   createStarSystem(*con_cassiopeia, "Sigma Cas",      -0.222, 0.643);
-
-   // Cygnus Systems (South America, Bonus 2)
-   createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);
-   createStarSystem(*con_cygnus, "Albireo",            -0.249, -0.051);
-   createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);
-   createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);
- 
-   // Cepheus Systems (Europe, Bonus 5)
-   createStarSystem(*con_cepheus, "Alderamin",         0.045,  0.472);
-   createStarSystem(*con_cepheus, "Alfirk",            0.063,  0.625);
-   createStarSystem(*con_cepheus, "Al Kalb al Rai",    -0.018, 0.724);
-   createStarSystem(*con_cepheus, "Alrai",             -0.081, 0.724);
-   createStarSystem(*con_cepheus, "The Garnet Star",   -0.045, 0.445);
-   createStarSystem(*con_cepheus, "Alkurhah",          -0.036, 0.499);
-   createStarSystem(*con_cepheus, "Iota Cep",          -0.090, 0.598);
-
-   // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);
-   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);
-   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);
-   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);
-   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);
-   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);
-
-   // Draco Systems (Russia, Bonus 7)
-   createStarSystem(*con_draco, "Etamin",              0.247, 0.382);
-   createStarSystem(*con_draco, "Rastaban",            0.346, 0.382);
-   createStarSystem(*con_draco, "Arrakis",             0.400, 0.402);
-   createStarSystem(*con_draco, "Kuma",                0.346, 0.436);
-   createStarSystem(*con_draco, "Grumium",             0.247, 0.454);
-   createStarSystem(*con_draco, "Nodus Secundus",      0.211, 0.634);
-   createStarSystem(*con_draco, "Tyl",                 0.202, 0.697);
-   createStarSystem(*con_draco, "Dsibin",              0.304, 0.670);
-   createStarSystem(*con_draco, "Aldhibah",            0.373, 0.544);
-   createStarSystem(*con_draco, "Ed Asiach",           0.499, 0.472);
-   createStarSystem(*con_draco, "Thubah",              0.544, 0.634);
-   createStarSystem(*con_draco, "Gianfar",             0.598, 0.778);
-
-   // Crux Systens (Australia, Bonus 2)
-   createStarSystem(*con_crux, "Acrux",                0.606, 0.000);
-   createStarSystem(*con_crux, "Becrux",               0.466, 0.100);
-   createStarSystem(*con_crux, "Gacrux",               0.534, 0.252);
-   createStarSystem(*con_crux, "Delta Cru",            0.690, 0.161); 
-
+   IGObject *con_one = createConstellation(*universe, "One",     2);
+   IGObject *con_two = createConstellation(*universe, "Two",     3);
+   
+   createStarSystem(*con_one, "alpha",          -0.250, 0.650);
+   createStarSystem(*con_one, "beta",           -0.250, 0.350);
+   
+   createStarSystem(*con_two, "gamma",          +0.250, 0.650);
+   createStarSystem(*con_two, "delta",          +0.250, 0.350);
+   
    //The question is: refer to planets as 1 to num_planets or as their actual ids?
    //It will be easier to access them by id but harder to create
    //and vica versa

@@ -40,6 +40,7 @@
 #include <tpserver/message.h>
 #include <stdint.h>
 
+#include "risk.h"
 #include "riskturn.h"
 #include "ownedobject.h"
 
@@ -61,11 +62,10 @@ void RiskTurn::doTurn(){
    ObjectManager* objM = game->getObjectManager();
    PlayerManager *pm = game->getPlayerManager();
    set<uint32_t> objectsIds = objM->getAllIds();
+   Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    //TODO: Calculate new reinforcements for players, add to their total.
    //Send message to player about updated total
-
-   //TODO: BIG: figure out some way to keep track of a players availible reinforcements
   
    processOrdersOfGivenType(objM,"Colonize");
    processOrdersOfGivenType(objM,"Reinforce");

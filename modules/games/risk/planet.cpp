@@ -103,13 +103,15 @@ void Planet::setOrderTypes() {
 }
 
 void Planet::doOnceATurn() {
-   uint32_t owner = getOwner(); 
-   //uint32_t rfmnts = Risk::getPlayerReinforcements(owner); //get owners resources from std::map Risk::getResources(owner)
-   //ASK: how to get reference to Risk, why "Army" doesn't count as a string?
-   //CHECK: if the first element of the std::pair is the number on surface
-   //uint32_t current = (getResources("Army")).first;    //get planets current resources
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+
+   uint32_t owner = getOwner();                                      //Get ID of planet owner
+   uint32_t reinforcements = risk->getPlayerReinforcements(owner);   //Get players max reinforcements
+   uint32_t current = getResource("Army").first;                     //Get planets current resources
+   //CHECK: if the first element of the std::pair is the number of armies on surface
    
-   //setResource("Army", current, rfmnts);  //Update the display of resources to show new army and max count (max is total availible reinforcements)
+   //Update the display of resources to show new army and max count (max is total availible reinforcements)
+   setResource("Army", current, reinforcements);  
    
    setOrderTypes();
 
@@ -148,8 +150,7 @@ void Planet::setOwner(uint32_t no){
 
 void Planet::setDefaultResources() {
 //set resource army to 0 total with a max "minable" of 0
-//There is potential to use this "minable" number as an indicator of availible units
- //The only special case where it doesn't work is when colonizing
+//Minable units are used to indicate availible reinforcements - This is updated in doOnceATurn
    setResource("Army", 0, 0);
 }
 
