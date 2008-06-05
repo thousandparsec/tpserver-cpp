@@ -45,6 +45,7 @@ class taeRuleset : public Ruleset {
         void createComponents();
 
         IGObject* createEmptyFleet(Player* owner, IGObject* parent, std::string name);
+        IGObject* createEmptyFleet(Player* owner, Vector3d loc, std::string name);
     
         Design* createPassengerShip(Player *owner, int type);
         Design* createVIPTransport(Player *owner, int type);

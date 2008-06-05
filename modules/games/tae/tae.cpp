@@ -489,6 +489,34 @@ IGObject* taeRuleset::createEmptyFleet(Player* owner, IGObject* parent, string n
     return fleet;
 }
 
+//Creates an empty fleet owned by "owner" at the location specified by "loc"
+//Adapted from the createEmptyFleet function of mtsec
+IGObject* taeRuleset::createEmptyFleet(Player* owner, Vector3d loc, string name) {
+    Game *game = Game::getGame();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+    IGObject *fleet = game->getObjectManager()->createNewObject();
+    obtm->setupObject(fleet, obtm->getObjectTypeByName("Fleet"));
+    
+    Fleet* theFleet = (Fleet*) (fleet->getObjectBehaviour());
+    theFleet->setSize(2);
+    fleet->setName(name.c_str());
+    theFleet->setOwner(owner->getID());
+
+    theFleet->setPosition(loc);
+    theFleet->setVelocity(Vector3d(0ll,0ll,0ll));
+
+    OrderQueue *fleetoq = new OrderQueue();
+    fleetoq->setQueueId(fleet->getID());
+    fleetoq->addOwner(owner->getID());
+    game->getOrderManager()->addOrderQueue(fleetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(fleetoq->getQueueId());
+    theFleet->setDefaultOrderTypes();
+
+    fleet->addToParent(1);
+    return fleet;
+}
+
 void taeRuleset::startGame() {
     setupResources();
     Logger::getLogger()->info("TaE started");
