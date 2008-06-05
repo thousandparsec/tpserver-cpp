@@ -51,6 +51,9 @@ class Fleet : public OwnedObject {
         std::map<uint32_t, uint32_t> getShips() const;
         uint32_t totalShips() const;
 
+        uint32_t getDamage() const;
+        void setDamage(uint32_t nd);
+
         void packExtraData(Frame * frame);
 
         void doOnceATurn();

@@ -21,6 +21,7 @@
 
 #include <math.h>
 
+#include <tpserver/logging.h>
 #include <tpserver/frame.h>
 #include <tpserver/order.h>
 #include <tpserver/game.h>
@@ -42,15 +43,18 @@
 #include "fleet.h"
 
 FleetType::FleetType():OwnedObjectType(){
+    Logger::getLogger()->debug("Enter: Fleet Constructor");
     //Set parameters of the fleet
     ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
     group->setName("Ships");
     group->setDescription("The information about ships in this fleet");
     group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
+    group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
     addParameterGroupDesc(group);
 
-    nametype = "Fleet";
+     nametype = "Fleet";
     typedesc = "Fleet of ships";
+    Logger::getLogger()->debug("Exit: Fleet Constructor");
 }
 
 FleetType::~FleetType(){
@@ -67,6 +71,7 @@ Fleet::~Fleet(){
 }
 
 void Fleet::setDefaultOrderTypes(){
+    Logger::getLogger()->debug("Enter: Fleet::setDefaultOrderTypes");
     //TODO: Write this function... example below
     /*
     OrderManager * om = Game::getGame()->getOrderManager();
@@ -77,9 +82,12 @@ void Fleet::setDefaultOrderTypes(){
     allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
     ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
     */
+    Logger::getLogger()->debug("Exit: Fleet::setDefaultOrderTypes");
+
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
+    Logger::getLogger()->debug("Enter: Fleet::addships");
     //Get list of ships
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
     //Add the new ships to list
@@ -87,9 +95,11 @@ void Fleet::addShips(uint32_t type, uint32_t number){
     //Set list of ships
     ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
     obj->touchModTime();
+    Logger::getLogger()->debug("Exit: Fleet::addShips");
 }
 
 bool Fleet::removeShips(uint32_t type, uint32_t number){
+    Logger::getLogger()->debug("Enter: Fleet::removeShips");
     //Get list of ships
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
     //Check to make sure the request is valid, then delete the ships
@@ -100,37 +110,55 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
         }
         ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
         obj->touchModTime();
+        Logger::getLogger()->debug("Exit: Fleet::removeShips");
         return true;
     }
+    Logger::getLogger()->debug("Exit: Fleet::removeShips");
     return false;
 }
 
 uint32_t Fleet::numShips(uint32_t type){
+    Logger::getLogger()->debug("Enter: Fleet::numShips");
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+    Logger::getLogger()->debug("Exit: Fleet::numShips");
     return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
 std::map<uint32_t, uint32_t> Fleet::getShips() const{
+    Logger::getLogger()->debug("Enter: Fleet::getShips");
     std::map<uint32_t, uint32_t> ships;
     std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = (( RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
             itcurr != shipsref.end(); ++itcurr){
         ships[itcurr->first.second] = itcurr->second;
     }
+    Logger::getLogger()->debug("Exit: Fleet::getShips");
     return ships;
 }
 
 uint32_t Fleet::totalShips() const{
+    Logger::getLogger()->debug("Enter: Fleet::totalShips");
     uint32_t num = 0;
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = ships.begin();
             itcurr != ships.end(); ++itcurr){
         num += itcurr->second;
     }
+    Logger::getLogger()->debug("Exit: Fleet::totalShips");
     return num;
 }
 
+uint32_t Fleet::getDamage() const{
+    return ((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue();
+}
+
+void Fleet::setDamage(uint32_t nd){
+    ((IntegerObjectParam*)(obj->getParameter(4,2)))->setValue(nd);
+    obj->touchModTime();
+}
+
 void Fleet::packExtraData(Frame * frame){
+    Logger::getLogger()->debug("Enter: Fleet::packExtraData");
     OwnedObject::packExtraData(frame);
 
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
@@ -143,6 +171,7 @@ void Fleet::packExtraData(Frame * frame){
     }
 
     frame->packInt(((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue());
+    Logger::getLogger()->debug("Exit: Fleet::packExtraData");
 
 }
 
@@ -154,8 +183,10 @@ int Fleet::getContainerType(){
 }
 
 void Fleet::setupObject(){
+    Logger::getLogger()->debug("Enter: Fleet::setupObject");
     OwnedObject::setupObject();
 
     setSize(2);
+    Logger::getLogger()->debug("Exit: Fleet::setupObject");
 }
 

@@ -435,7 +435,7 @@ void taeRuleset::createComponents() {
     comp->setPropertyList(propList);
 }
 
-Design* createPassengerShip(Player* owner, int type) {
+Design* taeRuleset::createPassengerShip(Player* owner, int type) {
     Design* ship = new Design();
     map<unsigned int, unsigned int> componentList;
 
@@ -540,6 +540,14 @@ void taeRuleset::onPlayerAdded(Player* player) {
         dv->setIsCompletelyVisible(true);
         playerview->addVisibleDesign(dv);
     }
+
+    //Setup starting fleets
+    //TODO:Add all the fleets/ships
+    IGObject* fleet = createEmptyFleet(player, Vector3d(1ll,1ll,1ll), "Test Fleet");
+    Design* ship = createPassengerShip(player, 1);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    game->getObjectManager()->addObject(fleet);
 
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
