@@ -36,7 +36,7 @@ public:
    
    Player* getWinner();
 private:
-   void processOrdersOfGivenType(ObjectManager* objM, std::string type = "");
+   void processOrdersOfGivenType(std::string type = "");
 
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset

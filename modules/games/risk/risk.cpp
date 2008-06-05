@@ -337,10 +337,25 @@ void Risk::startGame(){
    }
 
    if(settings->get("max_players") == "")
-      settings->set("max_players", "4");
+      settings->set("max_players", "6");
   
    if(settings->get("game_length") == "")
       settings->set("game_length", "60");
+      
+   if (settings->get("risk_rfc_rate") == "")
+      settings->set("risk_rfc_rate", "3");
+
+   if (settings->get("risk_rfc_number") == "")
+      settings->set("risk_rfc_number", "1");
+  
+   if (settings->get("risk_default_planet_armies") == "")
+      settings->set("risk_default_planet_armies", "3");
+
+   if (settings->get("risk_rfc_start") == "")
+      settings->set("risk_rfc_start", "30");
+      
+   if (settings->get("risk_randomly_assign_territories") == "" )
+      settings->set("risk_randomly_assign_territories", "true");
 }
 
 bool Risk::onAddPlayer(Player* player){
@@ -352,7 +367,7 @@ bool Risk::onAddPlayer(Player* player){
       //TODO: implement restrictions for adding players
       /* Commented out for the time being until things start working properly
 
-      uint32_t max_players = atoi(Settings::getSettings()->get("risk_max_players").c_str() );
+      uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
       bool isStarted = game->isStarted();
       uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
 
@@ -376,6 +391,7 @@ bool Risk::isBoardClaimed() const{
 
 void Risk::onPlayerAdded(Player* player){
    Logger::getLogger()->debug("Risk onPlayerAdded");
+   Settings* settings = Settings::getSettings();
 
    Message *welcome = new Message();
    welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
@@ -403,8 +419,13 @@ void Risk::onPlayerAdded(Player* player){
     playerview->addVisibleObject(obv);
    }
    
-   //Create a spot in the reinforcements map for the player.
-   reinforcements[player->getID()] = 0; //TODO: set this to default as declared in options
+   if ( settings->get("risk_randomly_assign_territories") == "true" )
+   {
+      //give out random planets
+   }
+   
+   //Create a spot in the reinforcements map for the player and assign starting reinforcements.
+   reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
  
 }
 

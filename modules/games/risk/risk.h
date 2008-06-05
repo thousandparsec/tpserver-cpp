@@ -78,6 +78,8 @@ class Risk : public Ruleset {
       std::map<uint32_t, uint32_t> reinforcements;
 
       UGraph graph;
+      
+      uint32_t rfc_number;
 
 };// class Risk : public Ruleset
 	

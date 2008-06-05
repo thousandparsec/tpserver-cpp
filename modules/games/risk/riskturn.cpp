@@ -67,10 +67,10 @@ void RiskTurn::doTurn(){
    //TODO: Calculate new reinforcements for players, add to their total.
    //Send message to player about updated total
   
-   processOrdersOfGivenType(objM,"Colonize");
-   processOrdersOfGivenType(objM,"Reinforce");
-   processOrdersOfGivenType(objM,"Move");
-   processOrdersOfGivenType(objM);
+   processOrdersOfGivenType("Colonize");
+   processOrdersOfGivenType("Reinforce");
+   processOrdersOfGivenType("Move");
+   processOrdersOfGivenType();
 
    //objM->clearRemovedObjects(); //CHECK: no objects are ever removed in Risk
    
@@ -98,10 +98,11 @@ void RiskTurn::doTurn(){
 *   only the first two P will be procesed
 *NOTE: If no type is specified then all orders in queue will be processed
 */
-void RiskTurn::processOrdersOfGivenType(ObjectManager* objM, string type) {
+void RiskTurn::processOrdersOfGivenType(string type) {
    Game* game = Game::getGame();
    OrderManager* ordM = game->getOrderManager();
-   
+   ObjectManager* objM = game->getObjectManager();
+      
    //Get all objects frobjM object manager
    set<uint32_t> objectsIds = objM->getAllIds();
    
@@ -153,7 +154,9 @@ void RiskTurn::setPlayerVisibleObjects() {
 
 Player* RiskTurn::getWinner() {
    //TODO: Check for winner here
-   Player *winner = NULL;  //So it compiles
+   Player *winner;
+   bool complete_ownership; //signifies if the board is completely owned or not
+   
    return winner;
 }
 } //namespace RiskRuleset
