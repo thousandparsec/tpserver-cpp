@@ -350,7 +350,7 @@ void Risk::startGame(){
   
    if(settings->get("game_length") == "")
       settings->set("game_length", "60");
-      /*
+
    if (settings->get("risk_rfc_rate") == "")
       settings->set("risk_rfc_rate", "3");
 
@@ -365,7 +365,7 @@ void Risk::startGame(){
       
    if (settings->get("risk_randomly_assign_territories") == "" )
       settings->set("risk_randomly_assign_territories", "true");
-*/}
+}
 
 bool Risk::onAddPlayer(Player* player){
       Logger::getLogger()->debug("Risk onAddPlayer"); 
@@ -429,7 +429,7 @@ void Risk::onPlayerAdded(Player* player){
    }
    
    if ( settings->get("risk_randomly_assign_territories") == "true" ) {
-      //randomlyAssignPlanets(player);
+      randomlyAssignPlanets(player);
    }
    
    //Create a spot in the reinforcements map for the player and assign starting reinforcements.
@@ -437,17 +437,18 @@ void Risk::onPlayerAdded(Player* player){
  
 }
 
+//CHECK: not really assigning planets
 void Risk::randomlyAssignPlanets(Player* player) {
+   Logger::getLogger()->debug("Attempting to randomly assign planets");
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
    PlayerManager *pm = game->getPlayerManager();
-   set<uint32_t> objectsIds = objM->getAllIds();
-   
+
    uint32_t to_be_asgned = num_planets / atoi(Settings::getSettings()->get("max_players").c_str() );
    OwnedObject* planet; 
    while (to_be_asgned > 0) {
       uint32_t planet_number = random->getInRange((uint32_t)1,num_planets); //Check is this in range inclusive?
-      planet = dynamic_cast<OwnedObject*>(objM->getObject(num_constellations+2*num_planets)->getObjectBehaviour());   //TODO make this more transparent
+      planet = dynamic_cast<OwnedObject*>(objM->getObject(num_constellations+2*planet_number)->getObjectBehaviour());   //TODO make this more transparent
       if (planet->getOwner() != 0) {
          planet->setOwner(player->getID());
          to_be_asgned--;
