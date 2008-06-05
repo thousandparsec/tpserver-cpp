@@ -18,6 +18,7 @@
  *
  */
 
+#include <time.h>
 #include <sstream>
 
 #include "command.h"
@@ -347,6 +348,7 @@ void CommandManager::describeCommand(uint32_t cmdtype, Frame * of)
 
 void CommandManager::addCommandType(Command* cmd){
     cmd->setType(nextType);
+    cmd->setDescriptionModTime(time(NULL));
     commandStore[nextType++] = cmd;
     seqkey++;
 }
@@ -354,25 +356,36 @@ void CommandManager::addCommandType(Command* cmd){
 void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     uint32_t lseqkey = frame->unpackInt();
     if(lseqkey == UINT32_NEG_ONE){
-        //start new seqkey
         lseqkey = seqkey;
     }
 
     uint32_t start = frame->unpackInt();
     uint32_t num = frame->unpackInt();
+    uint64_t fromtime = UINT64_NEG_ONE;
+    if(frame->getVersion() >= fv0_4){
+        fromtime = frame->unpackInt64();
+    }
   
     if(lseqkey != seqkey){
         of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
         return;
     }
 
-    if(start > commandStore.size()){
+    std::map<uint32_t, uint64_t> modlist;
+    for(std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin(); itcurr != commandStore.end(); ++itcurr){
+        Command* type = itcurr->second;
+        if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() > fromtime){
+            modlist[itcurr->first] = type->getDescriptionModTime();
+        }
+    }
+
+    if(start > modlist.size()){
         of->createFailFrame(fec_NonExistant, "Starting number too high");
         return;
     }
   
-    if(num > commandStore.size() - start){
-        num = commandStore.size() - start;
+    if(num > modlist.size() - start){
+        num = modlist.size() - start;
     }
   
     if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
@@ -382,13 +395,18 @@ void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
 
     of->setType(ftad_CommandTypes_List);
     of->packInt(lseqkey);
-    of->packInt(commandStore.size() - start - num);
+    of->packInt(modlist.size() - start - num);
     of->packInt(num);
-    std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin();
+    std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
     advance(itcurr, start);
     for(uint32_t i = 0; i < num; i++){
         of->packInt(itcurr->first);
+        of->packInt64(itcurr->second);
         ++itcurr;
+    }
+
+    if(of->getVersion() >= fv0_4){
+        of->packInt64(fromtime);
     }
 }
 

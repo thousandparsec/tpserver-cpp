@@ -72,6 +72,11 @@ void Command::setType(uint32_t ntype)
     type = ntype;
 }
 
+void Command::setDescriptionModTime(uint64_t mtime)
+{
+    descmodtime = mtime;
+}
+
 std::string Command::getName() const
 {
     return name;
@@ -82,8 +87,14 @@ std::string Command::getHelp() const
     return help;
 }
 
-std::list<CommandParameter*> Command::getParameters() const{
+std::list<CommandParameter*> Command::getParameters() const
+{
     return parameters;
+}
+
+uint64_t Command::getDescriptionModTime() const
+{
+    return descmodtime;
 }
 
 void Command::describeCommand(Frame * of) const
@@ -96,6 +107,7 @@ void Command::describeCommand(Frame * of) const
     for(std::list<CommandParameter*>::const_iterator itcurr = parameters.begin(); itcurr !=parameters.end(); ++itcurr){
         (*itcurr)->packCommandDescFrame(of);
     }
+    of->packInt64(descmodtime);
 }
 
 void Command::addCommandParameter(CommandParameter* cp)

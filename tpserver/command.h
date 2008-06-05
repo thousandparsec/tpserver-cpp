@@ -57,10 +57,12 @@ class Command {
 
     uint32_t getType() const;
     void setType(uint32_t ntype);
+    void setDescriptionModTime(uint64_t mtime);
 
     std::string getName() const;
     std::string getHelp() const;
     std::list<CommandParameter*> getParameters() const;
+    uint64_t getDescriptionModTime() const;
 
     void describeCommand(Frame * of) const;
 
@@ -72,6 +74,7 @@ class Command {
     uint32_t type;
     std::string name;
     std::string help;
+    uint64_t descmodtime;
   
   private:
     std::list<CommandParameter*> parameters;
