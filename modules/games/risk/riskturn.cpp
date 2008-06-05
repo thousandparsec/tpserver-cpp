@@ -90,6 +90,17 @@ void RiskTurn::doTurn(){
     
 } //RiskTurn::RiskTurn() : TurnProcess()
 
+void RiskTurn::calculateReinforcements() {
+   Game* game = Game::getGame();
+   ObjectManager* objM = game->getObjectManager();
+   PlayerManager *pm = game->getPlayerManager();
+   set<uint32_t> objectsIds = objM->getAllIds();
+   Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
+   
+   //Count territories of each player
+   //Assign correct amount of reinforcements
+}
+
 //ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird
 /** processOrdersOfGivenType
 * This function iterates over all objects the objM holds and process only orders of a given type 
@@ -152,11 +163,40 @@ void RiskTurn::setPlayerVisibleObjects() {
    //CHECK: If I need to reset any views. Its my belief I don't need to, since no objects are ever created.
 }
 
+//This class may be an exercise in futility. I tried writing it mainly from scratch and will need to be tested
 Player* RiskTurn::getWinner() {
-   //TODO: Check for winner here
+   Game* game = Game::getGame();
+   OrderManager* ordM = game->getOrderManager();
+   ObjectManager* objM = game->getObjectManager();
+   PlayerManager* pm = game->getPlayerManager();
+
    Player *winner;
+   uint32_t player;
    bool complete_ownership; //signifies if the board is completely owned or not
+
+   //Get all objects frobjM object manager
+   set<uint32_t> objectsIds = objM->getAllIds();
    
+   //Iterate over every object
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   {
+      IGObject * currObj = objM->getObject(*i);
+      OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
+      //CHECK: what happens when it encounters non-owned objects
+      
+      if ( i == objectsIds.begin() ) //we are on first object
+      {
+         player = ownedObj->getOwner();
+      }
+      else if ( player != ownedObj->getOwner() )   //CHECK: that this is valid
+      {
+         player = -1;
+      }
+   }
+   
+   if ( player != -1 )
+      winner = pm->getPlayer(player);
+      
    return winner;
 }
 } //namespace RiskRuleset

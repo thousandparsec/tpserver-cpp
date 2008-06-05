@@ -85,13 +85,15 @@ using std::advance;
 using std::pair;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
-Risk::Risk() :graph() {
+Risk::Risk() : graph(), random(NULL) {
    num_constellations = 0;
    num_planets = 0;
 }
 
 Risk::~Risk(){
-   //minisec simply deletes the random if not NULL    
+   if(random != NULL){
+     delete random;
+   }
 }
 
 std::string Risk::getName(){
@@ -154,7 +156,15 @@ void Risk::setOrderTypes() const{
 
 void Risk::createGame(){
    Logger::getLogger()->info("Risk created");
-
+/*
+   std::string randomseed = Settings::getSettings()->get("risk_debug_random_seed");
+   if( randomseed != ""){
+      random = new Random();
+      random->seed(atoi(randomseed.c_str()));
+   } else {
+      random = Game::getGame()->getRandom();
+   }
+*/
    createResources();
  
    //set up universe (universe->constellations->star sys->planet)
@@ -182,7 +192,6 @@ void Risk::createResources() {
    //Helper function starID(constellations,planet #) returns the ID of the star
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
-   IGObject* id;  //to temporarily hold an object to get its id
 
    ObjectManager *objman = Game::getGame()->getObjectManager();
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
@@ -341,7 +350,7 @@ void Risk::startGame(){
   
    if(settings->get("game_length") == "")
       settings->set("game_length", "60");
-      
+      /*
    if (settings->get("risk_rfc_rate") == "")
       settings->set("risk_rfc_rate", "3");
 
@@ -356,7 +365,7 @@ void Risk::startGame(){
       
    if (settings->get("risk_randomly_assign_territories") == "" )
       settings->set("risk_randomly_assign_territories", "true");
-}
+*/}
 
 bool Risk::onAddPlayer(Player* player){
       Logger::getLogger()->debug("Risk onAddPlayer"); 
@@ -419,14 +428,32 @@ void Risk::onPlayerAdded(Player* player){
     playerview->addVisibleObject(obv);
    }
    
-   if ( settings->get("risk_randomly_assign_territories") == "true" )
-   {
-      //give out random planets
+   if ( settings->get("risk_randomly_assign_territories") == "true" ) {
+      //randomlyAssignPlanets(player);
    }
    
    //Create a spot in the reinforcements map for the player and assign starting reinforcements.
    reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
  
+}
+
+void Risk::randomlyAssignPlanets(Player* player) {
+   Game* game = Game::getGame();
+   ObjectManager* objM = game->getObjectManager();
+   PlayerManager *pm = game->getPlayerManager();
+   set<uint32_t> objectsIds = objM->getAllIds();
+   
+   uint32_t to_be_asgned = num_planets / atoi(Settings::getSettings()->get("max_players").c_str() );
+   OwnedObject* planet; 
+   while (to_be_asgned > 0) {
+      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets); //Check is this in range inclusive?
+      planet = dynamic_cast<OwnedObject*>(objM->getObject(num_constellations+2*num_planets)->getObjectBehaviour());   //TODO make this more transparent
+      if (planet->getOwner() != 0) {
+         planet->setOwner(player->getID());
+         to_be_asgned--;
+      }
+
+   }
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {

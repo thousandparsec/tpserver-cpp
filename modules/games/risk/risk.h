@@ -21,10 +21,11 @@
  *
  */
 
-//small change
 #include <tpserver/ruleset.h> 
 #include <boost/graph/adjacency_list.hpp> //FIXME: May not work properly, fix if different include is found
+
 class IGObject;
+class Random;
 
 namespace RiskRuleset {
 
@@ -72,6 +73,8 @@ class Risk : public Ruleset {
        //onAddPlayer methods
       bool isBoardClaimed() const;
       
+      void randomlyAssignPlanets(Player* player);
+      
       //The number of planets to be on the board
       uint32_t num_planets;
       uint32_t num_constellations;
@@ -80,6 +83,8 @@ class Risk : public Ruleset {
       UGraph graph;
       
       uint32_t rfc_number;
+      
+     Random* random;
 
 };// class Risk : public Ruleset
 	

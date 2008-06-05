@@ -37,6 +37,7 @@ public:
    Player* getWinner();
 private:
    void processOrdersOfGivenType(std::string type = "");
+   void calculateReinforcements();
 
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset
