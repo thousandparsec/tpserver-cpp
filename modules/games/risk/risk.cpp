@@ -202,11 +202,23 @@ void Risk::createUniverse() {
    IGObject *con_one = createConstellation(*universe, "One",     2);
    IGObject *con_two = createConstellation(*universe, "Two",     3);
    
-   createStarSystem(*con_one, "alpha",          -0.250, 0.650);
-   createStarSystem(*con_one, "beta",           -0.250, 0.350);
+   createStarSystem(*con_one, "alpha",          -0.250, 0.650);   //planet #1
+   createStarSystem(*con_one, "beta",           -0.250, 0.350);   //planet #2
    
-   createStarSystem(*con_two, "gamma",          +0.250, 0.650);
-   createStarSystem(*con_two, "delta",          +0.250, 0.350);
+   createStarSystem(*con_two, "gamma",          +0.250, 0.650);   //planet #3
+   createStarSystem(*con_two, "delta",          +0.250, 0.350);   //planet #4
+
+   //TEST: used simply for testing, map creation will be a more robust and semi-hidden process once map import is made
+   const uint32_t ALPHA = 2 + 2*1;
+   const uint32_t BETA  = 2 + 2*2;
+   const uint32_t GAMMA = 2 + 2*3;
+   const uint32_t DELTA = 2 + 2*4;
+
+   
+   boost::add_edge(ALPHA, BETA, graph);
+   boost::add_edge(GAMMA, DELTA, graph);
+   boost::add_edge(BETA, DELTA, graph);
+   boost::add_edge(GAMMA, ALPHA, graph);   
    
    //The question is: refer to planets as 1 to num_planets or as their actual ids?
    //It will be easier to access them by id but harder to create
@@ -392,7 +404,7 @@ void Risk::onPlayerAdded(Player* player){
    }
    
    //Create a spot in the reinforcements map for the player.
-   reinforcements[player->getID()] = 0;
+   reinforcements[player->getID()] = 0; //TODO: set this to default as declared in options
  
 }
 
