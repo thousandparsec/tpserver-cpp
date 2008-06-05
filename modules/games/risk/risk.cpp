@@ -108,7 +108,7 @@ void Risk::initGame(){
    Logger::getLogger()->info("Risk initialised");
 
    Game::getGame()->setTurnProcess(new RiskTurn());
-   Game::getGame()->setRuleset(this);
+   //Game::getGame()->setRuleset(this);
 
    setObjectTypes();
 
