@@ -27,6 +27,7 @@
 #include "staticobject.h"
 #include "ownedobject.h"
 #include "resourcelistparam.h"
+#include <list>
 
 namespace RiskRuleset {
 
@@ -73,7 +74,7 @@ public:
 
    void setupObject();
 
-   //TODO: add getAdjacent method to return a set IDs of adjacent planets
+   std::list<Planet*> getAdjacent();
 };
 
 

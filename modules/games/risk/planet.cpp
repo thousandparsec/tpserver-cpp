@@ -49,7 +49,7 @@
 #include "containertypes.h"
 #include "risk.h"
 #include "planet.h"
-
+#include "graph.h"
 
 namespace RiskRuleset {
    
@@ -57,6 +57,7 @@ using std::string;
 using std::pair;
 using std::map;
 using std::set;
+using std::list;
 
 PlanetType::PlanetType() : StaticObjectType(){
    nametype = "Planet";
@@ -218,6 +219,10 @@ bool Planet::removeResource(const string& resTypeName, uint32_t amount){
 void Planet::setupObject(){
    setSize(2);
    ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
+}
+
+list<Planet*> Planet::getAdjacent() {
+   //TODO: Implement getAdjacent()
 }
 
 }
