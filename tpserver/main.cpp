@@ -19,6 +19,12 @@
  */
 
 #include <iostream>
+#include <stdexcept>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 #include <signal.h>
 
 #ifdef HAVE_CONFIG_H
@@ -38,23 +44,91 @@ void sigIntHandler(int sig){
   Network::getNetwork()->stopMainLoop();
 }
 
+static void child_handler(int signum)
+{
+    switch(signum){
+    case SIGALRM:
+        exit(1);
+        break;
+    case SIGUSR1:
+        exit(0);
+        break;
+    case SIGCHLD:
+        exit(1);
+        break;
+    }
+}
+
+
+static void daemonize()
+{
+    pid_t pid, sid, parent;
+
+    // already a daemon?
+    if(getppid() == 1)
+        return;
+
+    // trap signals
+    signal(SIGCHLD,child_handler);
+    signal(SIGUSR1,child_handler);
+    signal(SIGALRM,child_handler);
+
+    // fork
+    if((pid = fork()) < 0){
+        throw std::runtime_error(strerror(errno));
+    }
+    else if(pid > 0){
+        alarm(2);
+        pause();
+        exit(1);
+    }
+    
+    parent = getppid();
+
+    // handle signals
+    signal(SIGINT, sigIntHandler);
+    signal(SIGTERM, sigIntHandler);
+    signal(SIGCHLD,SIG_DFL);
+    signal(SIGTSTP,SIG_IGN);
+    signal(SIGTTOU,SIG_IGN);
+    signal(SIGTTIN,SIG_IGN);
+    signal(SIGHUP, SIG_IGN);
+
+    // change filemode mask
+    umask(0);
+
+    // new sid
+    if((sid = setsid()) < 0)
+        throw std::runtime_error(strerror(errno));
+
+    if(chdir("/") < 0)
+        throw std::runtime_error(strerror(errno));
+
+    // redirect std file descriptors
+    freopen( "/dev/null", "r", stdin);
+    freopen( "/dev/null", "w", stdout);
+    freopen( "/dev/null", "w", stderr);
+
+    kill(parent, SIGUSR1);
+}
+
 int main(int argc, char **argv)
 {
-  signal(SIGINT, sigIntHandler);
-  signal(SIGTERM, sigIntHandler);
   Settings *mySettings = Settings::getSettings();
   mySettings->readArgs(argc, argv);
 
   if(mySettings->get("NEVER_START") != "!"){
     if(!mySettings->readConfFile()){
       std::string savedloglevel = mySettings->get("log_level");
-      std::string savedlogconsole = mySettings->get("log_console");
       mySettings->set("log_level", "3");
-      mySettings->set("log_console", "yes");
       Logger::getLogger()->error("Could not read config file");
       mySettings->set("log_level", savedloglevel);
-      mySettings->set("log_console", savedlogconsole);
     }
+
+    if(mySettings->get("DEBUG") != "!")
+        daemonize();
+    else
+        mySettings->set("log_console", "yes");
 
     // TODO - is this in the right place?
     CommandManager *myCommandManager = CommandManager::getCommandManager();
