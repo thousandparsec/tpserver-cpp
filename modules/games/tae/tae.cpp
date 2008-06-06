@@ -444,6 +444,20 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 8)";
     comp->setPropertyList(propList);
+
+    //Weapons Arsenal
+    comp = new Component();
+    comp->addCategoryId(ds->getCategoryByName("Ships"));
+    comp->setName("Weapon");
+    comp->setDescription("The weapons arsenal for the ship");
+    comp->setTpclRequirementsFunction(
+        "(lambda (design) "
+            "(if (= (designType._num-components design) 1) "
+            "(cons #t \"\") "
+            "(cons #f \"This is a complete component, nothing else can be included\")))");
+    propList.clear();
+    propList[ds->getPropertyByName("Bombs")] = "(lambda (design) 1)";
+    comp->setPropertyList(propList);
 }
 
 Design* taeRuleset::createPassengerShip(Player* owner, int type) {
