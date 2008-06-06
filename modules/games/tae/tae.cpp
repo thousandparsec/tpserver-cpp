@@ -461,6 +461,32 @@ Design* taeRuleset::createPassengerShip(Player* owner, int type) {
     return ship;
 }
 
+Design* taeRuleset::createVIPTransport(Player* owner, int type) {
+    Design* ship = new Design();
+    map<unsigned int, unsigned int> componentList;
+
+    DesignStore * ds = Game::getGame()->getDesignStore();
+    
+    ship->setCategoryId(ds->getCategoryByName("Ships"));
+    ship->setName("VIP Transport");
+    ship->setDescription("A passenger transport ship for VIPs");
+    ship->setOwner(owner->getID());
+    //TODO: I hate if/else statements like this... I may change this later
+    if(type == 1) {
+        componentList[ds->getComponentByName("MerchantLeaderCargo")] = 1;
+    } else if (type == 2) {
+        componentList[ds->getComponentByName("ScientistLeaderCargo")] = 1;
+    } else if (type == 3) {
+        componentList[ds->getComponentByName("SettlerLeaderCargo")] = 1;
+    } else {
+        componentList[ds->getComponentByName("MiningLeaderCargo")] = 1;
+    }
+    ship->setComponents(componentList);
+    ds->addDesign(ship);
+
+    return ship;
+}
+
 //Creates an empty fleet owned by "owner" at the location of "parent"
 //Adapted from the createEmptyFleet function of mtsec
 IGObject* taeRuleset::createEmptyFleet(Player* owner, IGObject* parent, string name) {
