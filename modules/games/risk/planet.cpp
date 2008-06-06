@@ -52,7 +52,7 @@
 
 
 namespace RiskRuleset {
-
+   
 using std::string;
 using std::pair;
 using std::map;
@@ -214,8 +214,6 @@ bool Planet::removeResource(const string& resTypeName, uint32_t amount){
 
    return removeResource( getTypeId(resTypeName), amount);
 }
-
-
 
 void Planet::setupObject(){
    setSize(2);

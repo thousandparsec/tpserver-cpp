@@ -61,7 +61,7 @@ Order* Colonize::clone() const {
 
 bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
-   //TODO: Implement order
+   //TODO: Implement Colonize order
  
    //Check object for other Colonize orders, pick the largest VERIFIED bid (must check player has reinforcements availible)
    //Change object owner to owner of largest "bid"

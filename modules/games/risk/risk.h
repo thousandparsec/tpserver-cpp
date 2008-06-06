@@ -22,7 +22,7 @@
  */
 
 #include <tpserver/ruleset.h> 
-#include <boost/graph/adjacency_list.hpp> //FIXME: May not work properly, fix if different include is found
+#include <boost/graph/adjacency_list.hpp>
 
 class IGObject;
 class Random;
@@ -51,8 +51,10 @@ class Risk : public Ruleset {
       void onPlayerAdded(Player* player);
       
       //TODO: add getters/setters for graph, etc.
+      UGraph getGraph()const;
       uint32_t getPlayerReinforcements(uint32_t owner);
       void setPlayerReinforcements(uint32_t owner, uint32_t units);
+  
    private:
        //initGame methods
       void setObjectTypes() const;
@@ -84,7 +86,7 @@ class Risk : public Ruleset {
       
       uint32_t rfc_number;
       
-     Random* random;
+      Random* random;
 
 };// class Risk : public Ruleset
 	

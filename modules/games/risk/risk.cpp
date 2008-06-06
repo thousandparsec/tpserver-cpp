@@ -432,7 +432,6 @@ void Risk::onPlayerAdded(Player* player){
    
 }
 
-//CHECK: not really assigning planets
 void Risk::randomlyAssignPlanets(Player* player) {
    Logger::getLogger()->debug("Starting random planet assignment for player %d", player->getID());
 
@@ -442,7 +441,6 @@ void Risk::randomlyAssignPlanets(Player* player) {
 
    //get applicable settings
    uint32_t armies = atoi(settings->get("risk_default_planet_armies").c_str() );
-   uint32_t max_armies = atoi(settings->get("risk_rfc_start").c_str() );
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
 
    uint32_t to_be_asgned = num_planets / max_players ;    //TODO: Make this rounding a little more robust.
@@ -453,18 +451,29 @@ void Risk::randomlyAssignPlanets(Player* player) {
    Planet* planet; 
    while (to_be_asgned > 0) {
       Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
-      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets); //Check is this in range inclusive? //FIXME: Bus error here <-
-      planet = dynamic_cast<Planet*>(om->getObject(num_constellations+2*planet_number)->getObjectBehaviour());   //TODO make this more transparent
-      Logger::getLogger()->debug("Picked planet #%d to give out, this is object #%d",planet_number, num_constellations+2*planet_number);
-      if (planet != NULL && planet->getOwner() <=  0) {  //if planet is not owned
-         planet->setOwner(player->getID());                 //let the player have it
-         planet->setResource("Army", armies, max_armies);   //update availible resources
+      
+      //Check is this in range inclusive?
+      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets);
+      
+      //TODO make this more transparent
+      planet = dynamic_cast<Planet*>(om->getObject(num_constellations+2*planet_number)->getObjectBehaviour());
+      
+      Logger::getLogger()->debug("Picked planet #%d to give out, this is object #%d",
+            planet_number, num_constellations+2*planet_number);
+      
+      if (planet != NULL && planet->getOwner() <=  0) {                          //if planet is not owned
+         planet->setOwner(player->getID());                                      //let the player have it
+         planet->setResource("Army", armies, reinforcements[player->getID()]);   //and update availible resources with defaults
          to_be_asgned--;
       }
 
    }
    
    //TODO: Send message to player informing them they have received planets.
+}
+
+UGraph Risk::getGraph() const {
+   return graph;
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
