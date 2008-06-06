@@ -121,12 +121,6 @@ void Risk::setObjectTypes() const{
 
    obdm->addNewObjectType(new UniverseType());
 
-   //old
-   /*  eo = new StaticObjectType();
-   eo->setTypeName("Constellation");
-   eo->setTypeDescription("A set of star systems that provides a bonus of reinforcements to any player completely controlling it.");
-   obdm->addNewObjectType(eo); */
-   //new
    obdm->addNewObjectType(new ConstellationType());
 
    eo = new StaticObjectType();
@@ -156,7 +150,7 @@ void Risk::setOrderTypes() const{
 
 void Risk::createGame(){
    Logger::getLogger()->info("Risk created");
-/*
+
    std::string randomseed = Settings::getSettings()->get("risk_debug_random_seed");
    if( randomseed != ""){
       random = new Random();
@@ -164,7 +158,7 @@ void Risk::createGame(){
    } else {
       random = Game::getGame()->getRandom();
    }
-*/
+
    createResources();
  
    //set up universe (universe->constellations->star sys->planet)
@@ -439,22 +433,30 @@ void Risk::onPlayerAdded(Player* player){
 
 //CHECK: not really assigning planets
 void Risk::randomlyAssignPlanets(Player* player) {
-   Logger::getLogger()->debug("Attempting to randomly assign planets");
+   Logger::getLogger()->debug("Starting random planet assignment for player %d", player->getID());
    Game* game = Game::getGame();
-   ObjectManager* objM = game->getObjectManager();
-   PlayerManager *pm = game->getPlayerManager();
+   ObjectManager* om = game->getObjectManager();
+   PlayerManager* pm = game->getPlayerManager();
 
-   uint32_t to_be_asgned = num_planets / atoi(Settings::getSettings()->get("max_players").c_str() );
-   OwnedObject* planet; 
+   uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
+   uint32_t to_be_asgned = num_planets / max_players ;    //TODO: Make this rounding a little more robust.
+   Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
+         to_be_asgned, num_planets, max_players);
+   
+   Planet* planet; 
    while (to_be_asgned > 0) {
-      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets); //Check is this in range inclusive?
-      planet = dynamic_cast<OwnedObject*>(objM->getObject(num_constellations+2*planet_number)->getObjectBehaviour());   //TODO make this more transparent
-      if (planet->getOwner() != 0) {
-         planet->setOwner(player->getID());
+      Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
+      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets); //Check is this in range inclusive? //FIXME: Bus error here <-
+      planet = dynamic_cast<Planet*>(om->getObject(num_constellations+2*planet_number)->getObjectBehaviour());   //TODO make this more transparent
+      Logger::getLogger()->debug("Picked planet #%d to give out, this is object #%d",planet_number, num_constellations+2*planet_number);
+      if (planet != NULL && planet->getOwner() <=  0) {  //if planet is not owned
+         planet->setOwner(player->getID());  //let the player have it
          to_be_asgned--;
       }
 
    }
+   
+   //TODO: Send message to player informing them they have received planets.
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
