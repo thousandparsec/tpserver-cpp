@@ -106,13 +106,14 @@ void Planet::doOnceATurn() {
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
 
    uint32_t owner = getOwner();                                      //Get ID of planet owner
-   uint32_t reinforcements = risk->getPlayerReinforcements(owner);   //Get players max reinforcements
-   uint32_t current = getResource("Army").first;                     //Get planets current resources
-   //CHECK: if the first element of the std::pair is the number of armies on surface
-   
-   //Update the display of resources to show new army and max count (max is total availible reinforcements)
-   setResource("Army", current, reinforcements);  
-   
+   if (owner > 0) { //ensure the owner is real
+      uint32_t reinforcements = risk->getPlayerReinforcements(owner);   //Get players max reinforcements
+      uint32_t current = getResource("Army").first;                     //Get planets current resources
+      //CHECK: if the first element of the std::pair is the number of armies on surface
+
+      //Update the display of resources to show new army and max count (max is total availible reinforcements)
+      setResource("Army", current, reinforcements);  
+   }
    setOrderTypes();
 
    obj->touchModTime();
