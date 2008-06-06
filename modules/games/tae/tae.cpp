@@ -315,6 +315,17 @@ void taeRuleset::createProperties() {
             "((> n 8) (cons n \"ERROR: value too high!\")))))");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
+
+    prop = new Property();
+    prop->addCategoryId(ds->getCategoryByName("Ships"));
+    prop->setRank(0);
+    prop->setName("Bombs");
+    prop->setDisplayName("Supernova Bombs");
+    prop->setDescription("The number of supernova bombs aboard the ship");
+    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" bombs\")) ) )");
+    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+    ds->addProperty(prop);
+
 }
 
 void taeRuleset::createComponents() {
