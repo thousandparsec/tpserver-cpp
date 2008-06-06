@@ -25,6 +25,7 @@
 #include "logging.h"
 #include "settings.h"
 #include "game.h"
+#include "ruleset.h"
 #include "turntimer.h"
 #include "net.h"
 #include "pluginmanager.h"
@@ -141,7 +142,7 @@ class NetworkIsStartedCommand : public Command{
 class SettingsSetCommand : public Command{
   public:
     SettingsSetCommand() : Command(){
-        name = "set";
+        name = "set-setting";
         help = "Sets a setting.";
         addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to set."));
         addCommandParameter(new CommandParameter(cpT_String, "value", "Value to set setting to."));
@@ -160,7 +161,7 @@ class SettingsSetCommand : public Command{
 class SettingsGetCommand : public Command{
   public:
     SettingsGetCommand() : Command(){
-        name = "get";
+        name = "get-setting";
         help = "Gets a setting.";
         addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to get."));
     }
@@ -208,10 +209,10 @@ class PluginListCommand : public Command{
     }
 };
 
-class RulesetCommand : public Command{
+class RulesetSetCommand : public Command{
   public:
-    RulesetCommand() : Command(){
-        name = "ruleset";
+    RulesetSetCommand() : Command(){
+        name = "set-ruleset";
         help = "Sets the ruleset to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "ruleset", "Ruleset to load."));
     }
@@ -229,10 +230,25 @@ class RulesetCommand : public Command{
     }
 };
 
-class TpschemeCommand : public Command{
+class RulesetGetCommand : public Command{
   public:
-    TpschemeCommand() : Command(){
-        name = "tpscheme";
+    RulesetGetCommand() : Command(){
+        name = "get-ruleset";
+        help = "Gets the ruleset being used by the server.";
+    }
+    void action(Frame * frame, Frame * of){
+        std::ostringstream msg;
+        msg << "The server is using ruleset \"" << Game::getGame()->getRuleset()->getName()
+            << "\" (version " << Game::getGame()->getRuleset()->getVersion() << ").";
+        of->packInt(0);
+        of->packString(msg.str());
+    }
+};
+
+class TpschemeSetCommand : public Command{
+  public:
+    TpschemeSetCommand() : Command(){
+        name = "set-tpscheme";
         help = "Sets the TpScheme implementation to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "tpscheme", "TpScheme implementation to load."));
     }
@@ -250,10 +266,10 @@ class TpschemeCommand : public Command{
     }
 };
 
-class PersistenceCommand : public Command{
+class PersistenceSetCommand : public Command{
   public:
-    PersistenceCommand() : Command(){
-        name = "persistence";
+    PersistenceSetCommand() : Command(){
+        name = "set-persistence";
         help = "Sets the persistence method to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "persist", "Persistence method to load."));
     }
@@ -436,9 +452,10 @@ CommandManager::CommandManager()
     addCommandType(new SettingsGetCommand());
     addCommandType(new PluginLoadCommand());
     addCommandType(new PluginListCommand());
-    addCommandType(new RulesetCommand());
-    addCommandType(new TpschemeCommand());
-    addCommandType(new PersistenceCommand());
+    addCommandType(new RulesetSetCommand());
+    addCommandType(new RulesetGetCommand());
+    addCommandType(new TpschemeSetCommand());
+    addCommandType(new PersistenceSetCommand());
     addCommandType(new GameLoadCommand());
     addCommandType(new GameStartCommand());
     addCommandType(new GameIsStartedCommand());
