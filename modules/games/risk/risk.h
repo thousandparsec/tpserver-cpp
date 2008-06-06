@@ -23,6 +23,8 @@
 
 #include <tpserver/ruleset.h> 
 #include <boost/graph/adjacency_list.hpp>
+#include <vector>
+#include <tpserver/vector3d.h>
 
 class IGObject;
 class Random;
