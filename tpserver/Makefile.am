@@ -19,7 +19,7 @@ AVAHISOURCES =
 AVAHIHEADERS =
 endif
 
-tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
+tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
@@ -41,7 +41,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp console.cpp \
 		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp
 		
 headersdir = $(includedir)/tpserver
-headers_HEADERS = connection.h console.h \
+headers_HEADERS = connection.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h \
@@ -73,9 +73,9 @@ noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 INCLUDES = $(LTDLINCL)
 
 # FIXME: the dlopens should be dependent on what is configured to run.
-tpserver_cpp_LDADD = @libgnutls_LIBS@ @libtprl_LIBS@ @avahiclient_LIBS@ @BOOST_LDFLAGS@ @BOOST_SIGNALS_LIB@ $(LIBLTDL) "-dlopen" self
+tpserver_cpp_LDADD = @libgnutls_LIBS@ @avahiclient_LIBS@ @BOOST_LDFLAGS@ @BOOST_SIGNALS_LIB@ $(LIBLTDL) "-dlopen" self
 tpserver_cpp_DEPENDENCIES = $(LIBLTDL) 
-AM_CXXFLAGS = @libgnutls_CFLAGS@ @libtprl_CFLAGS@ @avahiclient_CFLAGS@
+AM_CXXFLAGS = @libgnutls_CFLAGS@ @avahiclient_CFLAGS@
 tpserver_cpp_LDFLAGS = -export-dynamic 
 
 

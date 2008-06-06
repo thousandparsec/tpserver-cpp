@@ -27,7 +27,6 @@
 #define VERSION "0.0.0"
 #endif
 
-#include "console.h"
 #include "commandmanager.h"
 #include "logging.h"
 #include "game.h"
@@ -66,9 +65,6 @@ int main(int argc, char **argv)
 	myLogger->info("This is GPL software, please see the COPYING file");
 
         try{
-
-	Console *myConsole = Console::getConsole();
-	myConsole->open();
 
 	Game *myGame = Game::getGame();
 
@@ -154,8 +150,6 @@ int main(int argc, char **argv)
             }
 
           myPlugins->stop();
-
-	myConsole->close();
 
         }catch(std::exception e){
             myLogger->debug("Caught exception, exiting");
