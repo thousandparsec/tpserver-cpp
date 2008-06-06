@@ -512,6 +512,23 @@ Design* taeRuleset::createVIPTransport(Player* owner, int type) {
     return ship;
 }
 
+Design* taeRuleset::createBomber(Player* owner) {
+    Design* ship = new Design();
+    map<unsigned int, unsigned int> componentList;
+
+    DesignStore * ds = Game::getGame()->getDesignStore();
+    
+    ship->setCategoryId(ds->getCategoryByName("Ships"));
+    ship->setName("Bomber");
+    ship->setDescription("A bomber capable of destroying star systems");
+    ship->setOwner(owner->getID());
+    componentList[ds->getComponentByName("Weapon")] = 1;
+    ship->setComponents(componentList);
+    ds->addDesign(ship);
+
+    return ship;
+}
+
 //Creates an empty fleet owned by "owner" at the location of "parent"
 //Adapted from the createEmptyFleet function of mtsec
 IGObject* taeRuleset::createEmptyFleet(Player* owner, IGObject* parent, string name) {
