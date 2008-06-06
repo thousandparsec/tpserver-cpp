@@ -21,13 +21,11 @@
  *
  */
 
-#include <risk.h>
 #include <planet.h>
- 
+#include <list>
 namespace RiskRuleset {
 
-using std::map;
-using std::list;
+
 
 class Graph {
 public:
@@ -36,16 +34,16 @@ public:
    bool addPlanet(IGObject* planet);
    bool addEdge(uint32_t id1, uint32_t id2);
    bool addEdge(IGObject* planet1, IGObject* planet2);
-   list<uint32_t> getAdjacent(IGObject* planet);
-   list<uint32_t> getAdjacent(uint32_t id);
+   std::list<uint32_t> getAdjacent(IGObject* planet);
+   std::list<uint32_t> getAdjacent(uint32_t id);
 private:
    struct Node {
       uint32_t id;
-      list<Node*> adjacent;
+      std::list<Node*> adjacent;
       //I didn't think it pertinent to include a pointer to the object here
       //as that information is available through the object manager via ID
    };
-   map<uint32_t,Node> nodeMap;
+   std::map<uint32_t,Node> nodeMap;
 };
 
 } //end namespace RiskRuleset

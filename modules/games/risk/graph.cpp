@@ -62,14 +62,14 @@ bool Graph::addEdge(IGObject* planet1, IGObject* planet2) {
    return addEdge(planet1->getID(),planet2->getID());
 }
 
-list<uint32_t> Graph::getAdjacent(IGObject* planet) { 
+std::list<uint32_t> Graph::getAdjacent(IGObject* planet) { 
    return getAdjacent(planet->getID());
 }
 
-list<uint32_t> Graph::getAdjacent(uint32_t id) { 
-   list<uint32_t> result;
+std::list<uint32_t> Graph::getAdjacent(uint32_t id) { 
+   std::list<uint32_t> result;
    Node* node = &nodeMap[id];
-   for (list<Node*>::iterator i = node->adjacent.begin(); i != node->adjacent.end(); ++i) {
+   for (std::list<Node*>::iterator i = node->adjacent.begin(); i != node->adjacent.end(); ++i) {
       result.push_back((*i)->id);
    }
    return result;

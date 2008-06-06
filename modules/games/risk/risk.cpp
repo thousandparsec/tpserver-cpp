@@ -63,6 +63,7 @@
 #include "ownedobject.h"
 #include "planet.h"
 #include "constellation.h"
+#include "graph.h"
 
 //Tyler's "hacky define :p"
 #define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
@@ -217,12 +218,8 @@ void Risk::createUniverse() {
    const uint32_t GAMMA = 2 + 2*3;
    const uint32_t DELTA = 2 + 2*4;
 
-   
-   boost::add_edge(ALPHA, BETA, graph);
-   boost::add_edge(GAMMA, DELTA, graph);
-   boost::add_edge(BETA, DELTA, graph);
-   boost::add_edge(GAMMA, ALPHA, graph);   
-   
+   //declare adjacencies
+
    //The question is: refer to planets as 1 to num_planets or as their actual ids?
    //It will be easier to access them by id but harder to create
    //and vica versa
@@ -472,7 +469,7 @@ void Risk::randomlyAssignPlanets(Player* player) {
    //TODO: Send message to player informing them they have received planets.
 }
 
-UGraph Risk::getGraph() const {
+Graph Risk::getGraph() const {
    return graph;
 }
 

@@ -22,7 +22,7 @@
  */
 
 #include <tpserver/ruleset.h> 
-#include <boost/graph/adjacency_list.hpp>
+#include <graph.h>
 #include <vector>
 #include <tpserver/vector3d.h>
 
@@ -30,14 +30,6 @@ class IGObject;
 class Random;
 
 namespace RiskRuleset {
-
-//vecS is used over listS because adding vectors is done only once at the beginning and thus quick add-remove operations are not required
-//Boost graphs CAN have internal properties, so when it comes to using graphviz to import maps we MAY be able to do it all in one graph
-
-//typedef an undirected (bidirected) graph that uses std::vector to store Vertex and Edge list
-   //The trade off of using vecS is that vecS uses less space but takes longer to add vertexs
-using namespace boost::graph;
-typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::bidirectionalS> UGraph;
 	
 class Risk : public Ruleset {
    public:
@@ -53,7 +45,7 @@ class Risk : public Ruleset {
       void onPlayerAdded(Player* player);
       
       //TODO: add getters/setters for graph, etc.
-      UGraph getGraph()const;
+      Graph getGraph()const;
       uint32_t getPlayerReinforcements(uint32_t owner);
       void setPlayerReinforcements(uint32_t owner, uint32_t units);
   
@@ -84,7 +76,7 @@ class Risk : public Ruleset {
       uint32_t num_constellations;
       std::map<uint32_t, uint32_t> reinforcements;
 
-      UGraph graph;
+      Graph graph;
       
       uint32_t rfc_number;
       
