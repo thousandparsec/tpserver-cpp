@@ -33,6 +33,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
+#include <tpserver/playermanager.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/designview.h>
@@ -302,7 +303,7 @@ void taeRuleset::createProperties() {
     // 7 -> Government Official
     // 8 -> Mining Foreman
     prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits)))"
-        "(cond "
+        "(cons n (cond "
             "((= n 1) \"Merchants\") "
             "((= n 2) \"Scientists\") "
             "((= n 3) \"Settlers\") "
@@ -312,7 +313,7 @@ void taeRuleset::createProperties() {
             "((= n 7) \"Government Official\") "
             "((= n 8) \"Mining Foreman\") "
             "((< n 1) (cons n \"ERROR: value too low!\")) "
-            "((> n 8) (cons n \"ERROR: value too high!\")))))");
+            "((> n 8) (cons n \"ERROR: value too high!\"))))))");
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
 
@@ -360,6 +361,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 2)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Settlers
     comp = new Component();
@@ -374,6 +376,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 3)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Mining Robots
     comp = new Component();
@@ -388,6 +391,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 4)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Merchant Leader
     comp = new Component();
@@ -402,6 +406,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 5)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Lead Scientist
     comp = new Component();
@@ -416,6 +421,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 6)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Government Official
     comp = new Component();
@@ -430,6 +436,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 7)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Mining Foreman
     comp = new Component();
@@ -444,6 +451,7 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Passengers")] = "(lambda (design) 8)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
 
     //Weapons Arsenal
     comp = new Component();
@@ -458,6 +466,8 @@ void taeRuleset::createComponents() {
     propList.clear();
     propList[ds->getPropertyByName("Bombs")] = "(lambda (design) 1)";
     comp->setPropertyList(propList);
+    ds->addComponent(comp);
+
 }
 
 Design* taeRuleset::createPassengerShip(Player* owner, int type) {
@@ -467,7 +477,7 @@ Design* taeRuleset::createPassengerShip(Player* owner, int type) {
     DesignStore * ds = Game::getGame()->getDesignStore();
     
     ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setName("Passenger Ship");
+    ship->setName("PassengerShip");
     ship->setDescription("A passenger transport ship");
     ship->setOwner(owner->getID());
     //TODO: I hate if/else statements like this... I may change this later
@@ -609,13 +619,21 @@ void taeRuleset::onPlayerAdded(Player* player) {
         playerview->addVisibleDesign(dv);
     }
 
+   for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
+      playerview->addUsableComponent(i);
+   }
+
+   std::set<uint32_t> mydesignids;
+
     //Setup starting fleets
     //TODO:Add all the fleets/ships
     IGObject* fleet = createEmptyFleet(player, Vector3d(1ll,1ll,1ll), "Test Fleet");
     Design* ship = createPassengerShip(player, 1);
     ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
     game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
+
 
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
@@ -624,6 +642,22 @@ void taeRuleset::onPlayerAdded(Player* player) {
         obv->setCompletelyVisible(true);
         playerview->addVisibleObject(obv);
     }
+
+   std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
+      if(*playerit == player->getID())
+        continue;
+
+      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
+        DesignView* dv = new DesignView();
+        dv->setDesignId(*desid);
+        dv->setIsCompletelyVisible(true);
+        oplayer->getPlayerView()->addVisibleDesign(dv);
+      }
+      game->getPlayerManager()->updatePlayer(oplayer->getID());
+    }
+
 }
 
 extern "C" {
