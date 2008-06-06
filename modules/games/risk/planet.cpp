@@ -43,6 +43,8 @@
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/player.h>
+#include <tpserver/logging.h>
+#include <tpserver/objectmanager.h>
 
 #include "containertypes.h"
 #include "risk.h"
@@ -103,6 +105,7 @@ void Planet::setOrderTypes() {
 }
 
 void Planet::doOnceATurn() {
+   Logger::getLogger()->debug("starting doOnceATurn for Planet");
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
 
    uint32_t owner = getOwner();                                      //Get ID of planet owner

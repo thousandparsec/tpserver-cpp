@@ -412,6 +412,7 @@ void Risk::onPlayerAdded(Player* player){
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
 
    //This should make every object visible to an added player
+   //ASK: if unknown(-1) is the same as 0?
    PlayerView* playerview = player->getPlayerView();
    std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
@@ -421,25 +422,31 @@ void Risk::onPlayerAdded(Player* player){
       obv->setCompletelyVisible(true);
     playerview->addVisibleObject(obv);
    }
+
+   //Create a spot in the reinforcements map for the player and assign starting reinforcements.
+   reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
    
    if ( settings->get("risk_randomly_assign_territories") == "true" ) {
       randomlyAssignPlanets(player);
    }
    
-   //Create a spot in the reinforcements map for the player and assign starting reinforcements.
-   reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
- 
 }
 
 //CHECK: not really assigning planets
 void Risk::randomlyAssignPlanets(Player* player) {
    Logger::getLogger()->debug("Starting random planet assignment for player %d", player->getID());
+
+   Settings* settings = Settings::getSettings();
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
-   PlayerManager* pm = game->getPlayerManager();
 
+   //get applicable settings
+   uint32_t armies = atoi(settings->get("risk_default_planet_armies").c_str() );
+   uint32_t max_armies = atoi(settings->get("risk_rfc_start").c_str() );
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
+
    uint32_t to_be_asgned = num_planets / max_players ;    //TODO: Make this rounding a little more robust.
+
    Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
          to_be_asgned, num_planets, max_players);
    
@@ -450,7 +457,8 @@ void Risk::randomlyAssignPlanets(Player* player) {
       planet = dynamic_cast<Planet*>(om->getObject(num_constellations+2*planet_number)->getObjectBehaviour());   //TODO make this more transparent
       Logger::getLogger()->debug("Picked planet #%d to give out, this is object #%d",planet_number, num_constellations+2*planet_number);
       if (planet != NULL && planet->getOwner() <=  0) {  //if planet is not owned
-         planet->setOwner(player->getID());  //let the player have it
+         planet->setOwner(player->getID());                 //let the player have it
+         planet->setResource("Army", armies, max_armies);   //update availible resources
          to_be_asgned--;
       }
 

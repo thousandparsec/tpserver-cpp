@@ -65,6 +65,11 @@ void RiskTurn::doTurn(){
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    //TODO: Calculate new reinforcements for players, add to their total.
+   //get all objects
+   //create a std::map
+   //iterate over every object, get its owner
+   //add 1 to map for every instance of player owned planet
+   //iterate over map and add total for player to reinforcements
    //Send message to player about updated total
   
    processOrdersOfGivenType("Colonize");
