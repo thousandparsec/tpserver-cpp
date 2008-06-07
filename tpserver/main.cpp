@@ -125,10 +125,13 @@ int main(int argc, char **argv)
       mySettings->set("log_level", savedloglevel);
     }
 
-    if(mySettings->get("DEBUG") != "!")
+    if(mySettings->get("DEBUG") != "!"){
         daemonize();
-    else
+    }else{
+        signal(SIGINT, sigIntHandler);
+        signal(SIGTERM, sigIntHandler);
         mySettings->set("log_console", "yes");
+    }
 
     // TODO - is this in the right place?
     CommandManager *myCommandManager = CommandManager::getCommandManager();
