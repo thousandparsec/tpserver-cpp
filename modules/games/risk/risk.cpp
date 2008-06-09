@@ -500,6 +500,12 @@ void Risk::randomlyAssignPlanets(Player* player) {
          planet->setOwner(player->getID());                                      //let the player have it
          planet->setResource("Army", armies, reinforcements[player->getID()]);   //and update availible resources with defaults
          to_be_asgned--;
+         
+         Message* gotPlanet = new Message();
+         gotPlanet->setSubject("Your received a randomly assigned planet");
+         gotPlanet->setBody("The planet you received was ");      //TODO: include planet name.
+         
+         player->postToBoard(gotPlanet);
          //TODO: send message to player informing them they have received planets
       }
 

@@ -228,6 +228,9 @@ uint32_t Planet::getID(){
    return this->obj->getID();
 }
 
+std::string Planet::getName(){
+   return this->obj->getName();
+}
 list<Planet*> Planet::getAdjacent() {
    list<Planet*> result;
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());

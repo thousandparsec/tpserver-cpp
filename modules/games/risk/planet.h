@@ -75,6 +75,7 @@ public:
    void setupObject();
    
    uint32_t getID();
+   std::string getName();
 
    std::list<Planet*> getAdjacent();
 };
