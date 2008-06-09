@@ -367,13 +367,17 @@ bool Risk::onAddPlayer(Player* player){
 
       //If ( max players exceeded OR (game's started AND there are no open spaces))    
          //disallow joining
-      if ( (cur_players >= max_players)||(isStarted && !isBoardClaimed()) )
+      Logger::getLogger()->debug("There are %d current players and the max players is %d",cur_players,max_players);
+      if ( (cur_players >= max_players) || isBoardClaimed() == true ) {
          canJoin = false;  
-
+         if ( isBoardClaimed() == true);
+      }
+      
       return canJoin; 
 }
 
 bool Risk::isBoardClaimed() const{
+   Logger::getLogger()->debug("Risk::isBoardClaimed has been called");
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
 
@@ -396,9 +400,13 @@ bool Risk::isBoardClaimed() const{
       }
    }
    
-   if ( owners.find(0) != NULL )    //If there is a unowned object in the set
+   if ( owners.find(0) != NULL ) {   //If there is a unowned object in the set
       result = false;               //Change result to indicate there exists an OwnedObject w/o an owner
-      
+      Logger::getLogger()->debug("Risk::isBoardClaimed will return false");      
+   }
+   else
+      Logger::getLogger()->debug("Risk::isBoardClaimed will return true");
+   
    return result;
 }
 
