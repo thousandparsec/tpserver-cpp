@@ -260,6 +260,7 @@ void Settings::printHelp(){
   std::cout << "\t-C\t--configure\tConfiguration file to read" << std::endl;
   std::cout << "\t-l\t--logging\tSets the logging level (default 0)" << std::endl;
   std::cout << "\t\t--<key> <value>\tSets the setting <key> to <value>" << std::endl;
+  std::cout << "\t-d\t--debug\t\tRun in debug mode (non-daemon)" << std::endl;
 }
 
 void Settings::setDefaultValues(){
