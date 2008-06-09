@@ -62,9 +62,9 @@ Order* Reinforce::clone() const {
 
 bool Reinforce::doOrder(IGObject *obj) {
    bool result = true;
-   //TODO: Implement order
+   //TODO: Implement Reinforce order
 
-   //--turns;   
+   --turns;   
    //Check if player has enough reinforcements availible to perform the reinforcement.
    //Add smallest of (All reinforcements requested || Total reinforcements availible) to planet
    //Decrement players reinforcements total.

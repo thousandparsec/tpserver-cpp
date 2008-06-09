@@ -66,6 +66,7 @@ Order* Move::clone() const {
 
 bool Move::doOrder(IGObject* obj) {
    bool result = true;
+   --turns;
    //TODO: Implement Move order
    
    //Double check if target planet is in list of adjacent planets?

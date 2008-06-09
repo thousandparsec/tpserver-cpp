@@ -106,17 +106,20 @@ void Planet::setOrderTypes() {
 }
 
 void Planet::doOnceATurn() {
-   Logger::getLogger()->debug("starting doOnceATurn for Planet");
+   Logger::getLogger()->debug("starting doOnceATurn for Planet %d",obj->getID());
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
 
    uint32_t owner = getOwner();                                      //Get ID of planet owner
    if (owner > 0) { //ensure the owner is real
       uint32_t reinforcements = risk->getPlayerReinforcements(owner);   //Get players max reinforcements
       uint32_t current = getResource("Army").first;                     //Get planets current resources
-      //CHECK: if the first element of the std::pair is the number of armies on surface
+      Logger::getLogger()->debug("Planet's has %d armies, %d minable.",current, getResource("Army").second);
+      Logger::getLogger()->debug("Setting minable to %d",reinforcements);
 
       //Update the display of resources to show new army and max count (max is total availible reinforcements)
       setResource("Army", current, reinforcements);  
+      
+      Logger::getLogger()->debug("After update planet now has %d armies, %d minable",getResource("Army").first,getResource("Army").second);
    }
    setOrderTypes();
 

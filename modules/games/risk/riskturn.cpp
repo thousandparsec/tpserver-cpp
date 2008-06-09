@@ -120,14 +120,12 @@ void RiskTurn::calculateReinforcements() {
    for(map<uint32_t,uint32_t>::iterator i = planets_owned.begin(); i != planets_owned.end(); ++i) {
       uint32_t number = rfc_number*(i->second/rfc_rate);
       uint32_t current = risk->getPlayerReinforcements(i->first);
-      
+      Logger::getLogger()->debug("Awarding %d reinforcements. Adding %d to %d gives %d current reinforcements",number,number,current,number+current);
       risk->setPlayerReinforcements(i->first,current+number);
+      Logger::getLogger()->debug("Reinforcements set for %d, current total is now: %d",i->first,risk->getPlayerReinforcements(i->first));
    }
    
-   
-   
-   //iterate over map and add total for player to reinforcements
-   //Send message to player about updated total
+   //TODO: Send message to player about updated total
 }
 
 //ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird
