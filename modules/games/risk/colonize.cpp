@@ -40,7 +40,7 @@ Colonize::Colonize() {
    name = "Colonize";
    description = "Colonize a planet";
 
-   //ASK: how to ensure colonize order is availible on unowned planets
+   //ASK: Work with Lee to get colonize order availible on unowned planets
    //CHECK: on validity of these parameters
    units = new ObjectOrderParameter();
    units->setName("Units");

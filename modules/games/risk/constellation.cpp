@@ -69,7 +69,7 @@ void Constellation::doOnceATurn() {
 }
 
 void Constellation::setupObject(){
-   //CHECK: I don't believe any setup is required for constellations
+
 }
 
 }

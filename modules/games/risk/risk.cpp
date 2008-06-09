@@ -429,7 +429,6 @@ void Risk::onPlayerAdded(Player* player){
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
 
    //This should make every object visible to an added player
-   //ASK: if unknown(-1) is the same as 0?
    PlayerView* playerview = player->getPlayerView();
    std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
@@ -460,7 +459,7 @@ void Risk::randomlyAssignPlanets(Player* player) {
    uint32_t armies = atoi(settings->get("risk_default_planet_armies").c_str() );
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
 
-   uint32_t to_be_asgned = num_planets / max_players ;    //TODO: Make this rounding a little more robust.
+   uint32_t to_be_asgned = num_planets / max_players ;    //TODO: possibly make this rounding a little more robust.
 
    Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
          to_be_asgned, num_planets, max_players);
@@ -482,7 +481,6 @@ void Risk::randomlyAssignPlanets(Player* player) {
    while (to_be_asgned > 0 && !isBoardClaimed() ) { 
       Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
 
-      //CHECK: is this in range inclusive?
       uint32_t planet_number = random->getInRange((uint32_t)0,unownedObjs.size()-1);
 
       //get and move iterator it to the planet number randomly chosen
@@ -503,10 +501,9 @@ void Risk::randomlyAssignPlanets(Player* player) {
          
          Message* gotPlanet = new Message();
          gotPlanet->setSubject("Your received a randomly assigned planet");
-         gotPlanet->setBody("The planet you received was ");      //TODO: include planet name.
+         gotPlanet->setBody("The planet you received was ");      //TODO: include planet name in message
          
          player->postToBoard(gotPlanet);
-         //TODO: send message to player informing them they have received planets
       }
 
    }

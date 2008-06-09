@@ -71,8 +71,6 @@ void RiskTurn::doTurn(){
    processOrdersOfGivenType("Reinforce");
    processOrdersOfGivenType("Move");
    processOrdersOfGivenType();
-
-   //objM->clearRemovedObjects(); //CHECK: no objects are ever removed in Risk
    
    setPlayerVisibleObjects();
 
@@ -90,7 +88,6 @@ void RiskTurn::doTurn(){
     
 } //RiskTurn::RiskTurn() : TurnProcess()
 
-//TODO: Calculate new reinforcements for players, add to their total.
 void RiskTurn::calculateReinforcements() {
    Logger::getLogger()->debug("Starting RiskTurn::calculateReinforcements");
    
@@ -166,7 +163,6 @@ void RiskTurn::processOrdersOfGivenType(string type) {
             //if order is of type asked for then process it
             if(type != "" && order->getName() == type)
             {
-               //CHECK: taken directly from RFTS code
                if(order->doOrder(currObj))
                {
                   oq->removeOrder(j, orderedObj->getOwner());
@@ -187,7 +183,22 @@ void RiskTurn::processOrdersOfGivenType(string type) {
 }
 
 void RiskTurn::setPlayerVisibleObjects() {
-   //CHECK: If I need to reset any views. Its my belief I don't need to, since no objects are ever created.
+   
+   PlayerManager *pm = Game::getGame()->getPlayerManager();
+   
+   set<uint32_t> players = pm->getAllIds();
+   
+   for(set<uint32_t>::const_iterator i = players.begin(); i != players.end(); i++) {
+      PlayerView* playerview = pm->getPlayer(*i)->getPlayerView();
+      std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
+      for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+         ++itcurr){
+      ObjectView* obv = new ObjectView();
+      obv->setObjectId(*itcurr);
+      obv->setCompletelyVisible(true);
+      playerview->addVisibleObject(obv);
+      }
+   }
 }
 
 //This class may be an exercise in futility. I tried writing it mainly from scratch and will need to be tested

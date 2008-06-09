@@ -34,6 +34,7 @@
 
 #include "move.h"
 
+//TODO: Make Move order display correctly in client
 namespace RiskRuleset {
 
 using std::string;
@@ -46,6 +47,7 @@ Move::Move() : Order() {
    planet->setName("Planet");
    planet->setDescription("The Planet to move to.");
    addOrderParameter(planet);   //TODO: Check how to populate this parameter with only adjacent planets
+   
    units = new ObjectOrderParameter();
    units->setName("Units");
    units->setDescription("The number of units to move (or attack with.)");
