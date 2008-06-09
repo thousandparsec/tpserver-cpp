@@ -152,7 +152,7 @@ void taeRuleset::createGame() {
             char* name = new char[20];
             sprintf(name, "Star System %d,%d", j, i);
             sys1->setName(name);
-            sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*i, 0ll));
+            sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*(i+1), 0ll));
             sys1ob->setInhabitable(true);
             sys1ob->setDestroyed(true);
             sys1->addToParent(gal->getID());
@@ -610,6 +610,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
 
     Game *game = Game::getGame();
     PlayerView* playerview = player->getPlayerView();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
 
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
     for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
@@ -625,9 +626,37 @@ void taeRuleset::onPlayerAdded(Player* player) {
 
    std::set<uint32_t> mydesignids;
 
+    //Add system and planet to hold player's fleets
+    IGObject* sys1 = game->getObjectManager()->createNewObject();
+    obtm->setupObject(sys1, obtm->getObjectTypeByName("Star System"));
+    StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
+    sys1ob->setSize(60000ll);
+    sys1->setName(player->getName() + "'s System");
+    sys1ob->setPosition(Vector3d(1ll+80000*player->getID(), 1ll, 0ll));
+    sys1ob->setInhabitable(true);
+    sys1ob->setDestroyed(true);
+    sys1->addToParent(1);
+    game->getObjectManager()->addObject(sys1);
+
+    IGObject *p = game->getObjectManager()->createNewObject();
+    obtm->setupObject(p, obtm->getObjectTypeByName("Planet"));
+    Planet * pob = (Planet*)(p->getObjectBehaviour());
+    pob->setSize(2);
+    p->setName(player->getName() + "'s Home Planet");
+    pob->setPosition(sys1ob->getPosition());
+    OrderQueue *planetoq = new OrderQueue();
+    planetoq->setObjectId(p->getID());
+    planetoq->addOwner(player->getID());
+    game->getOrderManager()->addOrderQueue(planetoq);
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
+    oqop->setQueueId(planetoq->getQueueId());
+    pob->setDefaultOrderTypes();
+    p->addToParent(sys1->getID());
+    game->getObjectManager()->addObject(p);
+
     //Setup starting fleets
     //TODO:Add all the fleets/ships
-    IGObject* fleet = createEmptyFleet(player, Vector3d(1ll,1ll,1ll), "Test Fleet");
+    IGObject* fleet = createEmptyFleet(player, p, "Test Fleet");
     Design* ship = createPassengerShip(player, 1);
     ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
     game->getDesignStore()->designCountsUpdated(ship);
