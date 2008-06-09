@@ -75,6 +75,15 @@ std::string taeRuleset::getVersion() {
 void taeRuleset::initGame() {
     Game* game = Game::getGame();
 
+    //Seed rand
+    std::srand(std::time(NULL));
+
+    //Set default ships left
+    shipsLeft[0] = 30;  //Merchants
+    shipsLeft[1] = 57;  //Scientists
+    shipsLeft[2] = 30;  //Settlers
+    shipsLeft[3] = 36;  //Miners
+
     //Add universe object type
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     obtm->addNewObjectType(new UniverseType());
@@ -477,23 +486,44 @@ Design* taeRuleset::createPassengerShip(Player* owner, int type) {
     DesignStore * ds = Game::getGame()->getDesignStore();
     
     ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setName("PassengerShip");
     ship->setDescription("A passenger transport ship");
     ship->setOwner(owner->getID());
     //TODO: I hate if/else statements like this... I may change this later
     if(type == 1) {
+        ship->setName("MerchantShip");
         componentList[ds->getComponentByName("MerchantCargo")] = 1;
     } else if (type == 2) {
+        ship->setName("ScientistShip");
         componentList[ds->getComponentByName("ScientistCargo")] = 1;
     } else if (type == 3) {
+        ship->setName("SettlerShip");
         componentList[ds->getComponentByName("SettlerCargo")] = 1;
     } else {
+        ship->setName("MiningShip");
         componentList[ds->getComponentByName("MiningCargo")] = 1;
     }
     ship->setComponents(componentList);
     ds->addDesign(ship);
 
     return ship;
+}
+
+Design* taeRuleset::createRandomPassengerShip(Player* owner) {
+    int type;
+
+    //Check to see if there are any ships left
+    if((shipsLeft[0] == 0) && (shipsLeft[1] == 0) && (shipsLeft[2] == 0) && (shipsLeft[3]== 0)) {
+        //TODO: initiate game over sequence
+    }
+
+    //Select a ship type
+    do {
+        type = std::rand() % 4;
+    } while(shipsLeft[type] <= 0);
+
+    shipsLeft[type]--;
+
+    return createPassengerShip(owner, type);
 }
 
 Design* taeRuleset::createVIPTransport(Player* owner, int type) {
@@ -503,17 +533,20 @@ Design* taeRuleset::createVIPTransport(Player* owner, int type) {
     DesignStore * ds = Game::getGame()->getDesignStore();
     
     ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setName("VIP Transport");
     ship->setDescription("A passenger transport ship for VIPs");
     ship->setOwner(owner->getID());
     //TODO: I hate if/else statements like this... I may change this later
     if(type == 1) {
+        ship->setName("MerchantLeaderShip");
         componentList[ds->getComponentByName("MerchantLeaderCargo")] = 1;
     } else if (type == 2) {
+        ship->setName("ScientistLeaderShip");
         componentList[ds->getComponentByName("ScientistLeaderCargo")] = 1;
     } else if (type == 3) {
+        ship->setName("SettlerLeaderShip");
         componentList[ds->getComponentByName("SettlerLeaderCargo")] = 1;
     } else {
+        ship->setName("MiningLeaderShip");
         componentList[ds->getComponentByName("MiningLeaderCargo")] = 1;
     }
     ship->setComponents(componentList);
@@ -655,15 +688,95 @@ void taeRuleset::onPlayerAdded(Player* player) {
     game->getObjectManager()->addObject(p);
 
     //Setup starting fleets
-    //TODO:Add all the fleets/ships
-    IGObject* fleet = createEmptyFleet(player, p, "Test Fleet");
-    Design* ship = createPassengerShip(player, 1);
+    //Colonist fleets
+    IGObject* fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    Design* ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Colonist Fleet");
+    ship = createRandomPassengerShip(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    //Leader fleets
+    fleet = createEmptyFleet(player, p, "Merchant Leader");
+    ship = createVIPTransport(player, 1);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Scientist Leader");
+    ship = createVIPTransport(player, 2);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Settler Leader");
+    ship = createVIPTransport(player, 3);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Mining Leader");
+    ship = createVIPTransport(player, 4);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    //Bomber fleets
+    fleet = createEmptyFleet(player, p, "Bomber");
+    ship = createBomber(player);
+    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    game->getDesignStore()->designCountsUpdated(ship);
+    mydesignids.insert(ship->getDesignId());
+    game->getObjectManager()->addObject(fleet);
+
+    fleet = createEmptyFleet(player, p, "Bomber");
+    ship = createBomber(player);
     ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
 
 
+    //Make designs visible
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
         ObjectView* obv = new ObjectView();
