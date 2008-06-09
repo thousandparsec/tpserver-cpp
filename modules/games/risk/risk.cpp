@@ -254,7 +254,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
    IGObject *starSys = game->getObjectManager()->createNewObject();
 
    otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
-   starSys->setName(name);
+   starSys->setName(name+" System");
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
    starSysData->setUnitPos(unitX, unitY);
 

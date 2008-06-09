@@ -40,6 +40,7 @@
 #include <tpserver/message.h>
 #include <stdint.h>
 #include <tpserver/settings.h>
+#include <tpserver/logging.h>
 
 #include "risk.h"
 #include "riskturn.h"
@@ -62,7 +63,6 @@ RiskTurn::~RiskTurn(){
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
-   PlayerManager *pm = game->getPlayerManager();
    set<uint32_t> objectsIds = objM->getAllIds();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
@@ -93,6 +93,8 @@ void RiskTurn::doTurn(){
 
 //TODO: Calculate new reinforcements for players, add to their total.
 void RiskTurn::calculateReinforcements() {
+   Logger::getLogger()->debug("Starting RiskTurn::calculateReinforcements");
+   
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
    PlayerManager *pm = game->getPlayerManager();
@@ -103,6 +105,7 @@ void RiskTurn::calculateReinforcements() {
    
    uint32_t rfc_rate = atoi(Settings::getSettings()->get("risk_rfc_rate").c_str() );
    uint32_t rfc_number = atoi(Settings::getSettings()->get("risk_rfc_number").c_str() );
+   Logger::getLogger()->debug("Got reinforcement rate and number, they are %d and %d",rfc_rate, rfc_number);
    
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i) {
       OwnedObject* currObj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectBehaviour());
@@ -110,6 +113,7 @@ void RiskTurn::calculateReinforcements() {
          uint32_t owner = currObj->getOwner();
          if (owner != 0) {
             planets_owned[owner] += 1; //add 1 to the number of planets owned for that player
+            Logger::getLogger()->debug("Got owned planet, owner is %d",owner);
          }
       }
    }   
@@ -194,35 +198,33 @@ void RiskTurn::setPlayerVisibleObjects() {
 Player* RiskTurn::getWinner() {
    Game* game = Game::getGame();
    OrderManager* ordM = game->getOrderManager();
-   ObjectManager* objM = game->getObjectManager();
    PlayerManager* pm = game->getPlayerManager();
-
+   ObjectManager* objM = game->getObjectManager();
+   
    Player *winner;
    uint32_t player;
-   bool complete_ownership; //signifies if the board is completely owned or not
 
    //Get all objects frobjM object manager
    set<uint32_t> objectsIds = objM->getAllIds();
+   set<uint32_t> owners;
+   uint32_t owner;
    
    //Iterate over every object
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
       IGObject * currObj = objM->getObject(*i);
       OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
-      //CHECK: what happens when it encounters non-owned objects
       
-      if ( i == objectsIds.begin() ) //we are on first object
-      {
-         player = ownedObj->getOwner();
-      }
-      else if ( player != ownedObj->getOwner() )   //CHECK: that this is valid
-      {
-         player = -1;
+      if ( ownedObj != NULL) {
+         owner = ownedObj->getOwner();
+         if (owner != 0) {
+            owners.insert(owner);
+         }
       }
    }
    
-   if ( player != -1 )
-      winner = pm->getPlayer(player);
+   if ( owners.begin() != owners.end() ) //there is more than own owner in the set
+      winner = pm->getPlayer(*(owners.begin()));      //CHECK: if owners set works properly.
       
    return winner;
 }
