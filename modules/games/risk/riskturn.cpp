@@ -64,7 +64,6 @@ void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
    set<uint32_t> objectsIds = objM->getAllIds();
-   Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    calculateReinforcements();
 
@@ -97,7 +96,6 @@ void RiskTurn::calculateReinforcements() {
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
-   PlayerManager *pm = game->getPlayerManager();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    set<uint32_t> objectsIds = om->getAllIds();
@@ -197,12 +195,10 @@ void RiskTurn::setPlayerVisibleObjects() {
 //This class may be an exercise in futility. I tried writing it mainly from scratch and will need to be tested
 Player* RiskTurn::getWinner() {
    Game* game = Game::getGame();
-   OrderManager* ordM = game->getOrderManager();
    PlayerManager* pm = game->getPlayerManager();
    ObjectManager* objM = game->getObjectManager();
    
-   Player *winner;
-   uint32_t player;
+   Player *winner = NULL;
 
    //Get all objects frobjM object manager
    set<uint32_t> objectsIds = objM->getAllIds();
@@ -211,20 +207,20 @@ Player* RiskTurn::getWinner() {
    
    //Iterate over every object
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
-   {
+   {  
       IGObject * currObj = objM->getObject(*i);
       OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
-      
-      if ( ownedObj != NULL) {
-         owner = ownedObj->getOwner();
-         if (owner != 0) {
-            owners.insert(owner);
+
+      if ( ownedObj != NULL) { //if the object IS owned
+         owner = ownedObj->getOwner(); 
+         if (owner != 0) {          //if the object is owned by a player
+            owners.insert(owner);   //Add the object's owner to the set
          }
       }
    }
    
-   if ( owners.begin() != owners.end() ) //there is more than own owner in the set
-      winner = pm->getPlayer(*(owners.begin()));      //CHECK: if owners set works properly.
+   if ( owners.begin() == owners.end() )        //If there is only one owner in the list
+      winner = pm->getPlayer(*(owners.begin()));//Get the player and assign them as the winner
       
    return winner;
 }

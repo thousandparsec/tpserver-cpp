@@ -382,11 +382,34 @@ bool Risk::onAddPlayer(Player* player){
 }
 
 bool Risk::isBoardClaimed() const{
-   //This method will run through board and check if all territories
-    //are claimed or not
+   Game* game = Game::getGame();
+   OrderManager* ordM = game->getOrderManager();
+   PlayerManager* pm = game->getPlayerManager();
+   ObjectManager* objM = game->getObjectManager();
 
-   //TODO: Check board to determine "claimedness"
-   return false;
+   //Get all objects frobjM object manager
+   set<uint32_t> objectsIds = objM->getAllIds();
+   set<uint32_t> owners;
+   uint32_t owner;
+   bool result = true;  //return value
+   
+   //Iterate over every object
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   {  
+      //Get an object
+      IGObject * currObj = objM->getObject(*i);
+      OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
+
+      if ( ownedObj != NULL) {         //if the object IS an owned objectowned
+         owner = ownedObj->getOwner(); 
+            owners.insert(owner);      //Add the object's owner to the set
+      }
+   }
+   
+   if ( owners.find(0) != NULL )    //If there is a unowned object in the set
+      result = false;               //Change result to indicate there exists an OwnedObject w/o an owner
+      
+   return result;
 }
 
 void Risk::onPlayerAdded(Player* player){
