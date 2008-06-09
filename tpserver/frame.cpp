@@ -1,6 +1,6 @@
 /*  Frame class, the network packets for the TP procotol
  *
- *  Copyright (C) 2003-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <string>
+#include <cstdlib>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -50,7 +51,7 @@ Frame::Frame()
   Frame::Frame(fv0_3);
 }
 
-Frame::Frame(FrameVersion v)
+Frame::Frame(ProtocolVersion v)
 {
   type = ft_Invalid;
   typeversion = 0;
@@ -138,13 +139,10 @@ char *Frame::getPacket() const{
       *temp = (char)(0xff & typeversion);
       temp++;
     }
-    
-    // Sequence number is only present in version 2 and above
-    if (version > 1) {
-      int nseq = htonl(sequence);
-      memcpy(temp, &nseq, 4);
-      temp += 4;
-    }
+
+    int nseq = htonl(sequence);
+    memcpy(temp, &nseq, 4);
+    temp += 4;
     
     int ntype = htonl(type);
     memcpy(temp, &ntype, 4);
@@ -177,7 +175,7 @@ bool Frame::setSequence(int s)
   return true;
 }
 
-FrameVersion Frame::getVersion() const
+ProtocolVersion Frame::getVersion() const
 {
 	return version;
 }
@@ -222,11 +220,11 @@ int Frame::setHeader(char *newhead)
       char ver[] = {'\0','\0','\0'};
       memcpy(ver, temp, 2);
       int nversion = atoi(ver);
-      version = (FrameVersion)nversion;
+      version = (ProtocolVersion)nversion;
       temp += 2;
     }else{
       // version 4 and above
-      version = (FrameVersion)(*temp);
+      version = (ProtocolVersion)(*temp);
       temp++;
       typeversion = (uint32_t)(*temp);
       temp++;
@@ -259,7 +257,7 @@ int Frame::setHeader(char *newhead)
 bool Frame::setType(FrameType nt)
 {
 
-  if (nt < ft_Invalid || (version == fv0_2 && nt > ft02_Max) || (version == fv0_3 && nt > ft03_Max))
+  if (nt < ft_Invalid || (version == fv0_3 && nt > ft03_Max)|| (version == fv0_4 && nt > ft04_Max))
     return false;
 	
 	type = nt;
@@ -496,18 +494,26 @@ void Frame::unpackData(unsigned int len, char* bdata){
   }
 }
 
-void Frame::createFailFrame(FrameErrorCode code, const char *reason)
-{
-  
+void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){
+    createFailFrame(code, reason, std::list<std::pair<reftype_t, refvalue_t> >());
+}
+
+void Frame::createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> >& refs){
     setType(ft02_Fail);
 
-  if (data != NULL) {
-    free(data);
-    length = 0;
-    data = NULL;
-    unpackptr = 0;
-  }
-  packInt(code);
-  packString(reason);
-  
+    if (data != NULL) {
+        free(data);
+        length = 0;
+        data = NULL;
+        unpackptr = 0;
+    }
+    packInt(code);
+    packString(reason);
+    if(version >= fv0_4){
+        packInt(refs.size());
+        for(std::list<std::pair<reftype_t, refvalue_t> >::const_iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
+            packInt(itcurr->first);
+            packInt(itcurr->second);
+        }
+    }
 }

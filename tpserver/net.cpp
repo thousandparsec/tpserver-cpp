@@ -1,6 +1,6 @@
 /*  Network abstraction for tpserver-cpp 
  *
- *  Copyright (C) 2003-2005, 2006, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -67,27 +67,6 @@ Network *Network::getNetwork()
 	return myInstance;
 }
 
-void Network::createFeaturesFrame(Frame* frame){
-  if(frame->getVersion() >= fv0_3){
-    frame->setType(ft03_Features);
-    frame->packInt(features.size());
-    for(std::map<int,int>::iterator itcurr = features.begin(); itcurr != features.end(); ++itcurr){
-      frame->packInt(itcurr->first);
-    }
-  }else{
-    Logger::getLogger()->warning("Tryed to create a Features frame for protocol version less than 3");
-    frame->createFailFrame(fec_FrameError, "Unknown request for features (not in current protocol)");
-  }
-}
-
-void Network::addFeature(int featid, int value){
-  features[featid] = value;
-}
-
-void Network::removeFeature(int featid){
-  features.erase(featid);
-}
-
 void Network::addConnection(Connection* conn)
 {
   Logger::getLogger()->debug("Adding a file descriptor %d", conn->getFD());
@@ -137,7 +116,7 @@ void Network::start()
 	  Logger::getLogger()->info("Starting Network");
           
 
-	  uint numsocks = 0;
+	  uint32_t numsocks = 0;
 	  TcpSocket* listensocket = new TcpSocket();
             listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
 	  if(listensocket->getStatus() != 0){
@@ -155,7 +134,6 @@ void Network::start()
             if(httpsocket->getStatus() != 0){
               addConnection(httpsocket);
               numsocks++;
-              addFeature(fid_http_other, atoi(Settings::getSettings()->get("http_port").c_str()));
               advertiser->addService("tp+http", httpsocket->getPort());
             }else{
               delete httpsocket;
@@ -171,7 +149,6 @@ void Network::start()
                 if(secsocket->getStatus() != 0){
                     addConnection(secsocket);
                     numsocks++;
-                    addFeature(fid_sec_conn_other, atoi(Settings::getSettings()->get("tps_port").c_str()));
                     advertiser->addService("tps", secsocket->getPort());
                 }else{
                     delete secsocket;
@@ -206,12 +183,7 @@ void Network::start()
 	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
 	}
 
-        //set if account registration is allowed.
-        if(Settings::getSettings()->get("add_players") == "yes"){
-          addFeature(fid_account_register, 0);
-        }else{
-          removeFeature(fid_account_register);
-        }
+
 
 }
 
@@ -240,8 +212,6 @@ void Network::stop()
 		      }
 		    }
 		  }
-                  removeFeature(fid_sec_conn_other);
-                  removeFeature(fid_http_other);
 
                   advertiser->unpublish();
 
@@ -392,10 +362,9 @@ Network::Network()
 
 	halt = false;
 	active = false;
-  features[fid_keep_alive] = 0;
-  features[fid_serverside_property] = 0;
+
   advertiser = new Advertiser();
-  Settings::getSettings()->setCallback("add_players", SettingsCallback(this, &Network::addAccountSettingChanged));
+
 }
 
 
@@ -417,11 +386,3 @@ Network Network::operator=(Network & rhs)
   return *this;
 }
 
-void Network::addAccountSettingChanged(const std::string &item, const std::string &value){
-  Logger::getLogger()->debug("In addAccountSettingChanged, working");
-  if(value == "yes"){
-    addFeature(fid_account_register, 0);
-  }else{
-    removeFeature(fid_account_register);
-  }
-}

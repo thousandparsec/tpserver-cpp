@@ -2,7 +2,7 @@
 #define NET_H
 /*  Network Abstraction class
  *
- *  Copyright (C) 2004-2005, 2006, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <map>
 #include <queue>
 #include <functional>
+#include <algorithm>
 
 class Connection;
 class Frame;
@@ -32,27 +33,10 @@ class AsyncFrame;
 
 class TimerCallback;
 
-enum FeatureIDs {
-  fid_sec_conn_this = 1,
-  fid_sec_conn_other = 2,
-  fid_http_this = 3,
-  fid_http_other = 4,
-  fid_keep_alive = 5,
-  fid_serverside_property = 6,
-  fid_account_register = 1000,
-  fid_filter_tls = 0x1000,
-  fid_filter_stringpad = 0x1D00
-};
-
 class Network {
 
       public:
 	static Network *getNetwork();
-
-	// Feature frames
-	void createFeaturesFrame(Frame * frame);
-        void addFeature(int featid, int value);
-        void removeFeature(int featid);
 
 	//stuff
 
@@ -86,8 +70,6 @@ class Network {
 	 Network(Network & rhs);
 	Network operator=(Network & rhs);
 
-        void addAccountSettingChanged(const std::string &item, const std::string &value);
-
 	static Network *myInstance;
 
 	fd_set master_set;
@@ -103,8 +85,6 @@ class Network {
          std::map<int, Connection*> writequeue;
          
          std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
-
-         std::map<int,int> features;
          
          Advertiser* advertiser;
 

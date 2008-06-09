@@ -39,6 +39,9 @@
 #include <tpserver/resourcedescription.h>
 #include <tpserver/prng.h>
 #include <tpserver/object.h>
+#include <tpserver/message.h>
+#include <tpserver/playermanager.h>
+#include <tpserver/player.h>
 
 #include "resourcelistparam.h"
 #include "containertypes.h"
@@ -92,18 +95,11 @@ Planet::~Planet() {
 
 void Planet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
-   uint32_t turn = Game::getGame()->getTurnNumber() % 3;
    
    std::set<uint32_t> allowedlist;
 
-   if(turn == 0) // 1st turn - allow production
-   {
-      allowedlist.insert(om->getOrderTypeByName("Produce"));
-   }
-   if(turn == 0 || turn == 1) // non-first turn, allow build
-   {
-      allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
-   }
+	allowedlist.insert(om->getOrderTypeByName("Produce"));
+	allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
       
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
@@ -121,76 +117,89 @@ void Planet::doOnceATurn() {
       }
       else if(turn == 1) // just did a prod. turn
       {
-         calcPopuation();
+			calcPopulation();
          upgradePdbs();
       }
-
-      ((ResourceListParam*)(obj->getParameter(3,1)))->setResource("Ship Technology", 0,
-                           PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
+		
+		this->setResource("Ship Technology", 0, PlayerInfo::getPlayerInfo(getOwner()).getShipTechPoints());
    }
-
+	
    setOrderTypes();
 
    obj->touchModTime();
 }
 
 void Planet::calcRP() {
-   ResourceListParam* resources = ((ResourceListParam*)(obj->getParameter(3,1)));
-   pair<uint32_t,uint32_t> popn = resources->getResource("Population");
-   resources->setResource("Resource Point",
+	pair<uint32_t,uint32_t> popn = this->getResource("Population");
+	this->setResource("Resource Point",
          ( std::min(popn.first, popn.second) * 2) +
-         (resources->getResource("Industry").first * resources->getResource("Social Environment").first) 
+			(this->getResource("Industry").first * this->getResource("Social Environment").first)
                                              / 16);
 }
 
-void Planet::calcPopuation() {
+void Planet::calcPopulation() {
 
    Random *rand = Game::getGame()->getRandom();
 
-   ResourceListParam* resources = ((ResourceListParam*)(obj->getParameter(3,1)));
-   int newPop = resources->getResource("Population").first;
-   const pair<uint32_t,uint32_t> &planetary = resources->getResource("Planetary Environment");
-   pair<uint32_t,uint32_t> &social = resources->getResource("Social Environment");
+	ResourceListParam res = ResourceListParam(obj->getParameter(3,1));
+	int newPop = getResource("Population").first;
+   const pair<uint32_t,uint32_t> planetary = getResource("Planetary Environment");
+   pair<uint32_t,uint32_t> social = RFTS_::getResource(res, "Social Environment");
 
             // social + midpoint of difference of percentage of planetary and social
    social.first = static_cast<uint32_t>( social.first + .125 *
                    ((static_cast<double>(planetary.first) / planetary.second) -
                     (static_cast<double>(social.first) / social.second))) ;
 
-   uint32_t& popMaint = resources->getResource("Population Maintenance").first;
+	uint32_t popMaint = RFTS_::getResource(res, "Population Maintenance").first;
 
    // add in a lil' randomness
    popMaint += static_cast<uint32_t>(popMaint * (rand->getInRange(-50,125) / 1000.) );
 
    if(newPop != 0 && static_cast<int>(popMaint) < newPop)
       newPop -= (newPop - popMaint ) / 3;
-
-   popMaint = 0; // use up maint points
    
       // social < 40 => pop goes down, else goes up
    newPop += static_cast<int>( newPop * ((social.first - 40) / 9.) );
 
    if(newPop < 0)
+	{
       newPop = 0;
+		Message *msg = new Message();
+		msg->setSubject("Planet population dead!");
+		msg->setBody( "The population on planet, " + obj->getName() + ", has completely died.<br/>\
+				Recolonisation and social environment buffing is recommended." );
+		msg->addReference(rst_Object, obj->getID());
+		Game::getGame()->getPlayerManager()->getPlayer(getOwner())->postToBoard(msg);
+						
+		// no population, no the owner
+		// also stops message being repeated every turn
+		setOwner(0);
+	}
 
-   resources->setResource("Population", static_cast<uint32_t>(newPop) );
+   RFTS_::setResource(res, "Population", static_cast<uint32_t>(newPop) );
+	RFTS_::setResource(res, "Social Environment", social.first);
+	RFTS_::setResource(res, "Population Maintenance", 0); // use up pop maint
+
 }
 
 void Planet::upgradePdbs() {
    if(PlayerInfo::getPlayerInfo(getOwner()).upgradePdbs())
    {
+		ResourceListParam res = ResourceListParam(obj->getParameter(3,1));
+		
       const char techLevel = PlayerInfo::getPlayerInfo(getOwner()).getShipTechLevel();
       uint32_t totalPdbs = 0;
 
       // just in case they skip a tech level, make sure we upgrade any/all pdbs
       for(char oldTech = static_cast<char>(techLevel - 1); oldTech >= '1'; oldTech--)
       {
-         uint32_t oldPdbs = ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(string("PDB") + oldTech).first;
-         ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(string("PDB") + oldTech, 0);
+			uint32_t oldPdbs = RFTS_::getResource(res, string("PDB") + oldTech).first;
+			RFTS_::setResource(res, string("PDB") + oldTech, 0);
          totalPdbs += oldPdbs;
       }
 
-      ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(string("PDB") + techLevel, totalPdbs);
+		RFTS_::setResource(res, string("PDB") + techLevel, totalPdbs);
    }
 }
 
@@ -242,41 +251,44 @@ void Planet::setDefaultResources() {
 }
 
 const uint32_t Planet::getCurrentRP() const {
-   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource("Resource Point").first;
+	return this->getResource("Resource Point").first;
 }
 
 const pair<uint32_t, uint32_t> Planet::getResource(uint32_t resTypeId) const {
-   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeId);
+	return ResourceListParam((obj->getParameter(3,1))).getResource(resTypeId);
 }
 
 const pair<uint32_t, uint32_t> Planet::getResource(const string& resTypeName) const {
-   return ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeName);
+	return RFTS_::getResource(ResourceListParam((obj->getParameter(3,1))),
+										 resTypeName);
 }
 
 void Planet::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {
-   ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(resTypeId, currVal, maxVal);
+	ResourceListParam(obj->getParameter(3,1)).setResource(resTypeId, currVal, maxVal);
 }
 
 void Planet::setResource(const string& resType, uint32_t currVal, uint32_t maxVal) {
-   ((ResourceListParam*)(obj->getParameter(3,1)))->setResource(resType, currVal, maxVal);
+	ResourceListParam res = ResourceListParam(obj->getParameter(3,1));
+	RFTS_::setResource( res, resType, currVal, maxVal);
 }
 
 const map<uint32_t, pair<uint32_t, uint32_t> > Planet::getResources() const{
-    return ((ResourceListParam*)(obj->getParameter(3,1)))->getResources();
+	return dynamic_cast<ResourceListObjectParam*>(obj->getParameter(3,1))->getResources();
 }
 
 void Planet::addResource(uint32_t resTypeId, uint32_t amount){
-   ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resTypeId).first += amount;
+   ResourceListParam((obj->getParameter(3,1))).addResource(resTypeId, amount);
    obj->touchModTime();
 }
 
 void Planet::addResource(const string& resType, uint32_t amount){
-   ((ResourceListParam*)(obj->getParameter(3,1)))->getResource(resType).first += amount;
+	addResource( getTypeId(resType), amount );
    obj->touchModTime();
 }
 
 bool Planet::removeResource(uint32_t resTypeId, uint32_t amount){
-   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListParam*)(obj->getParameter(3,1)))->getResources();
+	ResourceListObjectParam& res = *dynamic_cast<ResourceListObjectParam*>(obj->getParameter(3,1));
+	std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = res.getResources();
    
       if(reslist.find(resTypeId) != reslist.end()){
          obj->touchModTime();
@@ -284,10 +296,10 @@ bool Planet::removeResource(uint32_t resTypeId, uint32_t amount){
             std::pair<uint32_t, uint32_t> respair = reslist[resTypeId];
             respair.first -= amount;
             reslist[resTypeId] = respair;
-            ((ResourceListObjectParam*)(obj->getParameter(3,1)))->setResources(reslist);
+				res.setResources(reslist);
          } else {
             reslist[resTypeId].first = 0;
-            ((ResourceListObjectParam*)(obj->getParameter(3,1)))->setResources(reslist);
+				res.setResources(reslist);
          }
          return true;
       }
@@ -296,9 +308,7 @@ bool Planet::removeResource(uint32_t resTypeId, uint32_t amount){
 
 bool Planet::removeResource(const string& resTypeName, uint32_t amount){
 
-   return removeResource(Game::getGame()->getResourceManager()->
-                        getResourceDescription(resTypeName)->getResourceType(),
-                        amount);
+   return removeResource( getTypeId(resTypeName), amount);
 }
 
 void Planet::setupObject(){

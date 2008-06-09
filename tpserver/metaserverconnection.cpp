@@ -271,7 +271,11 @@ bool MetaserverConnection::sendUpdate(){
   formater << "&rulever=" << Game::getGame()->getRuleset()->getVersion();
   formater << "&objs=" << (Game::getGame()->getObjectManager()->getNumObjects());
   formater << "&plys=" << (Game::getGame()->getPlayerManager()->getNumPlayers());
-  formater << "&prd=" << (Game::getGame()->getTurnTimer()->getTurnLength());
+    TurnTimer* turntimer = Game::getGame()->getTurnTimer();
+    if(turntimer != NULL){
+        formater << "&prd=" << (turntimer->getTurnLength());
+        formater << "&next=" << (Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
+    }
   if(!(settings->get("admin_email").empty())){
     formater << "&admin=" << settings->get("admin_email");
   }
@@ -283,20 +287,15 @@ bool MetaserverConnection::sendUpdate(){
     formater << "&cmt=" << comment;
   }
   
-  if(settings->get("metaserver_params_version") == "3"){
-    formater << "&name=" << tname;
-    formater << "&turn=" << (Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
-  }else{
     formater << "&ln=" << tname;
     formater << "&sn=";
     if(!(settings->get("game_shortname").empty())){
-      formater << settings->get("game_shortname");
+        formater << settings->get("game_shortname");
     }else{
-      formater << "tp";
+        formater << "tp";
     }
-    formater << "&next=" << (Game::getGame()->getTurnTimer()->secondsToEOT() + time(NULL));
+    
     formater << "&turn=" << (Game::getGame()->getTurnNumber());
-  }
   
   int servicenumber = 0;
   std::map<std::string, uint16_t> services = advertiser->getServices();

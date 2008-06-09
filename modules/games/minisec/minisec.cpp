@@ -21,6 +21,7 @@
 #include <cassert>
 #include <sstream>
 #include <fstream>
+#include <cstring>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -770,17 +771,12 @@ void MiniSec::onPlayerAdded(Player* player){
     
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
-    const char* name = player->getName().c_str();
+    std::string name = player->getName();
     IGObject *star = game->getObjectManager()->createNewObject();
     otypeman->setupObject(star, obT_Star_System);
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(80000ll);
-    char* temp = new char[strlen(name) + 13];
-    strncpy(temp, name, strlen(name));
-    strncpy(temp + strlen(name), " Star System", 12);
-    temp[strlen(name) + 12] = '\0';
-    star->setName(temp);
-    delete[] temp;
+    star->setName(name + " Star System");
     thestar->setPosition(Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10000000),
                               (long long)(currandom->getInRange(-5000, 5000) * 10000000),
                               /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
@@ -791,12 +787,7 @@ void MiniSec::onPlayerAdded(Player* player){
     IGObject *planet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(planet, obT_Planet);
     
-    temp = new char[strlen(name) + 8];
-    strncpy(temp, name, strlen(name));
-    strncpy(temp + strlen(name), " Planet", 7);
-    temp[strlen(name) + 7] = '\0';
-    planet->setName(temp);
-    delete[] temp;
+    planet->setName(name + " Planet");
     
     Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
     
@@ -824,12 +815,7 @@ void MiniSec::onPlayerAdded(Player* player){
     otypeman->setupObject(fleet, obT_Fleet);
     Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
-    temp = new char[strlen(name) + 13];
-    strncpy(temp, name, strlen(name));
-    strncpy(temp + strlen(name), " First Fleet", 12);
-    temp[strlen(name) + 12] = '\0';
-    fleet->setName(temp);
-    delete[] temp;
+    fleet->setName(name + " First Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
@@ -854,12 +840,7 @@ void MiniSec::onPlayerAdded(Player* player){
     otypeman->setupObject(fleet, obT_Fleet);
     thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
-    temp = new char[strlen(name) + 14];
-    strncpy(temp, name, strlen(name));
-    strncpy(temp + strlen(name), " Second Fleet", 13);
-    temp[strlen(name) + 13] = '\0';
-    fleet->setName(temp);
-    delete[] temp;
+    fleet->setName(name + " Second Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
@@ -884,12 +865,7 @@ void MiniSec::onPlayerAdded(Player* player){
     otypeman->setupObject(fleet, obT_Fleet);
     thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
-    temp = new char[strlen(name) + 13];
-    strncpy(temp, name, strlen(name));
-    strncpy(temp + strlen(name), " Thrid Fleet", 12);
-    temp[strlen(name) + 12] = '\0';
-    fleet->setName(temp);
-    delete[] temp;
+    fleet->setName(name + " Thrid Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
                                                       (long long)(currandom->getInRange(-5000, 5000) * 10),
@@ -984,8 +960,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
 
     std::string name = names->getName();
 
-    // FIXME: Would it not be better that this method takes a std::string?
-    star->setName(name.c_str());
+    star->setName(name);
 
     thestar->setPosition( Vector3d( currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
                                  currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
@@ -993,7 +968,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     star->addToParent( mw_galaxy->getID());
     obman->addObject( star);
 
-    for(uint i = 1; i <= nplanets; i++){
+    for(uint32_t i = 1; i <= nplanets; i++){
         IGObject*  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
 
@@ -1008,7 +983,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
         Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
         
         theplanet->setSize( 2);
-        planet->setName( formatter.str().c_str());
+        planet->setName( formatter.str());
         theplanet->setPosition( thestar->getPosition() + Vector3d( i * 40000ll,
                                                              i * -35000ll,
                                                              0ll));
