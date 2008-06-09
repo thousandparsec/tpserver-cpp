@@ -221,8 +221,16 @@ void Planet::setupObject(){
    ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
 }
 
-list<Planet*> Planet::getAdjacent() {
-   //TODO: Implement getAdjacent()
+list<IGObject*> Planet::getAdjacent() {
+   list<IGObject*> result;
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   ObjectManager* om = Game::getGame()->getObjectManager();
+   
+   list<uint32_t> adjacent = risk->getGraph()->getAdjacent(this->obj->getID());
+   for(list<uint32_t>::iterator i = adjacent.begin(); i != adjacent.end(); ++i) {
+      result.push_back(om->getObject(*i));
+   }
+   return result;
 }
 
-}
+} //end namespace riskruleset

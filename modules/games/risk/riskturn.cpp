@@ -64,7 +64,7 @@ void RiskTurn::doTurn(){
    set<uint32_t> objectsIds = objM->getAllIds();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
-   calculateReinforcements()
+   calculateReinforcements();
 
    processOrdersOfGivenType("Colonize");
    processOrdersOfGivenType("Reinforce");

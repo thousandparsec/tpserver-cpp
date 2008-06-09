@@ -471,8 +471,8 @@ void Risk::randomlyAssignPlanets(Player* player) {
    //TODO: Send message to player informing them they have received planets.
 }
 
-Graph Risk::getGraph() const {
-   return graph;
+Graph* Risk::getGraph() {
+   return &graph;
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {

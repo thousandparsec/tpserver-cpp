@@ -44,7 +44,7 @@ class Risk : public Ruleset {
       bool onAddPlayer(Player* player); 
       void onPlayerAdded(Player* player);
       
-      Graph getGraph()const;
+      Graph* getGraph();
       uint32_t getPlayerReinforcements(uint32_t owner);
       void setPlayerReinforcements(uint32_t owner, uint32_t units);
   
