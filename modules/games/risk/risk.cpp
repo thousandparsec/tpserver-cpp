@@ -467,7 +467,7 @@ void Risk::randomlyAssignPlanets(Player* player) {
          to_be_asgned, num_planets, max_players);
    
    Planet* planet; 
-   while (to_be_asgned > 0) { 
+   while (to_be_asgned > 0 && !isBoardClaimed() ) { 
       //CHECK: This option is not particularly robust, it will cause problems in a game that has already begun 
       //unless it checks for total ownership or only picks from unowned planets.
       Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
@@ -485,11 +485,11 @@ void Risk::randomlyAssignPlanets(Player* player) {
          planet->setOwner(player->getID());                                      //let the player have it
          planet->setResource("Army", armies, reinforcements[player->getID()]);   //and update availible resources with defaults
          to_be_asgned--;
+         //TODO: send message to player informing them they have received planets
       }
 
    }
    
-   //TODO: Send message to player informing them they have received planets.
 }
 
 Graph* Risk::getGraph() {
