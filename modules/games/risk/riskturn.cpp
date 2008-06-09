@@ -64,14 +64,8 @@ void RiskTurn::doTurn(){
    set<uint32_t> objectsIds = objM->getAllIds();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
-   //TODO: Calculate new reinforcements for players, add to their total.
-   //get all objects
-   //create a std::map
-   //iterate over every object, get its owner
-   //add 1 to map for every instance of player owned planet
-   //iterate over map and add total for player to reinforcements
-   //Send message to player about updated total
-  
+   calculateReinforcements()
+
    processOrdersOfGivenType("Colonize");
    processOrdersOfGivenType("Reinforce");
    processOrdersOfGivenType("Move");
@@ -102,8 +96,13 @@ void RiskTurn::calculateReinforcements() {
    set<uint32_t> objectsIds = objM->getAllIds();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
    
-   //Count territories of each player
-   //Assign correct amount of reinforcements
+   //TODO: Calculate new reinforcements for players, add to their total.
+   //get all objects
+   //create a std::map
+   //iterate over every object, get its owner
+   //add 1 to map for every instance of player owned planet
+   //iterate over map and add total for player to reinforcements
+   //Send message to player about updated total
 }
 
 //ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird

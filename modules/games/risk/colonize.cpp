@@ -47,6 +47,7 @@ Colonize::Colonize() {
    units->setDescription("The number of units to colonize with.");
    addOrderParameter(units);
 
+   turns = 1;
 }
 
 Colonize::~Colonize() {

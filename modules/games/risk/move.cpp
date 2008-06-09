@@ -51,6 +51,7 @@ Move::Move() : Order() {
    units->setDescription("The number of units to move (or attack with.)");
    addOrderParameter(units);
 
+   turns = 1;
 }
 
 Move::~Move() {
