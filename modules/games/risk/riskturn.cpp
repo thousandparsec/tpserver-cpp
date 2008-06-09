@@ -39,6 +39,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/message.h>
 #include <stdint.h>
+#include <tpserver/settings.h>
 
 #include "risk.h"
 #include "riskturn.h"
@@ -48,6 +49,7 @@ namespace RiskRuleset{
 
 using std::set;
 using std::string;
+using std::map;
 
 RiskTurn::RiskTurn() : TurnProcess() {
 
@@ -89,18 +91,39 @@ void RiskTurn::doTurn(){
     
 } //RiskTurn::RiskTurn() : TurnProcess()
 
+//TODO: Calculate new reinforcements for players, add to their total.
 void RiskTurn::calculateReinforcements() {
    Game* game = Game::getGame();
-   ObjectManager* objM = game->getObjectManager();
+   ObjectManager* om = game->getObjectManager();
    PlayerManager *pm = game->getPlayerManager();
-   set<uint32_t> objectsIds = objM->getAllIds();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
+
+   set<uint32_t> objectsIds = om->getAllIds();
+   map<uint32_t,uint32_t> planets_owned;
    
-   //TODO: Calculate new reinforcements for players, add to their total.
-   //get all objects
-   //create a std::map
-   //iterate over every object, get its owner
-   //add 1 to map for every instance of player owned planet
+   uint32_t rfc_rate = atoi(Settings::getSettings()->get("risk_rfc_rate").c_str() );
+   uint32_t rfc_number = atoi(Settings::getSettings()->get("risk_rfc_number").c_str() );
+   
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i) {
+      OwnedObject* currObj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectBehaviour());
+      if (currObj != NULL) {//if the cast was ok
+         uint32_t owner = currObj->getOwner();
+         if (owner != 0) {
+            planets_owned[owner] += 1; //add 1 to the number of planets owned for that player
+         }
+      }
+   }   
+
+   //for each player in the map, calculate their reinforcements and add them to the existing rfc.
+   for(map<uint32_t,uint32_t>::iterator i = planets_owned.begin(); i != planets_owned.end(); ++i) {
+      uint32_t number = rfc_number*(i->second/rfc_rate);
+      uint32_t current = risk->getPlayerReinforcements(i->first);
+      
+      risk->setPlayerReinforcements(i->first,current+number);
+   }
+   
+   
+   
    //iterate over map and add total for player to reinforcements
    //Send message to player about updated total
 }
@@ -112,7 +135,7 @@ void RiskTurn::calculateReinforcements() {
 * I.E. if the type passed is P and the queue for an object is P->P->Q->P
 *   only the first two P will be procesed
 *NOTE: If no type is specified then all orders in queue will be processed
-*/
+**/
 void RiskTurn::processOrdersOfGivenType(string type) {
    Game* game = Game::getGame();
    OrderManager* ordM = game->getOrderManager();

@@ -74,7 +74,7 @@ public:
 
    void setupObject();
 
-   std::list<IGObject*> getAdjacent();
+   std::list<Planet*> getAdjacent();
 };
 
 
