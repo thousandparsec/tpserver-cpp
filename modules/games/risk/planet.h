@@ -73,6 +73,8 @@ public:
    void setOrderTypes();
 
    void setupObject();
+   
+   uint32_t getID();
 
    std::list<Planet*> getAdjacent();
 };

@@ -224,6 +224,10 @@ void Planet::setupObject(){
    ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
 }
 
+uint32_t Planet::getID(){
+   return this->obj->getID();
+}
+
 list<Planet*> Planet::getAdjacent() {
    list<Planet*> result;
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());

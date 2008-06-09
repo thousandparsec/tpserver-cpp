@@ -25,9 +25,9 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/objectbehaviour.h>
-#include <tpserver/order.h>
 #include <tpserver/object.h>
+#include <tpserver/order.h>
+#include <tpserver/objectbehaviour.h>
 #include <tpserver/objectview.h>
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>

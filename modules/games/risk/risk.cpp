@@ -362,7 +362,6 @@ bool Risk::onAddPlayer(Player* player){
       bool canJoin = true;            
 
       uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
-      bool isStarted = game->isStarted();
       uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
 
       //If ( max players exceeded OR (game's started AND there are no open spaces))    
@@ -467,19 +466,35 @@ void Risk::randomlyAssignPlanets(Player* player) {
          to_be_asgned, num_planets, max_players);
    
    Planet* planet; 
+   std::set<uint32_t> allIds = om->getAllIds();
+   std::set<uint32_t> unownedObjs;
+   
+   //This for loop populates set unownedObjs with only objects with no owner.
+   for (std::set<uint32_t>::iterator i = allIds.begin(); i != allIds.end(); ++i) {     //Iterate over all ids
+      IGObject * obj = om->getObject(*i);
+      Planet* ownedObj = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+      
+      if (ownedObj != NULL && ownedObj->getOwner() == 0 ) {
+            unownedObjs.insert(ownedObj->getID());            //Insert only unowned "OwnedObject" id into set
+      }
+   }
+   
    while (to_be_asgned > 0 && !isBoardClaimed() ) { 
-      //CHECK: This option is not particularly robust, it will cause problems in a game that has already begun 
-      //unless it checks for total ownership or only picks from unowned planets.
       Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
+
+      //CHECK: is this in range inclusive?
+      uint32_t planet_number = random->getInRange((uint32_t)0,unownedObjs.size()-1);
+
+      //get and move iterator it to the planet number randomly chosen
+      std::set<uint32_t>::iterator it = unownedObjs.begin(); 
+      for ( int i = 0; i < planet_number; i++, it++) {}
       
-      //Check is this in range inclusive?
-      uint32_t planet_number = random->getInRange((uint32_t)1,num_planets);
+      //The position of iterator is a randomly chosen unowned object
+      uint32_t id_to_grab = *(it);
+
+      planet = dynamic_cast<Planet*>(om->getObject(id_to_grab)->getObjectBehaviour());
       
-      //TODO make this more transparent
-      planet = dynamic_cast<Planet*>(om->getObject(num_constellations+2*planet_number)->getObjectBehaviour());
-      
-      Logger::getLogger()->debug("Picked planet #%d to give out, this is object #%d",
-            planet_number, num_constellations+2*planet_number);
+      Logger::getLogger()->debug("Picked planet #%d to give out", id_to_grab);
       
       if (planet != NULL && planet->getOwner() <=  0) {                          //if planet is not owned
          planet->setOwner(player->getID());                                      //let the player have it
