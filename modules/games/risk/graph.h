@@ -25,8 +25,6 @@
 #include <list>
 namespace RiskRuleset {
 
-
-
 class Graph {
 public:
    Graph();

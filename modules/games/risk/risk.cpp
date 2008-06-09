@@ -184,7 +184,6 @@ void Risk::createResources() {
 //Galaxies are ID 1 through num_constellations 
 //Planets Systems are num_constellations+1 through num_constellations*2 - 1. System 'k' is at num_constellations+(2k-1)
 //Planets are num_constellations+2 through num_constellations+2*num_planets. Planet 'k' is at num_constellations+2k
-   //Helper function starID(constellations,planet #) returns the ID of the star
 void Risk::createUniverse() {
    DEBUG_FN_PRINT();
 
@@ -219,11 +218,11 @@ void Risk::createUniverse() {
    const uint32_t DELTA = 2 + 2*4;
 
    //declare adjacencies
-
-   //The question is: refer to planets as 1 to num_planets or as their actual ids?
-   //It will be easier to access them by id but harder to create
-   //and vica versa
-
+   graph.addEdge(ALPHA,BETA);
+   graph.addEdge(GAMMA,DELTA);
+   graph.addEdge(BETA,GAMMA);
+   graph.addEdge(DELTA,ALPHA);
+   
 }
 
 IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
@@ -261,10 +260,8 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
    starSys->addToParent(parent.getID());
    game->getObjectManager()->addObject(starSys);
 
-   //CHECK: if commenting this out and changing planetName to name caused any problems
-   //string planetName;
-   //planetName = starSys->getName();
-   createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset());
+   //Create the planet AND add that planet to the graph.
+   graph.addPlanet(createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset()));
    return starSys;
 }
 
@@ -364,9 +361,6 @@ bool Risk::onAddPlayer(Player* player){
 
       bool canJoin = true;            
 
-      //TODO: implement restrictions for adding players
-      /* Commented out for the time being until things start working properly
-
       uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
       bool isStarted = game->isStarted();
       uint32_t cur_players = game->getPlayerManager()->getNumPlayers();
@@ -374,17 +368,13 @@ bool Risk::onAddPlayer(Player* player){
       //If ( max players exceeded OR (game's started AND there are no open spaces))    
          //disallow joining
       if ( (cur_players >= max_players)||(isStarted && !isBoardClaimed()) )
-      canJoin = false;  
-      else
-      canJoin = true;
-      */
+         canJoin = false;  
+
       return canJoin; 
 }
 
 bool Risk::isBoardClaimed() const{
    Game* game = Game::getGame();
-   OrderManager* ordM = game->getOrderManager();
-   PlayerManager* pm = game->getPlayerManager();
    ObjectManager* objM = game->getObjectManager();
 
    //Get all objects frobjM object manager
