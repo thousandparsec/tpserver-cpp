@@ -48,12 +48,12 @@ Move::Move() : Order() {
    name = "Move";
    description = "Move any number of units to an adjacent planet";
 
-   planet = new ListParameter();
-   planet->setName("Planet");
-   planet->setDescription("The Planet to move to.");
-   planet->setListOptionsCallback(ListOptionCallback(this,
+   targetPlanet = new ListParameter();
+   targetPlanet->setName("Planet");
+   targetPlanet->setDescription("The Planet to move to.");
+   targetPlanet->setListOptionsCallback(ListOptionCallback(this,
       &Move::generateListOptions));
-   addOrderParameter(planet);
+   addOrderParameter(targetPlanet);
 
    turns = 1;
 }
@@ -121,28 +121,53 @@ Order* Move::clone() const {
 }
 
 bool Move::doOrder(IGObject* obj) {
-   bool result = true;
    --turns;
-   //TODO: Implement Move order
    
-   //Double check if target planet is in list of adjacent planets?
-
-   //If planet is friendly - simply transfer units to planet
-   //Else
-      //Check to see if target planet has an order for attacking base planet
-      //if so execute "balanced" roll (i.e. 3-3)
-         //remove order on target planet to attack current planet
-      //else execute "attacker-favored" roll (i.e. 3-2)
-
-      //apply results of battle to base and target planets
+   Game* game = Game::getGame();
+   ObjectManager* om = game->getObjectManager();
+   Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(planet);
    
-      //if target planet is conquerred (no more armies on surface)
-         //change owner of target planet to current planet owner
-         //remove all orders on target planet
-
-   //Send message to players (and target planet owner if applicable)
+   //Get the list of planetIDs and the # of units to move
+   map<uint32_t,uint32_t> list = targetPlanet->getList();
    
-   return result;
+   //Iterate over all planetIDs and # of units to move to them
+   for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+      uint32_t planetID = i->first;
+      uint32_t numUnits = i->second;
+      Planet* origin = dynamic_cast<Planet*>(
+         obj->getObjectBehaviour());
+      assert(origin);
+      Planet* target = dynamic_cast<Planet*>(
+         om->getObject(planetID)->getObjectBehaviour());
+      assert(target);
+      
+      if (origin->getOwner() == target->getOwner()) {
+         //Friendly Move
+         origin->removeResource("Army",numUnits);
+         target->addResource("Army",numUnits);
+      }
+      else { //origin and target owners are not the same, attack
+         //Attack Move
+         
+      }
+      //If planet is friendly - simply transfer units to planet
+      //Else
+         //Check to see if target planet has an order for attacking base planet
+         //if so execute "balanced" roll (i.e. 3-3)
+            //remove order on target planet to attack current planet
+         //else execute "attacker-favored" roll (i.e. 3-2)
+
+         //apply results of battle to base and target planets
+
+         //if target planet is conquerred (no more armies on surface)
+            //change owner of target planet to current planet owner
+            //remove all orders on target planet
+   }
+
+   //TODO: send message about results of move order
+   
+   return true;   //moves are always completed, no matter what happens
 }
 
 } //end namespace RiskRuleset
