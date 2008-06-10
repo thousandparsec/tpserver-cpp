@@ -73,15 +73,13 @@ Fleet::~Fleet(){
 void Fleet::setDefaultOrderTypes(){
     Logger::getLogger()->debug("Enter: Fleet::setDefaultOrderTypes");
     //TODO: Write this function... example below
-    /*
     OrderManager * om = Game::getGame()->getOrderManager();
     std::set<uint32_t> allowedlist;
-    allowedlist.insert(om->getOrderTypeByName("No Operation"));
-    allowedlist.insert(om->getOrderTypeByName("Move"));
+    allowedlist.insert(om->getOrderTypeByName("Colonize"));
+    /*allowedlist.insert(om->getOrderTypeByName("Move"));
     allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
-    allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
+    allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));*/
     ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
-    */
     Logger::getLogger()->debug("Exit: Fleet::setDefaultOrderTypes");
 
 }

@@ -50,6 +50,7 @@
 #include "starsystem.h"
 #include "planet.h"
 #include "fleet.h"
+#include "colonize.h"
 
 //header includes
 #include "tae.h"
@@ -102,6 +103,10 @@ void taeRuleset::initGame() {
 
     //Add Fleet object type
     obtm->addNewObjectType(new FleetType());
+    
+    //Set Order types
+    OrderManager* orm = game->getOrderManager();
+    orm->addOrderType(new Colonize());
 
     Logger::getLogger()->info("TaE initialised");
 }
