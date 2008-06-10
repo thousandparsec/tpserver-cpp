@@ -128,11 +128,15 @@ bool Move::doOrder(IGObject* obj) {
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
+   PlayerManager* pm = game->getPlayerManager();
    Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(planet);
    
    //Get the list of planetIDs and the # of units to move
    map<uint32_t,uint32_t> list = targetPlanet->getList();
+   
+   Message* targetMessage;
+   Message* originMessage;
    
    //Iterate over all planetIDs and # of units to move to them
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {

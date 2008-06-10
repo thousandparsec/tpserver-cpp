@@ -135,6 +135,7 @@ void RiskTurn::calculateReinforcements() {
 *NOTE: If no type is specified then all orders in queue will be processed
 **/
 void RiskTurn::processOrdersOfGivenType(string type) {
+   Logger::getLogger()->debug("Now processing orders of type: %s",type.c_str());
    Game* game = Game::getGame();
    OrderManager* ordM = game->getOrderManager();
    ObjectManager* objM = game->getObjectManager();

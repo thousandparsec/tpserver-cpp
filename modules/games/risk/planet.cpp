@@ -93,15 +93,19 @@ Planet::~Planet() {
 
 }
 
+//TODO: make it so owned planets don't show colonize order.
 void Planet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
 
    std::set<uint32_t> allowedlist;
 
-   allowedlist.insert(om->getOrderTypeByName("Colonize"));
-   allowedlist.insert(om->getOrderTypeByName("Move"));
-   allowedlist.insert(om->getOrderTypeByName("Reinforce"));
-
+   if (this->getOwner() == 0) {
+      allowedlist.insert(om->getOrderTypeByName("Colonize"));
+   }
+   else {  
+      allowedlist.insert(om->getOrderTypeByName("Move"));
+      allowedlist.insert(om->getOrderTypeByName("Reinforce"));
+   }
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
 

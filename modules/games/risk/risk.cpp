@@ -460,7 +460,8 @@ void Risk::randomlyAssignPlanets(Player* player) {
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
 
    uint32_t to_be_asgned = num_planets / max_players ;    //TODO: possibly make this rounding a little more robust.
-
+   std::string body = "";
+   
    Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
          to_be_asgned, num_planets, max_players);
    
@@ -485,7 +486,7 @@ void Risk::randomlyAssignPlanets(Player* player) {
 
       //get and move iterator it to the planet number randomly chosen
       std::set<uint32_t>::iterator it = unownedObjs.begin(); 
-      for ( int i = 0; i < planet_number; i++, it++) {}
+      for ( uint32_t i = 0; i < planet_number; i++, it++) {}
       
       //The position of iterator is a randomly chosen unowned object
       uint32_t id_to_grab = *(it);
@@ -497,17 +498,24 @@ void Risk::randomlyAssignPlanets(Player* player) {
       if (planet != NULL && planet->getOwner() <=  0) {                          //if planet is not owned
          planet->setOwner(player->getID());                                      //let the player have it
          planet->setResource("Army", armies, reinforcements[player->getID()]);   //and update availible resources with defaults
+         planet->setOrderTypes();
          to_be_asgned--;
          
-         Message* gotPlanet = new Message();
-         gotPlanet->setSubject("Your received a randomly assigned planet");
-         gotPlanet->setBody("The planet you received was ");      //TODO: include planet name in message
-         
-         player->postToBoard(gotPlanet);
+         body += "You received the planet "+planet->getName()+".<br />";
       }
 
    }
-   
+
+   Message* gotPlanet = new Message();  
+   if (body != "") {
+      gotPlanet->setSubject("Your received a randomly assigned planet(s)");
+      gotPlanet->setBody(body);
+   }
+   else {
+      gotPlanet->setSubject("You have not received any planets");
+      gotPlanet->setBody("This may mean there were no planets to give out, or an error has occured");
+   }
+   player->postToBoard(gotPlanet);
 }
 
 Graph* Risk::getGraph() {
