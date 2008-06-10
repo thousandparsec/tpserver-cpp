@@ -34,6 +34,7 @@
 #include <tpserver/listparameter.h>
 
 #include "move.h"
+#include "planet.h"
 
 //TODO: Make Move order display correctly in client
 namespace RiskRuleset {
@@ -41,6 +42,7 @@ namespace RiskRuleset {
 using std::map;
 using std::pair;
 using std::string;
+using std::list;
 
 Move::Move() : Order() {
    name = "Move";
@@ -67,6 +69,24 @@ Move::~Move() {
 
 map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
    map<uint32_t, pair<string,uint32_t> > options;
+   
+   Game* game = Game::getGame();
+   
+   IGObject* selectedObj = game->getObjectManager()->getObject(
+      game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
+   
+   assert(planet);
+   
+   game->getObjectManager()->doneWithObject(selectedObj->getID());
+
+   list<Planet*> adjacent = planet->getAdjacent();
+   
+   uint32_t current = 0;
+   for(list<Planet*>::iterator i = adjacent.begin(); i != adjacent.end(); i++) {
+      options[current] = pair<string,uint32_t>(
+         (*i)->getName(),(*i)->getID() );
+   }   
    //populate options with adjacent planets
    return options;
 }
