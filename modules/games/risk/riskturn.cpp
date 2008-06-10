@@ -66,12 +66,12 @@ void RiskTurn::doTurn(){
    ObjectManager* objM = game->getObjectManager();
    set<uint32_t> objectsIds = objM->getAllIds();
 
-   calculateReinforcements();
-
    processOrdersOfGivenType("Colonize");
    processOrdersOfGivenType("Reinforce");
    processOrdersOfGivenType("Move");
    processOrdersOfGivenType();
+   
+   calculateReinforcements(); 
    
    setPlayerVisibleObjects();
 
