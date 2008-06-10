@@ -33,6 +33,7 @@
 #include <tpserver/logging.h>
 #include <tpserver/listparameter.h>
 
+#include <string>
 #include "move.h"
 #include "planet.h"
 
@@ -123,28 +124,32 @@ Order* Move::clone() const {
    return o;
 }
 
+//TODO: Get move messaging working.
 bool Move::doOrder(IGObject* obj) {
    --turns;
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
    PlayerManager* pm = game->getPlayerManager();
-   Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
-   assert(planet);
+   Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(origin);
    
    //Get the list of planetIDs and the # of units to move
    map<uint32_t,uint32_t> list = targetPlanet->getList();
    
-   Message* targetMessage;
-   Message* originMessage;
+   Message* originMessage; //message for origin planet owner.
+   Message* targetMessage; //message for target planet owner, if not same as origin.
+   Player* originPlayer = pm->getPlayer(origin->getOwner());
+   string originSubject = "Move order(s) successfully completed";
+   string originBody = "";
+   //use a map here to allow for multiple target players
+   string targetSubject = "";
+   string targetBody = "";
    
    //Iterate over all planetIDs and # of units to move to them
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
-      Planet* origin = dynamic_cast<Planet*>(
-         obj->getObjectBehaviour());
-      assert(origin);
       Planet* target = dynamic_cast<Planet*>(
          om->getObject(planetID)->getObjectBehaviour());
       assert(target);
@@ -153,6 +158,7 @@ bool Move::doOrder(IGObject* obj) {
          //Friendly Move
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
+         //originBody += "You have moved " + numUnits + " to " + target->getName() + ".\n";
       }
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
@@ -167,6 +173,8 @@ bool Move::doOrder(IGObject* obj) {
          //if target planet is conquerred (no more armies on surface)
             //change owner of target planet to current planet owner
             //remove all orders on target planet
+         //TODO: Add targetBody/originBody text about results
+         //TODO: Add target messaging.
       }
       //origin and target owners are not the same, target is unowned
       else {
@@ -174,11 +182,16 @@ bool Move::doOrder(IGObject* obj) {
          origin->removeResource("Army",numUnits);
          target->setOwner(origin->getOwner());
          target->addResource("Army",numUnits);
+         //originBody += "You have colonized " + target->getName() + " with " + numUnits + " units.\n"; 
       }
 
    }
-
-   //TODO: send message about results of move order
+   
+   originMessage->setSubject(originSubject);
+   originMessage->setBody(originBody);
+   originPlayer->postToBoard(originMessage);
+   
+   //TODO: send message to target player(s)
    
    return true;   //moves are always completed, no matter what happens
 }
