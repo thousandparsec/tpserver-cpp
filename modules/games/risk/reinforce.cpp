@@ -29,10 +29,12 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
+#include <tpserver/timeparameter.h>
 
 #include "reinforce.h"
-//#include "planet.h"
-//include "playerinfo.h"
+#include "planet.h"
+#include "risk.h"
+
 namespace RiskRuleset {
 
 using std::string;
@@ -41,11 +43,10 @@ Reinforce::Reinforce() {
    name = "Reinforce";
    description = "Reinforce a planet";
 
-   //Check on validity of these parameters
-   // units = new ObjectOrderParameter();
-   // units->setName("Units");
-   // units->setDescription("The number of units to reinforce with.");
-   // addOrderParameter(units);
+   numberUnits = new TimeParameter();
+   numberUnits->setName("Units");
+   numberUnits->setDescription("The number of units to reinforce with.");
+   addOrderParameter(numberUnits);
 
    turns = 1;
 }
@@ -62,14 +63,27 @@ Order* Reinforce::clone() const {
 
 bool Reinforce::doOrder(IGObject *obj) {
    bool result = true;
-   //TODO: Implement Reinforce order
+   
+   Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(planet);
+   
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   uint32_t requestedUnits = numberUnits->getTime();
+   uint32_t availibleUnits = risk->getPlayerReinforcements(planet->getOwner());
+   --turns;
+   
+   //if user has asked for too many units then only give them as much as they can afford
+   if ( requestedUnits > availibleUnits ) { 
+      requestedUnits = availibleUnits;    
+   }  
 
-   --turns;   
-   //Check if player has enough reinforcements availible to perform the reinforcement.
-   //Add smallest of (All reinforcements requested || Total reinforcements availible) to planet
+   planet->addResource("Army",requestedUnits);
+
    //Decrement players reinforcements total.
-   //Inform player how many reinforcements were added, their new reinforcement total.
-   return result;
+   risk->setPlayerReinforcements(planet->getOwner(), availibleUnits - requestedUnits);
+
+   //TODO: Inform player how many reinforcements were added, their new reinforcement total.
+   return true;
 }
 
 } //namespace RiskRuleset

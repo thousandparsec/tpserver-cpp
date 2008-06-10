@@ -64,6 +64,9 @@ Move::~Move() {
 
 //This function is commented to aid new ruleset developers in understanding
 //how to construct a generateListOptions function
+//CHECK: On move to empty planet with 2 units:
+   //planet empty planet recieves 2 units, updates reinforcements properly
+   //attemping to move from newly colonized planet does not allow user to pick any value
 map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
    //This map will be filled with options to be displayed
    //The pair is made up of a title and an integer max
@@ -150,7 +153,16 @@ bool Move::doOrder(IGObject* obj) {
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
          //Attack Move
-         
+         //Check to see if target planet has an order for attacking base planet
+         //if so execute "balanced" roll (i.e. 3-3)
+            //remove order on target planet to attack current planet
+         //else execute "attacker-favored" roll (i.e. 3-2)
+
+         //apply results of battle to origin and target planets
+
+         //if target planet is conquerred (no more armies on surface)
+            //change owner of target planet to current planet owner
+            //remove all orders on target planet
       }
       //origin and target owners are not the same, target is unowned
       else {
@@ -159,16 +171,7 @@ bool Move::doOrder(IGObject* obj) {
          target->setOwner(origin->getOwner());
          target->addResource("Army",numUnits);
       }
-         //Check to see if target planet has an order for attacking base planet
-         //if so execute "balanced" roll (i.e. 3-3)
-            //remove order on target planet to attack current planet
-         //else execute "attacker-favored" roll (i.e. 3-2)
 
-         //apply results of battle to base and target planets
-
-         //if target planet is conquerred (no more armies on surface)
-            //change owner of target planet to current planet owner
-            //remove all orders on target planet
    }
 
    //TODO: send message about results of move order

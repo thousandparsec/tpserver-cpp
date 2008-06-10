@@ -23,8 +23,8 @@
  
 #include <tpserver/order.h>
 
-class ObjectOrderParameter;
-class IGObject;
+ class TimeParameter;
+ class IGObject;
  
 namespace RiskRuleset {
 
@@ -40,7 +40,8 @@ public:
    virtual bool doOrder(IGObject* obj);
 
 private:
-   ObjectOrderParameter* units;    //# of units to Reinforce a target planet with.
+   //ASK: how to ask for just a number
+   TimeParameter* numberUnits;    //# of units to Reinforce planet with.
 
 };//class Reinforce
 } //namespace RiskRuleset

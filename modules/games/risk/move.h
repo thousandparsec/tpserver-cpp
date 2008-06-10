@@ -22,7 +22,6 @@
  
 #include <tpserver/order.h>
 
-class ObjectOrderParameter;
 class ListParameter;
 class IGObject;
 
