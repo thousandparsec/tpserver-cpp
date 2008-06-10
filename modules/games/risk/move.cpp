@@ -147,12 +147,18 @@ bool Move::doOrder(IGObject* obj) {
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
       }
-      else { //origin and target owners are not the same, attack
+      //origin and target owners are not the same, target is owned
+      else if (target->getOwner() != 0){ 
          //Attack Move
          
       }
-      //If planet is friendly - simply transfer units to planet
-      //Else
+      //origin and target owners are not the same, target is unowned
+      else {
+         //Colonize Move
+         origin->removeResource("Army",numUnits);
+         target->setOwner(origin->getOwner());
+         target->addResource("Army",numUnits);
+      }
          //Check to see if target planet has an order for attacking base planet
          //if so execute "balanced" roll (i.e. 3-3)
             //remove order on target planet to attack current planet
