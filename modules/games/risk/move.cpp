@@ -86,6 +86,7 @@ map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
    for(list<Planet*>::iterator i = adjacent.begin(); i != adjacent.end(); i++) {
       options[current] = pair<string,uint32_t>(
          (*i)->getName(),(*i)->getID() );
+      current++;
    }   
    //populate options with adjacent planets
    return options;
