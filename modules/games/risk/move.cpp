@@ -31,22 +31,27 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/logging.h>
+#include <tpserver/listparameter.h>
 
 #include "move.h"
 
 //TODO: Make Move order display correctly in client
 namespace RiskRuleset {
 
+using std::map;
+using std::pair;
 using std::string;
 
 Move::Move() : Order() {
    name = "Move";
-   description = "Move any number of units to a planet";
+   description = "Move any number of units to an adjacent planet";
 
-   planet = new ObjectOrderParameter();
+   planet = new ListParameter();
    planet->setName("Planet");
    planet->setDescription("The Planet to move to.");
-   addOrderParameter(planet);   //TODO: Check how to populate this parameter with only adjacent planets
+   planet->setListOptionsCallback(ListOptionCallback(this,
+      &Move::generateListOptions));
+   addOrderParameter(planet);
    
    units = new ObjectOrderParameter();
    units->setName("Units");
@@ -58,6 +63,12 @@ Move::Move() : Order() {
 
 Move::~Move() {
 
+}
+
+map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
+   map<uint32_t, pair<string,uint32_t> > options;
+   //populate options with adjacent planets
+   return options;
 }
 
 Order* Move::clone() const {

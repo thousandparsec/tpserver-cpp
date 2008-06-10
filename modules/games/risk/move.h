@@ -23,6 +23,7 @@
 #include <tpserver/order.h>
 
 class ObjectOrderParameter;
+class ListParameter;
 class IGObject;
 
 namespace RiskRuleset {
@@ -37,7 +38,9 @@ public:
    virtual bool doOrder(IGObject* obj);
 
 private:
-   ObjectOrderParameter* planet;
+   std::map<uint32_t, std::pair<std::string, uint32_t> >generateListOptions();
+   
+   ListParameter* planet;
    ObjectOrderParameter* units;
 };
 
