@@ -23,7 +23,7 @@
  
 #include <tpserver/order.h>
 
-class ObjectOrderParameter;
+class TimeParameter;
 class IGObject;
  
 namespace RiskRuleset {
@@ -35,12 +35,12 @@ public:
    Colonize();
    virtual ~Colonize();
 
-   virtual Order* clone() const; //not sure what this does
+   virtual Order* clone() const;
 
    virtual bool doOrder(IGObject* obj);
 
 private:
-   ObjectOrderParameter* units;    //# of units to colonize a target planet with.
+   TimeParameter* numberUnits;    //# of units to colonize a target planet with.
 
 };//class Colonize
 } //namespace RiskRuleset

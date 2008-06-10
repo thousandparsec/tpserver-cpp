@@ -29,6 +29,7 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
+#include <tpserver/timeparameter.h>
 
 #include "colonize.h"
 
@@ -42,10 +43,10 @@ Colonize::Colonize() {
 
    //ASK: Work with Lee to get colonize order available on unowned planets
    //CHECK: on validity of these parameters
-   units = new ObjectOrderParameter();
-   units->setName("Units");
-   units->setDescription("The number of units to colonize with.");
-   addOrderParameter(units);
+   numberUnits = new TimeParameter();
+   numberUnits->setName("Units");
+   numberUnits->setDescription("The number of units to colonize with.");
+   addOrderParameter(numberUnits);
 
    turns = 1;
 }

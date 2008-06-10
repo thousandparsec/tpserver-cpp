@@ -163,6 +163,7 @@ bool Move::doOrder(IGObject* obj) {
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
          //Attack Move
+         //CHECK: up on how to get another planet's order queue. (look in riskturn.cpp)
          //Check to see if target planet has an order for attacking base planet
          //if so execute "balanced" roll (i.e. 3-3)
             //remove order on target planet to attack current planet

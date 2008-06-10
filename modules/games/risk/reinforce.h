@@ -23,8 +23,8 @@
  
 #include <tpserver/order.h>
 
- class TimeParameter;
- class IGObject;
+class TimeParameter;
+class IGObject;
  
 namespace RiskRuleset {
 
