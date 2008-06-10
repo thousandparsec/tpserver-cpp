@@ -42,10 +42,10 @@ Reinforce::Reinforce() {
    description = "Reinforce a planet";
 
    //Check on validity of these parameters
-   units = new ObjectOrderParameter();
-   units->setName("Units");
-   units->setDescription("The number of units to reinforce with.");
-   addOrderParameter(units);
+   // units = new ObjectOrderParameter();
+   // units->setName("Units");
+   // units->setDescription("The number of units to reinforce with.");
+   // addOrderParameter(units);
 
    turns = 1;
 }

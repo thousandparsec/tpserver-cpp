@@ -22,7 +22,7 @@
  */
 
 #include <planet.h>
-#include <list>
+#include <set>
 namespace RiskRuleset {
 
 class Graph {
@@ -32,12 +32,12 @@ public:
    bool addPlanet(IGObject* planet);
    bool addEdge(uint32_t id1, uint32_t id2);
    bool addEdge(IGObject* planet1, IGObject* planet2);
-   std::list<uint32_t> getAdjacent(IGObject* planet);
-   std::list<uint32_t> getAdjacent(uint32_t id);
+   std::set<uint32_t> getAdjacent(IGObject* planet);
+   std::set<uint32_t> getAdjacent(uint32_t id);
 private:
    struct Node {
       uint32_t id;
-      std::list<Node*> adjacent;
+      std::set<Node*> adjacent;
       //I didn't think it pertinent to include a pointer to the object here
       //as that information is available through the object manager via ID
    };

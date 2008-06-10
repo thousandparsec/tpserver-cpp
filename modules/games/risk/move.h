@@ -41,7 +41,6 @@ private:
    std::map<uint32_t, std::pair<std::string, uint32_t> >generateListOptions();
    
    ListParameter* planet;
-   ObjectOrderParameter* units;
 };
 
 }

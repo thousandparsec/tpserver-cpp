@@ -51,8 +51,8 @@ bool Graph::addEdge(uint32_t id1, uint32_t id2) {
    Node* node1 = &nodeMap[id1];
    Node* node2 = &nodeMap[id2];
    if ( node1 != NULL && node2 != NULL ) { 
-      node1->adjacent.push_back(node2); 
-      node2->adjacent.push_back(node1);
+      node1->adjacent.insert(node2); 
+      node2->adjacent.insert(node1);
       result = true; 
    }
    return result;
@@ -62,15 +62,15 @@ bool Graph::addEdge(IGObject* planet1, IGObject* planet2) {
    return addEdge(planet1->getID(),planet2->getID());
 }
 
-std::list<uint32_t> Graph::getAdjacent(IGObject* planet) { 
+std::set<uint32_t> Graph::getAdjacent(IGObject* planet) { 
    return getAdjacent(planet->getID());
 }
 
-std::list<uint32_t> Graph::getAdjacent(uint32_t id) { 
-   std::list<uint32_t> result;
+std::set<uint32_t> Graph::getAdjacent(uint32_t id) { 
+   std::set<uint32_t> result;
    Node* node = &nodeMap[id];
-   for (std::list<Node*>::iterator i = node->adjacent.begin(); i != node->adjacent.end(); ++i) {
-      result.push_back((*i)->id);
+   for (std::set<Node*>::iterator i = node->adjacent.begin(); i != node->adjacent.end(); ++i) {
+      result.insert((*i)->id);
    }
    return result;
 }

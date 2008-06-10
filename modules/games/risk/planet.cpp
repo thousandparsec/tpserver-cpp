@@ -231,14 +231,14 @@ uint32_t Planet::getID(){
 std::string Planet::getName(){
    return this->obj->getName();
 }
-list<Planet*> Planet::getAdjacent() {
-   list<Planet*> result;
+set<Planet*> Planet::getAdjacent() {
+   set<Planet*> result;
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
    ObjectManager* om = Game::getGame()->getObjectManager();
    
-   list<uint32_t> adjacent = risk->getGraph()->getAdjacent(this->obj->getID());
-   for(list<uint32_t>::iterator i = adjacent.begin(); i != adjacent.end(); ++i) {
-      result.push_back(dynamic_cast<Planet*>(om->getObject(*i)->getObjectBehaviour()));
+   set<uint32_t> adjacent = risk->getGraph()->getAdjacent(this->obj->getID());
+   for(set<uint32_t>::iterator i = adjacent.begin(); i != adjacent.end(); ++i) {
+      result.insert(dynamic_cast<Planet*>(om->getObject(*i)->getObjectBehaviour()));
    }
    return result;
 }

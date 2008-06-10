@@ -27,7 +27,7 @@
 #include "staticobject.h"
 #include "ownedobject.h"
 #include "resourcelistparam.h"
-#include <list>
+#include <set>
 
 namespace RiskRuleset {
 
@@ -77,7 +77,7 @@ public:
    uint32_t getID();
    std::string getName();
 
-   std::list<Planet*> getAdjacent();
+   std::set<Planet*> getAdjacent();
 };
 
 
