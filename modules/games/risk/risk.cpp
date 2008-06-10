@@ -523,7 +523,6 @@ Graph* Risk::getGraph() {
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
-   //ASK: do I need to check for out of bounds
    return reinforcements[owner];
 }
 

@@ -60,7 +60,6 @@ RiskTurn::~RiskTurn(){
     
 }
 
-//TODO: remove ownership on planets with zero armies.
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();

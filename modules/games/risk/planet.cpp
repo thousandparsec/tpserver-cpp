@@ -93,7 +93,6 @@ Planet::~Planet() {
 
 }
 
-//TODO: make it so owned planets don't show colonize order.
 void Planet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
 

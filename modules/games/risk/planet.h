@@ -40,7 +40,7 @@ protected:
    ObjectBehaviour* createObjectBehaviour() const;
 };
 
-//TODO: Add function to check for loss of ownership, to be called after every move
+//TODO: Check planet for loss of ownership after moves.
 class Planet : public StaticObject, public OwnedObject {
 
 public:

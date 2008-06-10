@@ -30,6 +30,7 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
 #include <tpserver/timeparameter.h>
+#include <tpserver/message.h>
 
 #include "reinforce.h"
 #include "planet.h"
@@ -83,6 +84,7 @@ bool Reinforce::doOrder(IGObject *obj) {
    risk->setPlayerReinforcements(planet->getOwner(), availibleUnits - requestedUnits);
 
    //TODO: Inform player how many reinforcements were added, their new reinforcement total.
+   //ASK: about getting a string out of a uint32_t
    return true;
 }
 
