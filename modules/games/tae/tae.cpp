@@ -170,8 +170,8 @@ void taeRuleset::createGame() {
             obtm->setupObject(sys1, obT_Star_System);
             StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
             sys1ob->setSize(60000ll);
-            char* name = new char[20];
-            sprintf(name, "Star System %d,%d", j, i);
+            char* name = new char[8];
+            sprintf(name, "%d, %d", j, i);
             sys1->setName(name);
             sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*(i+1), 0ll));
             sys1ob->setInhabitable(true);
@@ -184,7 +184,9 @@ void taeRuleset::createGame() {
             obtm->setupObject(p, obT_Planet);
             Planet * pob = (Planet*)(p->getObjectBehaviour());
             pob->setSize(2);
-            p->setName("Alpha");
+            char* planetName = new char[20];
+            sprintf(planetName, "Planet %d, %d", j, i);
+            p->setName(planetName);
             pob->setPosition(sys1ob->getPosition());
             OrderQueue *planetoq = new OrderQueue();
             planetoq->setObjectId(p->getID());
@@ -193,10 +195,6 @@ void taeRuleset::createGame() {
             OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
             oqop->setQueueId(planetoq->getQueueId());
             pob->setDefaultOrderTypes();
-            //add resources, for testing purposes
-            for(int k = 1; k < 8; k++) {
-                pob->addResource(k,1);
-            }
             p->addToParent(sys1->getID());
             obm->addObject(p);
         }
