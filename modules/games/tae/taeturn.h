@@ -1,6 +1,6 @@
-#ifndef COLONIZE_H
-#define COLONIZE_H
-/*  Colonize class
+#ifndef TAETURN_H
+#define TAETURN_H
+/*  TaeTurn class, the end of turn process for tae
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
@@ -20,28 +20,24 @@
  *
  */
 
-#include <tpserver/order.h>
+#include <tpserver/turnprocess.h>
 
-class Frame;
-class ObjectOrderParameter;
-
-
-class Colonize : public Order
-{
- public:
-   Colonize();
-   virtual ~Colonize();
-
-   virtual Order* clone() const;
-
-   virtual void createFrame(Frame * f, int pos);
-   virtual Result inputFrame(Frame * f, uint32_t playerid);
-   
-   virtual bool doOrder(IGObject * obj);
-
- private:
-   ObjectOrderParameter* starSys;
+class TaeTurn : public TurnProcess{
+  public:
+    TaeTurn();
+    virtual ~TaeTurn();
+    
+    virtual void doTurn();
+  
+    void setFleetType(uint32_t ft);
+    void setPlanetType(uint32_t pt);
+    
+    std::set<uint32_t> getContainerIds() const;
+    
+  private:
+    uint32_t planettype;
+    uint32_t fleettype;
+    std::set<uint32_t> containerids;
 };
-
 
 #endif

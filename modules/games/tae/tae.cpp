@@ -51,6 +51,7 @@
 #include "planet.h"
 #include "fleet.h"
 #include "colonize.h"
+#include "taeturn.h"
 
 //header includes
 #include "tae.h"
@@ -76,6 +77,10 @@ std::string taeRuleset::getVersion() {
 void taeRuleset::initGame() {
     Game* game = Game::getGame();
 
+    //Setup turns
+    TaeTurn* turn = new TaeTurn();
+    game->setTurnProcess(turn);
+
     //Seed rand
     std::srand(std::time(NULL));
 
@@ -99,10 +104,12 @@ void taeRuleset::initGame() {
     obtm->addNewObjectType(new StarSystemType());
 
     //Add Planet object type
-    obtm->addNewObjectType(new PlanetType());
+    uint32_t pt = obtm->addNewObjectType(new PlanetType());
+    turn->setPlanetType(pt);
 
     //Add Fleet object type
-    obtm->addNewObjectType(new FleetType());
+    uint32_t ft = obtm->addNewObjectType(new FleetType());
+    turn->setFleetType(ft);
     
     //Set Order types
     OrderManager* orm = game->getOrderManager();
