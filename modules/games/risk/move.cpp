@@ -169,7 +169,8 @@ bool Move::doOrder(IGObject* obj) {
       assert(target);
       
       if (origin->getOwner() == target->getOwner()) {
-//Friendly Move
+         //Friendly Move
+         
          Logger::getLogger()->debug("The move is a Friendly move.");
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
@@ -179,23 +180,31 @@ bool Move::doOrder(IGObject* obj) {
       }
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
-            Logger::getLogger()->debug("The move is an Attack move.");
-//Attack Move           //TODO: Check that player has enough resources to attack
+         //Attack Move           //TODO: Check that player has enough resources to attack
                                  //TODO: More fully implement attack mechanic
+         
+         Logger::getLogger()->debug("The move is an Attack move.");
+         
          pair<uint32_t,uint32_t> rollResult;
          uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
+         
+         /*
          if ( targetPlanetAlsoAttacking(obj, om->getObject(i->first)) ) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
             rollResult = attackRoll(3,3);
             //TODO: do we remove order on target planet to attack current planet, or just change odds?
          }
          else {
+         */   
+         
             Logger::getLogger()->debug("The target planet is not attacking the origin");
             rollResult = attackRoll(3,2);
-         }
+         
+         //}
          
          Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d",
             rollResult.first*damage, rollResult.second*damage);
+            
          //Apply the damages of the attack
          origin->removeResource("Army",rollResult.first*damage);
          target->removeResource("Army",rollResult.second*damage);
@@ -308,7 +317,7 @@ pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDef
    attackRolls.reverse();
    
    //Get the defenders rolls
-   for( uint32_t d = 0; d < oddsAttacker; d++) {
+   for( uint32_t d = 0; d < oddsDefender; d++) {
       roll = random->getInRange(1,6);
       defendRolls.push_front(roll);
       Logger::getLogger()->debug("Defender rolls a %d",roll);
