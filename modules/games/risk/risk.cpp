@@ -353,6 +353,9 @@ void Risk::startGame(){
       
    if (settings->get("risk_randomly_assign_territories") == "" )
       settings->set("risk_randomly_assign_territories", "true");
+      
+   if (settings->get("risk_attack_dmg") == "" )
+      settings->set("risk_attacK_dmg","1");
 }
 
 bool Risk::onAddPlayer(Player* player){

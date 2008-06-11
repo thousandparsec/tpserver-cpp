@@ -34,6 +34,8 @@
 #include <tpserver/listparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/prng.h>
+#include <tpserver/settings.h>
 
 #include <string>
 #include <boost/format.hpp>
@@ -157,7 +159,7 @@ bool Move::doOrder(IGObject* obj) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
       
-      //Restrain user's 
+      //Restrain user's number of Units to move
       if ( numUnits == origin->getResource("Army").first) {
          numUnits = origin->getResource("Army").first - 1;
       }
@@ -167,7 +169,8 @@ bool Move::doOrder(IGObject* obj) {
       assert(target);
       
       if (origin->getOwner() == target->getOwner()) {
-         //Friendly Move
+//Friendly Move
+         Logger::getLogger()->debug("The move is a Friendly move.");
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
          //format message("You have moved %1% units to %2%.\n");
@@ -176,18 +179,34 @@ bool Move::doOrder(IGObject* obj) {
       }
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
-         //Attack Move
+            Logger::getLogger()->debug("The move is an Attack move.");
+//Attack Move           //TODO: Check that player has enough resources to attack
+                                 //TODO: More fully implement attack mechanic
+         pair<uint32_t,uint32_t> rollResult;
+         uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
          if ( targetPlanetAlsoAttacking(obj, om->getObject(i->first)) ) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
-            //execute "balanced" roll (i.e. 3-3)
+            rollResult = attackRoll(3,3);
             //TODO: do we remove order on target planet to attack current planet, or just change odds?
          }
          else {
-            //else execute "attacker-favored" roll (i.e. 3-2)
+            Logger::getLogger()->debug("The target planet is not attacking the origin");
+            rollResult = attackRoll(3,2);
          }
-
-         //apply results of battle to origin and target planets
-
+         
+         Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d",
+            rollResult.first*damage, rollResult.second*damage);
+         //Apply the damages of the attack
+         origin->removeResource("Army",rollResult.first*damage);
+         target->removeResource("Army",rollResult.second*damage);
+         numUnits -= rollResult.first*damage;
+         
+         //Check for change of ownership
+         if (target->getResource("Army").first <= 0) {
+            target->setOwner(origin->getOwner());
+            target->setResource("Army",numUnits, origin->getResource("Army").second);
+            //TODO:Clear order queue for target planet
+         }
          //if target planet is conquerred (no more armies on surface)
             //change owner of target planet to current planet owner
             //remove all orders on target planet
@@ -196,7 +215,8 @@ bool Move::doOrder(IGObject* obj) {
       }
       //origin and target owners are not the same, target is unowned
       else {
-         //Colonize Move
+//Colonize Move
+         Logger::getLogger()->debug("The move is a Colonize move.");
          origin->removeResource("Army",numUnits);
          target->setOwner(origin->getOwner());
          target->addResource("Army",numUnits);
@@ -265,4 +285,60 @@ bool Move::targetPlanetAlsoAttacking(IGObject* trueOrigin, IGObject* target) {
    return result;
 }
 
+//The left member of the pair represents how many units are lost by the attacker
+//The right member of the pair represents how many units are lost by the defender
+pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDefender) {
+   Logger::getLogger()->debug("Starting Move::attackRoll. Odds are %d:%d",oddsAttacker,oddsDefender);
+   Random* random = Game::getGame()->getRandom();  //ASK: seed this random?
+   pair<uint32_t,uint32_t> result;           //pair representing the result
+   result.first = 0;
+   result.second = 0;
+   
+   std::list<uint32_t> attackRolls, defendRolls;  //lists for both players rolls
+
+   uint32_t roll,attack,defend; //used for debugging
+   
+   //Get attacker's rolls
+   for( uint32_t a = 0; a < oddsAttacker; a++) {
+      roll = random->getInRange(1,6);
+      attackRolls.push_front(roll);
+      Logger::getLogger()->debug("Attacker rolls a %d",roll);
+   }
+   attackRolls.sort();
+   attackRolls.reverse();
+   
+   //Get the defenders rolls
+   for( uint32_t d = 0; d < oddsAttacker; d++) {
+      roll = random->getInRange(1,6);
+      defendRolls.push_front(roll);
+      Logger::getLogger()->debug("Defender rolls a %d",roll);
+   }
+   defendRolls.sort();
+   defendRolls.reverse();
+   
+   //Evaluate the rolls and assign damage
+   while ( !attackRolls.empty() && !defendRolls.empty()) {
+      attack = attackRolls.front();
+      defend = defendRolls.front();
+      if ( attack > defend  ) { //Attacker wins on the die
+         result.second++; //defender will take 1 damage
+         Logger::getLogger()->debug("Attacker(%d) beats defender(%d)",attack,defend);
+      }
+      else {                                             //Defender wins on the die
+         result.first++;   //attacker will take 1 damage
+         Logger::getLogger()->debug("Defender(%d) beats attacker(%d)",defend,attack);
+      }
+      
+      attackRolls.pop_front();   //remove the dice being looked at
+      defendRolls.pop_front();
+   }
+   
+   Logger::getLogger()->debug("In total defender lost %d rolls, attacker lost %d",result.second,result.first);
+   
+   return result;          //send back the results
+}
+
+void clearOrders(IGObject* obj) {
+   
+}
 } //end namespace RiskRuleset
