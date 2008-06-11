@@ -45,16 +45,20 @@ bool Graph::addPlanet(IGObject* planet) {
    return result;
 }
 
-bool Graph::addEdge(uint32_t id1, uint32_t id2) { 
+bool Graph::addEdge(const uint32_t& id1, const uint32_t& id2) { 
    bool result = false;
    //CHECK: what the default for the map is, and check that the id is declared
-   Node* node1 = &nodeMap[id1];
-   Node* node2 = &nodeMap[id2];
-   if ( node1 != NULL && node2 != NULL ) { 
-      node1->adjacent.insert(node2); 
-      node2->adjacent.insert(node1);
-      result = true; 
+   if ( nodeMap.find(id1) != nodeMap.end() && nodeMap.find(id2) != nodeMap.end())
+   {
+      Node* node1 = &nodeMap[id1];
+      Node* node2 = &nodeMap[id2];
+      if ( node1 != NULL && node2 != NULL ) { 
+         node1->adjacent.insert(node2); 
+         node2->adjacent.insert(node1);
+         result = true; 
+      }
    }
+
    return result;
 }
 

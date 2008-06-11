@@ -30,7 +30,7 @@ public:
    Graph();
    ~Graph();
    bool addPlanet(IGObject* planet);
-   bool addEdge(uint32_t id1, uint32_t id2);
+   bool addEdge(const uint32_t& id1, const uint32_t& id2);
    bool addEdge(IGObject* planet1, IGObject* planet2);
    std::set<uint32_t> getAdjacent(IGObject* planet);
    std::set<uint32_t> getAdjacent(uint32_t id);

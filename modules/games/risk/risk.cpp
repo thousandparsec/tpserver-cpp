@@ -266,31 +266,7 @@ IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double un
 }
 
 IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   IGObject *planet = game->getObjectManager()->createNewObject();
-
-   otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
-   planet->setName(name);
-   Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
-   planetData->setUnitPos(unitX, unitY);
-   planetData->setDefaultResources();
-
-   OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setObjectId(planet->getID());
-   game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>
-                                        (planet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
-   planetData->setOrderTypes();
-
-   planet->addToParent(parent.getID());
-   game->getObjectManager()->addObject(planet);
-
-   ++num_planets;
-   return planet;
+   return createPlanet(parent, name, Vector3d(unitX,unitY,0));
 }
 
 IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
@@ -526,7 +502,10 @@ Graph* Risk::getGraph() {
 }
 
 uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
-   return reinforcements[owner];
+   uint32_t result = 0;
+   if (reinforcements.find(owner) != reinforcements.end())
+      result = (*reinforcements.find(owner)).second;
+   return result;
 }
 
 void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
