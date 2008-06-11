@@ -35,8 +35,6 @@
 #include <tpserver/objectparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/orderqueueobjectparam.h>
-#include <tpserver/orderqueue.h>
 #include <tpserver/message.h>
 #include <stdint.h>
 #include <tpserver/settings.h>

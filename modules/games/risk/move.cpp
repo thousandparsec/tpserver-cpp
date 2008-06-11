@@ -32,8 +32,11 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/logging.h>
 #include <tpserver/listparameter.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
 
 #include <string>
+#include <boost/format.hpp>
 #include "move.h"
 #include "planet.h"
 
@@ -44,6 +47,7 @@ using std::map;
 using std::pair;
 using std::string;
 using std::set;
+using boost::format;
 
 Move::Move() : Order() {
    name = "Move";
@@ -100,6 +104,8 @@ map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
       I subtract 1 here because in Risk a player must keep at least one
       unit on each territory to maintain claim over it */
    uint32_t availibleUnits = planet->getResource("Army").first - 1;
+   //TODO: This should actually be some very large number, since a player may reinforce
+   //before a move is processed.
 
    /* This for loop will iterate over every adjacent planet. 
    This is where the majority of the work occurs, and we populate our list.
@@ -150,6 +156,8 @@ bool Move::doOrder(IGObject* obj) {
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
+         //TODO: This should be checked to see if it exceeds the max avail units.
+      
       Planet* target = dynamic_cast<Planet*>(
          om->getObject(planetID)->getObjectBehaviour());
       assert(target);
@@ -158,16 +166,21 @@ bool Move::doOrder(IGObject* obj) {
          //Friendly Move
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
-         //originBody += "You have moved " + numUnits + " to " + target->getName() + ".\n";
+         //format message("You have moved %1% units to %2%.\n");
+         //message % numUnits; message % target->getName();
+         //originBody += message.str();
       }
       //origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
          //Attack Move
-         //CHECK: up on how to get another planet's order queue. (look in riskturn.cpp)
-         //Check to see if target planet has an order for attacking base planet
-         //if so execute "balanced" roll (i.e. 3-3)
-            //remove order on target planet to attack current planet
-         //else execute "attacker-favored" roll (i.e. 3-2)
+         if ( targetPlanetAlsoAttacking(obj, om->getObject(i->first)) ) {
+            Logger::getLogger()->debug("The target planet is also attacking the origin");
+            //execute "balanced" roll (i.e. 3-3)
+            //TODO: do we remove order on target planet to attack current planet, or just change odds?
+         }
+         else {
+            //else execute "attacker-favored" roll (i.e. 3-2)
+         }
 
          //apply results of battle to origin and target planets
 
@@ -188,13 +201,64 @@ bool Move::doOrder(IGObject* obj) {
 
    }
    
-   originMessage->setSubject(originSubject);
-   originMessage->setBody(originBody);
-   originPlayer->postToBoard(originMessage);
+   //originMessage->setSubject(originSubject);
+   //originMessage->setBody(originBody);        //don't try setting a body with an empty string
+   //originPlayer->postToBoard(originMessage);
    
    //TODO: send message to target player(s)
    
    return true;   //moves are always completed, no matter what happens
+}
+
+//TODO: encapsulate this function so it is a lot more pretty
+bool Move::targetPlanetAlsoAttacking(IGObject* trueOrigin, IGObject* target) {
+   Logger::getLogger()->debug("Checking if a target planet is attacking");
+   
+   bool result = false;
+   //Get order queue from object
+   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(target->getParameterByType(obpT_Order_Queue));
+   OrderQueue* oq;
+   OrderManager* ordM = Game::getGame()->getOrderManager();
+   
+   if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL)
+   {
+      //Iterate over all orders
+      for (uint32_t j = 0; j < oq->getNumberOrders(); j++)
+      {
+         //Taken from RFTS
+         OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(target->getObjectBehaviour());
+         assert(orderedObj);
+
+         Order* order = oq->getOrder(j, orderedObj->getOwner());
+         //if order is of type asked for then process it
+         if (order->getName() == "Move")
+         {
+            Move* move = dynamic_cast<Move*>(order);
+            assert(move);
+            
+            Planet* origin = dynamic_cast<Planet*>(target->getObjectBehaviour());
+            assert(origin);
+
+            //Get the list of planetIDs and the # of units to move
+            map<uint32_t,uint32_t> list = targetPlanet->getList();
+            
+            for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+               uint32_t planetID = i->first;
+               
+               target = Game::getGame()->getObjectManager()->getObject(planetID);
+               if ( target == trueOrigin ) {
+                  //NOTE: Here is where any logic goes for dealing with two planets attacking eachother
+                  //For now we just notify the function caller the target is attacking the trueOrigin
+                  result = true;
+                  //force the exit of the funciton
+                  j = oq->getNumberOrders() + 1;
+                  i = list.end();
+               }
+            } //End for each order part in the order
+         }  //end if order name is "Move"
+      } //end for all orders
+   }//end if oqop is not null or oq is not null
+   return result;
 }
 
 } //end namespace RiskRuleset
