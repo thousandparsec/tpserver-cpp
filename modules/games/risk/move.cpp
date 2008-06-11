@@ -160,8 +160,12 @@ bool Move::doOrder(IGObject* obj) {
       uint32_t numUnits = i->second;
       
       //Restrain user's number of Units to move
-      if ( numUnits >= origin->getResource("Army").first) {
-         numUnits = origin->getResource("Army").first - 1;
+      uint32_t maxUnits = origin->getResource("Army").first;
+      if ( numUnits >= maxUnits && maxUnits > 0) {
+         if ( maxUnits > 0)
+            numUnits = maxUnits - 1;
+         else
+            numUnits = 0;
       }
       
       Planet* target = dynamic_cast<Planet*>(
