@@ -247,8 +247,21 @@ void taeRuleset::setupResources() {
         res->setVolume(0);
         rman->addResourceDescription(res);
     }
-    //Setup Technology resource
+    //Setup Money resource
     if(rman->getResourceDescription(4) == NULL){
+        Logger::getLogger()->info("Setting up Resource: Money");
+        ResourceDescription* res = new ResourceDescription();
+        res->setNameSingular("Monetary Asset");
+        res->setNamePlural("Monetary Assets");
+        res->setUnitSingular("unit");
+        res->setUnitPlural("units");
+        res->setDescription("Valuable investments in successful merchant colonies");
+        res->setMass(0);
+        res->setVolume(0);
+        rman->addResourceDescription(res);
+    }
+    //Setup Technology resource
+    if(rman->getResourceDescription(5) == NULL){
         Logger::getLogger()->info("Setting up Resource: Technology");
         ResourceDescription* res = new ResourceDescription();
         res->setNameSingular("Technological Advancement");
@@ -261,7 +274,7 @@ void taeRuleset::setupResources() {
         rman->addResourceDescription(res);
     }
     //Setup People resource
-    if(rman->getResourceDescription(5) == NULL){
+    if(rman->getResourceDescription(6) == NULL){
         Logger::getLogger()->info("Setting up Resource: People");
         ResourceDescription* res = new ResourceDescription();
         res->setNameSingular("Team of People");
@@ -269,19 +282,6 @@ void taeRuleset::setupResources() {
         res->setUnitSingular("unit");
         res->setUnitPlural("units");
         res->setDescription("Eager manpower produced by loyal colonists");
-        res->setMass(0);
-        res->setVolume(0);
-        rman->addResourceDescription(res);
-    }
-    //Setup Money resource
-    if(rman->getResourceDescription(6) == NULL){
-        Logger::getLogger()->info("Setting up Resource: Money");
-        ResourceDescription* res = new ResourceDescription();
-        res->setNameSingular("Monetary Asset");
-        res->setNamePlural("Monetary Assets");
-        res->setUnitSingular("unit");
-        res->setUnitPlural("units");
-        res->setDescription("Valuable investments in successful merchant colonies");
         res->setMass(0);
         res->setVolume(0);
         rman->addResourceDescription(res);

@@ -33,6 +33,8 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/logging.h>
+#include <tpserver/design.h>
+#include <tpserver/designstore.h>
 
 #include "ownedobject.h"
 #include "fleet.h"
@@ -127,7 +129,17 @@ bool Colonize::doOrder(IGObject * obj) {
 
     //Add resource to planet
     Planet* planet = (Planet*)(obm->getObject(pid)->getObjectBehaviour());
-    planet->addResource(4, 1);
+    Design* ship = Game::getGame()->getDesignStore()->getDesign(fleetData->getShips().begin()->first);
+    if(ship->getName().compare("MerchantShip") == 0) {
+        planet->addResource(4, 1);
+    } else if(ship->getName().compare("ScientistShip") == 0) {
+        planet->addResource(5, 1);
+    } else if(ship->getName().compare("SettlerShip") == 0) {
+        planet->addResource(6, 1);
+    } else if(ship->getName().compare("MiningShip") == 0) {
+        planet->addResource(7, 1);
+    } 
+
     obm->doneWithObject(newStarSys->getID());
    
  
