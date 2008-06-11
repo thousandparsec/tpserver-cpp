@@ -160,7 +160,7 @@ bool Move::doOrder(IGObject* obj) {
       uint32_t numUnits = i->second;
       
       //Restrain user's number of Units to move
-      if ( numUnits == origin->getResource("Army").first) {
+      if ( numUnits >= origin->getResource("Army").first) {
          numUnits = origin->getResource("Army").first - 1;
       }
       
