@@ -101,11 +101,9 @@ map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
 
    /* I now grab the number of "Army" resources on the planet, as I intend to
    use it as a maximum for each pair I add to the map.
-      I subtract 1 here because in Risk a player must keep at least one
-      unit on each territory to maintain claim over it */
-   uint32_t availibleUnits = planet->getResource("Army").first - 1;
-   //TODO: This should actually be some very large number, since a player may reinforce
-   //before a move is processed.
+      I add the current and max together to get an absolute maximum that the planet could have */
+   uint32_t availibleUnits = planet->getResource("Army").first 
+      + planet->getResource("Army").second - 1;
 
    /* This for loop will iterate over every adjacent planet. 
    This is where the majority of the work occurs, and we populate our list.
@@ -120,6 +118,7 @@ map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
       options[(*i)->getID()] = pair<string,uint32_t>(
          (*i)->getName(), availibleUnits );
    }   
+   //CHECK: how to get more than a single digit display
 
    return options;
 }
@@ -132,6 +131,7 @@ Order* Move::clone() const {
 
 //TODO: Get move messaging working.
 bool Move::doOrder(IGObject* obj) {
+   Logger::getLogger()->debug("Starting a Move::dorOrder");
    --turns;
    
    Game* game = Game::getGame();
@@ -156,7 +156,11 @@ bool Move::doOrder(IGObject* obj) {
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
-         //TODO: This should be checked to see if it exceeds the max avail units.
+      
+      //Restrain user's 
+      if ( numUnits == origin->getResource("Army").first) {
+         numUnits = origin->getResource("Army").first - 1;
+      }
       
       Planet* target = dynamic_cast<Planet*>(
          om->getObject(planetID)->getObjectBehaviour());
@@ -198,7 +202,6 @@ bool Move::doOrder(IGObject* obj) {
          target->addResource("Army",numUnits);
          //originBody += "You have colonized " + target->getName() + " with " + numUnits + " units.\n"; 
       }
-
    }
    
    //originMessage->setSubject(originSubject);
@@ -211,6 +214,7 @@ bool Move::doOrder(IGObject* obj) {
 }
 
 //TODO: encapsulate this function so it is a lot more pretty
+//CHECK: check if the function even works
 bool Move::targetPlanetAlsoAttacking(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("Checking if a target planet is attacking");
    

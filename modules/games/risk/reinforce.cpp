@@ -29,6 +29,7 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
+#include <tpserver/logging.h>
 #include <tpserver/timeparameter.h>
 #include <tpserver/message.h>
 
@@ -63,6 +64,7 @@ Order* Reinforce::clone() const {
 }
 
 bool Reinforce::doOrder(IGObject *obj) {
+   Logger::getLogger()->debug("Starting a Reinforce::doOrder");
    bool result = true;
    
    Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
