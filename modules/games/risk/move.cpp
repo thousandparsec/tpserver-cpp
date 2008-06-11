@@ -202,8 +202,8 @@ bool Move::doOrder(IGObject* obj) {
          
          //}
          
-         Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d",
-            rollResult.first*damage, rollResult.second*damage);
+         Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
+            rollResult.first*damage, rollResult.second*damage,damage);
             
          //Apply the damages of the attack
          origin->removeResource("Army",rollResult.first*damage);
