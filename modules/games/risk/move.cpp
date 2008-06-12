@@ -147,6 +147,7 @@ bool Move::doOrder(IGObject* obj) {
    
    //Origin message setup
    Message* originMessage; //message for origin planet owner.
+   assert(originMessage);
    //TODO: Restore original message after segfault is fixed
    string originSubject = "test subject";/* "Move order(s) via " + origin->getName() + " completed";*/
    string originBody = "";
@@ -265,15 +266,16 @@ bool Move::doOrder(IGObject* obj) {
       }
    }
    
-   Logger::getLogger()->debug("Origin message to be sent. Body is: %s\n Subject is:%s",originSubject.c_str(),originBody.c_str());
+   Logger::getLogger()->debug("Origin message to be sent. Body is:\n%s\n Subject is: %s",originSubject.c_str(),originBody.c_str());
    //TODO: Fix seg fault on setSubject()
-   originMessage->setSubject(originSubject.c_str());
+   originMessage->setSubject(originSubject);
    originMessage->setBody(originBody);        //don't try setting a body with an empty string
    pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
    
    //Send message to target player(s)
    for(map<uint32_t,string>::iterator i = targetMessages.begin(); i != targetMessages.end(); ++i) {
       Message* targetMessage;
+      assert(targetMessage);
       targetMessage->setSubject(targetSubject);
       targetMessage->setBody((*i).second);
       pm->getPlayer((*i).first)->postToBoard(targetMessage);
