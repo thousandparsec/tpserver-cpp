@@ -147,6 +147,7 @@ bool Move::doOrder(IGObject* obj) {
    
    //Origin message setup
    Message* originMessage; //message for origin planet owner.
+   //TODO: Restore original message after segfault is fixed
    string originSubject = "test subject";/* "Move order(s) via " + origin->getName() + " completed";*/
    string originBody = "";
    
@@ -263,7 +264,9 @@ bool Move::doOrder(IGObject* obj) {
          originBody += message.str();
       }
    }
+   
    Logger::getLogger()->debug("Origin message to be sent. Body is: %s\n Subject is:%s",originSubject.c_str(),originBody.c_str());
+   //TODO: Fix seg fault on setSubject()
    originMessage->setSubject(originSubject.c_str());
    originMessage->setBody(originBody);        //don't try setting a body with an empty string
    pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
