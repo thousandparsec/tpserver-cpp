@@ -147,7 +147,7 @@ bool Move::doOrder(IGObject* obj) {
    
    //Origin message setup
    Message* originMessage; //message for origin planet owner.
-   string originSubject = "Move order(s) via " + origin->getName() + " completed";
+   string originSubject = "test subject";/* "Move order(s) via " + origin->getName() + " completed";*/
    string originBody = "";
    
    //Target Messaging setup
@@ -264,7 +264,7 @@ bool Move::doOrder(IGObject* obj) {
       }
    }
    Logger::getLogger()->debug("Origin message to be sent. Body is: %s\n Subject is:%s",originSubject.c_str(),originBody.c_str());
-   originMessage->setSubject(originSubject);
+   originMessage->setSubject(originSubject.c_str());
    originMessage->setBody(originBody);        //don't try setting a body with an empty string
    pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
    

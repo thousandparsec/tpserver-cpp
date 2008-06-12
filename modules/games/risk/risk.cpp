@@ -378,7 +378,7 @@ bool Risk::isBoardClaimed() const{
       }
    }
    
-   if ( owners.find(0) != NULL ) {   //If there is a unowned object in the set
+   if ( owners.find(0) != owners.end() ) {   //If there is a unowned object in the set
       result = false;               //Change result to indicate there exists an OwnedObject w/o an owner
       Logger::getLogger()->debug("Risk::isBoardClaimed will return false");      
    }
