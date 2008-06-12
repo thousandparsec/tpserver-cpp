@@ -145,21 +145,21 @@ bool Move::doOrder(IGObject* obj) {
    //Get the list of planetIDs and the # of units to move
    map<uint32_t,uint32_t> list = targetPlanet->getList();
    
+   //Origin message setup
    Message* originMessage; //message for origin planet owner.
-   Message* targetMessage; //message for target planet owner, if not same as origin.
-   Player* originPlayer = pm->getPlayer(origin->getOwner());
-   string originSubject = "Move order(s) successfully completed";
+   string originSubject = "Move order(s) via " + origin->getName() + " completed";
    string originBody = "";
-   //use a map here to allow for multiple target players
-   string targetSubject = "";
-   string targetBody = "";
+   
+   //Target Messaging setup
+   map<uint32_t,string> targetMessages;   //owner=>subject, body is always the same
+   string targetSubject = "You have been attacked!";
    
    //Iterate over all planetIDs and # of units to move to them
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
       
-      //Restrain user's number of Units to move
+      //Restrain the number of units moved off of origin
       uint32_t maxUnits = origin->getResource("Army").first;
       if ( numUnits >= maxUnits && maxUnits > 0) {
          if ( maxUnits > 0)
@@ -171,29 +171,35 @@ bool Move::doOrder(IGObject* obj) {
       Planet* target = dynamic_cast<Planet*>(
          om->getObject(planetID)->getObjectBehaviour());
       assert(target);
-      
+
+      //Friendly Move  - origin and target owner are the same    
       if (origin->getOwner() == target->getOwner()) {
-         //Friendly Move
-         
          Logger::getLogger()->debug("The move is a Friendly move.");
+
+         //Move the units
          origin->removeResource("Army",numUnits);
          target->addResource("Army",numUnits);
-         //format message("You have moved %1% units to %2%.\n");
-         //message % numUnits; message % target->getName();
-         //originBody += message.str();
+         
+         //Produce the message
+         format message("You have moved %1% units from %2% to %3%.\n");
+         message % numUnits; message % origin->getName(); message % target->getName();
+         originBody += message.str();
       }
-      //origin and target owners are not the same, target is owned
+      //Attack Move - origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
-         //Attack Move           //TODO: Check that player has enough resources to attack
-                                 //TODO: More fully implement attack mechanic
-         
          Logger::getLogger()->debug("The move is an Attack move.");
-         
+         //TODO: More fully implement attack mechanic
+                  
          pair<uint32_t,uint32_t> rollResult;
          uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
+         bool targetIsAttackingOrigin = 
+            isTargetAttackingOrigin(obj, om->getObject(i->first));
+         uint32_t originOdds;
+         uint32_t targetOdds;
          
+         //TODO: Set player odds based on avail units.
          /*
-         if ( targetPlanetAlsoAttacking(obj, om->getObject(i->first)) ) {
+         if ( targetIsAttackingOrigin) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
             rollResult = attackRoll(3,3);
             //TODO: do we remove order on target planet to attack current planet, or just change odds?
@@ -214,41 +220,68 @@ bool Move::doOrder(IGObject* obj) {
          target->removeResource("Army",rollResult.second*damage);
          numUnits -= rollResult.first*damage;
          
+         string attacker = pm->getPlayer(origin->getOwner())->getName();
          //Check for change of ownership
          if (target->getResource("Army").first <= 0) {
             target->setOwner(origin->getOwner());
             target->setResource("Army",numUnits, origin->getResource("Army").second);
             //TODO:Clear order queue for target planet
+            
+            //Produce target 'loss of ownership' message
+            format message("You have lost %1% to %2%");
+            message % target->getName(); message % attacker;
+            targetMessages[target->getOwner()] += message.str();
          }
-         //if target planet is conquerred (no more armies on surface)
-            //change owner of target planet to current planet owner
-            //remove all orders on target planet
-         //TODO: Add targetBody/originBody text about results
-         //TODO: Add target messaging.
+         else
+         {
+            //Produce target 'you've been attacked' message
+            format message(
+               "%1% has been attacked by %2% via %3%. You lost %4% units, your opponent lost %5%.\n");
+            message % target->getName(); message % attacker;
+            message % origin->getName(); message % (rollResult.second*damage);
+            message % (rollResult.first*damage);
+            targetMessages[target->getOwner()] += message.str();
+         }
+         //Produce origin message
+         format message(
+            "Your attack on %1% destroyed %2% of your opponents units. You lost %3% units in retaliation.");
+         message % target->getName(); message % (rollResult.second*damage);
+         message % (rollResult.first*damage);
+         originBody += message.str();
       }
-      //origin and target owners are not the same, target is unowned
+      //Colonize Move - origin and target owners are not the same, target is unowned
       else {
-//Colonize Move
          Logger::getLogger()->debug("The move is a Colonize move.");
+         
          origin->removeResource("Army",numUnits);
          target->setOwner(origin->getOwner());
          target->addResource("Army",numUnits);
-         //originBody += "You have colonized " + target->getName() + " with " + numUnits + " units.\n"; 
+         
+         //Produce message for origin
+         format message("You have colonized %1% with %2% units.\n");
+         message % target->getName(); message % numUnits;
+         originBody += message.str();
       }
    }
+   Logger::getLogger()->debug("Origin message to be sent. Body is: %s\n Subject is:%s",originSubject.c_str(),originBody.c_str());
+   originMessage->setSubject(originSubject);
+   originMessage->setBody(originBody);        //don't try setting a body with an empty string
+   pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
    
-   //originMessage->setSubject(originSubject);
-   //originMessage->setBody(originBody);        //don't try setting a body with an empty string
-   //originPlayer->postToBoard(originMessage);
-   
-   //TODO: send message to target player(s)
+   //Send message to target player(s)
+   for(map<uint32_t,string>::iterator i = targetMessages.begin(); i != targetMessages.end(); ++i) {
+      Message* targetMessage;
+      targetMessage->setSubject(targetSubject);
+      targetMessage->setBody((*i).second);
+      pm->getPlayer((*i).first)->postToBoard(targetMessage);
+   }
    
    return true;   //moves are always completed, no matter what happens
 }
 
 //TODO: encapsulate this function so it is a lot more pretty
 //CHECK: check if the function even works
-bool Move::targetPlanetAlsoAttacking(IGObject* trueOrigin, IGObject* target) {
+bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("Checking if a target planet is attacking");
    
    bool result = false;
