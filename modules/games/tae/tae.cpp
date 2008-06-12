@@ -51,6 +51,7 @@
 #include "planet.h"
 #include "fleet.h"
 #include "colonize.h"
+#include "move.h"
 #include "taeturn.h"
 
 //header includes
@@ -114,6 +115,7 @@ void taeRuleset::initGame() {
     //Set Order types
     OrderManager* orm = game->getOrderManager();
     orm->addOrderType(new Colonize());
+    orm->addOrderType(new Move());
 
     Logger::getLogger()->info("TaE initialised");
 }
@@ -756,28 +758,36 @@ void taeRuleset::onPlayerAdded(Player* player) {
     //Leader fleets
     fleet = createEmptyFleet(player, p, "Merchant Leader");
     ship = createVIPTransport(player, 1);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Move");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
 
     fleet = createEmptyFleet(player, p, "Scientist Leader");
     ship = createVIPTransport(player, 2);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Move");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
 
     fleet = createEmptyFleet(player, p, "Settler Leader");
     ship = createVIPTransport(player, 3);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Move");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
 
     fleet = createEmptyFleet(player, p, "Mining Leader");
     ship = createVIPTransport(player, 4);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Move");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
