@@ -42,6 +42,8 @@
 
 #include "fleet.h"
 
+using std::string;
+
 FleetType::FleetType():OwnedObjectType(){
     Logger::getLogger()->debug("Enter: Fleet Constructor");
     //Set parameters of the fleet
@@ -71,17 +73,15 @@ Fleet::~Fleet(){
 }
 
 void Fleet::setDefaultOrderTypes(){
-    Logger::getLogger()->debug("Enter: Fleet::setDefaultOrderTypes");
-    //TODO: Write this function... example below
+}
+
+void Fleet::addAllowedOrder(string order) {
+    Logger::getLogger()->debug("Enter: Fleet::addAllowedOrder");
     OrderManager * om = Game::getGame()->getOrderManager();
     std::set<uint32_t> allowedlist;
-    allowedlist.insert(om->getOrderTypeByName("Colonize"));
-    /*allowedlist.insert(om->getOrderTypeByName("Move"));
-    allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
-    allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));*/
+    allowedlist.insert(om->getOrderTypeByName(order));
     ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
-    Logger::getLogger()->debug("Exit: Fleet::setDefaultOrderTypes");
-
+    Logger::getLogger()->debug("Exit: Fleet::addAllowedOrder");
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){

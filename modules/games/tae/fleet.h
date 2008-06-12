@@ -23,6 +23,7 @@
 
 #include <map>
 #include <list>
+#include <string>
 
 #include <tpserver/vector3d.h>
 #include "ownedobject.h"
@@ -45,6 +46,7 @@ class Fleet : public OwnedObject {
 
 
         void setDefaultOrderTypes();
+        void addAllowedOrder(std::string order);
         void addShips(uint32_t type, uint32_t number);
         bool removeShips(uint32_t type, uint32_t number);
         uint32_t numShips(uint32_t type);
