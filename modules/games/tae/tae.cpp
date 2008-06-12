@@ -52,6 +52,7 @@
 #include "fleet.h"
 #include "colonize.h"
 #include "move.h"
+#include "attack.h"
 #include "taeturn.h"
 
 //header includes
@@ -116,6 +117,7 @@ void taeRuleset::initGame() {
     OrderManager* orm = game->getOrderManager();
     orm->addOrderType(new Colonize());
     orm->addOrderType(new Move());
+    orm->addOrderType(new Attack());
 
     Logger::getLogger()->info("TaE initialised");
 }
@@ -795,14 +797,18 @@ void taeRuleset::onPlayerAdded(Player* player) {
     //Bomber fleets
     fleet = createEmptyFleet(player, p, "Bomber");
     ship = createBomber(player);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Attack");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
 
     fleet = createEmptyFleet(player, p, "Bomber");
     ship = createBomber(player);
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips(ship->getDesignId(), 1);
+    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+    fleetObj->addShips(ship->getDesignId(), 1);
+    fleetObj->addAllowedOrder("Attack");
     game->getDesignStore()->designCountsUpdated(ship);
     mydesignids.insert(ship->getDesignId());
     game->getObjectManager()->addObject(fleet);
