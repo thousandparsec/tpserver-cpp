@@ -151,6 +151,10 @@ bool Move::doOrder(IGObject* obj) {
    //TODO: Restore original message after segfault is fixed
    string originSubject = "test subject";/* "Move order(s) via " + origin->getName() + " completed";*/
    string originBody = "";
+   //TODO: Fix seg fault on setSubject()
+   assert(originSubject != "");
+   originMessage->setSubject(originSubject);
+   
    
    //Target Messaging setup
    map<uint32_t,string> targetMessages;   //owner=>subject, body is always the same
@@ -190,16 +194,21 @@ bool Move::doOrder(IGObject* obj) {
       //Attack Move - origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
          Logger::getLogger()->debug("The move is an Attack move.");
-         //TODO: More fully implement attack mechanic
+         //TODO: Implement more attack mechanics
                   
          pair<uint32_t,uint32_t> rollResult;
          uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
          bool targetIsAttackingOrigin = 
             isTargetAttackingOrigin(obj, om->getObject(i->first));
-         uint32_t originOdds;
-         uint32_t targetOdds;
+         //Establish default odds
+         //origin is restricted to only use as many units as it has availible, and cap to 3*damage
+         uint32_t originOdds = (origin->getResource("Army").first - 1) / 3*damage;
+         if (originOdds > 3) { originOdds = 3;}
+         //target is restricted to only as many units as there are avail and capped to 2*damage
+         uint32_t targetOdds = target->getResource("Army").first / 2*damage;
+         if (targetOdds > 2) { targetOdds = 2;}
+         //Do we let the roll continue if the owner has 0 odds?
          
-         //TODO: Set player odds based on avail units.
          /*
          if ( targetIsAttackingOrigin) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
@@ -210,7 +219,7 @@ bool Move::doOrder(IGObject* obj) {
          */   
          
             Logger::getLogger()->debug("The target planet is not attacking the origin");
-            rollResult = attackRoll(3,2);
+            rollResult = attackRoll(originOdds,targetOdds);
          
          //}
          
@@ -267,8 +276,8 @@ bool Move::doOrder(IGObject* obj) {
    }
    
    Logger::getLogger()->debug("Origin message to be sent. Body is:\n%s\n Subject is: %s",originSubject.c_str(),originBody.c_str());
-   //TODO: Fix seg fault on setSubject()
-   originMessage->setSubject(originSubject);
+
+   Logger::getLogger()->debug("set subject of message");
    originMessage->setBody(originBody);        //don't try setting a body with an empty string
    pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
    
