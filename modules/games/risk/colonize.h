@@ -1,9 +1,8 @@
 #ifndef COLONIZE_H
 #define COLONIZE_H
-/*  Colonize class
+/*  colonize class
  *
  *  Copyright (C) 2008  Ryan Neufeld and the Thousand Parsec Project
- *  Copyright (C) 2007  Tyler Shaub and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,10 +24,10 @@
 
 class ListParameter;
 class IGObject;
- 
+
 namespace RiskRuleset {
 
-class Colonize : public::Order {
+class Colonize : public::Order{
 public:
    Colonize();
    virtual ~Colonize();
@@ -37,9 +36,10 @@ public:
    virtual bool doOrder(IGObject* obj);
 
 private:
+   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+   
    ListParameter* targetPlanet;
-   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();   
+};
 
-};//class Colonize
-} //namespace RiskRuleset
+}
 #endif

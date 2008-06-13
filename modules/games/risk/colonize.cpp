@@ -20,7 +20,6 @@
  *
  */
  
-#include <tpserver/frame.h>
 #include <tpserver/objectorderparameter.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -28,7 +27,6 @@
 #include <tpserver/objecttypemanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/playerview.h>
 #include <tpserver/message.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
@@ -36,7 +34,6 @@
 #include <tpserver/listparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/prng.h>
 #include <tpserver/settings.h>
 
 #include "colonize.h"
@@ -49,7 +46,7 @@ using std::pair;
 using std::string;
 using std::set;
 
-Colonize::Colonize() {
+Colonize::Colonize() : Order()  {
    name = "Colonize";
    description = "Colonize a planet";
 
@@ -69,32 +66,41 @@ Colonize::~Colonize() {
 
 }
 
-map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions() {
+map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
    map<uint32_t, pair<string,uint32_t> > options;
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
-   
+
    IGObject* selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    assert(planet);
-   game->getObjectManager()->doneWithObject(selectedObj->getID());
+   om->doneWithObject(selectedObj->getID());
 
-   set<uint32_t> adjacent = om->getAllIds();
+   set<uint32_t> allObjs = om->getAllIds();
 
    uint32_t availibleUnits = planet->getResource("Army").second;
 
-   for(set<uint32_t>::iterator i = adjacent.begin(); i != adjacent.end(); i++) {
+   /* This for loop will iterate over every adjacent planet. 
+   This is where the majority of the work occurs, and we populate our list.
+   You see here we select an item of the map, in my case (*i)->getID(), and
+   for that item we create a pair.
+      If its a little hard to read, here is what I am doing:
+            options[#] = pair<string,uint32_t>( "title", max# );
+
+   For my pair I set the title as the adjacent planet to move to, and set the
+   max to availible units. */
+   for(set<uint32_t>::iterator i = allObjs.begin(); i != allObjs.end(); i++) {
       IGObject* currObj = om->getObject((*i));
       Planet* owned = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
-      if ( owned != NULL && owned->getOwner() == 0){   
-         options[owned->getID()] = pair<string,uint32_t>(
-            owned->getName(),  availibleUnits );
+      if ( owned != NULL && owned->getOwner() == 0) {   
+      options[owned->getID()] = pair<string,uint32_t>(
+         owned->getName(), availibleUnits );
       }
    }   
    //CHECK: how to get more than a single digit display
 
-   return options;   
+   return options;
 }
 
 Order* Colonize::clone() const {
