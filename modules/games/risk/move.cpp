@@ -208,21 +208,18 @@ bool Move::doOrder(IGObject* obj) {
          uint32_t targetOdds = target->getResource("Army").first / 2*damage;
          if (targetOdds > 2) { targetOdds = 2;}
          //Do we let the roll continue if the owner has 0 odds?
-         
-         /*
+
          if ( targetIsAttackingOrigin) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
-            rollResult = attackRoll(3,3);
+            targetOdds += 1;        //Increase defenders odds
             //TODO: do we remove order on target planet to attack current planet, or just change odds?
          }
-         else {
-         */   
-         
-            Logger::getLogger()->debug("The target planet is not attacking the origin");
-            rollResult = attackRoll(originOdds,targetOdds);
-         
-         //}
-         
+         else
+         {
+             Logger::getLogger()->debug("The target planet is not attacking the origin");
+         }  
+         rollResult = attackRoll(originOdds,targetOdds);
+               
          Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
             rollResult.first*damage, rollResult.second*damage,damage);
             
