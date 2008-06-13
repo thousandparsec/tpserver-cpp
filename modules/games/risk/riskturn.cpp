@@ -63,6 +63,7 @@ RiskTurn::~RiskTurn(){
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
+   PlayerManager* pm = game->getPlayerManager();
    set<uint32_t> objectsIds = objM->getAllIds();
 
    processOrdersOfGivenType("Colonize");
@@ -85,6 +86,28 @@ void RiskTurn::doTurn(){
    }
 
    objM->clearRemovedObjects();
+   
+   Player* winner = getWinner();
+   if(winner != NULL)
+   {
+      set<uint32_t> players = pm->getAllIds();
+
+      string body;
+      Message *gameOver = new Message();
+      gameOver->setSubject("Game over!");
+      
+      if( game->getTurnNumber() ==
+            static_cast<unsigned>(strtol(Settings::getSettings()->get("game_length").c_str(), NULL, 10)) )
+         body = "Game length elapsed, winner is: ";
+      else
+         body = "Universal domination by: ";
+         
+      body += winner->getName();
+      gameOver->setBody(body);
+
+      for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
+         pm->getPlayer(*i)->postToBoard(gameOver);
+   }
     
 } //RiskTurn::RiskTurn() : TurnProcess()
 
@@ -213,15 +236,16 @@ void RiskTurn::setPlayerVisibleObjects() {
    }
 }
 
-//This class may be an exercise in futility. I tried writing it mainly from scratch and will need to be tested
+//CHECK: Do we allow a player alone in the universe to be the winner? most likely yes...
 Player* RiskTurn::getWinner() {
+   Logger::getLogger()->debug("Looking for a winner");
    Game* game = Game::getGame();
    PlayerManager* pm = game->getPlayerManager();
    ObjectManager* objM = game->getObjectManager();
    
    Player *winner = NULL;
 
-   //Get all objects frobjM object manager
+   //Get all objects from object manager
    set<uint32_t> objectsIds = objM->getAllIds();
    set<uint32_t> owners;
    uint32_t owner;
@@ -236,13 +260,20 @@ Player* RiskTurn::getWinner() {
          owner = ownedObj->getOwner(); 
          if (owner != 0) {          //if the object is owned by a player
             owners.insert(owner);   //Add the object's owner to the set
+            
+            format message ("Adding owner #%1% to owners");
+            message % owner;
+            Logger::getLogger()->debug(message.str().c_str());
          }
       }
    }
    
-   if ( owners.begin() == owners.end() )        //If there is only one owner in the list
+   if ( owners.size() == 1 )  {      //If there is only one owner in the list
       winner = pm->getPlayer(*(owners.begin()));//Get the player and assign them as the winner
-      
+      format message ("The winner is %1%");
+      message % *(owners.begin());
+      Logger::getLogger()->debug(message.str().c_str());
+   }
    return winner;
 }
 } //namespace RiskRuleset
