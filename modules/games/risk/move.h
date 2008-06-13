@@ -36,7 +36,7 @@ public:
    virtual bool doOrder(IGObject* obj);
 
 private:
-   std::map<uint32_t, std::pair<std::string, uint32_t> >generateListOptions();
+   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
    bool isTargetAttackingOrigin(IGObject* obj, IGObject* target);
    std::pair<uint32_t,uint32_t> attackRoll(uint32_t oddsAttacker, uint32_t oddsDefender);
    

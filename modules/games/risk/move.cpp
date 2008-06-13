@@ -74,7 +74,7 @@ Move::~Move() {
 //CHECK: On move to empty planet with 2 units:
    //planet empty planet recieves 2 units, updates reinforcements properly
    //attemping to move from newly colonized planet does not allow user to pick any value
-map<uint32_t, pair<string, uint32_t> >Move::generateListOptions() {
+map<uint32_t, pair<string, uint32_t> > Move::generateListOptions() {
    //This map will be filled with options to be displayed
    //The pair is made up of a title and an integer max
    map<uint32_t, pair<string,uint32_t> > options;
@@ -209,7 +209,7 @@ bool Move::doOrder(IGObject* obj) {
          if (targetOdds > 2) { targetOdds = 2;}
          //Do we let the roll continue if the owner has 0 odds?
 
-         if ( targetIsAttackingOrigin) {
+         if ( targetIsAttackingOrigin ) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
             targetOdds += 1;        //Increase defenders odds
             //TODO: do we remove order on target planet to attack current planet, or just change odds?

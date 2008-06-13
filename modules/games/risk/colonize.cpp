@@ -20,22 +20,34 @@
  *
  */
  
+#include <tpserver/frame.h>
 #include <tpserver/objectorderparameter.h>
-#include <tpserver/message.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
-#include <tpserver/designstore.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/objecttypemanager.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
-#include <tpserver/timeparameter.h>
+#include <tpserver/message.h>
+#include <tpserver/ordermanager.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/logging.h>
+#include <tpserver/listparameter.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderqueue.h>
+#include <tpserver/prng.h>
+#include <tpserver/settings.h>
 
 #include "colonize.h"
+#include "planet.h"
 
 namespace RiskRuleset {
 
+using std::map;
+using std::pair;
 using std::string;
+using std::set;
 
 Colonize::Colonize() {
    name = "Colonize";
@@ -43,16 +55,46 @@ Colonize::Colonize() {
 
    //ASK: Work with Lee to get colonize order available on unowned planets
    //CHECK: on validity of these parameters
-   numberUnits = new TimeParameter();
-   numberUnits->setName("Units");
-   numberUnits->setDescription("The number of units to colonize with.");
-   addOrderParameter(numberUnits);
+   targetPlanet = new ListParameter();
+   targetPlanet->setName("Planet");
+   targetPlanet->setDescription("The Planet to bid on.");
+   targetPlanet->setListOptionsCallback(ListOptionCallback(this,
+      &Colonize::generateListOptions));
+   addOrderParameter(targetPlanet);
 
    turns = 1;
 }
 
 Colonize::~Colonize() {
 
+}
+
+map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions() {
+   map<uint32_t, pair<string,uint32_t> > options;
+   Game* game = Game::getGame();
+   ObjectManager* om = game->getObjectManager();
+   
+   IGObject* selectedObj = game->getObjectManager()->getObject(
+      game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
+   assert(planet);
+   game->getObjectManager()->doneWithObject(selectedObj->getID());
+
+   set<uint32_t> adjacent = om->getAllIds();
+
+   uint32_t availibleUnits = planet->getResource("Army").second;
+
+   for(set<uint32_t>::iterator i = adjacent.begin(); i != adjacent.end(); i++) {
+      IGObject* currObj = om->getObject((*i));
+      Planet* owned = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
+      if ( owned != NULL && owned->getOwner() == 0){   
+         options[owned->getID()] = pair<string,uint32_t>(
+            owned->getName(),  availibleUnits );
+      }
+   }   
+   //CHECK: how to get more than a single digit display
+
+   return options;   
 }
 
 Order* Colonize::clone() const {

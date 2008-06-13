@@ -23,24 +23,22 @@
  
 #include <tpserver/order.h>
 
-class TimeParameter;
+class ListParameter;
 class IGObject;
  
 namespace RiskRuleset {
 
 class Colonize : public::Order {
-
 public:
-
    Colonize();
    virtual ~Colonize();
 
    virtual Order* clone() const;
-
    virtual bool doOrder(IGObject* obj);
 
 private:
-   TimeParameter* numberUnits;    //# of units to colonize a target planet with.
+   ListParameter* targetPlanet;
+   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();   
 
 };//class Colonize
 } //namespace RiskRuleset
