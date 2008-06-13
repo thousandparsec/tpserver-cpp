@@ -94,8 +94,8 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
       IGObject* currObj = om->getObject((*i));
       Planet* owned = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
       if ( owned != NULL && owned->getOwner() == 0) {   
-      options[owned->getID()] = pair<string,uint32_t>(
-         owned->getName(), availibleUnits );
+         options[owned->getID()] = pair<string,uint32_t>(
+            owned->getName(), availibleUnits );
       }
    }   
    //CHECK: how to get more than a single digit display

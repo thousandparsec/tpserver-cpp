@@ -98,13 +98,10 @@ void Planet::setOrderTypes() {
 
    std::set<uint32_t> allowedlist;
 
-   if (this->getOwner() == 0) {
-      allowedlist.insert(om->getOrderTypeByName("Colonize"));
-   }
-   else {  
-      allowedlist.insert(om->getOrderTypeByName("Move"));
-      allowedlist.insert(om->getOrderTypeByName("Reinforce"));
-   }
+   //TODO: implement option to disable free colonization of any territory
+   allowedlist.insert(om->getOrderTypeByName("Colonize")); 
+   allowedlist.insert(om->getOrderTypeByName("Move"));
+   allowedlist.insert(om->getOrderTypeByName("Reinforce"));
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
 
