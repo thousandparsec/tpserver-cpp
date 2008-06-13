@@ -42,7 +42,6 @@
 #include "move.h"
 #include "planet.h"
 
-//TODO: Make Move order display correctly in client
 namespace RiskRuleset {
 
 using std::map;
@@ -131,7 +130,6 @@ Order* Move::clone() const {
    return o;
 }
 
-//TODO: Get move messaging working.
 bool Move::doOrder(IGObject* obj) {
    Logger::getLogger()->debug("Starting a Move::dorOrder");
    --turns;
@@ -148,10 +146,10 @@ bool Move::doOrder(IGObject* obj) {
    //Origin message setup
    Message* originMessage = new Message(); //message for origin planet owner.
    assert(originMessage);
-   //TODO: Restore original message after segfault is fixed
+
    string originSubject = "Move order(s) via " + origin->getName() + " completed";
    string originBody = "";
-   //TODO: Fix seg fault on setSubject()
+
    assert(originSubject != "");
    originMessage->setSubject(originSubject);
    

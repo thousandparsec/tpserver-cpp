@@ -40,6 +40,7 @@
 #include <tpserver/settings.h>
 #include <tpserver/logging.h>
 
+#include <boost/format.hpp>
 #include "risk.h"
 #include "riskturn.h"
 #include "ownedobject.h"
@@ -49,6 +50,7 @@ namespace RiskRuleset{
 using std::set;
 using std::string;
 using std::map;
+using boost::format;
 
 RiskTurn::RiskTurn() : TurnProcess() {
 
@@ -91,15 +93,17 @@ void RiskTurn::calculateReinforcements() {
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
+   PlayerManager* pm = game->getPlayerManager();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    set<uint32_t> objectsIds = om->getAllIds();
-   map<uint32_t,uint32_t> planets_owned;
+   map<uint32_t,uint32_t> planets_owned; // ownerID=>num_owned
    
    uint32_t rfc_rate = atoi(Settings::getSettings()->get("risk_rfc_rate").c_str() );
    uint32_t rfc_number = atoi(Settings::getSettings()->get("risk_rfc_number").c_str() );
    Logger::getLogger()->debug("Got reinforcement rate and number, they are %d and %d",rfc_rate, rfc_number);
    
+   //For each object in the universe tabulate how many planets each player owns
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i) {
       OwnedObject* currObj = dynamic_cast<OwnedObject*>(om->getObject(*i)->getObjectBehaviour());
       if (currObj != NULL) {//if the cast was ok
@@ -115,9 +119,18 @@ void RiskTurn::calculateReinforcements() {
    for(map<uint32_t,uint32_t>::iterator i = planets_owned.begin(); i != planets_owned.end(); ++i) {
       uint32_t number = rfc_number*(i->second/rfc_rate);
       uint32_t current = risk->getPlayerReinforcements(i->first);
-      Logger::getLogger()->debug("Awarding %d reinforcements. Adding %d to %d gives %d current reinforcements",number,number,current,number+current);
       risk->setPlayerReinforcements(i->first,current+number);
-      Logger::getLogger()->debug("Reinforcements set for %d, current total is now: %d",i->first,risk->getPlayerReinforcements(i->first));
+      Logger::getLogger()->debug("Reinforcements set for Player %d, current total is now: %d",i->first,risk->getPlayerReinforcements(i->first));
+      
+      //Produce owner reinforcements message
+      Message* message = new Message();
+      assert(message);
+      string subject = "You have received new reinforcements";
+      format body("You have gained %1% for a new total of %2% units.");
+      body % number; body % risk->getPlayerReinforcements(i->first);
+      message->setSubject(subject);
+      message->setBody(body.str());
+      pm->getPlayer(i->first)->postToBoard(message);
    }
    
    //TODO: Send message to player about updated total
