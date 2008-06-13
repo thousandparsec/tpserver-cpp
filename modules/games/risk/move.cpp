@@ -146,10 +146,10 @@ bool Move::doOrder(IGObject* obj) {
    map<uint32_t,uint32_t> list = targetPlanet->getList();
    
    //Origin message setup
-   Message* originMessage; //message for origin planet owner.
+   Message* originMessage = new Message(); //message for origin planet owner.
    assert(originMessage);
    //TODO: Restore original message after segfault is fixed
-   string originSubject = "test subject";/* "Move order(s) via " + origin->getName() + " completed";*/
+   string originSubject = "Move order(s) via " + origin->getName() + " completed";
    string originBody = "";
    //TODO: Fix seg fault on setSubject()
    assert(originSubject != "");
@@ -187,7 +187,7 @@ bool Move::doOrder(IGObject* obj) {
          target->addResource("Army",numUnits);
          
          //Produce the message
-         format message("You have moved %1% units from %2% to %3%.\n");
+         format message("You have moved %1% units from %2% to %3%.<br />");
          message % numUnits; message % origin->getName(); message % target->getName();
          originBody += message.str();
       }
@@ -244,7 +244,7 @@ bool Move::doOrder(IGObject* obj) {
          {
             //Produce target 'you've been attacked' message
             format message(
-               "%1% has been attacked by %2% via %3%. You lost %4% units, your opponent lost %5%.\n");
+               "%1% has been attacked by %2% via %3%. You lost %4% units, your opponent lost %5%.<br />");
             message % target->getName(); message % attacker;
             message % origin->getName(); message % (rollResult.second*damage);
             message % (rollResult.first*damage);
@@ -266,21 +266,18 @@ bool Move::doOrder(IGObject* obj) {
          target->addResource("Army",numUnits);
          
          //Produce message for origin
-         format message("You have colonized %1% with %2% units.\n");
+         format message("You have colonized %1% with %2% units.<br />");
          message % target->getName(); message % numUnits;
          originBody += message.str();
       }
    }
-   
-   Logger::getLogger()->debug("Origin message to be sent. Body is:\n%s\n Subject is: %s",originSubject.c_str(),originBody.c_str());
 
-   Logger::getLogger()->debug("set subject of message");
    originMessage->setBody(originBody);        //don't try setting a body with an empty string
    pm->getPlayer(origin->getOwner())->postToBoard(originMessage);
    
    //Send message to target player(s)
    for(map<uint32_t,string>::iterator i = targetMessages.begin(); i != targetMessages.end(); ++i) {
-      Message* targetMessage;
+      Message* targetMessage = new Message();
       assert(targetMessage);
       targetMessage->setSubject(targetSubject);
       targetMessage->setBody((*i).second);
