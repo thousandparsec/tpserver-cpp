@@ -48,13 +48,13 @@ static void child_handler(int signum)
 {
     switch(signum){
     case SIGALRM:
-        exit(1);
+        exit(1);    // fail, 2 seconds elapsed
         break;
     case SIGUSR1:
-        exit(0);
+        exit(0);    // ok, child acknowledged
         break;
     case SIGCHLD:
-        exit(1);
+        exit(1);    // fail, child died
         break;
     }
 }
@@ -78,6 +78,8 @@ static void daemonize()
         throw std::runtime_error(strerror(errno));
     }
     else if(pid > 0){
+        // wait 2 seconds for child to acknowledge
+        // pasuse() should not return (see child_handler())
         alarm(2);
         pause();
         exit(1);
@@ -109,6 +111,7 @@ static void daemonize()
     freopen( "/dev/null", "w", stdout);
     freopen( "/dev/null", "w", stderr);
 
+    // acknowledge to parent
     kill(parent, SIGUSR1);
 }
 
