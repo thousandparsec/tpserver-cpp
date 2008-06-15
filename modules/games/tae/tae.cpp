@@ -179,7 +179,7 @@ void taeRuleset::createGame() {
             sys1->setName(name);
             sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*(i+1), 0ll));
             sys1ob->setInhabitable(true);
-            sys1ob->setDestroyed(true);
+            sys1ob->setDestroyed(false);
             sys1->addToParent(gal->getID());
             obm->addObject(sys1);
 

@@ -37,6 +37,7 @@
 #include <tpserver/designstore.h>
 
 #include "ownedobject.h"
+#include "starsystem.h"
 #include "fleet.h"
 #include "planet.h"
 
@@ -86,6 +87,7 @@ Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
     assert(fleetData != NULL);
 
     IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
     // if they chose a planet, set to the owning star sys
     if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
@@ -99,9 +101,11 @@ Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
         starSys->setObjectId(fleet->getParent());
         Logger::getLogger()->debug("Player made illogical colonize order, resetting colonize to current pos");
     }
-
-    //TODO: Check to see if it is a legal system for this fleet (not colonized, 
-    //      occupied, or destroyed)
+    // Check to see if it is a legal system to colonize
+    else if(!starSysData->canBeColonized()) {
+        starSys->setObjectId(fleet->getParent());
+        Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
+    }        
 
     obm->doneWithObject(fleet->getID());
 

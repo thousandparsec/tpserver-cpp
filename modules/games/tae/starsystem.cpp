@@ -23,10 +23,17 @@
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/objectmanager.h>
+#include <tpserver/objecttypemanager.h>
+#include <tpserver/game.h>
+#include <tpserver/logging.h>
 
 #include "spaceobject.h"
+#include "planet.h"
 
 #include "starsystem.h"
+
+using std::set;
 
 StarSystemType::StarSystemType() : SpaceObjectType(){
     setTypeName("Star System");
@@ -60,6 +67,50 @@ StarSystem::StarSystem() : SpaceObject() {
 
 StarSystem::~StarSystem() {
 
+}
+
+bool StarSystem::canBeColonized() {
+    ObjectManager* obm = Game::getGame()->getObjectManager();
+    ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
+
+    if(isDestroyed()) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System is destroyed");
+        return false;
+    }
+
+    //Grab the children and see if the system is occupied
+    set<uint32_t> children = obj->getContainedObjects();
+    uint32_t pid;
+    bool isOccupied = false;
+    for(set<uint32_t>::iterator i = children.begin(); i != children.end(); i++) {
+        if(obm->getObject(*i)->getType() == obtm->getObjectTypeByName("Planet")) {
+            pid = *i;
+        } else if (obm->getObject(*i)->getType() == obtm->getObjectTypeByName("Fleet")) {
+            isOccupied = true;
+        }
+    }
+    if(isOccupied) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System is occupied");
+        return false;
+    }
+
+    //Check to see if the system has already been colonized
+    Planet* planet = (Planet*)(obm->getObject(pid)->getObjectBehaviour());
+    if(planet->getResource(4) > 0) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System has been colonized by merchants.");
+        return false;
+    } else if(planet->getResource(5) > 0) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System has been colonized by scientists.");
+        return false;
+    } else if(planet->getResource(6) > 0) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System has been colonized by settlers.");
+        return false;
+    } else if(planet->getResource(7) > 0) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System has been colonized by mining robots.");
+        return false;
+    }
+
+    return true;
 }
 
 bool StarSystem::isInhabitable() {

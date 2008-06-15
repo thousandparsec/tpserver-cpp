@@ -41,6 +41,7 @@ class StarSystem : public SpaceObject {
         StarSystem();
         virtual ~StarSystem();
 
+        bool canBeColonized();
         bool isInhabitable();
         void setInhabitable(bool inhabit);
         bool isDestroyed();
