@@ -32,6 +32,8 @@
 #include <tpserver/message.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/orderparameter.h>
 #include <tpserver/logging.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
@@ -44,6 +46,7 @@
 #include "attack.h"
 
 using std::set;
+using std::list;
 using std::string;
 
 Attack::Attack() : Order() {
@@ -106,10 +109,38 @@ Result Attack::inputFrame(Frame *f, uint32_t playerid) {
         starSys->setObjectId(fleet->getParent());
         Logger::getLogger()->debug("Player trying to destroy a system that is already destroyed");
     }
-    Logger::getLogger()->debug("done with fleet");
+    //Check to make sure that no other order is targeting this system 
+    else {
+        OrderManager* ordermanager = game->getOrderManager();
+        set<uint32_t> objects = obm->getAllIds();
+        for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+            IGObject * ob = obm->getObject(*itcurr);
+            if(ob->getType() == obtm->getObjectTypeByName("Fleet")){
+                OwnedObject* owned = (OwnedObject*) ob->getObjectBehaviour();
+                if(owned->getOwner() == playerid) {
+                    OrderQueueObjectParam* oqop = (OrderQueueObjectParam*)(ob->getParameterByType(obpT_Order_Queue));
+                    if(oqop != NULL){
+                        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+                        if(orderqueue != NULL){
+                            Order * currOrder = orderqueue->getFirstOrder();
+                            if(currOrder != NULL){
+                                list<OrderParameter*> paramList = currOrder->getParameters();
+                                list<OrderParameter*>::iterator i = paramList.begin();
+                                OrderParameter* param = *i;
+                                if(param->getName().compare("Star System") == 0) {
+                                    if(((ObjectOrderParameter*)param)->getObjectId() == starSys->getObjectId()) {
+                                        starSys->setObjectId(fleet->getParent());
+                                        Logger::getLogger()->debug("Player trying to destroy a system already targeted for an action this turn");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     obm->doneWithObject(fleet->getID());
-
-    Logger::getLogger()->debug("success");
 
     return Success();
 }
@@ -122,13 +153,15 @@ bool Attack::doOrder(IGObject * obj) {
     //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
     set<uint32_t> children = newStarSys->getContainedObjects();
-    uint32_t pid = -1;
+    uint32_t pid;
+    bool planetFound = false;
     for(set<uint32_t>::iterator i=children.begin(); i != children.end(); i++) {
         if(obm->getObject(*i)->getType() == obtm->getObjectTypeByName("Planet")) {
             pid = *i;
+            planetFound = true;
         }
     }
-    if(pid == -1) {
+    if(!planetFound) {
         Logger::getLogger()->debug("Attack Order: No planet found in target star system");
         return false;
     }
@@ -142,8 +175,8 @@ bool Attack::doOrder(IGObject * obj) {
     sys->setDestroyed(true);
 
     obm->doneWithObject(newStarSys->getID());
-   
- 
+
+
     // post completion message
     Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
     Message * msg = new Message();
