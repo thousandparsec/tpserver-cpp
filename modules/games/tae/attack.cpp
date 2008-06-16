@@ -87,24 +87,29 @@ Result Attack::inputFrame(Frame *f, uint32_t playerid) {
     assert(fleetData != NULL);
 
     IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
     // if they chose a planet, set to the owning star sys
     if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
     {
         starSys->setObjectId(starSysObj->getParent());
-        Logger::getLogger()->debug("Player trying to colonize to planet, setting to planet's star sys");
+        Logger::getLogger()->debug("Player trying to destroy to planet, setting to planet's star sys");
     }
     // if they're just crazy, reset to current position
     else if(starSysObj->getType() != obtm->getObjectTypeByName("Star System"))
     {
         starSys->setObjectId(fleet->getParent());
-        Logger::getLogger()->debug("Player made illogical colonize order, resetting colonize to current pos");
+        Logger::getLogger()->debug("Player made illogical destroy order, resetting colonize to current pos");
     }
-
-    //TODO: Check to see if it is a legal system for this fleet (not colonized, 
-    //      occupied, or destroyed)
-
+    //Check to see if star system is already destroyed
+    else if(starSysData->isDestroyed()) {
+        starSys->setObjectId(fleet->getParent());
+        Logger::getLogger()->debug("Player trying to destroy a system that is already destroyed");
+    }
+    Logger::getLogger()->debug("done with fleet");
     obm->doneWithObject(fleet->getID());
+
+    Logger::getLogger()->debug("success");
 
     return Success();
 }
