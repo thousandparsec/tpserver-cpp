@@ -231,6 +231,11 @@ bool Move::doOrder(IGObject* obj) {
          string attacker = pm->getPlayer(origin->getOwner())->getName();
          //Check for change of ownership
          if (target->getResource("Army").first <= 0) {
+            //Produce target 'loss of ownership' message
+            format message("You have lost %1% to %2%");
+            message % target->getName(); message % attacker;
+            targetMessages[target->getOwner()] += message.str();
+            
             target->setOwner(origin->getOwner());
             target->setResource("Army",numUnits, origin->getResource("Army").second);
             
@@ -242,10 +247,7 @@ bool Move::doOrder(IGObject* obj) {
             if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL) {
                oq->removeAllOrders();
             }
-            //Produce target 'loss of ownership' message
-            format message("You have lost %1% to %2%");
-            message % target->getName(); message % attacker;
-            targetMessages[target->getOwner()] += message.str();
+
          }
          else
          {
