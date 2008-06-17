@@ -131,7 +131,6 @@ Order* Move::clone() const {
 }
 
 bool Move::doOrder(IGObject* obj) {
-   Logger::getLogger()->debug("Starting a Move::dorOrder");
    --turns;
    
    Game* game = Game::getGame();
@@ -139,6 +138,8 @@ bool Move::doOrder(IGObject* obj) {
    PlayerManager* pm = game->getPlayerManager();
    Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(origin);
+
+   Logger::getLogger()->debug("Starting a Move::dorOrder on %s owned by player #%d", origin->getName(),origin->getOwner());
    
    //Get the list of planetIDs and the # of units to move
    map<uint32_t,uint32_t> list = targetPlanet->getList();
@@ -198,6 +199,7 @@ bool Move::doOrder(IGObject* obj) {
          uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
          bool targetIsAttackingOrigin = 
             isTargetAttackingOrigin(obj, om->getObject(i->first));
+         
          //Establish default odds
          //origin is restricted to only use as many units as it has availible, and cap to 3*damage
          uint32_t originOdds = (origin->getResource("Army").first - 1) / 3*damage;
@@ -210,7 +212,7 @@ bool Move::doOrder(IGObject* obj) {
          if ( targetIsAttackingOrigin ) {
             Logger::getLogger()->debug("The target planet is also attacking the origin");
             targetOdds += 1;        //Increase defenders odds
-            //TODO: do we remove order on target planet to attack current planet, or just change odds?
+            //TODO: Add option to remove order on target planet to attack current planet
          }
          else
          {
@@ -233,6 +235,14 @@ bool Move::doOrder(IGObject* obj) {
             target->setResource("Army",numUnits, origin->getResource("Army").second);
             //TODO:Clear order queue for target planet
             
+            //Get order queue from target
+            OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(om->getObject(i->first)->getParameterByType(obpT_Order_Queue));
+            OrderQueue* oq;
+            OrderManager* ordM = Game::getGame()->getOrderManager();
+
+            if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL) {
+               oq->removeAllOrders();
+            }
             //Produce target 'loss of ownership' message
             format message("You have lost %1% to %2%");
             message % target->getName(); message % attacker;
@@ -285,7 +295,7 @@ bool Move::doOrder(IGObject* obj) {
    return true;   //moves are always completed, no matter what happens
 }
 
-//TODO: encapsulate this function so it is a lot more pretty
+//TODO: Tidy up isTargetAttackingOrigin function
 //CHECK: check if the function even works
 bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("Checking if a target planet is attacking");
