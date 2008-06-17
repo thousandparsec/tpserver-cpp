@@ -38,6 +38,7 @@ public:
 private:
    void processOrdersOfGivenType(std::string type = "");
    void calculateReinforcements();
+   void calculateBonusReinforcements();
 
 };//class RiskTurn : public TurnProcess
 } //namespace RiskRuleset

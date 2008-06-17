@@ -155,6 +155,12 @@ void RiskTurn::calculateReinforcements() {
       message->setBody(body.str());
       pm->getPlayer(i->first)->postToBoard(message);
    }
+   
+   calculateBonusReinforcements();
+}
+
+void RiskTurn::calculateBonusReinforcements() {
+   //TODO: Give out bonus reinforcements for owning whole constellations
 }
 
 //ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird
