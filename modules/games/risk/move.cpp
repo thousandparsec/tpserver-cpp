@@ -202,10 +202,10 @@ bool Move::doOrder(IGObject* obj) {
          
          //Establish default odds
          //origin is restricted to only use as many units as it has availible, and cap to 3*damage
-         uint32_t originOdds = (origin->getResource("Army").first - 1) / 3*damage;
+         uint32_t originOdds = (origin->getResource("Army").first - 1) / damage;
          if (originOdds > 3) { originOdds = 3;}
          //target is restricted to only as many units as there are avail and capped to 2*damage
-         uint32_t targetOdds = target->getResource("Army").first / 2*damage;
+         uint32_t targetOdds = target->getResource("Army").first / damage;
          if (targetOdds > 2) { targetOdds = 2;}
          //Do we let the roll continue if the owner has 0 odds?
 
