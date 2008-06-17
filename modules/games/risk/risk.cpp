@@ -374,8 +374,12 @@ void Risk::startGame(){
    if (settings->get("risk_attack_dmg") == "" )
       settings->set("risk_attack_dmg","1");
       
-   if (settings->get("risk_allow_colonize") == "" )
+   if (settings->get("risk_randomly_assign_territories") == "true" ) {
       settings->set("risk_allow_colonize","false");
+   }
+   else
+      settings->set("risk_allow_colonize","true");
+      
 }
 
 bool Risk::onAddPlayer(Player* player){
