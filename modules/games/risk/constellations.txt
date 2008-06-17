@@ -77,6 +77,14 @@ place to put the default constellations:
    createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);
    createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);
 
+   // Orion Systens (Africa, Bonus 3)
+   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);
+   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);
+   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);
+   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);
+   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);
+   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);
+
    // Cepheus Systems (Europe, Bonus 5)
    createStarSystem(*con_cepheus, "Alderamin",         0.045,  0.472);
    createStarSystem(*con_cepheus, "Alfirk",            0.063,  0.625);
@@ -85,14 +93,6 @@ place to put the default constellations:
    createStarSystem(*con_cepheus, "The Garnet Star",   -0.045, 0.445);
    createStarSystem(*con_cepheus, "Alkurhah",          -0.036, 0.499);
    createStarSystem(*con_cepheus, "Iota Cep",          -0.090, 0.598);
-
-   // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);
-   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);
-   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);
-   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);
-   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);
-   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);
 
    // Draco Systems (Russia, Bonus 7)
    createStarSystem(*con_draco, "Etamin",              0.247, 0.382);
