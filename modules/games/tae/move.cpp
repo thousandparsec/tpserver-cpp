@@ -46,14 +46,9 @@
 using std::set;
 using std::string;
 
-Move::Move() : Order() {
+Move::Move() : FleetOrder() {
     name = "Move";
     description = "Move to a given system";
-
-    starSys = new ObjectOrderParameter();
-    starSys->setName("Star System");
-    starSys->setDescription("The star system to move to");
-    addOrderParameter(starSys);
 }
 
 Move::~Move() {
@@ -67,44 +62,15 @@ Order* Move::clone() const {
 }
 
 void Move::createFrame(Frame *f, int pos) {
-    Order::createFrame(f, pos);
+    FleetOrder::createFrame(f, pos);
 }
 
 Result Move::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = Order::inputFrame(f, playerid);
+    Result r = FleetOrder::inputFrame(f, playerid);
     if(!r) return r;
-
-    turns = 0;
-
-    Game *game = Game::getGame();
-    ObjectManager *obm = game->getObjectManager();
-    ObjectTypeManager *obtm = game->getObjectTypeManager();
-
-
-    IGObject *fleet = obm->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
-    Fleet* fleetData = (Fleet*)(fleet->getObjectBehaviour());
-    assert(fleetData != NULL);
-
-    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
-
-    // if they chose a planet, set to the owning star sys
-    if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
-    {
-        starSys->setObjectId(starSysObj->getParent());
-        Logger::getLogger()->debug("Player trying to move to planet, setting to planet's star sys");
-    }
-    // if they're just crazy, reset to current position
-    else if(starSysObj->getType() != obtm->getObjectTypeByName("Star System"))
-    {
-        starSys->setObjectId(fleet->getParent());
-        Logger::getLogger()->debug("Player made illogical colonize order, resetting colonize to current pos");
-    }
 
     //TODO: Check to see if it is a legal system for this fleet (not colonized, 
     //      occupied, or destroyed)
-
-    obm->doneWithObject(fleet->getID());
 
     return Success();
 }

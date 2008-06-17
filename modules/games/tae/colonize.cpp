@@ -46,14 +46,14 @@
 using std::set;
 using std::string;
 
-Colonize::Colonize() : Order() {
+Colonize::Colonize() : FleetOrder() {
     name = "Colonize";
     description = "Colonize a given system";
 
-    starSys = new ObjectOrderParameter();
+/*    starSys = new ObjectOrderParameter();
     starSys->setName("Star System");
     starSys->setDescription("The star system to Colonize");
-    addOrderParameter(starSys);
+    addOrderParameter(starSys);*/
 }
 
 Colonize::~Colonize() {
@@ -67,42 +67,24 @@ Order* Colonize::clone() const {
 }
 
 void Colonize::createFrame(Frame *f, int pos) {
-    Order::createFrame(f, pos);
+    FleetOrder::createFrame(f, pos);
 }
 
 Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = Order::inputFrame(f, playerid);
+    Result r = FleetOrder::inputFrame(f, playerid);
     if(!r) return r;
-
-    turns = 0;
 
     Game *game = Game::getGame();
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-
     IGObject *fleet = obm->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
-    Fleet* fleetData = (Fleet*)(fleet->getObjectBehaviour());
-    assert(fleetData != NULL);
 
     IGObject *starSysObj = obm->getObject(starSys->getObjectId());
     StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
-    // if they chose a planet, set to the owning star sys
-    if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
-    {
-        starSys->setObjectId(starSysObj->getParent());
-        Logger::getLogger()->debug("Player trying to colonize to planet, setting to planet's star sys");
-    }
-    // if they're just crazy, reset to current position
-    else if(starSysObj->getType() != obtm->getObjectTypeByName("Star System"))
-    {
-        starSys->setObjectId(fleet->getParent());
-        Logger::getLogger()->debug("Player made illogical colonize order, resetting colonize to current pos");
-    }
     // Check to see if it is a legal system to colonize
-    else if(!starSysData->canBeColonized()) {
+    if(starSysObj->getType() == obtm->getObjectTypeByName("Star System") && !starSysData->canBeColonized()) {
         starSys->setObjectId(fleet->getParent());
         Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
     }        

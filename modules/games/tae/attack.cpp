@@ -32,7 +32,6 @@
 #include <tpserver/message.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderparameter.h>
 #include <tpserver/logging.h>
 #include <tpserver/design.h>
@@ -49,14 +48,9 @@ using std::set;
 using std::list;
 using std::string;
 
-Attack::Attack() : Order() {
+Attack::Attack() : FleetOrder() {
     name = "Attack";
     description = "Attack a given system";
-
-    starSys = new ObjectOrderParameter();
-    starSys->setName("Star System");
-    starSys->setDescription("The star system to Attack");
-    addOrderParameter(starSys);
 }
 
 Attack::~Attack() {
@@ -70,77 +64,12 @@ Order* Attack::clone() const {
 }
 
 void Attack::createFrame(Frame *f, int pos) {
-    Order::createFrame(f, pos);
+    FleetOrder::createFrame(f, pos);
 }
 
 Result Attack::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = Order::inputFrame(f, playerid);
+    Result r = FleetOrder::inputFrame(f, playerid);
     if(!r) return r;
-
-    turns = 0;
-
-    Game *game = Game::getGame();
-    ObjectManager *obm = game->getObjectManager();
-    ObjectTypeManager *obtm = game->getObjectTypeManager();
-
-
-    IGObject *fleet = obm->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
-    Fleet* fleetData = (Fleet*)(fleet->getObjectBehaviour());
-    assert(fleetData != NULL);
-
-    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
-    StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
-
-    // if they chose a planet, set to the owning star sys
-    if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
-    {
-        starSys->setObjectId(starSysObj->getParent());
-        Logger::getLogger()->debug("Player trying to destroy to planet, setting to planet's star sys");
-    }
-    // if they're just crazy, reset to current position
-    else if(starSysObj->getType() != obtm->getObjectTypeByName("Star System"))
-    {
-        starSys->setObjectId(fleet->getParent());
-        Logger::getLogger()->debug("Player made illogical destroy order, resetting colonize to current pos");
-    }
-    //Check to see if star system is already destroyed
-    else if(starSysData->isDestroyed()) {
-        starSys->setObjectId(fleet->getParent());
-        Logger::getLogger()->debug("Player trying to destroy a system that is already destroyed");
-    }
-    //Check to make sure that no other order is targeting this system 
-    else {
-        OrderManager* ordermanager = game->getOrderManager();
-        set<uint32_t> objects = obm->getAllIds();
-        for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = obm->getObject(*itcurr);
-            if(ob->getType() == obtm->getObjectTypeByName("Fleet")){
-                OwnedObject* owned = (OwnedObject*) ob->getObjectBehaviour();
-                if(owned->getOwner() == playerid) {
-                    OrderQueueObjectParam* oqop = (OrderQueueObjectParam*)(ob->getParameterByType(obpT_Order_Queue));
-                    if(oqop != NULL){
-                        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
-                        if(orderqueue != NULL){
-                            Order * currOrder = orderqueue->getFirstOrder();
-                            if(currOrder != NULL){
-                                list<OrderParameter*> paramList = currOrder->getParameters();
-                                list<OrderParameter*>::iterator i = paramList.begin();
-                                OrderParameter* param = *i;
-                                if(param->getName().compare("Star System") == 0) {
-                                    if(((ObjectOrderParameter*)param)->getObjectId() == starSys->getObjectId()) {
-                                        starSys->setObjectId(fleet->getParent());
-                                        Logger::getLogger()->debug("Player trying to destroy a system already targeted for an action this turn");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    obm->doneWithObject(fleet->getID());
 
     return Success();
 }

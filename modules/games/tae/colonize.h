@@ -20,13 +20,13 @@
  *
  */
 
-#include <tpserver/order.h>
+#include "fleetorder.h"
 
 class Frame;
 class ObjectOrderParameter;
 
 
-class Colonize : public Order
+class Colonize : public FleetOrder
 {
  public:
    Colonize();
@@ -38,9 +38,6 @@ class Colonize : public Order
    virtual Result inputFrame(Frame * f, uint32_t playerid);
    
    virtual bool doOrder(IGObject * obj);
-
- private:
-   ObjectOrderParameter* starSys;
 };
 
 

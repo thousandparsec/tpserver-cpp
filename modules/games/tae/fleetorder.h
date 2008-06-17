@@ -1,6 +1,6 @@
-#ifndef ATTACK_H
-#define ATTACK_H
-/*  Attack class
+#ifndef FLEET_ORDER_H
+#define FLEET_ORDER_H
+/*  FleetOrder class
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
@@ -20,24 +20,27 @@
  *
  */
 
-#include "fleetorder.h"
+#include <tpserver/order.h>
 
 class Frame;
 class ObjectOrderParameter;
 
 
-class Attack : public FleetOrder
+class FleetOrder : public Order
 {
  public:
-   Attack();
-   virtual ~Attack();
+   FleetOrder();
+   virtual ~FleetOrder();
 
-   virtual Order* clone() const;
+   virtual Order* clone() const = 0;
 
    virtual void createFrame(Frame * f, int pos);
    virtual Result inputFrame(Frame * f, uint32_t playerid);
    
-   virtual bool doOrder(IGObject * obj);
+   virtual bool doOrder(IGObject * obj) = 0;
+
+ protected:
+   ObjectOrderParameter* starSys;
 };
 
 
