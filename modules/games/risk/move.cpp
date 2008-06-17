@@ -139,7 +139,7 @@ bool Move::doOrder(IGObject* obj) {
    Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(origin);
 
-   Logger::getLogger()->debug("Starting a Move::dorOrder on %s owned by player #%d", origin->getName(),origin->getOwner());
+   Logger::getLogger()->debug("Starting a Move::doOrder on %s.",origin->getName().c_str());
    
    //Get the list of planetIDs and the # of units to move
    map<uint32_t,uint32_t> list = targetPlanet->getList();
@@ -400,7 +400,4 @@ pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDef
    return result;          //send back the results
 }
 
-void clearOrders(IGObject* obj) {
-   
-}
 } //end namespace RiskRuleset
