@@ -73,24 +73,18 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-
-    IGObject *fleet = obm->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
-    Fleet* fleetData = (Fleet*)(fleet->getObjectBehaviour());
-    assert(fleetData != NULL);
-
     IGObject *starSysObj = obm->getObject(starSys->getObjectId());
 
     // if they chose a planet, set to the owning star sys
     if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
     {
-        starSys->setObjectId(starSysObj->getParent());
+        starSys->setObjectId(0);
         Logger::getLogger()->debug("Player trying to issue a fleet order to planet, setting to planet's star sys");
     }
     // if they're just crazy, reset to current position
     else if(starSysObj->getType() != obtm->getObjectTypeByName("Star System"))
     {
-        starSys->setObjectId(fleet->getParent());
+        starSys->setObjectId(0);
         Logger::getLogger()->debug("Player made illogical fleet order, resetting to current pos");
     }
     //Check to make sure that no other order is targeting this system       
@@ -118,7 +112,7 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
                                 OrderParameter* param = *i;
                                 if(param->getName().compare("Star System") == 0) {
                                     if(((ObjectOrderParameter*)param)->getObjectId() == starSys->getObjectId()) {
-                                        starSys->setObjectId(fleet->getParent());
+                                        starSys->setObjectId(0);
                                         Logger::getLogger()->debug("Player trying to initiate a fleet order on a system already targeted for an action this turn");
                                     }
                                 }
@@ -129,8 +123,6 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
             }
         }
     }
-
-    obm->doneWithObject(fleet->getID());
 
     return Success();
 }

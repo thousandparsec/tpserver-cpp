@@ -68,10 +68,7 @@ void Attack::createFrame(Frame *f, int pos) {
 }
 
 Result Attack::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = FleetOrder::inputFrame(f, playerid);
-    if(!r) return r;
-
-    return Success();
+    return FleetOrder::inputFrame(f, playerid);
 }
 
 bool Attack::doOrder(IGObject * obj) {
