@@ -233,7 +233,6 @@ bool Move::doOrder(IGObject* obj) {
          if (target->getResource("Army").first <= 0) {
             target->setOwner(origin->getOwner());
             target->setResource("Army",numUnits, origin->getResource("Army").second);
-            //TODO:Clear order queue for target planet
             
             //Get order queue from target
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(om->getObject(i->first)->getParameterByType(obpT_Order_Queue));
@@ -296,7 +295,7 @@ bool Move::doOrder(IGObject* obj) {
 }
 
 //TODO: Tidy up isTargetAttackingOrigin function
-//CHECK: check if the function even works
+//CHECK: Ensure isTargetAttackingOrigin function is working properly (I don't believe it is)
 bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("Checking if a target planet is attacking");
    

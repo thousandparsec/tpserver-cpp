@@ -155,8 +155,6 @@ void RiskTurn::calculateReinforcements() {
       message->setBody(body.str());
       pm->getPlayer(i->first)->postToBoard(message);
    }
-   
-   //TODO: Send message to player about updated total
 }
 
 //ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird

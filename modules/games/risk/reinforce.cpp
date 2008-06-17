@@ -33,6 +33,7 @@
 #include <tpserver/timeparameter.h>
 #include <tpserver/message.h>
 
+#include <boost/format.hpp>
 #include "reinforce.h"
 #include "planet.h"
 #include "risk.h"
@@ -40,6 +41,7 @@
 namespace RiskRuleset {
 
 using std::string;
+using boost::format;
 
 Reinforce::Reinforce() {
    name = "Reinforce";
@@ -85,8 +87,16 @@ bool Reinforce::doOrder(IGObject *obj) {
    //Decrement players reinforcements total.
    risk->setPlayerReinforcements(planet->getOwner(), availibleUnits - requestedUnits);
 
-   //TODO: Inform player how many reinforcements were added, their new reinforcement total.
-   //ASK: about getting a string out of a uint32_t
+   //Construct Reinforcement message
+   Message* message = new Message();
+   message->setSubject("Reinforce order completed successfully.");
+   format body("%1% received %2% additional units. %3% reinforcements remaining.");
+   body % planet->getName(); body % requestedUnits; body % (availibleUnits - requestedUnits);
+   message->setBody(body.str());
+
+   //Post message to players board
+   Game::getGame()->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(message);
+   
    return true;
 }
 

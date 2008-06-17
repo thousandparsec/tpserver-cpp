@@ -120,6 +120,11 @@ void Planet::doOnceATurn() {
       setResource("Army", current, reinforcements);  
       
       //Logger::getLogger()->debug("After update planet now has %d armies, %d minable",getResource("Army").first,getResource("Army").second);
+      
+      if ( current == 0 )
+      {
+         this->setOwner(0);
+      }
    }
    setOrderTypes();
 

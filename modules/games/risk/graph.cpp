@@ -47,7 +47,7 @@ bool Graph::addPlanet(IGObject* planet) {
 
 bool Graph::addEdge(const uint32_t& id1, const uint32_t& id2) { 
    bool result = false;
-   //CHECK: what the default for the map is, and check that the id is declared
+
    if ( nodeMap.find(id1) != nodeMap.end() && nodeMap.find(id2) != nodeMap.end())
    {
       Node* node1 = &nodeMap[id1];

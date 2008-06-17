@@ -479,7 +479,7 @@ void Risk::randomlyAssignPlanets(Player* player) {
    uint32_t armies = atoi(settings->get("risk_default_planet_armies").c_str() );
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
 
-   uint32_t to_be_asgned = num_planets / max_players ;    //TODO: possibly make this rounding a little more robust.
+   uint32_t to_be_asgned = num_planets / max_players ;   //Round is like this so there is a possability a few open spaces exist
    std::string body = "";
    
    Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
