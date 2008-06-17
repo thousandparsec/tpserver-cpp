@@ -45,6 +45,7 @@
 #include <tpserver/player.h>
 #include <tpserver/logging.h>
 #include <tpserver/objectmanager.h>
+#include <tpserver/settings.h>
 
 #include "containertypes.h"
 #include "risk.h"
@@ -99,7 +100,9 @@ void Planet::setOrderTypes() {
    std::set<uint32_t> allowedlist;
 
    //TODO: implement option to disable free colonization of any territory
-   //allowedlist.insert(om->getOrderTypeByName("Colonize"));  //TODO: Turn on colonize only when colonize option is on
+   if ( Settings::getSettings()->get("risk_allow_colonize") == "true" ) {
+      allowedlist.insert(om->getOrderTypeByName("Colonize"));  //TODO: Turn on colonize only when colonize option is on
+   }
    allowedlist.insert(om->getOrderTypeByName("Move"));
    allowedlist.insert(om->getOrderTypeByName("Reinforce"));
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);

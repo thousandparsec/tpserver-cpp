@@ -373,6 +373,9 @@ void Risk::startGame(){
       
    if (settings->get("risk_attack_dmg") == "" )
       settings->set("risk_attack_dmg","1");
+      
+   if (settings->get("risk_allow_colonize") == "" )
+      settings->set("risk_allow_colonize","false");
 }
 
 bool Risk::onAddPlayer(Player* player){
@@ -464,6 +467,9 @@ void Risk::onPlayerAdded(Player* player){
    
    if ( settings->get("risk_randomly_assign_territories") == "true" ) {
       randomlyAssignPlanets(player);
+   }
+   else {
+      //TODO: assign one planet to each player
    }
    
 }
