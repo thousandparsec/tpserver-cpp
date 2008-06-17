@@ -68,6 +68,7 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
     if(!r) return r;
 
     turns = 0;
+    int numOrders = 0;
 
     Game *game = Game::getGame();
     ObjectManager *obm = game->getObjectManager();
@@ -106,6 +107,7 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
                         if(orderqueue != NULL){
                             Order * currOrder = orderqueue->getFirstOrder();
                             if(currOrder != NULL){
+                                numOrders++;
                                 //See if the order is to this star system
                                 list<OrderParameter*> paramList = currOrder->getParameters();
                                 list<OrderParameter*>::iterator i = paramList.begin();
@@ -122,6 +124,13 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
                 }
             }
         }
+    }
+
+    //Check to see if the maximum number of orders has already been issued
+    //TODO: Change this so they cant even create another order once 2 have been created
+    if(numOrders > 1) {
+        starSys->setObjectId(0);
+        Logger::getLogger()->debug("Player has already issued 2 or more orders this turn.");
     }
 
     return Success();
