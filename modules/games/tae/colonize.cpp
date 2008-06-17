@@ -46,14 +46,15 @@
 using std::set;
 using std::string;
 
-Colonize::Colonize() : FleetOrder() {
-    name = "Colonize";
-    description = "Colonize a given system";
-
-/*    starSys = new ObjectOrderParameter();
-    starSys->setName("Star System");
-    starSys->setDescription("The star system to Colonize");
-    addOrderParameter(starSys);*/
+Colonize::Colonize(bool mining) : FleetOrder() {
+    isMining = mining;
+    if(mining) {
+        name = "ColonizeMining";
+        description = "Colonize a given system with Mining Robots";
+    } else {
+        name = "Colonize";
+        description = "Colonize a given system";
+    }
 }
 
 Colonize::~Colonize() {
@@ -61,7 +62,7 @@ Colonize::~Colonize() {
 }
 
 Order* Colonize::clone() const {
-    Colonize* o = new Colonize();
+    Colonize* o = new Colonize(isMining);
     o->type = type;
     return o;
 }
@@ -78,18 +79,14 @@ Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-    IGObject *fleet = obm->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-
     IGObject *starSysObj = obm->getObject(starSys->getObjectId());
     StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
     // Check to see if it is a legal system to colonize
-    if(starSysObj->getType() == obtm->getObjectTypeByName("Star System") && !starSysData->canBeColonized()) {
-        starSys->setObjectId(fleet->getParent());
+    if(starSysObj->getType() == obtm->getObjectTypeByName("Star System") && !starSysData->canBeColonized(isMining)) {
+        starSys->setObjectId(0);
         Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
     }        
-
-    obm->doneWithObject(fleet->getID());
 
     return Success();
 }
@@ -102,13 +99,15 @@ bool Colonize::doOrder(IGObject * obj) {
     //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
     set<uint32_t> children = newStarSys->getContainedObjects();
-    uint32_t pid = -1;
+    uint32_t pid;
+    bool planetFound = false;
     for(set<uint32_t>::iterator i=children.begin(); i != children.end(); i++) {
         if(obm->getObject(*i)->getType() == obtm->getObjectTypeByName("Planet")) {
             pid = *i;
+            planetFound = true;
         }
     }
-    if(pid == -1) {
+    if(!planetFound) {
         Logger::getLogger()->debug("Colonize Order: No planet found in target star system");
         return false;
     }

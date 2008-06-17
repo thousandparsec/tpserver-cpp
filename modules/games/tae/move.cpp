@@ -80,7 +80,6 @@ bool Move::doOrder(IGObject * obj) {
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
 
-    //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
     obj->removeFromParent();
     obj->addToParent(starSys->getObjectId());

@@ -69,7 +69,7 @@ StarSystem::~StarSystem() {
 
 }
 
-bool StarSystem::canBeColonized() {
+bool StarSystem::canBeColonized(bool mining) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
 
@@ -107,6 +107,15 @@ bool StarSystem::canBeColonized() {
         return false;
     } else if(planet->getResource(7) > 0) {
         Logger::getLogger()->debug("StarSystem->canBeColonized: System has been colonized by mining robots.");
+        return false;
+    }
+
+    //Check to make sure the system is inhabitable by the fleet
+    if(mining && planet->getResource(1) < 1) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System is inhabitable and cannot be colonized by mining robots");
+        return false;
+    } else if(!mining && planet->getResource(1) > 0) {
+        Logger::getLogger()->debug("StarSystem->canBeColonized: System is Uninhabitable and can ONLY be colonized by mining robots");
         return false;
     }
 

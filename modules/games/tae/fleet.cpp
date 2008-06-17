@@ -126,8 +126,10 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
     Logger::getLogger()->debug("Enter: Fleet::getShips");
     std::map<uint32_t, uint32_t> ships;
     std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = (( RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+    Logger::getLogger()->debug("got ship list");
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
-            itcurr != shipsref.end(); ++itcurr){
+            itcurr != shipsref.end(); ++itcurr){    
+        Logger::getLogger()->debug("step");
         ships[itcurr->first.second] = itcurr->second;
     }
     Logger::getLogger()->debug("Exit: Fleet::getShips");

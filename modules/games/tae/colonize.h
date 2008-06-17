@@ -29,7 +29,7 @@ class ObjectOrderParameter;
 class Colonize : public FleetOrder
 {
  public:
-   Colonize();
+   Colonize(bool mining);
    virtual ~Colonize();
 
    virtual Order* clone() const;
@@ -38,6 +38,9 @@ class Colonize : public FleetOrder
    virtual Result inputFrame(Frame * f, uint32_t playerid);
    
    virtual bool doOrder(IGObject * obj);
+
+ protected:
+   bool isMining;
 };
 
 

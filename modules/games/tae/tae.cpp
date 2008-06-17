@@ -115,7 +115,8 @@ void taeRuleset::initGame() {
     
     //Set Order types
     OrderManager* orm = game->getOrderManager();
-    orm->addOrderType(new Colonize());
+    orm->addOrderType(new Colonize(true));
+    orm->addOrderType(new Colonize(false));
     orm->addOrderType(new Move());
     orm->addOrderType(new Attack());
 
@@ -702,60 +703,24 @@ void taeRuleset::onPlayerAdded(Player* player) {
     game->getObjectManager()->addObject(p);
 
     //Setup starting fleets
+    IGObject* fleet;
+    Design* ship;
+    Fleet* fleetObj;
     //Colonist fleets
-    IGObject* fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    Design* ship = createRandomPassengerShip(player);
-    Fleet* fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    ship = createRandomPassengerShip(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    ship = createRandomPassengerShip(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    ship = createRandomPassengerShip(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    ship = createRandomPassengerShip(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Colonist Fleet");
-    ship = createRandomPassengerShip(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Colonize");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
+    for(int i = 0; i < 6; i++) {
+        fleet = createEmptyFleet(player, p, "Colonist Fleet");
+        ship = createRandomPassengerShip(player);
+        fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+        fleetObj->addShips(ship->getDesignId(), 1);
+        if(ship->getName().compare("MiningShip") == 0) {
+            fleetObj->addAllowedOrder("ColonizeMining");
+        } else {
+            fleetObj->addAllowedOrder("Colonize");
+        }
+        game->getDesignStore()->designCountsUpdated(ship);
+        mydesignids.insert(ship->getDesignId());
+        game->getObjectManager()->addObject(fleet);
+    }
 
     //Leader fleets
     fleet = createEmptyFleet(player, p, "Merchant Leader");
@@ -795,23 +760,16 @@ void taeRuleset::onPlayerAdded(Player* player) {
     game->getObjectManager()->addObject(fleet);
 
     //Bomber fleets
-    fleet = createEmptyFleet(player, p, "Bomber");
-    ship = createBomber(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Attack");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
-
-    fleet = createEmptyFleet(player, p, "Bomber");
-    ship = createBomber(player);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Attack");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
-    game->getObjectManager()->addObject(fleet);
+    for(int i = 0; i < 2; i++) {
+        fleet = createEmptyFleet(player, p, "Bomber");
+        ship = createBomber(player);
+        fleetObj =(Fleet*)(fleet->getObjectBehaviour());
+        fleetObj->addShips(ship->getDesignId(), 1);
+        fleetObj->addAllowedOrder("Attack");
+        game->getDesignStore()->designCountsUpdated(ship);
+        mydesignids.insert(ship->getDesignId());
+        game->getObjectManager()->addObject(fleet);
+    }
 
 
     //Make designs visible
