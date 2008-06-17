@@ -202,6 +202,12 @@ void Risk::createUniverse() {
    objman->addObject(universe);
 
    //LATER: create some sort of import function to create map from file 
+   createTestSystems(universe);
+   
+}
+
+void Risk::createTestSystems(IGObject* universe) {
+   /*
    IGObject *con_one = createConstellation(*universe, "One",     2);
    IGObject *con_two = createConstellation(*universe, "Two",     3);
    
@@ -216,15 +222,50 @@ void Risk::createUniverse() {
    const uint32_t BETA  = 2 + 2*2;
    const uint32_t GAMMA = 2 + 2*3;
    const uint32_t DELTA = 2 + 2*4;
-
+   
    //declare adjacencies
    graph.addEdge(ALPHA,BETA);
    graph.addEdge(GAMMA,DELTA);
    graph.addEdge(BETA,GAMMA);
    graph.addEdge(DELTA,ALPHA);
-   
-}
+   */
 
+   IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
+   IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
+
+   // Cygnus Systems (South America, Bonus 2)
+   createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
+   createStarSystem(*con_cygnus, "Albireo",            -0.249, -0.051); //6
+   createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);  //8
+   createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);  //10
+
+   // Orion Systens (Africa, Bonus 3)
+   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);   //12
+   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);  //14
+   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);   //16
+   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);   //18
+   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);   //20
+   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
+   
+   //Cygnus Internal Adjacencies
+   graph.addEdge(4,6);
+   graph.addEdge(8,6);
+   graph.addEdge(6,10);
+   graph.addEdge(4,10);
+   graph.addEdge(8,10);
+   
+   //Orion Internal Adjacencies
+   graph.addEdge(12,16);
+   graph.addEdge(12,20);
+   graph.addEdge(16,18);
+   graph.addEdge(18,20);
+   graph.addEdge(18,14);
+   graph.addEdge(20,22);
+   graph.addEdge(22,14);
+   
+   //Cygnus - Orion Adjacencies
+   graph.addEdge(12,8);
+}
 IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();

@@ -57,6 +57,7 @@ class Risk : public Ruleset {
       void createResources();
 
       void createUniverse();
+      void createTestSystems(IGObject* universe);
       IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
       IGObject* createStarSystem(IGObject& parent, const std::string& name,
          double unitX, double unitY);
