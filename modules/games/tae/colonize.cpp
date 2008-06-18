@@ -123,7 +123,50 @@ bool Colonize::doOrder(IGObject * obj) {
         planet->addResource(6, 1);
     } else if(ship->getName().compare("MiningShip") == 0) {
         planet->addResource(7, 1);
-    } 
+    }
+
+    //Get bordering star systems' regions
+    StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
+    set<uint32_t> regions;
+    Vector3d pos = starSysData->getPosition();
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r != 0 && regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }       
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r != 0 && regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }
+    
+    //Put the newly colonized ship into the proper region
+    //If it does not border any regions, then set it to a new one with a unique id
+    if(regions.size() == 0) {
+        starSysData->setRegion(starSys->getObjectId());
+    } else if(regions.size() == 1) {
+        //TODO: Add +1 to the resource score of the player with the correct
+        //      leader in this region
+
+        starSysData->setRegion(*(regions.begin()));
+    } else {
+        //TODO: This means that 2 regions are being connected. Perform check
+        //      For external combat here then perform region check again!
+    }
 
     obm->doneWithObject(newStarSys->getID());
    
