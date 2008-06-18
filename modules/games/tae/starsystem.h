@@ -41,6 +41,8 @@ class StarSystem : public SpaceObject {
         StarSystem();
         virtual ~StarSystem();
 
+        uint32_t getRegion();
+        void setRegion(uint32_t region);
         bool canBeColonized(bool mining);
         bool isInhabitable();
         void setInhabitable(bool inhabit);

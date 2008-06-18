@@ -44,6 +44,7 @@ StarSystemType::StarSystemType() : SpaceObjectType(){
     group->setDescription("Information on the current status of the star system");
     group->addParameter(obpT_Integer, "Inhabitable", "Is the system inhabitable"); 
     group->addParameter(obpT_Integer, "Destroyed", "Is the star destroyed");
+    group->addParameter(obpT_Integer, "Region", "The region this star system belongs to");
     addParameterGroupDesc(group);
 }
 
@@ -139,6 +140,15 @@ void StarSystem::setDestroyed(bool des) {
     ((IntegerObjectParam*)(obj->getParameter(2,2)))->setValue((uint32_t)des);
     obj->touchModTime();
 }
+
+uint32_t StarSystem::getRegion() {
+    return ((IntegerObjectParam*)(obj->getParameter(2,3)))->getValue();
+}
+
+void StarSystem::setRegion(uint32_t region) {
+    ((IntegerObjectParam*)(obj->getParameter(2,3)))->setValue(region);
+    obj->touchModTime();
+}   
 
 void StarSystem::doOnceATurn() {
 }
