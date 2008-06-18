@@ -394,9 +394,10 @@ bool Risk::onAddPlayer(Player* player){
       //If ( max players exceeded OR (game's started AND there are no open spaces))    
          //disallow joining
       Logger::getLogger()->debug("There are %d current players and the max players is %d",cur_players,max_players);
-      if ( (cur_players >= max_players) || isBoardClaimed() == true ) {
+      //TODO: make guest logon more robust, at present guest occupies a player number stall, if guest
+      //joins before other players then he takes a spot
+      if ( ( (cur_players >= max_players) || isBoardClaimed() == true )  && player->getName() != "guest" ) {
          canJoin = false;  
-         if ( isBoardClaimed() == true);
       }
       
       return canJoin; 
