@@ -110,6 +110,7 @@ Order* Colonize::clone() const {
    return c;
 }
 
+//TODO: Add messaging to colonize
 bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
    --turns;
