@@ -34,10 +34,10 @@ public:
 
    virtual Order* clone() const;
    virtual bool doOrder(IGObject* obj);
-
+   ListParameter* getTargetList();  //TODO: make this const.
 private:
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
-   
+   std::pair<IGObject*,uint32_t> getTopPlayerAndBid(IGObject* obj);
    ListParameter* targetPlanet;
 };
 

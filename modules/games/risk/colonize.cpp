@@ -37,6 +37,7 @@
 #include <tpserver/settings.h>
 
 #include "colonize.h"
+#include <boost/format.hpp>
 #include "planet.h"
 
 namespace RiskRuleset {
@@ -45,6 +46,7 @@ using std::map;
 using std::pair;
 using std::string;
 using std::set;
+using boost::format;
 
 Colonize::Colonize() : Order()  {
    name = "Colonize";
@@ -111,14 +113,172 @@ Order* Colonize::clone() const {
 bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
    --turns;
+
+   Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(origin);
+   Logger::getLogger()->debug("Starting a Colonize::doOrder on %s.",origin->getName().c_str());
+   
+   //Get the list of objects and the # of units to colonize
+   map<uint32_t,uint32_t> list = targetPlanet->getList();
+   
+   //Collect all bids
+   map<IGObject*,uint32_t> bids;
+   for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+      uint32_t planetID = i->first;
+      uint32_t numUnits = i->second;
+      
+      //Restrain the number of units moved off of origin
+      uint32_t maxUnits = origin->getResource("Army").first;
+      if ( numUnits >= maxUnits && maxUnits > 0) {
+         if ( maxUnits > 0)
+            numUnits = maxUnits - 1;
+         else
+            numUnits = 0;
+      }
+      
+      IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
+      Logger::getLogger()->debug("Collecting bid");
+      bids[target] += numUnits;
+   }
+   
+   //for each seperate planet bid on run the bid routine
+   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
+      
+      Planet* biddedPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
+      assert(biddedPlanet);
+      //Ensure the object IS a planet and the object is unowned
+      //The object MAY be owned if a bid has occured and a winner was chosen
+      //then all other bids on that planet will simply be ignored
+      if ( biddedPlanet != NULL && biddedPlanet->getOwner() != 0) {
+         pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
+         
+         Planet* ownerPlanet = dynamic_cast<Planet*>(topBidder.first->getObjectBehaviour());
+         assert(ownerPlanet);
+         
+         uint32_t player = ownerPlanet->getOwner(); 
+         
+         biddedPlanet->setOwner(topBidder.second);
+         //Change object owner to owner of largest "bid"
+         //Add # of armies in bid to planet
+         //Clear all remaining colonize orders (there shouldn't be other order types on the planet though)
+         //Inform colonize winner, as well as other bidders, of the results. Inform winner of new reinforcement total.
+      }
+   }   
    //TODO: Implement Colonize order
  
-   //Check object for other Colonize orders, pick the largest VERIFIED bid (must check player has reinforcements availible)
-   //Change object owner to owner of largest "bid"
-   //Add # of armies in bid to planet
-   //Clear all remaining colonize orders (there shouldn't be other order types on the planet though)
-   //Inform colonize winner, as well as other bidders, of the results. Inform winner of new reinforcement total.
+   
    return result;
+}
+
+pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
+   pair<IGObject*,uint32_t> result;
+   result.first = NULL;
+   result.second = 0;
+   
+   Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(origin);
+
+   Logger::getLogger()->debug("Collecting all bids on object %s",origin->getName().c_str());
+
+   Game* game = Game::getGame();
+   OrderManager* ordM = game->getOrderManager();
+   ObjectManager* objM = game->getObjectManager();
+   
+   //Construct the map to be used, the identifier is the planet, the value is the bid
+   map<IGObject*,uint32_t> bids;
+      
+   //Get all objects from object manager
+   set<uint32_t> objectsIds = objM->getAllIds();
+   
+   //Iterate over every object
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   {
+      //Get current object
+      IGObject * currObj = objM->getObject(*i);
+      
+      //Print out current planet
+      Planet* bidder = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
+      if (bidder != NULL) {
+         Logger::getLogger()->debug("Looking at orders on object %s",bidder->getName().c_str());
+      }
+      
+      //Get order queue from object
+      OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
+      OrderQueue* oq;
+
+      //Validate that the oq exists
+      if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL)
+      {
+         //Iterate over all orders
+         for (uint32_t j = 0; j < oq->getNumberOrders(); j++)
+         {
+            OwnedObject *orderedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
+            Order* order = NULL;
+            if ( orderedObj != NULL ) {
+               order = oq->getOrder(j, orderedObj->getOwner());
+            }
+            
+            Logger::getLogger()->debug("There exists a %s order on %s", order->getName().c_str(), bidder->getName().c_str());
+            //if order is a colonize order
+            if( order != NULL && order->getName() == "Colonize")
+            {
+               Colonize* colonize = dynamic_cast<Colonize*>(order);
+               assert(colonize);
+
+               //Get the list of planetIDs and the # of units to move
+               map<uint32_t,uint32_t> list = colonize->getTargetList()->getList();
+               
+               //Iterate over all suborders
+               for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+                  uint32_t planetID = i->first;
+                  uint32_t numUnits = i->second;
+                  
+                  format debug("Encountered suborder to Colonize %1% with %2% units");
+                  debug % planetID; debug % numUnits; 
+                  Logger::getLogger()->debug(debug.str().c_str());
+                  
+                  IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
+                  if ( target == obj ) {
+                     bids[target] += numUnits;                     
+                  }
+               }
+            }
+            else if ( order->getName() != "Colonize")
+            {
+               j = oq->getNumberOrders() + 1;   //force the loop to exit, we have "left" the frontal Colonize orders
+            }
+         }
+         currObj->touchModTime();
+      }
+      objM->doneWithObject(currObj->getID());
+   }
+   
+   //Iterate over all bids and restrict them to the maximum armies availible on that planet
+   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
+      //Restrict players bid to 1 less than their current reinforcements
+      Planet* planet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
+      assert(planet);
+      
+      uint32_t numUnits = i->second;
+      uint32_t maxUnits = planet->getResource("Army").first;
+      if ( numUnits >= maxUnits && maxUnits > 0) {
+         if ( maxUnits > 0)
+            numUnits = maxUnits - 1;
+         else
+            numUnits = 0;
+      }
+      
+      if ( numUnits > result.second ) {
+         result.second = numUnits;
+         result.first = i->first;
+      }
+   }
+   
+   return result;
+}
+
+ListParameter* Colonize::getTargetList() {
+   return targetPlanet;
 }
 
 }

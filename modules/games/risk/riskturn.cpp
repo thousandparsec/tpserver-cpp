@@ -177,7 +177,7 @@ void RiskTurn::processOrdersOfGivenType(string type) {
    OrderManager* ordM = game->getOrderManager();
    ObjectManager* objM = game->getObjectManager();
       
-   //Get all objects frobjM object manager
+   //Get all objects from object manager
    set<uint32_t> objectsIds = objM->getAllIds();
    
    //Iterate over every object

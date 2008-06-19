@@ -141,8 +141,6 @@ bool Move::doOrder(IGObject* obj) {
 
    Logger::getLogger()->debug("Starting a Move::doOrder on %s.",origin->getName().c_str());
    
-   //Get the list of planetIDs and the # of units to move
-   map<uint32_t,uint32_t> list = targetPlanet->getList();
    
    //Origin message setup
    Message* originMessage = new Message(); //message for origin planet owner.
@@ -153,11 +151,14 @@ bool Move::doOrder(IGObject* obj) {
 
    assert(originSubject != "");
    originMessage->setSubject(originSubject);
-   
-   
+      
    //Target Messaging setup
    map<uint32_t,string> targetMessages;   //owner=>subject, body is always the same
    string targetSubject = "You have been attacked!";
+
+   
+   //Get the list of planetIDs and the # of units to move
+   map<uint32_t,uint32_t> list = targetPlanet->getList();
    
    //Iterate over all planetIDs and # of units to move to them
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
@@ -226,7 +227,7 @@ bool Move::doOrder(IGObject* obj) {
          //Apply the damages of the attack
          origin->removeResource("Army",rollResult.first*damage);
          target->removeResource("Army",rollResult.second*damage);
-         numUnits -= rollResult.first*damage;
+         numUnits -= rollResult.first*damage; //Keep track of the number of units to move incase planet is conquerred
          
          string attacker = pm->getPlayer(origin->getOwner())->getName();
          //Check for change of ownership
@@ -298,6 +299,7 @@ bool Move::doOrder(IGObject* obj) {
 
 //TODO: Tidy up isTargetAttackingOrigin function
 //CHECK: Ensure isTargetAttackingOrigin function is working properly (I don't believe it is)
+//Not really sure if I even want this functionality in the game...
 bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("Checking if a target planet is attacking");
    
@@ -327,7 +329,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
             assert(origin);
 
             //Get the list of planetIDs and the # of units to move
-            map<uint32_t,uint32_t> list = targetPlanet->getList();
+            map<uint32_t,uint32_t> list = move->getTargetList()->getList();
             
             for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
                uint32_t planetID = i->first;
@@ -399,6 +401,10 @@ pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDef
    Logger::getLogger()->debug("In total defender lost %d rolls, attacker lost %d",result.second,result.first);
    
    return result;          //send back the results
+}
+
+ListParameter* Move::getTargetList() {
+   return targetPlanet;
 }
 
 } //end namespace RiskRuleset
