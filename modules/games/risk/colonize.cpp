@@ -126,9 +126,11 @@ bool Colonize::doOrder(IGObject *obj) {
    for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
+      IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);     
       
       //Restrain the number of units moved off of origin
       uint32_t maxUnits = origin->getResource("Army").first;
+      numUnits = numUnits + bids[target];
       if ( numUnits >= maxUnits && maxUnits > 0) {
          if ( maxUnits > 0)
             numUnits = maxUnits - 1;
@@ -136,8 +138,7 @@ bool Colonize::doOrder(IGObject *obj) {
             numUnits = 0;
       }
       
-      IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
-      bids[target] += numUnits;
+      bids[target] = numUnits;
    }
    
    Logger::getLogger()->debug("Got all bids");
@@ -153,7 +154,10 @@ bool Colonize::doOrder(IGObject *obj) {
       if ( biddedPlanet != NULL && biddedPlanet->getOwner() == 0) {
          Logger::getLogger()->debug("Getting the top player and bid");
          pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
-         
+         if ( topBidder.second > i->second ) {
+            topBidder.second = i->second;
+            topBidder.first = obj;
+         }
          Planet* ownerPlanet = dynamic_cast<Planet*>(topBidder.first->getObjectBehaviour());
          assert(ownerPlanet);
          
@@ -243,7 +247,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
                   
                   IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
                   if ( target == obj ) {
-                     bids[target] += numUnits;                     
+                     bids[currObj] += numUnits;                     
                   }
                }
             }
@@ -259,6 +263,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    
    //Iterate over all bids and restrict them to the maximum armies availible on that planet
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
+      Logger::getLogger()->debug("Iterating over all bids to pick the highest legal bid.");
       //Restrict players bid to 1 less than their current reinforcements
       Planet* planet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(planet);
@@ -277,6 +282,10 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
          result.first = i->first;
       }
    }
+   
+   format debugMsg("Found highest bidder to be from planet #%1% with %2% units");
+   debugMsg % result.first->getName(); debugMsg % result.second;
+   Logger::getLogger()->debug(debugMsg.str().c_str());
    
    return result;
 }
