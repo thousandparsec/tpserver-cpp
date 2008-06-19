@@ -368,13 +368,13 @@ void Risk::startGame(){
    if (settings->get("risk_rfc_start") == "")
       settings->set("risk_rfc_start", "30");
       
-   if (settings->get("risk_randomly_assign_territories") == "" )
-      settings->set("risk_randomly_assign_territories", "true");
+   if (settings->get("risk_randomly_assign") == "" )
+      settings->set("risk_randomly_assign", "true");
       
    if (settings->get("risk_attack_dmg") == "" )
       settings->set("risk_attack_dmg","1");
       
-   if (settings->get("risk_randomly_assign_territories") == "true" ) {
+   if (settings->get("risk_randomly_assign") == "true" ) {
       settings->set("risk_allow_colonize","false");
    }
    else
@@ -467,34 +467,48 @@ void Risk::onPlayerAdded(Player* player){
     playerview->addVisibleObject(obv);
    }
 
-   //Create a spot in the reinforcements map for the player and assign starting reinforcements.
-   reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
+   //Restrict guest player from receiving reinforcements or planets:
+   if ( player->getName() != "guest" ) {
+      //Create a spot in the reinforcements map for the player and assign starting reinforcements.
+      reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
    
-   if ( settings->get("risk_randomly_assign_territories") == "true" ) {
-      randomlyAssignPlanets(player);
+      if ( settings->get("risk_randomly_assign") == "true") {
+         randomlyAssignPlanets(player);
+      }
+      else {
+         randomlyGiveOnePlanet(player);
+      }
    }
-   else {
-      //TODO: assign one planet to each player
-   }
-   
 }
 
 void Risk::randomlyAssignPlanets(Player* player) {
-   Logger::getLogger()->debug("Starting random planet assignment for player %d", player->getID());
-
-   Settings* settings = Settings::getSettings();
-   Game* game = Game::getGame();
-   ObjectManager* om = game->getObjectManager();
+   Logger::getLogger()->debug("Starting fractional random planet assignment for player %d", player->getID());
 
    //get applicable settings
-   uint32_t armies = atoi(settings->get("risk_default_planet_armies").c_str() );
    uint32_t max_players = atoi(Settings::getSettings()->get("max_players").c_str() );
 
-   uint32_t to_be_asgned = num_planets / max_players ;   //Round is like this so there is a possability a few open spaces exist
+   //Round is like this so there is a possability a few open spaces to exist
+   uint32_t to_be_asgned = num_planets / max_players;
+   
+   randomlyPickPlanets(player,to_be_asgned);
+}
+
+void Risk::randomlyGiveOnePlanet(Player* player) {
+   Logger::getLogger()->debug("Starting single random planet assignment for player %d", player->getID());
+
+   //Randomly give the player planet
+   randomlyPickPlanets(player,1);
+}
+
+void Risk::randomlyPickPlanets(Player* player, uint32_t numPlanets) {
+   Game* game = Game::getGame();
+   ObjectManager* om = game->getObjectManager();
+   
    std::string body = "";
    
-   Logger::getLogger()->debug("The number of players to be assigned is %d. This is made up of %d / %d",
-         to_be_asgned, num_planets, max_players);
+   uint32_t armies = atoi(Settings::getSettings()->get("risk_default_planet_armies").c_str() );
+   
+   Logger::getLogger()->debug("The number of players to be assigned is %d.", numPlanets);
    
    Planet* planet; 
    std::set<uint32_t> allIds = om->getAllIds();
@@ -510,7 +524,8 @@ void Risk::randomlyAssignPlanets(Player* player) {
       }
    }
    
-   while (to_be_asgned > 0 && !isBoardClaimed() ) { 
+   //This loop gives out planets until all planets to be assigned are gone or no planets remain open
+   while (numPlanets > 0 && !isBoardClaimed() ) { 
       Logger::getLogger()->debug("Starting to assign random planets to player %d", player->getID());
 
       uint32_t planet_number = random->getInRange((uint32_t)0,unownedObjs.size()-1);
@@ -530,13 +545,14 @@ void Risk::randomlyAssignPlanets(Player* player) {
          planet->setOwner(player->getID());                                      //let the player have it
          planet->setResource("Army", armies, reinforcements[player->getID()]);   //and update availible resources with defaults
          planet->setOrderTypes();
-         to_be_asgned--;
+         numPlanets--;
          
          body += "You received the planet "+planet->getName()+".<br />";
       }
 
    }
-
+   
+   //Construct and send message regarding assigned planets
    Message* gotPlanet = new Message();  
    if (body != "") {
       gotPlanet->setSubject("Your received a randomly assigned planet(s)");

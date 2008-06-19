@@ -70,6 +70,8 @@ class Risk : public Ruleset {
       bool isBoardClaimed() const;
       
       void randomlyAssignPlanets(Player* player);
+      void randomlyGiveOnePlanet(Player* player);
+      void randomlyPickPlanets(Player* player, uint32_t numPlanets);
       
       //The number of planets to be on the board
       uint32_t num_planets;
