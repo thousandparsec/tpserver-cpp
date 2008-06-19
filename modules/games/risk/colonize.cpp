@@ -137,19 +137,21 @@ bool Colonize::doOrder(IGObject *obj) {
       }
       
       IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
-      Logger::getLogger()->debug("Collecting bid");
       bids[target] += numUnits;
    }
    
+   Logger::getLogger()->debug("Got all bids");
+   
    //for each seperate planet bid on run the bid routine
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
-      
+      Logger::getLogger()->debug("Starting to iterate over all players bids");
       Planet* biddedPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(biddedPlanet);
       //Ensure the object IS a planet and the object is unowned
       //The object MAY be owned if a bid has occured and a winner was chosen
       //then all other bids on that planet will simply be ignored
-      if ( biddedPlanet != NULL && biddedPlanet->getOwner() != 0) {
+      if ( biddedPlanet != NULL && biddedPlanet->getOwner() == 0) {
+         Logger::getLogger()->debug("Getting the top player and bid");
          pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
          
          Planet* ownerPlanet = dynamic_cast<Planet*>(topBidder.first->getObjectBehaviour());
@@ -157,7 +159,9 @@ bool Colonize::doOrder(IGObject *obj) {
          
          uint32_t player = ownerPlanet->getOwner(); 
          
-         biddedPlanet->setOwner(topBidder.second);
+         biddedPlanet->setOwner(player);
+         biddedPlanet->addResource("Army",topBidder.second);
+         ownerPlanet->removeResource("Army",topBidder.second);
          //Change object owner to owner of largest "bid"
          //Add # of armies in bid to planet
          //Clear all remaining colonize orders (there shouldn't be other order types on the planet though)
