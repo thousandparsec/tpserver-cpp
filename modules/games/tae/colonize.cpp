@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 #include <tpserver/frame.h>
 #include <tpserver/objectorderparameter.h>
@@ -45,6 +46,7 @@
 
 using std::set;
 using std::string;
+using std::stringstream;
 
 Colonize::Colonize(bool mining) : FleetOrder() {
     isMining = mining;
@@ -95,6 +97,7 @@ bool Colonize::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
+    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
@@ -158,11 +161,17 @@ bool Colonize::doOrder(IGObject * obj) {
     //If it does not border any regions, then set it to a new one with a unique id
     if(regions.size() == 0) {
         starSysData->setRegion(starSys->getObjectId());
+        stringstream out;
+        out << starSysData->getRegion();
+        Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else if(regions.size() == 1) {
         //TODO: Add +1 to the resource score of the player with the correct
         //      leader in this region
 
         starSysData->setRegion(*(regions.begin()));
+        stringstream out;
+        out << starSysData->getRegion();
+        Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else {
         //TODO: This means that 2 regions are being connected. Perform check
         //      For external combat here then perform region check again!
@@ -172,7 +181,6 @@ bool Colonize::doOrder(IGObject * obj) {
    
  
     // post completion message
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
     Message * msg = new Message();
     msg->setSubject("Colonize fleet order complete");
     msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has colonized ")
