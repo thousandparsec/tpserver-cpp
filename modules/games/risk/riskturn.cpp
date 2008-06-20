@@ -199,9 +199,10 @@ void RiskTurn::processOrdersOfGivenType(string type) {
             assert(orderedObj);
 
             Order* order = oq->getOrder(j, orderedObj->getOwner());
-            //if order is of type asked for then process it
-            if(type != "" && order->getName() == type)
+            //if order is of type asked for then process it, also process if no type is specified
+            if(order->getName() == type || type == "")
             {
+
                if(order->doOrder(currObj))
                {
                   oq->removeOrder(j, orderedObj->getOwner());

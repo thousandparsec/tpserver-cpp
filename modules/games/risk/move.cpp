@@ -70,9 +70,6 @@ Move::~Move() {
 
 //This function is commented to aid new ruleset developers in understanding
 //how to construct a generateListOptions function
-//CHECK: On move to empty planet with 2 units:
-   //planet empty planet recieves 2 units, updates reinforcements properly
-   //attemping to move from newly colonized planet does not allow user to pick any value
 map<uint32_t, pair<string, uint32_t> > Move::generateListOptions() {
    //This map will be filled with options to be displayed
    //The pair is made up of a title and an integer max
@@ -310,9 +307,6 @@ bool Move::doOrder(IGObject* obj) {
    return true;   //moves are always completed, no matter what happens
 }
 
-//TODO: Tidy up isTargetAttackingOrigin function
-//CHECK: Ensure isTargetAttackingOrigin function is working properly (I don't believe it is)
-//Not really sure if I even want this functionality in the game...
 bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    Logger::getLogger()->debug("\tChecking if a target planet is attacking");
    
@@ -370,7 +364,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
 //The right member of the pair represents how many units are lost by the defender
 pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDefender) {
    Logger::getLogger()->debug("Starting Move::attackRoll. Odds are %d:%d",oddsAttacker,oddsDefender);
-   Random* random = Game::getGame()->getRandom();  //ASK: seed this random?
+   Random* random = Game::getGame()->getRandom();
    pair<uint32_t,uint32_t> result;           //pair representing the result
    result.first = 0;
    result.second = 0;
