@@ -146,14 +146,14 @@ bool Colonize::doOrder(IGObject *obj) {
    
    //for each seperate planet bid on run the bid routine
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
-      Logger::getLogger()->debug("Starting to iterate over all players bids");
+      Logger::getLogger()->debug("\tStarting to iterate over all players bids");
       Planet* biddedPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(biddedPlanet);
       //Ensure the object IS a planet and the object is unowned
       //The object MAY be owned if a bid has occured and a winner was chosen
       //then all other bids on that planet will simply be ignored
       if ( biddedPlanet != NULL && biddedPlanet->getOwner() == 0) {
-         Logger::getLogger()->debug("Getting the top player and bid");
+         Logger::getLogger()->debug("\tGetting the top player and bid");
          pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
          if ( topBidder.second > i->second ) {
             topBidder.second = i->second;
@@ -187,7 +187,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(origin);
 
-   Logger::getLogger()->debug("Collecting all bids on object %s",origin->getName().c_str());
+   Logger::getLogger()->debug("\tCollecting all bids on object %s",origin->getName().c_str());
 
    Game* game = Game::getGame();
    OrderManager* ordM = game->getOrderManager();
@@ -208,7 +208,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
       //Print out current planet
       Planet* bidder = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
       if (bidder != NULL) {
-         Logger::getLogger()->debug("Looking at orders on object %s",bidder->getName().c_str());
+         Logger::getLogger()->debug("\t\tLooking at orders on object %s",bidder->getName().c_str());
       }
       
       //Get order queue from object
@@ -227,7 +227,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
                order = oq->getOrder(j, orderedObj->getOwner());
             }
             
-            Logger::getLogger()->debug("There exists a %s order on %s", order->getName().c_str(), bidder->getName().c_str());
+            Logger::getLogger()->debug("\t\tThere exists a %s order on %s", order->getName().c_str(), bidder->getName().c_str());
             //if order is a colonize order
             if( order != NULL && order->getName() == "Colonize")
             {
@@ -242,7 +242,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
                   uint32_t planetID = i->first;
                   uint32_t numUnits = i->second;
                   
-                  format debug("Encountered suborder to Colonize %1% with %2% units");
+                  format debug("\t\t\tEncountered suborder to Colonize %1% with %2% units");
                   debug % planetID; debug % numUnits; 
                   Logger::getLogger()->debug(debug.str().c_str());
                   

@@ -248,11 +248,11 @@ void Risk::createTestSystems(IGObject* universe) {
    createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
    
    //Cygnus Internal Adjacencies
-   graph.addEdge(4,6);
-   graph.addEdge(8,6);
-   graph.addEdge(6,10);
+   graph.addEdge(4,8);
    graph.addEdge(4,10);
    graph.addEdge(8,10);
+   graph.addEdge(8,6);
+   graph.addEdge(6,10);
    
    //Orion Internal Adjacencies
    graph.addEdge(12,16);
