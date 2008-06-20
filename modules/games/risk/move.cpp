@@ -211,17 +211,17 @@ bool Move::doOrder(IGObject* obj) {
          //Do we let the roll continue if the owner has 0 odds?
 
          if ( targetIsAttackingOrigin ) {
-            Logger::getLogger()->debug("The target planet is also attacking the origin");
+            Logger::getLogger()->debug("\t\tThe target planet is also attacking the origin");
             targetOdds += 1;        //Increase defenders odds
             //TODO: Add option to remove order on target planet to attack current planet
          }
          else
          {
-             Logger::getLogger()->debug("The target planet is not attacking the origin");
+             Logger::getLogger()->debug("\t\tThe target planet is not attacking the origin");
          }  
          rollResult = attackRoll(originOdds,targetOdds);
                
-         Logger::getLogger()->debug("In the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
+         Logger::getLogger()->debug("\tIn the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
             rollResult.first*damage, rollResult.second*damage,damage);
             
          //Apply the damages of the attack
@@ -301,7 +301,7 @@ bool Move::doOrder(IGObject* obj) {
 //CHECK: Ensure isTargetAttackingOrigin function is working properly (I don't believe it is)
 //Not really sure if I even want this functionality in the game...
 bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
-   Logger::getLogger()->debug("Checking if a target planet is attacking");
+   Logger::getLogger()->debug("\tChecking if a target planet is attacking");
    
    bool result = false;
    //Get order queue from object
@@ -309,6 +309,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
    OrderQueue* oq;
    OrderManager* ordM = Game::getGame()->getOrderManager();
    
+   //Validate targets Order Queue
    if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL)
    {
       //Iterate over all orders
@@ -322,6 +323,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
          //if order is of type asked for then process it
          if (order->getName() == "Move")
          {
+            Logger::getLogger()->debug("\tGot Move order on )
             Move* move = dynamic_cast<Move*>(order);
             assert(move);
             
@@ -331,14 +333,16 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
             //Get the list of planetIDs and the # of units to move
             map<uint32_t,uint32_t> list = move->getTargetList()->getList();
             
+            //Iterate over all suborders
             for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
                uint32_t planetID = i->first;
                
-               target = Game::getGame()->getObjectManager()->getObject(planetID);
-               if ( target == trueOrigin ) {
+               IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
+               if ( targetsTarget == trueOrigin ) {
                   //NOTE: Here is where any logic goes for dealing with two planets attacking eachother
                   //For now we just notify the function caller the target is attacking the trueOrigin
                   result = true;
+                  
                   //force the exit of the funciton
                   j = oq->getNumberOrders() + 1;
                   i = list.end();
