@@ -323,14 +323,13 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
          //if order is of type asked for then process it
          if (order->getName() == "Move")
          {
-            Planet* tempPlanet = dynamic_cast<Planet*>(target->getObjectBehaviour());
-            assert(tempPlanet);
-            Logger::getLogger()->debug("\tGot Move order on %s",tempPlanet->getName().c_str() );
-            Move* move = dynamic_cast<Move*>(order);
-            assert(move);
-            
+            //Debug calls
             Planet* origin = dynamic_cast<Planet*>(target->getObjectBehaviour());
             assert(origin);
+            Logger::getLogger()->debug("\tGot Move order on %s",origin->getName().c_str() );
+            
+            Move* move = dynamic_cast<Move*>(order);
+            assert(move);            
 
             //Get the list of planetIDs and the # of units to move
             map<uint32_t,uint32_t> list = move->getTargetList()->getList();
@@ -341,13 +340,11 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
                
                IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
                if ( targetsTarget == trueOrigin ) {
+                  Logger::getLogger()->debug("\tFound suborder to attack originating planet");
                   //NOTE: Here is where any logic goes for dealing with two planets attacking eachother
                   //For now we just notify the function caller the target is attacking the trueOrigin
-                  result = true;
                   
-                  //force the exit of the funciton
-                  j = oq->getNumberOrders() + 1;
-                  i = list.end();
+                  result = true;
                }
             } //End for each order part in the order
          }  //end if order name is "Move"
