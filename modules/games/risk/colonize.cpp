@@ -80,7 +80,7 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
 
    set<uint32_t> allObjs = om->getAllIds();
 
-   uint32_t availibleUnits = planet->getResource("Army").second;
+   uint32_t availibleUnits = planet->getResource("Army").first + planet->getResource("Army").second - 1;
 
    /* This for loop will iterate over every adjacent planet. 
    This is where the majority of the work occurs, and we populate our list.
