@@ -323,7 +323,9 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
          //if order is of type asked for then process it
          if (order->getName() == "Move")
          {
-            Logger::getLogger()->debug("\tGot Move order on )
+            Planet* tempPlanet = dynamic_cast<Planet*>(target->getObjectBehaviour());
+            assert(tempPlanet);
+            Logger::getLogger()->debug("\tGot Move order on %s",tempPlanet->getName().c_str() );
             Move* move = dynamic_cast<Move*>(order);
             assert(move);
             
