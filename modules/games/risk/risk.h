@@ -47,6 +47,9 @@ class Risk : public Ruleset {
       Graph* getGraph();
       uint32_t getPlayerReinforcements(uint32_t owner);
       void setPlayerReinforcements(uint32_t owner, uint32_t units);
+      
+      //onAddPlayer methods
+      bool isBoardClaimed() const;
   
    private:
        //initGame methods
@@ -66,8 +69,7 @@ class Risk : public Ruleset {
       IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
          const Vector3d& location);
 
-       //onAddPlayer methods
-      bool isBoardClaimed() const;
+
       
       void randomlyAssignPlanets(Player* player);
       void randomlyGiveOnePlanet(Player* player);

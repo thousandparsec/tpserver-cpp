@@ -96,12 +96,12 @@ Planet::~Planet() {
 
 void Planet::setOrderTypes() {
    OrderManager *om = Game::getGame()->getOrderManager();
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
 
    std::set<uint32_t> allowedlist;
 
-   //TODO: implement option to disable free colonization of any territory
-   if ( Settings::getSettings()->get("risk_allow_colonize") == "true" ) {
-      allowedlist.insert(om->getOrderTypeByName("Colonize"));  //TODO: Turn on colonize only when colonize option is on
+   if ( Settings::getSettings()->get("risk_allow_colonize") == "true" && !risk->isBoardClaimed() ) {
+      allowedlist.insert(om->getOrderTypeByName("Colonize"));
    }
    allowedlist.insert(om->getOrderTypeByName("Move"));
    allowedlist.insert(om->getOrderTypeByName("Reinforce"));
