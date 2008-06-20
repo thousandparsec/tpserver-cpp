@@ -217,7 +217,19 @@ bool Move::doOrder(IGObject* obj) {
          else if (originOdds != 0){ 
             targetOdds = 1; //Force target to be able to take atleast 1*damage if attacker can still attack
          } 
+         
+         //Apply Defender bonus if defender is also attacking
+         if ( targetIsAttackingOrigin ) {
+            Logger::getLogger()->debug("\t\tThe target planet is also attacking the origin");
+            targetOdds += 1;        //Increase defenders odds
+            //TODO: Add option to remove order on target planet to attack current planet
+         }
+         else
+         {
+             Logger::getLogger()->debug("\t\tThe target planet is not attacking the origin");
+         }
 
+         //Roll the dice
          rollResult = attackRoll(originOdds,targetOdds);
                
          Logger::getLogger()->debug("\tIn the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
