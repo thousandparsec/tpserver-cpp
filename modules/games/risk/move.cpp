@@ -203,22 +203,21 @@ bool Move::doOrder(IGObject* obj) {
          
          //Establish default odds
          //origin is restricted to only use as many units as it has availible, and cap to 3*damage
-         uint32_t originOdds = (origin->getResource("Army").first - 1) / damage;
+         uint32_t originOdds = 0;
+         uint32_t targetOdds = 0;
+         
+         originOdds = (origin->getResource("Army").first - 1) / damage;
          if (originOdds > 3) { originOdds = 3;}
          //target is restricted to only as many units as there are avail and capped to 2*damage
-         uint32_t targetOdds = target->getResource("Army").first / damage;
-         if (targetOdds > 2) { targetOdds = 2;}
-         //Do we let the roll continue if the owner has 0 odds?
-
-         if ( targetIsAttackingOrigin ) {
-            Logger::getLogger()->debug("\t\tThe target planet is also attacking the origin");
-            targetOdds += 1;        //Increase defenders odds
-            //TODO: Add option to remove order on target planet to attack current planet
+         
+         targetOdds = target->getResource("Army").first / damage;
+         if (targetOdds > 2) { 
+            targetOdds = 2;
          }
-         else
-         {
-             Logger::getLogger()->debug("\t\tThe target planet is not attacking the origin");
-         }  
+         else if (originOdds != 0){ 
+            targetOdds = 1; //Force target to be able to take atleast 1*damage if attacker can still attack
+         } 
+
          rollResult = attackRoll(originOdds,targetOdds);
                
          Logger::getLogger()->debug("\tIn the attack the attacker will take %d damage and the defender will take %d. Damage per roll is %d",
@@ -229,8 +228,10 @@ bool Move::doOrder(IGObject* obj) {
          target->removeResource("Army",rollResult.second*damage);
          numUnits -= rollResult.first*damage; //Keep track of the number of units to move incase planet is conquerred
          
+         //Used for messaging.
          string attacker = pm->getPlayer(origin->getOwner())->getName();
-         //Check for change of ownership
+         
+         //Check for change of ownership (no units)
          if (target->getResource("Army").first <= 0) {
             //Produce target 'loss of ownership' message
             format message("You have lost %1% to %2%");
