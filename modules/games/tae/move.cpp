@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 #include <tpserver/frame.h>
 #include <tpserver/objectorderparameter.h>
@@ -45,6 +46,7 @@
 
 using std::set;
 using std::string;
+using std::stringstream;
 
 Move::Move() : FleetOrder() {
     name = "Move";
@@ -95,7 +97,36 @@ bool Move::doOrder(IGObject * obj) {
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
 
-    IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    IGObject* newStarSys = obm->getObject(starSys->getObjectId());
+    StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
+
+    //Set new parent's region
+    set<uint32_t> regions = getBorderingRegions();
+    //If it does not border any regions, the add it to a new one
+    if(regions.size() == 0) {
+        starSysData->setRegion(starSys->getObjectId());
+        stringstream out;
+        out << starSysData->getRegion();
+        Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
+    } else if(regions.size() == 1) {
+        //TODO: Check for another leader of the fleet type in this region.
+        //      If there is one, initiate INTERNAL conflict!
+        starSysData->setRegion(*(regions.begin()));
+        stringstream out;
+        out << starSysData->getRegion();
+        Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
+    } else {
+        //This code should never be reached! It should've been caught already!
+        Logger::getLogger()->warning(string("A leader is attempting to join multiple regions at System: " + newStarSys->getName() + ".  This should've been caught earlier!").c_str());
+        return false;
+    }
+
+    //Remove old parent from region
+    IGObject* parent = obm->getObject(obj->getParent());
+    if(parent->getType() == obtm->getObjectTypeByName("Star System")) {
+        StarSystem* parentData = (StarSystem*) (parent->getObjectBehaviour());
+        parentData->setRegion(0);
+    }
     obj->removeFromParent();
     obj->addToParent(starSys->getObjectId());
     fleetData->setPosition(((StarSystem*)(newStarSys->getObjectBehaviour()))->getPosition());
