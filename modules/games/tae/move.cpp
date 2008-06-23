@@ -69,8 +69,23 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
     Result r = FleetOrder::inputFrame(f, playerid);
     if(!r) return r;
 
-    //TODO: Check to see if it is a legal system for this fleet (not colonized, 
-    //      occupied, or destroyed)
+    Game *game = Game::getGame();
+    ObjectManager *obm = game->getObjectManager();
+    ObjectTypeManager *obtm = game->getObjectTypeManager();
+
+    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
+
+    // Check to see if it is a legal system for this fleet 
+    if(starSysObj->getType() == obtm->getObjectTypeByName("Star System")) {
+        if(!starSysData->canBeColonized(false)) {
+            starSys->setObjectId(0);
+            Logger::getLogger()->debug("Player tried to move a system which cannot be colonized.");
+        } else if(getBorderingRegions().size() > 1) {
+            starSys->setObjectId(0);
+            Logger::getLogger()->debug("Player tried to occupy a system which would join two or more regions.");
+        }
+    }    
 
     return Success();
 }
