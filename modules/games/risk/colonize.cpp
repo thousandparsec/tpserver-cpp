@@ -308,7 +308,6 @@ void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids,
       pair<IGObject*,uint32_t> winner) {
          
    PlayerManager* pm = Game::getGame()->getPlayerManager();
-   ObjectManager* om = Game::getGame()->getObjectManager();
    Planet* target = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(target);
    
