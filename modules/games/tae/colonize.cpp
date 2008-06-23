@@ -101,6 +101,10 @@ bool Colonize::doOrder(IGObject * obj) {
 
     //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
+        Logger::getLogger()->debug("Trying to colonize to an object which is not a star system");
+        return false;
+    }
     set<uint32_t> children = newStarSys->getContainedObjects();
     uint32_t pid;
     bool planetFound = false;
