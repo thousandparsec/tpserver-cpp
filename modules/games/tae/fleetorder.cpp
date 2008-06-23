@@ -135,3 +135,39 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
 
     return Success();
 }
+
+set<uint32_t> FleetOrder::getBorderingRegions() {
+    ObjectManager* obm = Game::getGame()->getObjectManager();
+    ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
+    IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
+    set<uint32_t> regions;
+    Vector3d pos = starSysData->getPosition();
+    //east-west neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r != 0 && regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }
+    //north-south neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r != 0 && regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }
+    return regions;
+}

@@ -41,6 +41,7 @@ class FleetOrder : public Order
 
  protected:
    ObjectOrderParameter* starSys;
+   std::set<uint32_t> getBorderingRegions();
 };
 
 

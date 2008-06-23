@@ -130,32 +130,7 @@ bool Colonize::doOrder(IGObject * obj) {
 
     //Get bordering star systems' regions
     StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
-    set<uint32_t> regions;
-    Vector3d pos = starSysData->getPosition();
-    for(int i = -1; i < 2; i+=2) {
-        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
-        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
-            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
-                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
-                if(r != 0 && regions.count(r) == 0) {
-                    regions.insert(r);
-                }
-            }
-        }
-    }       
-    for(int i = -1; i < 2; i+=2) {
-        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
-        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
-            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
-                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
-                if(r != 0 && regions.count(r) == 0) {
-                    regions.insert(r);
-                }
-            }
-        }
-    }
+    set<uint32_t> regions = getBorderingRegions();
     
     //Put the newly colonized ship into the proper region
     //If it does not border any regions, then set it to a new one with a unique id
