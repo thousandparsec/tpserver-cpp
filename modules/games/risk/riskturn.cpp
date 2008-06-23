@@ -160,10 +160,10 @@ void RiskTurn::calculateReinforcements() {
 }
 
 void RiskTurn::calculateBonusReinforcements() {
-   //TODO: Give out bonus reinforcements for owning whole constellations
+   //LATER: Give out bonus reinforcements for owning whole constellations
 }
 
-//ASK: Should I be producing more detailed function documentation? or only in cases were it is a little weird
+
 /** processOrdersOfGivenType
 * This function iterates over all objects the objM holds and process only orders of a given type 
 * that are in the front of the queue.
@@ -241,7 +241,6 @@ void RiskTurn::setPlayerVisibleObjects() {
    }
 }
 
-//CHECK: Do we allow a player alone in the universe to be the winner? most likely yes...
 Player* RiskTurn::getWinner() {
    Logger::getLogger()->debug("Looking for a winner");
    Game* game = Game::getGame();

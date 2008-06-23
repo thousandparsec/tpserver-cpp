@@ -38,6 +38,8 @@ public:
 private:
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
    std::pair<IGObject*,uint32_t> getTopPlayerAndBid(IGObject* obj);
+   void sendPlayerMessages(IGObject* obj, std::map<IGObject*,uint32_t> bids, 
+      std::pair<IGObject*,uint32_t> winner);
    ListParameter* targetPlanet;
 };
 

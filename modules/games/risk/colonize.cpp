@@ -185,6 +185,7 @@ bool Colonize::doOrder(IGObject *obj) {
    return result;
 }
 
+//This function gets the top bid for the given object
 pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    pair<IGObject*,uint32_t> result;
    result.first = NULL;
@@ -268,6 +269,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
       objM->doneWithObject(currObj->getID());
    }
    
+
    //Iterate over all bids and restrict them to the maximum armies availible on that planet
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
       Logger::getLogger()->debug("Iterating over all bids to pick the highest legal bid.");
@@ -283,18 +285,62 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
          else
             numUnits = 0;
       }
+      i->second = numUnits;
       
       if ( numUnits > result.second ) {
-         result.second = numUnits;
+         result.second = i->second;
          result.first = i->first;
       }
    }
+   //LATER: Aggregate all bids from multiple objects to their owners
+
+   sendPlayerMessages(obj, bids,result);
    
    format debugMsg("Found highest bidder to be from planet #%1% with %2% units");
    debugMsg % result.first->getName(); debugMsg % result.second;
    Logger::getLogger()->debug(debugMsg.str().c_str());
    
    return result;
+}
+
+//TODO: Check that "this" move order owner gets a message
+void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids, 
+      pair<IGObject*,uint32_t> winner) {
+         
+   PlayerManager* pm = Game::getGame()->getPlayerManager();
+   ObjectManager* om = Game::getGame()->getObjectManager();
+   Planet* target = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+   assert(target);
+   
+   //Message subjects
+   string loserSubject = "Colonize Bid for " + target->getName() + " Rejected";
+   string winnerSubject = "Colonize Bid for " + target->getName() + " Accepted";
+   
+   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); i++ ) {
+      Planet* ownerPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
+      assert(ownerPlanet);
+      Player* player = pm->getPlayer(ownerPlanet->getOwner());
+      assert(player);
+      
+      //Populate message's subject and body
+      string subject;
+      format body ("Colonize bid via %1% to colonize %2% with %3% units was %4%."); 
+      body % ownerPlanet->getName(); body % target->getName(); body % i->second;
+      if ( i->first == winner.first ) { //If this is the winning bid
+         subject = winnerSubject;
+         body % "Accepted";
+      }
+      else {                              //The bid did not win
+         subject = loserSubject;
+         body % "Rejected";
+      }
+      
+      Message* msg = new Message();
+      msg->setSubject(subject);
+      msg->setBody(body.str());
+      player->postToBoard(msg);
+   }
+   
 }
 
 ListParameter* Colonize::getTargetList() {
