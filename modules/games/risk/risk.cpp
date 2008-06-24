@@ -198,7 +198,7 @@ void Risk::createUniverse() {
    StaticObject* uniData = dynamic_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setSize(123456789123ll);
    //The field of view for the universe is approximately -1 to 1 X and 0 to 1 Y.
-   uniData->setUnitPos(0,.5);
+   uniData->setUnitPos(-0.1,0.1);
    objman->addObject(universe);
 
    //LATER: create some sort of import function to create map from file 
