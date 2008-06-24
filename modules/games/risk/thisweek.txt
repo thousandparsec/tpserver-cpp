@@ -1,0 +1,16 @@
+Monday:
+Player messaging in Colonize, first try baby!
+
+=========================================================================================
+
+
+This Week:
+* I’d like too spend a day or two next week buffing up my knowledge on C++. In particular I’d like to read Effective C++, as well as some other web resources I’ve been pointed to.
+ * Focus will mainly be on testing, playtesting, and code refinement.
+
+Later:
+XML/YAML/graphviz map import
+Look for AI to test with
+Contribute to documents for ruleset creation
+Create set of shell/example classes for ruleset dev
+Add ability to repeatedly attack

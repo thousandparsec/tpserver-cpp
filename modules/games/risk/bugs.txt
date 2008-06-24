@@ -1,0 +1,18 @@
+Reinforcements issued AFTER move orders are not executed. Game enters "" phase but does not do order.
+-Bus error, attempting to colonize 2 places? couldn't reproduce
+-You have no objects error when player DOES have objects. x2 (can still issue orders)
+	Joined game mid-game after 1 player had already won
+	Persisted after colonizing more planets
+	Player is defeated, winner gets winning message, quits client.
+	Defender does "get universe", server fails on bus error during "Get Message Frame"".
+	
+To Test:
+colonization:
+	over bids - appears to work
+	multiple over bids - appears to work
+	multiple bids - appears to work
+Move:
+	conflict orders - works, but logically the behaviour can be strange.
+	
+Noticed:
+-"Chaining" of moves is possible to move a large number of units across the map.
