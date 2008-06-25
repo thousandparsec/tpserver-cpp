@@ -122,14 +122,24 @@ bool Colonize::doOrder(IGObject * obj) {
     //Add resource to planet
     Planet* planet = (Planet*)(obm->getObject(pid)->getObjectBehaviour());
     Design* ship = Game::getGame()->getDesignStore()->getDesign(fleetData->getShips().begin()->first);
+    uint32_t scoreType = 0;
+    string leaderName;
     if(ship->getName().compare("MerchantShip") == 0) {
         planet->addResource(4, 1);
+        scoreType = 1;
+        leaderName = "MerchantLeaderShip";
     } else if(ship->getName().compare("ScientistShip") == 0) {
         planet->addResource(5, 1);
+        scoreType = 2;
+        leaderName = "ScientistLeaderShip";
     } else if(ship->getName().compare("SettlerShip") == 0) {
         planet->addResource(6, 1);
+        scoreType = 3;
+        leaderName = "SettlerLeaderShip";
     } else if(ship->getName().compare("MiningShip") == 0) {
         planet->addResource(7, 1);
+        scoreType = 4;
+        leaderName = "MiningLeaderShip";
     }
 
     //Get bordering star systems' regions
@@ -144,9 +154,27 @@ bool Colonize::doOrder(IGObject * obj) {
         out << starSysData->getRegion();
         Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else if(regions.size() == 1) {
-        //TODO: Add +1 to the resource score of the player with the correct
-        //      leader in this region
+        // Add +1 to the resource score of the player with the correct leader 
+        // in this region
+        
+        //find the leader type
+        uint32_t leaderType;
+        DesignStore* ds = Game::getGame()->getDesignStore();
+        set<unsigned int> designs = ds->getDesignIds(); 
+        for(set<unsigned int>::iterator i = designs.begin(); i != designs.end(); i++) {
+            if(ds->getDesign(*i)->getName().compare(leaderName) == 0) {
+                leaderType = *i;
+            }
+        }
+        //find the leader of the region... add 1 to the player's score
+        int leaderID = getLeaderInRegion(*(regions.begin()), leaderType);
+        if(leaderID >= 0) {
+            Fleet* leader = (Fleet*) ((obm->getObject((uint32_t) leaderID))->getObjectBehaviour());
+            Player* owner = Game::getGame()->getPlayerManager()->getPlayer(leader->getOwner());
+            owner->setScore(scoreType, owner->getScore(scoreType) + 1);
+        }
 
+        //Add the newly colonized system to the region
         starSysData->setRegion(*(regions.begin()));
         stringstream out;
         out << starSysData->getRegion();

@@ -42,6 +42,7 @@ class FleetOrder : public Order
  protected:
    ObjectOrderParameter* starSys;
    std::set<uint32_t> getBorderingRegions();
+   int getLeaderInRegion(uint32_t region, uint32_t leaderType);
 };
 
 

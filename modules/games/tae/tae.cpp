@@ -660,6 +660,13 @@ void taeRuleset::onPlayerAdded(Player* player) {
     PlayerView* playerview = player->getPlayerView();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
+    //Set Player's score to 0
+    player->setScore(1,0);
+    player->setScore(2,0);
+    player->setScore(3,0);
+    player->setScore(4,0);
+
+    //Set designs as visible
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
     for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
         DesignView* dv = new DesignView();

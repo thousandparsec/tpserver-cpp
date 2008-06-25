@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <sstream>
 
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
@@ -40,6 +41,8 @@
 #include "fleet.h"
 
 #include "taeturn.h"
+
+using std::stringstream;
 
 TaeTurn::TaeTurn() : TurnProcess(), containerids(){
 
@@ -140,6 +143,18 @@ void TaeTurn::doTurn(){
                 playerview->updateObjectView(*itob);
             }
         }
+
+        //Send end of turn message to each player
+        Message * msg = new Message();
+        msg->setSubject("Turn complete");
+        stringstream out;
+        out << "Your Current Score: \n";
+        out << "Money: " << player->getScore(1) << "\n";
+        out << "Technology: " << player->getScore(2) << "\n";
+        out << "People: " << player->getScore(3) << "\n";
+        out << "Raw Materials: " << player->getScore(4);
+        msg->setBody(out.str());
+        player->postToBoard(msg);
     }
 
     playermanager->updateAll();

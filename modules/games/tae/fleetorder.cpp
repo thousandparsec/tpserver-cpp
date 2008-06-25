@@ -171,3 +171,33 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     }
     return regions;
 }
+
+int FleetOrder::getLeaderInRegion(uint32_t region, uint32_t leaderType) {
+    ObjectManager* obm = Game::getGame()->getObjectManager();
+    ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
+    
+    set<uint32_t> objects = obm->getAllIds();
+    for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = obm->getObject(*itcurr);
+        //Find the Fleets
+        if(ob->getType() == obtm->getObjectTypeByName("Fleet")){
+            Logger::getLogger()->debug("Found a fleet");
+            Fleet* f = (Fleet*) (ob->getObjectBehaviour());
+            //Check the ship
+            if(f->getShips().count(leaderType) > 0) {
+                IGObject* parent = obm->getObject(ob->getParent());
+                Logger::getLogger()->debug(parent->getName().c_str());
+                //Make sure the fleet is orbiting a star system
+                if(parent->getType() == obtm->getObjectTypeByName("Star System")) {
+                    StarSystem* parentData = (StarSystem*) (parent->getObjectBehaviour());
+                    //Check the region
+                    if(parentData->getRegion() == region) {
+                        return *itcurr;
+                    }
+                }
+            }
+        }
+    }
+    
+    return -1;
+}
