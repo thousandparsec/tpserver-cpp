@@ -159,20 +159,27 @@ bool Colonize::doOrder(IGObject * obj) {
         
         //find the leader type
         uint32_t leaderType;
+        uint32_t settlerLeader;
         DesignStore* ds = Game::getGame()->getDesignStore();
         set<unsigned int> designs = ds->getDesignIds(); 
         for(set<unsigned int>::iterator i = designs.begin(); i != designs.end(); i++) {
             if(ds->getDesign(*i)->getName().compare(leaderName) == 0) {
                 leaderType = *i;
+            } 
+            if(ds->getDesign(*i)->getName().compare("SettlerLeaderShip") == 0) {
+                settlerLeader = *i;
             }
         }
         //find the leader of the region... add 1 to the player's score
         int leaderID = getLeaderInRegion(*(regions.begin()), leaderType);
+        if(leaderID < 0 && leaderType != settlerLeader) {
+            leaderID = getLeaderInRegion(*(regions.begin()), settlerLeader);
+        }
         if(leaderID >= 0) {
             Fleet* leader = (Fleet*) ((obm->getObject((uint32_t) leaderID))->getObjectBehaviour());
             Player* owner = Game::getGame()->getPlayerManager()->getPlayer(leader->getOwner());
             owner->setScore(scoreType, owner->getScore(scoreType) + 1);
-        }
+        }    
 
         //Add the newly colonized system to the region
         starSysData->setRegion(*(regions.begin()));
