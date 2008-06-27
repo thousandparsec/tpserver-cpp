@@ -5,7 +5,11 @@
 	Persisted after colonizing more planets
 	Player is defeated, winner gets winning message, quits client.
 	Defender does "get universe", server fails on bus error during "Get Message Frame"".
-	
+
+-Player test joins game, gets one territory, sees it
+	Player test2 joins same game, sees test's territory as green, their own as red (see 					 			bug1.txt)
+-Player can't delete any messages 
+
 To Test:
 colonization:
 	over bids - appears to work
@@ -16,3 +20,4 @@ Move:
 	
 Noticed:
 -"Chaining" of moves is possible to move a large number of units across the map.
+-a late reinforce order can be triggered early by a normal reinforce

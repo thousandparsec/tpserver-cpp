@@ -110,7 +110,7 @@ Order* Colonize::clone() const {
    return c;
 }
 
-//TODO: Add messaging to colonize
+
 bool Colonize::doOrder(IGObject *obj) {
    bool result = true;
    --turns;
@@ -158,11 +158,12 @@ bool Colonize::doOrder(IGObject *obj) {
         //Get pair <owner's planet,bid> of top bidder
          pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
 
-         //Check if players bid is bigger than top bidder elsewhere
-         if ( i->second > topBidder.second ) {
-            topBidder.second = i->second;
-            topBidder.first = obj;
-         }
+         //Check if players bid is bigger than top bidder elsewhere - only did this because I wasn't sure
+         //BUG: this code would force the reset of bid restriction
+         // if ( i->second > topBidder.second ) {
+         //    topBidder.second = i->second;
+         //    topBidder.first = obj;
+         // }
         
          Planet* ownerPlanet = dynamic_cast<Planet*>(topBidder.first->getObjectBehaviour());
          assert(ownerPlanet);
