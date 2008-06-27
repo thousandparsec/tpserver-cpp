@@ -60,6 +60,8 @@ void TaeTurn::doTurn(){
     ObjectManager* objectmanager = game->getObjectManager();
     PlayerManager* playermanager = game->getPlayerManager();
 
+    //build map for storing orders
+    std::map<uint32_t, std::list<IGObject*> > playerOrders;
 
     //do orders 
     containerids.clear();
@@ -74,22 +76,36 @@ void TaeTurn::doTurn(){
                 if(orderqueue != NULL){
                     Order * currOrder = orderqueue->getFirstOrder();
                     if(currOrder != NULL){
-                        if(currOrder->doOrder(ob)){
-                            orderqueue->removeFirstOrder();
-                        }else{
-                            orderqueue->updateFirstOrder();
-                        }
+                        uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();
+                        std::list<IGObject*>::iterator i = playerOrders[owner].end();
+                        playerOrders[owner].insert(i, ob);
                     }
                 }
             }
         }
-
-        if(ob->getContainerType() >= 1){
-            containerids.insert(ob->getID());
-        }
-        objectmanager->doneWithObject(ob->getID());
     }
 
+    std::set<uint32_t> players = playermanager->getAllIds();
+    for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+        if(playerOrders[*itcurr].size() > 0) {
+            for(std::list<IGObject*>::iterator i = playerOrders[*itcurr].begin(); i != playerOrders[*itcurr].end(); i++) {
+                OrderQueue* orderqueue = ordermanager->getOrderQueue(((OrderQueueObjectParam*)((*i)->getParameterByType(obpT_Order_Queue)))->getQueueId());
+                Order* currOrder = orderqueue->getFirstOrder();
+                if(currOrder!= NULL) {
+                    if(currOrder->doOrder(*i)) {
+                        orderqueue->removeFirstOrder();
+                    } else {
+                        orderqueue->updateFirstOrder();
+                    }
+                }
+                if((*i)->getContainerType() >= 1){
+                    containerids.insert((*i)->getID());
+                }
+                objectmanager->doneWithObject((*i)->getID());
+            }
+        }
+    }
+                        
     objectmanager->clearRemovedObjects();
 
 
@@ -105,7 +121,7 @@ void TaeTurn::doTurn(){
 
     // find the objects that are visible to each player
     std::set<uint32_t> vis = objectmanager->getAllIds();
-    std::set<uint32_t> players = playermanager->getAllIds();
+    //std::set<uint32_t> players = playermanager->getAllIds();
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
         PlayerView* playerview = player->getPlayerView();
