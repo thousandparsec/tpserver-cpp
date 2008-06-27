@@ -446,11 +446,8 @@ void Risk::onPlayerAdded(Player* player){
    welcome->setBody("<b><u>Turn Order</b></u>:<br />\
                      Part 1: Colonization orders are processed<br />\
                      Part 2: Reinforce orders are processed<br />\
-                     Part 3: Non-attack movement orders are processed<br />\
-                     Part 4: Attack movement orders are processed<br />\
-                     <br /><br />\
-                     Once you have colonized a planet your total number<br />\
-                     of reinforcements will be displayed as the number minable.<br /><br />");
+                     Part 3: Movement orders are processed<br />\
+                     <br /><br />");
 
    player->postToBoard(welcome);
 
