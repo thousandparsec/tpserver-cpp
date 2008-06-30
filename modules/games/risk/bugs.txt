@@ -1,23 +1,18 @@
-
--Bus error, attempting to colonize 2 places? couldn't reproduce
--You have no objects error when player DOES have objects. x2 (can still issue orders)
+1. Players do not see territories on their own. Relates to similarly named players (test & test1, etc.)
+	Player test joins game, gets one territory, sees it
+	Player test2 joins same game, sees test's territory as green, their own as red 
+	MORE INFO:
+	-You have no objects error when player DOES have objects. x2 (can still issue orders)
 	Joined game mid-game after 1 player had already won
 	Persisted after colonizing more planets
 	Player is defeated, winner gets winning message, quits client.
 	Defender does "get universe", server fails on bus error during "Get Message Frame"".
+	-Repeated again, if player can't see their territories, and they lose, server crashes
+		--If player who can't see territories wins, nothing. (no objects msg though)
+	-Repeated 3rd with gdb, server did not crash, did again, same
+2. Player can't delete any messages. Cannot be repeated, same "launch" technique shows no problems.
+3. Bus error, attempting to colonize 2 places? couldn't reproduce
 
--Player test joins game, gets one territory, sees it
-	Player test2 joins same game, sees test's territory as green, their own as red (see 					 			bug1.txt)
--Player can't delete any messages 
-
-To Test:
-colonization:
-	over bids - appears to work
-	multiple over bids - appears to work
-	multiple bids - appears to work
-Move:
-	conflict orders - works, but logically the behaviour can be strange.
-	
 Noticed:
 -"Chaining" of moves is possible to move a large number of units across the map.
--a late reinforce order can be triggered early by a normal reinforce
+-a late reinforce order can be triggered early by a normal reinforce. This acts as a sort of "pull" on late "colonizers" to not get reinforcements they may be trying to use. Unintended but I like it.

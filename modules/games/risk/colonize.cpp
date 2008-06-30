@@ -99,7 +99,7 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
             owned->getName(), availibleUnits );
       }
    }   
-   //CHECK: how to get more than a single digit display
+   //CHECK: how to get more than a single digit display - Mac Bug?
 
    return options;
 }
@@ -293,7 +293,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
          result.first = i->first;
       }
    }
-   //LATER: Aggregate all bids from multiple objects to their owners
+   //LATER: ? Aggregate all bids from multiple objects to their owners
 
    sendPlayerMessages(obj, bids,result);
    
@@ -304,7 +304,6 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    return result;
 }
 
-//TODO: Check that "this" move order owner gets a message
 void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids, 
       pair<IGObject*,uint32_t> winner) {
          

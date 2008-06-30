@@ -116,7 +116,7 @@ map<uint32_t, pair<string, uint32_t> > Move::generateListOptions() {
       options[(*i)->getID()] = pair<string,uint32_t>(
          (*i)->getName(), availibleUnits );
    }   
-   //CHECK: how to get more than a single digit display
+   //CHECK: how to get more than a single digit display - Mac Bug?
 
    return options;
 }
@@ -191,7 +191,6 @@ bool Move::doOrder(IGObject* obj) {
       //Attack Move - origin and target owners are not the same, target is owned
       else if (target->getOwner() != 0){ 
          Logger::getLogger()->debug("The move is an Attack move.");
-         //TODO: Implement more attack mechanics
                   
          pair<uint32_t,uint32_t> rollResult;
          uint32_t damage = atoi(Settings::getSettings()->get("risk_attack_dmg").c_str() );
@@ -219,7 +218,6 @@ bool Move::doOrder(IGObject* obj) {
          if ( targetIsAttackingOrigin ) {
             Logger::getLogger()->debug("\t\tThe target planet is also attacking the origin");
             targetOdds += 1;        //Increase defenders odds
-            //TODO: Add option to remove order on target planet to attack current planet
          }
          else
          {
