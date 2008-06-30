@@ -43,9 +43,11 @@
 #include "taeturn.h"
 
 using std::stringstream;
+using std::string;
+
 
 TaeTurn::TaeTurn() : TurnProcess(), containerids(){
-
+    playerTurn = 0;
 }
 
 TaeTurn::~TaeTurn(){
@@ -85,8 +87,16 @@ void TaeTurn::doTurn(){
         }
     }
 
+    //Do orders for players in the correct order
     std::set<uint32_t> players = playermanager->getAllIds();
-    for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+    itcurr = players.begin();
+    for(int i = 0; i < playerTurn; i++) {
+        itcurr++;
+    }
+    for(int it = 0; it < players.size(); it++) {
+        if(itcurr == players.end()) {
+            itcurr = players.begin();
+        }
         if(playerOrders[*itcurr].size() > 0) {
             for(std::list<IGObject*>::iterator i = playerOrders[*itcurr].begin(); i != playerOrders[*itcurr].end(); i++) {
                 OrderQueue* orderqueue = ordermanager->getOrderQueue(((OrderQueueObjectParam*)((*i)->getParameterByType(obpT_Order_Queue)))->getQueueId());
@@ -104,8 +114,12 @@ void TaeTurn::doTurn(){
                 objectmanager->doneWithObject((*i)->getID());
             }
         }
+        itcurr++;
     }
-                        
+    
+    //Update which player's turn it is
+    playerTurn = (playerTurn + 1) % playermanager->getNumPlayers();
+
     objectmanager->clearRemovedObjects();
 
 
@@ -170,6 +184,25 @@ void TaeTurn::doTurn(){
         out << "People: " << player->getScore(3) << "\n";
         out << "Raw Materials: " << player->getScore(4);
         msg->setBody(out.str());
+        player->postToBoard(msg);
+
+        //Alert players to the turn order for next round
+        msg = new Message();
+        msg->setSubject("Turn Order");
+        string body = "The order for the next turn is: ";
+        itcurr = players.begin();
+        for(int i = 0; i < playerTurn; i++) {
+            itcurr++;
+        }
+        for(int it = 0; it < players.size(); it++) {
+            if(itcurr == players.end()) {
+                itcurr = players.begin();
+            }
+            body += playermanager->getPlayer(*itcurr)->getName();
+            body += " ";
+            itcurr++;
+        }
+        msg->setBody(body);
         player->postToBoard(msg);
     }
 

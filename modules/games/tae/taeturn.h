@@ -35,6 +35,7 @@ class TaeTurn : public TurnProcess{
     std::set<uint32_t> getContainerIds() const;
     
   private:
+    int playerTurn;
     uint32_t planettype;
     uint32_t fleettype;
     std::set<uint32_t> containerids;
