@@ -98,11 +98,20 @@ bool Move::doOrder(IGObject * obj) {
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
 
     IGObject* newStarSys = obm->getObject(starSys->getObjectId());
+
+    //Perform last minute checks to make sure this is a valid system
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
         Logger::getLogger()->debug("Trying to move to an object which is not a star system");
         return false;
     }
     StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
+    if(!starSysData->canBeColonized(false)) {
+        return false;
+        Logger::getLogger()->debug("Player tried to move a system which cannot be colonized.");
+    } else if(getBorderingRegions().size() > 1) {
+        return false;
+        Logger::getLogger()->debug("Player tried to occupy a system which would join two or more regions.");
+    }
 
     //Set new parent's region
     set<uint32_t> regions = getBorderingRegions();

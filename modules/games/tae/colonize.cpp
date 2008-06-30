@@ -99,12 +99,19 @@ bool Colonize::doOrder(IGObject * obj) {
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
     Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
-    //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+
+    //Perform last minute checks to make sure the system can be colonized
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
         Logger::getLogger()->debug("Trying to colonize to an object which is not a star system");
         return false;
     }
+    if(!((StarSystem*)(newStarSys->getObjectBehaviour()))->canBeColonized(isMining)) {
+        Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
+        return false;
+    }   
+
+    //Find the star system's planet
     set<uint32_t> children = newStarSys->getContainedObjects();
     uint32_t pid;
     bool planetFound = false;
