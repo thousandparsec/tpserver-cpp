@@ -10,6 +10,8 @@
 	-Repeated again, if player can't see their territories, and they lose, server crashes
 		--If player who can't see territories wins, nothing. (no objects msg though)
 	-Repeated 3rd with gdb, server did not crash, did again, same
+	FINALLY:
+	-It appears as if very similar names are the cause of the problem. Testing with "gibberish names" has yet to cause a problem.
 2. Player can't delete any messages. Cannot be repeated, same "launch" technique shows no problems.
 3. Bus error, attempting to colonize 2 places? couldn't reproduce
 
