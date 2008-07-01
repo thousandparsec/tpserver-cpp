@@ -70,6 +70,7 @@ class TurnResetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
+        Logger::getLogger()->info("EOT timer reset by administrator.");
         Game::getGame()->getTurnTimer()->resetTimer();
         msg << "Reset EOT timer, " << Game::getGame()->getTurnTimer()->secondsToEOT() << " seconds remain until EOT.";
         of->packInt(0);
@@ -155,6 +156,7 @@ class SettingsSetCommand : public Command{
         msg << "Setting value of \"" << setting << "\" to \"" << value << "\".";
         of->packInt(0);
         of->packString(msg.str());
+        Logger::getLogger()->info(msg.str().c_str());
     }
 };
 
