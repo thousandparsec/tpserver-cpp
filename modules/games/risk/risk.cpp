@@ -65,6 +65,8 @@
 #include "constellation.h"
 #include "graph.h"
 
+#include "boost/format.hpp"
+
 //Tyler's "hacky define :p"
 #define DEBUG_FN_PRINT() (Logger::getLogger()->debug(__PRETTY_FUNCTION__))
 
@@ -84,6 +86,7 @@ using std::set;
 using std::vector;
 using std::advance;
 using std::pair;
+using boost::format;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
 Risk::Risk() : graph(), random(NULL) {
@@ -207,28 +210,6 @@ void Risk::createUniverse() {
 }
 
 void Risk::createTestSystems(IGObject* universe) {
-   /*
-   IGObject *con_one = createConstellation(*universe, "One",     2);
-   IGObject *con_two = createConstellation(*universe, "Two",     3);
-   
-   createStarSystem(*con_one, "alpha",          -0.250, 0.650);   //planet #1
-   createStarSystem(*con_one, "beta",           -0.250, 0.350);   //planet #2
-   
-   createStarSystem(*con_two, "gamma",          +0.250, 0.650);   //planet #3
-   createStarSystem(*con_two, "delta",          +0.250, 0.350);   //planet #4
-
-   //TEST: used simply for testing, map creation will be a more robust and semi-hidden process once map import is made
-   const uint32_t ALPHA = 2 + 2*1;
-   const uint32_t BETA  = 2 + 2*2;
-   const uint32_t GAMMA = 2 + 2*3;
-   const uint32_t DELTA = 2 + 2*4;
-   
-   //declare adjacencies
-   graph.addEdge(ALPHA,BETA);
-   graph.addEdge(GAMMA,DELTA);
-   graph.addEdge(BETA,GAMMA);
-   graph.addEdge(DELTA,ALPHA);
-   */
 
    IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
    IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
@@ -266,6 +247,7 @@ void Risk::createTestSystems(IGObject* universe) {
    //Cygnus - Orion Adjacencies
    graph.addEdge(12,8);
 }
+
 IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
@@ -396,7 +378,15 @@ bool Risk::onAddPlayer(Player* player){
       Logger::getLogger()->debug("There are %d current players and the max players is %d",cur_players,max_players);
       //TODO: make guest logon more robust, at present guest occupies a player number stall, if guest
       //joins before other players then he takes a spot
-      if ( ( (cur_players >= max_players) || isBoardClaimed() == true )  && player->getName() != "guest" ) {
+      
+
+      if ( player->getName() == "guest") {
+         max_players++;    //increment max players for the meantime
+          format newMax("%1%"); newMax % max_players;
+         Settings::getSettings()->set("max_players",newMax.str().c_str()); //increase the recorded maximum # of players
+      }
+
+      if ( ( (cur_players >= max_players) || isBoardClaimed() == true ) ) {
          canJoin = false;  
       }
       
