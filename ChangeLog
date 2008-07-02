@@ -1,3 +1,12 @@
+1 Jul 08 - Lee
+    * Version 0.5.1
+    * Refactored out-of-game frames
+    * Further TP04 support, GetPlayerIds and references in Fail Frames.
+    * Configure and build fixes, for gcc 4.3 and autoconf 2.62
+    * MzScheme detected again correctly
+    * Avahi Publisher works after dbus or avahi-daemon restarts
+    * Numerious fixes for Mac OS X
+
 01 May 08 - Lee
     * Version 0.5.0
     * RFTS ruleset added, xdotx GSoC project 2007
