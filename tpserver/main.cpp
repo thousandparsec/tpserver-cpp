@@ -95,6 +95,7 @@ static void daemonize()
     signal(SIGTTOU,SIG_IGN);
     signal(SIGTTIN,SIG_IGN);
     signal(SIGHUP, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 
     // change filemode mask
     umask(0);
@@ -133,6 +134,7 @@ int main(int argc, char **argv)
     }else{
         signal(SIGINT, sigIntHandler);
         signal(SIGTERM, sigIntHandler);
+        signal(SIGPIPE, SIG_IGN);
         mySettings->set("log_console", "yes");
     }
 

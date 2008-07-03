@@ -45,6 +45,7 @@ AdminConnection::AdminConnection(int fd) : Connection(){
 
 AdminConnection::~AdminConnection(){
   Logger::getLogger()->removeLog(logextid);
+  Logger::getLogger()->info("Admin client disconnected");
 }
 
 
@@ -58,17 +59,14 @@ void AdminConnection::process(){
   switch (status) {
   case 1:
     //check if user is really an admin client
-    Logger::getLogger()->debug("Stage1 : pre-connect");
     verCheck();
     break;
   case 2:
     //authorise the user
-    Logger::getLogger()->debug("Stage2 : connected");
     login();
     break;
   case 3:
     //process as normal
-    Logger::getLogger()->debug("Stage3 : logged in");
     adminFrame();
     break;
   case 0:

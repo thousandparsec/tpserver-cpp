@@ -72,7 +72,6 @@ AdminTcpConnection::~AdminTcpConnection()
 void AdminTcpConnection::close()
 {
   if(sendqueue.empty()){
-    Logger::getLogger()->debug("Closing connection");
     ::close(sockfd);
     status = 0;
   }else{
@@ -330,7 +329,6 @@ bool AdminTcpConnection::readFrame(Frame * recvframe)
   if(rdatabuff == NULL && rbuffused != hlen){
     int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
     if(len == 0){
-      Logger::getLogger()->info("Client disconnected");
       close();
       rtn = false;
     }else if(len > 0){
@@ -389,7 +387,6 @@ bool AdminTcpConnection::readFrame(Frame * recvframe)
     if(rbuffused != datalen){
       int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
       if(len == 0){
-        Logger::getLogger()->info("Client disconnected");
         close();
         rtn = false;
       }else if(len > 0){
