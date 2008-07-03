@@ -21,10 +21,11 @@
  */
 
 #include <tpserver/turnprocess.h>
+#include "fleetbuilder.h"
 
 class TaeTurn : public TurnProcess{
   public:
-    TaeTurn();
+    TaeTurn(FleetBuilder* fb);
     virtual ~TaeTurn();
     
     virtual void doTurn();
@@ -35,6 +36,7 @@ class TaeTurn : public TurnProcess{
     std::set<uint32_t> getContainerIds() const;
     
   private:
+    FleetBuilder* fleetBuilder;
     int playerTurn;
     uint32_t planettype;
     uint32_t fleettype;

@@ -83,7 +83,7 @@ void taeRuleset::initGame() {
     fleetBuilder = new FleetBuilder();
 
     //Setup turns
-    TaeTurn* turn = new TaeTurn();
+    TaeTurn* turn = new TaeTurn(fleetBuilder);
     game->setTurnProcess(turn);
 
     //Add universe object type

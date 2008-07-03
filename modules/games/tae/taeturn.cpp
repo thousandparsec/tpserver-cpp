@@ -39,6 +39,7 @@
 
 #include "planet.h"
 #include "fleet.h"
+#include "fleetbuilder.h"
 
 #include "taeturn.h"
 
@@ -46,7 +47,8 @@ using std::stringstream;
 using std::string;
 
 
-TaeTurn::TaeTurn() : TurnProcess(), containerids(){
+TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
+    fleetBuilder = fb;
     playerTurn = 0;
 }
 
@@ -135,7 +137,6 @@ void TaeTurn::doTurn(){
 
     // find the objects that are visible to each player
     std::set<uint32_t> vis = objectmanager->getAllIds();
-    //std::set<uint32_t> players = playermanager->getAllIds();
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
         PlayerView* playerview = player->getPlayerView();
@@ -172,6 +173,30 @@ void TaeTurn::doTurn(){
                 obv->setGone(true);
                 playerview->updateObjectView(*itob);
             }
+        }
+
+        //Replace colonist fleets
+        int fleets = 0;
+        IGObject* homePlanet;
+        for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end(); ++itob){    
+            IGObject * ob = objectmanager->getObject(*itob);
+            if(ob->getName().compare("Colonist Fleet") == 0) {
+                uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();                if(owner == *itplayer) {
+                    fleets++;
+                }
+            }
+            if(ob->getName().compare(string(player->getName() + "'s Home Planet")) == 0) {
+                homePlanet = ob;
+            }
+        }
+
+        for(int i = fleets; i < 6; i++) {
+            IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
+            game->getObjectManager()->addObject(fleet);
+            ObjectView* obv = new ObjectView();
+            obv->setObjectId(fleet->getID());
+            obv->setCompletelyVisible(true);
+            player->getPlayerView()->addVisibleObject(obv);
         }
 
         //Send end of turn message to each player
