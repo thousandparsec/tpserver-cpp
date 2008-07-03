@@ -54,6 +54,7 @@
 #include "move.h"
 #include "attack.h"
 #include "taeturn.h"
+#include "fleetbuilder.h"
 
 //header includes
 #include "tae.h"
@@ -79,18 +80,11 @@ std::string taeRuleset::getVersion() {
 void taeRuleset::initGame() {
     Game* game = Game::getGame();
 
+    fleetBuilder = new FleetBuilder();
+
     //Setup turns
     TaeTurn* turn = new TaeTurn();
     game->setTurnProcess(turn);
-
-    //Seed rand
-    std::srand(std::time(NULL));
-
-    //Set default ships left
-    shipsLeft[0] = 30;  //Merchants
-    shipsLeft[1] = 57;  //Scientists
-    shipsLeft[2] = 30;  //Settlers
-    shipsLeft[3] = 36;  //Miners
 
     //Add universe object type
     ObjectTypeManager* obtm = game->getObjectTypeManager();
@@ -494,155 +488,6 @@ void taeRuleset::createComponents() {
 
 }
 
-Design* taeRuleset::createPassengerShip(Player* owner, int type) {
-    Design* ship = new Design();
-    map<unsigned int, unsigned int> componentList;
-
-    DesignStore * ds = Game::getGame()->getDesignStore();
-    
-    ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setDescription("A passenger transport ship");
-    ship->setOwner(owner->getID());
-    //TODO: I hate if/else statements like this... I may change this later
-    if(type == 1) {
-        ship->setName("MerchantShip");
-        componentList[ds->getComponentByName("MerchantCargo")] = 1;
-    } else if (type == 2) {
-        ship->setName("ScientistShip");
-        componentList[ds->getComponentByName("ScientistCargo")] = 1;
-    } else if (type == 3) {
-        ship->setName("SettlerShip");
-        componentList[ds->getComponentByName("SettlerCargo")] = 1;
-    } else {
-        ship->setName("MiningShip");
-        componentList[ds->getComponentByName("MiningCargo")] = 1;
-    }
-    ship->setComponents(componentList);
-    ds->addDesign(ship);
-
-    return ship;
-}
-
-Design* taeRuleset::createRandomPassengerShip(Player* owner) {
-    int type;
-
-    //Check to see if there are any ships left
-    if((shipsLeft[0] == 0) && (shipsLeft[1] == 0) && (shipsLeft[2] == 0) && (shipsLeft[3]== 0)) {
-        //TODO: initiate game over sequence
-    }
-
-    //Select a ship type
-    do {
-        type = std::rand() % 4;
-    } while(shipsLeft[type] <= 0);
-
-    shipsLeft[type]--;
-
-    return createPassengerShip(owner, type);
-}
-
-Design* taeRuleset::createVIPTransport(Player* owner, int type) {
-    Design* ship = new Design();
-    map<unsigned int, unsigned int> componentList;
-
-    DesignStore * ds = Game::getGame()->getDesignStore();
-    
-    ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setDescription("A passenger transport ship for VIPs");
-    ship->setOwner(owner->getID());
-    //TODO: I hate if/else statements like this... I may change this later
-    if(type == 1) {
-        ship->setName("MerchantLeaderShip");
-        componentList[ds->getComponentByName("MerchantLeaderCargo")] = 1;
-    } else if (type == 2) {
-        ship->setName("ScientistLeaderShip");
-        componentList[ds->getComponentByName("ScientistLeaderCargo")] = 1;
-    } else if (type == 3) {
-        ship->setName("SettlerLeaderShip");
-        componentList[ds->getComponentByName("SettlerLeaderCargo")] = 1;
-    } else {
-        ship->setName("MiningLeaderShip");
-        componentList[ds->getComponentByName("MiningLeaderCargo")] = 1;
-    }
-    ship->setComponents(componentList);
-    ds->addDesign(ship);
-
-    return ship;
-}
-
-Design* taeRuleset::createBomber(Player* owner) {
-    Design* ship = new Design();
-    map<unsigned int, unsigned int> componentList;
-
-    DesignStore * ds = Game::getGame()->getDesignStore();
-    
-    ship->setCategoryId(ds->getCategoryByName("Ships"));
-    ship->setName("Bomber");
-    ship->setDescription("A bomber capable of destroying star systems");
-    ship->setOwner(owner->getID());
-    componentList[ds->getComponentByName("Weapon")] = 1;
-    ship->setComponents(componentList);
-    ds->addDesign(ship);
-
-    return ship;
-}
-
-//Creates an empty fleet owned by "owner" at the location of "parent"
-//Adapted from the createEmptyFleet function of mtsec
-IGObject* taeRuleset::createEmptyFleet(Player* owner, IGObject* parent, string name) {
-    Game *game = Game::getGame();
-    ObjectTypeManager* obtm = game->getObjectTypeManager();
-    IGObject *fleet = game->getObjectManager()->createNewObject();
-    obtm->setupObject(fleet, obtm->getObjectTypeByName("Fleet"));
-    
-    Fleet* theFleet = (Fleet*) (fleet->getObjectBehaviour());
-    theFleet->setSize(2);
-    fleet->setName(name.c_str());
-    theFleet->setOwner(owner->getID());
-
-    theFleet->setPosition(((SpaceObject*)(parent->getObjectBehaviour()))->getPosition());
-    theFleet->setVelocity(Vector3d(0ll,0ll,0ll));
-
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
-    fleetoq->addOwner(owner->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
-    theFleet->setDefaultOrderTypes();
-
-    fleet->addToParent(parent->getID());
-    return fleet;
-}
-
-//Creates an empty fleet owned by "owner" at the location specified by "loc"
-//Adapted from the createEmptyFleet function of mtsec
-IGObject* taeRuleset::createEmptyFleet(Player* owner, Vector3d loc, string name) {
-    Game *game = Game::getGame();
-    ObjectTypeManager* obtm = game->getObjectTypeManager();
-    IGObject *fleet = game->getObjectManager()->createNewObject();
-    obtm->setupObject(fleet, obtm->getObjectTypeByName("Fleet"));
-    
-    Fleet* theFleet = (Fleet*) (fleet->getObjectBehaviour());
-    theFleet->setSize(2);
-    fleet->setName(name.c_str());
-    theFleet->setOwner(owner->getID());
-
-    theFleet->setPosition(loc);
-    theFleet->setVelocity(Vector3d(0ll,0ll,0ll));
-
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
-    fleetoq->addOwner(owner->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
-    theFleet->setDefaultOrderTypes();
-
-    fleet->addToParent(1);
-    return fleet;
-}
-
 void taeRuleset::startGame() {
     setupResources();
     Logger::getLogger()->info("TaE started");
@@ -666,12 +511,11 @@ void taeRuleset::onPlayerAdded(Player* player) {
     player->setScore(3,0);
     player->setScore(4,0);
 
-    //Set designs as visible
+    //Set visibility of current designs
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
     for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
         DesignView* dv = new DesignView();
         dv->setDesignId(*desid);
-        dv->setIsCompletelyVisible(true);
         playerview->addVisibleDesign(dv);
     }
 
@@ -711,75 +555,34 @@ void taeRuleset::onPlayerAdded(Player* player) {
 
     //Setup starting fleets
     IGObject* fleet;
-    Design* ship;
-    Fleet* fleetObj;
+    
     //Colonist fleets
     for(int i = 0; i < 6; i++) {
-        fleet = createEmptyFleet(player, p, "Colonist Fleet");
-        ship = createRandomPassengerShip(player);
-        fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-        fleetObj->addShips(ship->getDesignId(), 1);
-        if(ship->getName().compare("MiningShip") == 0) {
-            fleetObj->addAllowedOrder("ColonizeMining");
-        } else {
-            fleetObj->addAllowedOrder("Colonize");
-        }
-        game->getDesignStore()->designCountsUpdated(ship);
-        mydesignids.insert(ship->getDesignId());
+        fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, p, "Colonist Fleet");
         game->getObjectManager()->addObject(fleet);
     }
 
     //Leader fleets
-    fleet = createEmptyFleet(player, p, "Merchant Leader");
-    ship = createVIPTransport(player, 1);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Move");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
+    fleet = fleetBuilder->createFleet(FleetBuilder::VIP_FLEET, FleetBuilder::MERCHANT_SHIP, player, p, "Merchant Leader");
     game->getObjectManager()->addObject(fleet);
 
-    fleet = createEmptyFleet(player, p, "Scientist Leader");
-    ship = createVIPTransport(player, 2);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Move");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
+    fleet = fleetBuilder->createFleet(FleetBuilder::VIP_FLEET, FleetBuilder::SCIENTIST_SHIP, player, p, "Scientist Leader");
     game->getObjectManager()->addObject(fleet);
 
-    fleet = createEmptyFleet(player, p, "Settler Leader");
-    ship = createVIPTransport(player, 3);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Move");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
+    fleet = fleetBuilder->createFleet(FleetBuilder::VIP_FLEET, FleetBuilder::SETTLER_SHIP, player, p, "Settler Leader");
     game->getObjectManager()->addObject(fleet);
 
-    fleet = createEmptyFleet(player, p, "Mining Leader");
-    ship = createVIPTransport(player, 4);
-    fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-    fleetObj->addShips(ship->getDesignId(), 1);
-    fleetObj->addAllowedOrder("Move");
-    game->getDesignStore()->designCountsUpdated(ship);
-    mydesignids.insert(ship->getDesignId());
+    fleet = fleetBuilder->createFleet(FleetBuilder::VIP_FLEET, FleetBuilder::MINING_SHIP, player, p, "Mining Leader");
     game->getObjectManager()->addObject(fleet);
 
     //Bomber fleets
     for(int i = 0; i < 2; i++) {
-        fleet = createEmptyFleet(player, p, "Bomber");
-        ship = createBomber(player);
-        fleetObj =(Fleet*)(fleet->getObjectBehaviour());
-        fleetObj->addShips(ship->getDesignId(), 1);
-        fleetObj->addAllowedOrder("Attack");
-        game->getDesignStore()->designCountsUpdated(ship);
-        mydesignids.insert(ship->getDesignId());
+        fleet = fleetBuilder->createFleet(FleetBuilder::BOMBER_FLEET, NULL, player, p, "Bomber");
         game->getObjectManager()->addObject(fleet);
     }
 
 
-    //Make designs visible
+    //Set visibility of new designs and objects
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
         ObjectView* obv = new ObjectView();
@@ -788,18 +591,10 @@ void taeRuleset::onPlayerAdded(Player* player) {
         playerview->addVisibleObject(obv);
     }
 
-   std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+    std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
-      if(*playerit == player->getID())
-        continue;
 
       Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
-      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
-        DesignView* dv = new DesignView();
-        dv->setDesignId(*desid);
-        dv->setIsCompletelyVisible(true);
-        oplayer->getPlayerView()->addVisibleDesign(dv);
-      }
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
 
