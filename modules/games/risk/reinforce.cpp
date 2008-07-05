@@ -73,7 +73,7 @@ bool Reinforce::doOrder(IGObject *obj) {
    assert(planet);
    
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-   uint32_t requestedUnits = numberUnits->getTime();
+   uint32_t requestedUnits = numberUnits->getTime(); //since order is a "time" order
    uint32_t availibleUnits = risk->getPlayerReinforcements(planet->getOwner());
    --turns;
    
@@ -82,6 +82,7 @@ bool Reinforce::doOrder(IGObject *obj) {
       requestedUnits = availibleUnits;    
    }  
 
+   //Give resources to planet
    planet->addResource("Army",requestedUnits);
 
    //Decrement players reinforcements total.

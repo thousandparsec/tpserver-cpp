@@ -245,8 +245,10 @@ bool Move::doOrder(IGObject* obj) {
             message % target->getName(); message % attacker;
             targetMessages[target->getOwner()] += message.str();
             
+            //Change ownership, and give units (remove said units from origin)
             target->setOwner(origin->getOwner());
             target->setResource("Army",numUnits, origin->getResource("Army").second);
+            origin->removeResource("Army",numUnits);
             
             //Get order queue from target
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(om->getObject(i->first)->getParameterByType(obpT_Order_Queue));
