@@ -346,8 +346,8 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
                uint32_t planetID = i->first;
                
                IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
-               if ( targetsTarget == trueOrigin ) {
-                  Logger::getLogger()->debug("\tFound suborder to attack originating planet");
+               if ( targetsTarget == trueOrigin && origin->getResource("Army").first > 1) {
+                  Logger::getLogger()->debug("\tFound valid suborder to attack originating planet");
                   //NOTE: Here is where any logic goes for dealing with two planets attacking eachother
                   //For now we just notify the function caller the target is attacking the trueOrigin
                   
