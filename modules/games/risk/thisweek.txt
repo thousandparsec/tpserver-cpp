@@ -1,19 +1,27 @@
-Monday:
-Player messaging in Colonize, first try baby!
+Early Week:
+Read all of Effective C++
+Read some XML documentation, particularly on DTD's and schema
+Started looking into parsers for XML/C++
+Finished up "alpha" testing
 
+Friday:
+Tested 2 games with Jackie
+Found numerous bugs, fixed many (show commits.) Particularly cleaned up errors with Attack logic (extra unit creation, "cheating" by increasing odds)
+Some bugs are more difficult than others, particularly VIEW problems, and phantom ownerships.
+Player (wife) noted that getting started document should be more clear, as a non-gamer many things aren't as intuitive as I felt they were. Map connectivity not displayed is an issue.
 =========================================================================================
 
 
 This Week:
-* I’d like too spend a day or two next week buffing up my knowledge on C++. In particular I’d like to read Effective C++, as well as some other web resources I’ve been pointed to.
- * Focus will mainly be on testing, playtesting, and code refinement.
 
-Later:
-XML/YAML/graphviz map import
-Look for AI to test with
-Contribute to documents for ruleset creation
-Create set of shell/example classes for ruleset dev
+
+Last Half of Term:
+XML map import
 Add ability to repeatedly attack
+Arrange xml default map to favor weaker positions
+Create set of shell/example classes for ruleset dev
+Contribute to documents for ruleset creation
+Look for AI to test with
 
 XML Map importing:
 tags - <MAP> has <CONSTELLATION>s have <SYSTEM>s have (<NAME><ID?><LOCATION><NEIGHBOUR>)

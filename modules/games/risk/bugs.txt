@@ -12,8 +12,11 @@
 	-Repeated 3rd with gdb, server did not crash, did again, same
 	FINALLY:
 	-It appears as if very similar names are the cause of the problem. Testing with "gibberish names" has yet to cause a problem.
+	-Problem also occurred in a new game. Players Bryan and Ryan joined. Bryan gets territories, Ryan gets the "no objects" error but 3 planets are given out to player test... Is this caching problems or what?
 2. Player can't delete any messages. Cannot be repeated, same "launch" technique shows no problems.
 3. Bus error, attempting to colonize 2 places? couldn't reproduce
+4. Phantom ownership, Orders can be created on an enemy planet that was previously owned by the issuing player. Testing showed the orders were completely normally, and treated normally, as if they came from the enemy player. This may be a "server caching" issue or something more serious.
+	-Verified to occur repeatedly, with no view problems in game
 
 Noticed:
 -"Chaining" of moves is possible to move a large number of units across the map.
