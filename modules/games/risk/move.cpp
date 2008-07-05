@@ -239,7 +239,7 @@ bool Move::doOrder(IGObject* obj) {
          string attacker = pm->getPlayer(origin->getOwner())->getName();
          
          //Check for change of ownership (no units)
-         if (target->getResource("Army").first <= 0) {
+         if (target->getResource("Army").first <= 0 && numUnits > 0) {
             //Produce target 'loss of ownership' message
             format message("You have lost %1% to %2%");
             message % target->getName(); message % attacker;
@@ -254,7 +254,7 @@ bool Move::doOrder(IGObject* obj) {
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(om->getObject(i->first)->getParameterByType(obpT_Order_Queue));
             OrderQueue* oq;
             OrderManager* ordM = Game::getGame()->getOrderManager();
-
+            //And then clear the queue
             if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL) {
                oq->removeAllOrders();
             }
