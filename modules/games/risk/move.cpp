@@ -272,7 +272,7 @@ bool Move::doOrder(IGObject* obj) {
          }
          //Produce origin message
          format message(
-            "Your attack on %1% destroyed %2% of your opponents units. You lost %3% units in retaliation.");
+            "Your attack on %1% destroyed %2% of your opponents units. You lost %3% units in retaliation.\n");
          message % target->getName(); message % (rollResult.second*damage);
          message % (rollResult.first*damage);
          originBody += message.str();
@@ -346,6 +346,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
                uint32_t planetID = i->first;
                
                IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
+               //when target is attacking "true" origin and the target also has more than 1 unit (no cheating :P)
                if ( targetsTarget == trueOrigin && origin->getResource("Army").first > 1) {
                   Logger::getLogger()->debug("\tFound valid suborder to attack originating planet");
                   //NOTE: Here is where any logic goes for dealing with two planets attacking eachother
