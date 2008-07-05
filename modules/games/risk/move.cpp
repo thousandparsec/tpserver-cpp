@@ -239,7 +239,7 @@ bool Move::doOrder(IGObject* obj) {
          string attacker = pm->getPlayer(origin->getOwner())->getName();
          
          //Check for change of ownership (no units)
-         if (target->getResource("Army").first <= 0 && numUnits > 0) {
+         if (target->getResource("Army").first <= 0 && numUnits > 0) { //TEST
             //Produce target 'loss of ownership' message
             format message("You have lost %1% to %2%");
             message % target->getName(); message % attacker;
