@@ -256,7 +256,7 @@ void PlayerAgent::processGetObjectById (Frame * frame){
   }
 
   // Fall through incase of error
-  of->createFailFrame ( fec_FrameError, "Invalid frame" );
+  of->createFailFrame ( fec_FrameError, "Invalid frame, Get Object By Ids, Frame too short" );
   curConnection->sendFrame ( of );
 }
 
@@ -636,7 +636,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
       }
     }
   } else {
-    of->createFailFrame(fec_FrameError, "Invalid frame, too short");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Add Order, too short");
   }
   curConnection->sendFrame(of);
 }
@@ -646,7 +646,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
 
   if(frame->getDataLength() < 12){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Remove Order, too short (<12 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -725,7 +725,7 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
 
         if(frame->getDataLength() < 4){
           Frame *of = curConnection->createFrame(frame);
-          of->createFailFrame(fec_FrameError, "Invalid frame");
+          of->createFailFrame(fec_FrameError, "Invalid frame, Describe Order, Frame too short (<4 bytes)");
           curConnection->sendFrame(of);
           return;
         }
@@ -734,7 +734,7 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
         
         if(frame->getDataLength() < 4 + 4 * numdesc){
           Frame *of = curConnection->createFrame(frame);
-          of->createFailFrame(fec_FrameError, "Invalid frame");
+          of->createFailFrame(fec_FrameError, "Invalid frame, Describe Order, Frame too short");
           curConnection->sendFrame(of);
           return;
         }
@@ -773,14 +773,13 @@ void PlayerAgent::processGetOrderTypes(Frame * frame){
     return;
   }
 
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    curConnection->sendFrame(of);
-    return;
+  if(frame->getDataLength() != 12 && frame->getVersion() == fv0_3) {
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Order Types (TP03), Frame too short (<12 bytes)");
+  } else if (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4) {
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Order Types (TP04), Frame too short (<20 bytes)");
+  } else {
+    Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
   }
-
-  Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
-  
   curConnection->sendFrame(of);
 }
 
@@ -797,7 +796,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
 
   if(frame->getDataLength() < 8){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Probe Order, Frame too short (<8 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -862,7 +861,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
   
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Boards, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -871,7 +870,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
   
   if(frame->getDataLength() < 4 + 4*numboards){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Boards, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -905,9 +904,9 @@ void PlayerAgent::processGetBoards(Frame * frame){
 }
 
 void PlayerAgent::processGetBoardIds(Frame * frame){
-   Logger::getLogger()->debug("Doing get board ids frame");
+  Logger::getLogger()->debug("Doing get board ids frame");
    
-   if(frame->getVersion() < fv0_3){
+  if(frame->getVersion() < fv0_3){
     Logger::getLogger()->debug("protocol version not high enough");
     Frame *of = curConnection->createFrame(frame);
     of->createFailFrame(fec_FrameError, "Get Board Ids isn't supported in this protocol");
@@ -915,9 +914,9 @@ void PlayerAgent::processGetBoardIds(Frame * frame){
     return;
   }
 
-   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Board Ids, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -927,21 +926,21 @@ void PlayerAgent::processGetBoardIds(Frame * frame){
     //start new seqkey
     seqkey = 0;
   }
-    frame->unpackInt(); // starting number
-    uint32_t numtoget = frame->unpackInt();
+  frame->unpackInt(); // starting number
+  uint32_t numtoget = frame->unpackInt();
 
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_BoardIds_List);
   of->packInt(seqkey);
-    if(numtoget == 0){
-        of->packInt(1);
-        of->packInt(0);
-    }else{
-  of->packInt(0);
-  of->packInt(1);
-  of->packInt(0); //personal board
-  of->packInt64(Game::getGame()->getBoardManager()->getBoard(player->getBoardId())->getModTime());
-    }
+  if(numtoget == 0){
+    of->packInt(1);
+    of->packInt(0);
+  } else {
+    of->packInt(0);
+    of->packInt(1);
+    of->packInt(0); //personal board
+    of->packInt64(Game::getGame()->getBoardManager()->getBoard(player->getBoardId())->getModTime());
+  }
   
   curConnection->sendFrame(of);
 }
@@ -951,7 +950,7 @@ void PlayerAgent::processGetMessages(Frame * frame){
 
   if(frame->getDataLength() < 8){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Messages, Frame too short (<8 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -961,7 +960,7 @@ void PlayerAgent::processGetMessages(Frame * frame){
 
   if(frame->getDataLength() < 8 + 4 * nummsg){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Messages, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1014,7 +1013,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
 
   if(frame->getDataLength() < 28){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Post Message, Frame too short (<28 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1066,7 +1065,7 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
 
   if(frame->getDataLength() < 8){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Remove Messages, Frame too short (<8 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1076,7 +1075,7 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
 
   if(frame->getDataLength() < 8 + 4 * nummsg){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Remove Message, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1123,7 +1122,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
   
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Resource Description, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1132,7 +1131,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
   
   if(frame->getDataLength() < 4 + 4* numress){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Resource Description, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1179,7 +1178,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
 
    if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Resource Types, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1252,7 +1251,7 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Player, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1261,7 +1260,7 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   
   if(frame->getDataLength() < 4 + 4 * numplayers){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Player, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1314,7 +1313,7 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
     
     if(frame->getDataLength() != 20){
         Frame *of = curConnection->createFrame(frame);
-        of->createFailFrame(fec_FrameError, "Invalid frame");
+        of->createFailFrame(fec_FrameError, "Invalid frame, Get Player Ids, Frame not 20 bytes");
         curConnection->sendFrame(of);
         return;
     }
@@ -1384,7 +1383,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
 
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Category, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1393,7 +1392,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
   
   if(frame->getDataLength() < 4 + 4 * numcats){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Category, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1439,7 +1438,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   
   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Categories Ids, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1509,7 +1508,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
 
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Design, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1518,7 +1517,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
   
   if(frame->getDataLength() < 4 + 4 * numdesigns){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Design, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1550,7 +1549,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
 
   if(frame->getDataLength() < 40){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Add Design, Frame too short (<40 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1602,7 +1601,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 
   if(frame->getDataLength() < 40){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Modify Design, Frame too short (<40 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1660,7 +1659,7 @@ void PlayerAgent::processGetComponent(Frame* frame){
 
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Component, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1669,7 +1668,7 @@ void PlayerAgent::processGetComponent(Frame* frame){
   
   if(frame->getDataLength() < 4 + 4 * numcomps){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Component, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1710,7 +1709,7 @@ void PlayerAgent::processGetProperty(Frame* frame){
 
   if(frame->getDataLength() < 4){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Property, Frame too short (<4 bytes)");
     curConnection->sendFrame(of);
     return;
   }
@@ -1719,7 +1718,7 @@ void PlayerAgent::processGetProperty(Frame* frame){
   
     if(frame->getDataLength() < 4 + 4 * numprops){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Property, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
@@ -1764,7 +1763,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   
   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     Frame *of = curConnection->createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
+    of->createFailFrame(fec_FrameError, "Invalid frame, Get Property Ids, Frame too short");
     curConnection->sendFrame(of);
     return;
   }
