@@ -903,7 +903,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
   }
 }
 
-void PlayerAgent::processGetBoardIds(Frame * frame){
+void PlayerAgent::processGetBoardIds(Frame* frame){
   Logger::getLogger()->debug("Doing get board ids frame");
    
   if(frame->getVersion() < fv0_3){
@@ -926,22 +926,30 @@ void PlayerAgent::processGetBoardIds(Frame * frame){
     //start new seqkey
     seqkey = 0;
   }
-  frame->unpackInt(); // starting number
+  uint32_t snum = frame->unpackInt(); // starting number
   uint32_t numtoget = frame->unpackInt();
+  uint64_t fromtime = UINT64_NEG_ONE;
+  if(frame->getVersion() >= fv0_4){
+    fromtime = frame->unpackInt64();
+  }
 
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_BoardIds_List);
   of->packInt(seqkey);
+
   if(numtoget == 0){
-    of->packInt(1);
-    of->packInt(0);
+    of->packInt(1); // On ID left to get
+    of->packInt(0); // Zero sized list
   } else {
     of->packInt(0);
     of->packInt(1);
     of->packInt(0); //personal board
     of->packInt64(Game::getGame()->getBoardManager()->getBoard(player->getBoardId())->getModTime());
   }
-  
+
+  if(frame->getVersion() >= fv0_4){
+    of->packInt64(fromtime);
+  }
   curConnection->sendFrame(of);
 }
 
@@ -1486,7 +1494,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_CategoryIds_List);
-  of->packInt(0);
+  of->packInt(0); // seqkey
   of->packInt(modlist.size() - snum - numtoget);
   of->packInt(numtoget);
   std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
