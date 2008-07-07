@@ -444,15 +444,16 @@ void Risk::onPlayerAdded(Player* player){
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
 
    //This should make every object visible to an added player
-   PlayerView* playerview = player->getPlayerView();
-   std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
-   for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
-         ++itcurr){
-      ObjectView* obv = new ObjectView();
-      obv->setObjectId(*itcurr);
-      obv->setCompletelyVisible(true);
-    playerview->addVisibleObject(obv);
-   }
+   // PlayerView* playerview = player->getPlayerView();
+   //    std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
+   //    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
+   //          ++itcurr){
+   //       ObjectView* obv = new ObjectView();
+   //       obv->setObjectId(*itcurr);
+   //       obv->setCompletelyVisible(true);
+   //     playerview->addVisibleObject(obv);
+   //    }
+   RiskTurn::setPlayerVisibleObjects();
 
    //Restrict guest player from receiving reinforcements or planets:
    if ( player->getName() != "guest" ) {

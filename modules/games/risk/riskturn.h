@@ -32,7 +32,7 @@ public:
    virtual ~RiskTurn();
 
    virtual void doTurn();
-   void setPlayerVisibleObjects();
+   static void setPlayerVisibleObjects();
    
    Player* getWinner();
 private:
