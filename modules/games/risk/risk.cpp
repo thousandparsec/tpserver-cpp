@@ -453,7 +453,7 @@ void Risk::onPlayerAdded(Player* player){
    //       obv->setCompletelyVisible(true);
    //     playerview->addVisibleObject(obv);
    //    }
-   RiskTurn::setPlayerVisibleObjects();
+   setPlayerVisibleObjects();
 
    //Restrict guest player from receiving reinforcements or planets:
    if ( player->getName() != "guest" ) {

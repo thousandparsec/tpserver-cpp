@@ -222,7 +222,7 @@ void RiskTurn::processOrdersOfGivenType(string type) {
    }
 }
 
-void RiskTurn::setPlayerVisibleObjects() {
+void setPlayerVisibleObjects() {
    
    PlayerManager *pm = Game::getGame()->getPlayerManager();
    

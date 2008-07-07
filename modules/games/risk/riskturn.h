@@ -32,7 +32,7 @@ public:
    virtual ~RiskTurn();
 
    virtual void doTurn();
-   static void setPlayerVisibleObjects();
+   // static void setPlayerVisibleObjects();
    
    Player* getWinner();
 private:
@@ -41,5 +41,6 @@ private:
    void calculateBonusReinforcements();
 
 };//class RiskTurn : public TurnProcess
+void setPlayerVisibleObjects();
 } //namespace RiskRuleset
 #endif
