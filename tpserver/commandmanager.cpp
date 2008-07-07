@@ -373,6 +373,9 @@ class GameIsStartedCommand : public Command{
 
 CommandManager *CommandManager::myInstance = NULL;
 
+/* getCommandManager
+ * Returns this unique instance of CommandManager.
+ */
 CommandManager *CommandManager::getCommandManager()
 {
     if(myInstance == NULL)
@@ -381,20 +384,34 @@ CommandManager *CommandManager::getCommandManager()
     return myInstance;
 }
 
+/* checkCommandType
+ * Verifies that a command type is valid.
+ * type - The command type to check.
+ */
 bool CommandManager::checkCommandType(uint32_t type)
 {
     return (type >= 0 && type < nextType);
 }
 
+/* describeCommand
+ * Describes a command (if a valid type is passed).
+ * cmdtype - The command type to describe.
+ * of - The output frame.
+ */
 void CommandManager::describeCommand(uint32_t cmdtype, Frame * of)
 {
     if(commandStore.find(cmdtype) != commandStore.end()){
+        //call the command's describe function
         commandStore[cmdtype]->describeCommand(of);
     }else{
         of->createFailFrame(fec_NonExistant, "Command type does not exist");
     }
 }
 
+/* addCommandType
+ * Adds a new command type to the command store.
+ * cmd - The command prototype.
+ */
 void CommandManager::addCommandType(Command* cmd){
     cmd->setType(nextType);
     cmd->setDescriptionModTime(time(NULL));
@@ -402,6 +419,11 @@ void CommandManager::addCommandType(Command* cmd){
     seqkey++;
 }
 
+/* doGetCommandTypes
+ * Processes a Get Command Type IDs frame.
+ * frame - The input frame.
+ * of - The output frame.
+ */
 void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     uint32_t lseqkey = frame->unpackInt();
     if(lseqkey == UINT32_NEG_ONE){
@@ -459,17 +481,26 @@ void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     }
 }
 
+/* executeCommand
+ * Performs the command action specified by a Command frame.
+ * frame - The input frame.
+ * of - The output frame.
+ */
 void CommandManager::executeCommand(Frame * frame, Frame * of)
 {
     uint32_t cmdtype = frame->unpackInt();
     if(commandStore.find(cmdtype) != commandStore.end()){
         of->setType(ftad_CommandResult);
+        //call the command's action function
         commandStore[cmdtype]->action(frame, of);
     }else{
         of->createFailFrame(fec_NonExistant, "Command type does not exist");
     }
 }
 
+/* Default constructor
+ * Adds the local command set to the command store.
+ */
 CommandManager::CommandManager()
 {
     nextType = 0;
@@ -495,6 +526,9 @@ CommandManager::CommandManager()
     addCommandType(new GameIsStartedCommand());
 }
 
+/* Destructor
+ * Clears out the command store.
+ */
 CommandManager::~CommandManager()
 {
     for(std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin(); itcurr != commandStore.end(); ++itcurr){
