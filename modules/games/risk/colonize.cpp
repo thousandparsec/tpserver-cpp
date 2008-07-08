@@ -99,7 +99,6 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
             owned->getName(), availibleUnits );
       }
    }   
-   //CHECK: how to get more than a single digit display - Mac Bug?
 
    return options;
 }
@@ -293,7 +292,6 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
          result.first = i->first;
       }
    }
-   //LATER: ? Aggregate all bids from multiple objects to their owners
 
    sendPlayerMessages(obj, bids,result);
    
