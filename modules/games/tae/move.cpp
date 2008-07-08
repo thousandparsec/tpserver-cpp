@@ -111,6 +111,9 @@ bool Move::doOrder(IGObject * obj) {
     } else if(getBorderingRegions().size() > 1) {
         return false;
         Logger::getLogger()->debug("Player tried to occupy a system which would join two or more regions.");
+    } else if(!isBorderingScienceColony(starSysData)) {
+        return false;
+        Logger::getLogger()->debug("Player tried to occupy a system which does not border a science colony.");
     }
 
     //Set new parent's region
@@ -160,4 +163,38 @@ bool Move::doOrder(IGObject * obj) {
     player->postToBoard(msg);
 
     return true;
+}
+
+bool Move::isBorderingScienceColony(StarSystem* system) {
+    ObjectManager* obm = Game::getGame()->getObjectManager();
+    ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
+    Vector3d pos = system->getPosition();
+
+    //east-west neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
+                Planet* p = (Planet*)(tempObj->getObjectBehaviour());
+                if(p->getResource(5) > 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    //north-south neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
+                Planet* p = (Planet*)(tempObj->getObjectBehaviour());
+                if(p->getResource(5) > 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
