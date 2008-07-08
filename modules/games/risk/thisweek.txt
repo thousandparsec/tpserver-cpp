@@ -4,8 +4,9 @@ Monday:
 *midterm evaluation
 
 Tues:
-*bugs -> display bugs, ownership issues...
+*bugs -> display bugs, ownership issues... resolved
 *Screencasting work
+*emails emails emails
 =========================================================================================
 
 
