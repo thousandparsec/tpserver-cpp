@@ -158,7 +158,18 @@ uint32_t Planet::getOwner() const{
 }
 
 void Planet::setOwner(uint32_t no){
+   //get old owner
+   uint32_t oldowner = ((ReferenceObjectParam*)(obj->getParameter(2,1)))->getReferencedId();
+   
+   //set new owner
    ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferencedId(no);
+   
+   //get queue, then remove old owner
+   uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
+    OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+    queue->removeOwner(oldowner);
+    
+   //set new owner to own queue
    Game::getGame()->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(4,1)))->getQueueId())->addOwner(no);
 
    obj->touchModTime();
