@@ -40,20 +40,11 @@ class taeRuleset : public Ruleset {
         void onPlayerAdded(Player* player);
 
     private:
-//        int shipsLeft[4];
         FleetBuilder* fleetBuilder;
         void setupResources();
         void createProperties();
         void createComponents();
-/*
-        IGObject* createEmptyFleet(Player* owner, IGObject* parent, std::string name);
-        IGObject* createEmptyFleet(Player* owner, Vector3d loc, std::string name);
-    
-        Design* createPassengerShip(Player *owner, int type);
-        Design* createRandomPassengerShip(Player *owner);
-        Design* createVIPTransport(Player *owner, int type);
-        Design* createBomber(Player *owner);
-*/
+        void createBoard(std::string path, uint32_t galaxy);
 };
 
 }

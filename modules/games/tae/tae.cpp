@@ -20,6 +20,8 @@
 
 //System includes
 #include <sstream>
+#include <fstream>
+#include <stack>
 
 //tpserver includes
 #include <tpserver/game.h>
@@ -42,6 +44,7 @@
 #include <tpserver/category.h>
 #include <tpserver/property.h>
 #include <tpserver/component.h>
+#include <tpserver/settings.h>
 
 //tae includes
 #include "universe.h"
@@ -61,7 +64,9 @@
 
 using namespace tae;
 using std::map;
+using std::stack;
 using std::string;
+using std::ifstream;
 
 taeRuleset::taeRuleset() {
 }
@@ -139,8 +144,6 @@ void taeRuleset::createGame() {
 
     uint32_t obT_Universe = obtm->getObjectTypeByName("Universe");
     uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
-    uint32_t obT_Star_System = obtm->getObjectTypeByName("Star System");
-    uint32_t obT_Planet = obtm->getObjectTypeByName("Planet");
 
     //Create the universe
     IGObject* universe = obm->createNewObject();
@@ -161,6 +164,7 @@ void taeRuleset::createGame() {
     gal->addToParent(universe->getID());
     obm->addObject(gal);
 
+/*
     //Create the "Board" of star systems
     for(int i = 0; i < 11; i++) {
         for(int j = 0; j < 16; j++) {
@@ -198,9 +202,98 @@ void taeRuleset::createGame() {
             obm->addObject(p);
         }
     }
+*/
 
-
+    string path = string(Settings::getSettings()->get("board_path"));
+    Logger::getLogger()->debug(path.c_str());
+    
+    createBoard(path, gal->getID());
+    
     Logger::getLogger()->info("TaE created");
+}
+
+void taeRuleset::createBoard(string path, uint32_t galaxy) {
+    Game* game = Game::getGame();
+    ObjectManager* obm = game->getObjectManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+    stack<string> lines;
+    string line;
+    int row = 0;
+    ifstream file (path.c_str());
+
+    if (file.is_open())
+    {
+        while(!file.eof()) {
+            getline (file,line);
+            lines.push(line);
+        }
+        if(lines.top().compare("") == 0) {
+            lines.pop();
+        }
+        file.close();
+    } else {
+        //Build default map
+        lines.push(string("....MMMMM.A.M..."));
+        lines.push(string(".A..M.......M..A"));
+        lines.push(string("...MMA......MM.."));
+        lines.push(string("MMMM.........MMM"));
+        lines.push(string(".............AMM"));
+        lines.push(string("..............M."));
+        lines.push(string("MMMM....A...MMM."));
+        lines.push(string(".A.MMMM.....M..."));
+        lines.push(string("......MMMMMMM.A."));
+        lines.push(string(".....A.........."));
+        lines.push(string("..........A....."));
+    }
+    while(!lines.empty()) {
+        line = lines.top();
+        lines.pop();
+        for(int i = 0; i < line.length(); i++) {
+
+            //Create a star system
+            IGObject* sys1 = obm->createNewObject();
+            obtm->setupObject(sys1, obtm->getObjectTypeByName("Star System"));
+            StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
+            sys1ob->setSize(60000ll);
+            char* name = new char[8];
+            sprintf(name, "%d, %d", i, row);
+            sys1->setName(name);
+            sys1ob->setPosition(Vector3d(1ll + 80000ll*i, 1ll+80000ll*(row+1), 0ll));
+            sys1ob->setDestroyed(false);                
+            sys1->addToParent(galaxy);
+            obm->addObject(sys1);
+
+            //Create a planet
+            IGObject *p = obm->createNewObject();
+            obtm->setupObject(p, obtm->getObjectTypeByName("Planet"));
+            Planet * pob = (Planet*)(p->getObjectBehaviour());
+            pob->setSize(2);
+            char* planetName = new char[20];
+            sprintf(planetName, "Planet %d, %d", i, row);
+            p->setName(planetName);
+            pob->setPosition(sys1ob->getPosition());
+            OrderQueue *planetoq = new OrderQueue();
+            planetoq->setObjectId(p->getID());
+            planetoq->addOwner(0);
+            game->getOrderManager()->addOrderQueue(planetoq);
+            OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
+            oqop->setQueueId(planetoq->getQueueId());
+            pob->setDefaultOrderTypes();
+            p->addToParent(sys1->getID());
+            obm->addObject(p);
+            if(line[i] == '.') {
+                sys1ob->setInhabitable(true);
+            } else if (line[i] == 'M') {
+                sys1ob->setInhabitable(false);
+                pob->addResource(1,1);
+            } else if (line[i] == 'A') {
+                sys1ob->setInhabitable(true);
+                pob->addResource(3,1);
+                pob->addResource(5,1);
+            }   
+        }
+        row++;
+    } 
 }
 
 void taeRuleset::setupResources() {
