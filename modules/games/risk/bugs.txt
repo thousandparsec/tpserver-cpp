@@ -1,4 +1,5 @@
-1. Players do not see territories on their own. Relates to similarly named players (test & test1, etc.)
+1. FIXED? Updated setPlayerView code and problem should be fixed.
+	Players do not see territories on their own. Relates to similarly named players (test & test1, etc.)
 	Player test joins game, gets one territory, sees it
 	Player test2 joins same game, sees test's territory as green, their own as red 
 	MORE INFO:
@@ -15,7 +16,7 @@
 	-Problem also occurred in a new game. Players Bryan and Ryan joined. Bryan gets territories, Ryan gets the "no objects" error but 3 planets are given out to player test... Is this caching problems or what?
 2. Player can't delete any messages. Cannot be repeated, same "launch" technique shows no problems.
 3. Bus error, attempting to colonize 2 places? couldn't reproduce
-4. Phantom ownership, Orders can be created on an enemy planet that was previously owned by the issuing player. Testing showed the orders were completely normally, and treated normally, as if they came from the enemy player. This may be a "server caching" issue or something more serious.
+4. FIXED: Phantom ownership, Orders can be created on an enemy planet that was previously owned by the issuing player. Testing showed the orders were completely normally, and treated normally, as if they came from the enemy player. This may be a "server caching" issue or something more serious.
 	-Verified to occur repeatedly, with no view problems in game
 
 Noticed:
