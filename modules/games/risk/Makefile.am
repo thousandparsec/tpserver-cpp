@@ -16,3 +16,5 @@ noinst_HEADERS = risk.h colonize.h move.h reinforce.h riskturn.h map.h staticobj
 
 #minisec has this in it
 #EXTRA_DIST = sample.conf
+
+SUBDIRS = ticpp
