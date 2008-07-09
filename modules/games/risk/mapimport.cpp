@@ -22,13 +22,13 @@
 
 #include "mapimport.h"
 
+#include <string>
+
 namespace RiskRuleset {
 
-MapImport::MapImport(){
-   
-}
+using std::string;
 
-MapImport::~MapImport(){
+bool importMapFromFile(string filename){
    
 }
 
