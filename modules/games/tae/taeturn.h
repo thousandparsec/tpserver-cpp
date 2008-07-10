@@ -41,6 +41,8 @@ class TaeTurn : public TurnProcess{
     uint32_t planettype;
     uint32_t fleettype;
     std::set<uint32_t> containerids;
+
+    void awardArtifacts();
 };
 
 #endif

@@ -164,46 +164,6 @@ void taeRuleset::createGame() {
     gal->addToParent(universe->getID());
     obm->addObject(gal);
 
-/*
-    //Create the "Board" of star systems
-    for(int i = 0; i < 11; i++) {
-        for(int j = 0; j < 16; j++) {
-            //Create a star system
-            IGObject* sys1 = obm->createNewObject();
-            obtm->setupObject(sys1, obT_Star_System);
-            StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
-            sys1ob->setSize(60000ll);
-            char* name = new char[8];
-            sprintf(name, "%d, %d", j, i);
-            sys1->setName(name);
-            sys1ob->setPosition(Vector3d(1ll + 80000ll*j, 1ll+80000ll*(i+1), 0ll));
-            sys1ob->setInhabitable(true);
-            sys1ob->setDestroyed(false);
-            sys1->addToParent(gal->getID());
-            obm->addObject(sys1);
-
-            //Create a planet
-            IGObject *p = obm->createNewObject();
-            obtm->setupObject(p, obT_Planet);
-            Planet * pob = (Planet*)(p->getObjectBehaviour());
-            pob->setSize(2);
-            char* planetName = new char[20];
-            sprintf(planetName, "Planet %d, %d", j, i);
-            p->setName(planetName);
-            pob->setPosition(sys1ob->getPosition());
-            OrderQueue *planetoq = new OrderQueue();
-            planetoq->setObjectId(p->getID());
-            planetoq->addOwner(0);
-            game->getOrderManager()->addOrderQueue(planetoq);
-            OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
-            oqop->setQueueId(planetoq->getQueueId());
-            pob->setDefaultOrderTypes();
-            p->addToParent(sys1->getID());
-            obm->addObject(p);
-        }
-    }
-*/
-
     string path = string(Settings::getSettings()->get("board_path"));
     Logger::getLogger()->debug(path.c_str());
     
@@ -603,6 +563,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
     player->setScore(2,0);
     player->setScore(3,0);
     player->setScore(4,0);
+    player->setScore(5,0);
 
     //Set visibility of current designs
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();

@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include <tpserver/game.h>
+#include <tpserver/designstore.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/playermanager.h>
@@ -38,6 +39,7 @@
 #include <tpserver/message.h>
 
 #include "planet.h"
+#include "starsystem.h"
 #include "fleet.h"
 #include "fleetbuilder.h"
 
@@ -119,6 +121,8 @@ void TaeTurn::doTurn(){
         itcurr++;
     }
     
+    awardArtifacts();
+
     //Update which player's turn it is
     playerTurn = (playerTurn + 1) % playermanager->getNumPlayers();
 
@@ -207,7 +211,8 @@ void TaeTurn::doTurn(){
         out << "Money: " << player->getScore(1) << "\n";
         out << "Technology: " << player->getScore(2) << "\n";
         out << "People: " << player->getScore(3) << "\n";
-        out << "Raw Materials: " << player->getScore(4);
+        out << "Raw Materials: " << player->getScore(4) << "\n";
+        out << "Alien Artifacts: " << player->getScore(5);
         msg->setBody(out.str());
         player->postToBoard(msg);
 
@@ -232,6 +237,76 @@ void TaeTurn::doTurn(){
     }
 
     playermanager->updateAll();
+
+}
+
+void TaeTurn::awardArtifacts() {
+    Game* game = Game::getGame();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+    ObjectManager* objectmanager = game->getObjectManager();
+    
+    std::set<uint32_t> artifacts;
+    std::set<uint32_t> regions;
+    std::set<uint32_t> objects = objectmanager->getAllIds();
+    std::set<uint32_t>::iterator itcurr;
+
+    //Find any regions with 2 or more alien artifacts
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
+            Planet* p = (Planet*) ob->getObjectBehaviour();
+            if(p->getResource(3) > 0) {
+                StarSystem* sys = (StarSystem*)(objectmanager->getObject(ob->getParent())->getObjectBehaviour());
+                if(sys->getRegion() != 0) {
+                    if(regions.count(sys->getRegion()) > 0) {
+                        artifacts.insert(*itcurr);
+                    } else {
+                        regions.insert(sys->getRegion());
+                    }
+                }
+            }
+        }
+    }
+    
+    if(!artifacts.empty()) {
+        uint32_t type;
+        DesignStore* ds = game->getDesignStore();
+        PlayerManager* pm = game->getPlayerManager();
+        std::set<unsigned int> designs = ds->getDesignIds();
+        //get leader ID
+        for(itcurr = designs.begin(); itcurr != designs.end(); ++itcurr) {
+            if(ds->getDesign(*itcurr)->getName().compare("MerchantLeaderShip")) {
+                type = *itcurr;
+            }
+        }
+        //Search the objects for a merchant leader
+        for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+            IGObject * ob = objectmanager->getObject(*itcurr);
+            if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
+                Fleet* f = (Fleet*) (ob->getObjectBehaviour());
+                if(f->getShips().count(type) > 0) {
+                    IGObject* parent = objectmanager->getObject(ob->getParent());
+                    if(parent->getType() == obtm->getObjectTypeByName("Star System")) {
+                        StarSystem* parentData = (StarSystem*) (parent->getObjectBehaviour());
+                        //See if this leader is in a region with
+                        //2 or more alien artifacts
+                        for(std::set<uint32_t>::iterator i = artifacts.begin(); i != artifacts.end(); ++i) {
+                            IGObject* obj = objectmanager->getObject(*i);
+                            Planet* p = (Planet*) obj->getObjectBehaviour();
+                            StarSystem* sys = (StarSystem*)(objectmanager->getObject(obj->getParent())->getObjectBehaviour());
+                            if(sys->getRegion() == parentData->getRegion()) {
+                                //+1 to leader's owner's artifact score
+                                Player* owner = pm->getPlayer(f->getOwner());
+                                owner->setScore(5, owner->getScore(5) + 1);
+                                p->removeResource(3, 1);
+                                artifacts.erase(*i);
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+    }
 
 }
 
