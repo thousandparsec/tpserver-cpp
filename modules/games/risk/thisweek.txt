@@ -21,8 +21,8 @@ Friday:
 *Incorporate WIP Branch with main risk branch, making server option to use map imports (temporary)
 
 
-*Wait for reply from JLP about screencasts
-*Meet with Tyler about remainder of term
+*Get TinyXML working
+*Meet with Tyler about remainder of term - Friday/Weekend
 
 =========================================================================================
 
