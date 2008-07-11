@@ -7,6 +7,23 @@ Tues:
 *bugs -> display bugs, ownership issues... resolved
 *Screencasting work
 *emails emails emails
+
+Wed:
+*Created WIP branch to begin integrating TinyXML++
+*Wrote midterm report
+
+Thurs:
+*Ran a bunch of errands
+*Emailed JLP about screencasts
+
+Friday:
+*Revise midterm report- Section on me, picture, ODF
+*Incorporate WIP Branch with main risk branch, making server option to use map imports (temporary)
+
+
+*Wait for reply from JLP about screencasts
+*Meet with Tyler about remainder of term
+
 =========================================================================================
 
 

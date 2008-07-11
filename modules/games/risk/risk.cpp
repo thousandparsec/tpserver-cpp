@@ -64,6 +64,7 @@
 #include "planet.h"
 #include "constellation.h"
 #include "graph.h"
+#include "mapimport.h"
 
 #include "boost/format.hpp"
 
@@ -112,7 +113,6 @@ void Risk::initGame(){
    Logger::getLogger()->info("Risk initialised");
 
    Game::getGame()->setTurnProcess(new RiskTurn());
-   //Game::getGame()->setRuleset(this);
 
    setObjectTypes();
 
@@ -132,29 +132,21 @@ void Risk::setObjectTypes() const{
    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
    obdm->addNewObjectType(eo);
 
-   obdm->addNewObjectType(new PlanetType);   //may need to special some stuff here
-   //There are no fleets in risk - hence no fleet type
+   obdm->addNewObjectType(new PlanetType);
 }
 
 void Risk::setOrderTypes() const{
    OrderManager* orm = Game::getGame()->getOrderManager();
 
-   //To be an action availible on all unowned planets
-   //With planet selected order is to colonize with NUMBER armies
    orm->addOrderType(new Colonize());
-
-   //To be an action availible on all player owned planets
-   //With planet selected order is to reinforce with NUMBER armies
    orm->addOrderType(new Reinforce());
-
-   //To be an action availible on all player owned planets
-   //With planet selected order is to reinforce with NUMBER armies
    orm->addOrderType(new Move());
 }
 
 void Risk::createGame(){
    Logger::getLogger()->info("Risk created");
 
+   //Seed the random to be used as the supplied debug random seed (if supplied)
    std::string randomseed = Settings::getSettings()->get("risk_debug_random_seed");
    if( randomseed != ""){
       random = new Random();
@@ -166,7 +158,14 @@ void Risk::createGame(){
    createResources();
  
    //set up universe (universe->constellations->star sys->planet)
-   createUniverse();
+   std::string risk_mapimport = Settings::getSettings()->get("risk_mapimport");
+   if( risk_mapimport == "true") {
+      std::string mapfile = Settings::getSettings()->get("risk_map");
+      importMapFromFile(mapfile);
+   }
+   else {
+      createUniverse();
+   }
 }
 
 void Risk::createResources() {
@@ -322,7 +321,11 @@ IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d
 
 void Risk::startGame(){
    Logger::getLogger()->info("Risk started");
+   
+   setDefaults();
+}
 
+void Risk::setDefaults() {
    //Establish some defaults if user does not specify any in config
    Settings* settings = Settings::getSettings();
    if(settings->get("turn_length_over_threshold") == "")
@@ -362,6 +365,11 @@ void Risk::startGame(){
    else
       settings->set("risk_allow_colonize","true");
       
+   if (settings->get("risk_mapimport") == "" ) 
+      settings->set("risk_mapimport","false");
+      
+   if (settings->get("risk_map") == "")
+      settings->set("risk_map","default.svg");
 }
 
 bool Risk::onAddPlayer(Player* player){

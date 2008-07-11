@@ -69,7 +69,7 @@ class Risk : public Ruleset {
       IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
          const Vector3d& location);
 
-
+      void setDefaults();
       
       void randomlyAssignPlanets(Player* player);
       void randomlyGiveOnePlanet(Player* player);

@@ -24,7 +24,7 @@
 
 namespace RiskRuleset {
 
-static bool importMapFromFile(std::string filename);
+bool importMapFromFile(std::string filename);
 
 }
 
