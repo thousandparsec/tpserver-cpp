@@ -1,6 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-#
 rulesetlib_LTLIBRARIES = libticpp.la
 
 rulesetlibdir = $(libdir)/tpserver/ticpp
