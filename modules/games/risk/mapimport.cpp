@@ -21,7 +21,7 @@
  */
 #define TIXML_USE_TICPP
 
-//#include <modules/ticpp/ticpp.h>
+#include "ticpp.h"
 #include "mapimport.h"
 
 #include <string>
@@ -33,14 +33,14 @@ using std::string;
 bool importMapFromFile(string filename){
    bool loadedMap = false;
    
-   // TiXmlDocument map(filename);  //Create a new xml doc object from filename
-   //   loadedMap = map.LoadFile();   //Load that file, recording success in loadedMap
-   //   
-   //   if (loadedMap) {              //if - loading map was successful, we create all elements from the map
-   //                  //Create objects from loaded map
-   //   }
-   //   
-   //   return loadedMap;             //return true if map was created successfully, otherwise false
+   TiXmlDocument map(filename);  //Create a new xml doc object from filename
+     loadedMap = map.LoadFile();   //Load that file, recording success in loadedMap
+     
+     if (loadedMap) {              //if - loading map was successful, we create all elements from the map
+                    //Create objects from loaded map
+     }
+     
+     return loadedMap;             //return true if map was created successfully, otherwise false
 }
 
 }//end namespace RiskRuleset

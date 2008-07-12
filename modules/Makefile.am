@@ -1,2 +1,2 @@
-SUBDIRS = games persistence tpcl ticpp
+SUBDIRS = games persistence tpcl
 
