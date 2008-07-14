@@ -21,7 +21,10 @@
  */
 #define TIXML_USE_TICPP
 
+#include <tpserver/logging.h>
+
 #include "ticpp.h"
+#include "tinyxml.h"
 #include "mapimport.h"
 
 #include <string>
@@ -31,16 +34,17 @@ namespace RiskRuleset {
 using std::string;
 
 bool importMapFromFile(string filename){
-   bool loadedMap = false;
+   bool loadedMapOkay = false;
    
    TiXmlDocument map(filename);  //Create a new xml doc object from filename
-     loadedMap = map.LoadFile();   //Load that file, recording success in loadedMap
-     
-     if (loadedMap) {              //if - loading map was successful, we create all elements from the map
-                    //Create objects from loaded map
-     }
-     
-     return loadedMap;             //return true if map was created successfully, otherwise false
+   loadedMapOkay = map.LoadFile();   //Load that file, recording success in loadedMap
+
+   if (loadedMapOkay) {              //if - loading map was successful, we create all elements from the map
+      Logger::getLogger()->debug("Loaded %s", filename.c_str());
+                 //Create objects from loaded map
+   }
+
+   return loadedMapOkay;             //return true if map was created successfully, otherwise false
 }
 
 }//end namespace RiskRuleset

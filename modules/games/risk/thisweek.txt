@@ -1,25 +1,6 @@
 Monday:
-*Chatted with Tyler, about XML, other things, plan to meet/play friday night
-*Started making plans for a screencast
-*midterm evaluation
-
-Tues:
-*bugs -> display bugs, ownership issues... resolved
-*Screencasting work
-*emails emails emails
-
-Wed:
-*Created WIP branch to begin integrating TinyXML++
-*Wrote midterm report
-
-Thurs:
-*Ran a bunch of errands
-*Emailed JLP about screencasts
-
-Friday:
-*Revise midterm report- Section on me, picture, ODF
-*Incorporate WIP Branch with main risk branch, making server option to use map imports (temporary)
-
+*Investigated SVG, its going to work, *shoots some fireworks
+**Using circles as planets isn't the best though, rectangles will work better as the are different tags (than connections, which are paths), but who knows *shrugs*. Labels can be set properly using inkscape, and connections have "start" and "end"s that include these labels
 
 *Get TinyXML working
 *Meet with Tyler about remainder of term - Friday/Weekend
@@ -28,15 +9,14 @@ Friday:
 
 
 This Week:
-*Figure out XML
-*Midterm evals
-*Screencast of How to play
+*Get working on XML/SVG import
+*Make actual risk map in svg
+*Audio for JLP's screencast?
  
 Later:
-
-Look for AI to test with
-Contribute to documents for ruleset creation
-Create set of shell/example classes for ruleset dev
+Finish XML/SVG import
+Implement continent ownership bonus
+Consolidate messaging
 
 
 Screencasts (4)
@@ -45,7 +25,7 @@ Screencasts (4)
 	-Compiling from source?
 	-Different ways to set up server
 	-Modifying the config files
-*Using the TP client
+*Using the TP client (JLP Vid)
 	-Downloading the Univese
 	-How each pane works
 *Playing the Risk ruleset
