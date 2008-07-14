@@ -40,7 +40,43 @@ bool importMapFromFile(string filename){
 
    if (loadedMapOkay) {              //if - loading map was successful, we create all elements from the map
       Logger::getLogger()->debug("Loaded %s", filename.c_str());
-                 //Create objects from loaded map
+
+      TiXmlElement *pRoot, *pG, *pRect, *pPath;
+
+      //Get the root svg element
+      pRoot = map.FirstChildElement("svg");
+      if ( pRoot ) {
+
+         //Get the root g element
+         pG = pRoot->FirstChildElement("g");
+
+         if (pG) {
+            //Start processing Rectangles in g
+            pRect = pG->FirstChildElement("rect");
+            Logger::getLogger()->debug("Starting on rects processing");
+            while (pRect) {
+               //Process each individual Rectangle and translate to Star
+               Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
+
+               //Get the next rect
+               pRect = pRect->NextSiblingElement("rect");
+            }
+            Logger::getLogger()->debug("Finished with rects processing");
+
+            //Start processing Paths in g
+            pPath = pG->FirstChildElement("path");
+            Logger::getLogger()->debug("Starting on paths processing");
+            while (pPath) {
+               //Process each individual Path and translate into graph
+               Logger::getLogger()->debug("Looking at a path");
+
+               //Get the next path
+               pPath = pPath->NextSiblingElement("path");
+            }
+            Logger::getLogger()->debug("Finished with paths processing");
+         }// </g>
+      }// </svg>
+
    }
 
    return loadedMapOkay;             //return true if map was created successfully, otherwise false
