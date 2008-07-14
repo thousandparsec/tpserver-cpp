@@ -23,7 +23,6 @@
 
 #include <tpserver/logging.h>
 
-#include "ticpp.h"
 #include "tinyxml.h"
 #include "mapimport.h"
 
@@ -35,8 +34,8 @@ using std::string;
 
 bool importMapFromFile(string filename){
    bool loadedMapOkay = false;
-   
-   TiXmlDocument map(filename);  //Create a new xml doc object from filename
+   Logger::getLogger()->debug("Trying to load:  %s", filename.c_str());
+   TiXmlDocument map(filename.c_str());  //Create a new xml doc object from filename
    loadedMapOkay = map.LoadFile();   //Load that file, recording success in loadedMap
 
    if (loadedMapOkay) {              //if - loading map was successful, we create all elements from the map
