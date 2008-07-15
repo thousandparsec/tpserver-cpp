@@ -21,11 +21,23 @@
  */
  
 #include <string>
+#include <tpserver/object.h>
+#include <vector>
+#include <tpserver/vector3d.h>
 
+class IGObject;
+ 
 namespace RiskRuleset {
 
-bool importMapFromFile(std::string filename);
+bool importMapFromFile(std::string filename, IGObject& universe);
 
+IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
+IGObject* createStarSystem(IGObject& parent, const std::string& name,
+   double unitX, double unitY);
+IGObject* createPlanet(IGObject& parent, const std::string& name,
+   double unitX, double unitY);                        
+IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
+   const Vector3d& location);
 }
 
 #endif

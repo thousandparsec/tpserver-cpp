@@ -91,7 +91,6 @@ using boost::format;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
 Risk::Risk() : graph(), random(NULL) {
-   num_constellations = 0;
    num_planets = 0;
 }
 
@@ -157,15 +156,7 @@ void Risk::createGame(){
 
    createResources();
  
-   //set up universe (universe->constellations->star sys->planet)
-   std::string risk_mapimport = Settings::getSettings()->get("risk_mapimport");
-   if( risk_mapimport == "true") {
-      std::string mapfile = Settings::getSettings()->get("risk_map");
-      importMapFromFile(mapfile);
-   }
-   else {
-      createUniverse();
-   }
+   createUniverse();
 }
 
 void Risk::createResources() {
@@ -202,16 +193,22 @@ void Risk::createUniverse() {
    //The field of view for the universe is approximately -1 to 1 X and 0 to 1 Y.
    uniData->setUnitPos(-0.1,0.1);
    objman->addObject(universe);
-
-   //LATER: create some sort of import function to create map from file 
-   createTestSystems(universe);
    
+   //set up universe (universe->constellations->star sys->planet)
+   std::string risk_mapimport = Settings::getSettings()->get("risk_mapimport");
+   if( risk_mapimport == "true") {
+      std::string mapfile = Settings::getSettings()->get("risk_map");
+      importMapFromFile(mapfile,*universe);
+   }
+   else {
+      createTestSystems(*universe);
+   }
 }
 
-void Risk::createTestSystems(IGObject* universe) {
+void Risk::createTestSystems(IGObject& universe) {
 
-   IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
-   IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
+   IGObject *con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
+   IGObject *con_orion      = createConstellation(universe, "Orion",          3); //Africa
 
    // Cygnus Systems (South America, Bonus 2)
    createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
@@ -246,78 +243,6 @@ void Risk::createTestSystems(IGObject* universe) {
    //Cygnus - Orion Adjacencies
    graph.addEdge(12,8);
 }
-
-IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   IGObject *constellation = game->getObjectManager()->createNewObject();
-
-   otypeman->setupObject(constellation, otypeman->getObjectTypeByName("Constellation"));
-   constellation->setName(name);
-
-   Constellation* constellationData = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
-   constellationData->setBonus(bonus);
-
-   constellation->addToParent(parent.getID());
-   game->getObjectManager()->addObject(constellation);
-
-   ++num_constellations;
-   return constellation;
-}
-
-IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   IGObject *starSys = game->getObjectManager()->createNewObject();
-
-   otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
-   starSys->setName(name+" System");
-   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
-   starSysData->setUnitPos(unitX, unitY);
-
-   starSys->addToParent(parent.getID());
-   game->getObjectManager()->addObject(starSys);
-
-   //Create the planet AND add that planet to the graph.
-   graph.addPlanet(createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset()));
-   return starSys;
-}
-
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
-   return createPlanet(parent, name, Vector3d(unitX,unitY,0));
-}
-
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-   
-   IGObject *planet = game->getObjectManager()->createNewObject();
-   
-   otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
-   planet->setName(name);
-   Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
-   planetData->setPosition(location); // OK because unit pos isn't useful for planets
-   planetData->setDefaultResources();
-   
-   OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setObjectId(planet->getID());
-   game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*> 
-         (planet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
-   planetData->setOrderTypes();
-   
-   planet->addToParent(parent.getID());
-   game->getObjectManager()->addObject(planet);
-   
-   ++num_planets;
-   return planet;
-}   
 
 void Risk::startGame(){
    Logger::getLogger()->info("Risk started");
@@ -563,6 +488,10 @@ uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
 
 void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
    reinforcements[owner] = units;
+}
+
+void Risk::increaseNumPlanets() {
+   ++num_planets;
 }
 
 } //end namespace RiskRuleset

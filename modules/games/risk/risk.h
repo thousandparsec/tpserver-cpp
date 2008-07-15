@@ -50,7 +50,8 @@ class Risk : public Ruleset {
       
       //onAddPlayer methods
       bool isBoardClaimed() const;
-  
+      void increaseNumPlanets();      
+      
    private:
        //initGame methods
       void setObjectTypes() const;
@@ -60,15 +61,8 @@ class Risk : public Ruleset {
       void createResources();
 
       void createUniverse();
-      void createTestSystems(IGObject* universe);
-      IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
-      IGObject* createStarSystem(IGObject& parent, const std::string& name,
-         double unitX, double unitY);
-      IGObject* createPlanet(IGObject& parent, const std::string& name,
-         double unitX, double unitY);                        
-      IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
-         const Vector3d& location);
-
+      void createTestSystems(IGObject& universe);
+      
       void setDefaults();
       
       void randomlyAssignPlanets(Player* player);
@@ -77,7 +71,6 @@ class Risk : public Ruleset {
       
       //The number of planets to be on the board
       uint32_t num_planets;
-      uint32_t num_constellations;
       std::map<uint32_t, uint32_t> reinforcements;
 
       Graph graph;
