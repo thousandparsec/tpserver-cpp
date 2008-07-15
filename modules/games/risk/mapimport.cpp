@@ -75,7 +75,7 @@ bool importMapFromFile(string filename, IGObject& universe){
 
          if (pG) {
             //A map used to relate the colors of a constellation to the IGObject*
-            std::map<string,IGObject*> colorToConstellation;
+            std::map<string,IGObject*> styleToConstellation;
             
             //A map used to relate the label of a constellation to the IGObject*
             std::map<string,IGObject*> labelToPlanet;
@@ -90,20 +90,43 @@ bool importMapFromFile(string filename, IGObject& universe){
                //Process each individual Rectangle and translate to Star
                Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
 
-               //Translate color to continent -- Names?
-                  //If new continent, create it, map color to IGObject*
-               //Get the continent from map.
-               //Get X, Y, name
-               //Call CreateStarSystem with values, add reference to map
+               string style;
+               IGObject* parent;
+               size_t fillPosn;
+               
                double rectX;
                double rectY;
-               
+               string name;
+
+               //Extract the fill from the style attribute
+               style = pRect->Attribute("style");
+               Logger::getLogger()->debug("Style is initially: %s",style.c_str());
+               fillPosn = style.find("fill:#"); //Find where the fill occurs in the style string
+               if (fillPosn != string::npos)
+                  style = style.substr(fillPosn,12);
+               Logger::getLogger()->debug("Style was detected to be %s",style.c_str());               
+
+               std::map<string,IGObject*>::const_iterator cnstExists = styleToConstellation.find(style);
+               if (cnstExists == styleToConstellation.end()) {
+                  //TODO: extract name and bonus
+                  parent = createConstellation(universe,style,0);
+                  styleToConstellation[style] = parent;
+
+               }
+               else
+                  parent = styleToConstellation[style];
+                  
                std::istringstream xstream( pRect->Attribute("x"));
             	xstream >> rectX;
                std::istringstream ystream( pRect->Attribute("y"));
             	ystream >> rectY;
+               rectY *= -1; //invert the map, since svg files measure from top to bottom
 
-               createStarSystem(universe, pRect->Attribute("id"), rectX, rectY);
+               name = pRect->Attribute("id");
+               
+               //TODO: Replace universe parent with constellation
+               //Create the star system and keep track of the reference in the labelToPlanet map.
+               labelToPlanet['#'+name]=createStarSystem(*parent, name, rectX, rectY);
 
                //Get the next rect
                pRect = pRect->NextSiblingElement("rect");
@@ -119,8 +142,11 @@ bool importMapFromFile(string filename, IGObject& universe){
                   pPath->Attribute("inkscape:connection-start"),
                   pPath->Attribute("inkscape:connection-end"));
                
+               string p1 = pPath->Attribute("inkscape:connection-start");
+               string p2 = pPath->Attribute("inkscape:connection-end");
+               graph->addEdge(labelToPlanet[p1],labelToPlanet[p2]);
                //get label for start, end
-               //remove # from labels
+               //remove # from labels?
                
 
                //Get the next path
