@@ -45,6 +45,7 @@
 #include "colonize.h"
 
 using std::set;
+using std::map;
 using std::string;
 using std::stringstream;
 
@@ -100,6 +101,11 @@ bool Colonize::doOrder(IGObject * obj) {
     Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    uint32_t leaderType;
+    uint32_t settlerLeader;
+    uint32_t merchantLeader;
+    uint32_t miningLeader;
+    uint32_t scientistLeader;
 
     //Perform last minute checks to make sure the system can be colonized
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
@@ -165,8 +171,6 @@ bool Colonize::doOrder(IGObject * obj) {
         // in this region
         
         //find the leader type
-        uint32_t leaderType;
-        uint32_t settlerLeader;
         DesignStore* ds = Game::getGame()->getDesignStore();
         set<unsigned int> designs = ds->getDesignIds(); 
         for(set<unsigned int>::iterator i = designs.begin(); i != designs.end(); i++) {
@@ -175,7 +179,14 @@ bool Colonize::doOrder(IGObject * obj) {
             } 
             if(ds->getDesign(*i)->getName().compare("SettlerLeaderShip") == 0) {
                 settlerLeader = *i;
+            } else if(ds->getDesign(*i)->getName().compare("MerchantLeaderShip") == 0) {
+                merchantLeader = *i;
+            } else if(ds->getDesign(*i)->getName().compare("ScientistLeaderShip") == 0) {
+                scientistLeader = *i;
+            } else if(ds->getDesign(*i)->getName().compare("MiningLeaderShip") == 0) {
+                miningLeader = *i;
             }
+            
         }
         //find the leader of the region... add 1 to the player's score
         int leaderID = getLeaderInRegion(*(regions.begin()), leaderType);
@@ -194,8 +205,43 @@ bool Colonize::doOrder(IGObject * obj) {
         out << starSysData->getRegion();
         Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else {
-        //TODO: This means that 2 regions are being connected. Perform check
-        //      For external combat here then perform region check again!
+        // This means that 2 regions are being connected. Perform check
+        // For external combat here then perform region check again!
+        map<uint32_t, uint32_t> settlers;
+        map<uint32_t, uint32_t> scientists;
+        map<uint32_t, uint32_t> merchants;
+        map<uint32_t, uint32_t> miners;
+        for(set<unsigned int>::iterator i = regions.begin(); i != regions.end(); i++) {
+            int temp = getLeaderInRegion(*i, settlerLeader);
+            if(temp != -1) {
+                settlers[temp] = *i;
+            }
+            temp = getLeaderInRegion(*i, scientistLeader);
+            if(temp != -1) {
+                scientists[temp] = *i;
+            }
+            temp = getLeaderInRegion(*i, merchantLeader);
+            if(temp != -1) {
+                merchants[temp] = *i;
+            }
+            temp = getLeaderInRegion(*i, miningLeader);
+            if(temp != -1) {
+                miners[temp] = *i;
+            }
+        }
+
+        if(settlers.size() > 1) {
+            //Settler Conflict!
+        }
+        if(scientists.size() > 1) {
+            //Scientist Conflict!
+        }
+        if(merchants.size() > 1) {
+            //Merchant Conflict!
+        }
+        if(miners.size() > 1) {
+            //Miner Conflict!
+        }
     }
 
     obm->doneWithObject(newStarSys->getID());
