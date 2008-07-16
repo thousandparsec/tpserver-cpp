@@ -64,8 +64,9 @@ bool importMapFromFile(string filename, IGObject& universe){
    if (loadedMapOkay) {              //if - loading map was successful, we create all elements from the map
       Logger::getLogger()->debug("Loaded %s", filename.c_str());
 
-      TiXmlElement *pRoot, *pG, *pRect, *pPath;
+      TiXmlElement *pRoot, *pG;
 
+      loadedMapOkay = false;        //reset loaded map okay so we can ensure a map gets loaded
       //Get the root svg element
       pRoot = map.FirstChildElement("svg");
       if ( pRoot ) {
@@ -74,91 +75,149 @@ bool importMapFromFile(string filename, IGObject& universe){
          pG = pRoot->FirstChildElement("g");
 
          if (pG) {
-            //A map used to relate the colors of a constellation to the IGObject*
-            std::map<string,IGObject*> styleToConstellation;
-            
-            //A map used to relate the label of a constellation to the IGObject*
-            std::map<string,IGObject*> labelToPlanet;
-            
-            Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-            Graph* graph = risk->getGraph();
-
-            //Start processing Rectangles in g
-            pRect = pG->FirstChildElement("rect");
-            Logger::getLogger()->debug("Starting on rects processing");
-            while (pRect) {
-               //Process each individual Rectangle and translate to Star
-               Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
-
-               string style;
-               IGObject* parent;
-               size_t fillPosn;
-               
-               double rectX;
-               double rectY;
-               string name;
-
-               //Extract the fill from the style attribute
-               style = pRect->Attribute("style");
-               Logger::getLogger()->debug("Style is initially: %s",style.c_str());
-               fillPosn = style.find("fill:#"); //Find where the fill occurs in the style string
-               if (fillPosn != string::npos)
-                  style = style.substr(fillPosn,12);
-               Logger::getLogger()->debug("Style was detected to be %s",style.c_str());               
-
-               std::map<string,IGObject*>::const_iterator cnstExists = styleToConstellation.find(style);
-               if (cnstExists == styleToConstellation.end()) {
-                  //TODO: extract name and bonus
-                  parent = createConstellation(universe,style,0);
-                  styleToConstellation[style] = parent;
-
-               }
-               else
-                  parent = styleToConstellation[style];
-                  
-               std::istringstream xstream( pRect->Attribute("x"));
-            	xstream >> rectX;
-               std::istringstream ystream( pRect->Attribute("y"));
-            	ystream >> rectY;
-               rectY *= -1; //invert the map, since svg files measure from top to bottom
-
-               name = pRect->Attribute("id");
-               
-               //TODO: Replace universe parent with constellation
-               //Create the star system and keep track of the reference in the labelToPlanet map.
-               labelToPlanet['#'+name]=createStarSystem(*parent, name, rectX, rectY);
-
-               //Get the next rect
-               pRect = pRect->NextSiblingElement("rect");
-            }
-            Logger::getLogger()->debug("Finished with rects processing");
-
-            //Start processing Paths in g
-            pPath = pG->FirstChildElement("path");
-            Logger::getLogger()->debug("Starting on paths processing");
-            while (pPath) {
-               //Process each individual Path and translate into graph
-               Logger::getLogger()->debug("Looking at a path, start is: %s, end is %s",
-                  pPath->Attribute("inkscape:connection-start"),
-                  pPath->Attribute("inkscape:connection-end"));
-               
-               string p1 = pPath->Attribute("inkscape:connection-start");
-               string p2 = pPath->Attribute("inkscape:connection-end");
-               graph->addEdge(labelToPlanet[p1],labelToPlanet[p2]);
-               //get label for start, end
-               //remove # from labels?
-               
-
-               //Get the next path
-               pPath = pPath->NextSiblingElement("path");
-            }
-            Logger::getLogger()->debug("Finished with paths processing");
+            loadedMapOkay = processGTag(pG, universe);   //map loading must reach this point to be successful
          }// </g>
+
       }// </svg>
 
    }
 
    return loadedMapOkay;             //return true if map was created successfully, otherwise false
+}
+
+bool processGTag(TiXmlElement* pG, IGObject& universe) {
+   bool result = true;
+
+   //A map used to relate the label of a constellation to the IGObject*
+   std::map<string,IGObject*> labelToPlanet;
+   
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   Graph* graph = risk->getGraph();   
+
+   TiXmlElement* pPath;
+
+   //Start processing Rectangles in g
+   Logger::getLogger()->debug("Starting on rects processing");
+   processRectTags(pG,universe,labelToPlanet);
+   Logger::getLogger()->debug("Finished with rects processing");
+
+   //Start processing Paths in g
+   pPath = pG->FirstChildElement("path");
+   Logger::getLogger()->debug("Starting on paths processing");
+   while (pPath) {
+      string p1 = pPath->Attribute("inkscape:connection-start");
+      string p2 = pPath->Attribute("inkscape:connection-end");
+      
+      //Process each individual Path and translate into graph
+      Logger::getLogger()->debug("Looking at a path, start is: %s, end is %s",
+         p1.c_str(),p2.c_str());
+      
+      if ((p1 != "" && p2 != "") && labelToPlanet[p1]!=NULL && labelToPlanet[p2]!= NULL)
+         graph->addEdge(labelToPlanet[p1],labelToPlanet[p2]);
+
+      //Get the next path
+      pPath = pPath->NextSiblingElement("path");
+   }
+   Logger::getLogger()->debug("Finished with paths processing");
+   
+   return result;
+}
+
+//Process each individual Rectangle and translate to Star
+bool processRectTags(TiXmlElement* pG, IGObject& universe, std::map<string,IGObject*>& labelToPlanet) {
+   bool result = true;
+   
+   TiXmlElement* pRect;
+   pRect = pG->FirstChildElement("rect");
+   
+   //A map used to relate the colors of a constellation to the IGObject*
+   std::map<string,IGObject*> styleToConstellation;
+   
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   Graph* graph = risk->getGraph();
+   
+   while (pRect) {
+      Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
+      IGObject* parent;
+
+      string style;
+      size_t fillPosn;
+   
+      double rectX;
+      double rectY;
+      string name;
+
+      //Extract the fill from the style attribute
+      style = pRect->Attribute("style");
+      Logger::getLogger()->debug("Style is initially: %s",style.c_str());
+      fillPosn = style.find("fill:#"); //Find where the fill occurs in the style string
+      if (fillPosn != string::npos)
+         style = style.substr(fillPosn+6,6);
+      Logger::getLogger()->debug("Style was detected to be %s",style.c_str());               
+
+      //Check if constellation exists for given fill color
+      std::map<string,IGObject*>::const_iterator fillExists = styleToConstellation.find(style);
+      if (fillExists == styleToConstellation.end()) { //if color doesn't exist, create constellation for it
+         std::pair<string,uint32_t> cnstNameAndBonus = getNameAndBonus(pG,style);
+         parent = createConstellation(universe,cnstNameAndBonus.first,cnstNameAndBonus.second);
+         styleToConstellation[style] = parent;
+      }
+      else
+         parent = styleToConstellation[style];
+      
+      //Get doubles out of strings for x and y
+      std::istringstream xstream( pRect->Attribute("x"));
+   	xstream >> rectX;
+      std::istringstream ystream( pRect->Attribute("y"));
+   	ystream >> rectY;
+      rectY *= -1; //invert the map, since svg files measure from top to bottom
+
+      name = pRect->Attribute("id");
+   
+      //Create the star system and keep track of the reference in the labelToPlanet map.
+      labelToPlanet['#'+name]=createStarSystem(*parent, name, rectX, rectY);
+      pRect = pRect->NextSiblingElement("rect");
+   }
+   
+   return result;
+}
+
+std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string style) {
+   TiXmlElement *pText, *pTSpan;
+   std::pair<string,uint32_t> result;
+   result.first = ""; result.second = 0;
+
+   pText = pG->FirstChildElement("text");   
+   while(pText) {
+      pTSpan = pText->FirstChildElement("tspan");
+      while(pTSpan) {
+         string textStyle = pTSpan->Attribute("style");
+         size_t fillPosn = textStyle.find("fill:#"); //Find where the fill occurs in the style string
+         if (fillPosn != string::npos)
+            textStyle = textStyle.substr(fillPosn+6,6);
+            
+         if (textStyle == style) { //both colors are identical
+            string wholeText = pTSpan->GetText();
+            size_t delimiter = wholeText.find("|");
+            if ( delimiter != string::npos ) {
+               result.first = wholeText.substr(0,delimiter);
+               
+               std::istringstream bonusstream(wholeText.substr(delimiter+1));
+            	bonusstream >> result.second;
+            }
+         }
+            
+         pTSpan = pTSpan->NextSiblingElement("tspan");
+      }
+      
+      pText = pText->NextSiblingElement("text");
+   }
+   
+   //if no name was given, set style to color
+   if (result.first == "")
+      result.first = style;
+      
+   return result;
 }
 
 IGObject* createConstellation(IGObject& parent, const string& name, int bonus) {

@@ -2,8 +2,12 @@ Monday:
 *Investigated SVG, its going to work, *shoots some fireworks
 **Using circles as planets isn't the best though, rectangles will work better as the are different tags (than connections, which are paths), but who knows *shrugs*. Labels can be set properly using inkscape, and connections have "start" and "end"s that include these labels
 
-*Get TinyXML working
-*Meet with Tyler about remainder of term - Friday/Weekend
+Tuesday:
+*Got TinyXML working
+*Rudimentary import created -> must use inkscape, draw rects for planets, set id to name and label to name.
+
+Wednesday:
+*Got 
 
 =========================================================================================
 

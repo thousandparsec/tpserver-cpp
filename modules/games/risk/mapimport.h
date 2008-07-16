@@ -25,11 +25,16 @@
 #include <vector>
 #include <tpserver/vector3d.h>
 
+#include <tinyxml.h>
+#include <string>
 class IGObject;
  
 namespace RiskRuleset {
 
 bool importMapFromFile(std::string filename, IGObject& universe);
+bool processGTag(TiXmlElement* pG, IGObject& universe);
+bool processRectTags(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject*>& labelToPlanet);
+std::pair<std::string,uint32_t> getNameAndBonus(TiXmlElement* pG, std::string style);
 
 IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
 IGObject* createStarSystem(IGObject& parent, const std::string& name,
