@@ -125,8 +125,12 @@ bool Move::doOrder(IGObject * obj) {
         out << starSysData->getRegion();
         Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else if(regions.size() == 1) {
-        //TODO: Check for another leader of the fleet type in this region.
-        //      If there is one, initiate INTERNAL conflict!
+        //Check for another leader of the fleet type in this region.
+        uint32_t leaderType = fleetData->getShips().begin()->first;
+        int rivalLeader = getLeaderInRegion(*regions.begin(), leaderType);
+        if(rivalLeader != -1) {
+            //TODO: If there is one, initiate INTERNAL conflict!
+        }
         starSysData->setRegion(*(regions.begin()));
         stringstream out;
         out << starSysData->getRegion();
