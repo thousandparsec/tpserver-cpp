@@ -97,7 +97,13 @@ void Fleet::addAllowedCombatOrder(string order) {
 }
 
 void Fleet::toggleCombat() {
+    OrderManager * om = Game::getGame()->getOrderManager();
     combat = !combat;
+    if(combat) {
+        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
+    } else {
+        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(normalOrders);
+    } 
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
