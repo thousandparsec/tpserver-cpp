@@ -56,6 +56,7 @@ FleetType::FleetType():OwnedObjectType(){
 
      nametype = "Fleet";
     typedesc = "Fleet of ships";
+
     Logger::getLogger()->debug("Exit: Fleet Constructor");
 }
 
@@ -67,6 +68,7 @@ ObjectBehaviour* FleetType::createObjectBehaviour() const{
 }
 
 Fleet::Fleet():OwnedObject(){
+    combat = false;
 }
 
 Fleet::~Fleet(){
@@ -78,10 +80,24 @@ void Fleet::setDefaultOrderTypes(){
 void Fleet::addAllowedOrder(string order) {
     Logger::getLogger()->debug("Enter: Fleet::addAllowedOrder");
     OrderManager * om = Game::getGame()->getOrderManager();
-    std::set<uint32_t> allowedlist;
-    allowedlist.insert(om->getOrderTypeByName(order));
-    ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+    normalOrders.insert(om->getOrderTypeByName(order));
+    if(!combat) {
+        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(normalOrders);
+    }
     Logger::getLogger()->debug("Exit: Fleet::addAllowedOrder");
+}
+
+void Fleet::addAllowedCombatOrder(string order) {
+    OrderManager * om = Game::getGame()->getOrderManager();
+    combatOrders.insert(om->getOrderTypeByName(order));
+    if(combat) {
+        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
+    }
+    Logger::getLogger()->debug("Exit: Fleet::addAllowedCombatOrder");
+}
+
+void Fleet::toggleCombat() {
+    combat = !combat;
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
