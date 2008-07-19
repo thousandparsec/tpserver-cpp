@@ -7,7 +7,14 @@ Tuesday:
 *Rudimentary import created -> must use inkscape, draw rects for planets, set id to name and label to name.
 
 Wednesday:
-*Got 
+*Got name imports working, moving on to screencasts tomorrow, give mentors/admins time to digest
+
+Thursday:
+Screencasting scripts, mainly looking at getting my wife to dub
+
+Friday:
+Getting my courses worked out: will be taking discrete math, prog. practices, scientific comp, intro to AI, and Languages
+Looking into counting constellations -> actually harder than I thoguht
 
 =========================================================================================
 
