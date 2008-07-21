@@ -49,6 +49,8 @@ class Fleet : public OwnedObject {
         void addAllowedOrder(std::string order);
         void addAllowedCombatOrder(std::string order);
         void toggleCombat();
+        void setCombatant(bool com);
+        bool isCombatant();
         void addShips(uint32_t type, uint32_t number);
         bool removeShips(uint32_t type, uint32_t number);
         uint32_t numShips(uint32_t type);
@@ -66,6 +68,7 @@ class Fleet : public OwnedObject {
         int getContainerType();
     private:
         bool combat;
+        bool combatant;
         std::set<uint32_t> normalOrders;
         std::set<uint32_t> combatOrders;
 };

@@ -69,6 +69,7 @@ ObjectBehaviour* FleetType::createObjectBehaviour() const{
 
 Fleet::Fleet():OwnedObject(){
     combat = false;
+    combatant = false;
 }
 
 Fleet::~Fleet(){
@@ -100,10 +101,27 @@ void Fleet::toggleCombat() {
     OrderManager * om = Game::getGame()->getOrderManager();
     combat = !combat;
     if(combat) {
-        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
+        if(combatant) {
+            ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
+        } else {
+            std::set<uint32_t> temp;
+            ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(temp);
+        }
     } else {
         ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(normalOrders);
+        combatant = false;
     } 
+}
+
+void Fleet::setCombatant(bool com) {
+    combatant = com;
+    if(combat && com) {
+        ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
+    }   
+}
+
+bool Fleet::isCombatant() {
+    return combatant;
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
