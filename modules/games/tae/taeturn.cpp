@@ -52,6 +52,8 @@ using std::string;
 TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
     fleetBuilder = fb;
     playerTurn = 0;
+    combat = false;
+    isInternal = false;
 }
 
 TaeTurn::~TaeTurn(){
@@ -59,6 +61,11 @@ TaeTurn::~TaeTurn(){
 }
 
 void TaeTurn::doTurn(){
+    if(combat) {
+        doCombatTurn();
+        return;
+    }
+
     std::set<uint32_t>::iterator itcurr;
 
     Game* game = Game::getGame();
@@ -122,6 +129,11 @@ void TaeTurn::doTurn(){
     }
     
     awardArtifacts();
+
+    //Initialize combat if the next turn is a combat turn
+    if(combat) {
+        initCombat();
+    }
 
     //Update which player's turn it is
     playerTurn = (playerTurn + 1) % playermanager->getNumPlayers();
@@ -240,6 +252,47 @@ void TaeTurn::doTurn(){
 
 }
 
+void TaeTurn::initCombat() {
+    std::set<uint32_t>::iterator itcurr;
+
+    Game* game = Game::getGame();
+    ObjectManager* objectmanager = game->getObjectManager();
+    PlayerManager* playermanager = game->getPlayerManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+
+    std::set<uint32_t> objects = objectmanager->getAllIds();
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
+            Fleet* f = (Fleet*) ob->getObjectBehaviour();
+            f->toggleCombat();
+            //TODO: check to see if this fleet is a combatant
+        }
+    }
+
+    Message * msg = new Message();
+    msg->setSubject("COMBAT!");
+    msg->setBody(string("The next turn is a combat turn!"));
+    
+    std::set<uint32_t> players = playermanager->getAllIds();
+    for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+        Player* player = playermanager->getPlayer(*itcurr);        
+        player->postToBoard(msg);
+    }
+}
+
+void TaeTurn::doCombatTurn() {
+    //TODO: Do orders
+
+    //TODO: Award points
+
+    //TODO: Update Board & Visibility
+    
+    //TODO: Check for combat
+
+    //TODO: Post end of turn messages
+}
+
 void TaeTurn::awardArtifacts() {
     Game* game = Game::getGame();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
@@ -307,7 +360,12 @@ void TaeTurn::awardArtifacts() {
             } 
         }
     }
+}
 
+void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
+    combat = true;
+    isInternal = internal;
+    combatants = com;
 }
 
 void TaeTurn::setPlanetType(uint32_t pt){

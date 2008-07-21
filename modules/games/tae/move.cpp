@@ -41,10 +41,12 @@
 #include "fleet.h"
 #include "planet.h"
 #include "starsystem.h"
+#include "taeturn.h"
 
 #include "move.h"
 
 using std::set;
+using std::map;
 using std::string;
 using std::stringstream;
 
@@ -129,7 +131,12 @@ bool Move::doOrder(IGObject * obj) {
         uint32_t leaderType = fleetData->getShips().begin()->first;
         int rivalLeader = getLeaderInRegion(*regions.begin(), leaderType);
         if(rivalLeader != -1) {
-            //TODO: If there is one, initiate INTERNAL conflict!
+            //Initiate internal conflict!
+            map<uint32_t, uint32_t> combatants;
+            combatants[obj->getID()] = *regions.begin();
+            combatants[rivalLeader] = *regions.begin();
+            TaeTurn* turn = (TaeTurn*) Game::getGame()->getTurnProcess();
+            turn->queueCombatTurn(true, combatants);
         }
         starSysData->setRegion(*(regions.begin()));
         stringstream out;

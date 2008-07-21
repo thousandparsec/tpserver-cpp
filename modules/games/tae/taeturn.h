@@ -33,6 +33,8 @@ class TaeTurn : public TurnProcess{
     void setFleetType(uint32_t ft);
     void setPlanetType(uint32_t pt);
     
+    void queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com);   
+ 
     std::set<uint32_t> getContainerIds() const;
     
   private:
@@ -41,8 +43,13 @@ class TaeTurn : public TurnProcess{
     uint32_t planettype;
     uint32_t fleettype;
     std::set<uint32_t> containerids;
+    bool combat;
+    bool isInternal;
+    std::map<uint32_t, uint32_t> combatants;
 
     void awardArtifacts();
+    void initCombat();
+    void doCombatTurn();
 };
 
 #endif

@@ -41,6 +41,7 @@
 #include "starsystem.h"
 #include "fleet.h"
 #include "planet.h"
+#include "taeturn.h"
 
 #include "colonize.h"
 
@@ -230,17 +231,22 @@ bool Colonize::doOrder(IGObject * obj) {
             }
         }
 
+        TaeTurn* turn = (TaeTurn*) Game::getGame()->getTurnProcess();
         if(settlers.size() > 1) {
             //Settler Conflict!
+            turn->queueCombatTurn(false, settlers);
         }
         if(scientists.size() > 1) {
             //Scientist Conflict!
+            turn->queueCombatTurn(false, scientists);
         }
         if(merchants.size() > 1) {
             //Merchant Conflict!
+            turn->queueCombatTurn(false, merchants);
         }
         if(miners.size() > 1) {
             //Miner Conflict!
+            turn->queueCombatTurn(false, miners);
         }
     }
 
