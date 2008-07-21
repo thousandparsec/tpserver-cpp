@@ -1,44 +1,32 @@
 Monday:
-*Investigated SVG, its going to work, *shoots some fireworks
-**Using circles as planets isn't the best though, rectangles will work better as the are different tags (than connections, which are paths), but who knows *shrugs*. Labels can be set properly using inkscape, and connections have "start" and "end"s that include these labels
-
-Tuesday:
-*Got TinyXML working
-*Rudimentary import created -> must use inkscape, draw rects for planets, set id to name and label to name.
-
-Wednesday:
-*Got name imports working, moving on to screencasts tomorrow, give mentors/admins time to digest
-
-Thursday:
-Screencasting scripts, mainly looking at getting my wife to dub
-
-Friday:
-Getting my courses worked out: will be taking discrete math, prog. practices, scientific comp, intro to AI, and Languages
-Looking into counting constellations -> actually harder than I thoguht
+I'm definately sensing some display issues will need ot be resolved for a more playable experience with large maps.
 
 =========================================================================================
 
-
-This Week:
-*Get working on XML/SVG import
-*Make actual risk map in svg
-*Audio for JLP's screencast?
- 
-Later:
-Finish XML/SVG import
-Implement continent ownership bonus
-Consolidate messaging
+Now until end of project:
+*Make full map
+*Clean up SVG import
+*Implement continent ownership bonus
+*Audio for JLPs screencast
+*?Consolidate messaging?
 
 
 Screencasts (4)
-*Getting Client
-*Setting up Server
-	-Compiling from source?
-	-Different ways to set up server
+*Running a Risk server - config file fun
 	-Modifying the config files
-*Using the TP client (JLP Vid)
-	-Downloading the Univese
-	-How each pane works
+*Creating your own Risk maps
+Welcome to the Risk maps creation screencast. This screencast will walk you through using Inkscape to create your own maps for the Risk ruleset. Maps in risk are made up of a few simple things; Rectangles represent planets, the color of the rectangle represents continent, the labels of the rectangle represent the names of the planets, Diagram connectors indicate connectivity between planets, and finally, colored text assigns a name and bonus to the continent whose color it is written in (reword this). 
+
+To create a new planet all you need to do is select the rectangle creation tool, and pick a fill color from the color bar. Remember, identical colors accross rectangles represent constellations/continents.
+
+I find it easiest to create all my planets first, and arrange them, before connecting them with connectors. Once you're satisfied with the layout of your planets its time to give them names. Right click on a given rectangle and click Object Properties (a shortcut for this is selecting the object and pressing Ctrl-Shift-O). In this properties dialog replace the id and label with the desired name for the planet. Don't forget to fill both boxes or connectors won't work.
+
+Once you've named your planets its time to give a name to the constellations. Select the text tool and click on any open space to create a new title. Type the name of your constellation, followed by a vertical bar (usually above the enter key on the keyboard), followed by an integer representing the bonus reinforcements provided for owning the whole constellation. It should look just like this. Once you've given a name and a bonus select the text in the textbox by clicking and dragging the mouse across it and select the same color on the color bar as the color of the rectangles the label applies too.
+
+The only step left now is to connect the planets. To do this we select the "Diagram connector" tool in the tools bar. This procedure must be done carefully as an incorrect connector will LOOK like it connects two rectangles when in actuallity it does not. Hover your mouse over the center of the first rectangle until a small square appears, but your mouse into that square and click and drag towards the target rectangle. While still holding the mouse down hover over the target rectangle until a similar box appears. Move the cursor over the said box, and release. If done correctly a connector should appear that touches the edges of both rectangles.
+
+Once you've finished your map its time to load the map into tpserver-cpp. To do so you must specify the absolute path (or relative path, if you know from which folder tpserver-cpp will run)  of the location of the map inside the config file you will be using. Once the path is entered correctly you are ready to start playing.
+
 *Playing the Risk ruleset
 	-assumes you have watched client, setting up server (unless you know of a Risk server), and client howto
 	-Describes orders available, how to issue them
