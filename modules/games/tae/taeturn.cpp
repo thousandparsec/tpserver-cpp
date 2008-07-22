@@ -260,12 +260,17 @@ void TaeTurn::initCombat() {
     PlayerManager* playermanager = game->getPlayerManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
+    std::set<ObjectView*> views;
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             f->toggleCombat();
+            ObjectView* obv = new ObjectView();
+            obv->setObjectId(ob->getID());
+            obv->setCompletelyVisible(true);
+            views.insert(obv);
             //TODO: check to see if this fleet is a combatant
         }
     }
@@ -278,6 +283,9 @@ void TaeTurn::initCombat() {
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
         Player* player = playermanager->getPlayer(*itcurr);        
         player->postToBoard(msg);
+        for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
+            player->getPlayerView()->addVisibleObject(*i);
+        }
     }
 }
 

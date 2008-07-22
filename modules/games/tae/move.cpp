@@ -130,10 +130,9 @@ bool Move::doOrder(IGObject * obj) {
         //Check for another leader of the fleet type in this region.
         uint32_t leaderType = fleetData->getShips().begin()->first;
         string name = Game::getGame()->getDesignStore()->getDesign(leaderType)->getName();
-        Logger::getLogger()->debug(name.c_str());
         int rivalLeader = getLeaderInRegion(*regions.begin(), name);
         if(rivalLeader != -1) {
-            Logger::getLogger()->debug("INTERNAL CONFLICT****************");
+            Logger::getLogger()->debug("Internal Conflict triggered!");
             //Initiate internal conflict!
             map<uint32_t, uint32_t> combatants;
             combatants[obj->getID()] = *regions.begin();

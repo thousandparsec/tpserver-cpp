@@ -102,11 +102,6 @@ bool Colonize::doOrder(IGObject * obj) {
     Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
-    uint32_t leaderType;
-    uint32_t settlerLeader;
-    uint32_t merchantLeader;
-    uint32_t miningLeader;
-    uint32_t scientistLeader;
 
     //Perform last minute checks to make sure the system can be colonized
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
@@ -171,25 +166,6 @@ bool Colonize::doOrder(IGObject * obj) {
         // Add +1 to the resource score of the player with the correct leader 
         // in this region
         
-        //find the leader type
-/*        DesignStore* ds = Game::getGame()->getDesignStore();
-        set<unsigned int> designs = ds->getDesignIds(); 
-        for(set<unsigned int>::iterator i = designs.begin(); i != designs.end(); i++) {
-            if(ds->getDesign(*i)->getName().compare(leaderName) == 0) {
-                leaderType = *i;
-            } 
-            if(ds->getDesign(*i)->getName().compare("SettlerLeaderShip") == 0) {
-                settlerLeader = *i;
-            } else if(ds->getDesign(*i)->getName().compare("MerchantLeaderShip") == 0) {
-                merchantLeader = *i;
-            } else if(ds->getDesign(*i)->getName().compare("ScientistLeaderShip") == 0) {
-                scientistLeader = *i;
-            } else if(ds->getDesign(*i)->getName().compare("MiningLeaderShip") == 0) {
-                miningLeader = *i;
-            }
-            
-        }*/
-        //find the leader of the region... add 1 to the player's score
         int leaderID = getLeaderInRegion(*(regions.begin()), leaderName);
         if(leaderID < 0 && leaderName.compare("SettlerLeaderShip") != 0) {
             leaderID = getLeaderInRegion(*(regions.begin()), "SettlerLeaderShip");
