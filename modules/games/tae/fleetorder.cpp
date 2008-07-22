@@ -172,7 +172,7 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     return regions;
 }
 
-int FleetOrder::getLeaderInRegion(uint32_t region, uint32_t leaderType) {
+int FleetOrder::getLeaderInRegion(uint32_t region, string leaderType) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     
@@ -184,7 +184,8 @@ int FleetOrder::getLeaderInRegion(uint32_t region, uint32_t leaderType) {
             Logger::getLogger()->debug("Found a fleet");
             Fleet* f = (Fleet*) (ob->getObjectBehaviour());
             //Check the ship
-            if(f->getShips().count(leaderType) > 0) {
+            uint32_t ship = f->getShips().begin()->first;
+            if(Game::getGame()->getDesignStore()->getDesign(ship)->getName().compare(leaderType) == 0) {
                 IGObject* parent = obm->getObject(ob->getParent());
                 Logger::getLogger()->debug(parent->getName().c_str());
                 //Make sure the fleet is orbiting a star system

@@ -172,7 +172,7 @@ bool Colonize::doOrder(IGObject * obj) {
         // in this region
         
         //find the leader type
-        DesignStore* ds = Game::getGame()->getDesignStore();
+/*        DesignStore* ds = Game::getGame()->getDesignStore();
         set<unsigned int> designs = ds->getDesignIds(); 
         for(set<unsigned int>::iterator i = designs.begin(); i != designs.end(); i++) {
             if(ds->getDesign(*i)->getName().compare(leaderName) == 0) {
@@ -188,11 +188,11 @@ bool Colonize::doOrder(IGObject * obj) {
                 miningLeader = *i;
             }
             
-        }
+        }*/
         //find the leader of the region... add 1 to the player's score
-        int leaderID = getLeaderInRegion(*(regions.begin()), leaderType);
-        if(leaderID < 0 && leaderType != settlerLeader) {
-            leaderID = getLeaderInRegion(*(regions.begin()), settlerLeader);
+        int leaderID = getLeaderInRegion(*(regions.begin()), leaderName);
+        if(leaderID < 0 && leaderName.compare("SettlerLeaderShip") != 0) {
+            leaderID = getLeaderInRegion(*(regions.begin()), "SettlerLeaderShip");
         }
         if(leaderID >= 0) {
             Fleet* leader = (Fleet*) ((obm->getObject((uint32_t) leaderID))->getObjectBehaviour());
@@ -213,19 +213,19 @@ bool Colonize::doOrder(IGObject * obj) {
         map<uint32_t, uint32_t> merchants;
         map<uint32_t, uint32_t> miners;
         for(set<unsigned int>::iterator i = regions.begin(); i != regions.end(); i++) {
-            int temp = getLeaderInRegion(*i, settlerLeader);
+            int temp = getLeaderInRegion(*i, "SettlerLeaderShip");
             if(temp != -1) {
                 settlers[temp] = *i;
             }
-            temp = getLeaderInRegion(*i, scientistLeader);
+            temp = getLeaderInRegion(*i, "ScientistLeaderShip");
             if(temp != -1) {
                 scientists[temp] = *i;
             }
-            temp = getLeaderInRegion(*i, merchantLeader);
+            temp = getLeaderInRegion(*i, "MerchantLeaderShip");
             if(temp != -1) {
                 merchants[temp] = *i;
             }
-            temp = getLeaderInRegion(*i, miningLeader);
+            temp = getLeaderInRegion(*i, "MiningLeaderShip");
             if(temp != -1) {
                 miners[temp] = *i;
             }

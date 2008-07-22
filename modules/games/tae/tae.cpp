@@ -248,6 +248,7 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
                 pob->addResource(1,1);
             } else if (line[i] == 'A') {
                 sys1ob->setInhabitable(true);
+                sys1ob->setRegion(sys1->getID());
                 pob->addResource(3,1);
                 pob->addResource(5,1);
             }   
