@@ -33,7 +33,8 @@ class TaeTurn : public TurnProcess{
     void setFleetType(uint32_t ft);
     void setPlanetType(uint32_t pt);
     
-    void queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com);   
+    void queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com);
+    void addReinforcement(uint32_t player); 
  
     std::set<uint32_t> getContainerIds() const;
     

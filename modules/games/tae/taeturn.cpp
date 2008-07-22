@@ -376,6 +376,10 @@ void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
     combatants = com;
 }
 
+void TaeTurn::addReinforcement(uint32_t player) {
+    //TODO: +1 to player's combat strength for this turn
+}
+
 void TaeTurn::setPlanetType(uint32_t pt){
     planettype = pt;
 }
