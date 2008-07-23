@@ -1,0 +1,13 @@
+*Playing the Risk ruleset
+	-assumes you have watched client, setting up server (unless you know of a Risk server), and client howto
+	-Describes orders available, how to issue them
+		-not about map's lines not showing yet
+	-Note about order moves are processed. From top to bottom, etc.
+	-ON colonize orders
+		-What they do, how they work (bidding)
+		-On colonize orders being on or off
+	-ON reinforce orders
+		-what is done, how you are limited, word of caution
+	-ON move orders
+		-How they work, particularly attacks, how they are limited
+
