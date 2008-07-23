@@ -1,20 +1,3 @@
-Monday:
-I'm definately sensing some display issues will need ot be resolved for a more playable experience with large maps.
-
-=========================================================================================
-
-Now until end of project:
-*Make full map
-*Clean up SVG import
-*Implement continent ownership bonus
-*Audio for JLPs screencast
-*?Consolidate messaging?
-
-
-Screencasts (4)
-*Running a Risk server - config file fun
-	-Modifying the config files
-*Creating your own Risk maps
 Welcome to the Risk maps creation screencast. This screencast will walk you through using Inkscape to create your own maps for the Risk ruleset. Maps in risk are made up of a few simple things; Rectangles represent planets, the color of the rectangle represents continent, the labels of the rectangle represent the names of the planets, Diagram connectors indicate connectivity between planets, and finally, colored text assigns a name and bonus to the continent whose color it is written in (reword this). 
 
 To create a new planet all you need to do is select the rectangle creation tool, and pick a fill color from the color bar. Remember, identical colors accross rectangles represent constellations/continents.
@@ -26,20 +9,3 @@ Once you've named your planets its time to give a name to the constellations. Se
 The only step left now is to connect the planets. To do this we select the "Diagram connector" tool in the tools bar. This procedure must be done carefully as an incorrect connector will LOOK like it connects two rectangles when in actuality it does not. Hover your mouse over the center of the first rectangle until a small square appears, but your mouse into that square and click and drag towards the target rectangle. While still holding the mouse down hover over the target rectangle until a similar box appears. Move the cursor over the said box, and release. If done correctly a connector should appear that touches the edges of both rectangles.
 
 Once you've finished your map its time to load the map into tpserver-cpp. To do so you must specify the absolute path (or relative path, if you know from which folder tpserver-cpp will run)  of the location of the map inside the config file you will be using. Once the path is entered correctly you are ready to start playing.
-
-*Playing the Risk ruleset
-	-assumes you have watched client, setting up server (unless you know of a Risk server), and client howto
-	-Describes orders available, how to issue them
-		-not about map's lines not showing yet
-	-Note about order moves are processed. From top to bottom, etc.
-	-ON colonize orders
-		-What they do, how they work (bidding)
-		-On colonize orders being on or off
-	-ON reinforce orders
-		-what is done, how you are limited, word of caution
-	-ON move orders
-		-How they work, particularly attacks, how they are limited
-	-Advance techniques:
-		-Chaining moves together - pros/cons
-
-
