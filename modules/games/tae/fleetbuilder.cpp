@@ -99,6 +99,7 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
         } else {
             theFleet->addAllowedOrder("Colonize");
         }
+        theFleet->addAllowedCombatOrder("Reinforce");
     } else if(fleetType == VIP_FLEET) {
         ship = createVIPTransport(owner, shipType);
         theFleet->addAllowedOrder("Move");

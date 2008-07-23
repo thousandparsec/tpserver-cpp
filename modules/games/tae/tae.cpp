@@ -56,6 +56,7 @@
 #include "colonize.h"
 #include "move.h"
 #include "attack.h"
+#include "reinforce.h"
 #include "taeturn.h"
 #include "fleetbuilder.h"
 
@@ -118,6 +119,7 @@ void taeRuleset::initGame() {
     orm->addOrderType(new Colonize(false));
     orm->addOrderType(new Move());
     orm->addOrderType(new Attack());
+    orm->addOrderType(new Reinforce());
 
     Logger::getLogger()->info("TaE initialised");
 }

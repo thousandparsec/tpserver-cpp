@@ -47,6 +47,8 @@
 
 using std::stringstream;
 using std::string;
+using std::map;
+using std::set;
 
 
 TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
@@ -259,7 +261,24 @@ void TaeTurn::initCombat() {
     ObjectManager* objectmanager = game->getObjectManager();
     PlayerManager* playermanager = game->getPlayerManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
+    DesignStore* ds = game->getDesignStore();
 
+    set<uint32_t> owners;
+    string shipType;
+    for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+        Fleet* leader = (Fleet*) (objectmanager->getObject(i->first))->getObjectBehaviour();
+        if(shipType.empty()) {
+            if(isInternal) {
+                shipType = "ScientistShip";
+            } else {
+                uint32_t ship = leader->getShips().begin()->first;
+                shipType = ds->getDesign(ship)->getName();
+            }
+        }
+
+        owners.insert(leader->getOwner());
+    }
+            
     std::set<ObjectView*> views;
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
@@ -267,11 +286,20 @@ void TaeTurn::initCombat() {
         if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             f->toggleCombat();
+            //check to see if this fleet is a combatant
+            if(owners.count(f->getOwner()) > 0) {
+                uint32_t ship = f->getShips().begin()->first;
+                string name = ds->getDesign(ship)->getName();
+                if(name.compare(shipType) == 0) {
+                    f->setCombatant(true);
+                }
+            }
+
+            //Set visibility
             ObjectView* obv = new ObjectView();
             obv->setObjectId(ob->getID());
             obv->setCompletelyVisible(true);
             views.insert(obv);
-            //TODO: check to see if this fleet is a combatant
         }
     }
 
