@@ -268,14 +268,15 @@ void TaeTurn::initCombat() {
     set<uint32_t> regions;
     string shipType;
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-        Fleet* leader = (Fleet*) (objectmanager->getObject(i->first))->getObjectBehaviour();
+        IGObject* ob = objectmanager->getObject(i->first);
+        Fleet* leader = (Fleet*) (ob)->getObjectBehaviour();
         if(shipType.empty()) {
             if(isInternal) {
                 shipType = "ScientistShip";
             } else {
                 uint32_t ship = leader->getShips().begin()->first;
                 shipType = ds->getDesign(ship)->getName();
-                int pos = shipType.find("Leader");
+                size_t pos = shipType.find("Leader");
                 if(pos != shipType.npos) {
                     shipType.erase(pos, 6);
                 }
@@ -285,6 +286,39 @@ void TaeTurn::initCombat() {
 
         if(regions.count(i->second) <= 0) {
             regions.insert(i->second);
+        }
+
+        //Set initial internal combat strength
+        if(isInternal) {
+            IGObject *starSys = objectmanager->getObject(ob->getParent());
+            StarSystem* starSysData = (StarSystem*)(starSys->getObjectBehaviour());
+            Vector3d pos = starSysData->getPosition();
+            //east-west neighbors
+            for(int i = -1; i < 2; i+=2) {
+                set<uint32_t> ids = objectmanager->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
+                for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+                    IGObject *tempObj = objectmanager->getObject(*j);
+                    if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
+                        Planet* p = (Planet*)(tempObj->getObjectBehaviour());
+                        if(p->getResource(5) > 0) {
+                            addReinforcement(leader->getOwner());
+                        }
+                    }
+                }
+            }
+            //north-south neighbors
+            for(int i = -1; i < 2; i+=2) {
+                set<uint32_t> ids = objectmanager->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
+                for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+                    IGObject *tempObj = objectmanager->getObject(*j);
+                    if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
+                        Planet* p = (Planet*)(tempObj->getObjectBehaviour());
+                        if(p->getResource(5) > 0) {
+                            addReinforcement(leader->getOwner());
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -320,7 +354,9 @@ void TaeTurn::initCombat() {
             obv->setObjectId(ob->getID());
             obv->setCompletelyVisible(true);
             views.insert(obv);
-        } else if(ob->getType() == obtm->getObjectTypeByName("Planet") && !isInternal) {
+        } 
+        //Set initial external combat strength
+        else if(ob->getType() == obtm->getObjectTypeByName("Planet") && !isInternal) {
             Planet* p = (Planet*) ob->getObjectBehaviour();
             StarSystem* sys = (StarSystem*) objectmanager->getObject(ob->getParent())->getObjectBehaviour();
             if(regions.count(sys->getRegion()) > 0) {
