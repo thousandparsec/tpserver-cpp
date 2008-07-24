@@ -37,6 +37,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/message.h>
+#include <tpserver/logging.h>
 
 #include "planet.h"
 #include "starsystem.h"
@@ -318,15 +319,129 @@ void TaeTurn::initCombat() {
 }
 
 void TaeTurn::doCombatTurn() {
-    //TODO: Do orders
+    // Do orders
+    std::set<uint32_t>::iterator itcurr;
 
-    //TODO: Award points
+    Game* game = Game::getGame();
+    OrderManager* ordermanager = game->getOrderManager();
+    ObjectManager* objectmanager = game->getObjectManager();
+    PlayerManager* playermanager = game->getPlayerManager();
 
-    //TODO: Update Board & Visibility
+    containerids.clear();
+
+    std::set<uint32_t> objects = objectmanager->getAllIds();
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->getType() == planettype || ob->getType() == fleettype){
+            OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
+            if(oqop != NULL){
+                OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+                if(orderqueue != NULL){
+                    Order * currOrder = orderqueue->getFirstOrder();
+                    if(currOrder != NULL){
+                        if(currOrder->doOrder(ob)) {
+                            orderqueue->removeFirstOrder();
+                        } else {
+                            orderqueue->updateFirstOrder();
+                        }
+                    }
+                    if(ob->getContainerType() >= 1){
+                        containerids.insert(ob->getID());
+                    }
+                    objectmanager->doneWithObject((ob)->getID());
+                }
+            }
+        }
+    }
+
+    //TODO: Remove loosing combatants
     
     //TODO: Check for combat
 
-    //TODO: Post end of turn messages
+    //TODO: Award points
+
+    std::set<uint32_t> players = playermanager->getAllIds();
+    std::set<uint32_t> vis = objectmanager->getAllIds();
+
+    objectmanager->clearRemovedObjects();
+    objects = objectmanager->getAllIds();
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->isAlive()){
+            ob->getObjectBehaviour()->doOnceATurn();
+        }
+        objectmanager->doneWithObject(ob->getID());
+    }
+
+    for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
+        Player* player = playermanager->getPlayer(*itplayer);
+        PlayerView* playerview = player->getPlayerView();
+
+        for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
+            ObjectView* obv = playerview->getObjectView(*itob);
+            if(obv == NULL){
+                if(objectmanager->getObject(*itob)->isAlive()){
+                    obv = new ObjectView();
+                    obv->setObjectId(*itob);
+                    obv->setCompletelyVisible(true);
+                    playerview->addVisibleObject(obv);
+                }
+                objectmanager->doneWithObject(*itob);
+            }else{
+                IGObject* ro = objectmanager->getObject(*itob);
+                uint64_t obmt = ro->getModTime();
+                objectmanager->doneWithObject(*itob);
+                if(obmt > obv->getModTime()){
+                    obv->setModTime(obmt);
+                    playerview->updateObjectView(*itob);
+                }
+            }
+        }
+
+        // remove dead objects
+        std::set<uint32_t> goneobjects;
+        std::set<uint32_t> knownobjects = playerview->getVisibleObjects();
+        set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
+
+        for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
+            ObjectView* obv = playerview->getObjectView(*itob);
+            if(!obv->isGone()){
+                obv->setGone(true);
+                playerview->updateObjectView(*itob);
+            }
+        }
+
+        //Replace colonist fleets
+        int fleets = 0;
+        IGObject* homePlanet;
+        for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end(); ++itob){    
+            IGObject * ob = objectmanager->getObject(*itob);
+            if(ob->getName().compare("Colonist Fleet") == 0) {
+                uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();                if(owner == *itplayer) {
+                    fleets++;
+                }
+            }
+            if(ob->getName().compare(string(player->getName() + "'s Home Planet")) == 0) {
+                homePlanet = ob;
+            }
+        }
+
+        for(int i = fleets; i < 6; i++) {
+            IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
+            game->getObjectManager()->addObject(fleet);
+            ObjectView* obv = new ObjectView();
+            obv->setObjectId(fleet->getID());
+            obv->setCompletelyVisible(true);
+            player->getPlayerView()->addVisibleObject(obv);
+        }
+
+        //TODO: Send end of turn message to each player
+
+    }
+
+
+    playermanager->updateAll();
+
 }
 
 void TaeTurn::awardArtifacts() {
@@ -406,6 +521,7 @@ void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
 
 void TaeTurn::addReinforcement(uint32_t player) {
     //TODO: +1 to player's combat strength for this turn
+    Logger::getLogger()->debug("Add Reinforcement");
 }
 
 void TaeTurn::setPlanetType(uint32_t pt){
