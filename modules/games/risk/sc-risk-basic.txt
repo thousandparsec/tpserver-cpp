@@ -6,11 +6,49 @@ This screencast assumes your connecting to an already existing tpserver playing 
 
 *connect to risk server.
 
-*go over basic rules of risk
-*how risk is played in thousand parsec
-*BASIC information about orders, colonize, move, reinforce.
-*How to find out your availible units
-*misc. little basic things
+The Risk ruleset operates in a fashion not dissimilar to the physical Risk board game, with only a few changes to the game mechanics. Instead of players making moves individually all moves are now initiated simultaneously by all players. 
+*Do something...
+
+Risk has three basic order types, Reinforce, Move, and Colonize. The most basic order, Reinforce
+*Show reinforce order on an owned planet.
+
+lets a player reinforce a planet with Armies they have received from either their beginning total or any added units received each turn. Just like the Risk board game players receive reinforcements each turn based on the number of planets/territories they own; The exact number is determined by the server options. To find out how many Armies you have on a planet, and how many are availible, we look to the information panel for an owned planet (or even an enemies planet).
+*Show information panel
+
+In the information pane we see the number of current armies HERE
+*bring attention to Current Armies
+
+And the number of availible Armies HERE
+*Bring attention to the minable armies.
+
+While the current armies are specific to each planet, the minable armies is a total across all planets. Be careful when issuing reinforcement orders as you can use up all your armies before all your orders are processed.
+*Clear out of reinforcement order issueing
+
+The next order type, Move,
+*Show move order on owned planet
+
+
+Lets a player move or attack other planets adjacent to the issuing planet. 
+*Show populated adjacency list.
+While tpclient does not yet allow for lines to be drawn to indicate connectivity the move order target drop down will always be populated with adjacent planets.
+
+*Hover over adjacent planet
+Hovering over a planet or system can quickly tell us the name of that system, and we can check in our move order to see if we can move there. Once we pick a planet to move to, friendly or otherwise, we select a number of units to move to that system.
+*Select a planet
+The number of units availible to be moved can be no more than 1 less than the total number of units on a planet. Since it is possible to reinforce a planet before attempting to move units the move order will always make sure you don't exceed this limit. Long story short, don't worry about how many units your trying to move, you will never leave a planet with less than 1 unit.
+*Enter a super high bid, end turn
+Should you attempt to move units onto an enemy system an attack movement will be initiated. When attacking another system a number of dice will be rolled for each "side" (attacker or defender) and depending on the outcome of that roll either side may or may not lose units. If you should vanquish all the enemies units you will gain control of the system you attacked. This attack move will be the mainstay of your orders.
+
+The final order type is the Colonize order. 
+*Hover over colonize order, then create one.
+This is a special order type that is not always enabled on a server, depending on the game type, and disappears from use when all systems are occupied. The colonize order allows what could be called a "long distance move order with bidding". Colonize orders can be issued to colonize ANY open planet in the universe
+*Show populated list
+However, unlike Move orders, where the very first order to move to a planet instantly succeeds, Colonize orders tally all Colonize orders on a planet as Bids. These bids are then ordered, and the highest valid bid is completed. The client will always allow you to bid more than you have, but your actual bid will only be counted as how many units you can move from any one territory. At this moment bidding across multiple planets is not allowed.
+*Enter a bid, end turn.
+
+Once all players have selected "End of Turn" or the time limit of the turn is exceeded (depending on your server) all issued orders will be completed.
+*End a turn
+We didn't issue any orders this turn, but had we, they would be processed in a certain order. Order queues in Risk and TP in general operate on a First In - First out. The risk ruleset, specifically, first completes all colonize orders it sees, then all Reinforce orders it sees, then the all the Move orders it sees 
 
 *Thank user for watching, suggest there are many nuances to playing risk on thousand parsec that can be learned by watching the advanced play screencast.
 
