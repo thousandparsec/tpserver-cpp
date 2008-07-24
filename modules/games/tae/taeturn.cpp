@@ -265,6 +265,7 @@ void TaeTurn::initCombat() {
     DesignStore* ds = game->getDesignStore();
 
     set<uint32_t> owners;
+    set<uint32_t> regions;
     string shipType;
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
         Fleet* leader = (Fleet*) (objectmanager->getObject(i->first))->getObjectBehaviour();
@@ -274,10 +275,28 @@ void TaeTurn::initCombat() {
             } else {
                 uint32_t ship = leader->getShips().begin()->first;
                 shipType = ds->getDesign(ship)->getName();
+                int pos = shipType.find("Leader");
+                if(pos != shipType.npos) {
+                    shipType.erase(pos, 6);
+                }
             }
         }
-
         owners.insert(leader->getOwner());
+
+        if(regions.count(i->second) <= 0) {
+            regions.insert(i->second);
+        }
+    }
+
+    int resourceType;
+    if(shipType.compare("MerchantShip") == 0) {
+        resourceType = 4;
+    } else if(shipType.compare("ScientistShip") == 0) {
+        resourceType = 5;
+    } else if(shipType.compare("SettlerShip") == 0) {
+        resourceType = 6;
+    } else {
+        resourceType = 7;
     }
             
     std::set<ObjectView*> views;
@@ -301,12 +320,36 @@ void TaeTurn::initCombat() {
             obv->setObjectId(ob->getID());
             obv->setCompletelyVisible(true);
             views.insert(obv);
+        } else if(ob->getType() == obtm->getObjectTypeByName("Planet") && !isInternal) {
+            Planet* p = (Planet*) ob->getObjectBehaviour();
+            StarSystem* sys = (StarSystem*) objectmanager->getObject(ob->getParent())->getObjectBehaviour();
+            if(regions.count(sys->getRegion()) > 0) {
+                if(p->getResource(resourceType) > 0) {
+                    for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+                        if(i->second == sys->getRegion()) {
+                            Fleet* leader = (Fleet*) (objectmanager->getObject(i->first))->getObjectBehaviour();
+                            addReinforcement(leader->getOwner());
+                        }
+                    }
+                }
+            }
         }
     }
 
     Message * msg = new Message();
     msg->setSubject("COMBAT!");
-    msg->setBody(string("The next turn is a combat turn!"));
+    string body = "The next turn is an ";
+    if(isInternal) {
+        body+= "INTERNAL ";
+    } else {
+        body+= "EXTERNAL ";
+    }
+    body += "combat turn between ";
+    body += playermanager->getPlayer(*owners.begin())->getName();
+    body += " and ";
+    body += playermanager->getPlayer(*owners.end())->getName();
+    body += "!";
+    msg->setBody(body);
     
     std::set<uint32_t> players = playermanager->getAllIds();
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
