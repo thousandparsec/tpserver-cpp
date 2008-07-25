@@ -22,6 +22,7 @@
 
 #include <tpserver/turnprocess.h>
 #include "fleetbuilder.h"
+#include "fleet.h"
 
 class TaeTurn : public TurnProcess{
   public:
@@ -52,6 +53,7 @@ class TaeTurn : public TurnProcess{
     void awardArtifacts();
     void initCombat();
     void doCombatTurn();
+    void sendHome(uint32_t fleet);
 };
 
 #endif

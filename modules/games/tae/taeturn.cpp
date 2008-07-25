@@ -436,7 +436,34 @@ void TaeTurn::doCombatTurn() {
         }
     }
 
-    //TODO: Remove loosing combatants
+    
+    //Determine winner
+    uint32_t winner = 0;
+    uint32_t looser = 0;
+    for(map<uint32_t, int>::iterator i = strength.begin(); i != strength.end(); ++i) {
+        if(winner == 0) {
+            winner = i->first;
+        } else {
+            if(strength[winner] < i->second) {
+                winner = i->first;
+            } else {
+                looser = i->first;
+            }
+        }
+    }
+
+    //Remove loosing combatants
+    if(isInternal) {
+        for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+            IGObject* ob = objectmanager->getObject(i->first);
+            Fleet* f = (Fleet*) ob->getObjectBehaviour();
+            if(f->getOwner() != winner) {
+                sendHome(i->first);
+                Player* p = playermanager->getPlayer(winner);
+                p->setScore(2, p->getScore(2) + 1);
+            }
+        }
+    }
     
     //TODO: Check for combat
 
@@ -599,8 +626,11 @@ void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
     combat = true;
     isInternal = internal;
     combatants = com;
+    strength.clear();
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-        strength[i->first] = 0;
+        IGObject* ob = Game::getGame()->getObjectManager()->getObject(i->first);
+        Fleet* f = (Fleet*) ob->getObjectBehaviour();
+        strength[f->getOwner()] = 0;
     }
 }
 
@@ -608,6 +638,41 @@ void TaeTurn::addReinforcement(uint32_t player) {
     //+1 to player's combat strength for this turn
     strength[player] += 1;
     Logger::getLogger()->debug("Add Reinforcement");
+}
+
+void TaeTurn::sendHome(uint32_t fleet) {
+    Game* game = Game::getGame();
+    ObjectManager* obm = game->getObjectManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+    PlayerManager* pm = game->getPlayerManager();
+
+    IGObject* fleetobj = obm->getObject(fleet);
+    //Check to make sure it is really a fleet
+    if(fleetobj->getType() != obtm->getObjectTypeByName("Fleet")) {
+        return;
+    }
+    
+    //Get all the required objects
+    Fleet* f = (Fleet*) fleetobj->getObjectBehaviour();
+    Player* p = pm->getPlayer(f->getOwner());
+    IGObject* sys = obm->getObject(fleetobj->getParent());
+    StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
+
+    //Remove fleet from system
+    sysData->setRegion(0);
+    fleetobj->removeFromParent();
+
+    //Find it's home planet
+    std::set<uint32_t> objects = obm->getAllIds();
+    std::set<uint32_t>::iterator itcurr;
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = obm->getObject(*itcurr);
+        if(ob->getName().compare(string(p->getName() + "'s Home Planet")) == 0) {
+            Planet* p = (Planet*) ob->getObjectBehaviour();
+            f->setPosition(p->getPosition());
+            fleetobj->addToParent(ob->getID());
+        }
+    }
 }
 
 void TaeTurn::setPlanetType(uint32_t pt){
