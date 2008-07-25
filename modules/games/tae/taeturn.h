@@ -47,6 +47,7 @@ class TaeTurn : public TurnProcess{
     bool combat;
     bool isInternal;
     std::map<uint32_t, uint32_t> combatants;
+    std::map<uint32_t, int> strength;
 
     void awardArtifacts();
     void initCombat();

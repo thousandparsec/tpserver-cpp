@@ -374,18 +374,21 @@ void TaeTurn::initCombat() {
 
     Message * msg = new Message();
     msg->setSubject("COMBAT!");
-    string body = "The next turn is an ";
+    stringstream out;
+    out << "The next turn is an ";
     if(isInternal) {
-        body+= "INTERNAL ";
+        out << "INTERNAL ";
     } else {
-        body+= "EXTERNAL ";
+        out << "EXTERNAL ";
     }
-    body += "combat turn between ";
-    body += playermanager->getPlayer(*owners.begin())->getName();
-    body += " and ";
-    body += playermanager->getPlayer(*owners.end())->getName();
-    body += "!";
-    msg->setBody(body);
+    out << "combat turn! Combatants are:  ";
+    out << playermanager->getPlayer(*owners.begin())->getName();
+    out << " with an initial strength of ";
+    out << strength[*owners.begin()] << " and ";
+    out << playermanager->getPlayer(*owners.end())->getName();
+    out << " with an initial strength of ";
+    out << strength[*owners.end()];
+    msg->setBody(out.str());
     
     std::set<uint32_t> players = playermanager->getAllIds();
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
@@ -596,10 +599,14 @@ void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
     combat = true;
     isInternal = internal;
     combatants = com;
+    for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+        strength[i->first] = 0;
+    }
 }
 
 void TaeTurn::addReinforcement(uint32_t player) {
-    //TODO: +1 to player's combat strength for this turn
+    //+1 to player's combat strength for this turn
+    strength[player] += 1;
     Logger::getLogger()->debug("Add Reinforcement");
 }
 
