@@ -407,6 +407,7 @@ void TaeTurn::doCombatTurn() {
     Game* game = Game::getGame();
     OrderManager* ordermanager = game->getOrderManager();
     ObjectManager* objectmanager = game->getObjectManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
     PlayerManager* playermanager = game->getPlayerManager();
 
     containerids.clear();
@@ -463,11 +464,54 @@ void TaeTurn::doCombatTurn() {
                 p->setScore(2, p->getScore(2) + 1);
             }
         }
-    }
-    
-    //TODO: Check for combat
+    } else {
+        uint32_t loosingRegion;
+        string shipType;
+        for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+            IGObject* ob = objectmanager->getObject(i->first);
+            Fleet* f = (Fleet*) ob->getObjectBehaviour();
+            if(f->getOwner() != winner) {
+                loosingRegion = i->second;
+                shipType = ob->getName();
+                sendHome(i->first);
+            }
+        }
 
-    //TODO: Award points
+        int resourceType;
+        if(shipType.compare("Merchant Leader") == 0) {
+            resourceType = 4;
+        } else if(shipType.compare("Scientist Leader") == 0) {
+            resourceType = 5;
+        } else if(shipType.compare("Settler Leader") == 0) {
+            resourceType = 6;
+        } else {
+            resourceType = 7;
+        }
+
+        Player* player = playermanager->getPlayer(winner);
+        player->setScore(resourceType - 3, player->getScore(resourceType-3) + 1);
+
+        objects = objectmanager->getAllIds();
+        for(itcurr = objects.begin(); itcurr!= objects.end(); ++itcurr) {
+            IGObject* ob = objectmanager->getObject(*itcurr);
+            if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
+                IGObject* sys = objectmanager->getObject(ob->getParent());
+                StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
+                if(sysData->getRegion() == loosingRegion) {
+                    Planet* p = (Planet*) ob->getObjectBehaviour();
+                    if(p->getResource(resourceType) > 0) {
+                        p->removeResource(resourceType, 1);
+                        sysData->setRegion(0);
+                        player->setScore(resourceType - 3, player->getScore(resourceType-3) + 1);
+                    }
+                }
+            }
+        }        
+    }
+   
+    //TODO: rebuild region
+ 
+    //TODO: Check for combat
 
     std::set<uint32_t> players = playermanager->getAllIds();
     std::set<uint32_t> vis = objectmanager->getAllIds();
