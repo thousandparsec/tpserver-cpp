@@ -62,6 +62,7 @@ class Risk : public Ruleset {
 
       void createUniverse();
       void createTestSystems(IGObject& universe);
+      void createWormhole(IGObject& parent, int64_t startat, int64_t endat);
       
       void setDefaults();
       

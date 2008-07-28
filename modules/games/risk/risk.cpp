@@ -62,6 +62,7 @@
 #include "universe.h"
 #include "ownedobject.h"
 #include "planet.h"
+#include "wormhole.h"
 #include "constellation.h"
 #include "graph.h"
 #include "mapimport.h"
@@ -131,7 +132,9 @@ void Risk::setObjectTypes() const{
    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
    obdm->addNewObjectType(eo);
 
-   obdm->addNewObjectType(new PlanetType);
+   obdm->addNewObjectType(new PlanetType());
+   obdm->addNewObjectType(new StaticObjectType());
+   obdm->addNewObjectType(new WormholeType());
 }
 
 void Risk::setOrderTypes() const{
@@ -209,6 +212,7 @@ void Risk::createTestSystems(IGObject& universe) {
 
    IGObject *con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
    IGObject *con_orion      = createConstellation(universe, "Orion",          3); //Africa
+   IGObject *wormholes      = createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
 
    // Cygnus Systems (South America, Bonus 2)
    createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
@@ -225,23 +229,54 @@ void Risk::createTestSystems(IGObject& universe) {
    createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
    
    //Cygnus Internal Adjacencies
-   graph.addEdge(4,8);
-   graph.addEdge(4,10);
-   graph.addEdge(8,10);
-   graph.addEdge(8,6);
-   graph.addEdge(6,10);
+   createWormhole(*wormholes, 4, 8);
+   createWormhole(*wormholes, 4,10);
+   createWormhole(*wormholes, 8,10);
+   createWormhole(*wormholes, 8,6);
+   createWormhole(*wormholes, 6,10);
    
    //Orion Internal Adjacencies
-   graph.addEdge(12,16);
-   graph.addEdge(12,20);
-   graph.addEdge(16,18);
-   graph.addEdge(18,20);
-   graph.addEdge(18,14);
-   graph.addEdge(20,22);
-   graph.addEdge(22,14);
+   createWormhole(*wormholes, 12,16);
+   createWormhole(*wormholes, 12,20);
+   createWormhole(*wormholes, 16,18);
+   createWormhole(*wormholes, 18,20);
+   createWormhole(*wormholes, 18,14);
+   createWormhole(*wormholes, 20,22);
+   createWormhole(*wormholes, 22,14);
    
    //Cygnus - Orion Adjacencies
-   graph.addEdge(12,8);
+   createWormhole(*wormholes, 12,8);
+}
+
+void Risk::createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
+   DEBUG_FN_PRINT();
+   // Add the graph edge for risk..
+   graph.addEdge(startat,endat);
+
+   Game *game = Game::getGame();
+   ObjectTypeManager *otypeman = game->getObjectTypeManager();
+
+   // Get the start and ending system's so we can pull off their coordinates..
+   IGObject *startSystem = game->getObjectManager()->getObject(startat);
+   StaticObject *startSystemData = (StaticObject*)startSystem->getObjectBehaviour();
+   IGObject *endSystem = game->getObjectManager()->getObject(endat);
+   StaticObject *endSystemData = (StaticObject*)endSystem->getObjectBehaviour();
+
+   // Create a new wormhole
+   IGObject *wormhole = game->getObjectManager()->createNewObject();
+   otypeman->setupObject(wormhole, otypeman->getObjectTypeByName("Wormhole"));
+
+   wormhole->setName(startSystem->getName() + " to " + endSystem->getName());
+
+   Wormhole* wormholeData = dynamic_cast<Wormhole*>(wormhole->getObjectBehaviour());
+   wormholeData->setPosition(startSystemData->getPosition());
+   wormholeData->setExit(endSystemData->getPosition());
+
+   wormhole->addToParent(parent.getID());
+   game->getObjectManager()->addObject(wormhole);
+
+   game->getObjectManager()->doneWithObject(startat);
+   game->getObjectManager()->doneWithObject(endat);
 }
 
 void Risk::startGame(){
