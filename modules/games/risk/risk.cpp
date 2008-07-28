@@ -248,37 +248,6 @@ void Risk::createTestSystems(IGObject& universe) {
    createWormhole(*wormholes, 12,8);
 }
 
-void Risk::createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
-   DEBUG_FN_PRINT();
-   // Add the graph edge for risk..
-   graph.addEdge(startat,endat);
-
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   // Get the start and ending system's so we can pull off their coordinates..
-   IGObject *startSystem = game->getObjectManager()->getObject(startat);
-   StaticObject *startSystemData = (StaticObject*)startSystem->getObjectBehaviour();
-   IGObject *endSystem = game->getObjectManager()->getObject(endat);
-   StaticObject *endSystemData = (StaticObject*)endSystem->getObjectBehaviour();
-
-   // Create a new wormhole
-   IGObject *wormhole = game->getObjectManager()->createNewObject();
-   otypeman->setupObject(wormhole, otypeman->getObjectTypeByName("Wormhole"));
-
-   wormhole->setName(startSystem->getName() + " to " + endSystem->getName());
-
-   Wormhole* wormholeData = dynamic_cast<Wormhole*>(wormhole->getObjectBehaviour());
-   wormholeData->setPosition(startSystemData->getPosition());
-   wormholeData->setExit(endSystemData->getPosition());
-
-   wormhole->addToParent(parent.getID());
-   game->getObjectManager()->addObject(wormhole);
-
-   game->getObjectManager()->doneWithObject(startat);
-   game->getObjectManager()->doneWithObject(endat);
-}
-
 void Risk::startGame(){
    Logger::getLogger()->info("Risk started");
    

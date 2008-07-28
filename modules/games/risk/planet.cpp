@@ -108,6 +108,7 @@ void Planet::setOrderTypes() {
    ((OrderQueueObjectParam*)(obj->getParameter(4,1)))->setAllowedOrders(allowedlist);
 }
 
+//TODO: Look at fixing this up so we don't touch the object each turn.
 void Planet::doOnceATurn() {
    Logger::getLogger()->debug("starting doOnceATurn for Planet %d",obj->getID());
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());

@@ -20,12 +20,14 @@
  *
  */
  
-#include <string>
 #include <tpserver/object.h>
-#include <vector>
 #include <tpserver/vector3d.h>
 
+#include <wormhole.h>
+
 #include <tinyxml.h>
+
+#include <vector>
 #include <string>
 class IGObject;
  
@@ -33,7 +35,7 @@ namespace RiskRuleset {
 
 bool importMapFromFile(std::string filename, IGObject& universe);
 bool processGTag(TiXmlElement* pG, IGObject& universe);
-bool processRectTags(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject*>& labelToPlanet);
+bool processRectTag(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject*>& labelToPlanet);
 std::pair<std::string,uint32_t> getNameAndBonus(TiXmlElement* pG, std::string style);
 
 IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
@@ -43,6 +45,8 @@ IGObject* createPlanet(IGObject& parent, const std::string& name,
    double unitX, double unitY);                        
 IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
    const Vector3d& location);
+void createWormhole(IGObject& parent, int64_t startat, int64_t endat);
+void createWormhole(IGObject& parent, IGObject* startat, IGObject* endat);
 }
 
 #endif

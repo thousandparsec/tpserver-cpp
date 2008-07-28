@@ -87,21 +87,20 @@ bool importMapFromFile(string filename, IGObject& universe){
 
 bool processGTag(TiXmlElement* pG, IGObject& universe) {
    bool result = true;
+   
+   IGObject *wormholes      = createConstellation(universe, "Wormholes", 0); //Place to put wormholes
 
    //A map used to relate the label of a constellation to the IGObject*
    std::map<string,IGObject*> labelToPlanet;
-   
-   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-   Graph* graph = risk->getGraph();   
 
    TiXmlElement* pPath;
 
-   //Start processing Rectangles in g
+   //Process Rectangles in g
    Logger::getLogger()->debug("Starting on rects processing");
-   processRectTags(pG,universe,labelToPlanet);
+   processRectTag(pG,universe,labelToPlanet);
    Logger::getLogger()->debug("Finished with rects processing");
 
-   //Start processing Paths in g
+   //Process Paths in g
    pPath = pG->FirstChildElement("path");
    Logger::getLogger()->debug("Starting on paths processing");
    while (pPath) {
@@ -113,7 +112,7 @@ bool processGTag(TiXmlElement* pG, IGObject& universe) {
          p1.c_str(),p2.c_str());
       
       if ((p1 != "" && p2 != "") && labelToPlanet[p1]!=NULL && labelToPlanet[p2]!= NULL)
-         graph->addEdge(labelToPlanet[p1],labelToPlanet[p2]);
+         createWormhole(*wormholes,labelToPlanet[p1],labelToPlanet[p2]);
 
       //Get the next path
       pPath = pPath->NextSiblingElement("path");
@@ -124,7 +123,7 @@ bool processGTag(TiXmlElement* pG, IGObject& universe) {
 }
 
 //Process each individual Rectangle and translate to Star
-bool processRectTags(TiXmlElement* pG, IGObject& universe, std::map<string,IGObject*>& labelToPlanet) {
+bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObject*>& labelToPlanet) {
    bool result = true;
    
    TiXmlElement* pRect;
@@ -147,12 +146,15 @@ bool processRectTags(TiXmlElement* pG, IGObject& universe, std::map<string,IGObj
       double rectY;
       string name;
 
+      int styleTrimLen = 6;   //The length of text to trim from the style to get the hexcode color
+      int styleHexLen = 6;    //The length of text to extract fromthe style to get the hexcode color
+
       //Extract the fill from the style attribute
       style = pRect->Attribute("style");
       Logger::getLogger()->debug("Style is initially: %s",style.c_str());
       fillPosn = style.find("fill:#"); //Find where the fill occurs in the style string
       if (fillPosn != string::npos)
-         style = style.substr(fillPosn+6,6);
+         style = style.substr(fillPosn+styleTrimLen,styleHexLen);
       Logger::getLogger()->debug("Style was detected to be %s",style.c_str());               
 
       //Check if constellation exists for given fill color
@@ -222,6 +224,7 @@ std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string style) {
 
 IGObject* createConstellation(IGObject& parent, const string& name, int bonus) {
    DEBUG_FN_PRINT();
+   
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
@@ -242,6 +245,7 @@ IGObject* createConstellation(IGObject& parent, const string& name, int bonus) {
 //Its VERY important to note that the star system creation function returns a pointer to the PLANET
 IGObject* createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
    DEBUG_FN_PRINT();
+   
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
@@ -261,7 +265,7 @@ IGObject* createStarSystem(IGObject& parent, const string& name, double unitX, d
    IGObject* planet = createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset());
    graph->addPlanet(planet);
    
-   return planet; //TODO: Redo the way this all works
+   return planet;
 }
 
 IGObject* createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
@@ -297,4 +301,42 @@ IGObject* createPlanet(IGObject& parent, const string& name,const Vector3d& loca
    return planet;
 }   
 
+void createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
+   DEBUG_FN_PRINT();
+   
+   Game *game = Game::getGame();
+
+   // Add the graph edge for risk..
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   Graph* graph = risk->getGraph();
+   graph->addEdge(startat,endat);
+
+   ObjectTypeManager *otypeman = game->getObjectTypeManager();
+
+   // Get the start and ending system's so we can pull off their coordinates..
+   IGObject *startSystem = game->getObjectManager()->getObject(startat);
+   StaticObject *startSystemData = (StaticObject*)startSystem->getObjectBehaviour();
+   IGObject *endSystem = game->getObjectManager()->getObject(endat);
+   StaticObject *endSystemData = (StaticObject*)endSystem->getObjectBehaviour();
+
+   // Create a new wormhole
+   IGObject *wormhole = game->getObjectManager()->createNewObject();
+   otypeman->setupObject(wormhole, otypeman->getObjectTypeByName("Wormhole"));
+
+   wormhole->setName(startSystem->getName() + " to " + endSystem->getName());
+
+   Wormhole* wormholeData = dynamic_cast<Wormhole*>(wormhole->getObjectBehaviour());
+   wormholeData->setPosition(startSystemData->getPosition());
+   wormholeData->setExit(endSystemData->getPosition());
+
+   wormhole->addToParent(parent.getID());
+   game->getObjectManager()->addObject(wormhole);
+
+   game->getObjectManager()->doneWithObject(startat);
+   game->getObjectManager()->doneWithObject(endat);
+}
+
+void createWormhole(IGObject& parent, IGObject* startat, IGObject* endat) {
+   createWormhole(parent,startat->getID(),endat->getID());
+}
 }//end namespace RiskRuleset
