@@ -165,11 +165,12 @@ void RiskTurn::calculateBonusReinforcements() {
 
 
 /** processOrdersOfGivenType
-* This function iterates over all objects the objM holds and process only orders of a given type 
-* that are in the front of the queue.
-* I.E. if the type passed is P and the queue for an object is P->P->Q->P
-*   only the first two P will be procesed
-*NOTE: If no type is specified then all orders in queue will be processed
+ * This function iterates over all objects the objM holds and process only orders of a given type 
+ * that are in the front of the queue.
+ * I.E. if the type passed is P and the queue for an object is P->P->Q->P
+ *   only the first two P will be procesed
+ * NOTE: If no type is specified then all orders in queue will be processed
+ * @param type The name of the type of order to be processed. If no type is given all orders will be processed in the queue.
 **/
 void RiskTurn::processOrdersOfGivenType(string type) {
    Logger::getLogger()->debug("Now processing orders of type: \"%s\"",type.c_str());
