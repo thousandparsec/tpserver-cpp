@@ -440,7 +440,7 @@ void TaeTurn::doCombatTurn() {
     
     //Determine winner
     uint32_t winner = 0;
-    uint32_t looser = 0;
+    uint32_t loser = 0;
     for(map<uint32_t, int>::iterator i = strength.begin(); i != strength.end(); ++i) {
         if(winner == 0) {
             winner = i->first;
@@ -448,12 +448,15 @@ void TaeTurn::doCombatTurn() {
             if(strength[winner] < i->second) {
                 winner = i->first;
             } else {
-                looser = i->first;
+                loser = i->first;
             }
         }
     }
 
-    //Remove loosing combatants
+    //Remove losing combatants
+    uint32_t losingRegion;
+    uint32_t winningRegion;
+    set<uint32_t> removedSystems;
     if(isInternal) {
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
             IGObject* ob = objectmanager->getObject(i->first);
@@ -462,18 +465,32 @@ void TaeTurn::doCombatTurn() {
                 sendHome(i->first);
                 Player* p = playermanager->getPlayer(winner);
                 p->setScore(2, p->getScore(2) + 1);
+                losingRegion = i->second;
+                winningRegion = losingRegion;
+            }
+        }
+        objects = objectmanager->getAllIds();
+        for(itcurr = objects.begin(); itcurr!= objects.end(); ++itcurr) {
+            IGObject* ob = objectmanager->getObject(*itcurr);
+            if(ob->getType() == obtm->getObjectTypeByName("Star System")) {
+                StarSystem* sysData = (StarSystem*) ob->getObjectBehaviour();
+                if(sysData->getRegion() == losingRegion) {
+                    sysData->setRegion(0);
+                    removedSystems.insert(*itcurr);
+                }
             }
         }
     } else {
-        uint32_t loosingRegion;
         string shipType;
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
             IGObject* ob = objectmanager->getObject(i->first);
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             if(f->getOwner() != winner) {
-                loosingRegion = i->second;
+                losingRegion = i->second;
                 shipType = ob->getName();
                 sendHome(i->first);
+            } else {
+                winningRegion = i->second;
             }
         }
 
@@ -497,19 +514,27 @@ void TaeTurn::doCombatTurn() {
             if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
                 IGObject* sys = objectmanager->getObject(ob->getParent());
                 StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
-                if(sysData->getRegion() == loosingRegion) {
+                if(sysData->getRegion() == losingRegion) {
                     Planet* p = (Planet*) ob->getObjectBehaviour();
+                    sysData->setRegion(0);
                     if(p->getResource(resourceType) > 0) {
                         p->removeResource(resourceType, 1);
-                        sysData->setRegion(0);
                         player->setScore(resourceType - 3, player->getScore(resourceType-3) + 1);
+                    } else {
+                        removedSystems.insert(sys->getID());
                     }
+                } else if(sysData->getRegion() == winningRegion) {
+                    sysData->setRegion(0);
+                    removedSystems.insert(sys->getID());
                 }
             }
-        }        
+        }
     }
    
-    //TODO: rebuild region
+    //rebuild region
+    for(itcurr = removedSystems.begin(); itcurr!= removedSystems.end(); ++itcurr) {
+        rebuildRegion(*itcurr);
+    }
  
     //TODO: Check for combat
 
@@ -716,6 +741,100 @@ void TaeTurn::sendHome(uint32_t fleet) {
             f->setPosition(p->getPosition());
             fleetobj->addToParent(ob->getID());
         }
+    }
+}
+
+void TaeTurn::rebuildRegion(uint32_t system) {
+    Game* game = Game::getGame();
+    ObjectManager* obm = game->getObjectManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
+    set<uint32_t>::iterator itcurr;
+
+    IGObject* sys = obm->getObject(system);
+    StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
+
+    //Check to make sure it doesnt already have a region
+    if(sysData->getRegion() != 0) {
+        return;
+    }
+
+    //Check to make sure it is colonized or occupied
+    set<uint32_t> children = sys->getContainedObjects();
+    for(itcurr = children.begin(); itcurr != children.end(); itcurr++) {
+        IGObject* ob = obm->getObject(*itcurr);
+        bool resource = true;
+        bool occupied = false;
+        if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
+            Planet* p = (Planet*) ob->getObjectBehaviour();
+            if(p->getResource(4) == 0 && p->getResource(5) == 0 && p->getResource(6) == 0 && p->getResource(7) == 0) {
+                resource = false;
+            }
+        } else if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
+            occupied = true;
+        }
+        if(!(resource || occupied)) {
+            return;
+        }
+    }
+
+    //Check to make sure this isnt a home system
+    if(sys->getName().find("'s System") != string::npos) {
+        return;
+    }
+    
+    //Get neighbors
+    set<uint32_t> regions;
+    set<uint32_t> emptyNeighbors;
+    Vector3d pos = sysData->getPosition();
+    //east-west neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r == 0) {
+                    emptyNeighbors.insert(*j);
+                } else if (regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }
+    //north-south neighbors
+    for(int i = -1; i < 2; i+=2) {
+        set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
+        for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
+            IGObject *tempObj = obm->getObject(*j);
+            if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
+                uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
+                if(r == 0) {
+                    emptyNeighbors.insert(*j);
+                } else if (regions.count(r) == 0) {
+                    regions.insert(r);
+                }
+            }
+        }
+    }
+
+    //Set Region
+    if(regions.size() == 0) {
+        sysData->setRegion(sys->getID());
+        stringstream out;
+        out << sysData->getRegion();
+        Logger::getLogger()->debug(string("System " + sys->getName() + " added to region " + out.str()).c_str());
+    } else if(regions.size() == 1) {
+        sysData->setRegion(*(regions.begin()));
+        stringstream out;
+        out << sysData->getRegion();
+        Logger::getLogger()->debug(string("System " + sys->getName() + " added to region " + out.str()).c_str());
+    } else {
+        Logger::getLogger()->debug(string("** Unable to rebuild region! System, " + sys->getName() + " is bordering more than one region! ***").c_str());
+    }
+
+    //Recurse on neighbors
+    for(itcurr = emptyNeighbors.begin(); itcurr != emptyNeighbors.end(); itcurr++) {
+        rebuildRegion(*itcurr);
     }
 }
 

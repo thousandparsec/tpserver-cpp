@@ -54,6 +54,7 @@ class TaeTurn : public TurnProcess{
     void initCombat();
     void doCombatTurn();
     void sendHome(uint32_t fleet);
+    void rebuildRegion(uint32_t system);
 };
 
 #endif
