@@ -50,6 +50,7 @@ using std::stringstream;
 using std::string;
 using std::map;
 using std::set;
+using std::pair;
 
 
 TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
@@ -263,6 +264,18 @@ void TaeTurn::initCombat() {
     PlayerManager* playermanager = game->getPlayerManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     DesignStore* ds = game->getDesignStore();
+
+    pair<bool, map<uint32_t, uint32_t> > temp;
+    temp = combatQueue.front();
+    combatQueue.pop();
+    isInternal = temp.first;
+    combatants = temp.second;
+    strength.clear();
+    for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
+        IGObject* ob = Game::getGame()->getObjectManager()->getObject(i->first);
+        Fleet* f = (Fleet*) ob->getObjectBehaviour();
+        strength[f->getOwner()] = 0;
+    }
 
     set<uint32_t> owners;
     set<uint32_t> regions;
@@ -536,7 +549,44 @@ void TaeTurn::doCombatTurn() {
         rebuildRegion(*itcurr);
     }
  
-    //TODO: Check for combat
+    //Check for combat
+    combat = false;
+    while(!combatQueue.empty() && !combat) {
+        pair<bool, map<uint32_t, uint32_t> > temp = combatQueue.front();
+        combatQueue.pop();
+        isInternal = temp.first;
+        combatants = temp.second;
+        combat = true;
+        uint32_t region = 0;
+        for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end() && combat; i++) {
+            IGObject* ob = objectmanager->getObject(i->first);
+            IGObject* sys = objectmanager->getObject(ob->getParent());
+            StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
+            i->second = sysData->getRegion();
+            if(region == 0) {
+                region = sysData->getRegion();
+            } else if(region != sysData->getRegion()) {
+                combat = false;
+            }
+        }
+    }
+
+    //Cleanup and Set visibility
+    objects = objectmanager->getAllIds();
+    set<ObjectView*> views;
+    for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->getType() == obtm->getObjectTypeByName("Fleet") && !combat) {
+            Fleet* f = (Fleet*) ob->getObjectBehaviour();
+            f->toggleCombat();
+            f->setCombatant(false);
+        }
+        //Set visibility
+        ObjectView* obv = new ObjectView();
+        obv->setObjectId(ob->getID());
+        obv->setCompletelyVisible(true);
+        views.insert(obv);
+    }
 
     std::set<uint32_t> players = playermanager->getAllIds();
     std::set<uint32_t> vis = objectmanager->getAllIds();
@@ -554,6 +604,10 @@ void TaeTurn::doCombatTurn() {
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
         PlayerView* playerview = player->getPlayerView();
+
+        for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
+            playerview->addVisibleObject(*i);
+        }
 
         for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
             ObjectView* obv = playerview->getObjectView(*itob);
@@ -613,10 +667,33 @@ void TaeTurn::doCombatTurn() {
             player->getPlayerView()->addVisibleObject(obv);
         }
 
-        //TODO: Send end of turn message to each player
+        //Send end of turn message to each player
+        Message * msg = new Message();
+        msg->setSubject("Combat Complete!");
+        stringstream out;
+        Player* win = playermanager->getPlayer(winner);
+        out << win->getName() << " has won the battle with a strength of ";
+        out << strength[winner] << "!";
+        msg->setBody(out.str());
+        player->postToBoard(msg);
+
+        msg = new Message();
+        msg->setSubject("Turn complete");
+        stringstream out2;
+        out2 << "Your Current Score: \n";
+        out2 << "Money: " << player->getScore(1) << "\n";
+        out2 << "Technology: " << player->getScore(2) << "\n";
+        out2 << "People: " << player->getScore(3) << "\n";
+        out2 << "Raw Materials: " << player->getScore(4) << "\n";
+        out2 << "Alien Artifacts: " << player->getScore(5);
+        msg->setBody(out2.str());
+        player->postToBoard(msg);
 
     }
 
+    if(combat) {
+        initCombat();
+    }
 
     playermanager->updateAll();
 
@@ -693,14 +770,10 @@ void TaeTurn::awardArtifacts() {
 
 void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
     combat = true;
-    isInternal = internal;
-    combatants = com;
-    strength.clear();
-    for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-        IGObject* ob = Game::getGame()->getObjectManager()->getObject(i->first);
-        Fleet* f = (Fleet*) ob->getObjectBehaviour();
-        strength[f->getOwner()] = 0;
-    }
+    pair <bool, map<uint32_t, uint32_t> > temp;
+    temp.first = internal;
+    temp.second = com;
+    combatQueue.push(temp);
 }
 
 void TaeTurn::addReinforcement(uint32_t player) {

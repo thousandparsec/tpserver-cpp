@@ -20,6 +20,7 @@
  *
  */
 
+#include <queue>
 #include <tpserver/turnprocess.h>
 #include "fleetbuilder.h"
 #include "fleet.h"
@@ -49,6 +50,7 @@ class TaeTurn : public TurnProcess{
     bool isInternal;
     std::map<uint32_t, uint32_t> combatants;
     std::map<uint32_t, int> strength;
+    std::queue<std::pair<bool, std::map<uint32_t, uint32_t> > > combatQueue;
 
     void awardArtifacts();
     void initCombat();
