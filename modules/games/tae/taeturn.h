@@ -34,6 +34,7 @@ class TaeTurn : public TurnProcess{
   
     void setFleetType(uint32_t ft);
     void setPlanetType(uint32_t pt);
+    void setGameOver(bool isOver);
     
     void queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com);
     void addReinforcement(uint32_t player); 
@@ -48,6 +49,7 @@ class TaeTurn : public TurnProcess{
     std::set<uint32_t> containerids;
     bool combat;
     bool isInternal;
+    bool isGameOver;
     std::map<uint32_t, uint32_t> combatants;
     std::map<uint32_t, int> strength;
     std::queue<std::pair<bool, std::map<uint32_t, uint32_t> > > combatQueue;
@@ -57,6 +59,7 @@ class TaeTurn : public TurnProcess{
     void doCombatTurn();
     void sendHome(uint32_t fleet);
     void rebuildRegion(uint32_t system);
+    void gameOver();
 };
 
 #endif

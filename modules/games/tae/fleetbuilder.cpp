@@ -35,6 +35,7 @@
 #include <tpserver/playerview.h>
 
 #include "fleet.h"
+#include "taeturn.h"
 
 #include "fleetbuilder.h"
 
@@ -194,7 +195,8 @@ Design* FleetBuilder::createRandomPassengerShip(Player* owner) {
 
     //Check to see if there are any ships left
     if(shipsEmpty()) {
-        //TODO: initiate game over sequence
+        TaeTurn* turn = (TaeTurn*) Game::getGame()->getTurnProcess();
+        turn->setGameOver(true);
     }
 
     //Select a ship type

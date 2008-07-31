@@ -58,6 +58,7 @@ TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
     playerTurn = 0;
     combat = false;
     isInternal = false;
+    isGameOver = false;
 }
 
 TaeTurn::~TaeTurn(){
@@ -65,7 +66,10 @@ TaeTurn::~TaeTurn(){
 }
 
 void TaeTurn::doTurn(){
-    if(combat) {
+    if(isGameOver) {
+        gameOver();
+        return;
+    } else if(combat) {
         doCombatTurn();
         return;
     }
@@ -75,6 +79,7 @@ void TaeTurn::doTurn(){
     Game* game = Game::getGame();
     OrderManager* ordermanager = game->getOrderManager();
     ObjectManager* objectmanager = game->getObjectManager();
+    ObjectTypeManager* obtm = game->getObjectTypeManager();
     PlayerManager* playermanager = game->getPlayerManager();
 
     //build map for storing orders
@@ -133,6 +138,24 @@ void TaeTurn::doTurn(){
     }
     
     awardArtifacts();
+    //Check for end game condition of less than 3 artifacts remaining
+    objects = objectmanager->getAllIds();
+    int numArtifacts = 0;
+    for(itcurr = objects.begin(); itcurr != objects.end(); itcurr++) {
+        IGObject * ob = objectmanager->getObject(*itcurr);
+        if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
+            Planet* p = (Planet*) ob->getObjectBehaviour();
+            if(p->getResource(3) > 0) {
+                numArtifacts++;
+            }
+        }
+    }
+    if(numArtifacts < 3) {
+        isGameOver = true;
+        gameOver();
+        return;
+    }
+        
 
     //Initialize combat if the next turn is a combat turn
     if(combat) {
@@ -146,7 +169,6 @@ void TaeTurn::doTurn(){
 
 
     // to once a turn (right at the end)
-    objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
         if(ob->isAlive()){
@@ -909,6 +931,69 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     for(itcurr = emptyNeighbors.begin(); itcurr != emptyNeighbors.end(); itcurr++) {
         rebuildRegion(*itcurr);
     }
+}
+
+void gameOver() {
+    Game* game = Game::getGame();
+    PlayerManager* pm = game->getPlayerManager();
+
+    map<uint32_t, uint32_t> finalScore;
+    set<uint32_t>::iterator itcurr;
+    set<uint32_t> players = pm->getAllIds();
+    
+    for(itcurr = players.begin(); itcurr != players.end(); itcurr++) {
+        Player* p = pm->getPlayer(*itcurr);
+        uint32_t artifacts = p->getScore(5);
+        while(artifacts > 0) {
+            int lowest = 1;
+            for(int i = 2; i < 5; i++) {
+                if(p->getScore(i) < p->getScore(lowest)) {
+                    lowest = i;
+                }
+            }
+            p->setScore(lowest, p->getScore(lowest) + 1);
+            artifacts--;
+        }
+        
+        int highest = 1;
+        for(int i = 2; i < 5; i++) {
+            if(p->getScore(i) > p->getScore(highest)) {
+                highest = i;
+            }
+        }
+        
+        finalScore[*itcurr] = p->getScore(highest);
+    }
+
+    uint32_t winner = 0;
+    for(map<uint32_t, uint32_t>::iterator i = finalScore.begin(); i != finalScore.end(); i++) {
+        if(winner == 0 || i->second > finalScore[winner]) {
+            winner = i->first;
+        }
+    }
+
+    for(itcurr = players.begin(); itcurr != players.end(); itcurr++) {
+        Player* p = pm->getPlayer(*itcurr);
+
+        //Send message to each player
+        Message * msg = new Message();
+        msg->setSubject("GAME OVER!");
+        stringstream out;
+        Player* win = pm->getPlayer(winner);
+        out << win->getName() << " has won the game with a score of ";
+        out << finalScore[winner] << "!  ";
+        out << "Your final score after distributing your alien artifacts was: ";
+        out << finalScore[*itcurr];
+        msg->setBody(out.str());
+        p->postToBoard(msg);
+
+        p->setIsAlive(false);
+    }
+
+}
+
+void TaeTurn::setGameOver(bool isOver) {
+    isGameOver = isOver;
 }
 
 void TaeTurn::setPlanetType(uint32_t pt){
