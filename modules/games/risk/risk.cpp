@@ -229,23 +229,23 @@ void Risk::createTestSystems(IGObject& universe) {
    createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
    
    //Cygnus Internal Adjacencies
-   createWormhole(*wormholes, 4, 8);
-   createWormhole(*wormholes, 4,10);
-   createWormhole(*wormholes, 8,10);
-   createWormhole(*wormholes, 8,6);
-   createWormhole(*wormholes, 6,10);
+   createWormhole(*wormholes, 5, 9);
+   createWormhole(*wormholes, 5, 11);
+   createWormhole(*wormholes, 9, 11);
+   createWormhole(*wormholes, 9, 7);
+   createWormhole(*wormholes, 7, 11);
    
    //Orion Internal Adjacencies
-   createWormhole(*wormholes, 12,16);
-   createWormhole(*wormholes, 12,20);
-   createWormhole(*wormholes, 16,18);
-   createWormhole(*wormholes, 18,20);
-   createWormhole(*wormholes, 18,14);
-   createWormhole(*wormholes, 20,22);
-   createWormhole(*wormholes, 22,14);
+   createWormhole(*wormholes, 13, 17);
+   createWormhole(*wormholes, 13, 21);
+   createWormhole(*wormholes, 17, 19);
+   createWormhole(*wormholes, 19, 21);
+   createWormhole(*wormholes, 19, 15);
+   createWormhole(*wormholes, 21, 23);
+   createWormhole(*wormholes, 23, 15);
    
    //Cygnus - Orion Adjacencies
-   createWormhole(*wormholes, 12,8);
+   createWormhole(*wormholes, 13, 9);
 }
 
 void Risk::startGame(){

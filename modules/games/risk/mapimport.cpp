@@ -55,6 +55,8 @@ namespace RiskRuleset {
 using std::string;
 using std::map;
 
+typedef std::map<string,IGObject*> StrToObjMap;
+
 bool importMapFromFile(string filename, IGObject& universe){
    bool loadedMapOkay = false;
    Logger::getLogger()->debug("Trying to load:  %s", filename.c_str());
@@ -130,7 +132,7 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
    pRect = pG->FirstChildElement("rect");
    
    //A map used to relate the colors of a constellation to the IGObject*
-   std::map<string,IGObject*> styleToConstellation;
+   std::map<string,IGObject*> fillToConstellation;
    
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
    Graph* graph = risk->getGraph();
@@ -139,33 +141,24 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
       Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
       IGObject* parent;
 
-      string style;
-      size_t fillPosn;
+      string fill;
    
       double rectX;
       double rectY;
       string name;
 
-      int styleTrimLen = 6;   //The length of text to trim from the style to get the hexcode color
-      int styleHexLen = 6;    //The length of text to extract fromthe style to get the hexcode color
-
       //Extract the fill from the style attribute
-      style = pRect->Attribute("style");
-      Logger::getLogger()->debug("Style is initially: %s",style.c_str());
-      fillPosn = style.find("fill:#"); //Find where the fill occurs in the style string
-      if (fillPosn != string::npos)
-         style = style.substr(fillPosn+styleTrimLen,styleHexLen);
-      Logger::getLogger()->debug("Style was detected to be %s",style.c_str());               
-
+      fill = getFillFromStyle(pRect->Attribute("style"));
+                  
       //Check if constellation exists for given fill color
-      std::map<string,IGObject*>::const_iterator fillExists = styleToConstellation.find(style);
-      if (fillExists == styleToConstellation.end()) { //if color doesn't exist, create constellation for it
-         std::pair<string,uint32_t> cnstNameAndBonus = getNameAndBonus(pG,style);
+      std::map<string,IGObject*>::const_iterator fillExists = fillToConstellation.find(fill);
+      if (fillExists == fillToConstellation.end()) { //if color doesn't exist, create constellation for it
+         std::pair<string,uint32_t> cnstNameAndBonus = getNameAndBonus(pG,fill);
          parent = createConstellation(universe,cnstNameAndBonus.first,cnstNameAndBonus.second);
-         styleToConstellation[style] = parent;
+         fillToConstellation[fill] = parent;
       }
       else
-         parent = styleToConstellation[style];
+         parent = fillToConstellation[fill];
       
       //Get doubles out of strings for x and y
       std::istringstream xstream( pRect->Attribute("x"));
@@ -184,7 +177,7 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
    return result;
 }
 
-std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string style) {
+std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string fill) {
    TiXmlElement *pText, *pTSpan;
    std::pair<string,uint32_t> result;
    result.first = ""; result.second = 0;
@@ -193,12 +186,8 @@ std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string style) {
    while(pText) {
       pTSpan = pText->FirstChildElement("tspan");
       while(pTSpan) {
-         string textStyle = pTSpan->Attribute("style");
-         size_t fillPosn = textStyle.find("fill:#"); //Find where the fill occurs in the style string
-         if (fillPosn != string::npos)
-            textStyle = textStyle.substr(fillPosn+6,6);
-            
-         if (textStyle == style) { //both colors are identical
+         string textFill = getFillFromStyle(pTSpan->Attribute("style"));
+         if (textFill == fill) { //both colors are identical
             string wholeText = pTSpan->GetText();
             size_t delimiter = wholeText.find("|");
             if ( delimiter != string::npos ) {
@@ -215,10 +204,27 @@ std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string style) {
       pText = pText->NextSiblingElement("text");
    }
    
-   //if no name was given, set style to color
+   //if no name was given, set fill to color
    if (result.first == "")
-      result.first = style;
+      result.first = fill;
       
+   return result;
+}
+
+string getFillFromStyle(string longStyle) {
+   size_t fillPosn;
+   string result = "";
+   int styleTrimLen = 6;   //The length of text to trim from the style to get the hexcode color
+   int styleHexLen = 6;    //The length of text to extract fromthe style to get the hexcode color
+   
+   //Logger::getLogger()->debug("Style is initially: %s",longStyle.c_str());
+   
+   fillPosn = longStyle.find("fill:#"); //Find where the fill occurs in the style string
+   if (fillPosn != string::npos)
+      result = longStyle.substr(fillPosn+styleTrimLen,styleHexLen);
+   
+   //Logger::getLogger()->debug("Style was detected to be %s",result.c_str());
+   
    return result;
 }
 
