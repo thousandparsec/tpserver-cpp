@@ -98,24 +98,45 @@ bool Move::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
+    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     IGObject* newStarSys = obm->getObject(starSys->getObjectId());
 
     //Perform last minute checks to make sure this is a valid system
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
         Logger::getLogger()->debug("Trying to move to an object which is not a star system");
+        Message * msg = new Message();
+        msg->setSubject("Move order failed");
+        msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to move to an object which is not a star system!"));
+        msg->addReference(rst_Object, obj->getID());
+        player->postToBoard(msg);
         return false;
     }
     StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
     if(!starSysData->canBeColonized(false)) {
-        return false;
         Logger::getLogger()->debug("Player tried to move a system which cannot be colonized.");
+        Message * msg = new Message();
+        msg->setSubject("Move order failed");
+        msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to move to an invalid system!"));
+        msg->addReference(rst_Object, obj->getID());
+        player->postToBoard(msg);
+        return false;
     } else if(getBorderingRegions().size() > 1) {
-        return false;
         Logger::getLogger()->debug("Player tried to occupy a system which would join two or more regions.");
-    } else if(!isBorderingScienceColony(starSysData)) {
+        Message * msg = new Message();
+        msg->setSubject("Move order failed");
+        msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to occupy a system which would join two or more regions!"));
+        msg->addReference(rst_Object, obj->getID());
+        player->postToBoard(msg);
         return false;
+    } else if(!isBorderingScienceColony(starSysData)) {
         Logger::getLogger()->debug("Player tried to occupy a system which does not border a science colony.");
+        Message * msg = new Message();
+        msg->setSubject("Move order failed");
+        msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to move to a system which does not border a science colony!"));
+        msg->addReference(rst_Object, obj->getID());
+        player->postToBoard(msg);
+        return false;
     }
 
     //Set new parent's region
@@ -164,7 +185,6 @@ bool Move::doOrder(IGObject * obj) {
    
  
     // post completion message
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
     Message * msg = new Message();
     msg->setSubject("Move fleet order complete");
     msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has moved to ")
