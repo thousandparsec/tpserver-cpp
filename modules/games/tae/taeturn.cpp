@@ -43,6 +43,7 @@
 #include "starsystem.h"
 #include "fleet.h"
 #include "fleetbuilder.h"
+#include "move.h"
 
 #include "taeturn.h"
 
@@ -865,7 +866,12 @@ void TaeTurn::rebuildRegion(uint32_t system) {
                 resource = false;
             }
         } else if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
-            occupied = true;
+            if(!Move::isBorderingScienceColony(sysData)) {
+                sendHome(*itcurr);
+                occupied = false;
+            } else {
+                occupied = true;
+            }
         }
         if(!(resource || occupied)) {
             return;
