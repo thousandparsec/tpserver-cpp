@@ -211,6 +211,7 @@ std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string fill) {
    return result;
 }
 
+//Return the hexcode color from a style by looking for fill:# and taking the next 6 chars after that
 string getFillFromStyle(string longStyle) {
    size_t fillPosn;
    string result = "";
@@ -226,6 +227,27 @@ string getFillFromStyle(string longStyle) {
    //Logger::getLogger()->debug("Style was detected to be %s",result.c_str());
    
    return result;
+}
+
+// Herschell_s_Garnet_Star
+// Herschell's Garnet Star
+void removeUnderscores(string& str) {
+   int size = str.size();
+   
+   for (int i = 0; i < size; i++) {
+      if (str[i] == '_')
+      {
+         str[i] = ' ';
+         if( i == size - 2 && str[i+1] == 's' ) //we're at the second last char and the last char is 's'
+         {
+            str[i] = '\'';
+         }
+         else if( i < size - 2 && str[i+1] == 's' && str[i+2] == '_') {
+            str[i] == '\'';
+         }
+
+      }
+   }
 }
 
 IGObject* createConstellation(IGObject& parent, const string& name, int bonus) {
