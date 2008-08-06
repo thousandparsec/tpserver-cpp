@@ -298,7 +298,7 @@ void Risk::setDefaults() {
       settings->set("risk_mapimport","false");
       
    if (settings->get("risk_map") == "")
-      settings->set("risk_map","default-map.svg");
+      settings->set("risk_map","risk-defaultmap.svg");
 }
 
 bool Risk::onAddPlayer(Player* player){

@@ -170,7 +170,7 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
       name = pRect->Attribute("id");
    
       //Create the star system and keep track of the reference in the labelToPlanet map.
-      labelToPlanet['#'+name]=createStarSystem(*parent, name, rectX, rectY);
+      labelToPlanet['#'+name]=createStarSystem(*parent,  removeUnderscores(name), rectX, rectY);
       pRect = pRect->NextSiblingElement("rect");
    }
    
@@ -231,7 +231,7 @@ string getFillFromStyle(string longStyle) {
 
 // Herschell_s_Garnet_Star
 // Herschell's Garnet Star
-void removeUnderscores(string& str) {
+string removeUnderscores(string str) {
    int size = str.size();
    
    for (int i = 0; i < size; i++) {
@@ -240,14 +240,17 @@ void removeUnderscores(string& str) {
          str[i] = ' ';
          if( i == size - 2 && str[i+1] == 's' ) //we're at the second last char and the last char is 's'
          {
+            Logger::getLogger()->debug("got end of line _s, replacing with \'s");
             str[i] = '\'';
          }
          else if( i < size - 2 && str[i+1] == 's' && str[i+2] == '_') {
-            str[i] == '\'';
+            Logger::getLogger()->debug("got non-end of line _s, replacing with \'s");
+            str[i] = '\'';
          }
 
       }
    }
+   return str;
 }
 
 IGObject* createConstellation(IGObject& parent, const string& name, int bonus) {

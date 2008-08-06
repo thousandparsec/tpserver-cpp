@@ -38,6 +38,7 @@ bool importMapFromFile(std::string filename, IGObject& universe);
 bool processGTag(TiXmlElement* pG, IGObject& universe);
 bool processRectTag(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject*>& labelToPlanet);
 std::pair<std::string,uint32_t> getNameAndBonus(TiXmlElement* pG, std::string fill);
+std::string removeUnderscores(std::string str);
 
 std::string getFillFromStyle(std::string longStyle);
 IGObject* createConstellation(IGObject& parent, const std::string& name, int bonus);
