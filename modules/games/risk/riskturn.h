@@ -39,7 +39,7 @@ private:
    void processOrdersOfGivenType(std::string type = "");
    void calculateReinforcements();
    void calculateBonusReinforcements();
-
+   std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation);
 };//class RiskTurn : public TurnProcess
 void setPlayerVisibleObjects();
 } //namespace RiskRuleset

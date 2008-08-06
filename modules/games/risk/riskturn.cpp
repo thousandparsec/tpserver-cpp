@@ -44,6 +44,7 @@
 #include "risk.h"
 #include "riskturn.h"
 #include "ownedobject.h"
+#include "constellation.h"
 
 namespace RiskRuleset{
 
@@ -78,7 +79,7 @@ void RiskTurn::doTurn(){
    // do once a turn (right at the end)
    objectsIds = objM->getAllIds();
 
-   for(std::set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
       IGObject * obj = objM->getObject(*i);
       obj->getObjectBehaviour()->doOnceATurn();
@@ -160,9 +161,64 @@ void RiskTurn::calculateReinforcements() {
 }
 
 void RiskTurn::calculateBonusReinforcements() {
-   //LATER: Give out bonus reinforcements for owning whole constellations
+   ObjectManager* obm = Game::getGame()->getObjectManager();
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   IGObject* universe = obm->getObject(0);
+   set<uint32_t> constellation = universe->getContainedObjects();
+   
+   Logger::getLogger()->debug("Looking through each constellation to calculate bonus");
+   //For each constellation
+   for (set<uint32_t>::iterator i = constellation.begin(); i != constellation.end(); i++)
+   {
+      //Get current constellation
+      IGObject* crnt = obm->getObject(*i);
+
+      Logger::getLogger()->debug("\"%s\"",crnt->getName().c_str());
+      //if constellation name isn't Wormholes then we process that constellation
+      if (crnt->getName() != "Wormholes"){
+         //Use getPlayerAndUnits function to get a player who completely owns a constellation and the bonus they get
+         std::pair<uint32_t,uint32_t> playerAndUnits = getPlayerAndUnits(crnt);
+         //If a single player owns the entire constellation give them their bonus
+         if (playerAndUnits.first != 0) {
+            risk->setPlayerReinforcements(playerAndUnits.first, 
+               risk->getPlayerReinforcements(playerAndUnits.first) + playerAndUnits.second);
+         }
+      }
+   }
 }
 
+std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation) {
+   std::pair<uint32_t,uint32_t> result;
+   
+   ObjectManager* obm = Game::getGame()->getObjectManager();
+   result.first = 0;
+   result.second = 0;
+   
+   //get all systems
+   std::set<uint32_t> systems = constellation->getContainedObjects();
+   //for each system
+   for (set<uint32_t>::iterator i = systems.begin(); i != systems.end(); i++) {
+      IGObject* obj = obm->getObject(*i);
+      //todo: make object equal to CHILD of current obj
+      std::set<uint32_t> child = obj->getContainedObjects();
+      obj = obm->getObject(*child.begin());
+      Logger::getLogger()->debug("Looking at system %s",obj->getName().c_str());
+      Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+      
+      //On the first planet, set the results owner as the current planet owner
+      if (i == systems.begin()) {
+         Logger::getLogger()->debug("First owner in galaxy is %d", planet->getOwner());
+         result.first = planet->getOwner();
+      }
+      //On subsequent runs, if the owners aren't the same then zero out the results owner
+      //TODO: Test is getting wrong result
+      else if ( planet->getOwner() != result.second ) {
+         Logger::getLogger()->debug("Subsequent owner in galaxy do not match");
+         result.first = 0;
+      }
+   }
+   return result;
+}
 
 /** processOrdersOfGivenType
  * This function iterates over all objects the objM holds and process only orders of a given type 
