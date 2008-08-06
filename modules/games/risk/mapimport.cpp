@@ -318,11 +318,12 @@ void createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
    graph->addEdge(startat,endat);
 
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
+   ObjectManager* om = game->getObjectManager();
 
    // Get the start and ending system's so we can pull off their coordinates..
-   IGObject *startSystem = game->getObjectManager()->getObject(startat);
+   IGObject *startSystem = om->getObject(om->getObject(startat)->getParent());
    StaticObject *startSystemData = (StaticObject*)startSystem->getObjectBehaviour();
-   IGObject *endSystem = game->getObjectManager()->getObject(endat);
+   IGObject *endSystem = om->getObject(om->getObject(endat)->getParent());
    StaticObject *endSystemData = (StaticObject*)endSystem->getObjectBehaviour();
 
    // Create a new wormhole

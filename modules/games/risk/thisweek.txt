@@ -1,8 +1,5 @@
 Monday:
-Integrating Wormhole suppport
-
-Tuesday:
-Attempting to natively build tpclient-pywx. Not having a wonderful time. Also important to note wormhole support needs to be integrated into client or client will not work.
+Holiday; extracted some code out, found bug - can't delete orders...
 
 =========================================================================================
 
