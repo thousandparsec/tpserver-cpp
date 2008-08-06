@@ -198,7 +198,7 @@ bool Colonize::doOrder(IGObject * obj) {
         map<uint32_t, uint32_t> scientists;
         map<uint32_t, uint32_t> merchants;
         map<uint32_t, uint32_t> miners;
-        for(set<unsigned int>::iterator i = regions.begin(); i != regions.end(); i++) {
+        for(set<uint32_t>::iterator i = regions.begin(); i != regions.end(); i++) {
             int temp = getLeaderInRegion(*i, "SettlerLeaderShip");
             if(temp != -1) {
                 settlers[temp] = *i;
@@ -218,21 +218,41 @@ bool Colonize::doOrder(IGObject * obj) {
         }
 
         TaeTurn* turn = (TaeTurn*) Game::getGame()->getTurnProcess();
+        bool conflict = false;
         if(settlers.size() > 1) {
             //Settler Conflict!
             turn->queueCombatTurn(false, settlers);
+            conflict = true;
         }
         if(scientists.size() > 1) {
             //Scientist Conflict!
             turn->queueCombatTurn(false, scientists);
+            conflict = true;
         }
         if(merchants.size() > 1) {
             //Merchant Conflict!
             turn->queueCombatTurn(false, merchants);
+            conflict = true;
         }
         if(miners.size() > 1) {
             //Miner Conflict!
             turn->queueCombatTurn(false, miners);
+            conflict = true;
+        }
+        
+        if(!conflict) {
+            uint32_t region = *(regions.begin());
+            set<uint32_t> objects = obm->getAllIds();
+            for(set<uint32_t>::iterator i = objects.begin(); i != objects.end(); i++) {
+                IGObject* ob = obm->getObject(*i);
+                if(ob->getType() == obtm->getObjectTypeByName("Star System")) {
+                    StarSystem* sys = (StarSystem*) ob->getObjectBehaviour();
+                    uint32_t r = sys->getRegion();
+                    if(r != region && regions.count(r) > 0) {
+                        sys->setRegion(region);
+                    }
+                }
+            }
         }
     }
 
