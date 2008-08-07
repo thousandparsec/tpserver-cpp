@@ -155,13 +155,7 @@ void TaeTurn::doTurn(){
         isGameOver = true;
         gameOver();
         return;
-    }
-        
-
-    //Initialize combat if the next turn is a combat turn
-    if(combat) {
-        initCombat();
-    }
+    } 
 
     //Update which player's turn it is
     playerTurn = (playerTurn + 1) % playermanager->getNumPlayers();
@@ -273,6 +267,11 @@ void TaeTurn::doTurn(){
         }
         msg->setBody(body);
         player->postToBoard(msg);
+    }
+
+    //Initialize combat if the next turn is a combat turn
+    if(combat) {
+        initCombat();
     }
 
     playermanager->updateAll();
