@@ -229,7 +229,7 @@ string getFillFromStyle(string longStyle) {
    return result;
 }
 
-// Herschell_s_Garnet_Star
+// Herschell_s_Garnet_Star will become: 
 // Herschell's Garnet Star
 string removeUnderscores(string str) {
    int size = str.size();

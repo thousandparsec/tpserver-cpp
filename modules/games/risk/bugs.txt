@@ -18,7 +18,7 @@
 3. Bus error, attempting to colonize 2 places? couldn't reproduce
 4. FIXED: Phantom ownership, Orders can be created on an enemy planet that was previously owned by the issuing player. Testing showed the orders were completely normally, and treated normally, as if they came from the enemy player. This may be a "server caching" issue or something more serious.
 	-Verified to occur repeatedly, with no view problems in game
-
+5. Place 3 1 unit bids from a planet with only 3 units
 Noticed:
 -"Chaining" of moves is possible to move a large number of units across the map.
 -a late reinforce order can be triggered early by a normal reinforce. This acts as a sort of "pull" on late "colonizers" to not get reinforcements they may be trying to use. Unintended but I like it.

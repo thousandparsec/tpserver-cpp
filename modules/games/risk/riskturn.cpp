@@ -180,8 +180,11 @@ void RiskTurn::calculateBonusReinforcements() {
          std::pair<uint32_t,uint32_t> playerAndUnits = getPlayerAndUnits(crnt);
          //If a single player owns the entire constellation give them their bonus
          if (playerAndUnits.first != 0) {
-            risk->setPlayerReinforcements(playerAndUnits.first, 
-               risk->getPlayerReinforcements(playerAndUnits.first) + playerAndUnits.second);
+            Logger::getLogger()->debug("Found non-zero player owning whole constellation, awarding %d", playerAndUnits.second);
+            uint32_t currentRfc = risk->getPlayerReinforcements(playerAndUnits.first);
+            Logger::getLogger()->debug("Player %d would have gotten %d, now they get %d",playerAndUnits.first,currentRfc,currentRfc+playerAndUnits.second);
+            currentRfc = currentRfc + playerAndUnits.second;
+            risk->setPlayerReinforcements(playerAndUnits.first, currentRfc);
          }
       }
    }
@@ -194,6 +197,10 @@ std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation
    result.first = 0;
    result.second = 0;
    
+   Constellation* cnst = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
+   result.second = cnst->getBonus();
+   
+   Logger::getLogger()->debug("Got bonus, it was: %d",result.second);
    //get all systems
    std::set<uint32_t> systems = constellation->getContainedObjects();
    //for each system
@@ -211,8 +218,8 @@ std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation
          result.first = planet->getOwner();
       }
       //On subsequent runs, if the owners aren't the same then zero out the results owner
-      //TODO: Test is getting wrong result
-      else if ( planet->getOwner() != result.second ) {
+      else if ( planet->getOwner() != result.first ) {
+         Logger::getLogger()->debug("Second owner in galaxy is %d",planet->getOwner());
          Logger::getLogger()->debug("Subsequent owner in galaxy do not match");
          result.first = 0;
       }
