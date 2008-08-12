@@ -40,7 +40,7 @@
 #include "settings.h"
 #include "pluginmanager.h"
 
-void sigIntHandler(int sig){
+static void sigIntHandler(int signum){
   Network::getNetwork()->stopMainLoop();
 }
 
@@ -59,7 +59,6 @@ static void child_handler(int signum)
     }
 }
 
-
 static void daemonize()
 {
     pid_t pid, sid, parent;
@@ -67,6 +66,13 @@ static void daemonize()
     // already a daemon?
     if(getppid() == 1)
         return;
+
+	// set up signal mask
+	sigrelse(SIGCHLD);
+	sigrelse(SIGUSR1);
+	sigrelse(SIGALRM);
+	sigrelse(SIGINT);
+	sigrelse(SIGTERM);
 
     // trap signals
     signal(SIGCHLD,child_handler);
