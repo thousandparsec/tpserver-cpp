@@ -255,6 +255,7 @@ void Risk::startGame(){
 }
 
 void Risk::setDefaults() {
+   Logger::getLogger()->debug("=Setting Defaults=");
    //Establish some defaults if user does not specify any in config
    Settings* settings = Settings::getSettings();
    if(settings->get("turn_length_over_threshold") == "")
@@ -281,10 +282,13 @@ void Risk::setDefaults() {
 
    if (settings->get("risk_rfc_start") == "")
       settings->set("risk_rfc_start", "30");
-      
+   Logger::getLogger()->debug("risk_randomly_assign=%s",settings->get("risk_randomly_assign").c_str());   
    if (settings->get("risk_randomly_assign") == "" )
+   {
+      Logger::getLogger()->debug("risk_randomly_assign was %s and is now set to \"true\"",settings->get("risk_randomly_assign").c_str());
       settings->set("risk_randomly_assign", "true");
-      
+   }
+     
    if (settings->get("risk_attack_dmg") == "" )
       settings->set("risk_attack_dmg","1");
       
@@ -386,10 +390,13 @@ void Risk::onPlayerAdded(Player* player){
       //Create a spot in the reinforcements map for the player and assign starting reinforcements.
       reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
    
+      Logger::getLogger()->debug("risk_randomly_assign=%s",settings->get("risk_randomly_assign").c_str());
       if ( settings->get("risk_randomly_assign") == "true") {
+         Logger::getLogger()->debug("Starting a random assignment game");
          randomlyAssignPlanets(player);
       }
       else {
+         Logger::getLogger()->debug("Starting a bidding game");
          randomlyGiveOnePlanet(player);
       }
    }
