@@ -44,6 +44,7 @@
 #include "risk.h"
 #include "riskturn.h"
 #include "ownedobject.h"
+#include "constellation.h"
 
 namespace RiskRuleset{
 
@@ -78,7 +79,7 @@ void RiskTurn::doTurn(){
    // do once a turn (right at the end)
    objectsIds = objM->getAllIds();
 
-   for(std::set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
+   for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
       IGObject * obj = objM->getObject(*i);
       obj->getObjectBehaviour()->doOnceATurn();
@@ -160,16 +161,79 @@ void RiskTurn::calculateReinforcements() {
 }
 
 void RiskTurn::calculateBonusReinforcements() {
-   //LATER: Give out bonus reinforcements for owning whole constellations
+   ObjectManager* obm = Game::getGame()->getObjectManager();
+   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
+   IGObject* universe = obm->getObject(0);
+   set<uint32_t> constellation = universe->getContainedObjects();
+   
+   Logger::getLogger()->debug("Looking through each constellation to calculate bonus");
+   //For each constellation
+   for (set<uint32_t>::iterator i = constellation.begin(); i != constellation.end(); i++)
+   {
+      //Get current constellation
+      IGObject* crnt = obm->getObject(*i);
+
+      Logger::getLogger()->debug("\"%s\"",crnt->getName().c_str());
+      //if constellation name isn't Wormholes then we process that constellation
+      if (crnt->getName() != "Wormholes"){
+         //Use getPlayerAndUnits function to get a player who completely owns a constellation and the bonus they get
+         std::pair<uint32_t,uint32_t> playerAndUnits = getPlayerAndUnits(crnt);
+         //If a single player owns the entire constellation give them their bonus
+         if (playerAndUnits.first != 0) {
+            Logger::getLogger()->debug("Found non-zero player owning whole constellation, awarding %d", playerAndUnits.second);
+            uint32_t currentRfc = risk->getPlayerReinforcements(playerAndUnits.first);
+            Logger::getLogger()->debug("Player %d would have gotten %d, now they get %d",playerAndUnits.first,currentRfc,currentRfc+playerAndUnits.second);
+            currentRfc = currentRfc + playerAndUnits.second;
+            risk->setPlayerReinforcements(playerAndUnits.first, currentRfc);
+         }
+      }
+   }
 }
 
+std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation) {
+   std::pair<uint32_t,uint32_t> result;
+   
+   ObjectManager* obm = Game::getGame()->getObjectManager();
+   result.first = 0;
+   result.second = 0;
+   
+   Constellation* cnst = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
+   result.second = cnst->getBonus();
+   
+   Logger::getLogger()->debug("Got bonus, it was: %d",result.second);
+   //get all systems
+   std::set<uint32_t> systems = constellation->getContainedObjects();
+   //for each system
+   for (set<uint32_t>::iterator i = systems.begin(); i != systems.end(); i++) {
+      IGObject* obj = obm->getObject(*i);
+      //todo: make object equal to CHILD of current obj
+      std::set<uint32_t> child = obj->getContainedObjects();
+      obj = obm->getObject(*child.begin());
+      Logger::getLogger()->debug("Looking at system %s",obj->getName().c_str());
+      Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+      
+      //On the first planet, set the results owner as the current planet owner
+      if (i == systems.begin()) {
+         Logger::getLogger()->debug("First owner in galaxy is %d", planet->getOwner());
+         result.first = planet->getOwner();
+      }
+      //On subsequent runs, if the owners aren't the same then zero out the results owner
+      else if ( planet->getOwner() != result.first ) {
+         Logger::getLogger()->debug("Second owner in galaxy is %d",planet->getOwner());
+         Logger::getLogger()->debug("Subsequent owner in galaxy do not match");
+         result.first = 0;
+      }
+   }
+   return result;
+}
 
 /** processOrdersOfGivenType
-* This function iterates over all objects the objM holds and process only orders of a given type 
-* that are in the front of the queue.
-* I.E. if the type passed is P and the queue for an object is P->P->Q->P
-*   only the first two P will be procesed
-*NOTE: If no type is specified then all orders in queue will be processed
+ * This function iterates over all objects the objM holds and process only orders of a given type 
+ * that are in the front of the queue.
+ * I.E. if the type passed is P and the queue for an object is P->P->Q->P
+ *   only the first two P will be procesed
+ * NOTE: If no type is specified then all orders in queue will be processed
+ * @param type The name of the type of order to be processed. If no type is given all orders will be processed in the queue.
 **/
 void RiskTurn::processOrdersOfGivenType(string type) {
    Logger::getLogger()->debug("Now processing orders of type: \"%s\"",type.c_str());

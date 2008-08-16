@@ -1,31 +1,12 @@
-Early Week:
-Read all of Effective C++
-Read some XML documentation, particularly on DTD's and schema
-Started looking into parsers for XML/C++
-Finished up "alpha" testing
+Monday:
+Holiday; extracted some code out, found bug - can't delete orders...
 
-Friday:
-Tested 2 games with Jackie
-Found numerous bugs, fixed many (show commits.) Particularly cleaned up errors with Attack logic (extra unit creation, "cheating" by increasing odds)
-Some bugs are more difficult than others, particularly VIEW problems, and phantom ownerships.
-Player (wife) noted that getting started document should be more clear, as a non-gamer many things aren't as intuitive as I felt they were. Map connectivity not displayed is an issue.
 =========================================================================================
 
+Now until end of project:
+*Pictures for Risk MT-Report
+*Record Screencasts
+*Tidy up SVG import
+*Doxygenate code+comments
 
-This Week:
-
-
-Last Half of Term:
-XML map import
-Add ability to repeatedly attack
-Arrange xml default map to favor weaker positions
-Create set of shell/example classes for ruleset dev
-Contribute to documents for ruleset creation
-Look for AI to test with
-
-XML Map importing:
-tags - <MAP> has <CONSTELLATION>s have <SYSTEM>s have (<NAME><ID?><LOCATION><NEIGHBOUR>)
-Create all constellations... (store pointer to each constellation created)
-Create all Planets (w/o entering in neighbours)
-	Store planet <ID>or<NAME> tag in a map to the planet's ACTUAL in-game ID.
-Add all adjacencies
+//test comment

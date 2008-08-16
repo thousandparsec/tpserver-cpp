@@ -62,8 +62,10 @@
 #include "universe.h"
 #include "ownedobject.h"
 #include "planet.h"
+#include "wormhole.h"
 #include "constellation.h"
 #include "graph.h"
+#include "mapimport.h"
 
 #include "boost/format.hpp"
 
@@ -90,7 +92,6 @@ using boost::format;
 
 //Constructor with a initializer for adjacency_list graph, sets graph to have 0 vertices/edges 
 Risk::Risk() : graph(), random(NULL) {
-   num_constellations = 0;
    num_planets = 0;
 }
 
@@ -112,7 +113,6 @@ void Risk::initGame(){
    Logger::getLogger()->info("Risk initialised");
 
    Game::getGame()->setTurnProcess(new RiskTurn());
-   //Game::getGame()->setRuleset(this);
 
    setObjectTypes();
 
@@ -132,29 +132,23 @@ void Risk::setObjectTypes() const{
    eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
    obdm->addNewObjectType(eo);
 
-   obdm->addNewObjectType(new PlanetType);   //may need to special some stuff here
-   //There are no fleets in risk - hence no fleet type
+   obdm->addNewObjectType(new PlanetType());
+   obdm->addNewObjectType(new StaticObjectType());
+   obdm->addNewObjectType(new WormholeType());
 }
 
 void Risk::setOrderTypes() const{
    OrderManager* orm = Game::getGame()->getOrderManager();
 
-   //To be an action availible on all unowned planets
-   //With planet selected order is to colonize with NUMBER armies
    orm->addOrderType(new Colonize());
-
-   //To be an action availible on all player owned planets
-   //With planet selected order is to reinforce with NUMBER armies
    orm->addOrderType(new Reinforce());
-
-   //To be an action availible on all player owned planets
-   //With planet selected order is to reinforce with NUMBER armies
    orm->addOrderType(new Move());
 }
 
 void Risk::createGame(){
    Logger::getLogger()->info("Risk created");
 
+   //Seed the random to be used as the supplied debug random seed (if supplied)
    std::string randomseed = Settings::getSettings()->get("risk_debug_random_seed");
    if( randomseed != ""){
       random = new Random();
@@ -165,7 +159,6 @@ void Risk::createGame(){
 
    createResources();
  
-   //set up universe (universe->constellations->star sys->planet)
    createUniverse();
 }
 
@@ -203,16 +196,23 @@ void Risk::createUniverse() {
    //The field of view for the universe is approximately -1 to 1 X and 0 to 1 Y.
    uniData->setUnitPos(-0.1,0.1);
    objman->addObject(universe);
-
-   //LATER: create some sort of import function to create map from file 
-   createTestSystems(universe);
    
+   //set up universe (universe->constellations->star sys->planet)
+   std::string risk_mapimport = Settings::getSettings()->get("risk_mapimport");
+   if( risk_mapimport == "true") {
+      std::string mapfile = Settings::getSettings()->get("risk_map");
+      importMapFromFile(mapfile,*universe);
+   }
+   else {
+      createTestSystems(*universe);
+   }
 }
 
-void Risk::createTestSystems(IGObject* universe) {
+void Risk::createTestSystems(IGObject& universe) {
 
-   IGObject *con_cygnus     = createConstellation(*universe, "Cygnus",         2); //South America
-   IGObject *con_orion      = createConstellation(*universe, "Orion",          3); //Africa
+   IGObject *con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
+   IGObject *con_orion      = createConstellation(universe, "Orion",          3); //Africa
+   IGObject *wormholes      = createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
 
    // Cygnus Systems (South America, Bonus 2)
    createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
@@ -229,100 +229,33 @@ void Risk::createTestSystems(IGObject* universe) {
    createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
    
    //Cygnus Internal Adjacencies
-   graph.addEdge(4,8);
-   graph.addEdge(4,10);
-   graph.addEdge(8,10);
-   graph.addEdge(8,6);
-   graph.addEdge(6,10);
+   createWormhole(*wormholes, 5, 9);
+   createWormhole(*wormholes, 5, 11);
+   createWormhole(*wormholes, 9, 11);
+   createWormhole(*wormholes, 9, 7);
+   createWormhole(*wormholes, 7, 11);
    
    //Orion Internal Adjacencies
-   graph.addEdge(12,16);
-   graph.addEdge(12,20);
-   graph.addEdge(16,18);
-   graph.addEdge(18,20);
-   graph.addEdge(18,14);
-   graph.addEdge(20,22);
-   graph.addEdge(22,14);
+   createWormhole(*wormholes, 13, 17);
+   createWormhole(*wormholes, 13, 21);
+   createWormhole(*wormholes, 17, 19);
+   createWormhole(*wormholes, 19, 21);
+   createWormhole(*wormholes, 19, 15);
+   createWormhole(*wormholes, 21, 23);
+   createWormhole(*wormholes, 23, 15);
    
    //Cygnus - Orion Adjacencies
-   graph.addEdge(12,8);
+   createWormhole(*wormholes, 13, 9);
 }
-
-IGObject* Risk::createConstellation(IGObject& parent, const string& name, int bonus) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   IGObject *constellation = game->getObjectManager()->createNewObject();
-
-   otypeman->setupObject(constellation, otypeman->getObjectTypeByName("Constellation"));
-   constellation->setName(name);
-
-   Constellation* constellationData = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
-   constellationData->setBonus(bonus);
-
-   constellation->addToParent(parent.getID());
-   game->getObjectManager()->addObject(constellation);
-
-   ++num_constellations;
-   return constellation;
-}
-
-IGObject* Risk::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-
-   IGObject *starSys = game->getObjectManager()->createNewObject();
-
-   otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
-   starSys->setName(name+" System");
-   StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
-   starSysData->setUnitPos(unitX, unitY);
-
-   starSys->addToParent(parent.getID());
-   game->getObjectManager()->addObject(starSys);
-
-   //Create the planet AND add that planet to the graph.
-   graph.addPlanet(createPlanet(*starSys, name, starSysData->getPosition() + getRandPlanetOffset()));
-   return starSys;
-}
-
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
-   return createPlanet(parent, name, Vector3d(unitX,unitY,0));
-}
-
-IGObject* Risk::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
-   DEBUG_FN_PRINT();
-   Game *game = Game::getGame();
-   ObjectTypeManager *otypeman = game->getObjectTypeManager();
-   
-   IGObject *planet = game->getObjectManager()->createNewObject();
-   
-   otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
-   planet->setName(name);
-   Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
-   planetData->setPosition(location); // OK because unit pos isn't useful for planets
-   planetData->setDefaultResources();
-   
-   OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setObjectId(planet->getID());
-   game->getOrderManager()->addOrderQueue(planetOrders);
-   OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*> 
-         (planet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
-   planetData->setOrderTypes();
-   
-   planet->addToParent(parent.getID());
-   game->getObjectManager()->addObject(planet);
-   
-   ++num_planets;
-   return planet;
-}   
 
 void Risk::startGame(){
    Logger::getLogger()->info("Risk started");
+   
+   setDefaults();
+}
 
+void Risk::setDefaults() {
+   Logger::getLogger()->debug("=Setting Defaults=");
    //Establish some defaults if user does not specify any in config
    Settings* settings = Settings::getSettings();
    if(settings->get("turn_length_over_threshold") == "")
@@ -349,10 +282,13 @@ void Risk::startGame(){
 
    if (settings->get("risk_rfc_start") == "")
       settings->set("risk_rfc_start", "30");
-      
+   Logger::getLogger()->debug("risk_randomly_assign=%s",settings->get("risk_randomly_assign").c_str());   
    if (settings->get("risk_randomly_assign") == "" )
+   {
+      Logger::getLogger()->debug("risk_randomly_assign was %s and is now set to \"true\"",settings->get("risk_randomly_assign").c_str());
       settings->set("risk_randomly_assign", "true");
-      
+   }
+     
    if (settings->get("risk_attack_dmg") == "" )
       settings->set("risk_attack_dmg","1");
       
@@ -362,6 +298,11 @@ void Risk::startGame(){
    else
       settings->set("risk_allow_colonize","true");
       
+   if (settings->get("risk_mapimport") == "" ) 
+      settings->set("risk_mapimport","false");
+      
+   if (settings->get("risk_map") == "")
+      settings->set("risk_map","risk-defaultmap.svg");
 }
 
 bool Risk::onAddPlayer(Player* player){
@@ -376,7 +317,6 @@ bool Risk::onAddPlayer(Player* player){
       //If ( max players exceeded OR (game's started AND there are no open spaces))    
          //disallow joining
       Logger::getLogger()->debug("There are %d current players and the max players is %d",cur_players,max_players);
-      //TODO: make guest logon more robust, at present guest occupies a player number stall, if guest
       //joins before other players then he takes a spot
       
 
@@ -443,16 +383,6 @@ void Risk::onPlayerAdded(Player* player){
 
    Game::getGame()->getPlayerManager()->updatePlayer(player->getID()); 
 
-   //This should make every object visible to an added player
-   // PlayerView* playerview = player->getPlayerView();
-   //    std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
-   //    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
-   //          ++itcurr){
-   //       ObjectView* obv = new ObjectView();
-   //       obv->setObjectId(*itcurr);
-   //       obv->setCompletelyVisible(true);
-   //     playerview->addVisibleObject(obv);
-   //    }
    setPlayerVisibleObjects();
 
    //Restrict guest player from receiving reinforcements or planets:
@@ -460,10 +390,13 @@ void Risk::onPlayerAdded(Player* player){
       //Create a spot in the reinforcements map for the player and assign starting reinforcements.
       reinforcements[player->getID()] = atoi(Settings::getSettings()->get("risk_rfc_start").c_str() );
    
+      Logger::getLogger()->debug("risk_randomly_assign=%s",settings->get("risk_randomly_assign").c_str());
       if ( settings->get("risk_randomly_assign") == "true") {
+         Logger::getLogger()->debug("Starting a random assignment game");
          randomlyAssignPlanets(player);
       }
       else {
+         Logger::getLogger()->debug("Starting a bidding game");
          randomlyGiveOnePlanet(player);
       }
    }
@@ -566,6 +499,10 @@ uint32_t Risk::getPlayerReinforcements(uint32_t owner) {
 
 void Risk::setPlayerReinforcements(uint32_t owner, uint32_t units) {
    reinforcements[owner] = units;
+}
+
+void Risk::increaseNumPlanets() {
+   ++num_planets;
 }
 
 } //end namespace RiskRuleset

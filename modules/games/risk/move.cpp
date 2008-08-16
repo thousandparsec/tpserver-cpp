@@ -116,7 +116,6 @@ map<uint32_t, pair<string, uint32_t> > Move::generateListOptions() {
       options[(*i)->getID()] = pair<string,uint32_t>(
          (*i)->getName(), availibleUnits );
    }   
-   //CHECK: how to get more than a single digit display - Mac Bug?
 
    return options;
 }

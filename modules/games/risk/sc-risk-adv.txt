@@ -1,0 +1,15 @@
+*Showing blank screen with TP logo
+Welcome to the Risk ruleset "Playing Risk - Advanced" screencast. My name is Ryan Neufeld, or jaffer for short, and I will be walking you through a few tips and tricks for playing the Risk ruleset for thousand parsec. This screencast assumes you've viewed the Risk ruleset basic screencast, and are comfortable playing the game.
+
+*Switch to open client
+There are very few "advanced" techniques in the Risk ruleset to be used or discovered. But the one I colloqually call "chaining" is by far the most powerful. One thing many beginners to the risk ruleset neglect to realize is the ability to issue MULTIPLE move orders per planet per turn. 
+
+As you see from the board our territory Alnitak has X units, and the enemy territory betelgeuse has 3.
+To start a chain
+
+What this means for you is the ability to repeatedly bombard a given system an infinite number of times per turn, whilst that player may only be attacking you once. This power comes with great responsibility however, as I have personally learned, attacking too often in a single turn can result in a complete loss of units, decreasing your planet down to 1 unit. Since you cannot stop multiple attacks during turn processing you are forced to choose the number of move orders carefully
+
+The second "secret" game mechanic of the Risk ruleset is what I call "attack conflict resolution." Basically put, I've programmed the Ruleset, so that when two players attack each other simultaneously the defender receives 1 extra dice roll. Now this mechanic doesn't apply in places where it is completely unfair, like when a player only has 1 unit and is incapable of attacking, but you should know if YOU are being attacked by the person you ARE attacking, you will receive worse odds of winning. That said you might give yourself some extra OOMPH by surgically attacking an opponent to "milk the odds".
+
+OTHER THINGS
+============

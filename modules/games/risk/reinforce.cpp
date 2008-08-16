@@ -98,7 +98,7 @@ bool Reinforce::doOrder(IGObject *obj) {
    //Post message to players board
    Game::getGame()->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(message);
    
-   return true;
+   return result;
 }
 
 } //namespace RiskRuleset
