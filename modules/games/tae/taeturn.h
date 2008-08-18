@@ -36,7 +36,9 @@ class TaeTurn : public TurnProcess{
     void setPlanetType(uint32_t pt);
     void setGameOver(bool isOver);
     
+    //Queue up a conflict to be resolved at the next possible turn
     void queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com);
+    //Adds one reinforcement to the player
     void addReinforcement(uint32_t player); 
  
     std::set<uint32_t> getContainerIds() const;

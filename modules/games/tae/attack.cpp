@@ -1,5 +1,9 @@
 /*  Attack order
  *
+ *  This class defines the attack FleetOrder used by bomber fleets.
+ *  The attack order targets a system and destroys it, removing any
+ *  colony or leader and making it unusable for the rest of the game.
+ *
  *  Copyright (C) 2008 Dustin White and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -71,19 +75,25 @@ Result Attack::inputFrame(Frame *f, uint32_t playerid) {
     return FleetOrder::inputFrame(f, playerid);
 }
 
+// The attack order must check to make sure the target is valid, then
+// remove any colony or leader, and finally add the "destroyed" resource to
+// prevent further colonization or occupation.
+// TODO: check to make sure everything is removed correctly
 bool Attack::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
 
+    //Check to see if the system is valid
     //Find the star system's planet
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
+        //not a star system
         Logger::getLogger()->debug("Trying to attack an object which is not a star system");
         return false;
     }
     set<uint32_t> children = newStarSys->getContainedObjects();
-    uint32_t pid;
+    uint32_t pid; //ID of the planet
     bool planetFound = false;
     for(set<uint32_t>::iterator i=children.begin(); i != children.end(); i++) {
         if(obm->getObject(*i)->getType() == obtm->getObjectTypeByName("Planet")) {
@@ -92,6 +102,7 @@ bool Attack::doOrder(IGObject * obj) {
         }
     }
     if(!planetFound) {
+        //No planet in the system
         Logger::getLogger()->debug("Attack Order: No planet found in target star system");
         return false;
     }

@@ -55,6 +55,7 @@ using std::pair;
 
 
 TaeTurn::TaeTurn(FleetBuilder* fb) : TurnProcess(), containerids(){
+    //FleetBuilder needed so taeturn can refill colonist ships
     fleetBuilder = fb;
     playerTurn = 0;
     combat = false;
@@ -67,6 +68,7 @@ TaeTurn::~TaeTurn(){
 }
 
 void TaeTurn::doTurn(){
+    //check to make sure the game is still ging and this is not a combat turn
     if(isGameOver) {
         gameOver();
         return;
@@ -278,6 +280,7 @@ void TaeTurn::doTurn(){
 
 }
 
+//Setup the next turn to be ready for combat
 void TaeTurn::initCombat() {
     std::set<uint32_t>::iterator itcurr;
 
@@ -287,6 +290,7 @@ void TaeTurn::initCombat() {
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     DesignStore* ds = game->getDesignStore();
 
+    //Pop the combat queue and set the combatants
     pair<bool, map<uint32_t, uint32_t> > temp;
     temp = combatQueue.front();
     combatQueue.pop();
@@ -436,7 +440,6 @@ void TaeTurn::initCombat() {
 }
 
 void TaeTurn::doCombatTurn() {
-    // Do orders
     std::set<uint32_t>::iterator itcurr;
 
     Game* game = Game::getGame();
@@ -447,6 +450,7 @@ void TaeTurn::doCombatTurn() {
 
     containerids.clear();
 
+    // Do orders
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);

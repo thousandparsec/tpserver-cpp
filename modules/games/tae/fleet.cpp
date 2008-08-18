@@ -78,6 +78,7 @@ Fleet::~Fleet(){
 void Fleet::setDefaultOrderTypes(){
 }
 
+//Add an allowed NORMAL order
 void Fleet::addAllowedOrder(string order) {
     Logger::getLogger()->debug("Enter: Fleet::addAllowedOrder");
     OrderManager * om = Game::getGame()->getOrderManager();
@@ -88,6 +89,7 @@ void Fleet::addAllowedOrder(string order) {
     Logger::getLogger()->debug("Exit: Fleet::addAllowedOrder");
 }
 
+//Add an allowed COMBAT order
 void Fleet::addAllowedCombatOrder(string order) {
     OrderManager * om = Game::getGame()->getOrderManager();
     combatOrders.insert(om->getOrderTypeByName(order));
@@ -97,33 +99,44 @@ void Fleet::addAllowedCombatOrder(string order) {
     Logger::getLogger()->debug("Exit: Fleet::addAllowedCombatOrder");
 }
 
+//Toggles whether the current turn is a combat turn or not
+//NOTE: if it IS a combat turn, but this fleet is NOT a combatant,
+//      then it will have NO orders, otherwise (if it is a comatant)
+//      it will use its combat orders.
 void Fleet::toggleCombat() {
     OrderManager * om = Game::getGame()->getOrderManager();
     combat = !combat;
     if(combat) {
         if(combatant) {
+            //If current turn is combat turn and this fleet is a combatant then enable
+            //its combat orders
             ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
         } else {
+            //if it is not a combatant, then it gets no orders
             std::set<uint32_t> temp;
             ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(temp);
         }
     } else {
+        //if the current turn is not a combat turn then use its normal orders
         ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(normalOrders);
         combatant = false;
     } 
 }
 
+//Sets whether the fleet is a combatant in the combat turn
 void Fleet::setCombatant(bool com) {
     combatant = com;
     if(combat && com) {
         ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(combatOrders);
-    }   
+    }
 }
 
+//Gets whether or not the current fleet is a combatant in the cunbat turn
 bool Fleet::isCombatant() {
     return combatant;
 }
 
+//Add ships to the fleet
 void Fleet::addShips(uint32_t type, uint32_t number){
     Logger::getLogger()->debug("Enter: Fleet::addships");
     //Get list of ships
@@ -136,6 +149,7 @@ void Fleet::addShips(uint32_t type, uint32_t number){
     Logger::getLogger()->debug("Exit: Fleet::addShips");
 }
 
+//Remove ships from the fleet
 bool Fleet::removeShips(uint32_t type, uint32_t number){
     Logger::getLogger()->debug("Enter: Fleet::removeShips");
     //Get list of ships
@@ -155,6 +169,7 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
     return false;
 }
 
+//Get the number of ships of the specified type in the fleet
 uint32_t Fleet::numShips(uint32_t type){
     Logger::getLogger()->debug("Enter: Fleet::numShips");
     std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
@@ -162,6 +177,7 @@ uint32_t Fleet::numShips(uint32_t type){
     return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
+//Get a map of how many ships of each type are in the fleet.
 std::map<uint32_t, uint32_t> Fleet::getShips() const{
     Logger::getLogger()->debug("Enter: Fleet::getShips");
     std::map<uint32_t, uint32_t> ships;
@@ -176,6 +192,7 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
     return ships;
 }
 
+//Get the total number of ships in this fleet
 uint32_t Fleet::totalShips() const{
     Logger::getLogger()->debug("Enter: Fleet::totalShips");
     uint32_t num = 0;
@@ -188,10 +205,12 @@ uint32_t Fleet::totalShips() const{
     return num;
 }
 
+//Get damage done to ship (NOT CURRENTLY USED)
 uint32_t Fleet::getDamage() const{
     return ((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue();
 }
 
+//Set damage done to ship (NOT CURRENTLY USED)
 void Fleet::setDamage(uint32_t nd){
     ((IntegerObjectParam*)(obj->getParameter(4,2)))->setValue(nd);
     obj->touchModTime();

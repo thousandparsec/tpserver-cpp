@@ -1,4 +1,6 @@
-/*  FleetOrder order, the base class for fleet related orders in TaE
+/*  FleetOrder class.  This class is used as a base class for the normal
+ *  fleet based orders.  It encorporates many functions and data which
+ *  each of these orders need.
  *
  *  Copyright (C) 2008 Dustin White and the Thousand Parsec Project
  *
@@ -63,6 +65,7 @@ void FleetOrder::createFrame(Frame *f, int pos) {
     Order::createFrame(f, pos);
 }
 
+//Used to check to see if the input is valid
 Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
     Result r = Order::inputFrame(f, playerid);
     if(!r) return r;
@@ -136,6 +139,7 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
     return Success();
 }
 
+//Returns the regions bordering the fleet
 set<uint32_t> FleetOrder::getBorderingRegions() {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
@@ -143,6 +147,7 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
     set<uint32_t> regions;
     Vector3d pos = starSysData->getPosition();
+    //Check the neighbors:
     //east-west neighbors
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
@@ -172,10 +177,12 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     return regions;
 }
 
+//Get the leader of type leaderType in the specified region
 int FleetOrder::getLeaderInRegion(uint32_t region, string leaderType) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     
+    //Check all the objects for the leader
     set<uint32_t> objects = obm->getAllIds();
     for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = obm->getObject(*itcurr);

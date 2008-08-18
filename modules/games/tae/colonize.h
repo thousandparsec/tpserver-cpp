@@ -1,6 +1,14 @@
 #ifndef COLONIZE_H
 #define COLONIZE_H
 /*  Colonize class
+ *  
+ *  This class defines the colonize FleetOrder used by colonist fleets.
+ *  The colonize order targets an uninhabited/uncolonized system which
+ *  is valid for the fleet giving the order.  It creates a new colony,
+ *  awards one point of the same type as the fleet to the owner of the
+ *  leader in the region of the new colony.  It may also initiate an 
+ *  external combat if connecting two regions with leaders of the same
+ *  type.
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *

@@ -1,6 +1,7 @@
 #ifndef MOVE_H
 #define MOVE_H
-/*  Colonize class
+/*  The Move class defines a FleetOrder which is used by the leader
+ *  fleets to occupy systems.  This may create an internal conflict.
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
@@ -39,6 +40,7 @@ class Move : public FleetOrder
    
    virtual bool doOrder(IGObject * obj);
    
+   //Used to make sure the inputed system is bordering a science colony
    static bool isBorderingScienceColony(StarSystem* system);
 };
 

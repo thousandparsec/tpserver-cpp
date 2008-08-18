@@ -70,6 +70,8 @@ StarSystem::~StarSystem() {
 
 }
 
+//System cannot be destroyed, occupied, or colonized in order to be able to be colonized.
+//It also must be inhabitable for the colony type.
 bool StarSystem::canBeColonized(bool mining) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();

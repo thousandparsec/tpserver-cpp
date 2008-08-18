@@ -1,5 +1,13 @@
 /*  Colonize order
  *
+ *  This class defines the colonize FleetOrder used by colonist fleets.
+ *  The colonize order targets an uninhabited/uncolonized system which
+ *  is valid for the fleet giving the order.  It creates a new colony,
+ *  awards one point of the same type as the fleet to the owner of the
+ *  leader in the region of the new colony.  It may also initiate an 
+ *  external combat if connecting two regions with leaders of the same
+ *  type.
+ *
  *  Copyright (C) 2008 Dustin White and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -50,6 +58,8 @@ using std::map;
 using std::string;
 using std::stringstream;
 
+//The colonize constructor creates two different types of orders
+//one for mining fleets and one for all other colonist fleets
 Colonize::Colonize(bool mining) : FleetOrder() {
     isMining = mining;
     if(mining) {
@@ -95,6 +105,8 @@ Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
     return Success();
 }
 
+//The colonize order checks to make sure the system is valid, then adds a resource to the planet, checks for
+//external combat, and awards one point to the player with the leader in the region of the new colony.
 bool Colonize::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
@@ -105,6 +117,7 @@ bool Colonize::doOrder(IGObject * obj) {
 
     //Perform last minute checks to make sure the system can be colonized
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
+        //Not a star system
         Logger::getLogger()->debug("Trying to colonize to an object which is not a star system");
         Message * msg = new Message();
         msg->setSubject("Colonize order failed");
@@ -114,6 +127,7 @@ bool Colonize::doOrder(IGObject * obj) {
         return false;
     }
     if(!((StarSystem*)(newStarSys->getObjectBehaviour()))->canBeColonized(isMining)) {
+        //Not colonizable
         Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
         Message * msg = new Message();
         msg->setSubject("Colonize order failed");
@@ -193,7 +207,7 @@ bool Colonize::doOrder(IGObject * obj) {
         Logger::getLogger()->debug(string("System " + newStarSys->getName() + " added to region " + out.str()).c_str());
     } else {
         // This means that 2 regions are being connected. Perform check
-        // For external combat here then perform region check again!
+        // for external combat
         map<uint32_t, uint32_t> settlers;
         map<uint32_t, uint32_t> scientists;
         map<uint32_t, uint32_t> merchants;

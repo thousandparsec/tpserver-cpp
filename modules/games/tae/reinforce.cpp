@@ -1,4 +1,5 @@
-/*  Reinforce combat order
+/*  Reinforce order used in combat by colonist fleets. It adds one to
+ *  the owner's strength for that round of combat.
  *
  *  Copyright (C) 2008 Dustin White and the Thousand Parsec Project
  *

@@ -2,6 +2,10 @@
 #define ATTACK_H
 /*  Attack class
  *
+ *  This class defines the attack FleetOrder used by bomber fleets.
+ *  The attack order targets a system and destroys it, removing any
+ *  colony or leader and making it unusable for the rest of the game.
+ *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify

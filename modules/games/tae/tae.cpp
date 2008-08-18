@@ -183,6 +183,7 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
     int row = 0;
     ifstream file (path.c_str());
 
+    //Attempt to read in a custom map
     if (file.is_open())
     {
         while(!file.eof()) {

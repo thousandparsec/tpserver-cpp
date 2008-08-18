@@ -1,6 +1,8 @@
 #ifndef FLEET_ORDER_H
 #define FLEET_ORDER_H
-/*  FleetOrder class
+/*  FleetOrder class.  This class is used as a base class for the normal
+ *  fleet based orders.  It encorporates many functions and data which
+ *  each of these orders need.
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
@@ -40,8 +42,11 @@ class FleetOrder : public Order
    virtual bool doOrder(IGObject * obj) = 0;
 
  protected:
+   //The star system object this order is targetting.
    ObjectOrderParameter* starSys;
+   //A function to return which regions border the fleet
    std::set<uint32_t> getBorderingRegions();
+   //Gets the leader of type leaderType in the specified region.
    int getLeaderInRegion(uint32_t region, std::string leaderType);
 };
 

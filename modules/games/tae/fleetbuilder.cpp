@@ -1,5 +1,7 @@
-/*  FleetBuilder
- *  A helper class for replenishing fleets
+/*  The FleetBuilder class.  This class is used to create and manage
+ *  fleets.  It keeps track of how many fleets of each type are created
+ *  since there are a limited number of colonist fleets.  It also provides
+ *  simple functions to generate new fleets when needed.
  *
  *  Copyright (C) 2008  Dustin White and the Thousand Parsec Project
  *
@@ -58,8 +60,8 @@ FleetBuilder::FleetBuilder() {
 FleetBuilder::~FleetBuilder() {
 }
 
-//Create a new fleet of the specified type with the specified ship at
-//the location of the parent
+//Creates a fleet of type fleetType with ships of shipType for the owner at the location of the parent
+//with the name of name
 IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, IGObject* parent, std::string name) {
     Game *game = Game::getGame();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
@@ -122,6 +124,7 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
     othersView->setDesignId(ship->getDesignId());
     ownerView->setIsCompletelyVisible(true);
     if(fleetType == PASSENGER_FLEET) {
+        //Colonist ship types are not viewable by enemy players
         othersView->setIsCompletelyVisible(false);
     } else {
         othersView->setIsCompletelyVisible(true);

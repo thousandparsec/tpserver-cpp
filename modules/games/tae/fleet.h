@@ -44,7 +44,6 @@ class Fleet : public OwnedObject {
         Fleet();
         virtual ~Fleet();
 
-
         void setDefaultOrderTypes();
         void addAllowedOrder(std::string order);
         void addAllowedCombatOrder(std::string order);
@@ -69,7 +68,9 @@ class Fleet : public OwnedObject {
     private:
         bool combat;
         bool combatant;
+        //Allowed normal orders
         std::set<uint32_t> normalOrders;
+        //Allowed combat orders
         std::set<uint32_t> combatOrders;
 };
 
