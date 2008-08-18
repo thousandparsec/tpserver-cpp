@@ -88,9 +88,8 @@ void TaeTurn::doTurn(){
     //build map for storing orders
     std::map<uint32_t, std::list<IGObject*> > playerOrders;
 
-    //do orders 
     containerids.clear();
-
+    //separate orders by player
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
@@ -111,6 +110,7 @@ void TaeTurn::doTurn(){
     }
 
     //Do orders for players in the correct order
+    //The order in which orders are processed is rotated each turn
     std::set<uint32_t> players = playermanager->getAllIds();
     itcurr = players.begin();
     for(int i = 0; i < playerTurn; i++) {
@@ -165,7 +165,7 @@ void TaeTurn::doTurn(){
     objectmanager->clearRemovedObjects();
 
 
-    // to once a turn (right at the end)
+    // to once a turn
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
         if(ob->isAlive()){
@@ -309,10 +309,12 @@ void TaeTurn::initCombat() {
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
         IGObject* ob = objectmanager->getObject(i->first);
         Fleet* leader = (Fleet*) (ob)->getObjectBehaviour();
+        //look for the shiptype which this combat is associated with
         if(shipType.empty()) {
             if(isInternal) {
                 shipType = "ScientistShip";
             } else {
+                //Set shiptype to the type corresponding to the leader
                 uint32_t ship = leader->getShips().begin()->first;
                 shipType = ds->getDesign(ship)->getName();
                 size_t pos = shipType.find("Leader");
@@ -323,6 +325,7 @@ void TaeTurn::initCombat() {
         }
         owners.insert(leader->getOwner());
 
+        //Set which regions are involved in combat
         if(regions.count(i->second) <= 0) {
             regions.insert(i->second);
         }
@@ -332,6 +335,7 @@ void TaeTurn::initCombat() {
             IGObject *starSys = objectmanager->getObject(ob->getParent());
             StarSystem* starSysData = (StarSystem*)(starSys->getObjectBehaviour());
             Vector3d pos = starSysData->getPosition();
+            //Search for bordering science colonies
             //east-west neighbors
             for(int i = -1; i < 2; i+=2) {
                 set<uint32_t> ids = objectmanager->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
@@ -361,6 +365,7 @@ void TaeTurn::initCombat() {
         }
     }
 
+    //Set which resource will be awarded
     int resourceType;
     if(shipType.compare("MerchantShip") == 0) {
         resourceType = 4;
@@ -371,7 +376,9 @@ void TaeTurn::initCombat() {
     } else {
         resourceType = 7;
     }
-            
+
+    //Set all fleets to combat mode. Flag the fleets whose owners are
+    //directly involved in combat.
     std::set<ObjectView*> views;
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
@@ -411,6 +418,7 @@ void TaeTurn::initCombat() {
         }
     }
 
+    //Send message to players letting them know about combat
     Message * msg = new Message();
     msg->setSubject("COMBAT!");
     stringstream out;
@@ -497,6 +505,7 @@ void TaeTurn::doCombatTurn() {
     uint32_t winningRegion;
     set<uint32_t> removedSystems;
     if(isInternal) {
+        //Internal combat removes losing leader and awards one point to the winner
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
             IGObject* ob = objectmanager->getObject(i->first);
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
@@ -520,7 +529,10 @@ void TaeTurn::doCombatTurn() {
             }
         }
     } else {
+        //External combat removes the losing leader and losing colonies.
+        //1 point is awarded for the leader and each colony removed
         string shipType;
+        //set shiptype, losing/winning regions, and send home the losing leader
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
             IGObject* ob = objectmanager->getObject(i->first);
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
@@ -533,6 +545,7 @@ void TaeTurn::doCombatTurn() {
             }
         }
 
+        //set the correct resource type
         int resourceType;
         if(shipType.compare("Merchant Leader") == 0) {
             resourceType = 4;
@@ -544,9 +557,11 @@ void TaeTurn::doCombatTurn() {
             resourceType = 7;
         }
 
+        //add 1 to the winner for removing the leader
         Player* player = playermanager->getPlayer(winner);
         player->setScore(resourceType - 3, player->getScore(resourceType-3) + 1);
 
+        //remove all losing colonies
         objects = objectmanager->getAllIds();
         for(itcurr = objects.begin(); itcurr!= objects.end(); ++itcurr) {
             IGObject* ob = objectmanager->getObject(*itcurr);
@@ -617,6 +632,7 @@ void TaeTurn::doCombatTurn() {
     std::set<uint32_t> players = playermanager->getAllIds();
     std::set<uint32_t> vis = objectmanager->getAllIds();
 
+    //clear the removed objecs
     objectmanager->clearRemovedObjects();
     objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
@@ -626,11 +642,12 @@ void TaeTurn::doCombatTurn() {
         }
         objectmanager->doneWithObject(ob->getID());
     }
-
+    
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
         PlayerView* playerview = player->getPlayerView();
 
+        //Update visibility 
         for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
             playerview->addVisibleObject(*i);
         }
@@ -725,6 +742,8 @@ void TaeTurn::doCombatTurn() {
 
 }
 
+//Award artifacts to any players who have a merchant leader
+//in a region with two artifacts
 void TaeTurn::awardArtifacts() {
     Game* game = Game::getGame();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
@@ -794,6 +813,7 @@ void TaeTurn::awardArtifacts() {
     }
 }
 
+//Queue a new combat turn
 void TaeTurn::queueCombatTurn(bool internal, std::map<uint32_t, uint32_t> com) {
     combat = true;
     pair <bool, map<uint32_t, uint32_t> > temp;
@@ -808,6 +828,7 @@ void TaeTurn::addReinforcement(uint32_t player) {
     Logger::getLogger()->debug("Add Reinforcement");
 }
 
+//Sends a fleet back to it's home planet
 void TaeTurn::sendHome(uint32_t fleet) {
     Game* game = Game::getGame();
     ObjectManager* obm = game->getObjectManager();
@@ -843,6 +864,10 @@ void TaeTurn::sendHome(uint32_t fleet) {
     }
 }
 
+//Recurrsively rebuilds regions given a system.
+//If the system already has a region or is not occupied or
+//colonized, then this function returns.  Otherwise it
+//sets the region based on its neighbors.
 void TaeTurn::rebuildRegion(uint32_t system) {
     Game* game = Game::getGame();
     ObjectManager* obm = game->getObjectManager();
@@ -852,7 +877,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     IGObject* sys = obm->getObject(system);
     StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
 
-    //Check to make sure it doesnt already have a region
+    //Check to make sure the system doesnt already have a region
     if(sysData->getRegion() != 0) {
         return;
     }
@@ -923,16 +948,19 @@ void TaeTurn::rebuildRegion(uint32_t system) {
 
     //Set Region
     if(regions.size() == 0) {
+        //If neighbors have no region, then create a new region
         sysData->setRegion(sys->getID());
         stringstream out;
         out << sysData->getRegion();
         Logger::getLogger()->debug(string("System " + sys->getName() + " added to region " + out.str()).c_str());
     } else if(regions.size() == 1) {
+        //If it neighbors 1 region, then set as that region
         sysData->setRegion(*(regions.begin()));
         stringstream out;
         out << sysData->getRegion();
         Logger::getLogger()->debug(string("System " + sys->getName() + " added to region " + out.str()).c_str());
     } else {
+        //It should never border more than one region.  If it reaches this point, then there is an error somewhere
         Logger::getLogger()->debug(string("** Unable to rebuild region! System, " + sys->getName() + " is bordering more than one region! ***").c_str());
     }
 
@@ -942,6 +970,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     }
 }
 
+//End the game
 void gameOver() {
     Game* game = Game::getGame();
     PlayerManager* pm = game->getPlayerManager();
@@ -950,9 +979,12 @@ void gameOver() {
     set<uint32_t>::iterator itcurr;
     set<uint32_t> players = pm->getAllIds();
     
+    //Find each player's final score
     for(itcurr = players.begin(); itcurr != players.end(); itcurr++) {
         Player* p = pm->getPlayer(*itcurr);
         uint32_t artifacts = p->getScore(5);
+        //change artifact points to improve the types with the lowest
+        //points
         while(artifacts > 0) {
             int lowest = 1;
             for(int i = 2; i < 5; i++) {
@@ -964,16 +996,18 @@ void gameOver() {
             artifacts--;
         }
         
-        int highest = 1;
+        //Find the final score
+        int low = 1;
         for(int i = 2; i < 5; i++) {
-            if(p->getScore(i) > p->getScore(highest)) {
-                highest = i;
+            if(p->getScore(i) < p->getScore(low)) {
+                lowest = i;
             }
         }
         
-        finalScore[*itcurr] = p->getScore(highest);
+        finalScore[*itcurr] = p->getScore(low);
     }
 
+    //Find the winner
     uint32_t winner = 0;
     for(map<uint32_t, uint32_t>::iterator i = finalScore.begin(); i != finalScore.end(); i++) {
         if(winner == 0 || i->second > finalScore[winner]) {
