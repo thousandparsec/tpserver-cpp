@@ -340,6 +340,7 @@ modules/tpcl/Makefile
 modules/tpcl/guile/Makefile
 modules/tpcl/mzscheme/Makefile
 modules/games/risk/Makefile
+modules/games/tae/Makefile
 ]) 
 
 AC_OUTPUT
