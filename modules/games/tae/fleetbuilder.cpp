@@ -21,6 +21,8 @@
  *
  */
 
+#include <ctime>
+
 #include <tpserver/game.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/object.h>
