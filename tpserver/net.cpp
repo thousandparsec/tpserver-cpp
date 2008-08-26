@@ -37,7 +37,9 @@
 #include "settingscallback.h"
 #include "connection.h"
 #include "playerconnection.h"
+#include "adminconnection.h"
 #include "tcpsocket.h"
+#include "admintcpsocket.h"
 #include "game.h"
 #include "frame.h"
 #include "httpsocket.h"
@@ -203,7 +205,7 @@ void Network::stop()
 		      delete pc;
 		    }else{
                         ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
-		      if(ts != NULL){
+		      if(ts != NULL && ts->isPlayer()){
 			++itcurr;
 			removeConnection(ts);
 			delete ts;
@@ -224,6 +226,43 @@ void Network::stop()
 
 bool Network::isStarted() const{
   return active;
+}
+
+void Network::adminStart(){
+  if(Settings::getSettings()->get("admin_tcp") == "yes"){
+    AdminTcpSocket* admintcpsocket = new AdminTcpSocket();
+    admintcpsocket->openListen(Settings::getSettings()->get("admin_tcp_addr"), Settings::getSettings()->get("admin_tcp_port"));
+    if(admintcpsocket->getStatus() != 0){
+      addConnection(admintcpsocket);
+    }else{
+      delete admintcpsocket;
+      Logger::getLogger()->warning("Could not listen on admin TCP socket");
+    }
+  }else{
+    Logger::getLogger()->info("Not configured to start admin TCP socket");
+  }
+}
+
+void Network::adminStop(){
+  std::map<int, Connection*>::iterator itcurr = connections.begin();
+  while (itcurr != connections.end()) {
+    AdminConnection* ac = dynamic_cast<AdminConnection*>(itcurr->second);
+    if(ac != NULL){
+      ++itcurr;
+      ac->close();
+      removeConnection(ac);
+      delete ac;
+    }else{
+      ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
+      if(ts != NULL){
+        ++itcurr;
+        removeConnection(ts);
+        delete ts;
+      }else{
+        ++itcurr;
+      }
+    }
+  }
 }
 
 void Network::sendToAll(AsyncFrame* aframe){

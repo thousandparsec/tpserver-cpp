@@ -133,6 +133,27 @@ void Logger::error(const char *msg, ...)
 }
 
 
+int Logger::addLog(LogSink* newlog)
+{
+    std::ostringstream extname;
+
+    extname << "ext" << extcount;
+    logSinkMap[extname.str()] = newlog;
+    return extcount++;
+}
+
+void Logger::removeLog(int extid)
+{
+    std::ostringstream extname;
+
+    extname << "ext" << extid;
+    if (logSinkMap.find(extname.str()) != logSinkMap.end()) {
+        delete logSinkMap[extname.str()];
+	logSinkMap.erase(extname.str());
+    }
+}
+
+
 void Logger::flush()
 {
 	info("Logger stopped");
@@ -185,7 +206,7 @@ void Logger::reconfigure(const std::string & item, const std::string & value)
     }
 }
 
-Logger::Logger()
+Logger::Logger() : extcount(0)
 {
     reconfigure("","");
 	info("Logger started");

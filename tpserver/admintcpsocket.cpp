@@ -1,6 +1,6 @@
-/*  Tcp listen socket for tpserver-cpp with ipv4 and ipv6 support
+/*  Administration TCP listen socket for tpserver-cpp with ipv4 and ipv6 support
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,29 +25,29 @@
 #endif
 
 #include "logging.h"
-#include "playertcpconn.h"
+#include "admintcpconn.h"
 #include "net.h"
 
-#include "tcpsocket.h"
+#include "admintcpsocket.h"
 
-TcpSocket::TcpSocket() : ListenSocket(){
-  player = true;
+AdminTcpSocket::AdminTcpSocket() : ListenSocket(){
+  player = false;
 }
 
-TcpSocket::~TcpSocket(){
+AdminTcpSocket::~AdminTcpSocket(){
 }
 
-void TcpSocket::openListen(const std::string& address, const std::string& port){ 
+void AdminTcpSocket::openListen(const std::string& address, const std::string& port){ 
     if(port.length() == 0){
-        ListenSocket::openListen(address, "6923");
+        ListenSocket::openListen(address, "6925");
     }else{
         ListenSocket::openListen(address, port);
     }
 }
 
 
-PlayerConnection* TcpSocket::acceptConnection(int fd){
-    Logger::getLogger()->info("Accepting new tp (tcp) connection");
+AdminConnection* AdminTcpSocket::acceptConnection(int fd){
+    Logger::getLogger()->info("Accepting new admin (tcp) connection");
 
-    return new PlayerTcpConnection(fd);
+    return new AdminTcpConnection(fd);
 }

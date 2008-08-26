@@ -113,6 +113,16 @@ enum FrameType{
   ft04_PlayerIds_Get = 72,
   ft04_PlayerIds_List = 73,
   ft04_Max,
+  // Administration frame types follow
+  ftad_LogMessage = 1000,
+  ftad_CommandUpdate = 1001,
+  ftad_CommandDesc_Get = 1002,
+  ftad_CommandDesc = 1003,
+  ftad_CommandTypes_Get = 1004,
+  ftad_CommandTypes_List = 1005,
+  ftad_Command = 1006,
+  ftad_CommandResult = 1007,
+  ftad_Max,
 
 
 };
@@ -162,6 +172,8 @@ typedef uint32_t categoryid_t;
 typedef uint32_t designid_t;
 typedef uint32_t componentid_t;
 typedef uint32_t propertyid_t;
+
+typedef uint32_t commandtypeid_t;
 
 typedef int32_t reftype_t;
 typedef uint32_t refvalue_t;

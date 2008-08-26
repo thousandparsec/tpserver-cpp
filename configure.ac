@@ -60,13 +60,6 @@ AC_CHECK_LIB(pthread, pthread_create,,AC_MSG_ERROR(TP Server requires pthread li
 
 AC_CHECK_LIB(dl, dlsym,,)
 
-PKG_CHECK_MODULES(libtprl, libtprl >= 0.1.2,
-	,
-	AC_MSG_ERROR(Couldn't find libtprl. Please install it before trying again)
-)
-AC_SUBST([libtprl_LIBS])
-AC_SUBST([libtprl_CFLAGS])
-
 PKG_CHECK_MODULES(avahiclient, avahi-client > 0.6.0,
     [
     AC_DEFINE(HAVE_AVAHI, 1, true if avahi is available)

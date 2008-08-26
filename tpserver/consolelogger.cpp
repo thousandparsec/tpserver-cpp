@@ -29,7 +29,6 @@
 #include "consolelogger.h"
 #include "settings.h"
 #include "settingscallback.h"
-#include "console.h"
 
 ConsoleLogger::ConsoleLogger()
 {
@@ -74,5 +73,4 @@ void ConsoleLogger::doLogging( int level, const char* msg) const
         levelStr << " <  " << level << "  > ";
 
     std::cout << "\r" << timeStr << levelStr.str() << msg << std::endl;
-    Console::getConsole()->redisplay();
 }

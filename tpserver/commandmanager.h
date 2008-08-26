@@ -1,6 +1,8 @@
-/*  Tcp listen socket for tpserver-cpp with ipv4 and ipv6 support
+#ifndef COMMANDMANAGER_H
+#define COMMANDMANAGER_H
+/*  CommandManager class
  *
- *  Copyright (C) 2003-2005  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,36 +20,34 @@
  *
  */
 
+#include <map>
 #include <string>
+#include <stdint.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+class Command;
+class Frame;
+
+class CommandManager{
+  public:
+    static CommandManager *getCommandManager();
+
+    bool checkCommandType(uint32_t type);
+    void describeCommand(uint32_t cmdtype, Frame * of);
+    void addCommandType(Command* cmd);
+    void doGetCommandTypes(Frame * frame, Frame * of);
+    void executeCommand(Frame * frame, Frame * of);
+
+  private:
+    CommandManager();
+    virtual ~CommandManager();
+
+    std::map<uint32_t, Command*> commandStore;
+    uint32_t nextType;
+
+    uint32_t seqkey;
+
+    static CommandManager *myInstance;
+
+};
+
 #endif
-
-#include "logging.h"
-#include "playertcpconn.h"
-#include "net.h"
-
-#include "tcpsocket.h"
-
-TcpSocket::TcpSocket() : ListenSocket(){
-  player = true;
-}
-
-TcpSocket::~TcpSocket(){
-}
-
-void TcpSocket::openListen(const std::string& address, const std::string& port){ 
-    if(port.length() == 0){
-        ListenSocket::openListen(address, "6923");
-    }else{
-        ListenSocket::openListen(address, port);
-    }
-}
-
-
-PlayerConnection* TcpSocket::acceptConnection(int fd){
-    Logger::getLogger()->info("Accepting new tp (tcp) connection");
-
-    return new PlayerTcpConnection(fd);
-}

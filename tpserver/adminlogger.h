@@ -1,8 +1,8 @@
-#ifndef LISTENSOCKET_H
-#define LISTENSOCKET_H
-/* Server Listen socket connection
+#ifndef ADMINLOGGER_H
+#define ADMINLOGGER_H
+/*  Logger class for logging to the admin client
  *
- *  Copyright (C) 2005, 2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,33 +20,25 @@
  *
  */
 
-#include <string>
+#include "logsink.h"
 
-#include <tpserver/connection.h>
+class AdminConnection;
 
-//class PlayerConnection;
-
-class ListenSocket : public Connection {
+class AdminLogger : public LogSink {
  public:
-  ListenSocket();
-  virtual ~ListenSocket();
+    AdminLogger();
+    virtual ~AdminLogger();
 
-    virtual void openListen(const std::string& address, const std::string& port);
+    void setConnection(AdminConnection * newcon);
+    AdminConnection *getConnection() const;
 
-  virtual void process();
-  
-  uint16_t getPort() const;
+    virtual void doLogging(int level, const char* msg) const;
 
-  bool isPlayer();
+ private:
 
-protected:
-    virtual Connection* acceptConnection(int fd) = 0;
-
-  bool player;
-    
-private:
-  uint16_t portnum;
+    AdminConnection *curConnection;
 
 };
+
 
 #endif

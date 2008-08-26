@@ -39,7 +39,6 @@
 #include "listensocket.h"
 
 ListenSocket::ListenSocket() : Connection(){
-
 }
 
 ListenSocket::~ListenSocket(){
@@ -195,4 +194,8 @@ void ListenSocket::process(){
 
 uint16_t ListenSocket::getPort() const{
   return portnum;
+}
+
+bool ListenSocket::isPlayer(){
+  return player;
 }

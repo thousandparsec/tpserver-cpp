@@ -32,6 +32,7 @@
 #include "tlssocket.h"
 
 TlsSocket::TlsSocket() : ListenSocket(){
+  player = true;
     TlsManager::getInstance()->reference();
 }
 

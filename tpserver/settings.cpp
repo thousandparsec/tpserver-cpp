@@ -58,6 +58,8 @@ bool Settings::readArgs(int argc, char** argv){
 	}else if(strncmp(argv[i] + 2, "version", 7) == 0){
 	  std::cout << "tpserver-cpp " VERSION << std::endl;
 	  store["NEVER_START"] = "!";
+    }else if(strncmp(argv[i] + 2, "debug", 5) == 0){
+      store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 2, "configure", 9) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 2, "logging", 7) == 0){
@@ -72,6 +74,8 @@ bool Settings::readArgs(int argc, char** argv){
 	if(strncmp(argv[i] + 1, "h", 2) == 0){
 	  printHelp();
 	  store["NEVER_START"] = "!";
+    }else if(strncmp(argv[i] + 1, "d", 2) == 0){
+      store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 1, "C", 2) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 1, "l", 2) == 0){
@@ -256,10 +260,14 @@ void Settings::printHelp(){
   std::cout << "\t-C\t--configure\tConfiguration file to read" << std::endl;
   std::cout << "\t-l\t--logging\tSets the logging level (default 0)" << std::endl;
   std::cout << "\t\t--<key> <value>\tSets the setting <key> to <value>" << std::endl;
+  std::cout << "\t-d\t--debug\t\tRun in debug mode (non-daemon)" << std::endl;
 }
 
 void Settings::setDefaultValues(){
   store["NEVER_START"] = "0";
   store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
   store["logfile_name"] = "/var/log/tpserver-cpp.log";
+  store["admin_user"] = "admin";
+  store["admin_pass"] = "admin";
+  store["admin_tcp"] = "yes";
 }

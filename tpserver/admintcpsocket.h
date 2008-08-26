@@ -1,8 +1,8 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
-/*  Console controller
+#ifndef ADMINTCPSOCKET_H
+#define ADMINTCPSOCKET_H
+/* Server Administration TCP Listen socket connection
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2008 Aaron Mavrinac and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,36 +20,19 @@
  *
  */
 
-#include <tpserver/connection.h>
-#include <set>
+#include <string>
 
-namespace tprl{
-class RLCommand;
-class Console;
-}
+#include <tpserver/listensocket.h>
 
-class Console : public Connection{
+class AdminTcpSocket : public ListenSocket {
+ public:
+    AdminTcpSocket();
+  virtual ~AdminTcpSocket();
 
-      public:
-	static Console *getConsole();
+    virtual void openListen(const std::string& address, const std::string& port);
 
-	void open();
-
-	void process();
-        void redisplay();
-
-	void close();
-
-      private:
-	 Console(Console & rhs);
-	Console operator=(Console & rhs);
-	 Console();
-	~Console();
-
-        std::set<tprl::RLCommand*> commands;
-        tprl::Console * console;
-
-	static Console *myInstance;
+protected:
+    AdminConnection* acceptConnection(int fd);
 
 };
 
