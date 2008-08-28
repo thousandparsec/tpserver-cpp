@@ -273,12 +273,17 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    //Iterate over all bids and restrict them to the maximum armies availible on that planet
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
       Logger::getLogger()->debug("Iterating over all bids to pick the highest legal bid.");
+      //FIXME: Somewhere in this "for" the server crashes when a single bid is created for 1 unit when planet only has 1 unit left
+
       //Restrict players bid to 1 less than their current reinforcements
       Planet* planet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(planet);
-      
+
+      result.first = i->first;      
       uint32_t numUnits = i->second;
       uint32_t maxUnits = planet->getResource("Army").first;
+      
+      //If there is overflow of numUnits, check for maxUnits over 0 insures we don't set unsigned to < 0
       if ( numUnits >= maxUnits && maxUnits > 0) {
          if ( maxUnits > 0)
             numUnits = maxUnits - 1;
@@ -286,15 +291,14 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
             numUnits = 0;
       }
       i->second = numUnits;
-      
-      if ( numUnits > result.second ) {
-         result.second = i->second;
-         result.first = i->first;
-      }
+      result.second = i->second;
    }
 
    sendPlayerMessages(obj, bids,result);
    
+   if (result.first == NULL)
+   {
+   }
    format debugMsg("Found highest bidder to be from planet #%1% with %2% units");
    debugMsg % result.first->getName(); debugMsg % result.second;
    Logger::getLogger()->debug(debugMsg.str().c_str());
