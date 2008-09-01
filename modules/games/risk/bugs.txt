@@ -1,24 +1,10 @@
-1. FIXED? Updated setPlayerView code and problem should be fixed.
-	Players do not see territories on their own. Relates to similarly named players (test & test1, etc.)
-	Player test joins game, gets one territory, sees it
-	Player test2 joins same game, sees test's territory as green, their own as red 
-	MORE INFO:
-	-You have no objects error when player DOES have objects. x2 (can still issue orders)
-	Joined game mid-game after 1 player had already won
-	Persisted after colonizing more planets
-	Player is defeated, winner gets winning message, quits client.
-	Defender does "get universe", server fails on bus error during "Get Message Frame"".
-	-Repeated again, if player can't see their territories, and they lose, server crashes
-		--If player who can't see territories wins, nothing. (no objects msg though)
-	-Repeated 3rd with gdb, server did not crash, did again, same
-	FINALLY:
-	-It appears as if very similar names are the cause of the problem. Testing with "gibberish names" has yet to cause a problem.
-	-Problem also occurred in a new game. Players Bryan and Ryan joined. Bryan gets territories, Ryan gets the "no objects" error but 3 planets are given out to player test... Is this caching problems or what?
-2. Player can't delete any messages. Cannot be repeated, same "launch" technique shows no problems.
-3. Bus error, attempting to colonize 2 places? couldn't reproduce
-4. FIXED: Phantom ownership, Orders can be created on an enemy planet that was previously owned by the issuing player. Testing showed the orders were completely normally, and treated normally, as if they came from the enemy player. This may be a "server caching" issue or something more serious.
-	-Verified to occur repeatedly, with no view problems in game
-5. Place 3 1 unit bids from a planet with only 3 units
-Noticed:
--"Chaining" of moves is possible to move a large number of units across the map.
--a late reinforce order can be triggered early by a normal reinforce. This acts as a sort of "pull" on late "colonizers" to not get reinforcements they may be trying to use. Unintended but I like it.
+Current known bugs
+- Placing 3 1 unit bids from a planet with only 3 units crashes server (loaded quickstart-risk-bid config).
+I believe this bug is caused because the code doesn't properly handle a bid existing but none of the bids being valid.
+- Unable to delete last "1 of 1" message on mac client during quickstart-risk-random game.
+- Input box for number of units on move order has disappeared on Mac client.
+- Mac client; (maybe all) it is difficult to select individual planets as wormholes continually get autoselected.
+
+To be fixed/changed:
+- Moving reinforcement counts to a placeholder planet for each individual player. This will cut down on download times.
+- 
