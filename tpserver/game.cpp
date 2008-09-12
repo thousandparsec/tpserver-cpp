@@ -429,6 +429,14 @@ void Game::setTurnNumber(uint32_t t){
   turnNum = t;
 }
 
+std::string Game::getTurnName() const{
+    return turnname;
+}
+
+void Game::setTurnName(const std::string& tn){
+    turnname = tn;
+}
+
 void Game::setGameStartTime(uint64_t t){
   ctime = t;
 }
@@ -445,7 +453,7 @@ std::string Game::getKey() const{
   return key;
 }
 
-Game::Game() : ctime(0), turnNum(0), key(), turntimer(NULL){
+Game::Game() : ctime(0), turnNum(0),turnname(""), key(), turntimer(NULL){
   objectmanager = new ObjectManager();
   ordermanager = new OrderManager();
   objecttypemanager = new ObjectTypeManager();

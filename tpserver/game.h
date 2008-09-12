@@ -88,6 +88,8 @@ class Game {
     void doEndOfTurn();
 
     uint32_t getTurnNumber() const;
+    std::string getTurnName() const;
+    void setTurnName(const std::string& tn);
 
     uint64_t getGameStartTime() const;
 
@@ -116,6 +118,7 @@ class Game {
     
     uint64_t ctime;
     uint32_t turnNum;
+    std::string turnname;
     std::string key;
     
     Ruleset* ruleset;

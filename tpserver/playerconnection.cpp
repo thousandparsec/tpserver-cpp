@@ -329,6 +329,8 @@ void PlayerConnection::processTimeRemainingFrame(Frame* frame){
     time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
     if(time->getVersion() >= fv0_4){
         time->packInt(0); //player requested
+        time->packInt(Game::getGame()->getTurnNumber());
+        time->packString(Game::getGame()->getTurnName());
     }
     sendFrame(time);
 }
