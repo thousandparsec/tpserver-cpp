@@ -143,7 +143,7 @@ bool MysqlPersistence::init(){
                "name VARCHAR(50) NOT NULL UNIQUE, version INT UNSIGNED NOT NULL);") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 0), "
+            if(mysql_query(conn, "INSERT INTO tableversion VALUES (NULL, 'tableversion', 1), (NULL, 'gameinfo', 1), "
                     "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), (NULL, 'objectparamvelocity', 0), "
                     "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
                     "(NULL, 'objectparamreference', 0), (NULL, 'objectparamrefquantitylist', 0), "
@@ -163,7 +163,7 @@ bool MysqlPersistence::init(){
                     "(NULL, 'property', 0), (NULL, 'propertycat', 0), (NULL, 'resourcedesc', 0);") != 0){
                 throw std::exception();
             }
-            if(mysql_query(conn, "CREATE TABLE gameinfo (metakey VARCHAR(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL);") != 0){
+            if(mysql_query(conn, "CREATE TABLE gameinfo (metakey VARCHAR(50) NOT NULL, ctime BIGINT UNSIGNED NOT NULL PRIMARY KEY, turnnum INT UNSIGNED NOT NULL, turnname VARCHAR(50) NOT NULL);") != 0){
               throw std::exception();
             }
             if(mysql_query(conn, "CREATE TABLE object (objectid INT UNSIGNED NOT NULL, turnnum INT UNSIGNED NOT NULL, alive TINYINT UNSIGNED NOT NULL, type INT UNSIGNED NOT NULL, " 
@@ -373,6 +373,12 @@ bool MysqlPersistence::init(){
             Logger::getLogger()->error("Mysql persistence NOT STARTED");
             return false;
           }
+          if(getTableVersion("gameinfo") == 0){
+            if(mysql_query(conn, "ALTER TABLE gameinfo APPEND turnname VARCHAR(50) NOT NULL;") != 0){
+                Logger::getLogger()->error("Can't alter gameinfo table, please reset the database");
+                return false;
+            }
+          }
         }catch(std::exception e){
         }
         
@@ -427,7 +433,8 @@ bool MysqlPersistence::saveGameInfo(){
   std::ostringstream querybuilder;
   Game* game = Game::getGame();
   querybuilder << "INSERT INTO gameinfo VALUES ('" << addslashes(game->getKey()) << "', ";
-  querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber() << ");";
+  querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber();
+  querybuilder << ", '" << game->getTurnName() << "');";
   lock();
   if(mysql_query(conn, querybuilder.str().c_str()) != 0){
     Logger::getLogger()->error("Mysql: Could not save gameinfo - %s", mysql_error(conn));
@@ -465,6 +472,7 @@ bool MysqlPersistence::retrieveGameInfo(){
   game->setKey(row[0]);
   game->setGameStartTime(strtoull(row[1], NULL, 10));
   game->setTurnNumber(atoi(row[2]));
+  game->setTurnName(row[3]);
   
   mysql_free_result(giresult);
   
