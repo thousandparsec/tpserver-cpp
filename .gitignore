@@ -24,3 +24,4 @@ tpserver/*.conf
 *.loT
 .libs
 .deps
+*~
