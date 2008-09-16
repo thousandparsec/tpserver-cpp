@@ -374,7 +374,7 @@ bool MysqlPersistence::init(){
             return false;
           }
           if(getTableVersion("gameinfo") == 0){
-            if(mysql_query(conn, "ALTER TABLE gameinfo APPEND turnname VARCHAR(50) NOT NULL;") != 0){
+            if(mysql_query(conn, "ALTER TABLE gameinfo ADD COLUMN turnname VARCHAR(50) NOT NULL;") != 0){
                 Logger::getLogger()->error("Can't alter gameinfo table, please reset the database");
                 return false;
             }
