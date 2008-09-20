@@ -21,6 +21,14 @@
 #include <time.h>
 #include <sstream>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
+#ifndef VERSION
+#define VERSION "0.0.0"
+#endif
+#endif
+
 #include "command.h"
 #include "logging.h"
 #include "settings.h"
@@ -371,6 +379,51 @@ class GameIsStartedCommand : public Command{
     }
 };
 
+class StatusCommand : public Command{
+    public:
+        StatusCommand() : Command(){
+            name = "status";
+            help = "Prints out the key info about the server and game.";
+        }
+        void action(Frame* frame, Frame* of){
+            std::ostringstream formater;
+            formater << "Server: tpserver-cpp" << std::endl;
+            formater << "Version: " VERSION << std::endl;
+            formater << "Persistence available: " << ((Game::getGame()->getPersistence() != NULL) ? "yes" : "no") << std::endl;
+            Ruleset* rules = Game::getGame()->getRuleset();
+            if(rules != NULL){
+                formater << "Ruleset name: " << rules->getName() << std::endl;
+                formater << "Ruleset Version: " << rules->getVersion() << std::endl;
+            }
+            formater << "Game Loaded: " << ((Game::getGame()->isLoaded()) ? "yes" : "no") << std::endl;
+            formater << "Game Started: " << ((Game::getGame()->isStarted()) ? "yes" : "no") << std::endl;
+            if(Game::getGame()->isStarted()){
+                formater << "Time to next turn: " << Game::getGame()->getTurnTimer()->secondsToEOT() << std::endl;
+                formater << "Turn length: " << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds" << std::endl;
+                formater << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
+                formater << "Turn name: " << Game::getGame()->getTurnName() << std::endl;
+            }
+            formater << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
+            
+            of->packInt(0);
+            of->packString(formater.str());
+            
+        }
+};
+
+class ServerQuitCommand : public Command{
+    public:
+        ServerQuitCommand() : Command(){
+            name = "server-quit";
+            help = "Make the server exit, use with caution.";
+        }
+        void action(Frame *f, Frame *of){
+            Network::getNetwork()->stopMainLoop();
+            of->packInt(0);
+            of->packString("Server shutting down");
+        }
+};
+
 CommandManager *CommandManager::myInstance = NULL;
 
 /* getCommandManager
@@ -524,6 +577,8 @@ CommandManager::CommandManager()
     addCommandType(new GameLoadCommand());
     addCommandType(new GameStartCommand());
     addCommandType(new GameIsStartedCommand());
+    addCommandType(new StatusCommand());
+    addCommandType(new ServerQuitCommand());
 }
 
 /* Destructor
