@@ -12,3 +12,8 @@ libtae_la_LDFLAGS = -module
 noinst_HEADERS = tae.h universe.h spaceobject.h emptyobject.h starsystem.h \
 				 planet.h ownedobject.h fleet.h colonize.h taeturn.h move.h \
 				 attack.h fleetorder.h fleetbuilder.h reinforce.h
+
+EXTRA_DIST = tpserver-cpp-tae.xml
+
+tpconfigdir = $(datadir)/tp/servers
+tpconfig_DATA = tpserver-cpp-tae.xml

@@ -15,3 +15,8 @@ noinst_HEADERS = bombard.h buildfleet.h colonise.h containertypes.h fleet.h \
 	map.h mergefleet.h move.h ownedobject.h planet.h playerinfo.h \
 	productioninfo.h productionorder.h renamefleet.h resourcelistparam.h rfts.h rftsturn.h \
 	splitfleet.h staticobject.h universe.h
+
+EXTRA_DIST = tpserver-cpp-rfts.xml
+
+tpconfigdir = $(datadir)/tp/servers
+tpconfig_DATA = tpserver-cpp-rfts.xml

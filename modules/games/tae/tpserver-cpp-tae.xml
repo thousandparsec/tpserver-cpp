@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+    <server name="tpserver-cpp">
+        <ruleset name="tae">
+            <longname>Tigris and Euphrates</longname>
+            <version>0.1</version>
+            <description>A simple to play strategy game. This ruleset is an adaptation based on the board game Tigris and Euphrates by Mayfair Games.</description>
+        </ruleset>
+    </server>
+</tpconfig>

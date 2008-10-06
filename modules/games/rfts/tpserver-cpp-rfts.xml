@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+    <server name="tpserver-cpp">
+        <ruleset name="rfts">
+            <longname>Reach for the Stars</longname>
+            <version>0.5</version>
+            <description>A clone of the classic game.</description>
+        </ruleset>
+    </server>
+</tpconfig>
