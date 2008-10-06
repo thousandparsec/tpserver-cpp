@@ -18,10 +18,5 @@
             <default>0</default>
             <commandstring>--turn_length_over_threshold %d</commandstring>
         </parameter>
-        <ruleset name="mtsec">
-            <longname>MTSec</longname>
-            <version>0.0</version>
-            <description>The second milestone game. It is designed to both be a fun game and to exercise the object design capabilities of the framework.</description>
-        </ruleset>
     </server>
 </tpconfig>

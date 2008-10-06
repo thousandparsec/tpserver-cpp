@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+    <server name="tpserver-cpp">
+        <ruleset name="mtsec">
+            <longname>MTSec</longname>
+            <version>0.0</version>
+            <description>The second milestone game. It is designed to both be a fun game and to exercise the design capabilities of the framework.</description>
+        </ruleset>
+    </server>
+</tpconfig>
