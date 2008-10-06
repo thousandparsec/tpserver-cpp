@@ -328,6 +328,7 @@ AC_DEFINE_DIR(LIBDIR, libdir, The library directory where the modules are stored
 
 AC_CONFIG_FILES([
 Makefile
+tpserver-cpp.xml
 tpserver/Makefile
 modules/Makefile
 modules/games/Makefile

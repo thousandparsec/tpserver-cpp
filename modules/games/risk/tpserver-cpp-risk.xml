@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+  <server name="tpserver-cpp">
+    <ruleset name="risk">
+      <longname>Risk</longname>
+      <version>0</version>
+      <description>A modified Risk ruleset for tpserver-cpp.</description>
+      <parameter name="map" type="S">
+        <longname>Map</longname>
+        <description>Map file to load.</description>
+        <default />
+        <commandstring>--risk_map %s</commandstring>
+      </parameter>
+      <parameter name="rfcstart" type="I">
+        <longname>Reinforcements</longname>
+        <description>Starting reinforcement count.</description>
+        <default />
+        <commandstring>--risk_rfc_start %d</commandstring>
+      </parameter>
+    </ruleset>
+  </server>
+</tpconfig>

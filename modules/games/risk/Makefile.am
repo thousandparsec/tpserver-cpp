@@ -13,4 +13,7 @@ librisk_la_LDFLAGS = -module
 #All the .h's
 noinst_HEADERS = risk.h colonize.h move.h reinforce.h riskturn.h map.h staticobject.h containertypes.h universe.h ownedobject.h planet.h wormhole.h constellation.h resourcelistparam.h graph.h mapimport.h tinystr.h tinyxml.h
 
-#EXTRA_DIST = sample.conf
+EXTRA_DIST = sample.conf tpserver-cpp-risk.xml
+
+tpconfigdir = $(datadir)/tp/servers
+tpconfig_DATA = tpserver-cpp-risk.xml

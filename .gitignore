@@ -25,3 +25,4 @@ tpserver/*.conf
 .libs
 .deps
 *~
+tpserver-cpp.xml
