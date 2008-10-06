@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+    <server name="tpserver-cpp">
+        <ruleset name="minisec">
+            <longname>MiniSec</longname>
+            <version>0.3</version>
+            <description>The first milestone game. Simple test of being able to issue orders and perform simple combat.</description>
+        </ruleset>
+    </server>
+</tpconfig>

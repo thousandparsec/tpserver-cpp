@@ -18,11 +18,6 @@
             <default>0</default>
             <commandstring>--turn_length_over_threshold %d</commandstring>
         </parameter>
-        <ruleset name="minisec">
-            <longname>MiniSec</longname>
-            <version>0.3</version>
-            <description>The first milestone game. Simple test of being able to issue orders and perform simple combat.</description>
-        </ruleset>
         <ruleset name="mtsec">
             <longname>MTSec</longname>
             <version>0.0</version>
