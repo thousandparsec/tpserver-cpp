@@ -134,9 +134,15 @@ void PlayerConnection::login(){
           player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
         }catch(std::exception e){
           if(Settings::getSettings()->get("autoadd_players") == "yes" &&
-              Settings::getSettings()->get("add_players") == "yes") {
-              Logger::getLogger()->info("Creating new player automatically");
+                Settings::getSettings()->get("add_players") == "yes") {
+                Logger::getLogger()->info("Creating new player automatically");
               player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+              if(player != NULL){
+                  Frame* f = createFrame(recvframe);
+                  f->createFailFrame(fec_PermissionDenied, "Cannot create new player");
+                  sendFrame(f);
+                  return;
+              }
           }
         }
         if(player != NULL){
