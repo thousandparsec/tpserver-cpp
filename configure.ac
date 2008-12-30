@@ -50,6 +50,7 @@ AC_PROG_LIBTOOL
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
 
+AX_LIBTOOL2
 
 AC_HEADER_STDC
 

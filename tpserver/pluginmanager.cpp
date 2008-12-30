@@ -28,6 +28,10 @@
 #endif
 #endif
 
+#ifdef USE_LIBTOOL2 
+# define lt_preloaded_symbols lt__PROGRAM__LTX_preloaded_symbols 
+#endif
+
 #include "logging.h"
 #include "settings.h"
 
