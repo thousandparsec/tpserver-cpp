@@ -137,7 +137,7 @@ void PlayerConnection::login(){
                 Settings::getSettings()->get("add_players") == "yes") {
                 Logger::getLogger()->info("Creating new player automatically");
               player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
-              if(player != NULL){
+              if(player == NULL){
                   Frame* f = createFrame(recvframe);
                   f->createFailFrame(fec_PermissionDenied, "Cannot create new player");
                   sendFrame(f);

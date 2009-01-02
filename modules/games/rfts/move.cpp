@@ -140,7 +140,7 @@ bool Move::doOrder(IGObject * obj) {
       // post completion message
       Message * msg = new Message();
       msg->setSubject("Move fleet order complete");
-      msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has arrived and is in orbit around ")
+      msg->setBody(string("Your fleet \"" + obj->getName() + "\" has arrived and is in orbit around ")
           + newStarSys->getName() + ".");
       msg->addReference(rst_Action_Order, rsorav_Completion);
       msg->addReference(rst_Object, starSys->getObjectId());
