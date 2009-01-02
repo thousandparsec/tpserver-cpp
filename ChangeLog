@@ -1,3 +1,10 @@
+03 Jan 09 - Lee
+    * Version 0.6.0
+    * Merged 2008 GSoC projects: Risk, TaE, remote admin
+    * Various bug fixes: OSX, configure, gcc-4.3, libtool2
+    * Updated MySQL persistence for TP04 new features
+    * Total commit: 364
+
 1 Jul 08 - Lee
     * Version 0.5.1
     * Refactored out-of-game frames

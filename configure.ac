@@ -1,4 +1,4 @@
-AC_INIT([tpserver-cpp],[0.5.1],[lee@thousandparsec.net])
+AC_INIT([tpserver-cpp],[0.6.0],[lee@thousandparsec.net])
 AC_CONFIG_SRCDIR(tpserver/main.cpp)
 
 AC_CANONICAL_TARGET([])
