@@ -3,7 +3,7 @@ AC_CONFIG_SRCDIR(tpserver/main.cpp)
 
 AC_CANONICAL_TARGET([])
 
-AM_INIT_AUTOMAKE(tpserver-cpp, 0.5.1)
+AM_INIT_AUTOMAKE(tpserver-cpp, 0.6.0)
 AM_CONFIG_HEADER(config.h)
 
 AM_MAINTAINER_MODE
