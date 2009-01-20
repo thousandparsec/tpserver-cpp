@@ -63,6 +63,7 @@ void Advertiser::publish(){
     publishers.insert(new Avahi(this));
   }catch(std::exception e){
     // do nothing, maybe warn of no mdns-sd
+      Logger::getLogger()->warning("Failed to start Avahi");
   }
 #endif
   if(Settings::getSettings()->get("metaserver_enable") == "yes"){
