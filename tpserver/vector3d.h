@@ -20,6 +20,8 @@
  *
  */
 
+#include <sys/types.h>
+
 class Frame;
 
 class Vector3d{
@@ -27,32 +29,32 @@ class Vector3d{
  public:
   Vector3d();
   Vector3d(const Vector3d & rhs);
-  Vector3d(long long x, long long y, long long z);
+  Vector3d(int64_t x, int64_t y, int64_t z);
 
   Vector3d operator=(const Vector3d & rhs);
   Vector3d operator+(const Vector3d & rhs) const;
   Vector3d operator-(const Vector3d & rhs) const;
-  Vector3d operator*(long long val) const;
+  Vector3d operator*(int64_t val) const;
   bool operator==(const Vector3d &rhs) const;
   bool operator!=(const Vector3d &rhs) const;
-  Vector3d makeLength(long long length) const;
+  Vector3d makeLength(int64_t length) const;
 
-  long long getX() const;
-  long long getY() const;
-  long long getZ() const;
+  int64_t getX() const;
+  int64_t getY() const;
+  int64_t getZ() const;
 
-  void setAll(long long newx, long long newy, long long newz);
+  void setAll(int64_t newx, int64_t newy, int64_t newz);
 
-  unsigned long long getDistance(const Vector3d & origin) const;
+  uint64_t getDistance(const Vector3d & origin) const;
   double getDistanceSq(const Vector3d & origin) const;
 
   void pack(Frame * frame) const;
   void unpack(Frame * frame);
 
  private:
-  long long x;
-  long long y;
-  long long z;
+  int64_t x;
+  int64_t y;
+  int64_t z;
   
 
 

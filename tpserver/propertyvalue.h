@@ -36,16 +36,16 @@ class PropertyValue{
 
   void packFrame(Frame* frame) const;
 
-  unsigned int getPropertyId() const;
+  uint32_t getPropertyId() const;
   double getValue() const;
   std::string getDisplayString() const;
 
-  void setPropertyId(unsigned int id);
+  void setPropertyId(uint32_t id);
   void setValue(double v);
   void setDisplayString(const std::string& d);
 
  private:
-  unsigned int propid;
+  uint32_t propid;
   double value;
   std::string display;
 

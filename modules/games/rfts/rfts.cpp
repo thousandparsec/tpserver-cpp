@@ -698,7 +698,7 @@ IGObject* Rfts::choosePlayerPlanet() const {
 Component* createEngineComponent(char techLevel) {
 
    Component* engine = new Component();
-   map<unsigned int, string> propList;
+   map<uint32_t, string> propList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
@@ -718,7 +718,7 @@ Component* createEngineComponent(char techLevel) {
 
 Component* createBattleComponent(char techLevel) {
    Component *battle = new Component();
-   map<unsigned int, string> propList;
+   map<uint32_t, string> propList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
@@ -739,7 +739,7 @@ Component* createBattleComponent(char techLevel) {
 
 Component* createTransportComponent() {
    Component *trans = new Component();
-   map<unsigned int, string> propList;
+   map<uint32_t, string> propList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
@@ -759,7 +759,7 @@ Component* createTransportComponent() {
 Design* createMarkDesign(Player *owner, char level) {
    Design *mark = new Design();
    DesignStore *ds = Game::getGame()->getDesignStore();
-   map<unsigned int, unsigned int> componentList;
+   map<uint32_t, uint32_t> componentList;
 
    string name = string("Mark") + level;
 
@@ -779,7 +779,7 @@ Design* createMarkDesign(Player *owner, char level) {
 
 Design* createScoutDesign(Player *owner) {
    Design* scout = new Design();
-   map<unsigned int, unsigned int> componentList;
+   map<uint32_t, uint32_t> componentList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
@@ -797,7 +797,7 @@ Design* createScoutDesign(Player *owner) {
 
 Design* createTransportDesign(Player *owner) {
    Design* trans = new Design();
-   map<unsigned int, unsigned int> componentList;
+   map<uint32_t, uint32_t> componentList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 

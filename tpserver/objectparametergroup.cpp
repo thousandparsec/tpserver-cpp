@@ -73,7 +73,7 @@ void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
   }
 }
 
-bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, unsigned int playerid){
+bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playerid){
   bool rtn = true;
   for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){

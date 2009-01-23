@@ -191,7 +191,7 @@ bool MetaserverConnection::sendUpdate(){
   char* straddr = new char[INET6_ADDRSTRLEN];
   
   sockaddr_storage laddr;
-  unsigned int lalen = sizeof(laddr);
+  uint32_t lalen = sizeof(laddr);
   getsockname(sockfd, (sockaddr*)(&laddr), &lalen);
   
   if(laddr.ss_family == AF_INET6){

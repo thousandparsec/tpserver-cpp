@@ -91,7 +91,7 @@ void PlayerView::removeVisibleObject(uint32_t objid){
   }
 }
 
-bool PlayerView::isVisibleObject(unsigned int objid){
+bool PlayerView::isVisibleObject(uint32_t objid){
   if(visibleObjects.find(objid) != visibleObjects.end()){
     ObjectView* obj = cacheObjects[objid];
     if(obj == NULL){

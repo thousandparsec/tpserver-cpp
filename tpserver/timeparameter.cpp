@@ -39,7 +39,7 @@ void TimeParameter::packOrderFrame(Frame * f){
   f->packInt(max);
 }
 
-bool TimeParameter::unpackFrame(Frame *f, unsigned int playerid){
+bool TimeParameter::unpackFrame(Frame *f, uint32_t playerid){
   if(!f->isEnoughRemaining(8))
     return false;
   turns = f->unpackInt();

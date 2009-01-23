@@ -65,8 +65,8 @@ void Move::setDest(const Vector3d & ndest)
 
 int Move::getETA(IGObject *ob) const{
   Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
-  unsigned long long distance = coords->getPosition().getDistance(fleet->getPosition());
-  unsigned long max_speed = fleet->maxSpeed();
+  uint64_t distance = coords->getPosition().getDistance(fleet->getPosition());
+  uint32_t max_speed = fleet->maxSpeed();
   
   if(distance == 0) 
     return 1;
@@ -88,7 +88,7 @@ void Move::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);	
 }
 
-Result Move::inputFrame(Frame * f, unsigned int playerid)
+Result Move::inputFrame(Frame * f, uint32_t playerid)
 {
   return Order::inputFrame(f, playerid);
 }
@@ -96,8 +96,8 @@ Result Move::inputFrame(Frame * f, unsigned int playerid)
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
   Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
-  unsigned long long distance = dest.getDistance(fleet->getPosition());
-  unsigned long long max_speed = fleet->maxSpeed();
+  uint64_t distance = dest.getDistance(fleet->getPosition());
+  uint64_t max_speed = fleet->maxSpeed();
 
   Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
 	ob->getID(), distance, max_speed, distance/max_speed);
@@ -116,8 +116,8 @@ bool Move::doOrder(IGObject * ob){
   
     if(fleet->getPosition() != dest && containertype >= 1){
       //removeFromParent();
-      std::set<unsigned int> oblist = ((MinisecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
-      for(std::set<unsigned int>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
+      std::set<uint32_t> oblist = ((MinisecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
         Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getParameterByType(obpT_Position_3D));

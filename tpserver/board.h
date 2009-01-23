@@ -42,13 +42,13 @@ class Board{
   std::string getDescription();
   
   void addMessage(Message* msg, int pos);
-  bool removeMessage(unsigned int pos);
+  bool removeMessage(uint32_t pos);
 
 
   void packBoard(Frame * frame);
-  void packMessage(Frame * frame, unsigned int msgnum);
+  void packMessage(Frame * frame, uint32_t msgnum);
 
-        long long getModTime() const;
+        int64_t getModTime() const;
 
     // for persistence only
     uint32_t getNumMessages() const;
@@ -62,7 +62,7 @@ class Board{
   std::string name;
   std::string description;
 
-  long long modtime;
+  int64_t modtime;
 
 };
 

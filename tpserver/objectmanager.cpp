@@ -73,7 +73,7 @@ void ObjectManager::discardNewObject(IGObject* obj){
 IGObject *ObjectManager::getObject(uint32_t id){
      IGObject *rtn = NULL;
    
-    std::map < unsigned int, IGObject * >::iterator obj = objects.find(id);
+    std::map < uint32_t, IGObject * >::iterator obj = objects.find(id);
     if (obj != objects.end()) {
         rtn = (*obj).second;
     }
@@ -101,7 +101,7 @@ void ObjectManager::scheduleRemoveObject(uint32_t id){
 }
 
 void ObjectManager::clearRemovedObjects(){
-    for(std::set<unsigned int>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
+    for(std::set<uint32_t>::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
         objects[*itrm]->removeFromParent();
         objects[*itrm]->getObjectBehaviour()->signalRemoval();
         delete objects[*itrm];

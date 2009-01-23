@@ -48,7 +48,7 @@ class Order {
         uint64_t getDescriptionModTime() const;
 
 	virtual void createFrame(Frame * f, int pos);
-	virtual Result inputFrame(Frame * f, unsigned int playerid);
+	virtual Result inputFrame(Frame * f, uint32_t playerid);
 
 	virtual bool doOrder(IGObject * ob) = 0;
 

@@ -32,10 +32,10 @@ class Property{
 
   void packFrame(Frame* frame) const;
 
-  unsigned int getPropertyId() const;
+  uint32_t getPropertyId() const;
   std::set<uint32_t> getCategoryIds() const;
   bool isInCategory(uint32_t catid) const;
-  unsigned int getRank() const;
+  uint32_t getRank() const;
   std::string getName() const;
         std::string getDisplayName() const;
     std::string getDescription() const;
@@ -43,10 +43,10 @@ class Property{
         std::string getTpclRequirementsFunction() const;
     uint64_t getModTime() const;
   
-  void setPropertyId(unsigned int id);
+  void setPropertyId(uint32_t id);
   void addCategoryId(uint32_t id);
   void setCategoryIds(const std::set<uint32_t>& idset);
-  void setRank(unsigned int r);
+  void setRank(uint32_t r);
   void setName(const std::string& n);
         void setDisplayName(const std::string& d);
   void setDescription(const std::string& d);
@@ -55,10 +55,10 @@ class Property{
     void setModTime(uint64_t nmt);
 
  private:
-  unsigned int propid;
+  uint32_t propid;
   std::set<uint32_t> catids;
-  unsigned int rank;
-  unsigned long long timestamp;
+  uint32_t rank;
+  uint64_t timestamp;
   std::string name;
         std::string display;
   std::string description;

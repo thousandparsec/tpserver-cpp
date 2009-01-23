@@ -42,7 +42,7 @@ void RefQuantityListObjectParam::packObjectFrame(Frame * f, uint32_t objID){
 }
 
 
-bool RefQuantityListObjectParam::unpackModifyObjectFrame(Frame *f, unsigned int playerid){
+bool RefQuantityListObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(4))
     return false;

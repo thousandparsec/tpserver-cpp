@@ -122,7 +122,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
   return options;
 }
 
-Result Build::inputFrame(Frame *f, unsigned int playerid)
+Result Build::inputFrame(Frame *f, uint32_t playerid)
 {
   Result r = Order::inputFrame(f, playerid);
   if(!r) return r;
@@ -130,7 +130,7 @@ Result Build::inputFrame(Frame *f, unsigned int playerid)
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
   
-  unsigned int bldTmPropID = ds->getPropertyByName( "BuildTime");
+  uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
   
   std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
   uint32_t usedshipres = 0;

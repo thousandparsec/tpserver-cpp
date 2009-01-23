@@ -478,7 +478,7 @@ void MTSec::createNumHullsProp()
 
 void MTSec::createScoutHullComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -504,7 +504,7 @@ void MTSec::createScoutHullComp()
 
 void MTSec::createBattleScoutHullComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -541,7 +541,7 @@ void MTSec::createBattleScoutHullComp()
 
 void MTSec::createCerium3AmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -574,7 +574,7 @@ void MTSec::createCerium3AmmoComp()
 
 void MTSec::createCerium6AmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -607,7 +607,7 @@ void MTSec::createCerium6AmmoComp()
 
 void MTSec::createCerium12AmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -640,7 +640,7 @@ void MTSec::createCerium12AmmoComp()
 
 void MTSec::createUraniumAmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -673,7 +673,7 @@ void MTSec::createUraniumAmmoComp()
 
 void MTSec::createAntiparticleAmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -706,7 +706,7 @@ void MTSec::createAntiparticleAmmoComp()
 
 void MTSec::createAntimatterAmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -739,7 +739,7 @@ void MTSec::createAntimatterAmmoComp()
 
 void MTSec::createThoriumAmmoComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -772,7 +772,7 @@ void MTSec::createThoriumAmmoComp()
 
 void MTSec::createAlphaMissileBayComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -811,7 +811,7 @@ void MTSec::createAlphaMissileBayComp()
 
 void MTSec::createBetaMissileBayComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -850,7 +850,7 @@ void MTSec::createBetaMissileBayComp()
 
 void MTSec::createGammaMissileBayComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -889,7 +889,7 @@ void MTSec::createGammaMissileBayComp()
 
 void MTSec::createDeltaMissileBayComp()
 {
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     DesignStore *ds = Game::getGame()->getDesignStore();
     Component* comp = new Component();
 
@@ -1094,7 +1094,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
 
 
 // Returns a random number between 1 and 'max'
-static unsigned int myRandom( unsigned int  max)
+static uint32_t myRandom( uint32_t  max)
 {
     return Game::getGame()->getRandom()->getInRange(1U, max);
 }
@@ -1107,7 +1107,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
     IGObject*      star = game->getObjectManager()->createNewObject();
-    unsigned int   nplanets = 0;
+    uint32_t   nplanets = 0;
     std::ostringstream     formatter;
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
@@ -1117,7 +1117,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     otypeman->setupObject(star, obT_Star_System);
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(1400000ll);
-    unsigned int   thx = myRandom(45);
+    uint32_t   thx = myRandom(45);
     star->setName(systemNames[thx-1]);
     thestar->setPosition( Vector3d( myRandom(8000) * 1000000ll - 4000000000ll,
                                  myRandom(8000) * 1000000ll - 4000000000ll,
@@ -1377,7 +1377,7 @@ void MTSec::createGame()
     Logger::getLogger()->debug( "Enter MTSec::createGame");
     Game*        game = Game::getGame();
     DesignStore* ds = game->getDesignStore();
-    unsigned int counter;
+    uint32_t counter;
     Category*    cat = new Category();
     cat->setName("Ships");
     cat->setDescription("The Ship design and component category");
@@ -1449,7 +1449,7 @@ Design* MTSec::createScoutDesign( Player* owner)
 {
     Game *game = Game::getGame();
     Design* scout = new Design();
-    std::map<unsigned int, unsigned int> componentList;
+    std::map<uint32_t, uint32_t> componentList;
 
     scout->setCategoryId(1);
     scout->setName( "Scout");
@@ -1468,7 +1468,7 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
     Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
     Game *game = Game::getGame();
     Design* scout = new Design();
-    std::map<unsigned int, unsigned int> componentList;
+    std::map<uint32_t, uint32_t> componentList;
 
     scout->setCategoryId(1);
     scout->setName( "BattleScout");
@@ -1495,9 +1495,9 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
         
     otypeman->setupObject(fleet, otypeman->getObjectTypeByName("Fleet"));
     
-    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
+    Vector3d  offset = Vector3d( ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 /*(int64_t)((rand() % 10000) - 5000)*/ 0);
     
     Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize( 2);
@@ -1566,9 +1566,9 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     
     otypeman->setupObject(planet, obT_Planet);
     Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
-    Vector3d  offset = Vector3d( ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 ( long long) ( game->getRandom()->getInRange(0, 10000) - 5000),
-                                 /*(long long)((rand() % 10000) - 5000)*/ 0);
+    Vector3d  offset = Vector3d( ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
+                                 /*(int64_t)((rand() % 10000) - 5000)*/ 0);
     theplanet->setSize( 2);
     planet->setName( planetName.c_str());
     theplanet->setOwner(player->getID());
@@ -1616,9 +1616,9 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
     std::string starName = player->getName() + " Star System";
 
     otypeman->setupObject(star, otypeman->getObjectTypeByName("Star System"));
-    Vector3d  location = Vector3d( ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
-                                   ( long long) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
-                                   /*(long long)(((rand()%1000)-500)*10000000)*/ 0);
+    Vector3d  location = Vector3d( ( int64_t) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
+                                   ( int64_t) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
+                                   /*(int64_t)(((rand()%1000)-500)*10000000)*/ 0);
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize( 2000000ll);
     star->setName( starName.c_str());

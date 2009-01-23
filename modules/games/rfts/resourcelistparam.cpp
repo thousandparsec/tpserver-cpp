@@ -52,7 +52,7 @@ const bool ResourceListParam::hasResource(uint32_t resTypeId) const {
 }
 
 const pair<uint32_t, uint32_t> ResourceListParam::getResource(uint32_t resTypeId) const {
-   return hasResource(resTypeId)? resources->getResources().find(resTypeId)->second : make_pair(0u, 0u);
+   return hasResource(resTypeId) ? resources->getResources().find(resTypeId)->second : make_pair(0u, 0u);
 }
 
 void ResourceListParam::setResource(uint32_t resTypeId, uint32_t currVal, uint32_t maxVal) {

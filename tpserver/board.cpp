@@ -78,7 +78,7 @@ void Board::addMessage(Message * msg, int pos){
     }
 }
 
-bool Board::removeMessage(unsigned int pos){
+bool Board::removeMessage(uint32_t pos){
   if(pos >= nummsg || pos < 0){
     return false;
   }
@@ -97,7 +97,7 @@ void Board::packBoard(Frame * frame){
   frame->packInt64(modtime);
 }
 
-void Board::packMessage(Frame * frame, unsigned int msgnum){
+void Board::packMessage(Frame * frame, uint32_t msgnum){
     if(msgnum < nummsg){
         Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
         if(message != NULL){
@@ -115,7 +115,7 @@ void Board::packMessage(Frame * frame, unsigned int msgnum){
   }
 }
 
-long long Board::getModTime() const{
+int64_t Board::getModTime() const{
     return modtime;
 }
 

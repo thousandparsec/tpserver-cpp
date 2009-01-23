@@ -111,7 +111,7 @@ bool Settings::readConfFile(const std::string& fname){
       return false;
     }
     std::string   configString;
-    unsigned long      lineCount = 0;
+    uint32_t      lineCount = 0;
     const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 
     while ( ! configFile.eof() && getline( configFile, configString)) {

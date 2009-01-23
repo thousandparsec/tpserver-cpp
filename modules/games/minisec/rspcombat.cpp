@@ -102,9 +102,9 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
       pos1 = 0;
       pos2 = 1;
     }else{
-      pos1 = pos2 = random->getInRange(0U, fleetcache.size() - 1);
+      pos1 = pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
       while(pos2 == pos1){
-        pos2 = random->getInRange(0U, fleetcache.size() - 1);
+        pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
       }
     }
     

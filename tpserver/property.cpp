@@ -49,7 +49,7 @@ void Property::packFrame(Frame* frame) const{
     frame->packString(tpcl_requires.c_str());
 }
 
-unsigned int Property::getPropertyId() const{
+uint32_t Property::getPropertyId() const{
   return propid;
 }
 
@@ -61,7 +61,7 @@ bool Property::isInCategory(uint32_t id) const{
   return catids.count(id) != 0;
 }
 
-unsigned int Property::getRank() const{
+uint32_t Property::getRank() const{
   return rank;
 }
 
@@ -89,7 +89,7 @@ uint64_t Property::getModTime() const{
     return timestamp;
 }
 
-void Property::setPropertyId(unsigned int id){
+void Property::setPropertyId(uint32_t id){
   propid = id;
 }
 
@@ -101,7 +101,7 @@ void Property::setCategoryIds(const std::set<uint32_t>& ids){
   catids = ids;
 }
 
-void Property::setRank(unsigned int r){
+void Property::setRank(uint32_t r){
   rank = r;
 }
 

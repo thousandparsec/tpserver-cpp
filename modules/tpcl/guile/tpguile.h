@@ -45,18 +45,18 @@ class TpGuile : public TpScheme{
   void defineDesignType( Design * d);
   void definePropertyAccessors();
   void setDesignPropertyValue( const PropertyValue & pv);
-  void setDesignComponentCount( const unsigned int count);
-  std::map<unsigned int, std::map<unsigned int, std::list<std::string> > > *
-      createPropertyRankingMap( std::map<unsigned int, unsigned int> & complist);
+  void setDesignComponentCount( const uint32_t count);
+  std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
+      createPropertyRankingMap( std::map<uint32_t, uint32_t> & complist);
   double evalCompProperty( std::string lambdaStr);
   PropertyValue getPropertyValue( Property * p,
                                   std::list<std::string> & compPropStrList);
-  std::map<unsigned int, PropertyValue> * calculateDesignPropertyValues( Design* d);
+  std::map<uint32_t, PropertyValue> * calculateDesignPropertyValues( Design* d);
   bool evalRequirementFtn( std::string function, std::string & why);
-  bool canPropGoInDesign( unsigned int propertyID, std::string & why);
-  bool canCompGoInDesign( unsigned int componentID, std::string & why);
+  bool canPropGoInDesign( uint32_t propertyID, std::string & why);
+  bool canCompGoInDesign( uint32_t componentID, std::string & why);
   void validateDesign( Design* d,
-                       std::map<unsigned int, PropertyValue> & propertyvalues);
+                       std::map<uint32_t, PropertyValue> & propertyvalues);
 
 
 };

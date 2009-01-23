@@ -63,7 +63,7 @@ Board* BoardManager::createNewBoard(const std::string &name, const std::string &
 
 Board* BoardManager::getBoard(uint32_t id){
     Board* rtn = NULL;
-    std::map<unsigned int, Board*>::iterator pl = boards.find(id);
+    std::map<uint32_t, Board*>::iterator pl = boards.find(id);
     if(pl != boards.end()){
         rtn = (*pl).second;
     }
@@ -79,8 +79,8 @@ void BoardManager::updateBoard(uint32_t id){
 }
 
 std::set<uint32_t> BoardManager::getAllBoardIds(){
-    std::set<unsigned int> vis;
-    for(std::map<unsigned int, Board*>::const_iterator itid = boards.begin();
+    std::set<uint32_t> vis;
+    for(std::map<uint32_t, Board*>::const_iterator itid = boards.begin();
         itid != boards.end(); ++itid){
         vis.insert(itid->first);
     }

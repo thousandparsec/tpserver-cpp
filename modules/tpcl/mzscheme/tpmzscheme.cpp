@@ -77,8 +77,8 @@ void TpMzScheme::evalDesign(Design* d){
     
     temp = scheme_eval_string("(define property-designType-set! (lambda (design id val) (designType-set! design (- id 1) val)))", env);
 
-    std::set<unsigned int> propids = ds->getPropertyIds();
-    for(std::set<unsigned int>::iterator propit = propids.begin();
+    std::set<uint32_t> propids = ds->getPropertyIds();
+    for(std::set<uint32_t>::iterator propit = propids.begin();
 	propit != propids.end(); ++propit){
       // for each property type
       Property* p = ds->getProperty(*propit);
@@ -94,32 +94,32 @@ void TpMzScheme::evalDesign(Design* d){
     }
     propids.clear();
 
-        std::map<unsigned int, unsigned int> complist = d->getComponents();
+        std::map<uint32_t, uint32_t> complist = d->getComponents();
 
     temp = scheme_eval_string("(define design (make-designType))", env);
 
-        std::map<unsigned int, std::map<unsigned int, std::list<std::string> > > propranking;
-        for(std::map<unsigned int, unsigned int>::iterator compit = complist.begin();
+        std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > propranking;
+        for(std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
                 compit != complist.end(); ++compit){
             Component *c = ds->getComponent(compit->first);
-            std::map<unsigned int, std::string> pilist = c->getPropertyList();
-            for(std::map<unsigned int, std::string>::iterator piit = pilist.begin();
+            std::map<uint32_t, std::string> pilist = c->getPropertyList();
+            for(std::map<uint32_t, std::string>::iterator piit = pilist.begin();
                     piit != pilist.end(); ++piit){
                 Property* p = ds->getProperty(piit->first);
-                for(unsigned int i = 0; i < compit->second; i++){
+                for(uint32_t i = 0; i < compit->second; i++){
                     propranking[p->getRank()][p->getPropertyId()].push_back(piit->second);
                 }
       }
 
     }
 
-    std::map<unsigned int, PropertyValue> propertyvalues;
+    std::map<uint32_t, PropertyValue> propertyvalues;
 
-    for(std::map<unsigned int, std::map<unsigned int, std::list<std::string> > >::iterator rpiit = propranking.begin();
+    for(std::map<uint32_t, std::map<uint32_t, std::list<std::string> > >::iterator rpiit = propranking.begin();
 	rpiit != propranking.end(); ++rpiit){
-      std::map<unsigned int, std::list<std::string> > pilist = rpiit->second;
+      std::map<uint32_t, std::list<std::string> > pilist = rpiit->second;
       std::set<PropertyValue> localvalues;
-      for(std::map<unsigned int, std::list<std::string> >::iterator piit = pilist.begin();
+      for(std::map<uint32_t, std::list<std::string> >::iterator piit = pilist.begin();
 	  piit != pilist.end(); ++piit){
 	PropertyValue propval;
 	propval.setPropertyId(piit->first);
@@ -179,10 +179,10 @@ void TpMzScheme::evalDesign(Design* d){
     std::string feedback = "";
         Logger::getLogger()->debug("About to process requirement functions");
 
-        for(std::map<unsigned int, unsigned int>::iterator compit = complist.begin();
+        for(std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
                 compit != complist.end();
                 ++compit){
-            unsigned int curval = compit->first;
+            uint32_t curval = compit->first;
       
       //for each component in the design
       temp = scheme_eval_string((std::string("(") + ds->getComponent(curval)->getTpclRequirementsFunction() + " design)").c_str(), env);
@@ -204,10 +204,10 @@ void TpMzScheme::evalDesign(Design* d){
       }
     }
 
-        for(std::map<unsigned int, std::map<unsigned int, std::list<std::string> > >::iterator rpiit = propranking.begin();
+        for(std::map<uint32_t, std::map<uint32_t, std::list<std::string> > >::iterator rpiit = propranking.begin();
                 rpiit != propranking.end(); ++rpiit){
-            std::map<unsigned int, std::list<std::string> > pilist = rpiit->second;
-            for(std::map<unsigned int, std::list<std::string> >::iterator piit = pilist.begin();
+            std::map<uint32_t, std::list<std::string> > pilist = rpiit->second;
+            for(std::map<uint32_t, std::list<std::string> >::iterator piit = pilist.begin();
                     piit != pilist.end(); ++piit){
                 temp = scheme_eval_string((std::string("(") + ds->getProperty(piit->first)->getTpclRequirementsFunction() + " design)").c_str(), env);
 #ifdef HAVE_MZSCHEME20X

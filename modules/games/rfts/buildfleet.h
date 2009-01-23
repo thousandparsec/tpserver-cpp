@@ -40,7 +40,7 @@ class BuildFleet : public Order {
 	
 	virtual void createFrame(Frame *f, int pos);
 
-   virtual Result inputFrame(Frame * f, unsigned int playerid);
+   virtual Result inputFrame(Frame * f, uint32_t playerid);
 
    virtual bool doOrder(IGObject * obj);
 

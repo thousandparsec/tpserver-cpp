@@ -34,7 +34,7 @@ Category::Category(){
 Category::~Category(){
 }
 
-unsigned int Category::getCategoryId() const{
+uint32_t Category::getCategoryId() const{
   return catid;
 }
 
@@ -66,7 +66,7 @@ bool Category::doModifyDesign(Design* d){
   return true;
 }
 
-void Category::setCategoryId(unsigned int c){
+void Category::setCategoryId(uint32_t c){
   catid = c;
 }
 

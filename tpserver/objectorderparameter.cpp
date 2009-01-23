@@ -37,7 +37,7 @@ void ObjectOrderParameter::packOrderFrame(Frame * f){
   f->packInt(object);
 }
 
-bool ObjectOrderParameter::unpackFrame(Frame *f, unsigned int playerid){
+bool ObjectOrderParameter::unpackFrame(Frame *f, uint32_t playerid){
   if(f->isEnoughRemaining(4)){
     object = f->unpackInt();
     return true;

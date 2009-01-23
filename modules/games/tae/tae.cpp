@@ -408,7 +408,7 @@ void taeRuleset::createComponents() {
     DesignStore *ds = Game::getGame()->getDesignStore();
 
     Component* comp = new Component();
-    map<unsigned int, string> propList;
+    map<uint32_t, string> propList;
 
     //Merchants
     comp->addCategoryId(ds->getCategoryByName("Ships"));

@@ -401,7 +401,7 @@ private:
 	struct Entity
 	{
 		const char*     str;
-		unsigned int	strLength;
+		uint32_t	strLength;
 		char		    chr;
 	};
 	enum

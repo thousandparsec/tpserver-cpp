@@ -29,7 +29,7 @@ public:
   virtual ~StringParameter();
 
   virtual void packOrderFrame(Frame * f);
-  virtual bool unpackFrame(Frame * f, unsigned int playerid);
+  virtual bool unpackFrame(Frame * f, uint32_t playerid);
 
   virtual OrderParameter *clone() const;
 

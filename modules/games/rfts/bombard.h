@@ -36,7 +36,7 @@ class Bombard : public ::Order {
 
    virtual Order* clone() const;
 
-   virtual Result inputFrame(Frame * f, unsigned int playerid);
+   virtual Result inputFrame(Frame * f, uint32_t playerid);
 
    virtual bool doOrder(IGObject *obj);
 

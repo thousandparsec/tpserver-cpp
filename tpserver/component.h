@@ -30,22 +30,22 @@ class Component{
   Component();
   virtual ~Component();
 
-  unsigned int getComponentId() const;
+  uint32_t getComponentId() const;
   std::set<uint32_t> getCategoryIds() const;
   bool isInCategory(uint32_t id) const;
   std::string getName() const;
   std::string getDescription() const;
   std::string getTpclRequirementsFunction() const;
-  std::map<unsigned int, std::string> getPropertyList() const;
+  std::map<uint32_t, std::string> getPropertyList() const;
   uint64_t getModTime() const;
 
-  void setComponentId(unsigned int id);
+  void setComponentId(uint32_t id);
   void setCategoryIds(const std::set<uint32_t>& ids);
   void addCategoryId(uint32_t id);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
   void setTpclRequirementsFunction(const std::string& a);
-  void setPropertyList(std::map<unsigned int, std::string> pl);
+  void setPropertyList(std::map<uint32_t, std::string> pl);
   void setModTime(uint64_t nmt);
   
   void setInUse(bool used=true);
@@ -54,13 +54,13 @@ class Component{
   uint32_t getParentDesignId() const;
   
  protected:
-  unsigned int compid;
+  uint32_t compid;
   std::set<uint32_t> catids;
-  unsigned long long timestamp;
+  uint64_t timestamp;
   std::string name;
   std::string description;
   std::string tpcl_requirements;
-  std::map<unsigned int, std::string> propertylist;
+  std::map<uint32_t, std::string> propertylist;
   bool inuse;
   uint32_t parentdesignid;
 

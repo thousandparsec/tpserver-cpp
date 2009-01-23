@@ -36,7 +36,7 @@ void IntegerObjectParam::packObjectFrame(Frame * f, uint32_t objID){
 }
 
 
-bool IntegerObjectParam::unpackModifyObjectFrame(Frame *f, unsigned int playerid){
+bool IntegerObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(4))
     return false;

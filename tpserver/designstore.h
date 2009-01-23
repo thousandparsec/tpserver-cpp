@@ -36,15 +36,15 @@ class DesignStore{
 
     void init();
 
-  Category* getCategory(unsigned int id);
-  Design* getDesign(unsigned int id);
-  Component* getComponent(unsigned int id);
-  Property* getProperty(unsigned int id);
+  Category* getCategory(uint32_t id);
+  Design* getDesign(uint32_t id);
+  Component* getComponent(uint32_t id);
+  Property* getProperty(uint32_t id);
 
-  std::set<unsigned int> getCategoryIds() const;
-  std::set<unsigned int> getDesignIds() const;
-  std::set<unsigned int> getComponentIds() const;
-  std::set<unsigned int> getPropertyIds() const;
+  std::set<uint32_t> getCategoryIds() const;
+  std::set<uint32_t> getDesignIds() const;
+  std::set<uint32_t> getComponentIds() const;
+  std::set<uint32_t> getPropertyIds() const;
  
   void addCategory(Category* c);
 
@@ -55,26 +55,26 @@ class DesignStore{
   void addComponent(Component* c);
   void addProperty(Property* p);
   
-  unsigned int getCategoryByName(const std::string& name);
+  uint32_t getCategoryByName(const std::string& name);
   uint32_t getComponentByName(const std::string& name);
-  unsigned int getPropertyByName(const std::string& name);
+  uint32_t getPropertyByName(const std::string& name);
 
-  unsigned int getMaxDesignId() const;
-  unsigned int getMaxComponentId() const;
-  unsigned int getMaxPropertyId() const;
+  uint32_t getMaxDesignId() const;
+  uint32_t getMaxComponentId() const;
+  uint32_t getMaxPropertyId() const;
   
  protected:
   uint32_t next_designid;
   uint32_t next_componentid;
   uint32_t next_propertyid;
   uint32_t next_categoryid;
-  std::map<unsigned int, Category*> categories;
-  std::map<std::string,unsigned int>  categoryIndex;
-  std::map<unsigned int, Design*> designs;
-  std::map<unsigned int, Component*> components;
+  std::map<uint32_t, Category*> categories;
+  std::map<std::string,uint32_t>  categoryIndex;
+  std::map<uint32_t, Design*> designs;
+  std::map<uint32_t, Component*> components;
   std::map<std::string, uint32_t> componentIndex;
-  std::map<unsigned int, Property*> properties;
-  std::map<std::string,unsigned int>  propertyIndex;
+  std::map<uint32_t, Property*> properties;
+  std::map<std::string,uint32_t>  propertyIndex;
   
 };
 

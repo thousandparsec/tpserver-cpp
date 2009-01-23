@@ -54,7 +54,7 @@ class OrderParameter {
         
 	virtual void packOrderFrame(Frame * f) = 0;
         void packOrderDescFrame(Frame* f) const;
-	virtual bool unpackFrame(Frame * f, unsigned int playerid) = 0;
+	virtual bool unpackFrame(Frame * f, uint32_t playerid) = 0;
 
 
 	virtual OrderParameter *clone() const = 0;

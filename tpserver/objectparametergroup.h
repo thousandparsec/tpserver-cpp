@@ -51,7 +51,7 @@ class ObjectParameterGroupData {
     void addParameter(ObjectParameter* op);
     
     void packObjectFrame(Frame * f, uint32_t playerid);
-    bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
+    bool unpackModifyObjectFrame(Frame * f, uint32_t playerid);
     
     void signalRemoval();
 

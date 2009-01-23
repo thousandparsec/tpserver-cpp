@@ -38,7 +38,7 @@
 
 #ifndef htonq
 #ifndef WORDS_BIGENDIAN
-# define htonq(i)	( ((long long)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
+# define htonq(i)	( ((int64_t)(htonl((i) & 0xffffffff)) << 32) | htonl(((i) >> 32) & 0xffffffff ) )
 #else
 #define htonq(i)        i
 #endif 
@@ -350,9 +350,9 @@ bool Frame::packInt(int val)
 	return true;
 }
 
-bool Frame::packInt64(long long val)
+bool Frame::packInt64(int64_t val)
 {
-	long long netval = htonq(val);
+	int64_t netval = htonq(val);
 	char *temp = (char *) realloc(data, length + 8);
 	
 	if (temp != NULL) {
@@ -391,7 +391,7 @@ bool Frame::packInt8(char val){
   return true;
 }
 
-bool Frame::packData(unsigned int len, char* bdata){
+bool Frame::packData(uint32_t len, char* bdata){
   char *temp = (char *) realloc(data, length + len + 3);
   
   if (temp != NULL) {
@@ -465,9 +465,9 @@ std::string Frame::unpackStdString(){
   return std::string(cstr, 0, len);
 }
 
-long long Frame::unpackInt64()
+int64_t Frame::unpackInt64()
 {
-	long long nval;
+	int64_t nval;
 	memcpy(&nval, data + unpackptr, 8);
 	unpackptr += 8;
 	return ntohq(nval);
@@ -481,7 +481,7 @@ char Frame::unpackInt8(){
   return rval;
 }
 
-void Frame::unpackData(unsigned int len, char* bdata){
+void Frame::unpackData(uint32_t len, char* bdata){
   Logger::getLogger()->warning("Using unpackData, might not be safe");
   
   memcpy(bdata, data + unpackptr, len);

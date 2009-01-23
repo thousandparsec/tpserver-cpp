@@ -50,7 +50,7 @@ class Fleet : public OwnedObject {
 	std::map<uint32_t, uint32_t> getShips() const;
 	uint32_t totalShips() const;
 
-	long long maxSpeed();
+	int64_t maxSpeed();
 
         uint32_t getDamage() const;
         void setDamage(uint32_t nd);

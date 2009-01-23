@@ -64,7 +64,7 @@ Order* Bombard::clone() const {
    return b;
 }
 
-Result Bombard::inputFrame(Frame * f, unsigned int playerid) {
+Result Bombard::inputFrame(Frame * f, uint32_t playerid) {
    Result r = Order::inputFrame(f, playerid);
    if(!r) return r;
 

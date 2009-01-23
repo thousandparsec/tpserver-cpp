@@ -42,8 +42,8 @@ class Message{
   void setBody(const std::string &nbody);
   std::string getBody();
 
-  void addReference(int type, unsigned int value);
-    std::set<std::pair<int, unsigned int> > getReferences() const;
+  void addReference(int type, uint32_t value);
+    std::set<std::pair<int, uint32_t> > getReferences() const;
 
   void pack(Frame * frame);
 
@@ -52,7 +52,7 @@ class Message{
   std::string body;
   int turnnum;
   
-  std::set<std::pair<int, unsigned int> > references;
+  std::set<std::pair<int, uint32_t> > references;
 
 };
 

@@ -50,7 +50,7 @@ class ObjectParameter {
 	uint32_t getType() const;
         
 	virtual void packObjectFrame(Frame * f, uint32_t playerid) = 0;
-	virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid) = 0;
+	virtual bool unpackModifyObjectFrame(Frame * f, uint32_t playerid) = 0;
 
         virtual void signalRemoval();
 

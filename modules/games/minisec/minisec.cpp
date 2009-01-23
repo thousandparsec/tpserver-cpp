@@ -125,7 +125,7 @@ public:
   std::string getName() {
     if (names.size() > 0) {
       // Choose a random name
-      unsigned int choice = rand->getInRange(0U, names.size() - 1);
+      uint32_t choice = rand->getInRange((uint32_t)0U, (uint32_t)names.size() - 1);
 
       std::set<const char*>::iterator name = names.begin();
       advance(name, choice);
@@ -379,7 +379,7 @@ void MiniSec::createGame(){
         prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
     
-    std::map<unsigned int, std::string> propertylist;
+    std::map<uint32_t, std::string> propertylist;
     
     Component* comp = new Component();
     comp->setCategoryIds(catids);
@@ -722,7 +722,7 @@ void MiniSec::onPlayerAdded(Player* player){
     scout->setName("Scout");
     scout->setDescription("Scout ship");
     scout->setOwner(player->getID());
-      std::map<unsigned int, unsigned int> cl;
+      std::map<uint32_t, uint32_t> cl;
       cl[1] = 1;
     scout->setComponents(cl);
     game->getDesignStore()->addDesign(scout);
@@ -737,7 +737,7 @@ void MiniSec::onPlayerAdded(Player* player){
       cl[2] = 1;
     frigate->setComponents(cl);
     game->getDesignStore()->addDesign(frigate);
-    unsigned int frigateid = frigate->getDesignId();
+    uint32_t frigateid = frigate->getDesignId();
     mydesignids.insert(frigate->getDesignId());
   
     Design* design = new Design();
@@ -777,9 +777,9 @@ void MiniSec::onPlayerAdded(Player* player){
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(80000ll);
     star->setName(name + " Star System");
-    thestar->setPosition(Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10000000),
-                              (long long)(currandom->getInRange(-5000, 5000) * 10000000),
-                              /*(long long)(((rand() % 1000) - 500) * 10000000)*/ 0));
+    thestar->setPosition(Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10000000),
+                              (int64_t)(currandom->getInRange(-5000, 5000) * 10000000),
+                              /*(int64_t)(((rand() % 1000) - 500) * 10000000)*/ 0));
     
     star->addToParent(1);
     game->getObjectManager()->addObject(star);
@@ -795,9 +795,9 @@ void MiniSec::onPlayerAdded(Player* player){
     
     theplanet->setOwner(player->getID());
     theplanet->addResource(2, 1);
-    theplanet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000)* 10),
-                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000)* 10),
+                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     
     OrderQueue *planetoq = new OrderQueue();
     planetoq->setObjectId(planet->getID());
@@ -817,9 +817,9 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " First Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
@@ -842,9 +842,9 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " Second Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     fleetoq = new OrderQueue();
@@ -867,9 +867,9 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " Thrid Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (long long)(currandom->getInRange(-5000, 5000) * 10),
-                                                      /*(long long)((rand() % 10000) - 5000)*/ 0));
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
     fleetoq = new OrderQueue();
@@ -929,7 +929,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     ObjectManager* obman = game->getObjectManager();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
     IGObject*      star  = obman->createNewObject();
-    unsigned int   nplanets = 0;
+    uint32_t   nplanets = 0;
     std::ostringstream     formatter;
    
     // FIXME: This is repeated everywhere put it in a getter

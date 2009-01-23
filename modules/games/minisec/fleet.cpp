@@ -148,7 +148,7 @@ uint32_t Fleet::totalShips() const{
   return num;
 }
 
-long long Fleet::maxSpeed(){
+int64_t Fleet::maxSpeed(){
   double speed = 1e100;
   DesignStore* ds = Game::getGame()->getDesignStore();
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
@@ -156,7 +156,7 @@ long long Fleet::maxSpeed(){
       itcurr != ships.end(); ++itcurr){
         speed = fmin(speed, ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Speed")));
   }
-  return (long long)(floor(speed));
+  return (int64_t)(floor(speed));
 }
 
 uint32_t Fleet::getDamage() const{

@@ -92,8 +92,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     Random* rand = Game::getGame()->getRandom();
     int r1 = rand->getInRange(0U, 40U) + 60;
     int r2 = rand->getInRange(0U, 40U) + 60;
-    unsigned int damage1 = ( 2 * r1) / 100;
-    unsigned int damage2 = ( 2 * r2) / 100;
+    uint32_t damage1 = ( 2 * r1) / 100;
+    uint32_t damage2 = ( 2 * r2) / 100;
 
     bool tte = false;
 

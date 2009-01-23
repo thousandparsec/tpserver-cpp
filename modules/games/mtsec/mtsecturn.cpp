@@ -132,7 +132,7 @@ void MTSecTurn::doTurn(){
     }
     
     
-    for(std::set<unsigned int>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
+    for(std::set<uint32_t>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
       IGObject* itbobj = objectmanager->getObject(*itb);
       uint32_t playerid2;
       Vector3d pos2;

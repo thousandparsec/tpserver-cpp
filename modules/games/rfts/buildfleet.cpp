@@ -143,7 +143,7 @@ void BuildFleet::createFrame(Frame *f, int pos) {
 	Order::createFrame(f, pos);
 }
 
-Result BuildFleet::inputFrame(Frame *f, unsigned int playerid) {
+Result BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
 
    Result r = Order::inputFrame(f, playerid);
    if(!r) return r;

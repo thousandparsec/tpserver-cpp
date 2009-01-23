@@ -68,9 +68,9 @@ class Frame {
     
     bool packString(const std::string &str);
     bool packInt(int val);
-    bool packInt64(long long val);
+    bool packInt64(int64_t val);
     bool packInt8(char val);
-    bool packData(unsigned int len, char* bdata);
+    bool packData(uint32_t len, char* bdata);
   
     bool isEnoughRemaining(uint32_t size) const;
     // uses these functions with care
@@ -79,9 +79,9 @@ class Frame {
   
     int unpackInt();
     std::string unpackStdString();
-    long long unpackInt64();
+    int64_t unpackInt64();
     char unpackInt8();
-    void unpackData(unsigned int len, char* bdata);
+    void unpackData(uint32_t len, char* bdata);
   
     void createFailFrame(FrameErrorCode code, const std::string& reason);
     void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);

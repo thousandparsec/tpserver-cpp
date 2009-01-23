@@ -55,11 +55,11 @@ std::string Message::getBody(){
   return body;
 }
 
-void Message::addReference(int type, unsigned int value){
-  references.insert(std::pair<int, unsigned int>(type, value));
+void Message::addReference(int type, uint32_t value){
+  references.insert(std::pair<int, uint32_t>(type, value));
 }
 
-std::set<std::pair<int, unsigned int> > Message::getReferences() const{
+std::set<std::pair<int, uint32_t> > Message::getReferences() const{
     return references;
 }
 
@@ -75,7 +75,7 @@ void Message::pack(Frame * frame){
     if(frame->getVersion() > fv0_2){
   frame->packInt(turnnum);
   frame->packInt(references.size());
-  for(std::set<std::pair<int, unsigned int> >::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr){
+  for(std::set<std::pair<int, uint32_t> >::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr){
     frame->packInt((*itcurr).first);
     frame->packInt((*itcurr).second);
   }

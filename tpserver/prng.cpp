@@ -113,8 +113,8 @@ void Random::seed(uint32_t init_key[], uint32_t key_length)
 /* generates a random number on [0,0xffffffff]-interval */
 uint32_t Random::getInt32(void)
 {
-    unsigned long y;
-    static unsigned long mag01[2]={0x0UL, MATRIX_A};
+    uint32_t y;
+    static uint32_t mag01[2]={0x0UL, MATRIX_A};
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
     if (mti >= N) { /* generate N words at one time */
@@ -154,6 +154,10 @@ int32_t Random::getInt31(void)
     return (long)(getInt32()>>1);
 }
 
+uint32_t Random::getInRange(int min, int max){
+    return (uint32_t)getInRange((uint32_t)min, (uint32_t)max);
+}
+
 uint32_t Random::getInRange(uint32_t min, uint32_t max){
   return (uint32_t)(getReal2() * (double)(max - min + 1) + min);
 }
@@ -186,7 +190,7 @@ double Random::getReal3(void)
 /* generates a random number on [0,1) with 53-bit resolution*/
 double Random::getRes53(void) 
 { 
-    unsigned long a=getInt32()>>5, b=getInt32()>>6; 
+    uint32_t a=getInt32()>>5, b=getInt32()>>6; 
     return(a*67108864.0+b)*(1.0/9007199254740992.0); 
 } 
 /* These real versions are due to Isaku Wada, 2002/01/09 added */

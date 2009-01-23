@@ -75,8 +75,8 @@ const ResourceDescription* ResourceManager::getResourceDescription(const std::st
 }
 
 std::set<uint32_t> ResourceManager::getAllIds(){
-    std::set<unsigned int> vis;
-    for(std::map<unsigned int, ResourceDescription*>::const_iterator itid = resdescs.begin();
+    std::set<uint32_t> vis;
+    for(std::map<uint32_t, ResourceDescription*>::const_iterator itid = resdescs.begin();
             itid != resdescs.end(); ++itid){
         vis.insert(itid->first);
     }

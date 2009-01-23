@@ -57,7 +57,7 @@ void PropertyValue::packFrame(Frame* frame) const{
   frame->packString(display.c_str());
 }
 
-unsigned int PropertyValue::getPropertyId() const{
+uint32_t PropertyValue::getPropertyId() const{
   return propid;
 }
 
@@ -69,7 +69,7 @@ std::string PropertyValue::getDisplayString() const{
   return display;
 }
 
-void PropertyValue::setPropertyId(unsigned int id){
+void PropertyValue::setPropertyId(uint32_t id){
   propid = id;
 }
 

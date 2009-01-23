@@ -776,7 +776,7 @@ void TaeTurn::awardArtifacts() {
         uint32_t type;
         DesignStore* ds = game->getDesignStore();
         PlayerManager* pm = game->getPlayerManager();
-        std::set<unsigned int> designs = ds->getDesignIds();
+        std::set<uint32_t> designs = ds->getDesignIds();
         //get leader ID
         for(itcurr = designs.begin(); itcurr != designs.end(); ++itcurr) {
             if(ds->getDesign(*itcurr)->getName().compare("MerchantLeaderShip")) {

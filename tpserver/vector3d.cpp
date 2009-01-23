@@ -1,4 +1,4 @@
-/*  3D vector with long long components
+/*  3D vector with int64_t components
  *
  *  Copyright (C) 2004  Lee Begg and the Thousand Parsec Project
  *
@@ -29,7 +29,7 @@ Vector3d::Vector3d(){
   x = y = z = 0LL;
 }
 
-Vector3d::Vector3d(long long newx, long long newy, long long newz){
+Vector3d::Vector3d(int64_t newx, int64_t newy, int64_t newz){
   x = newx;
   y = newy;
   z = newz;
@@ -65,7 +65,7 @@ Vector3d Vector3d::operator-(const Vector3d & rhs) const{
   return rtn;
 }
 
-Vector3d Vector3d::operator*(long long val) const{
+Vector3d Vector3d::operator*(int64_t val) const{
   Vector3d rtn;
   rtn.x = x * val;
   rtn.y = y * val;
@@ -81,36 +81,36 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
   return !(operator==(rhs));
 }
 
-Vector3d Vector3d::makeLength(long long length) const{
+Vector3d Vector3d::makeLength(int64_t length) const{
   Vector3d rtn;
   double len = sqrt(((double)x * (double)x) + ((double)y * (double)y) + ((double)z * (double)z));
   assert(len > 0);
-  rtn.x = (long long)((double)x * (double)length / len);
-  rtn.y = (long long)((double)y * (double)length / len);
-  rtn.z = (long long)((double)z * (double)length / len);
+  rtn.x = (int64_t)((double)x * (double)length / len);
+  rtn.y = (int64_t)((double)y * (double)length / len);
+  rtn.z = (int64_t)((double)z * (double)length / len);
   return rtn;
 }
 
-long long Vector3d::getX() const{
+int64_t Vector3d::getX() const{
   return x;
 }
 
-long long Vector3d::getY() const{
+int64_t Vector3d::getY() const{
   return y;
 }
 
-long long Vector3d::getZ() const{
+int64_t Vector3d::getZ() const{
   return z;
 }
 
-void Vector3d::setAll(long long newx, long long newy, long long newz){
+void Vector3d::setAll(int64_t newx, int64_t newy, int64_t newz){
   x = newx;
   y = newy;
   z = newz;
 }
 
-unsigned long long Vector3d::getDistance(const Vector3d & origin) const{
-  return (unsigned long long)sqrt(getDistanceSq(origin));
+uint64_t Vector3d::getDistance(const Vector3d & origin) const{
+  return (uint64_t)sqrt(getDistanceSq(origin));
 }
 
 double Vector3d::getDistanceSq(const Vector3d & origin) const{

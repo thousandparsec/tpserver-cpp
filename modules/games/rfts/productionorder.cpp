@@ -134,7 +134,7 @@ void ProductionOrder::createFrame(Frame *f, int pos) {
    Order::createFrame(f, pos);
 }
 
-Result ProductionOrder::inputFrame(Frame *f, unsigned int playerid) {
+Result ProductionOrder::inputFrame(Frame *f, uint32_t playerid) {
    return Order::inputFrame(f, playerid);
 }
 

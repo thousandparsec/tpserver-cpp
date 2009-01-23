@@ -68,7 +68,7 @@ void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   while(itcurr != itend){
     if(!player->getPlayerView()->isVisibleObject(*itcurr)){
-      std::set<unsigned int>::iterator itemp = itcurr;
+      std::set<uint32_t>::iterator itemp = itcurr;
       ++itcurr;
       temp.erase(itemp);
     }else{

@@ -35,7 +35,7 @@ Component::~Component(){
 
 }
 
-unsigned int Component::getComponentId() const{
+uint32_t Component::getComponentId() const{
   return compid;
 }
 
@@ -59,7 +59,7 @@ std::string Component::getTpclRequirementsFunction() const{
   return tpcl_requirements;
 }
 
-std::map<unsigned int, std::string> Component::getPropertyList() const{
+std::map<uint32_t, std::string> Component::getPropertyList() const{
   return propertylist;
 }
 
@@ -67,7 +67,7 @@ uint64_t Component::getModTime() const{
     return timestamp;
 }
 
-void Component::setComponentId(unsigned int id){
+void Component::setComponentId(uint32_t id){
   compid = id;
 }
 
@@ -91,7 +91,7 @@ void Component::setTpclRequirementsFunction(const std::string& a){
   tpcl_requirements = a;
 }
 
-void Component::setPropertyList(std::map<unsigned int, std::string> pl){
+void Component::setPropertyList(std::map<uint32_t, std::string> pl){
   propertylist = pl;
 }
 

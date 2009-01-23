@@ -44,7 +44,7 @@ public:
   ObjectView* getObjectView(uint32_t objid);
   void updateObjectView(uint32_t objid);
   void removeVisibleObject(uint32_t objid);
-  bool isVisibleObject(unsigned int objid);
+  bool isVisibleObject(uint32_t objid);
   std::set<uint32_t> getVisibleObjects() const;
   void addOwnedObject(uint32_t objid);
   void removeOwnedObject(uint32_t objid);

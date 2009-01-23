@@ -150,7 +150,7 @@ void IGObject::addContainedObject(uint32_t addObjectID){
   }
 }
 
-void IGObject::removeContainedObject(unsigned int removeObjectID){
+void IGObject::removeContainedObject(uint32_t removeObjectID){
   // remove object
   touchModTime();
   relationships->removeChild(removeObjectID);

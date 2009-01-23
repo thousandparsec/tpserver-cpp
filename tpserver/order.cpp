@@ -99,7 +99,7 @@ void Order::createFrame(Frame * f, int pos)
   }
 }
 
-Result Order::inputFrame(Frame * f, unsigned int playerid)
+Result Order::inputFrame(Frame * f, uint32_t playerid)
 {
   //ready passed object, position, and type.
   if(!f->isEnoughRemaining(8))

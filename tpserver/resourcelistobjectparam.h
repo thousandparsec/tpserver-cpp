@@ -32,7 +32,7 @@ public:
   virtual ~ResourceListObjectParam();
 
   virtual void packObjectFrame(Frame * f, uint32_t objID);
-  virtual bool unpackModifyObjectFrame(Frame * f, unsigned int playerid);
+  virtual bool unpackModifyObjectFrame(Frame * f, uint32_t playerid);
 
   virtual ObjectParameter *clone() const;
 

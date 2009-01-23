@@ -112,7 +112,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
     
     while(itcurr != itend){
       if(!playerview->isVisibleObject(*itcurr)){
-        std::set<unsigned int>::iterator itemp = itcurr;
+        std::set<uint32_t>::iterator itemp = itcurr;
         ++itcurr;
         children.erase(itemp);
       }else{

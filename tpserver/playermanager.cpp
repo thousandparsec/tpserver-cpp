@@ -93,7 +93,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         msg->addReference(rst_Action_Player, rspav_Joined);
         msg->addReference(rst_Player, rtn->getID());
         
-        for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
+        for(std::map<uint32_t, Player*>::const_iterator itid = players.begin();
                 itid != players.end(); ++itid){
             Player* op = itid->second;
             if(op == NULL){
@@ -123,7 +123,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
 
 Player* PlayerManager::getPlayer(uint32_t id){
     Player* rtn = NULL;
-    std::map<unsigned int, Player*>::iterator pl = players.find(id);
+    std::map<uint32_t, Player*>::iterator pl = players.find(id);
     if(pl != players.end()){
         rtn = (*pl).second;
     }
@@ -142,7 +142,7 @@ Player* PlayerManager::findPlayer(const std::string &name, const std::string &pa
     //look for current/known players
     Player *rtn = NULL;
 
-    std::map<unsigned int, Player*>::iterator itcurr;
+    std::map<uint32_t, Player*>::iterator itcurr;
 
     for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
         Player* p = (*itcurr).second;
@@ -182,8 +182,8 @@ void PlayerManager::updatePlayer(uint32_t id){
 }
 
 std::set<uint32_t> PlayerManager::getAllIds(){
-    std::set<unsigned int> vis;
-    for(std::map<unsigned int, Player*>::const_iterator itid = players.begin();
+    std::set<uint32_t> vis;
+    for(std::map<uint32_t, Player*>::const_iterator itid = players.begin();
         itid != players.end(); ++itid){
         vis.insert(itid->first);
     }
