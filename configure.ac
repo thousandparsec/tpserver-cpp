@@ -37,18 +37,15 @@ AC_REQUIRE_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-dnl Enable building of the convenience library
-dnl and set LIBLTDL accordingly
-AC_LIBLTDL_CONVENIENCE
-dnl Substitute LTDLINCL and LIBLTDL in the Makefiles
-AC_SUBST(LTDLINCL)
-AC_SUBST(LIBLTDL)
-dnl Check for dlopen support
-AC_LIBTOOL_DLOPEN
+AM_INIT_AUTOMAKE
+LT_CONFIG_LTDL_DIR([libltdl])
+LT_INIT([dlopen])
+LTDL_INIT([recursive, convenience])
+AC_CONFIG_FILES([libltdl/Makefile])
+AC_CONFIG_SUBDIRS(libltdl)
+
 dnl Configure libtool
 AC_PROG_LIBTOOL
-dnl Configure libltdl
-AC_CONFIG_SUBDIRS(libltdl)
 
 AX_LIBTOOL2
 
