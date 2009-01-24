@@ -1,0 +1,47 @@
+#! /bin/sh
+
+export PATH=./temp:/opt/crosstool/gcc-3.3.6-/i686-pc-cygwin/bin:$PATH
+
+if [ x$1 = "xconfigure" ]; then
+	libgnutls_CFLAGS="-I/opt/crosstool/built/usr/include"                            \
+	libgnutls_LDFLAGS="-L/opt/crosstool/built/usr/lib"                               \
+	  \
+	./configure --prefix=/opt/tpserver-cpp            \
+		--host=i686-pc-cygwin                         \
+		--build=i686-linux                            \
+		--with-boost=/opt/crosstool/built/usr         \
+		--with-boost-signals=boost_signals-gcc-mt-s   \
+		--without-mysql                               \
+		--without-avahi                               \
+		--with-ltdl-include=/opt/crosstool/built/usr/include \
+		--with-ltdl-lib=/opt/crosstool/built/usr/lib \
+		--with-guile=/opt/crosstool/built/usr
+
+fi
+
+make 2>&1
+
+cd tpserver
+/bin/bash ../libtool --tag=CXX   --mode=link i686-pc-cygwin-g++ -I/opt/crosstool/built/usr/include  -g -Wall -I/opt/crosstool/built/usr/include/boost-1_33_1 -I/opt/crosstool/built/usr/include/boost-1_33_1 -export-dynamic   -o tpserver-cpp.exe  main.o connection.o frame.o game.o logging.o net.o settings.o player.o object.o order.o vector3d.o board.o message.o ordermanager.o objecttypemanager.o playerconnection.o playertcpconn.o tcpsocket.o property.o propertyvalue.o component.o design.o designstore.o tpscheme.o category.o persistence.o objectmanager.o playermanager.o listensocket.o boardmanager.o filelogger.o syslogger.o consolelogger.o resourcedescription.o resourcemanager.o pluginmanager.o httpsocket.o playerhttpconn.o admintcpsocket.o adminconnection.o admintcpconn.o adminlogger.o command.o commandmanager.o  advertiser.o metaserverpublisher.o metaserverconnection.o orderparameter.o spacecoordparam.o timeparameter.o objectorderparameter.o stringparameter.o listparameter.o prng.o playeragent.o turnprocess.o objectparameter.o objectparametergroup.o position3dobjectparam.o velocity3dobjectparam.o sizeobjectparam.o integerobjectparam.o referenceobjectparam.o refquantitylistobjectparam.o resourcelistobjectparam.o orderqueueobjectparam.o orderqueue.o turntimer.o asynctimeremaining.o playerview.o componentview.o designview.o objectview.o objecttype.o objectparametergroupdesc.o objectbehaviour.o objectinfo.o objectrelationships.o -L/opt/crosstool/built/usr/lib -lboost_signals-gcc-mt-s "-dlopen" self -lpthread -dlopen ../modules/games/minisec/.libs/libminisec.la -dlopen ../modules/games/risk/.libs/librisk.la -dlopen ../modules/tpcl/guile/.libs/libtpguile.la
+cd ..
+
+if [ x$1 = "xpackage" ]; then
+	make install
+
+	# Copy the DLL's we need
+	cp -rvf /opt/crosstool/built/usr/bin/*.dll /opt/tpserver-cpp/bin
+
+	pushd /opt/tpserver-cpp/bin
+	rm cygguilereadline-v-17-17.dll
+	rm cygguile-srfi-srfi-*
+	rm cygboost_*
+	popd
+
+	# Copy the .la files which are needed	
+	cp `find /opt/tpserver-cpp/lib -name *.la` /opt/tpserver-cpp/bin
+
+	# Copy the scheme files needed
+	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 /opt/tpserver-cpp/bin
+
+fi
+
