@@ -37,6 +37,8 @@
 
 #include "pluginmanager.h"
 
+extern const lt_dlsymlist lt_preloaded_symbols[];
+
 typedef bool (* tpinit_function)(void);
 
 PluginManager *PluginManager::instance = NULL;
@@ -84,6 +86,17 @@ void PluginManager::start(){
     log->error("Failed to load initalise the loader %s", lt_dlerror());
 	stop();
   }
+
+  log->info("Started looking for preloaded modules.");
+  for (int i = 0; lt_preloaded_symbols[i].name != NULL; i++) {
+    int len = strlen(lt_preloaded_symbols[i].name);
+
+    if (strncmp(lt_preloaded_symbols[i].name, "lib", 3) == 0 && 
+        strncmp(lt_preloaded_symbols[i].name+(len-2), ".a", 2) == 0)
+      log->info("Found %s at %p", lt_preloaded_symbols[i].name, lt_preloaded_symbols[i].address);
+  }
+  log->info("Finished looking for preloaded modules.");
+
 
   /* Need to load ourselves before we can load other modules. */
   lt_dlhandle nlib = lt_dlopen(NULL);
