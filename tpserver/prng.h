@@ -70,7 +70,6 @@ class Random{
     /* generates a random number on [0,0x7fffffff]-interval */
     int32_t getInt31(void);
     
-    uint32_t getInRange(int min, int max);
     uint32_t getInRange(uint32_t min, uint32_t max);
     int32_t getInRange(int32_t min, int32_t max);
     

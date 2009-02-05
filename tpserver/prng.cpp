@@ -154,10 +154,6 @@ int32_t Random::getInt31(void)
     return (long)(getInt32()>>1);
 }
 
-uint32_t Random::getInRange(int min, int max){
-    return (uint32_t)getInRange((uint32_t)min, (uint32_t)max);
-}
-
 uint32_t Random::getInRange(uint32_t min, uint32_t max){
   return (uint32_t)(getReal2() * (double)(max - min + 1) + min);
 }
