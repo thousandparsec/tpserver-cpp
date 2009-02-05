@@ -18,6 +18,7 @@
  *
  */
 
+#include <cstring>
 #include <ltdl.h>
 
 #ifdef HAVE_CONFIG_H
