@@ -39,7 +39,7 @@
 #include "config.h"
 #endif
 #ifndef VERSION
-#define VERSION 0.0.0
+#define VERSION "0.0.0"
 #endif
 
 #include "logging.h"
