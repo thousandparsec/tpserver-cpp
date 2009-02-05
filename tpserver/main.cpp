@@ -21,7 +21,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
-#include <sys/types.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>

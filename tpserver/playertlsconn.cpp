@@ -20,7 +20,7 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
+#include <stdint.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <gnutls/gnutls.h>
