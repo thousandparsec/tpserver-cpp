@@ -37,11 +37,26 @@ AC_REQUIRE_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-AM_INIT_AUTOMAKE
-LT_CONFIG_LTDL_DIR([libltdl])
-LT_INIT([dlopen])
-LTDL_INIT([recursive, convenience])
-AC_CONFIG_FILES([libltdl/Makefile])
+#libtool and libtldl
+
+m4_ifdef([LT_INIT],
+    [
+        dnl libtool2 and libltdl7
+        
+        LT_CONFIG_LTDL_DIR([libltdl])
+        LT_INIT([dlopen])
+        LTDL_INIT([recursive, convenience])
+        AC_CONFIG_FILES([libltdl/Makefile])
+    ],
+    [
+        dnl libtool1 and libltdl3
+        
+        AC_LIBLTDL_CONVENIENCE
+        AC_SUBST(LTDLINCL)
+        AC_SUBST(LIBLTDL)
+        AC_LIBTOOL_DLOPEN
+    ])
+
 AC_CONFIG_SUBDIRS(libltdl)
 
 dnl Configure libtool
