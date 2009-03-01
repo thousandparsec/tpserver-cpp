@@ -1,3 +1,8 @@
+tpserver-cpp (0.6.0-1) unstable; urgency=low
+
+  * Update for the 0.6.0 release.
+
+ -- Tim 'mithro' Ansell <mithro@mithis.com>  Sun, 01 Mar 2008 20:24:22 +1100
 tpserver-cpp (0.4.1-1) unstable; urgency=low
 
   * Initial release
