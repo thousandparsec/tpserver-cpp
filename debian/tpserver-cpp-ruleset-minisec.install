@@ -1,1 +1,3 @@
 usr/lib/tpserver/ruleset/libminisec*
+usr/share/tp/servers/tpserver-cpp-minisec.xml
+usr/share/tpserver-cpp/*-minisec*.conf

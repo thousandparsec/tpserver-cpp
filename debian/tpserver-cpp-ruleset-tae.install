@@ -1,0 +1,3 @@
+usr/lib/tpserver/ruleset/libtae*
+usr/share/tp/servers/tpserver-cpp-tae.xml
+usr/share/tpserver-cpp/*-tae*.conf

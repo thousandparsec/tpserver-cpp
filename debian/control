@@ -78,3 +78,26 @@ Description: Thousand Parsec Server, written in C++, Mtsec ruleset
  .
  Files for the mtsec game ruleset.
 
+Package: tpserver-cpp-ruleset-rfts
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, Mtsec ruleset
+ Thousand Parsec Server, written in C++
+ .
+ Files for the rfts game ruleset.
+
+Package: tpserver-cpp-ruleset-risk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, Mtsec ruleset
+ Thousand Parsec Server, written in C++
+ .
+ Files for the risk game ruleset.
+
+Package: tpserver-cpp-ruleset-tae
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Thousand Parsec Server, written in C++, Mtsec ruleset
+ Thousand Parsec Server, written in C++
+ .
+ Files for the tae game ruleset.

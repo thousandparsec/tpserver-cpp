@@ -1,0 +1,3 @@
+usr/lib/tpserver/ruleset/librfts*
+usr/share/tp/servers/tpserver-cpp-rfts.xml
+usr/share/tpserver-cpp/*-rfts*.conf

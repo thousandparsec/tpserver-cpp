@@ -1,2 +1,3 @@
 usr/bin/tpserver-cpp
-etc/tpserver/tpserver.conf
+usr/share/tp/servers/tpserver-cpp.xml
+etc/tpserver-cpp/tpserver-cpp.conf

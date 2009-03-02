@@ -1,0 +1,3 @@
+usr/lib/tpserver/ruleset/librisk*
+usr/share/tp/servers/tpserver-cpp-risk.xml
+usr/share/tpserver-cpp/*-risk*.conf

@@ -1,2 +1,3 @@
 usr/lib/tpserver/ruleset/libmtsec*
-
+usr/share/tp/servers/tpserver-cpp-mtsec.xml
+usr/share/tpserver-cpp/*-mtsec*.conf
