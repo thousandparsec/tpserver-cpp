@@ -26,3 +26,6 @@ tpserver/*.conf
 .deps
 *~
 tpserver-cpp.xml
+libltdl/*
+debian/*
+build-stamp
