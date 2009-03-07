@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
+<tpconfig>
+    <server name="dev-tpserver-cpp">
+        <longname>tpserver-cpp (Development)</longname>
+        <version>dev</version>
+        <description>Thousand Parsec server in C++.</description>
+        <commandstring>./tpserver-cpp -d --configure /dev/null --ruleset ../modules/games/%(rname)s/.libs/lib%(rname)s --tp_port %(port)d</commandstring>
+        <cwd>../tpserver-cpp/tpserver/</cwd>
+        <forced>--game_load yes</forced>
+        <forced>--game_start yes</forced>
+        <forced>--network_start yes</forced>
+        <forced>--add_players yes</forced>
+        <forced>--autoadd_players yes</forced>
+        <forced>--turn_player_threshold 100</forced>
+        <forced>--tpscheme ../modules/tpcl/guile/.libs/libtpguile</forced>
+        <parameter name="turnlength" type="I">
+            <longname>Turn Length</longname>
+            <description>Maximum length of a turn (0 for unlimited).</description>
+            <default>0</default>
+            <commandstring>--turn_length_over_threshold %d</commandstring>
+        </parameter>
+        <ruleset name="risk">
+            <longname>Risk</longname>
+            <version>0</version>
+            <description>A modified Risk ruleset for tpserver-cpp.</description>
+            <parameter name="map" type="S">
+                <longname>Map</longname>
+                <description>Map file to load.</description>
+                <default />
+                <commandstring>--risk_map %s</commandstring>
+            </parameter>
+            <parameter name="rfcstart" type="I">
+                <longname>Reinforcements</longname>
+                <description>Starting reinforcement count.</description>
+                <default />
+                <commandstring>--risk_rfc_start %d</commandstring>
+            </parameter>
+        </ruleset>
+        <ruleset name="minisec">
+            <longname>MiniSec</longname>
+            <version>0.3</version>
+            <description>The first milestone game. Simple test of being able to issue orders and perform simple combat.</description>
+        </ruleset>
+        <ruleset name="mtsec">
+            <longname>MTSec</longname>
+            <version>0.0</version>
+            <description>The second milestone game. It is designed to both be a fun game and to exercise the design capabilities of the framework.</description>
+        </ruleset>
+        <ruleset name="rfts">
+            <longname>Reach for the Stars</longname>
+            <version>0.5</version>
+            <description>A clone of the classic game.</description>
+        </ruleset>
+        <ruleset name="tae">
+            <longname>Tigris and Euphrates</longname>
+            <version>0.1</version>
+            <description>A simple to play strategy game. This ruleset is an adaptation based on the board game Tigris and Euphrates by Mayfair Games.</description>
+        </ruleset>
+    </server>
+</tpconfig>
