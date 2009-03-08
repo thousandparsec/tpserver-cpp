@@ -18,7 +18,7 @@
             <longname>Turn Length</longname>
             <description>Maximum length of a turn (0 for unlimited).</description>
             <default>0</default>
-            <commandstring>--turn_length_over_threshold %d</commandstring>
+            <commandstring>--turn_length_under_threshold %d</commandstring>
         </parameter>
         <ruleset name="risk">
             <longname>Risk</longname>
