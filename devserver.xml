@@ -24,7 +24,7 @@
             <longname>Risk</longname>
             <version>0</version>
             <description>A modified Risk ruleset for tpserver-cpp.</description>
-            <parameter name="map" type="S">
+            <parameter name="map" type="F">
                 <longname>Map</longname>
                 <description>Map file to load.</description>
                 <default />
