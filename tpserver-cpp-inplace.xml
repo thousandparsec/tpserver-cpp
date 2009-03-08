@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
-<tpconfig>
+<tpconfig type="inplace">
     <server name="tpserver-cpp-inplace">
         <longname>tpserver-cpp (Development)</longname>
         <version>dev</version>

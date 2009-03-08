@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
-<tpconfig>
+<tpconfig type="installed">
     <server name="tpserver-cpp">
         <ruleset name="mtsec">
             <longname>MTSec</longname>
