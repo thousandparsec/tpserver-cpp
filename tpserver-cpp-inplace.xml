@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE tpconfig SYSTEM "../tpconfig.dtd">
 <tpconfig>
-    <server name="dev-tpserver-cpp">
+    <server name="tpserver-cpp-inplace">
         <longname>tpserver-cpp (Development)</longname>
         <version>dev</version>
         <description>Thousand Parsec server in C++.</description>
