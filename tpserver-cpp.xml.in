@@ -5,7 +5,11 @@
         <longname>tpserver-cpp</longname>
         <version>@VERSION@</version>
         <description>Thousand Parsec server in C++.</description>
-        <commandstring>tpserver-cpp -d --configure /dev/null --ruleset %(rname)s --tp_port %(port)d</commandstring>
+        <commandstring>tpserver-cpp</commandstring>
+        <forced>-d</forced>
+        <forced>--configure /dev/null</forced>
+        <forced>--ruleset %(rname)s</forced>
+        <forced>--tp_port %(port)d</forced>
         <forced>--game_load yes</forced>
         <forced>--game_start yes</forced>
         <forced>--network_start yes</forced>
