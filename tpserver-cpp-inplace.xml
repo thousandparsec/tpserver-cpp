@@ -17,6 +17,7 @@
         <forced>--add_players yes</forced>
         <forced>--autoadd_players yes</forced>
         <forced>--turn_player_threshold 100</forced>
+        <forced>--turn_length_over_threshold 0</forced>
         <forced>--tpscheme ../modules/tpcl/guile/.libs/libtpguile</forced>
         <parameter name="turnlength" type="I">
             <longname>Turn Length</longname>

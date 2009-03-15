@@ -16,6 +16,7 @@
         <forced>--add_players yes</forced>
         <forced>--autoadd_players yes</forced>
         <forced>--turn_player_threshold 100</forced>
+        <forced>--turn_length_over_threshold 0</forced>
         <parameter name="turnlength" type="I">
             <longname>Turn Length</longname>
             <description>Maximum length of a turn (0 for unlimited).</description>
