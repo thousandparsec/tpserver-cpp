@@ -49,7 +49,10 @@ TurnTimer::~TurnTimer(){
 void TurnTimer::playerFinishedTurn(uint32_t playerid){
   if(Game::getGame()->getPlayerManager()->getPlayer(playerid)->isAlive()){
     finishedPlayers.insert(playerid);
-    if(!overthreshold && isOverThreshold()){
+    if(finishedPlayers.size() > 1 && finishedPlayers.size() == Game::getGame()->getPlayerManager()->getNumPlayers() - numdead){
+        //All players finished (and two players or more)
+        thresholdDoneAndStartEOT();
+    }else if(!overthreshold && isOverThreshold()){
       Logger::getLogger()->info("Threshold of players finished, setting over threshold turn length.");
       updateTimer();
       overthreshold = true;
