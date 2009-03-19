@@ -340,6 +340,8 @@ AC_DEFINE_DIR(LIBDIR, libdir, The library directory where the modules are stored
 #AC_SUBST(MODULE_LIBS)
 
 AC_CONFIG_FILES([
+shave \
+shave-libtool \
 Makefile
 tpserver-cpp.xml
 tpserver/Makefile
@@ -356,5 +358,7 @@ modules/tpcl/mzscheme/Makefile
 modules/games/risk/Makefile
 modules/games/tae/Makefile
 ]) 
+
+SHAVE_INIT([.], [enable])
 
 AC_OUTPUT
