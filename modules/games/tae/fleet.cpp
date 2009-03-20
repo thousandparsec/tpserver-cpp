@@ -104,7 +104,6 @@ void Fleet::addAllowedCombatOrder(string order) {
 //      then it will have NO orders, otherwise (if it is a comatant)
 //      it will use its combat orders.
 void Fleet::toggleCombat() {
-    OrderManager * om = Game::getGame()->getOrderManager();
     combat = !combat;
     if(combat) {
         if(combatant) {
