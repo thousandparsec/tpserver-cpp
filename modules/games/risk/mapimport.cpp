@@ -135,7 +135,6 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
    std::map<string,IGObject*> fillToConstellation;
    
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-   Graph* graph = risk->getGraph();
    
    while (pRect) {
       Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
