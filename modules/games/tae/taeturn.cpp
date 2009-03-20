@@ -116,7 +116,7 @@ void TaeTurn::doTurn(){
     for(int i = 0; i < playerTurn; i++) {
         itcurr++;
     }
-    for(int it = 0; it < players.size(); it++) {
+    for(uint32_t it = 0; it < players.size(); it++) {
         if(itcurr == players.end()) {
             itcurr = players.begin();
         }
@@ -259,7 +259,7 @@ void TaeTurn::doTurn(){
         for(int i = 0; i < playerTurn; i++) {
             itcurr++;
         }
-        for(int it = 0; it < players.size(); it++) {
+        for(uint32_t it = 0; it < players.size(); it++) {
             if(itcurr == players.end()) {
                 itcurr = players.begin();
             }
