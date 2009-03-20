@@ -55,5 +55,5 @@ void SysLogger::doLogging( int level, const char* msg) const
         level = LOG_NOTICE;
     }
 
-    syslog( level, msg);
+    syslog( level, "%s", msg);
 }
