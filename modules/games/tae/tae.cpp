@@ -211,7 +211,7 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
     while(!lines.empty()) {
         line = lines.top();
         lines.pop();
-        for(int i = 0; i < line.length(); i++) {
+        for(uint32_t i = 0; i < line.length(); i++) {
 
             //Create a star system
             IGObject* sys1 = obm->createNewObject();
