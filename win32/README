@@ -1,0 +1,22 @@
+Building for windows is really sucky, but here are the instructions anyway.
+
+Requirements:
+ * You will need the cygwin32 cross-compiler - you can get it from my blog.
+ * You will need the "prebuilt" dependencies (guile, etc) - you can also get
+   them from my blog. These are binaries from the cygwin archive which have
+   been extracted into the /opt/crosstool/built directory.
+
+You will also need to uninstall the libgnutls-dev and libavahi-dev packages as
+the "--without-xxxx" doesn't seem to work with our ./configure script and it
+picks up your system installed stuff.
+
+You then need apply the win32.patch which will prevent a bunch of unneeded
+things from building. It also disables all rulesets apart from risk and minisec.
+
+Then run 
+	./win32/build-for-windows configure
+To configure and build.
+
+Then run
+	./win32/build-for-windows package
+To copy the dependencies into the /opt/tpserver-cpp-win32/bin/ directory.

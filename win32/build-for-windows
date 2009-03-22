@@ -47,5 +47,6 @@ if [ x$1 = "xpackage" ]; then
 	# Copy the scheme files needed
 	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 $PREFIX/bin
 
+	cp ./win32/tpserver-cpp.bat $PREFIX/bin
 fi
 
