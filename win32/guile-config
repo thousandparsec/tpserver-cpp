@@ -1,0 +1,16 @@
+#! /bin/sh
+
+case "$1" in
+	--version)
+		echo "guile-config - Guile version 1.8.2"
+	;;
+
+	link)
+		echo "-L/opt/crosstool/built/usr/lib -lguile -lltdl  -Wl,-Bsymbolic-functions -lgmp -lcrypt -lm -lltdl"
+	;;
+
+	compile)
+		echo "-I/opt/crosstool/built/usr/include "
+	;;
+esac
+

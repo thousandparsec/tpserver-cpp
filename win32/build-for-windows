@@ -1,12 +1,16 @@
 #! /bin/sh
 
-export PATH=./temp:/opt/crosstool/gcc-3.3.6-/i686-pc-cygwin/bin:$PATH
+export PREFIX=/opt/tpserver-cpp-win32/
+
+export PATH=./win32:/opt/crosstool/gcc-3.3.6-/i686-pc-cygwin/bin:$PATH
 
 if [ x$1 = "xconfigure" ]; then
+	./autogen.sh
+
 	libgnutls_CFLAGS="-I/opt/crosstool/built/usr/include"                            \
 	libgnutls_LDFLAGS="-L/opt/crosstool/built/usr/lib"                               \
 	  \
-	./configure --prefix=/opt/tpserver-cpp            \
+	./configure --prefix=$PREFIX            \
 		--host=i686-pc-cygwin                         \
 		--build=i686-linux                            \
 		--with-boost=/opt/crosstool/built/usr         \
@@ -29,19 +33,19 @@ if [ x$1 = "xpackage" ]; then
 	make install
 
 	# Copy the DLL's we need
-	cp -rvf /opt/crosstool/built/usr/bin/*.dll /opt/tpserver-cpp/bin
+	cp -rvf /opt/crosstool/built/usr/bin/*.dll $PREFIX/bin
 
-	pushd /opt/tpserver-cpp/bin
+	pushd $PREFIX/bin
 	rm cygguilereadline-v-17-17.dll
 	rm cygguile-srfi-srfi-*
 	rm cygboost_*
 	popd
 
 	# Copy the .la files which are needed	
-	cp `find /opt/tpserver-cpp/lib -name *.la` /opt/tpserver-cpp/bin
+	cp `find $PREFIX/lib -name *.la` $PREFIX/bin
 
 	# Copy the scheme files needed
-	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 /opt/tpserver-cpp/bin
+	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 $PREFIX/bin
 
 fi
 
