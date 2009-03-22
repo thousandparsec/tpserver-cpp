@@ -375,7 +375,7 @@ pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDef
    
    //Get attacker's rolls
    for( uint32_t a = 0; a < oddsAttacker; a++) {
-      roll = random->getInRange(1,6);
+      roll = random->getInRange((int32_t)1,(int32_t)6);
       attackRolls.push_front(roll);
       Logger::getLogger()->debug("Attacker rolls a %d",roll);
    }
@@ -384,7 +384,7 @@ pair<uint32_t,uint32_t> Move::attackRoll(uint32_t oddsAttacker, uint32_t oddsDef
    
    //Get the defenders rolls
    for( uint32_t d = 0; d < oddsDefender; d++) {
-      roll = random->getInRange(1,6);
+      roll = random->getInRange((int32_t)1,(int32_t)6);
       defendRolls.push_front(roll);
       Logger::getLogger()->debug("Defender rolls a %d",roll);
    }

@@ -119,7 +119,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
     uint32_t ownerid1 = f1->getOwner();
     uint32_t ownerid2 = f2->getOwner();
         
-    int r1 = random->getInRange(0, 2);
+    int32_t r1 = random->getInRange((int32_t)0, (int32_t)2);
     
     std::list<uint32_t> d1, d2;
     

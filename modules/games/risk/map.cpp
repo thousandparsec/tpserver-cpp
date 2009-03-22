@@ -55,9 +55,9 @@ const Vector3d getUniverseCoord(const pair<double,double>& unitPos) {
 const Vector3d getRandPlanetOffset() {
    Random *rand = Game::getGame()->getRandom();
    return Vector3d( static_cast<int64_t>( UNIVERSE_WIDTH * UNIVERSE_TOTAL_SCALE *
-      (rand->getInRange(-100,100)/10000.) ),
+      (rand->getInRange((int32_t)-100,(int32_t)100)/10000.) ),
       static_cast<int64_t>( UNIVERSE_HEIGHT * UNIVERSE_TOTAL_SCALE *
-      (rand->getInRange(-100,100)/10000.) ),
+      (rand->getInRange((int32_t)-100,(int32_t)100)/10000.) ),
       0 );
 }
 

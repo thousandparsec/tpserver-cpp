@@ -777,8 +777,8 @@ void MiniSec::onPlayerAdded(Player* player){
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(80000ll);
     star->setName(name + " Star System");
-    thestar->setPosition(Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10000000),
-                              (int64_t)(currandom->getInRange(-5000, 5000) * 10000000),
+    thestar->setPosition(Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
+                              (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
                               /*(int64_t)(((rand() % 1000) - 500) * 10000000)*/ 0));
     
     star->addToParent(1);
@@ -795,8 +795,8 @@ void MiniSec::onPlayerAdded(Player* player){
     
     theplanet->setOwner(player->getID());
     theplanet->addResource(2, 1);
-    theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000)* 10),
-                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+    theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000)* 10),
+                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     
     OrderQueue *planetoq = new OrderQueue();
@@ -817,8 +817,8 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " First Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
@@ -842,8 +842,8 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " Second Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
@@ -867,8 +867,8 @@ void MiniSec::onPlayerAdded(Player* player){
     thefleet->setSize(2);
     fleet->setName(name + " Thrid Fleet");
     thefleet->setOwner(player->getID());
-    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange(-5000, 5000) * 10),
-                                                      (int64_t)(currandom->getInRange(-5000, 5000) * 10),
+    thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
@@ -962,8 +962,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
 
     star->setName(name);
 
-    thestar->setPosition( Vector3d( currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
-                                 currandom->getInRange(0, 8000) * 1000000ll - 4000000000ll,
+    thestar->setPosition( Vector3d( currandom->getInRange((int32_t)0, (int32_t)8000) * 1000000ll - 4000000000ll,
+                                 currandom->getInRange((int32_t)0, (int32_t)8000) * 1000000ll - 4000000000ll,
                                  0ll));
     star->addToParent( mw_galaxy->getID());
     obman->addObject( star);
