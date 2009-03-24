@@ -145,9 +145,6 @@ int main(int argc, char **argv)
         mySettings->set("log_console", "yes");
     }
 
-    // TODO - is this in the right place?
-    CommandManager *myCommandManager = CommandManager::getCommandManager();
-
 	Logger *myLogger = Logger::getLogger();
 
 	myLogger->info("Tpserver-cpp " VERSION " starting");
