@@ -134,8 +134,6 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
    //A map used to relate the colors of a constellation to the IGObject*
    std::map<string,IGObject*> fillToConstellation;
    
-   Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-   
    while (pRect) {
       Logger::getLogger()->debug("Got rect, id is: %s",pRect->Attribute("id"));
       IGObject* parent;
