@@ -20,6 +20,8 @@
 
 #include <libguile.h>
 
+#include <cstdlib>
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -433,6 +435,10 @@ void TpGuile::evalDesign( Design* d)
 
 TpGuile::TpGuile() {
     std::string  designTypeDefFile = "guile.scm";
+
+#if __CYGWIN__
+    setenv("GUILE_LOAD_PATH", "..\\share\\tpserver\\tpscheme\\guile\\", 0);
+#endif
 
     scm_init_guile();
     scm_c_eval_string("(set! %load-path (cons \"" DATADIR "/tpserver/tpscheme/guile/\" (cons \"modules/tpcl/guile/\" (cons \"../modules/tpcl/guile/\" %load-path ))))");

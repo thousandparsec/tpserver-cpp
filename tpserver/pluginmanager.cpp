@@ -88,6 +88,10 @@ void PluginManager::start(){
 	stop();
   }
 
+#if __CYGWIN__
+  log->info("Running on windows, only the statically linked modules listed below will be avaliable.");
+#endif
+
   log->info("Started looking for preloaded modules.");
   for (int i = 0; lt_preloaded_symbols[i].name != NULL; i++) {
     int len = strlen(lt_preloaded_symbols[i].name);
@@ -160,22 +164,46 @@ std::string PluginManager::getLoadedLibraryNames() const{
 }
 
 bool PluginManager::loadRuleset(const std::string& name){
+#if __CYGWIN__
+  // Do we have a / in name? Just use it directly then.
+  if(name.find("/") == name.npos)
+    return load(std::string("../lib/tpserver/ruleset/lib").append(name).append(".la"));
+  else
+    return load(name);
+#else
   if(name.find("/") == name.npos)
     return load(std::string(LIBDIR "/tpserver/ruleset/lib").append(name));
   else
     return load(name);
+#endif
 }
 
 bool PluginManager::loadPersistence(const std::string& name){
+#if __CYGWIN__
+  // Do we have a / in name? Just use it directly then.
+  if(name.find("/") == name.npos)
+    return load(std::string("../lib/tpserver/persistence/lib").append(name).append(".la"));
+  else
+    return load(name);
+#else
   if(name.find("/") == name.npos)
     return load(std::string(LIBDIR "/tpserver/persistence/lib").append(name));
   else
     return load(name);
+#endif
 }
 
 bool PluginManager::loadTpScheme(const std::string& name){
+#if __CYGWIN__
+  // Do we have a / in name? Just use it directly then.
+  if(name.find("/") == name.npos)
+    return load(std::string("../lib/tpserver/tpscheme/lib").append(name).append(".la"));
+  else
+    return load(name);
+#else
   if(name.find("/") == name.npos)
     return load(std::string(LIBDIR "/tpserver/tpscheme/lib").append(name));
   else
     return load(name);
+#endif
 }

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 export PREFIX=/opt/tpserver-cpp-win32/
 
@@ -36,17 +36,15 @@ if [ x$1 = "xpackage" ]; then
 	cp -rvf /opt/crosstool/built/usr/bin/*.dll $PREFIX/bin
 
 	pushd $PREFIX/bin
-	rm cygguilereadline-v-17-17.dll
-	rm cygguile-srfi-srfi-*
-	rm cygboost_*
+	rm -f cygguilereadline-v-17-17.dll
+	rm -f cygguile-srfi-srfi-*
+	rm -f cygboost_*
 	popd
 
 	# Copy the .la files which are needed	
-	cp `find $PREFIX/lib -name *.la` $PREFIX/bin
+	#cp `find $PREFIX/lib -name *.la` $PREFIX/bin
 
 	# Copy the scheme files needed
-	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 $PREFIX/bin
-
-	cp ./win32/tpserver-cpp.bat $PREFIX/bin
+	cp -rvf /opt/crosstool/built/usr/share/guile/1.8/ice-9 $PREFIX/share/tpserver/tpscheme/guile/
 fi
 
