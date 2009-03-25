@@ -1,3 +1,13 @@
+25 Mar 09 - Lee
+    * Version 0.6.1
+    * Updated libltdl
+    * Improvements to single player xml files
+    * Better windows support (cross compiling)
+    * Fixed types, unsigned int to uint32, etc
+    * Do turn straight away if all players are finished
+    * Clean up removing warnings
+    * Total commit: 38
+
 03 Jan 09 - Lee
     * Version 0.6.0
     * Merged 2008 GSoC projects: Risk, TaE, remote admin
