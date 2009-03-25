@@ -51,14 +51,13 @@ void PlayerManager::init(){
 }
 
 Player* PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
-    Player *rtn = NULL;
+    Player *rtn = findPlayer(name);
 
-    try{
-      Player* real = findPlayer(name, pass);
-
-    }catch(std::exception e){
-
-
+    if(rtn != NULL){
+        //Player's name exists already
+        rtn = NULL;
+    }else{
+      //Player's name doesn't exist, create the new player.
       rtn = new Player();
       rtn->setId(nextid++);
       rtn->setName(name.c_str());
@@ -136,7 +135,7 @@ Player* PlayerManager::getPlayer(uint32_t id){
     return rtn;
 }
 
-Player* PlayerManager::findPlayer(const std::string &name, const std::string &pass){
+Player* PlayerManager::findPlayer(const std::string &name){
     Logger::getLogger()->debug("finding player");
 
     //look for current/known players
@@ -157,15 +156,6 @@ Player* PlayerManager::findPlayer(const std::string &name, const std::string &pa
                 break;
             }
         }
-    }
-    
-    //name not found, throw an exception to know that we can create a new player
-    if(rtn == NULL)
-        throw std::exception();
-    
-    std::string itpass = rtn->getPass();
-    if (pass != itpass) {
-        rtn = NULL;
     }
 
     return rtn;

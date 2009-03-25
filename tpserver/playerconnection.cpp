@@ -129,10 +129,15 @@ void PlayerConnection::login(){
       }
       username = username.substr(0, username.find('@'));
       if (username.length() > 0 && password.length() > 0) {
-        Player* player = NULL;
-        try{
-          player = Game::getGame()->getPlayerManager()->findPlayer(username, password);
-        }catch(std::exception e){
+        Player* player = Game::getGame()->getPlayerManager()->findPlayer(username);
+        
+        if(player != NULL){
+            if(player->getPass() != password){
+                //password doesn't match, fail
+                player = NULL;
+            }
+        }else{
+          //Player's name doesn't exist
           if(Settings::getSettings()->get("autoadd_players") == "yes" &&
                 Settings::getSettings()->get("add_players") == "yes") {
                 Logger::getLogger()->info("Creating new player automatically");

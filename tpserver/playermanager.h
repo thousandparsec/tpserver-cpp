@@ -35,7 +35,7 @@ public:
     Player* createNewPlayer(const std::string &name, const std::string &pass);
 
     Player* getPlayer(uint32_t id);
-    Player* findPlayer(const std::string &name, const std::string &pass);
+    Player* findPlayer(const std::string &name);
 
     void updateAll();
     void updatePlayer(uint32_t id);
