@@ -39,7 +39,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
 		playerview.cpp componentview.cpp designview.cpp objectview.cpp objecttype.cpp \
 		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp \
-		basicturntimer.cpp thresholdturntimer.cpp
+		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h \
@@ -70,7 +70,7 @@ noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
 	admintcpsocket.h admintcpconn.h adminlogger.h \
 	metaserverconnection.h asyncframe.h asynctimeremaining.h basicturntimer.h \
-	thresholdturntimer.h
+	thresholdturntimer.h playersfinishedturntimer.h
 
 INCLUDES = $(LTDLINCL)
 
