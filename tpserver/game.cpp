@@ -58,6 +58,8 @@
 #include "advertiser.h"
 #include "turntimer.h"
 
+#include "thresholdturntimer.h"
+
 #include "game.h"
 
 Game *Game::myInstance = NULL;
@@ -147,7 +149,7 @@ bool Game::start(){
     ruleset->startGame();
 
     if(turntimer == NULL){
-      turntimer = new TurnTimer();
+      turntimer = new ThresholdTurnTimer();
     }
     
     //set num of dead players in the TurnTimer for accurate threshold calcuation

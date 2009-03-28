@@ -38,7 +38,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp \
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
 		playerview.cpp componentview.cpp designview.cpp objectview.cpp objecttype.cpp \
-		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp
+		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp \
+		basicturntimer.cpp thresholdturntimer.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h \
@@ -68,7 +69,8 @@ noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
 	admintcpsocket.h admintcpconn.h adminlogger.h \
-	metaserverconnection.h asyncframe.h asynctimeremaining.h
+	metaserverconnection.h asyncframe.h asynctimeremaining.h basicturntimer.h \
+	thresholdturntimer.h
 
 INCLUDES = $(LTDLINCL)
 
