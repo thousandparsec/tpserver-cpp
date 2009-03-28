@@ -1,5 +1,5 @@
 /* ltdl.c -- system independent dlopen wrapper
-   Copyright (C) 1998, 1999, 2000, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -137,16 +137,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* --- WINDOWS SUPPORT --- */
 
-
-#ifdef DLL_EXPORT
-#  define LT_GLOBAL_DATA	__declspec(dllexport)
-#else
-#  define LT_GLOBAL_DATA
+/* DLL building support on win32 hosts;  mostly to workaround their
+   ridiculous implementation of data symbol exporting. */
+#ifndef LT_GLOBAL_DATA
+#  if defined(__WINDOWS__) || defined(__CYGWIN__)
+#    ifdef DLL_EXPORT           /* defined by libtool (if required) */
+#      define LT_GLOBAL_DATA __declspec(dllexport)
+#    endif
+#  endif
+#  ifndef LT_GLOBAL_DATA        /* static linking or !__WINDOWS__ */
+#    define LT_GLOBAL_DATA
+#  endif
 #endif
 
 /* fopen() mode flags for reading a text file */
 #undef	LT_READTEXT_MODE
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__) || defined(__CYGWIN__)
 #  define LT_READTEXT_MODE "rt"
 #else
 #  define LT_READTEXT_MODE "r"
@@ -894,7 +900,7 @@ static	const char	sys_search_path[]	= LTDL_SYSSEARCHPATH;
 		(*lt_dlmutex_seterror_func) (errormsg);		\
 	else 	lt_dllast_error = (errormsg);	} LT_STMT_END
 #define LT_DLMUTEX_GETERROR(errormsg)		LT_STMT_START {	\
-	if (lt_dlmutex_seterror_func)				\
+	if (lt_dlmutex_geterror_func)				\
 		(errormsg) = (*lt_dlmutex_geterror_func) ();	\
 	else	(errormsg) = lt_dllast_error;	} LT_STMT_END
 
@@ -918,7 +924,7 @@ lt_dlmutex_register (lock, unlock, seterror, geterror)
      lt_dlmutex_seterror *seterror;
      lt_dlmutex_geterror *geterror;
 {
-  lt_dlmutex_unlock *old_unlock = unlock;
+  lt_dlmutex_unlock *old_unlock = lt_dlmutex_unlock_func;
   int		     errors	= 0;
 
   /* Lock using the old lock() callback, if any.  */
@@ -929,6 +935,7 @@ lt_dlmutex_register (lock, unlock, seterror, geterror)
     {
       lt_dlmutex_lock_func     = lock;
       lt_dlmutex_unlock_func   = unlock;
+      lt_dlmutex_seterror_func = seterror;
       lt_dlmutex_geterror_func = geterror;
     }
   else
@@ -1061,17 +1068,6 @@ lt_estrdup (str)
 #  include <sys/dl.h>
 #endif
 
-#ifdef RTLD_GLOBAL
-#  define LT_GLOBAL		RTLD_GLOBAL
-#else
-#  ifdef DL_GLOBAL
-#    define LT_GLOBAL		DL_GLOBAL
-#  endif
-#endif /* !RTLD_GLOBAL */
-#ifndef LT_GLOBAL
-#  define LT_GLOBAL		0
-#endif /* !LT_GLOBAL */
-
 /* We may have to define LT_LAZY_OR_NOW in the command line if we
    find out it does not work in some platform. */
 #ifndef LT_LAZY_OR_NOW
@@ -1107,7 +1103,7 @@ sys_dl_open (loader_data, filename)
      lt_user_data loader_data;
      const char *filename;
 {
-  lt_module   module   = dlopen (filename, LT_GLOBAL | LT_LAZY_OR_NOW);
+  lt_module   module   = dlopen (filename, LT_LAZY_OR_NOW);
 
   if (!module)
     {
@@ -2143,6 +2139,8 @@ static struct lt_user_dlloader presym = {
 /* The type of a function used at each iteration of  foreach_dirinpath().  */
 typedef int	foreach_callback_func LT_PARAMS((char *filename, lt_ptr data1,
 						 lt_ptr data2));
+/* foreachfile_callback itself calls a function of this type: */
+typedef int	file_worker_func      LT_PARAMS((const char *filename, void *data));
 
 static	int	foreach_dirinpath     LT_PARAMS((const char *search_path,
 						 const char *base_name,
@@ -2340,6 +2338,18 @@ lt_dlexit ()
 		  if (lt_dlclose (tmp))
 		    {
 		      ++errors;
+		    }
+		  /* Make sure that the handle pointed to by 'cur' still exists.
+		     lt_dlclose recursively closes dependent libraries which removes
+		     them from the linked list.  One of these might be the one
+		     pointed to by 'cur'.  */
+		  if (cur)
+		    {
+		      for (tmp = handles; tmp; tmp = tmp->next)
+			if (tmp == cur)
+			  break;
+		      if (! tmp)
+			cur = handles;
 		    }
 		}
 	    }
@@ -2944,7 +2954,7 @@ load_deplibs (handle, deplibs)
 
       handle->deplibs = (lt_dlhandle*) LT_EMALLOC (lt_dlhandle *, depcount);
       if (!handle->deplibs)
-	goto cleanup;
+	goto cleanup_names;
 
       for (i = 0; i < depcount; ++i)
 	{
@@ -2995,6 +3005,7 @@ unload_deplibs (handle)
 	      errors += lt_dlclose (handle->deplibs[i]);
 	    }
 	}
+      LT_DLFREE (handle->deplibs);
     }
 
   return errors;
@@ -3023,7 +3034,7 @@ trim (dest, str)
 	return 1;
 
       strncpy(tmp, &str[1], (end - str) - 1);
-      tmp[len-3] = LT_EOS_CHAR;
+      tmp[(end - str) - 1] = LT_EOS_CHAR;
       *dest = tmp;
     }
   else
@@ -3197,7 +3208,7 @@ try_dlopen (phandle, filename)
 	    }
 #endif
 #ifdef LTDL_SYSSEARCHPATH
-	  if (!file && sys_search_path)
+	  if (!file && *sys_search_path)
 	    {
 	      file = find_file (sys_search_path, base_name, &dir);
 	    }
@@ -3229,16 +3240,19 @@ try_dlopen (phandle, filename)
       /* read the .la file */
       while (!feof (file))
 	{
+	  line[line_len-2] = '\0';
 	  if (!fgets (line, (int) line_len, file))
 	    {
 	      break;
 	    }
 
 	  /* Handle the case where we occasionally need to read a line
-	     that is longer than the initial buffer size.  */
-	  while ((line[LT_STRLEN(line) -1] != '\n') && (!feof (file)))
+	     that is longer than the initial buffer size.
+	     Behave even if the file contains NUL bytes due to corruption. */
+	  while (line[line_len-2] != '\0' && line[line_len-2] != '\n' && !feof (file))
 	    {
 	      line = LT_DLREALLOC (char, line, line_len *2);
+	      line[line_len*2 - 2] = '\0';
 	      if (!fgets (&line[line_len -1], (int) line_len +1, file))
 		{
 		  break;
@@ -3711,8 +3725,7 @@ foreachfile_callback (dirname, data1, data2)
      lt_ptr data1;
      lt_ptr data2;
 {
-  int (*func) LT_PARAMS((const char *filename, lt_ptr data))
-	= (int (*) LT_PARAMS((const char *filename, lt_ptr data))) data1;
+  file_worker_func *func = *(file_worker_func **) data1;
 
   int	  is_done  = 0;
   char   *argz     = 0;
@@ -3750,37 +3763,38 @@ lt_dlforeachfile (search_path, func, data)
      lt_ptr data;
 {
   int is_done = 0;
+  file_worker_func **fpptr = &func;
 
   if (search_path)
     {
       /* If a specific path was passed, search only the directories
 	 listed in it.  */
       is_done = foreach_dirinpath (search_path, 0,
-				   foreachfile_callback, func, data);
+				   foreachfile_callback, fpptr, data);
     }
   else
     {
       /* Otherwise search the default paths.  */
       is_done = foreach_dirinpath (user_search_path, 0,
-				   foreachfile_callback, func, data);
+				   foreachfile_callback, fpptr, data);
       if (!is_done)
 	{
 	  is_done = foreach_dirinpath (getenv("LTDL_LIBRARY_PATH"), 0,
-				       foreachfile_callback, func, data);
+				       foreachfile_callback, fpptr, data);
 	}
 
 #ifdef LTDL_SHLIBPATH_VAR
       if (!is_done)
 	{
 	  is_done = foreach_dirinpath (getenv(LTDL_SHLIBPATH_VAR), 0,
-				       foreachfile_callback, func, data);
+				       foreachfile_callback, fpptr, data);
 	}
 #endif
 #ifdef LTDL_SYSSEARCHPATH
       if (!is_done)
 	{
 	  is_done = foreach_dirinpath (getenv(LTDL_SYSSEARCHPATH), 0,
-				       foreachfile_callback, func, data);
+				       foreachfile_callback, fpptr, data);
 	}
 #endif
     }
@@ -4284,17 +4298,18 @@ lt_dlcaller_get_data  (key, handle)
   LT_DLMUTEX_LOCK ();
 
   /* Locate the index of the element with a matching KEY.  */
-  {
-    int i;
-    for (i = 0; handle->caller_data[i].key; ++i)
-      {
-	if (handle->caller_data[i].key == key)
-	  {
-	    result = handle->caller_data[i].data;
-	    break;
-	  }
-      }
-  }
+  if (handle->caller_data)
+    {
+      int i;
+      for (i = 0; handle->caller_data[i].key; ++i)
+        {
+          if (handle->caller_data[i].key == key)
+            {
+              result = handle->caller_data[i].data;
+              break;
+            }
+        }
+    }
 
   LT_DLMUTEX_UNLOCK ();
 
