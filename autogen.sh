@@ -22,7 +22,8 @@ echo libtoolize...
     exit 1
 }
 
-libtoolize --automake --copy --force --ltdl --recursive
+#try with recursive first, then without
+libtoolize --automake --copy --force --ltdl --recursive || libtoolize --automake --copy --force --ltdl
 
 echo automake...
 (automake --version) < /dev/null > /dev/null 2>&1 || {
