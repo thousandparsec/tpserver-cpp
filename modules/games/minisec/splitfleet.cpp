@@ -82,7 +82,9 @@ bool SplitFleet::doOrder(IGObject * ob){
   msg->addReference(rst_Object, ob->getID());
   
   IGObject * nfleet = Game::getGame()->getObjectManager()->createNewObject();
-  Game::getGame()->getObjectTypeManager()->setupObject(nfleet,Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet"));
+  ObjectTypeManager* obtypeman = Game::getGame()->getObjectTypeManager();
+  uint32_t fleettype = obtypeman->getObjectTypeByName("Fleet");
+  obtypeman->setupObject(nfleet, fleettype);
   Fleet* nf = (Fleet*)(nfleet->getObjectBehaviour());
   nf->setSize(2);
   nfleet->setName("A fleet");
@@ -133,7 +135,7 @@ bool SplitFleet::doOrder(IGObject * ob){
     Game::getGame()->getPlayerManager()->getPlayer(of->getOwner())->getPlayerView()->addOwnedObject(nfleet->getID());
   }
   
-  Game::getGame()->getPlayerManager()->getPlayer(nf->getOwner())->postToBoard(msg);
+  Game::getGame()->getPlayerManager()->getPlayer(of->getOwner())->postToBoard(msg);
   
   return true;
 }
