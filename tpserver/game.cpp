@@ -1,6 +1,6 @@
 /*  Game controller for tpserver-cpp
  *
- *  Copyright (C) 2003-2006, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2006, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@
 #include "advertiser.h"
 #include "turntimer.h"
 
+#include "basicturntimer.h"
+#include "playersfinishedturntimer.h"
 #include "thresholdturntimer.h"
 
 #include "game.h"
@@ -149,7 +151,14 @@ bool Game::start(){
     ruleset->startGame();
 
     if(turntimer == NULL){
-      turntimer = new ThresholdTurnTimer();
+        std::string timername = Settings::getSettings()->get("turntimer");
+        if(timername == "threshold"){
+            turntimer = new ThresholdTurnTimer();
+        }else if(timername == "playersfinished"){
+            turntimer = new PlayersFinishedTurnTimer();
+        }else{
+            turntimer = new BasicTurnTimer();
+        }
     }
     
     //set num of dead players in the TurnTimer for accurate threshold calcuation

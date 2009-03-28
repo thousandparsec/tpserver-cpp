@@ -63,6 +63,10 @@ void BasicTurnTimer::resetTimer(){
     
     uint32_t len = atoi(settings->get("turn_length").c_str());
     
+    if(len == 0){
+        len = 60;
+    }
+    
     timer = new TimerCallback(this, &BasicTurnTimer::timerFinished, len);
     Network::getNetwork()->addTimer(*timer);
     

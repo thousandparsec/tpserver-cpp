@@ -15,13 +15,12 @@
         <forced>--network_start yes</forced>
         <forced>--add_players yes</forced>
         <forced>--autoadd_players yes</forced>
-        <forced>--turn_player_threshold 100</forced>
-        <forced>--turn_length_over_threshold 0</forced>
+        <forced>--turntimer playersfinished</forced>
         <parameter name="turnlength" type="I">
             <longname>Turn Length</longname>
             <description>Maximum length of a turn (0 for unlimited).</description>
             <default>0</default>
-            <commandstring>--turn_length_under_threshold %d</commandstring>
+            <commandstring>--turn_length %d</commandstring>
         </parameter>
     </server>
 </tpconfig>
