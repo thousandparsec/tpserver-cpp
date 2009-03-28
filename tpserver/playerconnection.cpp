@@ -223,7 +223,7 @@ void PlayerConnection::login(){
     }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
       processSetFilters(recvframe);
     }else{
-      Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining");
+      Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
       Frame *failframe = createFrame(recvframe);
       failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
       sendFrame(failframe);
