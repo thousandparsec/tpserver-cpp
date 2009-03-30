@@ -20,5 +20,5 @@ noinst_HEADERS = planet.h fleet.h nop.h move.h build.h colonise.h splitfleet.h m
 
 EXTRA_DIST = tpserver-cpp-mtsec.xml
 
-tpconfigdir = $(datadir)/tp/servers
+tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-mtsec.xml

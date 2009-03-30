@@ -18,5 +18,5 @@ noinst_HEADERS = bombard.h buildfleet.h colonise.h containertypes.h fleet.h \
 
 EXTRA_DIST = tpserver-cpp-rfts.xml
 
-tpconfigdir = $(datadir)/tp/servers
+tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-rfts.xml

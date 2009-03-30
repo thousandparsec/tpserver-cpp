@@ -15,5 +15,5 @@ noinst_HEADERS = tae.h universe.h spaceobject.h emptyobject.h starsystem.h \
 
 EXTRA_DIST = tpserver-cpp-tae.xml
 
-tpconfigdir = $(datadir)/tp/servers
+tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-tae.xml

@@ -20,6 +20,6 @@ noinst_HEADERS = planet.h fleet.h nop.h move.h build.h colonise.h splitfleet.h m
 
 EXTRA_DIST = sample.conf tpserver-cpp-minisec.xml
 
-tpconfigdir = $(datadir)/tp/servers
+tpconfigdir = $(datadir)/tp
 
 tpconfig_DATA = tpserver-cpp-minisec.xml

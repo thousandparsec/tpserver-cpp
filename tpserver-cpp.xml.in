@@ -6,6 +6,7 @@
         <version>@VERSION@</version>
         <description>Thousand Parsec server in C++.</description>
         <commandstring>tpserver-cpp</commandstring>
+        <cwd>@prefix@/bin</cwd>
         <forced>-d</forced>
         <forced>--configure /dev/null</forced>
         <forced>--ruleset %(rname)s</forced>

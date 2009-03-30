@@ -15,5 +15,5 @@ noinst_HEADERS = risk.h colonize.h move.h reinforce.h riskturn.h map.h staticobj
 
 EXTRA_DIST = sample.conf tpserver-cpp-risk.xml
 
-tpconfigdir = $(datadir)/tp/servers
+tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-risk.xml
