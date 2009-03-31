@@ -17,6 +17,7 @@
         <forced>--add_players yes</forced>
         <forced>--autoadd_players yes</forced>
         <forced>--turntimer playersfinished</forced>
+        <forced>--logging 1</forced>
         <parameter name="turnlength" type="I">
             <longname>Turn Length</longname>
             <description>Maximum length of a turn (0 for unlimited).</description>
