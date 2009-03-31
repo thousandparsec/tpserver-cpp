@@ -36,6 +36,8 @@ TurnTimer::~TurnTimer(){
 }
 
 void TurnTimer::playerFinishedTurn(uint32_t playerid){
+  Logger::getLogger()->info("Player %d finished turn (%d other players finished).", playerid, finishedPlayers.size());
+
   if(Game::getGame()->getPlayerManager()->getPlayer(playerid)->isAlive()){
     finishedPlayers.insert(playerid);
     onPlayerFinishedTurn();
