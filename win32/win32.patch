@@ -1,3 +1,13 @@
+diff --git a/Makefile.am b/Makefile.am
+index d6a871e..04aba55 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,4 +1,4 @@
+-SUBDIRS = libltdl modules tpserver
++SUBDIRS = modules tpserver
+ man_MANS = tpserver-cpp.1
+ 
+ EXTRA_DIST = $(man_MANS) sample.conf quickstart-minisec.conf quickstart-mtsec.conf autogen.sh \
 diff --git a/modules/games/Makefile.am b/modules/games/Makefile.am
 index 961bc37..c688f01 100644
 --- a/modules/games/Makefile.am
@@ -5,18 +15,8 @@ index 961bc37..c688f01 100644
 @@ -1 +1 @@
 -SUBDIRS = mtsec minisec rfts risk tae
 +SUBDIRS = minisec risk 
-diff --git a/Makefile.am b/Makefile.am
-index 1c32bba..f5fa508 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -1,4 +1,4 @@
--SUBDIRS = libltdl modules tpserver
-+SUBDIRS = modules tpserver
- 
- man_MANS = tpserver-cpp.1
- 
 diff --git a/tpserver/Makefile.am b/tpserver/Makefile.am
-index a115a8f..a58323b 100644
+index bf644c4..2bc3369 100644
 --- a/tpserver/Makefile.am
 +++ b/tpserver/Makefile.am
 @@ -11,13 +11,8 @@ GNUTLSSOURCES =
@@ -33,3 +33,43 @@ index a115a8f..a58323b 100644
  
  tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
  		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
+diff --git a/win32/win32.patch b/win32/win32.patch
+index 8955826..e69de29 100644
+--- a/win32/win32.patch
++++ b/win32/win32.patch
+@@ -1,35 +0,0 @@
+-diff --git a/modules/games/Makefile.am b/modules/games/Makefile.am
+-index 961bc37..c688f01 100644
+---- a/modules/games/Makefile.am
+-+++ b/modules/games/Makefile.am
+-@@ -1 +1 @@
+--SUBDIRS = mtsec minisec rfts risk tae
+-+SUBDIRS = minisec risk 
+-diff --git a/Makefile.am b/Makefile.am
+-index 1c32bba..f5fa508 100644
+---- a/Makefile.am
+-+++ b/Makefile.am
+-@@ -1,4 +1,4 @@
+--SUBDIRS = libltdl modules tpserver
+-+SUBDIRS = modules tpserver
+- 
+- man_MANS = tpserver-cpp.1
+- 
+-diff --git a/tpserver/Makefile.am b/tpserver/Makefile.am
+-index a115a8f..a58323b 100644
+---- a/tpserver/Makefile.am
+-+++ b/tpserver/Makefile.am
+-@@ -11,13 +11,8 @@ GNUTLSSOURCES =
+- GNUTLSHEADERS =
+- endif
+- 
+--if AVAHI
+--AVAHISOURCES = avahi.cpp
+--AVAHIHEADERS = avahi.h
+--else
+- AVAHISOURCES =
+- AVAHIHEADERS =
+--endif
+- 
+- tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
+- 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
