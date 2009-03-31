@@ -29,3 +29,5 @@ tpserver-cpp.xml
 libltdl/*
 debian/*
 build-stamp
+shave
+shave-libtool
