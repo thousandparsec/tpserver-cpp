@@ -125,6 +125,9 @@ Player* PlayerManager::getPlayer(uint32_t id){
     std::map<uint32_t, Player*>::iterator pl = players.find(id);
     if(pl != players.end()){
         rtn = (*pl).second;
+    }else{
+        //player does not exist
+        return NULL;
     }
     if(rtn == NULL){
         rtn = Game::getGame()->getPersistence()->retrievePlayer(id);
