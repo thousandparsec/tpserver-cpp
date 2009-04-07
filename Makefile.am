@@ -10,3 +10,6 @@ EXTRA_DIST = $(man_MANS) sample.conf quickstart-minisec.conf quickstart-mtsec.co
 tpconfigdir = $(datadir)/tp
 
 tpconfig_DATA = tpserver-cpp.xml
+
+doc: Doxyfile
+	doxygen Doxyfile
