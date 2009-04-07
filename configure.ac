@@ -229,23 +229,34 @@ if test "$guile_option" != "no"; then
       [1.6.*])
         GUILE_CFLAGS="`$GUILE_CONFIG compile`"
         GUILE_LIBS="`$GUILE_CONFIG link`"
-        AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
         AC_DEFINE(HAVE_GUILE1_6, 1, [Defined to 1 if the guile version is 1.6])
-        AM_CONDITIONAL(GUILE, true)
-        guile_use="yes"
+        check_libguile="yes"
         ;;
       [1.[789].*|2.*]) 
         GUILE_CFLAGS="`$GUILE_CONFIG compile`"
         GUILE_LIBS="`$GUILE_CONFIG link`"
-        AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
-        AM_CONDITIONAL(GUILE, true)
-        guile_use="yes"
+        check_libguile="yes"
         ;;
       *)
         AC_MSG_WARN([guile >= 1.6.* required (you have $v)]) 
         AM_CONDITIONAL(GUILE, false)
         ;;
       esac
+      
+      dnl check guile actually works
+      
+      if test "x$check_libguile" == "xyes"; then
+        AC_CHECK_LIB(guile, scm_init_guile,[
+                AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
+                AM_CONDITIONAL(GUILE, true)
+                guile_use="yes"
+            ],[
+                AM_CONDITIONAL(GUILE, false)
+                AC_MSG_WARN(Cannot find Guile library, not building guile module.)
+            ])
+      fi
+      
+      
    else
       AC_MSG_WARN(Cannot find Guile configuration script, not building Guile module)
       AM_CONDITIONAL(GUILE, false)
