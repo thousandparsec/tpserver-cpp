@@ -58,15 +58,19 @@ bool Settings::readArgs(int argc, char** argv){
 	}else if(strncmp(argv[i] + 2, "version", 7) == 0){
 	  std::cout << "tpserver-cpp " VERSION << std::endl;
 	  store["NEVER_START"] = "!";
-    }else if(strncmp(argv[i] + 2, "debug", 5) == 0){
-      store["DEBUG"] = "!";
+        }else if(strncmp(argv[i] + 2, "debug", 5) == 0){
+            store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 2, "configure", 9) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 2, "logging", 7) == 0){
 	  store["log_level"] = std::string(argv[++i]);
 	}else{
-            store[argv[i] + 2] = argv[i + 1];
-            i++;
+            if(i + 1 < argc){
+                store[argv[i] + 2] = argv[i + 1];
+                i++;
+            }else{
+                printf("Invalid argument setting: %s\n", argv[i]);
+            }
         }
 
       }else{
@@ -74,13 +78,15 @@ bool Settings::readArgs(int argc, char** argv){
 	if(strncmp(argv[i] + 1, "h", 2) == 0){
 	  printHelp();
 	  store["NEVER_START"] = "!";
-    }else if(strncmp(argv[i] + 1, "d", 2) == 0){
-      store["DEBUG"] = "!";
+        }else if(strncmp(argv[i] + 1, "d", 2) == 0){
+            store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 1, "C", 2) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 1, "l", 2) == 0){
 	  store["log_level"] = std::string(argv[++i]);
-	}
+	}else{
+            printf("Unknown short argument: %s\n", argv[i]);
+        }
 
       }
     }
