@@ -60,6 +60,8 @@ bool Settings::readArgs(int argc, char** argv){
 	  store["NEVER_START"] = "!";
         }else if(strncmp(argv[i] + 2, "debug", 5) == 0){
             store["DEBUG"] = "!";
+        }else if(strncmp(argv[i] + 2, "verbose", 6) == 0){
+            store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 2, "configure", 9) == 0){
 	  store["config_file"] = std::string(argv[++i]);
 	}else if(strncmp(argv[i] + 2, "logging", 7) == 0){
@@ -78,7 +80,7 @@ bool Settings::readArgs(int argc, char** argv){
 	if(strncmp(argv[i] + 1, "h", 2) == 0){
 	  printHelp();
 	  store["NEVER_START"] = "!";
-        }else if(strncmp(argv[i] + 1, "d", 2) == 0){
+        }else if(strncmp(argv[i] + 1, "v", 2) == 0){
             store["DEBUG"] = "!";
 	}else if(strncmp(argv[i] + 1, "C", 2) == 0){
 	  store["config_file"] = std::string(argv[++i]);
@@ -266,7 +268,8 @@ void Settings::printHelp(){
   std::cout << "\t-C\t--configure\tConfiguration file to read" << std::endl;
   std::cout << "\t-l\t--logging\tSets the logging level (default 0)" << std::endl;
   std::cout << "\t\t--<key> <value>\tSets the setting <key> to <value>" << std::endl;
-  std::cout << "\t-d\t--debug\t\tRun in debug mode (non-daemon)" << std::endl;
+  std::cout << "\t\t--debug\t\tRun in verbose/debug mode (non-daemon)" << std::endl;
+  std::cout << "\t-v\t--verbose\tRun in verbose/debug mode (non-daemon)" << std::endl;
 }
 
 void Settings::setDefaultValues(){
