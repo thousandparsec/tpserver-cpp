@@ -521,6 +521,8 @@ void Rfts::startGame() {
       
    if(settings->get("game_length") == "")
       settings->set("game_length", "60");
+   
+   Game::getGame()->setTurnName("Production, Construction, Movement");
 }
 
 bool Rfts::onAddPlayer(Player *player) {

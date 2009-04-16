@@ -141,6 +141,15 @@ void RftsTurn::doTurn() {
       for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
          pm->getPlayer(*i)->postToBoard(gameOver);
    }
+   
+   int turn = game->getTurnNumber() % 3;
+   if(turn == 0){
+       game->setTurnName("Production, Construction, Movement");
+   }else if(turn == 1){
+       game->setTurnName("Construction, Movement");
+   }else{
+       game->setTurnName("Movement");
+   }
 }
 
 void RftsTurn::setPlayerVisibleObjects() {
