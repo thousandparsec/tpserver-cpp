@@ -246,6 +246,8 @@ if test "$guile_option" != "no"; then
       dnl check guile actually works
       
       if test "x$check_libguile" == "xyes"; then
+        CXXFLAGS_SAVE="$CXXFLAGS $GUILE_CFLAGS"
+        LDFLAGS_SAVE="$LDFLAGS $GUILE_LIBS"
         AC_CHECK_LIB(guile, scm_init_guile,[
                 AC_DEFINE(HAVE_GUILE, 1, [Defined to 1 if guile libraries are available])
                 AM_CONDITIONAL(GUILE, true)
@@ -254,6 +256,8 @@ if test "$guile_option" != "no"; then
                 AM_CONDITIONAL(GUILE, false)
                 AC_MSG_WARN(Cannot find Guile library, not building guile module.)
             ])
+        CXXFLAGS=$CXXFLAGS_SAVE
+        LDFLAGS=$LDFLAGS_SAVE
       fi
       
       
