@@ -1,5 +1,5 @@
 #ifndef REFERENCEOBJECTPARAM_H
-#define REFERECEOBJECTPARAM_H
+#define REFERENCEOBJECTPARAM_H
 /*  ReferenceObjectParam class
  *
  *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
