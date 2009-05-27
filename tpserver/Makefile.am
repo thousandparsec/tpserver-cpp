@@ -39,7 +39,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
 		playerview.cpp componentview.cpp designview.cpp objectview.cpp objecttype.cpp \
 		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp \
-		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp
+		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp \
+		mediaobjectparam.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h \
@@ -63,7 +64,7 @@ headers_HEADERS = connection.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
 	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h \
-	command.h commandmanager.h
+	command.h commandmanager.h mediaobjectparam.h
 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
