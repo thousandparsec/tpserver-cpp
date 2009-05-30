@@ -48,7 +48,7 @@ ObjectBehaviour* PlanetType::createObjectBehaviour() const{
   return new Planet();
 }
 
-const uint32_t Planet::RESGRPID = 4;
+const uint32_t Planet::RESGRPID = 5;
 const uint32_t Planet::RESPARAMID = 1;
 
 Planet::Planet(){

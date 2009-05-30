@@ -24,6 +24,7 @@
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/velocity3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/mediaobjectparam.h>
 #include <tpserver/objectparametergroupdesc.h>
 
 #include "spaceobject.h"
@@ -36,6 +37,12 @@ SpaceObjectType::SpaceObjectType():ObjectType(){
   group->addParameter(obpT_Velocity, "Velocity", "The velocity of the object");
   group->addParameter(obpT_Size, "Size", "The size of the object");
   addParameterGroupDesc(group);
+  group = new ObjectParameterGroupDesc();
+  group->setName("Media");
+  group->setDescription("Media for this object");
+  group->addParameter(obpT_Media, "Icon", "Icon for this object");
+  group->addParameter(obpT_Media, "Media", "The main media for the object");
+  addParameterGroupDesc(group);
   
 }
 
@@ -47,6 +54,9 @@ const uint32_t SpaceObject::POSGRPID = 1;
 const uint32_t SpaceObject::POSPARAMID = 1;
 const uint32_t SpaceObject::VELPARAMID = 2;
 const uint32_t SpaceObject::SIZEPARAMID = 3;
+const uint32_t SpaceObject::MEDIAGRPID = 2;
+const uint32_t SpaceObject::ICONPARAMID = 1;
+const uint32_t SpaceObject::MEDIAPARAMID = 2;
 
 SpaceObject::SpaceObject() : ObjectBehaviour(){
 }
@@ -81,4 +91,13 @@ void SpaceObject::setSize(uint64_t ns){
   obj->touchModTime();
 }
 
+void SpaceObject::setIcon(const std::string& aMediaStr){
+    ((MediaObjectParam*)(obj->getParameter(MEDIAGRPID, ICONPARAMID)))->setMediaUrl(aMediaStr);
+    obj->touchModTime();
+}
+
+void SpaceObject::setMedia(const std::string& aMediaStr){
+    ((MediaObjectParam*)(obj->getParameter(MEDIAGRPID, MEDIAPARAMID)))->setMediaUrl(aMediaStr);
+    obj->touchModTime();
+}
 

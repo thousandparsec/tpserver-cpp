@@ -53,9 +53,9 @@ OwnedObjectType::OwnedObjectType():SpaceObjectType(){
 OwnedObjectType::~OwnedObjectType(){
 }
 
-const uint32_t OwnedObject::OWNERGRPID = 2;
+const uint32_t OwnedObject::OWNERGRPID = 3;
 const uint32_t OwnedObject::OWNERPARAMID = 1;
-const uint32_t OwnedObject::ORDERGRPID = 3;
+const uint32_t OwnedObject::ORDERGRPID = 4;
 const uint32_t OwnedObject::ORDERQPARAMID = 1;
 
 OwnedObject::OwnedObject():SpaceObject(){

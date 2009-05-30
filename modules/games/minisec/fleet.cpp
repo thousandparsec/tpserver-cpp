@@ -59,7 +59,7 @@ ObjectBehaviour* FleetType::createObjectBehaviour() const{
   return new Fleet();
 }
 
-const uint32_t Fleet::SHIPSGRPID = 4;
+const uint32_t Fleet::SHIPSGRPID = 5;
 const uint32_t Fleet::SHIPSPARAMID = 1;
 const uint32_t Fleet::DAMAGEPARAMID = 2;
 

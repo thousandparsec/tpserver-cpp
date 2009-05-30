@@ -42,7 +42,7 @@ ObjectBehaviour* UniverseType::createObjectBehaviour() const{
   return new Universe();
 }
 
-const uint32_t Universe::AGEGRPID = 2;
+const uint32_t Universe::AGEGRPID = 3;
 const uint32_t Universe::AGEPARAMID = 1;
 
 Universe::Universe(){
