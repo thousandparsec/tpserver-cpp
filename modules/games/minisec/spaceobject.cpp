@@ -1,6 +1,6 @@
 /*  Fleet object
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,12 @@ SpaceObjectType::SpaceObjectType():ObjectType(){
 SpaceObjectType::~SpaceObjectType(){
 }
 
+
+const uint32_t SpaceObject::POSGRPID = 1;
+const uint32_t SpaceObject::POSPARAMID = 1;
+const uint32_t SpaceObject::VELPARAMID = 2;
+const uint32_t SpaceObject::SIZEPARAMID = 3;
+
 SpaceObject::SpaceObject() : ObjectBehaviour(){
 }
 
@@ -49,29 +55,29 @@ SpaceObject::~SpaceObject(){
 }
 
 Vector3d SpaceObject::getPosition() const{
-  return ((Position3dObjectParam*)(obj->getParameter(1,1)))->getPosition();
+  return ((Position3dObjectParam*)(obj->getParameter(POSGRPID,POSPARAMID)))->getPosition();
 }
 
 Vector3d SpaceObject::getVelocity() const{
-  return ((Velocity3dObjectParam*)(obj->getParameter(1,2)))->getVelocity();
+  return ((Velocity3dObjectParam*)(obj->getParameter(POSGRPID,VELPARAMID)))->getVelocity();
 }
 
 uint64_t SpaceObject::getSize() const{
-  return ((SizeObjectParam*)(obj->getParameter(1,3)))->getSize();
+  return ((SizeObjectParam*)(obj->getParameter(POSGRPID,SIZEPARAMID)))->getSize();
 }
 
 void SpaceObject::setPosition(const Vector3d & np){
-  ((Position3dObjectParam*)(obj->getParameter(1,1)))->setPosition(np);
+  ((Position3dObjectParam*)(obj->getParameter(POSGRPID,POSPARAMID)))->setPosition(np);
   obj->touchModTime();
 }
 
 void SpaceObject::setVelocity(const Vector3d & nv){
-  ((Velocity3dObjectParam*)(obj->getParameter(1,2)))->setVelocity(nv);
+  ((Velocity3dObjectParam*)(obj->getParameter(POSGRPID,VELPARAMID)))->setVelocity(nv);
   obj->touchModTime();
 }
 
 void SpaceObject::setSize(uint64_t ns){
-  ((SizeObjectParam*)(obj->getParameter(1,3)))->setSize(ns);
+  ((SizeObjectParam*)(obj->getParameter(POSGRPID,SIZEPARAMID)))->setSize(ns);
   obj->touchModTime();
 }
 

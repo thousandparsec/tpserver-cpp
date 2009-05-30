@@ -1,6 +1,6 @@
 /*  Planet objects
  *
- *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@ ObjectBehaviour* PlanetType::createObjectBehaviour() const{
   return new Planet();
 }
 
+const uint32_t Planet::RESGRPID = 4;
+const uint32_t Planet::RESPARAMID = 1;
 
 Planet::Planet(){
 }
@@ -60,13 +62,13 @@ void Planet::setDefaultOrderTypes(){
   std::set<uint32_t> allowedlist;
   allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
-  ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+  ((OrderQueueObjectParam*)(obj->getParameter(ORDERGRPID,ORDERQPARAMID)))->setAllowedOrders(allowedlist);
 }
 
 void Planet::packExtraData(Frame * frame){
   OwnedObject::packExtraData(frame);
   
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
     frame->packInt(reslist.size());
     for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
             itcurr != reslist.end(); ++itcurr){
@@ -89,11 +91,11 @@ int Planet::getContainerType(){
 
 
 std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
-    return ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+    return ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
 }
 
 uint32_t Planet::getResource(uint32_t restype) const{
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
   if(reslist.find(restype) != reslist.end()){
     return reslist.find(restype)->first;
   }
@@ -101,27 +103,27 @@ uint32_t Planet::getResource(uint32_t restype) const{
 }
 
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
-    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(ress);
+    ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->setResources(ress);
     obj->touchModTime();
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
     std::pair<uint32_t, uint32_t> respair = reslist[restype];
     respair.first += amount;
     reslist[restype] = respair;
-    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+    ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->setResources(reslist);
     obj->touchModTime();
 }
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
     if(reslist.find(restype) != reslist.end()){
         if(reslist[restype].first >= amount){
             std::pair<uint32_t, uint32_t> respair = reslist[restype];
             respair.first -= amount;
             reslist[restype] = respair;
-            ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+            ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->setResources(reslist);
             obj->touchModTime();
             return true;
         }

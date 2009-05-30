@@ -2,7 +2,7 @@
 #define SPACEOBJECT_H
 /*  Space Object class
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,7 +47,11 @@ class SpaceObject : public ObjectBehaviour{
         void setVelocity(const Vector3d & nv);
         void setSize(uint64_t ns);
         
-
+    private:
+        static const uint32_t POSGRPID;
+        static const uint32_t POSPARAMID;
+        static const uint32_t VELPARAMID;
+        static const uint32_t SIZEPARAMID;
 
 };
 
