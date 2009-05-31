@@ -553,7 +553,7 @@ void MiniSec::createGame(){
   oqop->setQueueId(planetoq->getQueueId());
   theearth->setDefaultOrderTypes();
   theearth->setIcon("common/object-icons/planet");
-  theearth->setMedia("common-2d/planet-small/animation/terran1");
+  theearth->setMedia("common-2d/foreign/freeorion/planet-small/animation/terran1");
   earth->addToParent(sol->getID());
   obman->addObject(earth);
   
@@ -571,7 +571,7 @@ void MiniSec::createGame(){
   oqop->setQueueId(planetoq->getQueueId());
   thevenus->setDefaultOrderTypes();
   thevenus->setIcon("common/object-icons/planet");
-  thevenus->setMedia("common-2d/planet-small/animation/desert1");
+  thevenus->setMedia("common-2d/foreign/freeorion/planet-small/animation/desert1");
   venus->addToParent(sol->getID());
   obman->addObject(venus);
   
@@ -589,7 +589,7 @@ void MiniSec::createGame(){
   oqop->setQueueId(planetoq->getQueueId());
   themars->setDefaultOrderTypes();
   themars->setIcon("common/object-icons/planet");
-  themars->setMedia("common-2d/planet-small/animation/inferno1");
+  themars->setMedia("common-2d/foreign/freeorion/planet-small/animation/inferno1");
   mars->addToParent(sol->getID());
   obman->addObject(mars);
   
@@ -607,7 +607,7 @@ void MiniSec::createGame(){
   oqop->setQueueId(planetoq->getQueueId());
   theacprime->setDefaultOrderTypes();
   theacprime->setIcon("common/object-icons/planet");
-  theacprime->setMedia("common-2d/planet-small/animation/toxic1");
+  theacprime->setMedia("common-2d/foreign/freeorion/planet-small/animation/toxic1");
   acprime->addToParent(ac->getID());
   obman->addObject(acprime);
   
@@ -625,7 +625,7 @@ void MiniSec::createGame(){
   oqop->setQueueId(planetoq->getQueueId());
   thes1->setDefaultOrderTypes();
   theac->setIcon("common/object-icons/planet");
-  theac->setMedia("common-2d/planet-small/animation/barren1");
+  theac->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
  
@@ -852,7 +852,7 @@ void MiniSec::onPlayerAdded(Player* player){
                                                       (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     theplanet->setIcon("common/object-icons/planet");
-    theplanet->setMedia("common-2d/planet-small/animation/" + planetmedia->getName());
+    theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
     OrderQueue *planetoq = new OrderQueue();
     planetoq->setObjectId(planet->getID());
     planetoq->addOwner(player->getID());
