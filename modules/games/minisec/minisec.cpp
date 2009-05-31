@@ -82,12 +82,12 @@ static char const * const defaultSystemNames[] = {
   "Fools Errand",    "Wrenganis",           "Humph",
   "Byzantis",        "Torontis",            "Radiant Pool"};
   
-static char const * const defaultPlanetMedia[] = {
+static char const * const defaultSystemMedia[] = {
     "blue", "red", "yellow", "purple-large", 
     "purple-small", "rainbow"
 };
 
-static char const * const defaultSystemMedia[] = {
+static char const * const defaultPlanetMedia[] = {
     "barren1", "barren2", "barren3", "desert1", "desert2",
     "desert3", "gasgiant1", "gasgiant2", "gasgiant3",
     "inferno1", "inferno2", "inferno3", "ocean1", "ocean2",
