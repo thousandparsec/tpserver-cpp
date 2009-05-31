@@ -1,6 +1,6 @@
 /*  MiniSec ruleset
  *
- *  Copyright (C) 2003-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@
 
 #include "minisec.h"
 
-static char const * const defaultNames[] = {
+static char const * const defaultSystemNames[] = {
   "Barnard's Star",  "Gielgud",             "Ventana",
   "Aleph Prime",     "Ventil",              "Sagitaria",
   "Drifter",         "Ptelemicus",          "Centanis",
@@ -81,30 +81,54 @@ static char const * const defaultNames[] = {
   "Atlantis",        "Draconis",            "Muir's Gold",
   "Fools Errand",    "Wrenganis",           "Humph",
   "Byzantis",        "Torontis",            "Radiant Pool"};
+  
+static char const * const defaultPlanetMedia[] = {
+    "blue", "red", "yellow", "purple-large", 
+    "purple-small", "rainbow"
+};
+
+static char const * const defaultSystemMedia[] = {
+    "barren1", "barren2", "barren3", "desert1", "desert2",
+    "desert3", "gasgiant1", "gasgiant2", "gasgiant3",
+    "inferno1", "inferno2", "inferno3", "ocean1", "ocean2",
+    "ocean3", "radiated1", "radiated2", "radiaged3",
+    "swamp1", "swamp2", "swamp3", "terran1", "terran2",
+    "terran3", "toxic1", "toxic2", "toxic3", "tundra1",
+    "tundra2", "tundra3"
+};
+
+static char const * const defaultFleetMedia[] = {
+    "aeon-hud", "ancestor-hud", "andolian_dostoevsky-hud",
+    "andolian_sartre-hud", "andolian_schroedinger-hud",
+    "ariston-hud", "clydesdale-hud", "confed_gawain-hud",
+    "confed_schroedinger-hud", "destroyer-hud",
+    "franklin-hud", "gawain-hud", "highborn_gawain-hud",
+    "kyta-hud", "purist_admonisher-hud", "purist_gawain-hud",
+    "sartre-hud", "schroedinger-hud", "shaper_ancestor-hud",
+    "watson-hud"
+};
 
 /**
 * Base class for various ways to get names for starsystems.
 */
-class Names {
-	uint64_t systems;
 
-public:
-	Names() {
-		systems = 0;
-	}
+Names::Names(const std::string& defaultname) : systems(0), prefix(defaultname) {
+	
+}
 
-	/**
-	 * Get a name which is "System xx".
-	 */
-	virtual std::string getName() {
-			std::ostringstream name;
-			name.str("");
-			name << "System " << ++systems;
+/**
+ * Get a name which is "System xx".
+ */
+std::string Names::getName() {
+    std::ostringstream name;
+    name.str("");
+    name << prefix << " " << ++systems;
 
-			return name.str();
-  }
-	virtual ~Names() {};
-};
+    return name.str();
+}
+
+Names::~Names() {};
+
 
 /**
  * Use a predefined list of names in this file and then fall back to "System xx" names.
@@ -113,11 +137,13 @@ class NamesSet : public Names {
 
   std::set<const char*> names;
   Random* rand;
+  bool replace;
 
 public:
-  NamesSet(Random* r) :
-      Names(),
-      names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))) 
+  NamesSet(Random* r, char const * const defaultNames[], bool withreplacement, const std::string& defaultprefix) :
+      Names(defaultprefix),
+      names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))),
+      replace(withreplacement)
   {
     rand  = r;
   }
@@ -131,7 +157,9 @@ public:
       advance(name, choice);
       assert(name != names.end());
 
-      names.erase(name);
+      if(!replace){
+        names.erase(name);
+      }
 
       return std::string(*name);
     } else {
@@ -211,7 +239,7 @@ class NamesFile : public Names {
   }
 
 public:
-  NamesFile(std::istream* f) : Names() {
+  NamesFile(std::istream* f, const std::string& defaultname) : Names(defaultname) {
     m_file = f;
 
   }
@@ -245,12 +273,16 @@ extern "C" {
 }
 
 MiniSec::MiniSec() : random(NULL){
+    systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, true, "");
+    planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, true, "");
+    fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, true, "");
 }
 
 MiniSec::~MiniSec(){
   if(random != NULL){
     delete random;
   }
+  
 }
 
 std::string MiniSec::getName(){
@@ -453,6 +485,8 @@ void MiniSec::createGame(){
   theuniverse->setSize(1000000000000ll);
   universe->setName("The Universe");
   theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
+  theuniverse->setIcon("common/object-icons/system");
+  theuniverse->setMedia("common-2d/foreign/freeorion/nebula-small/nebula3");
   obman->addObject(universe);
   
   //add contained objects
@@ -463,6 +497,8 @@ void MiniSec::createGame(){
   mw_galaxy->setName("Milky Way Galaxy");
   eo->setPosition(Vector3d(0ll, -6000ll, 0ll));
   mw_galaxy->addToParent(universe->getID());
+  eo->setIcon("common/object-icons/system");
+  eo->setMedia("common-2d/foreign/freeorion/nebula-small/nebula1");
   obman->addObject(mw_galaxy);
   
   // star system 1
@@ -472,6 +508,8 @@ void MiniSec::createGame(){
   thesol->setSize(60000ll);
   sol->setName("Sol/Terra System");
   thesol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
+  thesol->setIcon("common/object-icons/system");
+  thesol->setMedia("common-2d/star-small/yellow");
   sol->addToParent(mw_galaxy->getID());
   obman->addObject(sol);
 
@@ -482,6 +520,8 @@ void MiniSec::createGame(){
   theac->setSize(90000ll);
   ac->setName("Alpha Centauri System");
   theac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
+  theac->setIcon("common/object-icons/system");
+  theac->setMedia("common-2d/star-small/purple-large");
   ac->addToParent(mw_galaxy->getID());
   obman->addObject(ac);
   
@@ -492,6 +532,8 @@ void MiniSec::createGame(){
   thesirius->setSize(60000ll);
   sirius->setName("Sirius System");
   thesirius->setPosition(Vector3d(-250000000ll, -4000000000ll, 0ll));
+  thesirius->setIcon("common/object-icons/system");
+  thesirius->setMedia("common-2d/star-small/red");
   sirius->addToParent(mw_galaxy->getID());
   obman->addObject(sirius);
 
@@ -510,6 +552,8 @@ void MiniSec::createGame(){
   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   theearth->setDefaultOrderTypes();
+  theearth->setIcon("common/object-icons/planet");
+  theearth->setMedia("common-2d/planet-small/animation/terran1");
   earth->addToParent(sol->getID());
   obman->addObject(earth);
   
@@ -526,6 +570,8 @@ void MiniSec::createGame(){
   oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   thevenus->setDefaultOrderTypes();
+  thevenus->setIcon("common/object-icons/planet");
+  thevenus->setMedia("common-2d/planet-small/animation/desert1");
   venus->addToParent(sol->getID());
   obman->addObject(venus);
   
@@ -542,6 +588,8 @@ void MiniSec::createGame(){
   oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   themars->setDefaultOrderTypes();
+  themars->setIcon("common/object-icons/planet");
+  themars->setMedia("common-2d/planet-small/animation/inferno1");
   mars->addToParent(sol->getID());
   obman->addObject(mars);
   
@@ -558,6 +606,8 @@ void MiniSec::createGame(){
   oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   theacprime->setDefaultOrderTypes();
+  theacprime->setIcon("common/object-icons/planet");
+  theacprime->setMedia("common-2d/planet-small/animation/toxic1");
   acprime->addToParent(ac->getID());
   obman->addObject(acprime);
   
@@ -574,6 +624,8 @@ void MiniSec::createGame(){
   oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   thes1->setDefaultOrderTypes();
+  theac->setIcon("common/object-icons/planet");
+  theac->setMedia("common-2d/planet-small/animation/barren1");
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
  
@@ -593,16 +645,16 @@ void MiniSec::createGame(){
 
   Names* names;
   if(namesfile == ""){
-    names = new NamesSet(currandom);
+    names = new NamesSet(currandom, defaultSystemNames, false, "System");
   } else {
     std::ifstream* f = new std::ifstream(namesfile.c_str());
     if (f->fail()) {
       Logger::getLogger()->error("Could not open system names file %s", namesfile.c_str());
       delete f;
       // Fall back to the names set
-      names = new NamesSet(currandom);
+      names = new NamesSet(currandom, defaultSystemNames, false, "System");
     } else {
-      names = new NamesFile(new std::ifstream(namesfile.c_str()));
+      names = new NamesFile(new std::ifstream(namesfile.c_str()), "System");
     }
   }
 
@@ -780,7 +832,8 @@ void MiniSec::onPlayerAdded(Player* player){
     thestar->setPosition(Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
                               (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
                               /*(int64_t)(((rand() % 1000) - 500) * 10000000)*/ 0));
-    
+    thestar->setIcon("common/object-icons/system");
+    thestar->setMedia("common-2d/star-small/" + systemmedia->getName());
     star->addToParent(1);
     game->getObjectManager()->addObject(star);
     
@@ -798,7 +851,8 @@ void MiniSec::onPlayerAdded(Player* player){
     theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000)* 10),
                                                       (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
                                                       /*(int64_t)((rand() % 10000) - 5000)*/ 0));
-    
+    theplanet->setIcon("common/object-icons/planet");
+    theplanet->setMedia("common-2d/planet-small/animation/" + planetmedia->getName());
     OrderQueue *planetoq = new OrderQueue();
     planetoq->setObjectId(planet->getID());
     planetoq->addOwner(player->getID());
@@ -829,6 +883,8 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->setIcon("common/object-icons/ship");
+    thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
@@ -854,6 +910,8 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->setIcon("common/object-icons/ship");
+    thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
@@ -879,6 +937,8 @@ void MiniSec::onPlayerAdded(Player* player){
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->setIcon("common/object-icons/ship");
+    thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
     
     fleet->addToParent(star->getID());
@@ -920,6 +980,11 @@ void MiniSec::onPlayerAdded(Player* player){
   
   
 }
+
+Names* MiniSec::getFleetMediaNames() const{
+    return fleetmedia;
+}
+
 
 // Create a random star system
 IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* names)
@@ -965,6 +1030,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     thestar->setPosition( Vector3d( currandom->getInRange((int32_t)0, (int32_t)8000) * 1000000ll - 4000000000ll,
                                  currandom->getInRange((int32_t)0, (int32_t)8000) * 1000000ll - 4000000000ll,
                                  0ll));
+    thestar->setIcon("common/object-icons/system");
+    thestar->setMedia("common-2d/star-small/" + systemmedia->getName());
     star->addToParent( mw_galaxy->getID());
     obman->addObject( star);
 
@@ -994,7 +1061,8 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
         OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
         oqop->setQueueId(planetoq->getQueueId());
         theplanet->setDefaultOrderTypes();
-        
+        theplanet->setIcon("common/object-icons/planet");
+        theplanet->setMedia("common-2d/planet-small/animation/" + planetmedia->getName());
         planet->addToParent( star->getID());
         obman->addObject( planet);
         max_planets--;

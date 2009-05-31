@@ -1,6 +1,6 @@
 /*  Build object for BuildFleet orders
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include <tpserver/objecttypemanager.h>
 
 #include "planet.h"
+#include "minisec.h"
 
 #include "build.h"
 
@@ -209,6 +210,8 @@ bool Build::doOrder(IGObject *ob)
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
+    thefleet->setIcon("common/object-icons/ship");
+    thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + ((MiniSec*)(game->getRuleset()))->getFleetMediaNames()->getName());
     
     //set ship type
     std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
