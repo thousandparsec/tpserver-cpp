@@ -624,8 +624,8 @@ void MiniSec::createGame(){
   oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
   oqop->setQueueId(planetoq->getQueueId());
   thes1->setDefaultOrderTypes();
-  theac->setIcon("common/object-icons/planet");
-  theac->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
+  thes1->setIcon("common/object-icons/planet");
+  thes1->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
  
