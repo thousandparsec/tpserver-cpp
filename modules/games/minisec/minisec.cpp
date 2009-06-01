@@ -290,7 +290,7 @@ std::string MiniSec::getName(){
 }
 
 std::string MiniSec::getVersion(){
-  return "0.3";
+  return "0.4";
 }
 
 void MiniSec::initGame(){
