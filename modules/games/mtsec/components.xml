@@ -1,7 +1,7 @@
 <components>
 
 <comp>
-    <name>ScoutHull</name>
+    <name>Scout Hull</name>
     <description>The scout hull, fitted out with everything a scout needs</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -18,7 +18,7 @@
 
 
 <comp>
-    <name>BattleScoutHull</name>
+    <name>Battle Scout Hull</name>
     <description>The battle scout hull</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -47,7 +47,7 @@
 
 
 <comp>
-    <name>Cerium3Explosives</name>
+    <name>Cerium 3 Explosives</name>
     <description>A huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -72,7 +72,7 @@
 
 
 <comp>
-    <name>Cerium6Explosives</name>
+    <name>Cerium 6 Explosives</name>
     <description>A huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -97,7 +97,7 @@
 
 
 <comp>
-    <name>Cerium12Explosives</name>
+    <name>Cerium 12 Explosives</name>
     <description>A huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -122,7 +122,7 @@
 
 
 <comp>
-    <name>UraniumExplosives</name>
+    <name>Uranium Explosives</name>
     <description>Most basic nuclear explosive</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -147,7 +147,7 @@
 
 
 <comp>
-    <name>AntiparticleExplosives</name>
+    <name>Antiparticle Explosives</name>
     <description>An extremely expensive but hugely explosive particle and anit-particle explosive</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -172,7 +172,7 @@
 
 
 <comp>
-    <name>AntimatterExplosives</name>
+    <name>Antimatter Explosives</name>
     <description>An even more extremely expensive but insanely explosive antimatter-matter explosive</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -197,7 +197,7 @@
 
 
 <comp>
-    <name>ThoriumExplosives</name>
+    <name>Thorium Explosives</name>
     <description>A significantly cheaper but less explosive nuclear explosive</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -222,7 +222,7 @@
 
 
 <comp>
-    <name>AlphaMissileBay</name>
+    <name>Alpha Missile Bay</name>
     <description>An alpha missile bay, capable of firing one alpha missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -251,7 +251,7 @@
 
 
 <comp>
-    <name>BetaMissileBay</name>
+    <name>Beta Missile Bay</name>
     <description>A beta missile bay, capable of firing one beta missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -280,7 +280,7 @@
 
 
 <comp>
-    <name>GammaMissileBay</name>
+    <name>Gamma Missile Bay</name>
     <description>A gamma missile bay, capable of firing one gamma missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
@@ -309,7 +309,7 @@
 
 
 <comp>
-    <name>DeltaMissileBay</name>
+    <name>Delta Missile Bay</name>
     <description>A delta missile bay, capable of firing one delta missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
