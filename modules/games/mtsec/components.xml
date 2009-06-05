@@ -9,11 +9,12 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) (* 100 1000000))]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 2)]]></Armor>
-    <_num-components><![CDATA[(lambda (design) 1)]]></_num-components>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 100 1000000))]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 2)]]></Armor>
+    </propertylist>
 </comp>
 
 
@@ -28,20 +29,21 @@
                     (cons #f \A ship can only have one type of missile bay\)) 
                 (cons #f \A ship can only use one hull!\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) (* 75 1000000))]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 5)]]></Armor>
-    <!--  To determine the total firepower of the ship, we multiply the 
-          firepower of an individual missile bay by how many missile bays 
-          the ship has. 
-          To determine how many missile bays the ship can have, we divide 
-          the ship size by the missile size. -->
-    <Firepower><![CDATA[(lambda (design) (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design))]]></Firepower>
-    <HitPoints><![CDATA[(lambda (design) 100)]]></HitPoints>
-    <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
-    <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
-
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 75 1000000))]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 5)]]></Armor>
+        <!--  To determine the total firepower of the ship, we multiply the 
+              firepower of an individual missile bay by how many missile bays 
+              the ship has. 
+              To determine how many missile bays the ship can have, we divide 
+              the ship size by the missile size. -->
+        <Firepower><![CDATA[(lambda (design) (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design))]]></Firepower>
+        <HitPoints><![CDATA[(lambda (design) 100)]]></HitPoints>
+        <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+    </propertylist>
 </comp>
 
 
@@ -55,18 +57,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 3)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 8)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 3)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 8)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -80,18 +84,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 6)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 11)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 36)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 6)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 11)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 36)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -105,18 +111,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 12)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 55)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 156)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 12)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 55)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 156)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -130,18 +138,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 1)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 4)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 1)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 4)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -155,18 +165,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -180,18 +192,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -205,18 +219,20 @@
             (cons #t \\) 
             (cons #f \This is a complete component, nothing else can be included\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
-    <AmmoExplosiveness><![CDATA[(lambda (design) 0.5)]]></AmmoExplosiveness>
-    <!--  Ammo cost is (cost/size) * size. 
-          This is for one 'unit' of explosive - if a missile can fit two units, 
-          the cost for the missile bay is twice the AmmoCost property -->
-    <AmmoCost><![CDATA[(lambda (design) 1)]]></AmmoCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 0.5)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 1)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+    </propertylist>
 </comp>
 
 
@@ -232,20 +248,22 @@
                     (cons #f \Explosive is too large for alpha missiles\)) 
                 (cons #f \Missiles can only handle one type of explosive\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
-    <!--  To get the missile's firepower, we multiply the explosiveness of 
-          the material by how much material can fit in the warhead. 
-          How much material can fit in the warhead is the missile size divided 
-          by the ammo size. -->
-    <MissileFirepower><![CDATA[(lambda (design)(* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
-    <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
-    <MissileCost><![CDATA[(lambda (design) (* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
+        <!--  To get the missile's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the missile size divided 
+              by the ammo size. -->
+        <MissileFirepower><![CDATA[(lambda (design)(* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
+        <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
+        <MissileCost><![CDATA[(lambda (design) (* (floor (/ 3 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
 </comp>
 
 
@@ -261,20 +279,22 @@
                     (cons #f \Explosive is too large for beta missiles\)) 
                 (cons #f \Missiles can only handle one type of explosive\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
-    <!--  To get the missile's firepower, we multiply the explosiveness of 
-          the material by how much material can fit in the warhead. 
-          How much material can fit in the warhead is the missile size divided 
-          by the ammo size. -->
-    <MissileFirepower><![CDATA[(lambda (design)(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
-    <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
-    <MissileCost><![CDATA[(lambda (design)(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
+        <!--  To get the missile's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the missile size divided 
+              by the ammo size. -->
+        <MissileFirepower><![CDATA[(lambda (design)(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
+        <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
+        <MissileCost><![CDATA[(lambda (design)(* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
 </comp>
 
 
@@ -290,20 +310,22 @@
                     (cons #f \Explosive is too large for gamma missiles\)) 
                 (cons #f \Missiles can only handle one type of explosive\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
-    <!--  To get the missile's firepower, we multiply the explosiveness of 
-          the material by how much material can fit in the warhead. 
-          How much material can fit in the warhead is the missile size divided 
-          by the ammo size. -->
-    <MissileFirepower><![CDATA[(lambda (design) (* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
-    <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
-    <MissileCost><![CDATA[(lambda (design) (* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
+        <!--  To get the missile's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the missile size divided 
+              by the ammo size. -->
+        <MissileFirepower><![CDATA[(lambda (design) (* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
+        <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
+        <MissileCost><![CDATA[(lambda (design) (* (floor (/ 8 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
 </comp>
 
 
@@ -319,20 +341,22 @@
                     (cons #f \Explosive is too large for gamma missiles\)) 
                 (cons #f \Missiles can only handle one type of explosive\)))]]>
     </tpclRequirementsFunction>
-    <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-    <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
-    <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-    <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-    <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
-    <!--  To get the missile's firepower, we multiply the explosiveness of 
-          the material by how much material can fit in the warhead. 
-          How much material can fit in the warhead is the missile size divided 
-          by the ammo size. -->
-    <MissileFirepower><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
-    <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
-    <MissileCost><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
-    <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-    <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+        <!--  To get the missile's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the missile size divided 
+              by the ammo size. -->
+        <MissileFirepower><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
+        <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
+        <MissileCost><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
 </comp>
 
 </components>
