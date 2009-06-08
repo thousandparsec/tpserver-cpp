@@ -1,6 +1,6 @@
 /*  Universe object
  *
- *  Copyright (C) 2003-2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2003-2004, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ ObjectBehaviour* UniverseType::createObjectBehaviour() const{
   return new Universe();
 }
 
+const uint32_t Universe::AGEGRPID = 3;
+const uint32_t Universe::AGEPARAMID = 1;
+
 Universe::Universe(){
 }
 
@@ -50,11 +53,11 @@ Universe::~Universe(){
 
 
 void Universe::packExtraData(Frame * frame){
-  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue());
+  frame->packInt(((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->getValue());
 }
 
 void Universe::doOnceATurn(){
-  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue() + 1);
+  ((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->setValue(((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->getValue() + 1);
   obj->touchModTime();
 }
 
@@ -64,10 +67,10 @@ int Universe::getContainerType(){
 
 
 void Universe::setYear(int nyear){
-  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(nyear);
+  ((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->setValue(nyear);
   obj->touchModTime();
 }
 
 int Universe::getYear(){
-  return ((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue();
+  return ((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->getValue();
 }

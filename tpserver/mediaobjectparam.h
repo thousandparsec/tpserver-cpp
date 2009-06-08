@@ -1,8 +1,8 @@
-#ifndef UNIVERSE_H
-#define UNIVERSE_H
-/*  Universe ObjectData class
+#ifndef MEDIAOBJECTPARAM_H
+#define MEDIAOBJECTPARAM_H
+/*  MediaObjectParam class
  *
- *  Copyright (C) 2004, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,35 +20,27 @@
  *
  */
 
-#include "spaceobject.h"
+#include <stdint.h>
+#include <string>
 
-class UniverseType : public SpaceObjectType{
-  public:
-    UniverseType();
-    virtual ~UniverseType();
+#include <tpserver/objectparameter.h>
+
+class MediaObjectParam : public ObjectParameter{
+
+public:
+  MediaObjectParam();
+  virtual ~MediaObjectParam();
+
+  virtual void packObjectFrame(Frame * f, uint32_t objID);
+  virtual bool unpackModifyObjectFrame(Frame * f, uint32_t playerid);
+
+  virtual ObjectParameter *clone() const;
   
-  protected:
-    ObjectBehaviour* createObjectBehaviour() const;
-};
+  std::string getMediaUrl() const;
+  void setMediaUrl(const std::string& ns);
 
-class Universe:public SpaceObject {
-      public:
-	Universe();
-        virtual ~Universe();
-        
-
-	void packExtraData(Frame * frame);
-
-	void doOnceATurn();
-
-	int getContainerType();
-
-	void setYear(int year);
-	int getYear();
-
-    private:
-        static const uint32_t AGEGRPID;
-        static const uint32_t AGEPARAMID;
+protected:
+  std::string murl;
 
 };
 

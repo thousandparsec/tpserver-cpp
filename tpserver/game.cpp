@@ -431,7 +431,7 @@ void Game::packGameInfoFrame(Frame* frame){
   if(!settings->get("game_media_base").empty()){
     frame->packString(settings->get("game_media_base"));
   }else{
-    frame->packString("http://darcs.thousandparsec.net/repos/media/client/");
+    frame->packString("http://svn.thousandparsec.net/svn/media/client/");
   }
   
 }

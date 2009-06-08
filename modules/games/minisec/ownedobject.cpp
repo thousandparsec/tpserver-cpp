@@ -1,6 +1,6 @@
 /*  Fleet object
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,6 +53,11 @@ OwnedObjectType::OwnedObjectType():SpaceObjectType(){
 OwnedObjectType::~OwnedObjectType(){
 }
 
+const uint32_t OwnedObject::OWNERGRPID = 3;
+const uint32_t OwnedObject::OWNERPARAMID = 1;
+const uint32_t OwnedObject::ORDERGRPID = 4;
+const uint32_t OwnedObject::ORDERQPARAMID = 1;
+
 OwnedObject::OwnedObject():SpaceObject(){
 }
 
@@ -60,11 +65,11 @@ OwnedObject::~OwnedObject(){
 }
 
 uint32_t OwnedObject::getOwner() const{
-  return ((ReferenceObjectParam*)(obj->getParameter(2,1)))->getReferencedId();
+  return ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)))->getReferencedId();
 }
 
 void OwnedObject::setOwner(uint32_t no){
-  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferencedId(no);
+  ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)))->setReferencedId(no);
   obj->touchModTime();
 }
 
@@ -73,7 +78,7 @@ void OwnedObject::setOwner(uint32_t no){
 void OwnedObject::packExtraData(Frame * frame){
   SpaceObject::packExtraData(frame);
   
-  ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
+  ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)));
   frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
 
 }
@@ -81,7 +86,7 @@ void OwnedObject::packExtraData(Frame * frame){
 
 void OwnedObject::setupObject(){
   ObjectBehaviour::setupObject();
-  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
+  ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)))->setReferenceType(rst_Player);
   //something about the orderqueue?
 }
 

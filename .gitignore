@@ -31,3 +31,4 @@ debian/*
 build-stamp
 shave
 shave-libtool
+docs/
