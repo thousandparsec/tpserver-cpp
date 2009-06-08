@@ -7,6 +7,7 @@
         <description>Thousand Parsec server in C++.</description>
         <commandstring>tpserver-cpp</commandstring>
         <cwd>tpserver</cwd>
+		<started>Started network</started>
         <forced>-v</forced>
         <forced>--configure /dev/null</forced>
         <forced>--ruleset ../modules/games/%(rname)s/.libs/lib%(rname)s</forced>
