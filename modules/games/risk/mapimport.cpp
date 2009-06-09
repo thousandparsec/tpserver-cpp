@@ -24,7 +24,7 @@
 #include <tpserver/logging.h>
 
 //XML related function
-#include "tinyxml.h"
+#include <tpserver/tinyxml/tinyxml.h>
 #include "mapimport.h"
 
 //Map creation
