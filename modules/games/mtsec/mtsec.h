@@ -55,23 +55,6 @@ class MTSec : public Ruleset{
   void createNumHullsProp();
 
 
-  // Component definition methods
-  void createScoutHullComp();
-  void createBattleScoutHullComp();
-  void createCeriumAmmoComp();
-  void createCerium3AmmoComp();
-  void createCerium6AmmoComp();
-  void createCerium12AmmoComp();
-  void createUraniumAmmoComp();
-  void createAntiparticleAmmoComp();
-  void createAntimatterAmmoComp();
-  void createThoriumAmmoComp();
-  void createAlphaMissileBayComp();
-  void createBetaMissileBayComp();
-  void createGammaMissileBayComp();
-  void createDeltaMissileBayComp();
-
-
   // Design definition methods
   Design* createScoutDesign( Player* owner);
   Design* createBattleScoutDesign( Player* owner);
@@ -100,6 +83,7 @@ class MTSec : public Ruleset{
  private:
   std::map<std::string,uint32_t>  propertyIndex;
   uint32_t compMax;
+  std::string importFile;
 
 };
 

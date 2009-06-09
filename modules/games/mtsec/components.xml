@@ -329,17 +329,15 @@
     </propertylist>
 </comp>
 
-
-
 <comp>
     <name>Delta Missile Bay</name>
     <description>A delta missile bay, capable of firing one delta missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[
         (lambda (design) 
-            (if (= (designType.num-ammo design) 1) 
-                (if (< (designType.AmmoSize design) 13) 
-                    (cons #t \\) 
-                    (cons #f \Explosive is too large for gamma missiles\)) 
+        (if (= (designType.num-ammo design) 1) 
+        (if (< (designType.AmmoSize design) 13) 
+                (cons #t \\) 
+                (cons #f \Explosive is too large for gamma missiles\)) 
                 (cons #f \Missiles can only handle one type of explosive\)))]]>
     </tpclRequirementsFunction>
     <propertylist>
@@ -349,9 +347,9 @@
         <Armor><![CDATA[(lambda (design) 0)]]></Armor>
         <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
         <!--  To get the missile's firepower, we multiply the explosiveness of 
-              the material by how much material can fit in the warhead. 
-              How much material can fit in the warhead is the missile size divided 
-              by the ammo size. -->
+                the material by how much material can fit in the warhead. 
+                How much material can fit in the warhead is the missile size divided 
+                by the ammo size. -->
         <MissileFirepower><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design))]]></MissileFirepower>
         <!--  Missile bay Cost is ammo cost times how much material can fit in the warhead -->
         <MissileCost><![CDATA[(lambda (design) (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design))]]></MissileCost>
@@ -359,5 +357,6 @@
         <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
     </propertylist>
 </comp>
+
 
 </components>

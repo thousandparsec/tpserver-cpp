@@ -6,6 +6,12 @@
             <longname>MTSec</longname>
             <version>0.0</version>
             <description>The second milestone game. It is designed to both be a fun game and to exercise the design capabilities of the framework.</description>
+      <parameter name="components" type="F">
+        <longname>Components</longname>
+        <description>Components file to load.</description>
+        <default />
+        <commandstring>--components_file %s</commandstring>
+      </parameter>
         </ruleset>
     </server>
 </tpconfig>
