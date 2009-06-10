@@ -27,44 +27,99 @@
 class Message;
 class Frame;
 
-class Board{
+/**
+ * Board for posting messages
+ */
+class Board {
 
- public:
-  Board();
-  ~Board();
+  public:
+    /**
+     * Default constructor
+     *
+     * Sets modification time to now, and number of messages and boardid 
+     * to zero.
+     */
+    Board();
 
-  void setBoardID(int i);
-  int getBoardID();
+    /// Sets board ID and updates modification time
+    void setBoardID(int i);
+    /// Returns board ID
+    int getBoardID();
 
-  void setName(const std::string & nname);
-  std::string getName();
+    /// Sets board name and updates modification time
+    void setName(const std::string & nname);
+    /// Returns board name
+    std::string getName();
 
-  void setDescription(const std::string & ndest);
-  std::string getDescription();
-  
-  void addMessage(Message* msg, int pos);
-  bool removeMessage(uint32_t pos);
+    /// Sets board description and updates modification time
+    void setDescription(const std::string & ndest);
+    /// Returns board description
+    std::string getDescription();
 
+    /**
+     * Adds a message at given position
+     *
+     * Passing -1 as position will result in adding a message on top of
+     * the board.
+     *
+     * If message is succesfully added modification time is updated and
+     * board is updated.
+     */
+    void addMessage(Message* msg, int pos);
 
-  void packBoard(Frame * frame);
-  void packMessage(Frame * frame, uint32_t msgnum);
+    /**
+     * Removes message at given position
+     *
+     * @param pos valid message position
+     * @returns true if message has been successfuly removed, false otherwise
+     */
+    bool removeMessage(uint32_t pos);
 
-        int64_t getModTime() const;
+    /**
+     * Packs board information into a frame.
+     */
+    void packBoard(Frame * frame);
 
-    // for persistence only
+    /**
+     * Packs the requested message into the frame
+     */
+    void packMessage(Frame * frame, uint32_t msgnum);
+
+    /**
+     * Returns last modification time
+     */
+    int64_t getModTime() const;
+
+    /**
+     * Get count of messages on board
+     */
     uint32_t getNumMessages() const;
+
+    /**
+     * Sets the number of messages on board
+     *
+     * @warning should be used ONLY by the persistence module
+     */
     void setNumMessages(uint32_t nnm);
+    
+    /**
+     * Sets the modification time
+     *
+     * @warning should be used ONLY by the persistence module
+     */
     void setModTime(uint64_t nmt);
 
- private:
-    uint32_t nummsg;
-
-  int boardid;
-  std::string name;
-  std::string description;
-
-  int64_t modtime;
-
+  private:
+    /// Count of messages on the board
+    uint32_t message_count;
+    /// Board identification number
+    int boardid;
+    /// Board name
+    std::string name;
+    /// Board description
+    std::string description;
+    /// Last modification time
+    int64_t mod_time;
 };
 
 #endif

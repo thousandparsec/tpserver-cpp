@@ -26,65 +26,63 @@
 
 #include "board.h"
 
-Board::Board(){
-  modtime = time(NULL);
-    nummsg = 0;
+Board::Board() {
+  mod_time = time(NULL);
+  message_count = 0;
+  boardid = 0;
 }
 
-Board::~Board(){
-}
-
-void Board::setBoardID(int i){
+void Board::setBoardID(int i) {
   boardid = i;
-  modtime = time(NULL);
+  mod_time = time(NULL);
 }
 
-int Board::getBoardID(){
+int Board::getBoardID() {
   return boardid;
 }
 
-void Board::setName(const std::string & nname){
+void Board::setName(const std::string & nname) {
   name = nname;
-  modtime = time(NULL);
+  mod_time = time(NULL);
 }
 
 std::string Board::getName(){
   return name;
 }
 
-void Board::setDescription(const std::string & ndest){
+void Board::setDescription(const std::string & ndest) {
   description = ndest;
-  modtime = time(NULL);
+  mod_time = time(NULL);
 }
 
-std::string Board::getDescription(){
+std::string Board::getDescription() {
   return description;
 }
 
-void Board::addMessage(Message * msg, int pos){
-    bool success = false;
-  if(pos == -1){
-        if(Game::getGame()->getBoardManager()->addMessage(msg, this, nummsg)){
-            success = true;
-        }
-  }else{
-        if(Game::getGame()->getBoardManager()->addMessage(msg, this, pos)){
-            success = true;
-        }
-  }
-    if(success){
-        modtime = time(NULL);
-        Game::getGame()->getBoardManager()->updateBoard(boardid);
+void Board::addMessage(Message * msg, int pos) {
+  bool success = false;
+  if (pos == -1) {
+    if (Game::getGame()->getBoardManager()->addMessage(msg, this, message_count)) {
+      success = true;
     }
+  } else {
+    if (Game::getGame()->getBoardManager()->addMessage(msg, this, pos)) {
+      success = true;
+    }
+  }
+  if (success) {
+    mod_time = time(NULL);
+    Game::getGame()->getBoardManager()->updateBoard(boardid);
+  }
 }
 
 bool Board::removeMessage(uint32_t pos){
-  if(pos >= nummsg || pos < 0){
+  if (pos >= message_count || pos < 0) {
     return false;
   }
-    Game::getGame()->getBoardManager()->removeMessage(this, pos);
-  modtime = time(NULL);
-    Game::getGame()->getBoardManager()->updateBoard(boardid);
+  Game::getGame()->getBoardManager()->removeMessage(this, pos);
+  mod_time = time(NULL);
+  Game::getGame()->getBoardManager()->updateBoard(boardid);
   return true;
 }
 
@@ -93,40 +91,40 @@ void Board::packBoard(Frame * frame){
   frame->packInt(boardid);
   frame->packString(name.c_str());
   frame->packString(description.c_str());
-  frame->packInt(nummsg);
-  frame->packInt64(modtime);
+  frame->packInt(message_count);
+  frame->packInt64(mod_time);
 }
 
 void Board::packMessage(Frame * frame, uint32_t msgnum){
-    if(msgnum < nummsg){
-        Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
-        if(message != NULL){
-            frame->setType(ft02_Message);
-            frame->packInt(boardid);
-            frame->packInt(msgnum);
-            message->pack(frame);
-        }else{
-            frame->createFailFrame(fec_TempUnavailable, "Could not get Message at this time");
-            Logger::getLogger()->warning("Board has messages but persistence didn't get it");
-            Logger::getLogger()->warning("POSSIBLE DATABASE INCONSISTANCE");
-        }
-  }else{
+  if (msgnum < message_count) {
+    Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
+    if (message != NULL) {
+      frame->setType(ft02_Message);
+      frame->packInt(boardid);
+      frame->packInt(msgnum);
+      message->pack(frame);
+    } else {
+      frame->createFailFrame(fec_TempUnavailable, "Could not get Message at this time");
+      Logger::getLogger()->warning("Board has messages but persistence didn't get it");
+      Logger::getLogger()->warning("POSSIBLE DATABASE INCONSISTANCE");
+    }
+  } else {
     frame->createFailFrame(fec_NonExistant, "No such Message on board");
   }
 }
 
 int64_t Board::getModTime() const{
-    return modtime;
+  return mod_time;
 }
 
 uint32_t Board::getNumMessages() const{
-    return nummsg;
+  return message_count;
 }
 
 void Board::setNumMessages(uint32_t nnm){
-    nummsg = nnm;
+  message_count = nnm;
 }
 
 void Board::setModTime(uint64_t nmt){
-    modtime = nmt;
+  mod_time = nmt;
 }
