@@ -60,17 +60,8 @@ std::string Board::getDescription() {
 }
 
 void Board::addMessage(Message * msg, int pos) {
-  bool success = false;
-  if (pos == -1) {
-    if (Game::getGame()->getBoardManager()->addMessage(msg, this, message_count)) {
-      success = true;
-    }
-  } else {
-    if (Game::getGame()->getBoardManager()->addMessage(msg, this, pos)) {
-      success = true;
-    }
-  }
-  if (success) {
+  if (pos == -1) pos = message_count;
+  if (Game::getGame()->getBoardManager()->addMessage(msg, this, pos)) {
     mod_time = time(NULL);
     Game::getGame()->getBoardManager()->updateBoard(boardid);
   }
