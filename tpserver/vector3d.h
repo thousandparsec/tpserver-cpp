@@ -24,40 +24,138 @@
 
 class Frame;
 
-class Vector3d{
+/**
+ * 3D Vector implementation based on 64-bit integers
+ */
+class Vector3d {
+  public:
+    /**
+     * Default constructor
+     *
+     * Sets all values to zero.
+     */
+    Vector3d();
 
- public:
-  Vector3d();
-  Vector3d(const Vector3d & rhs);
-  Vector3d(int64_t x, int64_t y, int64_t z);
+    /**
+     * Copy constructor
+     */
+    Vector3d(const Vector3d & rhs);
 
-  Vector3d operator=(const Vector3d & rhs);
-  Vector3d operator+(const Vector3d & rhs) const;
-  Vector3d operator-(const Vector3d & rhs) const;
-  Vector3d operator*(int64_t val) const;
-  bool operator==(const Vector3d &rhs) const;
-  bool operator!=(const Vector3d &rhs) const;
-  Vector3d makeLength(int64_t length) const;
+    /**
+     * Explicit value constructor
+     */
+    Vector3d(int64_t x, int64_t y, int64_t z);
 
-  int64_t getX() const;
-  int64_t getY() const;
-  int64_t getZ() const;
+    /**
+     * Assignment operator
+     */
+    Vector3d operator=(const Vector3d & rhs);
 
-  void setAll(int64_t newx, int64_t newy, int64_t newz);
+    /**
+     * Addition operator
+     */
+    Vector3d operator+(const Vector3d & rhs) const;
 
-  uint64_t getDistance(const Vector3d & origin) const;
-  double getDistanceSq(const Vector3d & origin) const;
+    /**
+     * Subtraction operator
+     */
+    Vector3d operator-(const Vector3d & rhs) const;
 
-  void pack(Frame * frame) const;
-  void unpack(Frame * frame);
+    /**
+     * Scalar multiplication operator
+     */
+    Vector3d operator*(int64_t val) const;
 
- private:
-  int64_t x;
-  int64_t y;
-  int64_t z;
-  
+    /**
+     * Equality operator
+     */
+    bool operator==(const Vector3d &rhs) const;
 
+    /**
+     * In-equality operator
+     */
+    bool operator!=(const Vector3d &rhs) const;
 
+    /**
+     * Returns the length of the vector
+     *
+     * @warning The result is truncated to a integral value.
+     */
+    uint64_t getLength() const;
+
+    /**
+     * Returns the length of the vector, squared
+     */
+    double getLengthSq() const;
+
+    /**
+     * Passed length vector creation
+     *
+     * Creates a vector with the same direction but length
+     * as passed.
+     *
+     * @warning Function will assert fail if vector is of length zero.
+     *
+     * @param length the desired length of the vector
+     * @returns Vector with the same direction as this but with the passed 
+     *          length
+     */
+    Vector3d makeLength(int64_t length) const;
+
+    /**
+     * Returns the X component of the vector
+     */
+    int64_t getX() const;
+
+    /**
+     * Returns the Y component of the vector
+     */
+    int64_t getY() const;
+
+    /**
+     * Returns the Z component of the vector
+     */
+    int64_t getZ() const;
+
+    /**
+     * Sets the x, y and z components to the passed values.
+     */
+    void setAll(int64_t newx, int64_t newy, int64_t newz);
+
+    /**
+     * Calculates the distance between two points
+     *
+     * @warning the result is typecasted to a integer value
+     * @returns distance to passed parameter
+     */
+    uint64_t getDistance(const Vector3d & origin) const;
+
+    /**
+     * Calculates the distance between two points, squared
+     *
+     * @returns distance to passed parameter, squared
+     */
+    double getDistanceSq(const Vector3d & origin) const;
+
+    /**
+     * Pack the vector into the passed frame.
+     */
+    void pack(Frame * frame) const;
+
+    /**
+     * Unpack the vector from the passed frame.
+     */
+    void unpack(Frame * frame);
+
+  private:
+    /// X-component value
+    int64_t x;
+
+    /// Y-component value
+    int64_t y;
+
+    /// Z-component value
+    int64_t z;
 };
 
 

@@ -81,14 +81,19 @@ bool Vector3d::operator!=(const Vector3d &rhs) const{
   return !(operator==(rhs));
 }
 
+uint64_t Vector3d::getLength() const {
+  return (uint64_t) sqrt( getLengthSq() );
+}
+
+double Vector3d::getLengthSq() const {
+  return ((double)x * (double)x) + ((double)y * (double)y) + ((double)z * (double)z);
+}
+
 Vector3d Vector3d::makeLength(int64_t length) const{
-  Vector3d rtn;
-  double len = sqrt(((double)x * (double)x) + ((double)y * (double)y) + ((double)z * (double)z));
-  assert(len > 0);
-  rtn.x = (int64_t)((double)x * (double)length / len);
-  rtn.y = (int64_t)((double)y * (double)length / len);
-  rtn.z = (int64_t)((double)z * (double)length / len);
-  return rtn;
+  double thisLength = sqrt(getLengthSq());
+  assert(thisLength > 0);
+  double scale = length / thisLength;
+  return *this * scale;
 }
 
 int64_t Vector3d::getX() const{
@@ -114,10 +119,8 @@ uint64_t Vector3d::getDistance(const Vector3d & origin) const{
 }
 
 double Vector3d::getDistanceSq(const Vector3d & origin) const{
-  double dx = (double)x - (double)origin.x;
-  double dy = (double)y - (double)origin.y;
-  double dz = (double)z - (double)origin.z;
-  return ((dx * dx) + (dy * dy) + (dz * dz));
+  Vector3d diff( *this - origin );
+  return diff.getLengthSq();
 }
 
 void Vector3d::pack(Frame * frame) const{
