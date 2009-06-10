@@ -27,33 +27,80 @@
 
 class Frame;
 
-class Message{
+/**
+ * Class representing a readable message posted on message boards in TP
+ *
+ * A message consists of a subject, body, turn number and references.
+ */
+class Message {
+  public:
+    /// Type definition for a single reference
+    typedef std::pair<RefSysType, uint32_t> Ref;
+    
+    /// Type definition for a set of references
+    typedef std::set<Ref> References;
 
- public:
-  Message();
+  public:
+    /**
+     * Default constructor
+     *
+     * Sets the turn number to current game turn.
+     */
+    Message();
+
+    /**
+     * Copy constructor
+     */
     Message(const Message& rhs);
 
-  int getTurn();
+    /// Returns the stored turn value
+    int getTurn();
+
+    /// Sets the stored turn value
     void setTurn(uint32_t nt);
 
-  void setSubject(const std::string &nsub);
-  std::string getSubject();
-  
-  void setBody(const std::string &nbody);
-  std::string getBody();
+    /// Sets the subject
+    void setSubject(const std::string &nsub);
 
-  void addReference(int type, uint32_t value);
-    std::set<std::pair<int, uint32_t> > getReferences() const;
+    /// Returns the subject
+    std::string getSubject();
 
-  void pack(Frame * frame);
+    /// Sets the message body
+    void setBody(const std::string &nbody);
 
- private:
-  std::string subject;
-  std::string body;
-  int turnnum;
-  
-  std::set<std::pair<int, uint32_t> > references;
+    /// Returns the message body
+    std::string getBody();
 
+    /**
+     * Adds a new reference to the stored references.
+     *
+     * @param type Reference type (RefSysType)
+     * @param value Reference value
+     */
+    void addReference(RefSysType type, uint32_t value);
+
+    /**
+     * Returns the reference set
+     */
+    References getReferences() const;
+
+    /**
+     * Packs the Message into a frame
+     */
+    void pack(Frame * frame);
+
+  private:
+    /// Message subject
+    std::string subject;
+
+    /// Message body
+    std::string body;
+
+    /// Turn number when the message was posted
+    int turn_number;
+
+    /// Message references
+    References references;
 };
 
 #endif

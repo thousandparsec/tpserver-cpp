@@ -1819,11 +1819,11 @@ bool MysqlPersistence::saveMessage(uint32_t msgid, Message* msg){
         return false;
     }
     unlock();
-    std::set<std::pair<int32_t, uint32_t> > refs = msg->getReferences();
+    Message::References refs = msg->getReferences();
     if(!refs.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO messagereference VALUES ";
-        for(std::set<std::pair<int32_t, uint32_t> >::iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
+        for(Message::References::iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
             if(itcurr != refs.begin())
                 querybuilder << ", ";
             querybuilder << "(" << msgid << ", " << (*itcurr).first << ", " << (*itcurr).second << ")";
@@ -1887,7 +1887,7 @@ Message* MysqlPersistence::retrieveMessage(uint32_t msgid){
     unlock();
     
     while((row = mysql_fetch_row(msgresult)) != NULL){
-        msg->addReference(atoi(row[0]), atoi(row[1]));
+        msg->addReference((RefSysType)atoi(row[0]), atoi(row[1]));
     }
     mysql_free_result(msgresult);
     

@@ -1052,7 +1052,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
             for(uint32_t i = 0; i < numrefs; i++){
                 int32_t rtype = frame->unpackInt();
                 uint32_t rid = frame->unpackInt();
-                msg->addReference(rtype, rid);
+                msg->addReference((RefSysType)rtype, rid);
             }
         }
     currboard->addMessage(msg, pos);

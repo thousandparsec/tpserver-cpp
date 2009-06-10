@@ -23,61 +23,62 @@
 
 #include "message.h"
 
-Message::Message(){
-  turnnum = Game::getGame()->getTurnNumber();
+Message::Message() {
+  turn_number = Game::getGame()->getTurnNumber();
 }
 
-Message::Message(const Message& rhs) : subject(rhs.subject), body(rhs.body), turnnum(rhs.turnnum),
-        references(rhs.references){
+Message::Message(const Message& rhs) 
+  : subject(rhs.subject), body(rhs.body), turn_number(rhs.turn_number), references(rhs.references) {
 }
 
-int Message::getTurn(){
-  return turnnum;
+int Message::getTurn() {
+  return turn_number;
 }
 
-void Message::setTurn(uint32_t nt){
-    turnnum = nt;
+void Message::setTurn(uint32_t nt) {
+  turn_number = nt;
 }
 
-void Message::setSubject(const std::string & nsub){
+void Message::setSubject(const std::string & nsub) {
   subject = nsub;
 }
 
-std::string Message::getSubject(){
+std::string Message::getSubject() {
   return subject;
 }
 
-void Message::setBody(const std::string & nbody){
+void Message::setBody(const std::string & nbody) {
   body = nbody;
 }
 
-std::string Message::getBody(){
+std::string Message::getBody() {
   return body;
 }
 
-void Message::addReference(int type, uint32_t value){
-  references.insert(std::pair<int, uint32_t>(type, value));
+void Message::addReference(RefSysType type, uint32_t value) {
+  references.insert( Ref(type, value) );
 }
 
-std::set<std::pair<int, uint32_t> > Message::getReferences() const{
-    return references;
+Message::References Message::getReferences() const {
+  return references;
 }
 
-void Message::pack(Frame * frame){
-    if(frame->getVersion() == fv0_2){
-        frame->packInt(1);
-        frame->packInt(0);
-    }else{
-        frame->packInt(0);
-    }
+void Message::pack(Frame * frame) {
+  if (frame->getVersion() == fv0_2) {
+    frame->packInt(1);
+    frame->packInt(0);
+  } else {
+    frame->packInt(0);
+  }
   frame->packString(subject.c_str());
   frame->packString(body.c_str());
-    if(frame->getVersion() > fv0_2){
-  frame->packInt(turnnum);
-  frame->packInt(references.size());
-  for(std::set<std::pair<int, uint32_t> >::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr){
-    frame->packInt((*itcurr).first);
-    frame->packInt((*itcurr).second);
-  }
+  if (frame->getVersion() > fv0_2) {
+    frame->packInt(turn_number);
+    frame->packInt(references.size());
+    for (References::iterator itcurr = references.begin(); itcurr != references.end(); ++itcurr) {
+      frame->packInt((*itcurr).first);
+      frame->packInt((*itcurr).second);
     }
+  }
 }
+
