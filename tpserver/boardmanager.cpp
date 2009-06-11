@@ -75,6 +75,11 @@ void BoardManager::updateBoard(uint32_t id) {
   Game::getGame()->getPersistence()->updateBoard(boards[id]);
 }
 
+void BoardManager::postToBoard(Message* msg, uint32_t boardid) {
+  Board* board = getBoard(boardid);
+  board->addMessage(msg,-1);
+}
+
 bool BoardManager::addMessage(Message* msg, Board* board, uint32_t pos){
   uint32_t msgid = nextmid++;
   uint32_t boardid = board->getBoardID();

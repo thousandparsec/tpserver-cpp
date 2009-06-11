@@ -63,6 +63,11 @@ public:
      */
     void updateBoard(uint32_t id);
 
+    /**
+     * Posts message to top of passed board, by boardid.
+     */
+    void postToBoard(Message* msg, uint32_t boardid);
+
     // these methods *only* used by Board
     bool addMessage(Message* msg, Board* board, uint32_t pos);
     bool removeMessage(Board* board, uint32_t pos);
