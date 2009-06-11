@@ -26,18 +26,42 @@
 class Board;
 class Message;
 
+/**
+ * Manager class for boards and messages
+ */
 class BoardManager{
 public:
+    /**
+     * Default constructor
+     */
     BoardManager();
-    ~BoardManager();
 
+    /**
+     * Initializes the board manager
+     *
+     * Prepares board data.
+     */
     void init();
 
+    /** 
+     * Creates a new board
+     *
+     * @param name Board name
+     * @param desc Board description
+     *
+     * @returns Pointer to newly created board
+     */
     Board* createNewBoard(const std::string &name, const std::string &desc);
-    Board* getBoard(uint32_t id);
-    void updateBoard(uint32_t id);
 
-    std::set<uint32_t> getAllBoardIds();
+    /**
+     * Returns board by ID
+     */
+    Board* getBoard(uint32_t id);
+
+    /**
+     * Update board by ID
+     */
+    void updateBoard(uint32_t id);
 
     // these methods *only* used by Board
     bool addMessage(Message* msg, Board* board, uint32_t pos);
@@ -45,11 +69,18 @@ public:
     Message* getMessage(Board* board, uint32_t pos);
 
 private:
-    std::map<uint32_t, Board*> boards;
+    typedef std::map<uint32_t, Board*>   BoardMap;
+    typedef std::map<uint32_t, Message*> MessageMap;
+    typedef std::list<uint32_t>          IdList;
+    typedef std::map<uint32_t, IdList>   BoardMessages;
+    
+    BoardMap boards;
+    MessageMap messagecache;
+    
     uint32_t nextbid;
     uint32_t nextmid;
-    std::map<uint32_t, Message*> messagecache;
-    std::map<uint32_t, std::list<uint32_t> > boardmessages;
+    
+    BoardMessages boardmessages;
 };
 
 #endif

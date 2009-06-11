@@ -27,132 +27,128 @@
 
 #include "boardmanager.h"
 
-BoardManager::BoardManager(){
-    nextbid = 1;
-    nextmid = 1;
+BoardManager::BoardManager() 
+  : nextbid(1), nextmid(1) {
 }
 
-BoardManager::~BoardManager(){
 
+void BoardManager::init() {
+  Persistence* persist = Game::getGame()->getPersistence();
+  nextbid = persist->getMaxBoardId() + 1;
+  nextmid = persist->getMaxMessageId() + 1;
+  std::set<uint32_t> bidset(persist->getBoardIds());
+
+  for(std::set<uint32_t>::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
+    boards[*itcurr] = NULL;
+    boardmessages[*itcurr] = IdList();
+  }
 }
 
-void BoardManager::init(){
-    Persistence* persist = Game::getGame()->getPersistence();
-    nextbid = persist->getMaxBoardId() + 1;
-    nextmid = persist->getMaxMessageId() + 1;
-    std::set<uint32_t> bidset(persist->getBoardIds());
-    for(std::set<uint32_t>::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr){
-        boards[*itcurr] = NULL;
-        boardmessages[*itcurr] = std::list<uint32_t>();
-    }
+Board* BoardManager::createNewBoard(const std::string &name, const std::string &desc) {
+  Board *rtn = new Board();
+
+  rtn->setBoardID(nextbid++);
+  rtn->setName(name);
+  rtn->setDescription(desc);
+
+  boards[rtn->getBoardID()] = (rtn);
+  boardmessages[rtn->getBoardID()] = IdList();
+  Game::getGame()->getPersistence()->saveBoard(rtn);
+
+  return rtn;
 }
 
-Board* BoardManager::createNewBoard(const std::string &name, const std::string &desc){
-    Board *rtn = NULL;
-    rtn = new Board();
-    rtn->setBoardID(nextbid++);
-    rtn->setName(name);
-    rtn->setDescription(desc);
-
-    boards[rtn->getBoardID()] = (rtn);
-    boardmessages[rtn->getBoardID()] = std::list<uint32_t>();
-    Game::getGame()->getPersistence()->saveBoard(rtn);
-
-    return rtn;
+Board* BoardManager::getBoard(uint32_t id) {
+  Board* rtn = NULL;
+  BoardMap::iterator pl = boards.find(id);
+  if (pl != boards.end()) {
+    rtn = (*pl).second;
+  }
+  if (rtn == NULL) {
+    rtn = Game::getGame()->getPersistence()->retrieveBoard(id);
+    boards[id] = rtn;
+  }
+  return rtn;
 }
 
-Board* BoardManager::getBoard(uint32_t id){
-    Board* rtn = NULL;
-    std::map<uint32_t, Board*>::iterator pl = boards.find(id);
-    if(pl != boards.end()){
-        rtn = (*pl).second;
-    }
-    if(rtn == NULL){
-        rtn = Game::getGame()->getPersistence()->retrieveBoard(id);
-        boards[id] = rtn;
-    }
-    return rtn;
-}
-
-void BoardManager::updateBoard(uint32_t id){
-    Game::getGame()->getPersistence()->updateBoard(boards[id]);
-}
-
-std::set<uint32_t> BoardManager::getAllBoardIds(){
-    std::set<uint32_t> vis;
-    for(std::map<uint32_t, Board*>::const_iterator itid = boards.begin();
-        itid != boards.end(); ++itid){
-        vis.insert(itid->first);
-    }
-    return vis;
+void BoardManager::updateBoard(uint32_t id) {
+  Game::getGame()->getPersistence()->updateBoard(boards[id]);
 }
 
 bool BoardManager::addMessage(Message* msg, Board* board, uint32_t pos){
-    uint32_t msgid = nextmid++;
-    messagecache[msgid] = msg;
-    std::list<uint32_t> bmlist = boardmessages[board->getBoardID()];
-        if(bmlist.empty()){
-            bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
-            boardmessages[board->getBoardID()] = bmlist;
-        }
-        if (pos == UINT32_NEG_ONE) {
-            bmlist.push_back(msgid);
-        } else {
-            std::list<uint32_t>::iterator inspos = bmlist.begin();
-            advance(inspos, pos);
-            bmlist.insert(inspos, msgid);
-        }
-        boardmessages[board->getBoardID()] = bmlist;
-        Game::getGame()->getPersistence()->saveMessage(msgid, msg);
-        Game::getGame()->getPersistence()->saveMessageList(board->getBoardID(), bmlist);
-        board->setNumMessages(bmlist.size());
-        return true;
+  uint32_t msgid = nextmid++;
+  messagecache[msgid] = msg;
+  IdList bmlist = boardmessages[board->getBoardID()];
+
+  if (bmlist.empty()) {
+    bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
+    boardmessages[board->getBoardID()] = bmlist;
+  }
+
+  if (pos == UINT32_NEG_ONE) {
+    bmlist.push_back(msgid);
+  } else {
+    IdList::iterator inspos = bmlist.begin();
+    advance(inspos, pos);
+    bmlist.insert(inspos, msgid);
+  }
+
+  boardmessages[board->getBoardID()] = bmlist;
+
+  bool result = true;
+  result = result && Game::getGame()->getPersistence()->saveMessage(msgid, msg);
+  result = result && Game::getGame()->getPersistence()->saveMessageList(board->getBoardID(), bmlist);
+  board->setNumMessages(bmlist.size());
+  return result;
 }
 
 bool BoardManager::removeMessage(Board* board, uint32_t pos){
-    std::list<uint32_t> bmlist = boardmessages[board->getBoardID()];
-    if(bmlist.empty()){
-        bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
-        boardmessages[board->getBoardID()] = bmlist;
-    }
-    if (pos >= bmlist.size()) {
-        return false;
-    }
-
-    std::list<uint32_t>::iterator itpos = bmlist.begin();
-    advance(itpos, pos);
-    uint32_t msgid = *itpos;
-    Message* msg = messagecache[msgid];
-    if(msg == NULL){
-        msg = Game::getGame()->getPersistence()->retrieveMessage(msgid);
-        messagecache[msgid] = msg;
-    }
-    delete msg;
-    bmlist.erase(itpos);
+  IdList bmlist = boardmessages[board->getBoardID()];
+  if(bmlist.empty()){
+    bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
     boardmessages[board->getBoardID()] = bmlist;
-    Game::getGame()->getPersistence()->removeMessage(msgid);
-    Game::getGame()->getPersistence()->saveMessageList(board->getBoardID(), bmlist);
-    board->setNumMessages(bmlist.size());
-    return true;
+  }
+  if (pos >= bmlist.size()) {
+    return false;
+  }
+
+  IdList::iterator itpos = bmlist.begin();
+  advance(itpos, pos);
+  uint32_t msgid = *itpos;
+  Message* msg = messagecache[msgid];
+  if(msg == NULL){
+    msg = Game::getGame()->getPersistence()->retrieveMessage(msgid);
+    messagecache[msgid] = msg;
+  }
+  delete msg;
+  bmlist.erase(itpos);
+  boardmessages[board->getBoardID()] = bmlist;
+
+  bool result = true;
+  result = result && Game::getGame()->getPersistence()->removeMessage(msgid);
+  result = result && Game::getGame()->getPersistence()->saveMessageList(board->getBoardID(), bmlist);
+  board->setNumMessages(bmlist.size());
+  return result;
 }
 
 Message* BoardManager::getMessage(Board* board, uint32_t pos){
-    std::list<uint32_t> bmlist = boardmessages[board->getBoardID()];
-    if(bmlist.empty()){
-        bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
-        boardmessages[board->getBoardID()] = bmlist;
-    }
-    if (pos >= bmlist.size()) {
-        return NULL;
-    }
+  IdList bmlist = boardmessages[board->getBoardID()];
+  if(bmlist.empty()){
+    bmlist = Game::getGame()->getPersistence()->retrieveMessageList(board->getBoardID());
+    boardmessages[board->getBoardID()] = bmlist;
+  }
+  if (pos >= bmlist.size()) {
+    return NULL;
+  }
 
-    std::list<uint32_t>::iterator itpos = bmlist.begin();
-    advance(itpos, pos);
-    uint32_t msgerid = *itpos;
-    Message* msg = messagecache[msgerid];
-    if(msg == NULL){
-        msg = Game::getGame()->getPersistence()->retrieveMessage(msgerid);
-        messagecache[msgerid] = msg;
-    }
-    return msg;
+  IdList::iterator itpos = bmlist.begin();
+  advance(itpos, pos);
+  uint32_t msgerid = *itpos;
+  Message* msg = messagecache[msgerid];
+  if(msg == NULL){
+    msg = Game::getGame()->getPersistence()->retrieveMessage(msgerid);
+    messagecache[msgerid] = msg;
+  }
+  return msg;
 }
+
