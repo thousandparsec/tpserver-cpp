@@ -29,34 +29,32 @@
 
 #include "adminlogger.h"
 
-AdminLogger::AdminLogger()
-{
+AdminLogger::AdminLogger() : connection(NULL) {
 }
 
-AdminLogger::~AdminLogger()
-{
+AdminLogger::~AdminLogger() {
 }
 
-void AdminLogger::setConnection(AdminConnection * newcon)
-{
-    curConnection = newcon;
+void AdminLogger::setConnection(AdminConnection* newcon) {
+    connection = newcon;
 }
 
-AdminConnection *AdminLogger::getConnection() const
-{
-    return curConnection;
+AdminConnection *AdminLogger::getConnection() const {
+    return connection;
 }
 
-void AdminLogger::doLogging(int level, const char* msg) const
-{
-    uint64_t    timestamp = time( NULL);
+void AdminLogger::doLogging(int level, const char* msg) const {
+    uint64_t timestamp = time(NULL);
 
-    if(curConnection->getStatus() == 3){
-        Frame * logmessage = curConnection->createFrame(NULL);
+    assert(connection);
+
+    // TODO: "3"? What the hell is 3?
+    if (connection->getStatus() == 3) {
+        Frame* logmessage = connection->createFrame(NULL);
         logmessage->setType(ftad_LogMessage);
         logmessage->packInt64(timestamp);
         logmessage->packInt(level);
         logmessage->packString(msg);
-        curConnection->sendFrame(logmessage);
+        connection->sendFrame(logmessage);
     }
 }
