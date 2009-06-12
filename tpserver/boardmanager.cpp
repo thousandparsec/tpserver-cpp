@@ -40,19 +40,16 @@ void BoardManager::init() {
 
   for(std::set<uint32_t>::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
     boards[*itcurr] = NULL;
-    boardmessages[*itcurr] = IdList();
   }
 }
 
 Board* BoardManager::createNewBoard(const std::string &name, const std::string &desc) {
-  Board *rtn = new Board();
+  Board *rtn = new Board(nextbid++);
 
-  rtn->setBoardID(nextbid++);
   rtn->setName(name);
   rtn->setDescription(desc);
 
   boards[rtn->getBoardID()] = (rtn);
-  boardmessages[rtn->getBoardID()] = IdList();
   Game::getGame()->getPersistence()->saveBoard(rtn);
 
   return rtn;
@@ -71,82 +68,39 @@ Board* BoardManager::getBoard(uint32_t id) {
   return rtn;
 }
 
-void BoardManager::updateBoard(uint32_t id) {
-  Game::getGame()->getPersistence()->updateBoard(boards[id]);
-}
-
 void BoardManager::postToBoard(Message* msg, uint32_t boardid) {
   Board* board = getBoard(boardid);
   board->addMessage(msg,-1);
 }
 
-bool BoardManager::addMessage(Message* msg, Board* board, uint32_t pos){
+uint32_t BoardManager::addMessage(Message* msg) {
   uint32_t msgid = nextmid++;
-  uint32_t boardid = board->getBoardID();
   messagecache[msgid] = msg;
-
-  if (boardmessages[boardid].empty()) {
-    boardmessages[boardid] = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+  if (!(Game::getGame()->getPersistence()->saveMessage(msgid, msg))) {
+    messagecache[msgid] = NULL;
+    // signal that the message is invalid
+    return UINT32_NEG_ONE;
   }
-  
-  if (pos == UINT32_NEG_ONE) {
-    boardmessages[boardid].push_back(msgid);
-  } else {
-    IdList::iterator inspos = boardmessages[boardid].begin();
-    advance(inspos, pos);
-    boardmessages[boardid].insert(inspos, msgid);
-  }
-
-  bool result = true;
-  result = result && Game::getGame()->getPersistence()->saveMessage(msgid, msg);
-  result = result && Game::getGame()->getPersistence()->saveMessageList(boardid, boardmessages[boardid]);
-  board->setNumMessages(boardmessages[boardid].size());
-  return result;
+  return msgid;
 }
 
-bool BoardManager::removeMessage(Board* board, uint32_t pos){
-  uint32_t boardid = board->getBoardID();
-  
-  if (boardmessages[boardid].empty()) {
-    boardmessages[boardid] = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
-  }
-  if (pos >= boardmessages[boardid].size()) {
+
+bool BoardManager::removeMessage(uint32_t message_id) {
+  if (!(Game::getGame()->getPersistence()->removeMessage(message_id))) {
+    // better to keep the message than get a segfault...
     return false;
   }
-
-  IdList::iterator itpos = boardmessages[boardid].begin();
-  advance(itpos, pos);
-  uint32_t msgid = *itpos;
-  Message* msg = messagecache[msgid];
-  if(msg == NULL){
-    msg = Game::getGame()->getPersistence()->retrieveMessage(msgid);
-    messagecache[msgid] = msg;
+  if ( messagecache[message_id] != NULL ) {
+    delete messagecache[message_id];
+    messagecache[message_id] = NULL;
   }
-  delete msg;
-  boardmessages[boardid].erase(itpos);
-
-  bool result = true;
-  result = result && Game::getGame()->getPersistence()->removeMessage(msgid);
-  result = result && Game::getGame()->getPersistence()->saveMessageList(boardid, boardmessages[boardid]);
-  board->setNumMessages(boardmessages[boardid].size());
-  return result;
+  return true;
 }
 
-Message* BoardManager::getMessage(Board* board, uint32_t pos) {
-  uint32_t boardid = board->getBoardID();
-  if (boardmessages[boardid].empty()) {
-    boardmessages[boardid] = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+Message* BoardManager::getMessage(uint32_t message_id) {
+  if (messagecache[message_id] == NULL) {
+    messagecache[message_id] = Game::getGame()->getPersistence()->retrieveMessage(message_id);
   }
-  if (pos >= boardmessages[boardid].size()) {
-    return NULL;
-  }
-
-  IdList::iterator itpos = boardmessages[boardid].begin();
-  advance(itpos, pos);
-  uint32_t mid = *itpos;
-  if (messagecache[mid] == NULL) {
-    messagecache[mid] = Game::getGame()->getPersistence()->retrieveMessage(mid);
-  }
-  return messagecache[mid];
+  return messagecache[message_id];
 }
 

@@ -22,19 +22,15 @@
 #include "message.h"
 #include "game.h"
 #include "boardmanager.h"
+#include "persistence.h"
 #include "logging.h"
 
 #include "board.h"
 
-Board::Board() {
+Board::Board(uint32_t id) {
   mod_time = time(NULL);
   message_count = 0;
-  boardid = 0;
-}
-
-void Board::setBoardID(int i) {
-  boardid = i;
-  mod_time = time(NULL);
+  boardid = id;
 }
 
 int Board::getBoardID() {
@@ -60,20 +56,52 @@ std::string Board::getDescription() {
 }
 
 void Board::addMessage(Message * msg, int pos) {
-  if (pos == -1) pos = message_count;
-  if (Game::getGame()->getBoardManager()->addMessage(msg, this, pos)) {
-    mod_time = time(NULL);
-    Game::getGame()->getBoardManager()->updateBoard(boardid);
+  if (message_ids.empty()) {
+    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
   }
+  uint32_t msgid = Game::getGame()->getBoardManager()->addMessage(msg);
+  if (msgid == UINT32_NEG_ONE)
+  {
+    // error report?
+    return;
+  }
+  if (pos == -1) {
+    message_ids.push_back(msgid);
+  } else {
+    IdList::iterator inspos = message_ids.begin();
+    advance(inspos, pos);
+    message_ids.insert(inspos, msgid);
+  }
+  message_count = message_ids.size();
+  Game::getGame()->getPersistence()->saveMessageList(boardid, message_ids);
+  Game::getGame()->getPersistence()->updateBoard(this);
+  mod_time = time(NULL);
 }
 
 bool Board::removeMessage(uint32_t pos){
   if (pos >= message_count || pos < 0) {
     return false;
   }
-  Game::getGame()->getBoardManager()->removeMessage(this, pos);
-  mod_time = time(NULL);
-  Game::getGame()->getBoardManager()->updateBoard(boardid);
+  if (message_ids.empty()) {
+    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+  }
+  if (pos >= message_ids.size()) {
+    return false;
+  }
+  IdList::iterator itpos = message_ids.begin();
+  advance(itpos, pos);
+  uint32_t msgid = *itpos;
+  message_ids.erase(itpos);
+  message_count = message_ids.size();
+
+  bool result = true;
+  result = result && Game::getGame()->getBoardManager()->removeMessage(msgid);
+  result = result && Game::getGame()->getPersistence()->saveMessageList(boardid, message_ids);
+  Game::getGame()->getPersistence()->updateBoard(this);
+
+  if (result) {
+    mod_time = time(NULL);
+  }
   return true;
 }
 
@@ -86,9 +114,17 @@ void Board::packBoard(Frame * frame){
   frame->packInt64(mod_time);
 }
 
-void Board::packMessage(Frame * frame, uint32_t msgnum){
+void Board::packMessage(Frame * frame, uint32_t msgnum) {
   if (msgnum < message_count) {
-    Message* message = Game::getGame()->getBoardManager()->getMessage(this, msgnum);
+    Message* message = NULL;
+    if (message_ids.empty()) {
+      message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+    }
+    if (msgnum < message_ids.size()) {
+      IdList::iterator itpos = message_ids.begin();
+      advance(itpos, msgnum);
+      message = Game::getGame()->getBoardManager()->getMessage(*itpos);
+    }
     if (message != NULL) {
       frame->setType(ft02_Message);
       frame->packInt(boardid);

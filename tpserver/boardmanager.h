@@ -59,33 +59,25 @@ public:
     Board* getBoard(uint32_t id);
 
     /**
-     * Update board by ID
-     */
-    void updateBoard(uint32_t id);
-
-    /**
      * Posts message to top of passed board, by boardid.
      */
     void postToBoard(Message* msg, uint32_t boardid);
 
     // these methods *only* used by Board
-    bool addMessage(Message* msg, Board* board, uint32_t pos);
-    bool removeMessage(Board* board, uint32_t pos);
-    Message* getMessage(Board* board, uint32_t pos);
+    uint32_t addMessage(Message* msg);
+    bool removeMessage(uint32_t message_id);
+    Message* getMessage(uint32_t message_id);
 
 private:
     typedef std::map<uint32_t, Board*>   BoardMap;
     typedef std::map<uint32_t, Message*> MessageMap;
     typedef std::list<uint32_t>          IdList;
-    typedef std::map<uint32_t, IdList>   BoardMessages;
     
     BoardMap boards;
     MessageMap messagecache;
     
     uint32_t nextbid;
     uint32_t nextmid;
-    
-    BoardMessages boardmessages;
 };
 
 #endif

@@ -1754,8 +1754,7 @@ Board* MysqlPersistence::retrieveBoard(uint32_t boardid){
         mysql_free_result(obresult);
         return NULL;
     }
-    Board* board = new Board();
-    board->setBoardID(boardid);
+    Board* board = new Board(boardid);
     board->setName(row[1]);
     board->setDescription(row[2]);
     board->setNumMessages(atoi(row[3]));

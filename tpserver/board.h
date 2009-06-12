@@ -22,7 +22,7 @@
  */
 
 #include <string>
-#include <stdint.h>
+#include <list>
 
 class Message;
 class Frame;
@@ -33,16 +33,16 @@ class Frame;
 class Board {
 
   public:
-    /**
-     * Default constructor
-     *
-     * Sets modification time to now, and number of messages and boardid 
-     * to zero.
-     */
-    Board();
+    /// List of Message ID's
+    typedef std::list< uint32_t > IdList;
 
-    /// Sets board ID and updates modification time
-    void setBoardID(int i);
+    /**
+     * Constructor
+     *
+     * Sets modification time to now, and number of messages to zero.
+     */
+    explicit Board( uint32_t id );
+
     /// Returns board ID
     int getBoardID();
 
@@ -120,6 +120,12 @@ class Board {
     std::string description;
     /// Last modification time
     int64_t mod_time;
+    /// List of MessageID's belonging to this board
+    IdList message_ids;
+
+  private:
+    /// Blocked default constructor
+    Board() {}
 };
 
 #endif
