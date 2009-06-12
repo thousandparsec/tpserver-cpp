@@ -27,28 +27,20 @@
 
 #include "board.h"
 
-Board::Board(uint32_t id) {
-  mod_time = time(NULL);
+Board::Board(uint32_t id, const std::string& nname, const std::string& ndesc) {
   message_count = 0;
   boardid = id;
+  name = nname;
+  description = ndesc;
+  mod_time = time(NULL);
 }
 
 int Board::getBoardID() {
   return boardid;
 }
 
-void Board::setName(const std::string & nname) {
-  name = nname;
-  mod_time = time(NULL);
-}
-
 std::string Board::getName(){
   return name;
-}
-
-void Board::setDescription(const std::string & ndest) {
-  description = ndest;
-  mod_time = time(NULL);
 }
 
 std::string Board::getDescription() {
@@ -148,10 +140,7 @@ uint32_t Board::getNumMessages() const{
   return message_count;
 }
 
-void Board::setNumMessages(uint32_t nnm){
-  message_count = nnm;
-}
-
-void Board::setModTime(uint64_t nmt){
-  mod_time = nmt;
+void Board::setPersistenceData( uint32_t nmessage_count, uint64_t nmod_time ) {
+  message_count = nmessage_count;
+  mod_time = nmod_time;
 }

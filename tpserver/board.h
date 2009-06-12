@@ -41,18 +41,14 @@ class Board {
      *
      * Sets modification time to now, and number of messages to zero.
      */
-    explicit Board( uint32_t id );
+    Board( uint32_t id, const std::string& nname, const std::string& ndesc );
 
     /// Returns board ID
     int getBoardID();
 
-    /// Sets board name and updates modification time
-    void setName(const std::string & nname);
     /// Returns board name
     std::string getName();
 
-    /// Sets board description and updates modification time
-    void setDescription(const std::string & ndest);
     /// Returns board description
     std::string getDescription();
 
@@ -96,18 +92,11 @@ class Board {
     uint32_t getNumMessages() const;
 
     /**
-     * Sets the number of messages on board
+     * Sets the number of messages on board and modification time
      *
      * @warning should be used ONLY by the persistence module
      */
-    void setNumMessages(uint32_t nnm);
-    
-    /**
-     * Sets the modification time
-     *
-     * @warning should be used ONLY by the persistence module
-     */
-    void setModTime(uint64_t nmt);
+    void setPersistenceData( uint32_t nmessage_count, uint64_t nmod_time );
 
   private:
     /// Count of messages on the board

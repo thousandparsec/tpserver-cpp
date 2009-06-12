@@ -71,7 +71,6 @@ public:
 private:
     typedef std::map<uint32_t, Board*>   BoardMap;
     typedef std::map<uint32_t, Message*> MessageMap;
-    typedef std::list<uint32_t>          IdList;
     
     BoardMap boards;
     MessageMap messagecache;

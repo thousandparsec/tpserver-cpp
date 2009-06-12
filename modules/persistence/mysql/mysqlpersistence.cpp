@@ -1754,11 +1754,8 @@ Board* MysqlPersistence::retrieveBoard(uint32_t boardid){
         mysql_free_result(obresult);
         return NULL;
     }
-    Board* board = new Board(boardid);
-    board->setName(row[1]);
-    board->setDescription(row[2]);
-    board->setNumMessages(atoi(row[3]));
-    board->setModTime(strtoull(row[4], NULL, 10));
+    Board* board = new Board(boardid,row[1],row[2]);
+    board->setPersistanceData(atoi(row[3]),strtoull(row[4], NULL, 10));
     mysql_free_result(obresult);
     return board;
 }
