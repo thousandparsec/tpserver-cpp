@@ -20,21 +20,42 @@
  *
  */
 
-#include <string>
+#include <tpserver/logsink.h>
 
-#include "logsink.h"
-
+/**
+ * Log sink that logs to console
+ *
+ * @see LogSink
+ */
 class ConsoleLogger : public LogSink {
- public:
+  public:
+    /**
+     * Default constructor
+     *
+     * Registers the log_colour callback to settings.
+     */
     ConsoleLogger();
+
+    /**
+     * Destructor
+     *
+     * Unregisters settings callback.
+     */
     virtual ~ConsoleLogger();
 
+    /**
+     * Logging override
+     *
+     * Logs to console.
+     */
     virtual void doLogging( int level, const char* msg) const;
 
- private:
+  private:
+    /// Callback for reconfiguring color
     void reconfigure(const std::string& key, const std::string& value);
-    bool colour;
 
+    /// Is console output colored?
+    bool colour;
 };
 
 

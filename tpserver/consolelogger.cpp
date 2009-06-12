@@ -30,47 +30,47 @@
 #include "settings.h"
 #include "settingscallback.h"
 
-ConsoleLogger::ConsoleLogger()
-{
+ConsoleLogger::ConsoleLogger() {
   Settings::getSettings()->setCallback("log_colour", SettingsCallback(this, &ConsoleLogger::reconfigure));
   reconfigure("", "");
 }
 
-ConsoleLogger::~ConsoleLogger()
-{
+ConsoleLogger::~ConsoleLogger() {
   Settings::getSettings()->removeCallback("log_colour");
 }
 
-void ConsoleLogger::reconfigure(const std::string& key, const std::string& value)
-{
-    colour = (Settings::getSettings()->get("log_colour") == "yes");
+void ConsoleLogger::reconfigure(const std::string& key, const std::string& value) {
+  colour = (Settings::getSettings()->get("log_colour") == "yes");
 }
 
-void ConsoleLogger::doLogging( int level, const char* msg) const
-{
-    char        timeStr[30];
-    time_t      currTime = time( NULL);
-    std::ostringstream levelStr;
-    static const std::string colourStrings[] = { "",
-                                                 "\e[32;1m",
-                                                 "\e[33;1m",
-                                                 "\e[31;1m"};
-    static const std::string levelStrings[] = { " < Debug > ",
-                                                " < Info  > ",
-                                                " <Warning> ",
-                                                " < Error > "};
+void ConsoleLogger::doLogging( int level, const char* msg) const {
+  char        timeStr[30];
+  time_t      currTime = time( NULL);
+  std::ostringstream levelStr;
+  
+  static const std::string colourStrings[] = { 
+    "",
+    "\e[32;1m",
+    "\e[33;1m",
+    "\e[31;1m"
+  };
 
-    strftime( timeStr, 30, "%F %H:%M:%S", localtime( &currTime));
+  static const std::string levelStrings[] = { 
+    " < Debug > ",
+    " < Info  > ",
+    " <Warning> ",
+    " < Error > "
+  };
 
-    if ( level <= 3) {
-        if ( colour)
-            levelStr << colourStrings[level];
-        levelStr << levelStrings[level];
-        if ( colour)
-            levelStr << "\e[0m";
-    }
-    else
-        levelStr << " <  " << level << "  > ";
+  strftime( timeStr, 30, "%F %H:%M:%S", localtime( &currTime));
 
-    std::cout << "\r" << timeStr << levelStr.str() << msg << std::endl;
+  if (level <= 3) {
+    if (colour) levelStr << colourStrings[level];
+    levelStr << levelStrings[level];
+    if (colour) levelStr << "\e[0m";
+  }
+  else
+    levelStr << " <  " << level << "  > ";
+
+  std::cout << "\r" << timeStr << levelStr.str() << msg << std::endl;
 }
