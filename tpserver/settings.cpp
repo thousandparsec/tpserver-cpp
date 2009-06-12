@@ -31,64 +31,62 @@
 #endif
 
 #include "logging.h"
-
 #include "settingscallback.h"
-
 #include "settings.h"
 
-Settings *Settings::myInstance = NULL;
+Settings *Settings::instance = NULL;
 
 Settings *Settings::getSettings()
 {
-	if (myInstance == NULL) {
-		myInstance = new Settings();
-		myInstance->setDefaultValues();
-	}
-	return myInstance;
+  if (instance == NULL) {
+    instance = new Settings();
+    instance->setDefaultValues();
+  }
+  return instance;
 }
 
-bool Settings::readArgs(int argc, char** argv){
-
-  for(int i = 1; i < argc; i++){
-    if(argv[i][0] == '-'){
-      if(argv[i][1] == '-'){
-	//long option
-	if(strncmp(argv[i] + 2, "help", 4) == 0){
-	  printHelp();
-	  store["NEVER_START"] = "!";
-	}else if(strncmp(argv[i] + 2, "version", 7) == 0){
-	  std::cout << "tpserver-cpp " VERSION << std::endl;
-	  store["NEVER_START"] = "!";
-        }else if(strncmp(argv[i] + 2, "debug", 5) == 0){
-            store["DEBUG"] = "!";
-        }else if(strncmp(argv[i] + 2, "verbose", 6) == 0){
-            store["DEBUG"] = "!";
-	}else if(strncmp(argv[i] + 2, "configure", 9) == 0){
-	  store["config_file"] = std::string(argv[++i]);
-	}else if(strncmp(argv[i] + 2, "logging", 7) == 0){
-	  store["log_level"] = std::string(argv[++i]);
-	}else{
-            if(i + 1 < argc){
-                store[argv[i] + 2] = argv[i + 1];
-                i++;
-            }else{
-                printf("Invalid argument setting: %s\n", argv[i]);
-            }
+bool Settings::readArgs(int argc, char** argv) {
+  // TODO: refactor this to boost::program_options
+  for(int i = 1; i < argc; i++) {
+    if(argv[i][0] == '-') {
+      if(argv[i][1] == '-') {
+        //long option
+        if(strncmp(argv[i] + 2, "help", 4) == 0) {
+          printHelp();
+          store["NEVER_START"] = "!";
+        } else if (strncmp(argv[i] + 2, "version", 7) == 0) {
+          std::cout << "tpserver-cpp " VERSION << std::endl;
+          store["NEVER_START"] = "!";
+        } else if (strncmp(argv[i] + 2, "debug", 5) == 0) {
+          store["DEBUG"] = "!";
+        } else if (strncmp(argv[i] + 2, "verbose", 6) == 0) {
+          store["DEBUG"] = "!";
+        } else if (strncmp(argv[i] + 2, "configure", 9) == 0) {
+          store["config_file"] = std::string(argv[++i]);
+        } else if (strncmp(argv[i] + 2, "logging", 7) == 0) {
+          store["log_level"] = std::string(argv[++i]);
+        } else {
+          if (i + 1 < argc) {
+            store[argv[i] + 2] = argv[i + 1];
+            i++;
+          }else{
+            printf("Invalid argument setting: %s\n", argv[i]);
+          }
         }
 
-      }else{
-	//short option
-	if(strncmp(argv[i] + 1, "h", 2) == 0){
-	  printHelp();
-	  store["NEVER_START"] = "!";
-        }else if(strncmp(argv[i] + 1, "v", 2) == 0){
-            store["DEBUG"] = "!";
-	}else if(strncmp(argv[i] + 1, "C", 2) == 0){
-	  store["config_file"] = std::string(argv[++i]);
-	}else if(strncmp(argv[i] + 1, "l", 2) == 0){
-	  store["log_level"] = std::string(argv[++i]);
-	}else{
-            printf("Unknown short argument: %s\n", argv[i]);
+      } else {
+        //short option
+        if (strncmp(argv[i] + 1, "h", 2) == 0){
+          printHelp();
+          store["NEVER_START"] = "!";
+        } else if (strncmp(argv[i] + 1, "v", 2) == 0){
+          store["DEBUG"] = "!";
+        } else if (strncmp(argv[i] + 1, "C", 2) == 0){
+          store["config_file"] = std::string(argv[++i]);
+        } else if (strncmp(argv[i] + 1, "l", 2) == 0){
+          store["log_level"] = std::string(argv[++i]);
+        } else {
+          printf("Unknown short argument: %s\n", argv[i]);
         }
 
       }
@@ -99,134 +97,133 @@ bool Settings::readArgs(int argc, char** argv){
     //tpserver-cpp run without parameters, set some sensible defaults
     store["log_console"] = "yes";
     store["log_level"] = "1";
-    
   }
-  
+
   return true;
 }
 
-bool Settings::readConfFile(){
+bool Settings::readConfFile() {
   return readConfFile(store["config_file"]);
 }
 
 void Settings::gripeOnLine(const std::string& line, const char* complaint) {
-    Logger::getLogger()->error( "Invalid configuration file line, %s: \"%s\"", complaint, line.c_str());
+  Logger::getLogger()->error( "Invalid configuration file line, %s: \"%s\"", complaint, line.c_str());
 }
 
 
 bool Settings::readConfFile(const std::string& fname){
-    std::ifstream  configFile( fname.c_str());
-    if(!configFile){
-      return false;
+  // TODO: refactor this!
+  std::ifstream configFile( fname.c_str());
+  if (!configFile) {
+    return false;
+  }
+  std::string configString;
+  uint32_t    lineCount = 0;
+  const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+
+  while (!configFile.eof() && getline( configFile, configString)) {
+    lineCount++;
+    std::string    savedConfigString = configString;
+    std::string    key = "";
+    std::string    value = "";
+    std::string::size_type valuelength = 0;
+    std::string::size_type keylength = 0;
+
+    /* remove leading spaces */
+    configString.erase( 0, configString.find_first_not_of( " 	"));
+
+    /* comment/empty line? */
+    if ( configString == "" || configString[0] == '#') {
+      continue;
     }
-    std::string   configString;
-    uint32_t      lineCount = 0;
-    const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.";
 
-    while ( ! configFile.eof() && getline( configFile, configString)) {
-        std::string    savedConfigString = configString;
-        std::string    key = "";
-        std::string    value = "";
-        std::string::size_type valuelength = 0;
-        std::string::size_type keylength = 0;
-
-        /* remove leading spaces */
-        configString.erase( 0, configString.find_first_not_of( " 	"));
-
-        /* comment/empty line? */
-        if ( configString == "" || configString[0] == '#') {
-            continue;
-        }
-
-        lineCount++;
-        keylength = configString.find_first_of( " 	=");
-        key = configString.substr( 0, keylength);
-        configString.erase( 0, keylength);
-        if ( key == "") {
-            gripeOnLine( savedConfigString, "empty key");
-            continue;
-        }
-        if ( key.find_first_not_of( validKeyChars) < keylength ||
-             key.find_first_of( "0123456789") == 0) {
-            gripeOnLine( savedConfigString, "invalid characters in key");
-            continue;
-        }
-
-        /* remove whitespace */
-        configString.erase( 0, configString.find_first_not_of( " 	"));
-
-        /* this next character better be an equals sign */
-        if ( configString[0] != '=') {
-            gripeOnLine( savedConfigString, "missing equals");
-            continue;
-        }
-        configString.erase( 0, 1);
-
-        /* remove whitespace... */
-        configString.erase( 0, configString.find_first_not_of( " 	"));
-
-        /* Are we quoted? */
-        if ( configString[0] == '"') {
-            configString.erase( 0, 1);
-            valuelength = configString.find_first_of( "\"");
-            value = configString.substr( 0, valuelength);
-            configString.erase( 0, valuelength + 1);
-
-            /* remove whitespace... */
-            configString.erase( 0, configString.find_first_not_of( " 	"));
-
-            /* What is left ought to be a comment */
-            if ( !configString.empty() && configString[0] != '#') {
-                gripeOnLine( savedConfigString, "extraneous characters");
-            }
-            /* But if it isn't, we just let it pass... */
-        }
-        else if ( configString[0] == '\'') {
-            configString.erase( 0, 1);
-            valuelength = configString.find_first_of( "\'");
-            value = configString.substr( 0, valuelength);
-            configString.erase( 0, valuelength + 1);
-
-            /* remove whitespace... */
-            configString.erase( 0, configString.find_first_not_of( " 	"));
-
-            /* What is left ought to be a comment */
-            if ( !configString.empty() && configString[0] != '#') {
-                gripeOnLine( savedConfigString, "extraneous characters");
-            }
-            /* But if it isn't, we just let it pass... */
-        }
-        else {
-            valuelength = configString.find_first_of( " 	");
-            value = configString.substr( 0, valuelength);
-            configString.erase( 0, valuelength);
-
-            /* remove whitespace... */
-            configString.erase( 0, configString.find_first_not_of( " 	"));
-
-            /* What is left ought to be a comment */
-            if ( !configString.empty() && configString[0] != '#') {
-                gripeOnLine( savedConfigString, "extraneous characters");
-            }
-            /* But if it isn't, we just let it pass... */
-        }
-        store[key] = value;
+    keylength = configString.find_first_of( " 	=");
+    key = configString.substr( 0, keylength);
+    configString.erase( 0, keylength);
+    if ( key == "") {
+      gripeOnLine( savedConfigString, "empty key");
+      continue;
     }
+    if ( key.find_first_not_of( validKeyChars) < keylength ||
+        key.find_first_of( "0123456789") == 0) {
+      gripeOnLine( savedConfigString, "invalid characters in key");
+      continue;
+    }
+
+    /* remove whitespace */
+    configString.erase( 0, configString.find_first_not_of( " 	"));
+
+    /* this next character better be an equals sign */
+    if ( configString[0] != '=') {
+      gripeOnLine( savedConfigString, "missing equals");
+      continue;
+    }
+    configString.erase( 0, 1);
+
+    /* remove whitespace... */
+    configString.erase( 0, configString.find_first_not_of( " 	"));
+
+    /* Are we quoted? */
+    if ( configString[0] == '"') {
+      configString.erase( 0, 1);
+      valuelength = configString.find_first_of( "\"");
+      value = configString.substr( 0, valuelength);
+      configString.erase( 0, valuelength + 1);
+
+      /* remove whitespace... */
+      configString.erase( 0, configString.find_first_not_of( " 	"));
+
+      /* What is left ought to be a comment */
+      if ( !configString.empty() && configString[0] != '#') {
+        gripeOnLine( savedConfigString, "extraneous characters");
+      }
+      /* But if it isn't, we just let it pass... */
+    }
+    else if ( configString[0] == '\'') {
+      configString.erase( 0, 1);
+      valuelength = configString.find_first_of( "\'");
+      value = configString.substr( 0, valuelength);
+      configString.erase( 0, valuelength + 1);
+
+      /* remove whitespace... */
+      configString.erase( 0, configString.find_first_not_of( " 	"));
+
+      /* What is left ought to be a comment */
+      if ( !configString.empty() && configString[0] != '#') {
+        gripeOnLine( savedConfigString, "extraneous characters");
+      }
+      /* But if it isn't, we just let it pass... */
+    }
+    else {
+      valuelength = configString.find_first_of( " 	");
+      value = configString.substr( 0, valuelength);
+      configString.erase( 0, valuelength);
+
+      /* remove whitespace... */
+      configString.erase( 0, configString.find_first_not_of( " 	"));
+
+      /* What is left ought to be a comment */
+      if ( !configString.empty() && configString[0] != '#') {
+        gripeOnLine( savedConfigString, "extraneous characters");
+      }
+      /* But if it isn't, we just let it pass... */
+    }
+    store[key] = value;
+  }
 
   return true;
 }
 
 void Settings::set(std::string item, std::string value){
   store[item] = value;
-  if(callbacks.find(item) != callbacks.end()){
-     callbacks[item].call(item, value);
+  if (callbacks.find(item) != callbacks.end()) {
+    callbacks[item].call(item, value);
   }
 }
 
-
-std::string Settings::get(std::string item){
-  std::map<std::string, std::string>::iterator itcurr = store.find(item);
-  if(itcurr == store.end()){
+std::string Settings::get(std::string item) {
+  SettingsMap::iterator itcurr = store.find(item);
+  if( itcurr == store.end()) {
     return std::string("");
   }
   return itcurr->second;
@@ -240,22 +237,16 @@ void Settings::removeCallback(std::string item){
   callbacks.erase(item);
 }
 
-Settings::Settings()
-{
-
+Settings::Settings() {
 }
 
-Settings::~Settings()
-{
-
+Settings::~Settings() {
 }
 
-Settings::Settings(Settings & rhs)
-{
+Settings::Settings(Settings & rhs) {
 }
 
-Settings Settings::operator=(Settings & rhs)
-{
+Settings Settings::operator=(Settings & rhs) {
   //please don't call me
   assert(0);
   return *this;
@@ -274,10 +265,10 @@ void Settings::printHelp(){
 }
 
 void Settings::setDefaultValues(){
-  store["NEVER_START"] = "0";
-  store["config_file"] = "/etc/tpserver-cpp/tpserver.conf";
+  store["NEVER_START"]  = "0";
+  store["config_file"]  = "/etc/tpserver-cpp/tpserver.conf";
   store["logfile_name"] = "/var/log/tpserver-cpp.log";
-  store["admin_user"] = "admin";
-  store["admin_pass"] = "admin";
-  store["admin_tcp"] = "yes";
+  store["admin_user"]   = "admin";
+  store["admin_pass"]   = "admin";
+  store["admin_tcp"]    = "yes";
 }

@@ -25,37 +25,82 @@
 
 class SettingsCallback;
 
+/**
+ * Settings manager singleton
+ */
 class Settings {
+  public:
+    /**
+     * Singleton accessor
+     */
+    static Settings *getSettings();
 
-      public:
-	static Settings *getSettings();
+    /**
+     * Read command-line args
+     */
+    bool readArgs(int argc, char** argv);
 
-	bool readArgs(int argc, char** argv);
-	bool readConfFile();
+    /**
+     * Read configuration file
+     *
+     * Config file name taken from stored config_file configuration
+     *
+     * @returns true if succeeded, false otherwise
+     */
+    bool readConfFile();
 
-	void set(std::string item, std::string value);
-	std::string get(std::string item);
-        
-        void setCallback(std::string item, SettingsCallback cb);
-        void removeCallback(std::string item);
+    /**
+     * Set value explicitly
+     */
+    void set(std::string item, std::string value);
 
-      private:
-	 Settings();
-	~Settings();
-	 Settings(Settings & rhs);
-	Settings operator=(Settings & rhs);
+    /**
+     * Return requested value
+     */
+    std::string get(std::string item);
 
-	void printHelp();
-        void gripeOnLine(const std::string& line, const char* complaint);
-        bool readConfFile(const std::string& fname);
+    /**
+     * Set a new configuiration item callback
+     */
+    void setCallback(std::string item, SettingsCallback cb);
 
-	void setDefaultValues();
+    /**
+     * Remove callback assigned to given item
+     */
+    void removeCallback(std::string item);
 
-	// settings storage
-	std::map<std::string, std::string> store;
-        std::map<std::string, SettingsCallback> callbacks;
+  private:
+    /// Settings map typedef
+    typedef std::map<std::string, std::string> SettingsMap;
+    /// Callbacks map typedef
+    typedef std::map<std::string, SettingsCallback> CallbackMap;
 
-	static Settings *myInstance;
+  private:
+    /// Blocked default constructor
+    Settings();
+    /// Blocked destructor
+    ~Settings();
+    /// Blocked copy constructor
+    Settings(Settings & rhs);
+    /// Blocked assignment operator
+    Settings operator=(Settings & rhs);
+
+    /// Print help
+    void printHelp();
+    /// Log config error
+    void gripeOnLine(const std::string& line, const char* complaint);
+    /// Read configuration file
+    bool readConfFile(const std::string& fname);
+
+    void setDefaultValues();
+
+    /// Settings storage
+    SettingsMap store;
+    /// Callback storage
+    CallbackMap callbacks;
+
+    /// Singleton instance
+    static Settings *instance;
 
 };
 

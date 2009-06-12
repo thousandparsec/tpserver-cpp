@@ -19,6 +19,8 @@
  */
 #ifndef SETTINGSCALLBACK_H
 #define SETTINGSCALLBACK_H
+// TODO: refactor this using boost::function
+
 
 /** Baseclass for SettingsCallback
 
