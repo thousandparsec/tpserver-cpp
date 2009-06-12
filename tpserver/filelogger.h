@@ -25,20 +25,46 @@
 
 #include <tpserver/logsink.h>
 
+/**
+ * Log sink that logs to file
+ *
+ * @see LogSink
+ */
 class FileLogger : public LogSink {
- public:
+  public:
+    /**
+     * Default constructor
+     *
+     * Opens logger to default log-file
+     */
     FileLogger();
-    FileLogger( std::string  logfile);
+
+    /**
+     * Explicit constructor
+     *
+     * Opens file passed for logging
+     */
+    explicit FileLogger(std::string logfile);
+
+    /**
+     * Destructor
+     *
+     * Performs cleanup and flush.
+     */
     virtual ~FileLogger();
 
-    virtual void doLogging( int level, const char* msg) const;
+    /**
+     * Logging override
+     *
+     * Logs to opened file.
+     */
+    virtual void doLogging(int level, const char* msg) const;
 
- protected:
-    std::string    logFileSpec;
-    std::ofstream*      logStream;
-
- private:
-
+  protected:
+    /// Log file name
+    std::string     filename;
+    /// Log file stream
+    std::ofstream*  stream;
 };
 
 

@@ -29,47 +29,48 @@
 
 #include "filelogger.h"
 
-FileLogger::FileLogger()
-{
-    logFileSpec = "/var/log/tpserver-cpp.log";
-    logStream = new std::ofstream( logFileSpec.c_str(), std::ios_base::out);
-    if(!logStream){
-        throw std::exception();
-    }
+// TODO: better exception support
+
+FileLogger::FileLogger() {
+  filename = "/var/log/tpserver-cpp.log";
+  stream = new std::ofstream(filename.c_str(), std::ios_base::out);
+  if (!stream) {
+    throw std::exception();
+  }
 }
 
-FileLogger::FileLogger( std::string  logfile)
-{
-    logFileSpec = logfile;
-    logStream = new std::ofstream( logFileSpec.c_str(), std::ios_base::out);
-    if(!logStream){
-        throw std::exception();
-    }
+FileLogger::FileLogger(std::string logfile) {
+  filename = logfile;
+  stream = new std::ofstream(filename.c_str(), std::ios_base::out);
+  if (!stream) {
+    throw std::exception();
+  }
 }
 
-FileLogger::~FileLogger()
-{
-    logStream->close();
-    delete logStream;
+FileLogger::~FileLogger() {
+  stream->close();
+  delete stream;
 }
 
 
-void FileLogger::doLogging( int level, const char* msg) const
-{
-    char     timeStr[40];
-    time_t   currTime = time( NULL);
-    std::ostringstream levelStr;
-    static const std::string levelStrings[] = { " < Debug > ",
-                                                " < Info  > ",
-                                                " <Warning> ",
-                                                " < Error > "};
+void FileLogger::doLogging( int level, const char* msg) const {
+  char   timeStr[40];
+  time_t currTime = time( NULL);
+  std::ostringstream levelStr;
+  static const std::string levelStrings[] = { 
+    " < Debug > ",
+    " < Info  > ",
+    " <Warning> ",
+    " < Error > "
+  };
 
-    strftime( timeStr, 40, "%F %H:%M:%S", localtime( &currTime));
+  strftime( timeStr, 40, "%F %H:%M:%S", localtime( &currTime));
 
-    if ( level <= 3)
-        levelStr << levelStrings[level];
-    else
-        levelStr << " <  " << level << "  > ";
+  if (level <= 3) {
+    levelStr << levelStrings[level];
+  } else {
+    levelStr << " <  " << level << "  > ";
+  }
 
-    *logStream << timeStr << levelStr.str() << msg << std::endl;
+  *stream << timeStr << levelStr.str() << msg << std::endl;
 }
