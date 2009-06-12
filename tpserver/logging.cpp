@@ -36,98 +36,98 @@
 #include "syslogger.h"
 #include "consolelogger.h"
 
-Logger *Logger::myInstance = NULL;
+Logger *Logger::instance = NULL;
 
 Logger *Logger::getLogger()
 {
-	if ( myInstance == NULL) {
-        myInstance = new Logger();
-	}
+  if ( instance == NULL) {
+    instance = new Logger();
+  }
 
-	return myInstance;
+  return instance;
 }
 
 void Logger::debug(const char *msg, ...)
 {
-    if ( loglevel <= 0) {
-        char* fmsg = new char[100];
+  if ( log_level <= 0) {
+    char* fmsg = new char[100];
 
-        va_list ap;
-        va_start(ap, msg);
-        int reallen = vsnprintf(fmsg, 100, msg, ap);
-        if(reallen > 100){
-            delete[] fmsg;
-            fmsg = new char[reallen + 1];
-            va_end(ap);
-            va_start(ap, msg);
-            vsnprintf(fmsg, reallen + 1, msg, ap);
-        }
-        va_end(ap);
-        doLogging(0, fmsg);
-        delete[] fmsg;
+    va_list ap;
+    va_start(ap, msg);
+    int reallen = vsnprintf(fmsg, 100, msg, ap);
+    if(reallen > 100){
+      delete[] fmsg;
+      fmsg = new char[reallen + 1];
+      va_end(ap);
+      va_start(ap, msg);
+      vsnprintf(fmsg, reallen + 1, msg, ap);
     }
+    va_end(ap);
+    doLogging(0, fmsg);
+    delete[] fmsg;
+  }
 }
 
 void Logger::info(const char *msg, ...)
 {
-    if ( loglevel <= 1) {
-        char* fmsg = new char[100];
+  if ( log_level <= 1) {
+    char* fmsg = new char[100];
 
-        va_list ap;
-        va_start(ap, msg);
-        int reallen = vsnprintf(fmsg, 100, msg, ap);
-        if(reallen > 100){
-            delete[] fmsg;
-            fmsg = new char[reallen + 1];
-            va_end(ap);
-            va_start(ap, msg);
-            vsnprintf(fmsg, reallen + 1, msg, ap);
-        }
-        va_end(ap);
-        doLogging(1, fmsg);
-        delete[] fmsg;
+    va_list ap;
+    va_start(ap, msg);
+    int reallen = vsnprintf(fmsg, 100, msg, ap);
+    if(reallen > 100){
+      delete[] fmsg;
+      fmsg = new char[reallen + 1];
+      va_end(ap);
+      va_start(ap, msg);
+      vsnprintf(fmsg, reallen + 1, msg, ap);
     }
+    va_end(ap);
+    doLogging(1, fmsg);
+    delete[] fmsg;
+  }
 }
 
 void Logger::warning(const char *msg, ...)
 {
-    if ( loglevel <= 2) {
-        char* fmsg = new char[100];
+  if ( log_level <= 2) {
+    char* fmsg = new char[100];
 
-        va_list ap;
-        va_start(ap, msg);
-        int reallen = vsnprintf(fmsg, 100, msg, ap);
-        if(reallen > 100){
-            delete[] fmsg;
-            fmsg = new char[reallen + 1];
-            va_end(ap);
-            va_start(ap, msg);
-            vsnprintf(fmsg, reallen + 1, msg, ap);
-        }
-        va_end(ap);
-        doLogging(2, fmsg);
-        delete[] fmsg;
+    va_list ap;
+    va_start(ap, msg);
+    int reallen = vsnprintf(fmsg, 100, msg, ap);
+    if(reallen > 100){
+      delete[] fmsg;
+      fmsg = new char[reallen + 1];
+      va_end(ap);
+      va_start(ap, msg);
+      vsnprintf(fmsg, reallen + 1, msg, ap);
     }
+    va_end(ap);
+    doLogging(2, fmsg);
+    delete[] fmsg;
+  }
 }
 
 void Logger::error(const char *msg, ...)
 {
-  if ( loglevel <= 3) {
-      char* fmsg = new char[100];
+  if ( log_level <= 3) {
+    char* fmsg = new char[100];
 
-      va_list ap;
-      va_start(ap, msg);
-      int reallen = vsnprintf(fmsg, 100, msg, ap);
-      if(reallen > 100){
-          delete[] fmsg;
-          fmsg = new char[reallen + 1];
-          va_end(ap);
-          va_start(ap, msg);
-          vsnprintf(fmsg, reallen + 1, msg, ap);
-      }
-      va_end(ap);
-      doLogging(3, fmsg);
+    va_list ap;
+    va_start(ap, msg);
+    int reallen = vsnprintf(fmsg, 100, msg, ap);
+    if(reallen > 100){
       delete[] fmsg;
+      fmsg = new char[reallen + 1];
+      va_end(ap);
+      va_start(ap, msg);
+      vsnprintf(fmsg, reallen + 1, msg, ap);
+    }
+    va_end(ap);
+    doLogging(3, fmsg);
+    delete[] fmsg;
   }
   //exit(1);
 }
@@ -135,85 +135,81 @@ void Logger::error(const char *msg, ...)
 
 int Logger::addLog(LogSink* newlog)
 {
-    std::ostringstream extname;
+  std::ostringstream extname;
 
-    extname << "ext" << extcount;
-    logSinkMap[extname.str()] = newlog;
-    return extcount++;
+  extname << "ext" << sink_count;
+  sink_map[extname.str()] = newlog;
+  return sink_count++;
 }
 
 void Logger::removeLog(int extid)
 {
-    std::ostringstream extname;
+  std::ostringstream extname;
 
-    extname << "ext" << extid;
-    if (logSinkMap.find(extname.str()) != logSinkMap.end()) {
-        delete logSinkMap[extname.str()];
-	logSinkMap.erase(extname.str());
-    }
+  extname << "ext" << extid;
+  if (sink_map.find(extname.str()) != sink_map.end()) {
+    delete sink_map[extname.str()];
+    sink_map.erase(extname.str());
+  }
 }
 
 
 void Logger::flush()
 {
-	info("Logger stopped");
+  info("Logger stopped");
 }
 
 void Logger::reconfigure(const std::string & item, const std::string & value)
 {
-    std::map<std::string, LogSink*>::iterator  pos;
 
-    // Default log level to 0 (in case log_level is not present in config file)
-    loglevel = atoi(Settings::getSettings()->get("log_level").c_str());
+  // Default log level to 0 (in case log_level is not present in config file)
+  log_level = atoi(Settings::getSettings()->get("log_level").c_str());
 
-    if (Settings::getSettings()->get("log_console") == "yes") {
-        if (logSinkMap.find("console") == logSinkMap.end())
-            logSinkMap["console"] = new ConsoleLogger();
+  if (Settings::getSettings()->get("log_console") == "yes") {
+    if (sink_map.find("console") == sink_map.end())
+      sink_map["console"] = new ConsoleLogger();
+  } else {
+    if (sink_map.find("console") != sink_map.end()) {
+      delete sink_map["console"];
+      sink_map.erase("console");
     }
-    else {
-        if (logSinkMap.find("console") != logSinkMap.end()) {
-            delete logSinkMap["console"];
-            logSinkMap.erase("console");
-        }
-    }
+  }
 
-    if (Settings::getSettings()->get("log_file") == "yes" && Settings::getSettings()->get("logfile_name") != ""){
-        if ( logSinkMap.find( "file") == logSinkMap.end()) {
-            try{
-                logSinkMap["file"] = new FileLogger(
-                     Settings::getSettings()->get("logfile_name"));
-            }catch(std::exception e){
-                error("Could not start file log sink, could not open file");
-            }
-        }
+  if (Settings::getSettings()->get("log_file") == "yes" && Settings::getSettings()->get("logfile_name") != ""){
+    if ( sink_map.find( "file") == sink_map.end()) {
+      try {
+        sink_map["file"] = new FileLogger(
+            Settings::getSettings()->get("logfile_name"));
+      } catch (std::exception e){
+        error("Could not start file log sink, could not open file");
+      }
     }
-    else {
-        if ( logSinkMap.find( "file") != logSinkMap.end()) {
-            delete logSinkMap["file"];
-            logSinkMap.erase("file");
-        }
+  } else {
+    if ( sink_map.find( "file") != sink_map.end()) {
+      delete sink_map["file"];
+      sink_map.erase("file");
     }
+  }
 
-    if ( Settings::getSettings()->get("log_syslog") == "yes") {
-        if ( logSinkMap.find( "sys") == logSinkMap.end())
-            logSinkMap["sys"] = new SysLogger();
+  if ( Settings::getSettings()->get("log_syslog") == "yes") {
+    if ( sink_map.find( "sys") == sink_map.end())
+      sink_map["sys"] = new SysLogger();
+  } else {
+    if ( sink_map.find( "sys") != sink_map.end()) {
+      delete sink_map["sys"];
+      sink_map.erase("sys");
     }
-    else {
-        if ( logSinkMap.find( "sys") != logSinkMap.end()) {
-            delete logSinkMap["sys"];
-            logSinkMap.erase("sys");
-        }
-    }
+  }
 }
 
-Logger::Logger() : extcount(0)
+Logger::Logger() : sink_count(0)
 {
-    reconfigure("","");
-	info("Logger started");
-  Settings::getSettings()->setCallback("log_level", SettingsCallback(this, &Logger::reconfigure));
+  reconfigure("","");
+  info("Logger started");
+  Settings::getSettings()->setCallback("log_level",   SettingsCallback(this, &Logger::reconfigure));
   Settings::getSettings()->setCallback("log_console", SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_syslog", SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_file", SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_syslog",  SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_file",    SettingsCallback(this, &Logger::reconfigure));
 }
 
 Logger::~Logger()
@@ -224,9 +220,7 @@ Logger::~Logger()
 
 void Logger::doLogging(int level, const char *msg)
 {
-    std::map<std::string, LogSink*>::iterator  pos;
-
-    for (pos = logSinkMap.begin(); pos != logSinkMap.end(); pos++) {
-        pos->second->doLogging( level, msg);
-    }
+  for (SinkMap::iterator pos = sink_map.begin(); pos != sink_map.end(); ++pos) {
+    pos->second->doLogging(level, msg);
+  }
 }

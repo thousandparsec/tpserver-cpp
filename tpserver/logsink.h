@@ -20,16 +20,23 @@
  *
  */
 
-
+/**
+ * Log sink abstract interface class
+ */
 class LogSink {
- public:
+  public:
+    /**
+     * Empty virtual destructor to prevent compiler warnings
+     */
     virtual ~LogSink(){};
 
+    /**
+     * Abstract logging function
+     *
+     * @param level logging level
+     * @param msg logging message
+     */
     virtual void doLogging( int level, const char* msg) const = 0;
-
- private:
-
 };
-
 
 #endif

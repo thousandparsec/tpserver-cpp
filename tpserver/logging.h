@@ -25,39 +25,88 @@
 
 class LogSink;
 
+/**
+ * Logger singleton for internal logging
+ */
 class Logger {
 
- public:
-	static Logger *getLogger();
+  public:
+    /**
+     * Static singleton instance accessor
+     */
+    static Logger *getLogger();
 
-	void debug(const char *msg, ...);
-	void info(const char *msg, ...);
-	void warning(const char *msg, ...);
-	void error(const char *msg, ...);
+    /**
+     * Write to debug log
+     */
+    void debug(const char *msg, ...);
 
-	int addLog(LogSink* newlog);
-	void removeLog(int extid);
+    /**
+     * Write to info log
+     */
+    void info(const char *msg, ...);
 
-	void flush();
+    /**
+     * Write to warning log
+     */
+    void warning(const char *msg, ...);
 
-	void reconfigure(const std::string & item, const std::string & value);
+    /**
+     * Write to error log
+     */
+    void error(const char *msg, ...);
 
+    /**
+     * Add a log sink
+     */
+    int addLog(LogSink* newlog);
 
- private:
+    /**
+     * Remove log sink
+     */
+    void removeLog(int extid);
+
+    /**
+     * Flush the log sinks
+     */
+    void flush();
+
+    /**
+     * Callback for Settings configuration
+     */
+    void reconfigure(const std::string & item, const std::string & value);
+
+  private:
+    /// Private constructor, class can only be instantiated via getLogger
     Logger();
-	virtual ~Logger();
+
+    /// Private destructor (how will the class be freed??)
+    virtual ~Logger();
+
+    /// Blocked copy constructor
     Logger(Logger & rhs);
-	Logger operator=(Logger & rhs);
 
-	void doLogging( int level, const char *msg);
+    /// Blocked assignment operator
+    Logger operator=(Logger & rhs);
 
-    std::map<std::string, LogSink*>  logSinkMap;
+    /// Perform logging per operation level
+    void doLogging( int level, const char *msg);
 
-        int extcount;
-        
-	int loglevel;
+  private:
+    /// Sink map typedef
+    typedef std::map<std::string, LogSink*> SinkMap; 
 
-	static Logger *myInstance;
+    /// Sink map
+    SinkMap sink_map;
+
+    /// Count of external sinks 
+    int sink_count;
+
+    /// Current log level
+    int log_level;
+
+    /// Singleton static instance
+    static Logger *instance;
 };
 
 #define debugLog   Logger::getLogger()->debug
