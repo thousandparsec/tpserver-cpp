@@ -48,9 +48,7 @@ std::string Board::getDescription() {
 }
 
 void Board::addMessage(Message * msg, int pos) {
-  if (message_ids.empty()) {
-    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
-  }
+  retrieveMessageList();
   uint32_t msgid = Game::getGame()->getBoardManager()->addMessage(msg);
   if (msgid == UINT32_NEG_ONE)
   {
@@ -71,12 +69,7 @@ void Board::addMessage(Message * msg, int pos) {
 }
 
 bool Board::removeMessage(uint32_t pos){
-  if (pos >= message_count || pos < 0) {
-    return false;
-  }
-  if (message_ids.empty()) {
-    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
-  }
+  retrieveMessageList();
   if (pos >= message_ids.size()) {
     return false;
   }
@@ -109,9 +102,7 @@ void Board::packBoard(Frame * frame){
 void Board::packMessage(Frame * frame, uint32_t msgnum) {
   if (msgnum < message_count) {
     Message* message = NULL;
-    if (message_ids.empty()) {
-      message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
-    }
+    retrieveMessageList();
     if (msgnum < message_ids.size()) {
       IdList::iterator itpos = message_ids.begin();
       advance(itpos, msgnum);
@@ -143,4 +134,10 @@ uint32_t Board::getNumMessages() const{
 void Board::setPersistenceData( uint32_t nmessage_count, uint64_t nmod_time ) {
   message_count = nmessage_count;
   mod_time = nmod_time;
+}
+
+void Board::retrieveMessageList() {
+  if (message_ids.empty()) {
+    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+  }
 }

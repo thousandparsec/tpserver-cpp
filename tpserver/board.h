@@ -112,6 +112,9 @@ class Board {
     /// List of MessageID's belonging to this board
     IdList message_ids;
 
+    /// Retrieves if neccessary message list from persistence
+    void retrieveMessageList();
+
   private:
     /// Blocked default constructor
     Board() {}
