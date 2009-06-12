@@ -26,34 +26,32 @@
 
 #include "syslogger.h"
 
-SysLogger::SysLogger()
-{
-    openlog( "tpserver-cpp", LOG_PID, LOG_DAEMON);
+SysLogger::SysLogger() {
+  openlog( "tpserver-cpp", LOG_PID, LOG_DAEMON);
 }
 
-SysLogger::~SysLogger()
-{
-    closelog();
+SysLogger::~SysLogger() {
+  closelog();
 }
 
-void SysLogger::doLogging( int level, const char* msg) const
-{
-    switch ( level) {
+void SysLogger::doLogging( int level, const char* msg) const {
+  switch (level) {
     case 0:
-        level = LOG_DEBUG;
-        break;
+      level = LOG_DEBUG;
+      break;
     case 1:
-        level = LOG_INFO;
-        break;
+      level = LOG_INFO;
+      break;
     case 2:
-        level = LOG_WARNING;
-        break;
+      level = LOG_WARNING;
+      break;
     case 3:
-        level = LOG_ERR;
-        break;
+      level = LOG_ERR;
+      break;
     default:
-        level = LOG_NOTICE;
-    }
+      level = LOG_NOTICE;
+  }
 
-    syslog( level, "%s", msg);
+  syslog( level, "%s", msg);
 }
+

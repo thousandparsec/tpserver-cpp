@@ -20,19 +20,35 @@
  *
  */
 
+#include <tpserver/logsink.h>
 
-#include "logsink.h"
-
+/**
+ * Log sink that logs to file
+ *
+ * @see LogSink
+ */
 class SysLogger : public LogSink {
- public:
+  public:
+    /**
+     * Default constructor
+     *
+     * Opens syslog under the name "tpserver-cpp".
+     */
     SysLogger();
+    /**
+     * Destructor
+     *
+     * Closes the syslog.
+     */
     virtual ~SysLogger();
 
-    virtual void doLogging( int level, const char* msg) const;
-
- private:
-
+    /**
+     * Logging override
+     *
+     * Logs to syslog.
+     */
+    virtual void doLogging(int level, const char* msg) const;
 };
 
-
 #endif
+
