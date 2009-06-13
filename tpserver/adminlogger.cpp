@@ -46,7 +46,7 @@ AdminConnection *AdminLogger::getConnection() const {
 void AdminLogger::doLogging(int level, const char* msg) const {
     uint64_t timestamp = time(NULL);
 
-    assert(connection);
+    //TODO: assert(connection);
 
     // TODO: "3"? What the hell is 3?
     if (connection->getStatus() == 3) {
