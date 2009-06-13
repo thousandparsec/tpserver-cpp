@@ -22,9 +22,7 @@
 
 #include <map>
 #include <string>
-
-class Board;
-class Message;
+#include <tpserver/board.h>
 
 /**
  * Manager class for boards and messages
@@ -51,12 +49,12 @@ public:
      *
      * @returns Pointer to newly created board
      */
-    Board* createNewBoard(const std::string &name, const std::string &desc);
+    Board::Ptr createNewBoard(const std::string &name, const std::string &desc);
 
     /**
      * Returns board by ID
      */
-    Board* getBoard(uint32_t id);
+    Board::Ptr getBoard(uint32_t id);
 
     /**
      * Posts message to top of passed board, by boardid.
@@ -69,7 +67,7 @@ public:
     Message* getMessage(uint32_t message_id);
 
 private:
-    typedef std::map<uint32_t, Board*>   BoardMap;
+    typedef std::map<uint32_t, Board::Ptr>   BoardMap;
     typedef std::map<uint32_t, Message*> MessageMap;
     
     BoardMap boards;

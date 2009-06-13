@@ -108,16 +108,16 @@ bool Persistence::removeOrder(uint32_t queueid, uint32_t ordid){
 }
 
 
-bool Persistence::saveBoard(Board* board){
+bool Persistence::saveBoard(boost::shared_ptr<Board> board){
     return false;
 }
 
-bool Persistence::updateBoard(Board* board){
+bool Persistence::updateBoard(const Board* board){
     return false;
 }
 
-Board* Persistence::retrieveBoard(uint32_t boardid){
-    return NULL;
+boost::shared_ptr<Board> Persistence::retrieveBoard(uint32_t boardid){
+    return boost::shared_ptr<Board>();
 }
 
 uint32_t Persistence::getMaxBoardId(){

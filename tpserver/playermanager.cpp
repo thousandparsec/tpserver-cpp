@@ -67,7 +67,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         // player can be added
         
         //setup board and add to player
-        Board* board = Game::getGame()->getBoardManager()->createNewBoard("Personal board", 
+        Board::Ptr board = Game::getGame()->getBoardManager()->createNewBoard("Personal board", 
                 "Messages from the System and personal notices board");
         rtn->setBoardId(board->getBoardID());
 

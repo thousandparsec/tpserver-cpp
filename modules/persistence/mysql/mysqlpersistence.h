@@ -70,9 +70,9 @@ public:
     virtual bool removeOrder(uint32_t queueid, uint32_t ordid);
     
 
-    virtual bool saveBoard(Board* board);
-    virtual bool updateBoard(Board* board);
-    virtual Board* retrieveBoard(uint32_t boardid);
+    virtual bool saveBoard(boost::shared_ptr<Board> board);
+    virtual bool updateBoard(const Board* board);
+    virtual boost::shared_ptr<Board> retrieveBoard(uint32_t boardid);
     virtual uint32_t getMaxBoardId();
     virtual std::set<uint32_t> getBoardIds();
 

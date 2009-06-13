@@ -23,6 +23,7 @@
 
 #include <string>
 #include <list>
+#include <boost/shared_ptr.hpp>
 
 class Message;
 class Frame;
@@ -33,6 +34,9 @@ class Frame;
 class Board {
 
   public:
+    /// typedef for shared pointer
+    typedef boost::shared_ptr< Board > Ptr;
+
     /// List of Message ID's
     typedef std::list< uint32_t > IdList;
 

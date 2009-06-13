@@ -893,7 +893,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
     Frame *of = curConnection->createFrame(frame);
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
-      Board* board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
+      Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
       board->packBoard(of);
     }else{
       //boards in the game object
@@ -926,7 +926,7 @@ void PlayerAgent::processGetBoardIds(Frame* frame){
     //start new seqkey
     seqkey = 0;
   }
-  uint32_t snum = frame->unpackInt(); // starting number
+  /*uint32_t snum =*/ frame->unpackInt(); // starting number
   uint32_t numtoget = frame->unpackInt();
   uint64_t fromtime = UINT64_NEG_ONE;
   if(frame->getVersion() >= fv0_4){
@@ -988,14 +988,14 @@ void PlayerAgent::processGetMessages(Frame * frame){
     return;
   }
 
-  Board * currboard;
+  Board::Ptr currboard;
     //HACK
     // should depend on what the player should be allowed to see
     if(lboardid == 0)
         lboardid = player->getBoardId();
     currboard = Game::getGame()->getBoardManager()->getBoard(lboardid);
 
-  if(currboard != NULL){
+  if(currboard.get() != NULL){
     for(int i = 0; i < nummsg; i++){
       Frame *of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
@@ -1029,7 +1029,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
   int lboardid = frame->unpackInt();
   int pos = frame->unpackInt();
 
-  Board * currboard;
+  Board::Ptr currboard;
     //HACK
     // should depend on what the player should be allowed to see
     if(lboardid == 0)
@@ -1094,7 +1094,7 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
     curConnection->sendFrame(seq);
   }
 
-  Board * currboard;
+  Board::Ptr currboard;
     //HACK
     // should depend on what the player should be allowed to see
     if(lboardid == 0)

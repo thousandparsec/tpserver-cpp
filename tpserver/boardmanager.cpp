@@ -39,34 +39,34 @@ void BoardManager::init() {
   std::set<uint32_t> bidset(persist->getBoardIds());
 
   for(std::set<uint32_t>::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
-    boards[*itcurr] = NULL;
+    boards[*itcurr] = Board::Ptr();
   }
 }
 
-Board* BoardManager::createNewBoard(const std::string &name, const std::string &desc) {
-  Board *rtn = new Board(nextbid++, name, desc);
+Board::Ptr BoardManager::createNewBoard(const std::string &name, const std::string &desc) {
+  Board::Ptr board( new Board(nextbid++, name, desc) );
 
-  boards[rtn->getBoardID()] = (rtn);
-  Game::getGame()->getPersistence()->saveBoard(rtn);
+  boards[board->getBoardID()] = board;
+  Game::getGame()->getPersistence()->saveBoard(board);
 
-  return rtn;
+  return board;
 }
 
-Board* BoardManager::getBoard(uint32_t id) {
-  Board* rtn = NULL;
+Board::Ptr BoardManager::getBoard(uint32_t id) {
+  Board::Ptr board;
   BoardMap::iterator pl = boards.find(id);
   if (pl != boards.end()) {
-    rtn = (*pl).second;
+    board = (*pl).second;
   }
-  if (rtn == NULL) {
-    rtn = Game::getGame()->getPersistence()->retrieveBoard(id);
-    boards[id] = rtn;
+  if (board.get() == NULL) {
+    board = Game::getGame()->getPersistence()->retrieveBoard(id);
+    boards[id] = board;
   }
-  return rtn;
+  return board;
 }
 
 void BoardManager::postToBoard(Message* msg, uint32_t boardid) {
-  Board* board = getBoard(boardid);
+  Board::Ptr board = getBoard(boardid);
   board->addMessage(msg,-1);
 }
 
