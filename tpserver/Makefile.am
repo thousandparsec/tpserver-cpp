@@ -65,7 +65,10 @@ headers_HEADERS = connection.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
 	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h \
-	command.h commandmanager.h mediaobjectparam.h tinyxml/tinyxml.h
+	command.h commandmanager.h mediaobjectparam.h
+
+headerstinyxmldir = $(headersdir)/tinyxml
+headerstinyxml_HEADERS = tinyxml/tinyxml.h
 
 noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
