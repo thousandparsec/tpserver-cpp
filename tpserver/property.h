@@ -25,45 +25,52 @@
 
 class Frame;
 
-class Property{
- public:
-  Property();
-  ~Property();
+class Property {
+  public:
+    /**
+     * Default constructor
+     *
+     * Sets timestamp
+     */
+    Property();
 
-  void packFrame(Frame* frame) const;
+    /**
+     * Pack property data into a frame
+     */
+    void packFrame(Frame* frame) const;
 
-  uint32_t getPropertyId() const;
-  std::set<uint32_t> getCategoryIds() const;
-  bool isInCategory(uint32_t catid) const;
-  uint32_t getRank() const;
-  std::string getName() const;
-        std::string getDisplayName() const;
+    uint32_t getPropertyId() const;
+    std::set<uint32_t> getCategoryIds() const;
+    bool isInCategory(uint32_t catid) const;
+    uint32_t getRank() const;
+    std::string getName() const;
+    std::string getDisplayName() const;
     std::string getDescription() const;
-  std::string getTpclDisplayFunction() const;
-        std::string getTpclRequirementsFunction() const;
+    std::string getTpclDisplayFunction() const;
+    std::string getTpclRequirementsFunction() const;
     uint64_t getModTime() const;
-  
-  void setPropertyId(uint32_t id);
-  void addCategoryId(uint32_t id);
-  void setCategoryIds(const std::set<uint32_t>& idset);
-  void setRank(uint32_t r);
-  void setName(const std::string& n);
-        void setDisplayName(const std::string& d);
-  void setDescription(const std::string& d);
-  void setTpclDisplayFunction(const std::string& d);
-        void setTpclRequirementsFunction(const std::string& r);
+
+    void setPropertyId(uint32_t id);
+    void addCategoryId(uint32_t id);
+    void setCategoryIds(const std::set<uint32_t>& idset);
+    void setRank(uint32_t r);
+    void setName(const std::string& n);
+    void setDisplayName(const std::string& d);
+    void setDescription(const std::string& d);
+    void setTpclDisplayFunction(const std::string& d);
+    void setTpclRequirementsFunction(const std::string& r);
     void setModTime(uint64_t nmt);
 
- private:
-  uint32_t propid;
-  std::set<uint32_t> catids;
-  uint32_t rank;
-  uint64_t timestamp;
-  std::string name;
-        std::string display;
-  std::string description;
-  std::string tpcl_display;
-        std::string tpcl_requires;
+  private:
+    uint32_t propid;
+    std::set<uint32_t> catids;
+    uint32_t rank;
+    uint64_t timestamp;
+    std::string name;
+    std::string display;
+    std::string description;
+    std::string tpcl_display;
+    std::string tpcl_requires;
 
 };
 
