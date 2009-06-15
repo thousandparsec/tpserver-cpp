@@ -81,9 +81,7 @@ Frame::Frame(const Frame &rhs)
 Frame::~Frame()
 {
   if (data != NULL)
-  {
     free(data);
-  }
 }
 
 Frame Frame::operator=(const Frame & rhs)

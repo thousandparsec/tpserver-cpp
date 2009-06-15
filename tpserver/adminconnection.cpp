@@ -34,10 +34,6 @@
 
 #include "adminconnection.h"
 
-AdminConnection::AdminConnection() : Connection(), version(fv0_4){
-}
-
-
 AdminConnection::AdminConnection(int fd) : Connection(){
   sockfd = fd;
   status = PRECONNECTED;

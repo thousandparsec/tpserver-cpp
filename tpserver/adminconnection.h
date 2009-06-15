@@ -31,12 +31,9 @@ class AdminLogger;
 class AdminConnection: public Connection {
   
  public:
-  AdminConnection();
   AdminConnection(int fd);
   virtual ~AdminConnection();
   
-  void setFD(int fd);
-
   void process();
   virtual void close() = 0;
   virtual void sendFrame(Frame * frame) = 0;
@@ -62,6 +59,8 @@ class AdminConnection: public Connection {
   int logextid;
 
   ProtocolVersion version;
+ private:
+  AdminConnection() {};
 };
 
 #endif

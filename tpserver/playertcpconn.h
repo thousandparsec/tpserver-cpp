@@ -35,7 +35,6 @@ class PlayerTcpConnection : public PlayerConnection {
   void close();
   
  protected:
-  PlayerTcpConnection();
   void verCheck();
   virtual int32_t verCheckPreChecks();
   virtual int32_t verCheckLastChance();
