@@ -55,7 +55,7 @@ PlayerTlsConnection::PlayerTlsConnection(int fd) : PlayerTcpConnection(fd), hand
 }
 
 PlayerTlsConnection::~PlayerTlsConnection(){
-    if (status != 0) {
+    if (status != DISCONNECTED) {
             close();
     }
     TlsManager::getInstance()->dereference();

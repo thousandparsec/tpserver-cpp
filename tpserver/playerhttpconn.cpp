@@ -49,7 +49,7 @@ PlayerHttpConnection::PlayerHttpConnection(int fd) : PlayerTcpConnection(fd), ht
 
 PlayerHttpConnection::~PlayerHttpConnection()
 {
-	if (status != 0) {
+	if (status != DISCONNECTED) {
 		close();
 	}
 }

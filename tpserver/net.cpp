@@ -121,7 +121,7 @@ void Network::start()
 	  uint32_t numsocks = 0;
 	  TcpSocket* listensocket = new TcpSocket();
             listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
-	  if(listensocket->getStatus() != 0){
+	  if(listensocket->getStatus() != Connection::DISCONNECTED){
 	    addConnection(listensocket);
 	    numsocks++;
             advertiser->addService("tp", listensocket->getPort());
@@ -133,7 +133,7 @@ void Network::start()
           if(Settings::getSettings()->get("http") == "yes"){
             HttpSocket* httpsocket = new HttpSocket();
             httpsocket->openListen(Settings::getSettings()->get("http_addr"), Settings::getSettings()->get("http_port"));
-            if(httpsocket->getStatus() != 0){
+            if(httpsocket->getStatus() != Connection::DISCONNECTED){
               addConnection(httpsocket);
               numsocks++;
               advertiser->addService("tp+http", httpsocket->getPort());
@@ -148,7 +148,7 @@ void Network::start()
             if(Settings::getSettings()->get("tps") == "yes"){
                 TlsSocket* secsocket = new TlsSocket();
                 secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
-                if(secsocket->getStatus() != 0){
+                if(secsocket->getStatus() != Connection::DISCONNECTED){
                     addConnection(secsocket);
                     numsocks++;
                     advertiser->addService("tps", secsocket->getPort());
@@ -162,7 +162,7 @@ void Network::start()
             if(Settings::getSettings()->get("https") == "yes"){
                 HttpsSocket* secsocket = new HttpsSocket();
                 secsocket->openListen(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
-                if(secsocket->getStatus() != 0){
+                if(secsocket->getStatus() != Connection::DISCONNECTED){
                     addConnection(secsocket);
                     numsocks++;
                     advertiser->addService("tp+https", secsocket->getPort());
@@ -232,7 +232,7 @@ void Network::adminStart(){
   if(Settings::getSettings()->get("admin_tcp") == "yes"){
     AdminTcpSocket* admintcpsocket = new AdminTcpSocket();
     admintcpsocket->openListen(Settings::getSettings()->get("admin_tcp_addr"), Settings::getSettings()->get("admin_tcp_port"));
-    if(admintcpsocket->getStatus() != 0){
+    if(admintcpsocket->getStatus() != Connection::DISCONNECTED){
       addConnection(admintcpsocket);
     }else{
       delete admintcpsocket;
@@ -269,7 +269,7 @@ void Network::sendToAll(AsyncFrame* aframe){
   std::map < int, Connection * >::iterator itcurr;
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
     PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
-    if(currConn != NULL && currConn->getStatus() == 3){
+    if(currConn != NULL && currConn->getStatus() == Connection::READY){
       Frame * currFrame = currConn->createFrame(NULL);
       if(aframe->createFrame(currFrame)){
         currConn->sendFrame(currFrame);
@@ -343,7 +343,7 @@ void Network::masterLoop()
 				if (FD_ISSET((*itcurr).first, &cur_set)) {
 					(*itcurr).second->process();
 				}
-				if ((*itcurr).second->getStatus() == 0) {
+				if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
 				  Logger::getLogger()->info("Closed connection %d", (*itcurr).second->getFD());
 				  Connection* conn = itcurr->second;
 				  removeConnection(conn);

@@ -42,14 +42,14 @@ ListenSocket::ListenSocket() : Connection(){
 }
 
 ListenSocket::~ListenSocket(){
-  if(status != 0)
+  if(status != DISCONNECTED)
     close(sockfd);
-  status = 0;
+  status = DISCONNECTED;
 }
 
 void ListenSocket::openListen(const std::string &address, const std::string &port){
  
-  status = 1;
+  status = PRECONNECTED;
 
   const char* c_addr = address.c_str();
   if(address.length() == 0){
@@ -103,7 +103,7 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 #endif
 	if (sockfd == -1){
 		Logger::getLogger()->warning("Could not create Socket");
-            status = 0;
+            status = DISCONNECTED;
             return;
         }
         
@@ -130,7 +130,7 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 	if (bind(sockfd, (struct sockaddr *) &myAddr, sizeof(struct sockaddr)) != 0) {
 		perror("bind");
 		Logger::getLogger()->error("Failed to bind to port and address");
-                status = 0;
+                status = DISCONNECTED;
                 close(sockfd);
                 return;
 	}
@@ -138,13 +138,13 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 
 	if (listen(sockfd, 5) != 0){
 		Logger::getLogger()->error("Failed to listen");
-            status = 0;
+            status = DISCONNECTED;
             close(sockfd);
             return;
         }
 
 	if(sockfd == -1){
-	  status = 0;
+	  status = DISCONNECTED;
 	}
     
 }

@@ -55,7 +55,7 @@ PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd), rheader
 
 PlayerTcpConnection::~PlayerTcpConnection()
 {
-	if (status != 0) {
+	if (status != DISCONNECTED) {
 		close();
 	}
         if(rheaderbuff != NULL)
@@ -76,7 +76,7 @@ void PlayerTcpConnection::close()
   if(sendqueue.empty()){
     Logger::getLogger()->debug("Closing connection");
     ::close(sockfd);
-    status = 0;
+    status = DISCONNECTED;
   }else{
     sendandclose = true;
   }
@@ -91,7 +91,7 @@ void PlayerTcpConnection::sendFrame(Frame * frame)
   if(version == fv0_2 && frame->getType() >= ft02_Max){
     Logger::getLogger()->error("Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
   }else{
-    if(status != 0 && !sendandclose){
+    if(status != DISCONNECTED && !sendandclose){
       sendqueue.push(frame);
       
       processWrite();
@@ -271,7 +271,7 @@ void PlayerTcpConnection::verCheck(){
             std::string clientsoft = recvframe->unpackStdString();
             Logger::getLogger()->info("Client on connection %d is [%s]", sockfd, clientsoft.c_str());
             
-            status = 2;
+            status = CONNECTED;
             
             Frame *okframe = createFrame(recvframe);
             okframe->setType(ft02_OK);

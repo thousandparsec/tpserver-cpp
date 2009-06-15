@@ -28,7 +28,7 @@
 #include "connection.h"
 
 Connection::Connection()
-  : sockfd(0), status(0)
+  : sockfd(0), status(DISCONNECTED)
 {
 }
 
@@ -48,7 +48,7 @@ int Connection::getFD()
 void Connection::processWrite(){
 }
 
-int Connection::getStatus()
+Connection::Status Connection::getStatus()
 {
   return status;
 }

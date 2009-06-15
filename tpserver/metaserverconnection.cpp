@@ -68,14 +68,14 @@ MetaserverConnection::MetaserverConnection(Advertiser* ad, MetaserverPublisher* 
 }
 
 MetaserverConnection::~MetaserverConnection(){
-  if(status != 0)
+  if(status != DISCONNECTED)
     close(sockfd);
-  status = 0;
+  status = DISCONNECTED;
 }
 
 bool MetaserverConnection::sendUpdate(){
 
-  status = 1;
+  status = PRECONNECTED;
   
   Settings* settings = Settings::getSettings();
 
@@ -103,7 +103,7 @@ bool MetaserverConnection::sendUpdate(){
   
   if (n < 0) {
     Logger::getLogger()->error("Metaserver: Could not getaddrinfo, %s", gai_strerror(n));
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
   
@@ -146,7 +146,7 @@ bool MetaserverConnection::sendUpdate(){
   } else if ((sin.sin_port = htons((u_short)atoi(port.c_str())))==0) {
     fprintf(stderr, "ipv4_only_connect:: could not get service=[%s]\n",
             port.c_str());
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
   
@@ -156,13 +156,13 @@ bool MetaserverConnection::sendUpdate(){
   } else if ( (sin.sin_addr.s_addr = inet_addr(host.c_str())) == 
               INADDR_NONE) {
     fprintf(stderr, "ipv4_only_connect:: could not get host=[%s]\n", host.c_str());
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
   
   if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {  
     fprintf(stderr, "ipv4_only_connect:: could not open socket\n");
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
   
@@ -171,14 +171,14 @@ bool MetaserverConnection::sendUpdate(){
 //         setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   if (connect(sockfd,(struct sockaddr *)&sin, sizeof(sin)) < 0) {
     fprintf(stderr, "ipv4_only_connect:: could not connect to host=[%s]\n", host.c_str());
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
 
 #endif
   if (sockfd == -1){
     Logger::getLogger()->warning("Could not create Metaserver Connection socket");
-    status = 0;
+    status = DISCONNECTED;
     return false;
   }
   
@@ -244,7 +244,7 @@ bool MetaserverConnection::sendUpdate(){
      || localip.find("fec0::") == 0 // ipv6 site local address
      || localip.find("fe80::") == 0) // ipv6 link local address
   {
-    status = 0;
+    status = DISCONNECTED;
     close(sockfd);
     Logger::getLogger()->warning("Was going to send private ip address to metaserver, not updating metaserver");
     return false;
@@ -328,7 +328,7 @@ bool MetaserverConnection::sendUpdate(){
   
   send(sockfd, request.c_str(), request.length(), 0);
   
-  status = 1;
+  status = PRECONNECTED;
   
   return true;
 }
@@ -342,7 +342,7 @@ void MetaserverConnection::process(){
   if(rlen <= 0){
     Logger::getLogger()->debug("Metaserver disconnected");
     close(sockfd);
-    status = 0;
+    status = DISCONNECTED;
     delete[] buffer;
     std::cout << response << std::endl;
     return;

@@ -26,6 +26,16 @@
 class Connection {
   public:
     /**
+     * Connection status
+     */
+    enum Status {
+      DISCONNECTED = 0, //!< Connection not established
+      PRECONNECTED,     //!< Connection established but not ready
+      CONNECTED,        //!< Connection established
+      READY             //!< Connection ready
+    };
+
+    /**
      * Default constructor
      *
      * Zeroes all fields
@@ -52,7 +62,7 @@ class Connection {
     /**
      * Returns status
      */
-    int getStatus();
+    Status getStatus();
 
     /**
      * Returns file descriptor of connection
@@ -64,7 +74,7 @@ class Connection {
     /// Connection socket file descriptor
     int sockfd;
     /// Connection status
-    int status;
+    Status status;
 };
 
 #endif

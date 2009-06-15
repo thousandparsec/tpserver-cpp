@@ -141,7 +141,7 @@ class AvahiWatch : public Connection{
  public:
   AvahiWatch(int fd, AvahiWatchCallback cb, void* ud): Connection(), callback(cb), watchedEvents(), happenedEvents(), userdata(ud){
     sockfd = fd;
-    status = 1;
+    status = PRECONNECTED;
     Network::getNetwork()->addConnection(this);
   }
   

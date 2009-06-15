@@ -40,7 +40,7 @@ AdminConnection::AdminConnection() : Connection(), version(fv0_4){
 
 AdminConnection::AdminConnection(int fd) : Connection(){
   sockfd = fd;
-  status = 1;
+  status = PRECONNECTED;
 }
 
 AdminConnection::~AdminConnection(){
@@ -51,31 +51,27 @@ AdminConnection::~AdminConnection(){
 
 void AdminConnection::setFD(int fd){
   sockfd = fd;
-  status = 1;
+  status = PRECONNECTED;
 }
 
 void AdminConnection::process(){
   Logger::getLogger()->debug("About to Process");
   switch (status) {
-  case 1:
+  case PRECONNECTED:
     //check if user is really an admin client
     verCheck();
     break;
-  case 2:
+  case CONNECTED:
     //authorise the user
     login();
     break;
-  case 3:
+  case READY:
     //process as normal
     adminFrame();
     break;
-  case 0:
-  default:
+  case DISCONNECTED:
     //do nothing
     Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
-    if (status != 0)
-            close();
-    status = 0;
     break;
   }
   Logger::getLogger()->debug("Finished Processing");
@@ -138,7 +134,7 @@ void AdminConnection::login(){
           logsink = new AdminLogger();
 	  logsink->setConnection(this);
           logextid = Logger::getLogger()->addLog(logsink);
-          status = 3;
+          status = READY;
         } else {
           Logger::getLogger()->info("Bad username or password");
           Frame *failframe = createFrame(recvframe);

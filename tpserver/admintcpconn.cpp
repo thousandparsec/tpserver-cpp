@@ -53,7 +53,7 @@ AdminTcpConnection::AdminTcpConnection(int fd) : AdminConnection(fd), rheaderbuf
 
 AdminTcpConnection::~AdminTcpConnection()
 {
-	if (status != 0) {
+	if (status != DISCONNECTED) {
 		close();
 	}
         if(rheaderbuff != NULL)
@@ -73,7 +73,7 @@ void AdminTcpConnection::close()
 {
   if(sendqueue.empty()){
     ::close(sockfd);
-    status = 0;
+    status = DISCONNECTED;
   }else{
     sendandclose = true;
   }
@@ -86,7 +86,7 @@ void AdminTcpConnection::sendFrame(Frame * frame)
 
   }
   FrameType type = frame->getType();
-  if(status != 0 && !sendandclose){
+  if(status != DISCONNECTED && !sendandclose){
     sendqueue.push(frame);
     processWrite();
   }
@@ -263,7 +263,7 @@ void AdminTcpConnection::verCheck(){
             std::string clientsoft = recvframe->unpackStdString();
             Logger::getLogger()->info("Admin client on connection %d is [%s]", sockfd, clientsoft.c_str());
 
-            status = 2;
+            status = CONNECTED;
 
             Frame *okframe = createFrame(recvframe);
             okframe->setType(ft02_OK);

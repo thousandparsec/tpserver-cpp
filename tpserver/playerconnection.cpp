@@ -45,7 +45,7 @@ PlayerConnection::PlayerConnection() : Connection(), playeragent(NULL), version(
 
 PlayerConnection::PlayerConnection(int fd) : Connection(), playeragent(NULL), version(fv0_3), paddingfilter(false){
   sockfd = fd;
-  status = 1;
+  status = PRECONNECTED;
   lastpingtime = time(NULL);
 }
 
@@ -58,34 +58,30 @@ PlayerConnection::~PlayerConnection(){
 
 void PlayerConnection::setFD(int fd){
   sockfd = fd;
-  status = 1;
+  status = PRECONNECTED;
 }
 
 void PlayerConnection::process(){
   Logger::getLogger()->debug("About to Process");
   switch (status) {
-  case 1:
+  case PRECONNECTED:
     //check if user is really a TP protocol verNN client
     Logger::getLogger()->debug("Stage1 : pre-connect");
     verCheck();
     break;
-  case 2:
+  case CONNECTED:
     //authorise the user
     Logger::getLogger()->debug("Stage2 : connected");
     login();
     break;
-  case 3:
+  case READY:
     //process as normal
     Logger::getLogger()->debug("Stage3 : logged in");
     inGameFrame();
     break;
-  case 0:
-  default:
+  case DISCONNECTED:
     //do nothing
     Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
-    if (status != 0)
-            close();
-    status = 0;
     break;
   }
   Logger::getLogger()->debug("Finished Processing");
@@ -159,7 +155,7 @@ void PlayerConnection::login(){
           playeragent = new PlayerAgent();
           playeragent->setPlayer(player);
           playeragent->setConnection(this);
-          status = 3;
+          status = READY;
         } else {
           Logger::getLogger()->info("Bad username or password");
           Frame *failframe = createFrame(recvframe);
