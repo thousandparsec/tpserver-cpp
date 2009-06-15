@@ -20,23 +20,51 @@
  *
  */
 
-
+/**
+ * Abstract connection class
+ */
 class Connection {
-  
- public:
-  Connection();
-  virtual ~Connection();
-  
-  int getFD();
-  
-  virtual void process() = 0;
-  virtual void processWrite();
-  int getStatus();
-  
- protected:
-  int sockfd;
-  int status;
-  
+  public:
+    /**
+     * Default constructor
+     *
+     * Zeroes all fields
+     */
+    Connection();
+
+    /**
+     * Destructor
+     *
+     * Does nothing but ensures virtuality
+     */
+    virtual ~Connection();
+
+    /**
+     * Abstract processing
+     */
+    virtual void process() = 0;
+
+    /**
+     * Virtual process write
+     */
+    virtual void processWrite();
+
+    /**
+     * Returns status
+     */
+    int getStatus();
+
+    /**
+     * Returns file descriptor of connection
+     */
+    // TODO: Remove!
+    int getFD();
+
+  protected:
+    /// Connection socket file descriptor
+    int sockfd;
+    /// Connection status
+    int status;
 };
 
 #endif

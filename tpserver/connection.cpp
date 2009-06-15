@@ -21,20 +21,15 @@
 #include <unistd.h>
 #include <string.h>
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "logging.h"
-#include "net.h"
-
-
 #include "connection.h"
 
 Connection::Connection()
+  : sockfd(0), status(0)
 {
-	status = 0;
 }
 
 
@@ -46,7 +41,7 @@ Connection::~Connection()
 
 int Connection::getFD()
 {
-	return sockfd;
+  return sockfd;
 }
 
 
@@ -55,6 +50,6 @@ void Connection::processWrite(){
 
 int Connection::getStatus()
 {
-	return status;
+  return status;
 }
 
