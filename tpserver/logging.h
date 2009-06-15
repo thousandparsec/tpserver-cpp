@@ -114,4 +114,9 @@ class Logger {
 #define warningLog Logger::getLogger()->warning
 #define errorLog   Logger::getLogger()->error
 
+#define DEBUG   Logger::getLogger()->debug
+#define INFO    Logger::getLogger()->info
+#define WARNING Logger::getLogger()->warning
+#define ERROR   Logger::getLogger()->error
+
 #endif

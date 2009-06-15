@@ -54,32 +54,33 @@ void PlayerConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std:
   Frame* frame = createFrame(oldframe);
   frame->createFailFrame(code, error);
   sendFrame(frame);
+  delete frame;
 }
 
 void PlayerConnection::process(){
-  Logger::getLogger()->debug("About to Process");
+  DEBUG("PlayerConnection : About to Process");
   switch (status) {
     case PRECONNECTED:
       //check if user is really a TP protocol verNN client
-      Logger::getLogger()->debug("Stage1 : pre-connect");
+      DEBUG("PlayerConnection : Stage 1 - pre-connect");
       verCheck();
       break;
     case CONNECTED:
       //authorise the user
-      Logger::getLogger()->debug("Stage2 : connected");
+      DEBUG("PlayerConnection : Stage 2 - connected");
       login();
       break;
     case READY:
       //process as normal
-      Logger::getLogger()->debug("Stage3 : logged in");
+      DEBUG("PlayerConnection : Stage 3 - logged in");
       inGameFrame();
       break;
     case DISCONNECTED:
       //do nothing
-      Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
+      WARNING("PlayerConnection : Tried to process connections that is closed or invalid");
       break;
   }
-  Logger::getLogger()->debug("Finished Processing");
+  DEBUG("PlayerConnection : Finished Processing");
 }
 
 Frame* PlayerConnection::createFrame(Frame* oldframe)
@@ -109,7 +110,7 @@ void PlayerConnection::login(){
           throw std::exception();
         password = recvframe->unpackStdString();
       }catch(std::exception e){
-        Logger::getLogger()->debug("Login: not enough data");
+        DEBUG("PlayerConnection : Login - not enough data");
         sendFail(recvframe, fec_FrameError, "Login Error - missing username or password");
         delete recvframe;
         return;
@@ -127,10 +128,11 @@ void PlayerConnection::login(){
           //Player's name doesn't exist
           if(Settings::getSettings()->get("autoadd_players") == "yes" &&
               Settings::getSettings()->get("add_players") == "yes") {
-            Logger::getLogger()->info("Creating new player automatically");
+            INFO("PlayerConnection : Creating new player automatically");
             player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
             if(player == NULL){
               sendFail(recvframe, fec_PermissionDenied, "Cannot create new player");
+              delete recvframe;
               return;
             }
           }
@@ -146,11 +148,11 @@ void PlayerConnection::login(){
           playeragent->setConnection(this);
           status = READY;
         } else {
-          Logger::getLogger()->info("Bad username or password");
+          INFO("PlayerConnection : Bad username or password");
           sendFail(recvframe,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
         }
       } else {
-        Logger::getLogger()->debug("username or password == NULL");
+        DEBUG("PlayerConnection : username or password == NULL");
         sendFail(recvframe,fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
         //close();
       }
@@ -166,7 +168,7 @@ void PlayerConnection::login(){
         std::string password = recvframe->unpackStdString();
         username = username.substr(0, username.find('@'));
         if (username.length() > 0 && password.length() > 0) {
-          Logger::getLogger()->info("Creating new player");
+          INFO("PlayerConnection : Creating new player");
           Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
           if(player != NULL){
             // also email address and comment strings
@@ -176,21 +178,21 @@ void PlayerConnection::login(){
             okframe->setType(ft02_OK);
             okframe->packString("Account created.");
             sendFrame(okframe);
-            Logger::getLogger()->info("Account created ok for %s", username.c_str());
+            INFO("PlayerConnection : Account created ok for %s", username.c_str());
             playeragent = new PlayerAgent();
             playeragent->setPlayer(player);
             playeragent->setConnection(this);
           }else{
-            Logger::getLogger()->info("Bad username or password in account creation");
+            INFO("PlayerConnection : Bad username or password in account creation");
             sendFail(recvframe,fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
           }
         }else{
-          Logger::getLogger()->debug("username or password == NULL in account frame");
+          DEBUG("PlayerConnection : username or password == NULL in account frame");
           sendFail(recvframe,fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
           close();
         }
       }else{
-        Logger::getLogger()->info("Account creation disabled, not creating account");
+        INFO("PlayerConnection : Account creation disabled, not creating account");
         sendFail(recvframe,fec_PermissionDenied, "Account creation Disabled, talk to game admin");
       }
     }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
@@ -198,7 +200,7 @@ void PlayerConnection::login(){
     }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
       processSetFilters(recvframe);
     }else{
-      Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
+      WARNING("PlayerConnection : In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
       sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
     }
   }
@@ -214,7 +216,7 @@ void PlayerConnection::inGameFrame()
     if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
       processGetFeaturesFrame(frame);
     }else if(version >= fv0_3 && frame->getType() == ft03_Ping){
-      Logger::getLogger()->debug("Processing Ping frame");
+      DEBUG("PlayerConnection : Processing Ping frame");
       // check for the time of the last frame, ignore this if
       //  less than 60 seconds ago.
       if(lastpingtime < static_cast<uint64_t>(time(NULL)) - 60){
@@ -223,9 +225,9 @@ void PlayerConnection::inGameFrame()
         pong->setType(ft02_OK);
         pong->packString("Keep alive ok, hope you're still there");
         sendFrame(pong);
-        Logger::getLogger()->debug("Did ping for client %d", sockfd);
+        DEBUG("PlayerConnection : Did ping for client %d", sockfd);
       }else{
-        Logger::getLogger()->warning("Client %d tried to ping within 60 seconds of the last ping", sockfd);
+        WARNING("PlayerConnection : Client %d tried to ping within 60 seconds of the last ping", sockfd);
       }
     }else if(frame->getType() == ft02_Time_Remaining_Get){
       processTimeRemainingFrame(frame);
@@ -236,21 +238,21 @@ void PlayerConnection::inGameFrame()
     }else{
       if(Game::getGame()->isStarted()){
         // should pass frame to player to do something with
-        Logger::getLogger()->debug("inGameFrame");
+        DEBUG("PlayerConnection : inGameFrame");
         playeragent->processIGFrame(frame);
       }else{
         sendFail(frame,fec_TempUnavailable, "Game has not yet started, please wait");
       }
     }
   } else {
-    Logger::getLogger()->debug("noFrame :(");
+    DEBUG("PlayerConnection : noFrame :(");
     // client closed
   }
   delete frame;
 }
 
 void PlayerConnection::processGetFeaturesFrame(Frame* frame){
-  Logger::getLogger()->debug("Processing Get Features frame");
+  DEBUG("PlayerConnection : Processing Get Features frame");
   Frame *features = createFrame(frame);
   features->setType(ft03_Features);
   std::set<uint32_t> fids;
@@ -271,14 +273,14 @@ void PlayerConnection::processGetFeaturesFrame(Frame* frame){
 }
 
 void PlayerConnection::processGetGameInfoFrame(Frame* frame){
-  Logger::getLogger()->debug("Processing get GameInfo frame");
+  DEBUG("PlayerConnection : Processing get GameInfo frame");
   Frame *game = createFrame(frame);
   Game::getGame()->packGameInfoFrame(game);
   sendFrame(game);
 }
 
 void PlayerConnection::processSetFilters(Frame* frame){
-  Logger::getLogger()->debug("Processing set filters");
+  DEBUG("PlayerConnection : Processing set filters");
   Frame* rtnframe = createFrame(frame);
   uint32_t numfilters = frame->unpackInt();
   std::set<uint32_t> filters_wanted;
@@ -304,7 +306,7 @@ void PlayerConnection::processSetFilters(Frame* frame){
 }
 
 void PlayerConnection::processTimeRemainingFrame(Frame* frame){
-  Logger::getLogger()->debug("Processing Get Time frame");
+  DEBUG("PlayerConnection : Processing Get Time frame");
   Frame *time = createFrame(frame);
   time->setType(ft02_Time_Remaining);
   time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
