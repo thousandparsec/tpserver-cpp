@@ -26,17 +26,16 @@
 
 class PlayerTcpConnection : public PlayerConnection {
  public:
-  PlayerTcpConnection();
   PlayerTcpConnection(int fd);
   virtual ~PlayerTcpConnection();
   
-  void setFD(int fd);
 
-  void close();
   void sendFrame(Frame * frame);
   void processWrite();
+  void close();
   
  protected:
+  PlayerTcpConnection();
   void verCheck();
   virtual int32_t verCheckPreChecks();
   virtual int32_t verCheckLastChance();

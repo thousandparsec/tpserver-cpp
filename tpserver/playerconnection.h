@@ -31,8 +31,6 @@ class PlayerAgent;
 class PlayerConnection: public Connection {
   
  public:
-  PlayerConnection();
-  PlayerConnection(int fd);
   virtual ~PlayerConnection();
   
   void setFD(int fd);
@@ -46,6 +44,8 @@ class PlayerConnection: public Connection {
   ProtocolVersion getProtocolVersion();
   
  protected:
+  PlayerConnection(int fd);
+  PlayerConnection();
   
   virtual void verCheck() = 0;
   void login();

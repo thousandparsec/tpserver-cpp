@@ -48,12 +48,6 @@ AdminConnection::~AdminConnection(){
   Logger::getLogger()->info("Admin client disconnected");
 }
 
-
-void AdminConnection::setFD(int fd){
-  sockfd = fd;
-  status = PRECONNECTED;
-}
-
 void AdminConnection::process(){
   Logger::getLogger()->debug("About to Process");
   switch (status) {

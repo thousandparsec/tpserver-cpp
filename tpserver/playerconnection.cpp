@@ -56,11 +56,6 @@ PlayerConnection::~PlayerConnection(){
 }
 
 
-void PlayerConnection::setFD(int fd){
-  sockfd = fd;
-  status = PRECONNECTED;
-}
-
 void PlayerConnection::process(){
   Logger::getLogger()->debug("About to Process");
   switch (status) {
