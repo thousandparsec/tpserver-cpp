@@ -26,7 +26,6 @@
 
 class PlayerAgent;
 class PlayerConnection: public Connection {
-
   public:
     virtual ~PlayerConnection();
 
@@ -36,30 +35,32 @@ class PlayerConnection: public Connection {
 
     Frame* createFrame(Frame* oldframe = NULL);
 
-    ProtocolVersion getProtocolVersion();
-
   protected:
     PlayerConnection(int fd);
 
     virtual void verCheck() = 0;
-    void login();
-
-    void inGameFrame();
-
     virtual bool readFrame(Frame * recvframe) = 0;
 
     void processGetFeaturesFrame(Frame* frame);
+
+    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
+
+    ProtocolVersion version;
+  private:
+    /// Blocked to disallow non-fd creation
+    PlayerConnection() {}
+    
+  private:
     void processGetGameInfoFrame(Frame* frame);
     void processSetFilters(Frame* frame);
     void processTimeRemainingFrame(Frame* frame);
 
+    void inGameFrame();
+    void login();
+    
     PlayerAgent *playeragent;
-
-    ProtocolVersion version;
     uint64_t lastpingtime;
     bool paddingfilter;
-  private:
-    PlayerConnection() {}
 };
 
 #endif

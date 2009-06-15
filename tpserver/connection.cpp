@@ -32,6 +32,10 @@ Connection::Connection()
 {
 }
 
+Connection::Connection(int fd)
+  : sockfd(fd), status(PRECONNECTED)
+{
+}
 
 Connection::~Connection()
 {

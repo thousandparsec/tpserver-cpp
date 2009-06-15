@@ -41,6 +41,14 @@ class Connection {
      * Zeroes all fields
      */
     Connection();
+    
+    /**
+     * Explicit FD constructor
+     *
+     * Sets status to preconnected, and fd to the passed value
+     */
+    explicit Connection(int fd);
+
 
     /**
      * Destructor

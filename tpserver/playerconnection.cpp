@@ -38,9 +38,9 @@
 
 #include "playerconnection.h"
 
-PlayerConnection::PlayerConnection(int fd) : Connection(), playeragent(NULL), version(fv0_3), paddingfilter(false){
-  sockfd = fd;
-  status = PRECONNECTED;
+PlayerConnection::PlayerConnection(int fd) 
+  : Connection(fd), version(fv0_3), playeragent(NULL), paddingfilter(false)
+{
   lastpingtime = time(NULL);
 }
 
@@ -50,6 +50,11 @@ PlayerConnection::~PlayerConnection(){
   }
 }
 
+void PlayerConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error ) {
+  Frame* frame = createFrame(oldframe);
+  frame->createFailFrame(code, error);
+  sendFrame(frame);
+}
 
 void PlayerConnection::process(){
   Logger::getLogger()->debug("About to Process");
@@ -77,7 +82,6 @@ void PlayerConnection::process(){
   Logger::getLogger()->debug("Finished Processing");
 }
 
-
 Frame* PlayerConnection::createFrame(Frame* oldframe)
 {
   Frame* newframe;
@@ -91,7 +95,6 @@ Frame* PlayerConnection::createFrame(Frame* oldframe)
   newframe->enablePaddingStrings(paddingfilter);
   return newframe;
 }
-
 
 void PlayerConnection::login(){
   Frame *recvframe = createFrame();
@@ -107,9 +110,7 @@ void PlayerConnection::login(){
         password = recvframe->unpackStdString();
       }catch(std::exception e){
         Logger::getLogger()->debug("Login: not enough data");
-        Frame *failframe = createFrame(recvframe);
-        failframe->createFailFrame(fec_FrameError, "Login Error - missing username or password");
-        sendFrame(failframe);
+        sendFail(recvframe, fec_FrameError, "Login Error - missing username or password");
         delete recvframe;
         return;
       }
@@ -129,9 +130,7 @@ void PlayerConnection::login(){
             Logger::getLogger()->info("Creating new player automatically");
             player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
             if(player == NULL){
-              Frame* f = createFrame(recvframe);
-              f->createFailFrame(fec_PermissionDenied, "Cannot create new player");
-              sendFrame(f);
+              sendFail(recvframe, fec_PermissionDenied, "Cannot create new player");
               return;
             }
           }
@@ -148,15 +147,11 @@ void PlayerConnection::login(){
           status = READY;
         } else {
           Logger::getLogger()->info("Bad username or password");
-          Frame *failframe = createFrame(recvframe);
-          failframe->createFailFrame(fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
-          sendFrame(failframe);
+          sendFail(recvframe,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
         }
       } else {
         Logger::getLogger()->debug("username or password == NULL");
-        Frame *failframe = createFrame(recvframe);
-        failframe->createFailFrame(fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
-        sendFrame(failframe);
+        sendFail(recvframe,fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
         //close();
       }
 
@@ -187,22 +182,16 @@ void PlayerConnection::login(){
             playeragent->setConnection(this);
           }else{
             Logger::getLogger()->info("Bad username or password in account creation");
-            Frame *failframe = createFrame(recvframe);
-            failframe->createFailFrame(fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
-            sendFrame(failframe);
+            sendFail(recvframe,fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
           }
         }else{
           Logger::getLogger()->debug("username or password == NULL in account frame");
-          Frame *failframe = createFrame(recvframe);
-          failframe->createFailFrame(fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
-          sendFrame(failframe);
+          sendFail(recvframe,fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
           close();
         }
       }else{
         Logger::getLogger()->info("Account creation disabled, not creating account");
-        Frame *failframe = createFrame(recvframe);
-        failframe->createFailFrame(fec_PermissionDenied, "Account creation Disabled, talk to game admin");
-        sendFrame(failframe);
+        sendFail(recvframe,fec_PermissionDenied, "Account creation Disabled, talk to game admin");
       }
     }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
       processGetGameInfoFrame(recvframe);
@@ -210,9 +199,7 @@ void PlayerConnection::login(){
       processSetFilters(recvframe);
     }else{
       Logger::getLogger()->warning("In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
-      Frame *failframe = createFrame(recvframe);
-      failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
-      sendFrame(failframe);
+      sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
     }
   }
   delete recvframe;
@@ -252,9 +239,7 @@ void PlayerConnection::inGameFrame()
         Logger::getLogger()->debug("inGameFrame");
         playeragent->processIGFrame(frame);
       }else{
-        Frame *gns = createFrame(frame);
-        gns->createFailFrame(fec_TempUnavailable, "Game has not yet started, please wait");
-        sendFrame(gns);
+        sendFail(frame,fec_TempUnavailable, "Game has not yet started, please wait");
       }
     }
   } else {
@@ -307,8 +292,7 @@ void PlayerConnection::processSetFilters(Frame* frame){
   }
 
   if(filters_wanted.size() != filters_setup.size()){
-    rtnframe->createFailFrame(fec_PermUnavailable, "Not all filters specified are available");
-    sendFrame(rtnframe);
+    sendFail(frame,fec_PermUnavailable, "Not all filters specified are available");
   }else{
     rtnframe->setType(ft02_OK);
     rtnframe->packString("Filters ready, setting filters now");
