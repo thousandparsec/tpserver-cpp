@@ -52,62 +52,59 @@ Frame::Frame()
 }
 
 Frame::Frame(ProtocolVersion v)
+  : version(v), type(ft_Invalid), typeversion(0),
+    sequence(0), length(0), data(NULL), padstrings(false),
+    unpackptr(0)
 {
-  type = ft_Invalid;
-  typeversion = 0;
-  
-  length = 0;
-  data = NULL;
-  unpackptr = 0;
-  version = v;
-  padstrings = false;
 }
 
 Frame::Frame(const Frame &rhs)
 {
-	type = rhs.type;
-        typeversion = rhs.typeversion;
-	length = rhs.length;
-	version = rhs.version;
-	sequence = rhs.sequence;
-        padstrings = rhs.padstrings;
-	
-	data = (char *) malloc(length);
-	if (data != NULL) {
-		memcpy(data, rhs.data, length);
-	} else {
-	  
-	       type = ft_Invalid;
-		length = 0;
-	}
-	unpackptr = 0;
+  type = rhs.type;
+  typeversion = rhs.typeversion;
+  length = rhs.length;
+  version = rhs.version;
+  sequence = rhs.sequence;
+  padstrings = rhs.padstrings;
+
+  data = (char *) malloc(length);
+  if (data != NULL) {
+    memcpy(data, rhs.data, length);
+  } else {
+
+    type = ft_Invalid;
+    length = 0;
+  }
+  unpackptr = 0;
 }
 
 Frame::~Frame()
 {
-	if (data != NULL)
-		free(data);
+  if (data != NULL)
+  {
+    free(data);
+  }
 }
 
 Frame Frame::operator=(const Frame & rhs)
 {
-	type = rhs.type;
-        typeversion = rhs.typeversion;
-	length = rhs.length;
-	version = rhs.version;
-	sequence = rhs.sequence;
-        padstrings = rhs.padstrings;
-        
-	data = (char *) malloc(length);
-	if (data != NULL) {
-		memcpy(data, rhs.data, length);
-	} else {
+  type = rhs.type;
+  typeversion = rhs.typeversion;
+  length = rhs.length;
+  version = rhs.version;
+  sequence = rhs.sequence;
+  padstrings = rhs.padstrings;
 
-	       type = ft_Invalid;
-		length = 0;
-	}
-	unpackptr = 0;
-	return *this;
+  data = (char *) malloc(length);
+  if (data != NULL) {
+    memcpy(data, rhs.data, length);
+  } else {
+
+    type = ft_Invalid;
+    length = 0;
+  }
+  unpackptr = 0;
+  return *this;
 }
 
 char *Frame::getPacket() const{
@@ -128,7 +125,7 @@ char *Frame::getPacket() const{
       for (int i = 100; i > 1; i = i / 10) {
         int digit = (version - (version / i * i)) / (i/10);
         char v = '0' + digit;
-        
+
         memcpy(temp, &v, 1);
         temp += 1;
       }
@@ -143,25 +140,25 @@ char *Frame::getPacket() const{
     int nseq = htonl(sequence);
     memcpy(temp, &nseq, 4);
     temp += 4;
-    
+
     int ntype = htonl(type);
     memcpy(temp, &ntype, 4);
     temp += 4;
-    
+
     int nlen = htonl(length);
     memcpy(temp, &nlen, 4);
     temp += 4;
-    
+
     // Body
     memcpy(temp, data, length);
   }
-  
+
   return packet;
 }
 
 FrameType Frame::getType() const
 {
-	return type;
+  return type;
 }
 
 int Frame::getSequence() const
@@ -177,33 +174,33 @@ bool Frame::setSequence(int s)
 
 ProtocolVersion Frame::getVersion() const
 {
-	return version;
+  return version;
 }
 
 int Frame::getLength() const
 {
-	return getHeaderLength()+getDataLength();
+  return getHeaderLength()+getDataLength();
 }
 
 int Frame::getHeaderLength() const
 {
-	
+
   return 16;
-	
+
 }
 
 int Frame::getDataLength() const
 {
-	return length;
+  return length;
 }
 
 char *Frame::getData() const
 {
-	char *tortn = (char *) malloc(length);
-	if (tortn != NULL) {
-		memcpy(tortn, data, length);
-	}
-	return tortn;
+  char *tortn = (char *) malloc(length);
+  if (tortn != NULL) {
+    memcpy(tortn, data, length);
+  }
+  return tortn;
 }
 
 int Frame::setHeader(char *newhead)
@@ -212,7 +209,7 @@ int Frame::setHeader(char *newhead)
 
   unpackptr = 0;
   int len;
-  
+
   if (memcmp(temp, "TP", 2) == 0) {
     temp += 2;
 
@@ -229,15 +226,15 @@ int Frame::setHeader(char *newhead)
       typeversion = (uint32_t)(*temp);
       temp++;
     }
-    
-    
+
+
     // pick up sequence number for versions greater than 02
     int nseq;
     memcpy(&nseq, temp, 4);
     sequence = ntohl(nseq);
     temp += 4;
-    
-    
+
+
     int ntype;
     memcpy(&ntype, temp, 4);
     type = (FrameType) ntohl(ntype);
@@ -259,27 +256,27 @@ bool Frame::setType(FrameType nt)
 
   if ((nt < ft_Invalid || (version == fv0_3 && nt > ft03_Max) || (version == fv0_4 && nt > ft04_Max)) && (nt < ftad_LogMessage || nt > ftad_Max)) // TODO - may want better admin checking here
     return false;
-	
-	type = nt;
-	return true;
+
+  type = nt;
+  return true;
 }
 
 bool Frame::setData(char *newdata, int dlen)
 {
-	unpackptr = 0;
-	if (dlen > 0) {
-		char *temp = (char *) realloc(data, dlen);
-		if (temp != NULL) {
-			data = temp;
-			length = dlen;
-			memcpy(data, newdata, length);
-		} else {
-			return false;
-		}
-	} else {
-		return false;
-	}
-	return true;
+  unpackptr = 0;
+  if (dlen > 0) {
+    char *temp = (char *) realloc(data, dlen);
+    if (temp != NULL) {
+      data = temp;
+      length = dlen;
+      memcpy(data, newdata, length);
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+  return true;
 }
 
 uint32_t Frame::getTypeVersion() const{
@@ -309,13 +306,13 @@ bool Frame::packString(const std::string &str){
   if (temp != NULL) {
     data = temp;
     temp += length;
-    
+
     // Actual string
     memcpy(temp, str.c_str(), slen);
     temp += slen;
-    
+
     length += slen;
-    
+
     if(padstrings){
       int pad = length % 4;
       if(pad != 0){
@@ -334,43 +331,43 @@ bool Frame::packString(const std::string &str){
 
 bool Frame::packInt(int val)
 {
-	int netval = htonl(val);
-	char *temp = (char *) realloc(data, length + 4);
-	
-	if (temp != NULL) {
-		data = temp;
-		temp += length;
-		
-		memcpy(temp, &netval, 4);
-		length += 4;
-		
-	} else {
-		return false;
-	}
-	return true;
+  int netval = htonl(val);
+  char *temp = (char *) realloc(data, length + 4);
+
+  if (temp != NULL) {
+    data = temp;
+    temp += length;
+
+    memcpy(temp, &netval, 4);
+    length += 4;
+
+  } else {
+    return false;
+  }
+  return true;
 }
 
 bool Frame::packInt64(int64_t val)
 {
-	int64_t netval = htonq(val);
-	char *temp = (char *) realloc(data, length + 8);
-	
-	if (temp != NULL) {
-		data = temp;
-		temp += length;
-		
-		memcpy(temp, &netval, 8);
-		length += 8;
-		
-	} else {
-		return false;
-	}
-	return true;
+  int64_t netval = htonq(val);
+  char *temp = (char *) realloc(data, length + 8);
+
+  if (temp != NULL) {
+    data = temp;
+    temp += length;
+
+    memcpy(temp, &netval, 8);
+    length += 8;
+
+  } else {
+    return false;
+  }
+  return true;
 }
 
 bool Frame::packInt8(char val){
   char *temp = (char *) realloc(data, length + 4);
-  
+
   if (temp != NULL) {
     data = temp;
 
@@ -393,7 +390,7 @@ bool Frame::packInt8(char val){
 
 bool Frame::packData(uint32_t len, char* bdata){
   char *temp = (char *) realloc(data, length + len + 3);
-  
+
   if (temp != NULL) {
     data = temp;
     temp += length;
@@ -421,25 +418,25 @@ bool Frame::isEnoughRemaining(uint32_t size) const{
 
 uint32_t Frame::getUnpackOffset() const
 {
-	return unpackptr;
+  return unpackptr;
 }
 
 bool Frame::setUnpackOffset(uint32_t newoffset)
 {
-	if (newoffset < length - 4 && newoffset >= 0)
-		unpackptr = newoffset;
-	else
-		return false;
-	
-	return true;
+  if (newoffset < length - 4 && newoffset >= 0)
+    unpackptr = newoffset;
+  else
+    return false;
+
+  return true;
 }
 
 int Frame::unpackInt()
 {
-	int nval;
-	memcpy(&nval, data + unpackptr, 4);
-	unpackptr += 4;
-	return ntohl(nval);
+  int nval;
+  memcpy(&nval, data + unpackptr, 4);
+  unpackptr += 4;
+  return ntohl(nval);
 }
 
 
@@ -467,10 +464,10 @@ std::string Frame::unpackStdString(){
 
 int64_t Frame::unpackInt64()
 {
-	int64_t nval;
-	memcpy(&nval, data + unpackptr, 8);
-	unpackptr += 8;
-	return ntohq(nval);
+  int64_t nval;
+  memcpy(&nval, data + unpackptr, 8);
+  unpackptr += 8;
+  return ntohq(nval);
 }
 
 char Frame::unpackInt8(){
@@ -483,7 +480,7 @@ char Frame::unpackInt8(){
 
 void Frame::unpackData(uint32_t len, char* bdata){
   Logger::getLogger()->warning("Using unpackData, might not be safe");
-  
+
   memcpy(bdata, data + unpackptr, len);
   unpackptr += len;
   if(padstrings){
@@ -495,25 +492,25 @@ void Frame::unpackData(uint32_t len, char* bdata){
 }
 
 void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){
-    createFailFrame(code, reason, std::list<std::pair<reftype_t, refvalue_t> >());
+  createFailFrame(code, reason, std::list<std::pair<reftype_t, refvalue_t> >());
 }
 
 void Frame::createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> >& refs){
-    setType(ft02_Fail);
+  setType(ft02_Fail);
 
-    if (data != NULL) {
-        free(data);
-        length = 0;
-        data = NULL;
-        unpackptr = 0;
+  if (data != NULL) {
+    free(data);
+    length = 0;
+    data = NULL;
+    unpackptr = 0;
+  }
+  packInt(code);
+  packString(reason);
+  if(version >= fv0_4){
+    packInt(refs.size());
+    for(std::list<std::pair<reftype_t, refvalue_t> >::const_iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
+      packInt(itcurr->first);
+      packInt(itcurr->second);
     }
-    packInt(code);
-    packString(reason);
-    if(version >= fv0_4){
-        packInt(refs.size());
-        for(std::list<std::pair<reftype_t, refvalue_t> >::const_iterator itcurr = refs.begin(); itcurr != refs.end(); ++itcurr){
-            packInt(itcurr->first);
-            packInt(itcurr->second);
-        }
-    }
+  }
 }

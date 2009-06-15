@@ -26,82 +26,125 @@
 
 #include <tpserver/protocol.h>
 
+/**
+ * Frame class for representing TP protocol frames
+ */
 class Frame {
-
   public:
+    /**
+     * Standard constructor
+     *
+     * Creates version 3 frames
+     */
     Frame();
-    Frame(ProtocolVersion v);
+
+    /**
+     * Constructor setting a given version
+     */
+    explicit Frame(ProtocolVersion v);
+
+    /**
+     * Copy constructor
+     */
     Frame(const Frame &rhs);
-  
+
+    /**
+     * Destructor
+     *
+     * Frees data if needed
+     */
     ~Frame();
-  
+
+    /**
+     * Assignment operator
+     */
     Frame operator=(const Frame &rhs);
-  
+
+    /**
+     * CREATE header??
+     */
+    // TODO: This is something to be refactored!
     int setHeader(char *newhead);
+
+    // TODO: as above!
     char *getPacket() const;
-    int getHeaderLength() const;		// The length of the header section
-    int getDataLength() const;		// The length of the data section
-    int getLength() const;			// The total length of the packet
-    
+
+    /**
+     * Return the length of the header section
+     */
+    int getHeaderLength() const;
+
+    /**
+     * Return the length of the data section
+     */
+    int getDataLength() const;
+
+    /**
+     * Return the frame length
+     *
+     * Equals to length of data section + length of header section
+     */
+    int getLength() const;
+
     // Data
     char *getData() const;
     bool setData(char *newdata, int dlen);
-  
+
     // Type
     FrameType getType() const;
     bool setType(FrameType nt);
-    
+
     // frame type version
     uint32_t getTypeVersion() const;
     bool setTypeVersion(uint32_t tv);
-    
+
     // Sequence
     int getSequence() const;
     bool setSequence(int s);
-    
+
     // Version
     ProtocolVersion getVersion() const;
-    
+
     //string padding
     bool isPaddingStrings() const;
     void enablePaddingStrings(bool on);
-    
+
     bool packString(const std::string &str);
     bool packInt(int val);
     bool packInt64(int64_t val);
     bool packInt8(char val);
     bool packData(uint32_t len, char* bdata);
-  
+
     bool isEnoughRemaining(uint32_t size) const;
     // uses these functions with care
     uint32_t getUnpackOffset() const;
     bool setUnpackOffset(uint32_t newoffset);
-  
+
     int unpackInt();
     std::string unpackStdString();
     int64_t unpackInt64();
     char unpackInt8();
     void unpackData(uint32_t len, char* bdata);
-  
+
     void createFailFrame(FrameErrorCode code, const std::string& reason);
     void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);
-  
+
   private:
+    /// Version of protocol that this frame is encoded with
     ProtocolVersion version;
+    /// Frame type
     FrameType type;
+    /// Type version
     uint32_t typeversion;
-
-    // Which packet sequence does this refer to?
+    /// Which packet sequence does this refer to?
     uint32_t sequence;
-    
-    // Frame length
+    /// Frame length
     uint32_t length;
-
-    // Actual data of the frame
+    /// Actual data of the frame
     char *data;
-    
+    /// Whether to pad strings with \0 values
     bool padstrings;
-
+    /// Current unpack position
     uint32_t unpackptr;
 };
 
