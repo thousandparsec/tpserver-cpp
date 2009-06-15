@@ -54,7 +54,6 @@ void PlayerConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std:
   Frame* frame = createFrame(oldframe);
   frame->createFailFrame(code, error);
   sendFrame(frame);
-  delete frame;
 }
 
 void PlayerConnection::process(){
