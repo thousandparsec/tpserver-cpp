@@ -22,6 +22,8 @@
 
 #include "tpserver/ruleset.h"
 
+namespace MTSecRuleset {
+
 class MTSec : public Ruleset{
  public:
   MTSec();
@@ -86,5 +88,7 @@ class MTSec : public Ruleset{
   std::string importFile;
 
 };
+
+}//end namespace
 
 #endif

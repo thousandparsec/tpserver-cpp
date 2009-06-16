@@ -320,4 +320,31 @@
         </propertylist>
 </comp>
 
+<comp>
+    <name>Armor</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>Armor reduces the damage taken by 0.1%</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 10)]]></Armor>
+        </propertylist>
+</comp>
+
+<comp>
+    <name>Colonisation Module</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>Allows the ship to colonise a planet.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 1)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+    </propertylist>
+</comp>
+
+
 </components>

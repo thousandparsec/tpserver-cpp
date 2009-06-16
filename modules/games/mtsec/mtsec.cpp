@@ -84,9 +84,11 @@ static char const * const systemNames[] = {
 extern "C" {
   #define tp_init libmtsec_LTX_tp_init
   bool tp_init(){
-    return Game::getGame()->setRuleset(new MTSec());
+    return Game::getGame()->setRuleset(new MTSecRuleset::MTSec());
   }
 }
+
+namespace MTSecRuleset {
 
 
 MTSec::MTSec() {
@@ -138,8 +140,7 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
-
-    compMax = 13;
+    compMax = 16;
 }
 
 
@@ -1231,3 +1232,5 @@ void MTSec::onPlayerAdded(Player* player)
     Logger::getLogger()->debug( "Exit MTSec::onPlayerAdded");
     return;
 }
+
+}//end namespace
