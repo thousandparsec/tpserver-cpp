@@ -35,7 +35,7 @@ compsImport::compsImport() {
 bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t>  propertyIndex) {
     TiXmlDocument doc(filename.c_str());
     if(!doc.LoadFile()){
-        Logger::getLogger()->debug("Error: could not load file");
+        Logger::getLogger()->debug("Error: could not load components XML file");
         return false;
     }
 
@@ -56,7 +56,7 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
     {
         TiXmlElement* pCur = 0;
 
-        std::string compName, compDescription, compTpcl;
+        std::string compName, compDescription, compTpcl, compIDName;
         std::map<uint32_t, std::string> propertylist;
 
 
@@ -68,6 +68,14 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
             if (pCur) { 
                 compName = pCur->GetText();
                 if (compName.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the ID of the component
+            pCur = pChild->FirstChildElement("ComponentIDName");
+            if (pCur) { 
+                compIDName = pCur->GetText();
+                if (compIDName.empty()) return false;
             } else {
                 return false;
             }
@@ -109,8 +117,7 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
         //do the component
         DesignStore *ds = Game::getGame()->getDesignStore();
         Component* comp = new Component();
-
-        comp->addCategoryId(1);
+        comp->addCategoryId(ds->getCategoryByName(compIDName));
         comp->setName(compName);
         comp->setDescription(compDescription);
         comp->setTpclRequirementsFunction(compTpcl);
