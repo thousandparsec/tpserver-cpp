@@ -20,19 +20,20 @@
 
 #include <string>
 #include <map>
-#include "compsimport.h"
+#include "xmlimport.h"
 #include <tpserver/logging.h>
 #include <iostream>
 #include "tpserver/game.h"
 #include "tpserver/designstore.h"
 #include "tpserver/component.h"
-#include <set>
+#include "tpserver/property.h"
 
-compsImport::compsImport() {
+
+xmlImport::xmlImport() {
 
 }
 
-bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t>  propertyIndex) {
+bool xmlImport::importComps(std::string filename) {
     TiXmlDocument doc(filename.c_str());
     if(!doc.LoadFile()){
         Logger::getLogger()->debug("Error: could not load components XML file");
@@ -43,10 +44,11 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
     TiXmlElement* pChild;
     TiXmlHandle hDoc(&doc);
     TiXmlHandle hRoot(0);
+    DesignStore *ds = Game::getGame()->getDesignStore();
 
     int count=0;    // item count
 
-    pElem = hDoc.FirstChildElement().Element();
+    pElem = hDoc.FirstChildElement("components").Element();
     if(!pElem) return false;
 
     hRoot = TiXmlHandle(pElem);
@@ -58,7 +60,6 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
 
         std::string compName, compDescription, compTpcl, compIDName;
         std::map<uint32_t, std::string> propertylist;
-
 
         pChild = hRoot.Child("comp",count).Element();
         //debug: cout << "count: " << count << endl;
@@ -83,7 +84,7 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
             pCur = pChild->FirstChildElement("description");
             if (pCur) {
                 compDescription = pCur->GetText();
-                if (compName.empty()) return false;
+                if (compDescription.empty()) return false;
             } else {
                 return false;
             }
@@ -106,7 +107,7 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
                 std::string pKey=pElem->Value();
                 std::string pText=pElem->GetText();
                 if (!pKey.empty() && !pText.empty()) {
-                    propertylist[propertyIndex[pKey]] = pText;
+                    propertylist[ds->getPropertyByName(pKey)] = pText;
                 } else {
                     return false;
                 }
@@ -115,7 +116,6 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
                 return false;
             }
         //do the component
-        DesignStore *ds = Game::getGame()->getDesignStore();
         Component* comp = new Component();
         comp->addCategoryId(ds->getCategoryByName(compIDName));
         comp->setName(compName);
@@ -123,6 +123,108 @@ bool compsImport::doImport(std::string filename, std::map<std::string,uint32_t> 
         comp->setTpclRequirementsFunction(compTpcl);
         comp->setPropertyList(propertylist);
         ds->addComponent(comp);
+        } else {
+            return false;
+        }
+        count++;
+    }
+    return true;
+}
+
+bool xmlImport::importProps(std::string filename) {
+    TiXmlDocument doc(filename.c_str());
+    if(!doc.LoadFile()){
+        Logger::getLogger()->debug("Error: could not load properties XML file");
+        return false;
+    }
+
+    TiXmlElement* pElem;
+    TiXmlElement* pChild;
+    TiXmlHandle hDoc(&doc);
+    TiXmlHandle hRoot(0);
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    int count=0;    // item count
+
+    pElem = hDoc.FirstChildElement("properties").Element();
+    if(!pElem) return false;
+
+    hRoot = TiXmlHandle(pElem);
+
+    for(pElem=hRoot.FirstChild("prop").Element(); pElem != NULL;
+    pElem = pElem->NextSiblingElement())
+    {
+        TiXmlElement* pCur = 0;
+
+        std::string propName, propDisplayName, propDescription, propTpclDisplay,
+                    propTpclRequirement, propIDName;
+        uint32_t propRank = 0;
+        std::map<uint32_t, std::string> propertylist;
+
+
+        pChild = hRoot.Child("prop",count).Element();
+        //debug: cout << "count: " << count << endl;
+        if(pChild) { 
+            //read and set the name of the property
+            pCur = pChild->FirstChildElement("name");
+            if (pCur) { 
+                propName = pCur->GetText();
+                if (propName.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the name of the property
+            pCur = pChild->FirstChildElement("displayName");
+            if (pCur) { 
+                propDisplayName = pCur->GetText();
+                if (propDisplayName.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the ID of the property
+            pCur = pChild->FirstChildElement("PropertyIDName");
+            if (pCur) { 
+                propIDName = pCur->GetText();
+                if (propIDName.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the description of the property
+            pCur = pChild->FirstChildElement("description");
+            if (pCur) {
+                propDescription = pCur->GetText();
+                if (propDescription.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the tpclDisplayFunction of the property
+            pCur = pChild->FirstChildElement("tpclDisplayFunction");
+            if (pCur) {
+                propTpclDisplay = pCur->GetText();
+                if (propTpclDisplay.empty()) return false;
+            } else {
+                return false;
+            }
+            //read and set the tpclRequirementsFunction of the property
+            pCur = pChild->FirstChildElement("tpclRequirementsFunction");
+            if (pCur) {
+                propTpclRequirement = pCur->GetText();
+                if (propTpclRequirement.empty()) return false;
+            } else {
+                return false;
+            }
+
+        //do the property
+            Property* prop = new Property();
+            DesignStore *ds = Game::getGame()->getDesignStore();
+            prop->addCategoryId(ds->getCategoryByName(propIDName));
+            prop->setRank(propRank);
+            prop->setName(propName);
+            prop->setDisplayName(propDisplayName);
+            prop->setDescription(propDescription);
+            prop->setTpclDisplayFunction(propTpclDisplay);
+            prop->setTpclRequirementsFunction(propTpclRequirement);
+            ds->addProperty(prop);
         } else {
             return false;
         }

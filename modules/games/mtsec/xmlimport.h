@@ -22,14 +22,14 @@
 
 #include "tinyxml.h"
 
-class compsImport {
+class xmlImport {
 
 public:
-    compsImport();
-    bool doImport(std::string filename, std::map<std::string,uint32_t>  propertyIndex);
+    xmlImport();
+    bool importComps(std::string filename);
+    bool importProps(std::string filename);
  
 private:
-    std::string filename;
     TiXmlHandle *pRoot;
 
 };

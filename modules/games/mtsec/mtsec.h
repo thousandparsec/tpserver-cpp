@@ -83,7 +83,6 @@ class MTSec : public Ruleset{
   void setNewPlayerTech( Player* player);
 
  private:
-  std::map<std::string,uint32_t>  propertyIndex;
   uint32_t compMax;
   std::string importFile;
 
