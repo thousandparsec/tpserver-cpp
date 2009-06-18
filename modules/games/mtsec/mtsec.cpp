@@ -93,7 +93,8 @@ namespace MTSecRuleset {
 
 MTSec::MTSec() {
   Settings* settings = Settings::getSettings();
-  importFile = settings->get("components_file");
+  xmlImporter = new xmlImport();
+  xmlImporter->setFile(settings->get("gamedata_file"));
 }
 
 
@@ -171,22 +172,12 @@ void MTSec::createProperties()
 {
     Logger::getLogger()->debug( "Enter MTSec::createProperties");
 
-    createSpeedProp();
-    createAmmoCostProp();
-    createAmmoExplosivenessProp();
-    createAmmoSizeProp();
-    createFirepowerProp();
-    createMissileCostProp();
-    createMissileFirepowerProp();
-    createMissileSizeProp();
-    createHitPointsProp();
-    createHPProp();
-    createBuildTimeProp();
-    createArmorProp();
-    createColoniseProp();
-    createNumAmmoProp();
-    createNumBayTypesProp();
-    createNumHullsProp();
+    xmlImport * xmlImporter = new xmlImport();
+    if (xmlImporter->importProps()) {
+        Logger::getLogger()->debug("Done reading XML file.");
+    }
+    else
+        Logger::getLogger()->debug("XML File unsuccessful");
 
     Logger::getLogger()->debug( "Exit MTSec::createProperties");
 
@@ -199,7 +190,7 @@ void MTSec::createComponents()
     Logger::getLogger()->debug( "Enter MTSec::createComponents");
 
     xmlImport * xmlImporter = new xmlImport();
-    if (xmlImporter->importProps(importFile)) {
+    if (xmlImporter->importComps()) {
         Logger::getLogger()->debug("Done reading XML file.");
     }
     else

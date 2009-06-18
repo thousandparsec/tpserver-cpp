@@ -33,8 +33,12 @@ xmlImport::xmlImport() {
 
 }
 
-bool xmlImport::importComps(std::string filename) {
-    TiXmlDocument doc(filename.c_str());
+void xmlImport::setFile(std::string filename) {
+    this->xmlFile = filename;
+}
+
+bool xmlImport::importComps() {
+    TiXmlDocument doc(xmlFile.c_str());
     if(!doc.LoadFile()){
         Logger::getLogger()->debug("Error: could not load components XML file");
         return false;
@@ -131,8 +135,8 @@ bool xmlImport::importComps(std::string filename) {
     return true;
 }
 
-bool xmlImport::importProps(std::string filename) {
-    TiXmlDocument doc(filename.c_str());
+bool xmlImport::importProps() {
+    TiXmlDocument doc(xmlFile.c_str());
     if(!doc.LoadFile()){
         Logger::getLogger()->debug("Error: could not load properties XML file");
         return false;
@@ -158,7 +162,7 @@ bool xmlImport::importProps(std::string filename) {
 
         std::string propName, propDisplayName, propDescription, propTpclDisplay,
                     propTpclRequirement, propIDName;
-        uint32_t propRank = 0;
+        int propRank;
         std::map<uint32_t, std::string> propertylist;
 
 
@@ -189,6 +193,13 @@ bool xmlImport::importProps(std::string filename) {
             } else {
                 return false;
             }
+            //read and set the rank of the property
+            pCur = pChild->FirstChildElement("rank");
+            if (pCur) {
+                if (pCur->QueryIntAttribute("value", &(propRank)) != TIXML_SUCCESS) {
+                    return false;
+                }
+            }
             //read and set the description of the property
             pCur = pChild->FirstChildElement("description");
             if (pCur) {
@@ -216,9 +227,8 @@ bool xmlImport::importProps(std::string filename) {
 
         //do the property
             Property* prop = new Property();
-            DesignStore *ds = Game::getGame()->getDesignStore();
             prop->addCategoryId(ds->getCategoryByName(propIDName));
-            prop->setRank(propRank);
+            prop->setRank((uint32_t)propRank);
             prop->setName(propName);
             prop->setDisplayName(propDisplayName);
             prop->setDescription(propDescription);

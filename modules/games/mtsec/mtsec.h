@@ -38,25 +38,6 @@ class MTSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
  protected:
-  // Property definition methods
-  void createSpeedProp();
-  void createAmmoCostProp();
-  void createAmmoExplosivenessProp();
-  void createAmmoSizeProp();
-  void createFirepowerProp();
-  void createMissileCostProp();
-  void createMissileFirepowerProp();
-  void createMissileSizeProp();
-  void createHitPointsProp();
-  void createHPProp();
-  void createBuildTimeProp();
-  void createArmorProp();
-  void createColoniseProp();
-  void createNumAmmoProp();
-  void createNumBayTypesProp();
-  void createNumHullsProp();
-
-
   // Design definition methods
   Design* createScoutDesign( Player* owner);
   Design* createBattleScoutDesign( Player* owner);
@@ -84,7 +65,7 @@ class MTSec : public Ruleset{
 
  private:
   uint32_t compMax;
-  std::string importFile;
+  xmlImport *xmlImporter;
 
 };
 

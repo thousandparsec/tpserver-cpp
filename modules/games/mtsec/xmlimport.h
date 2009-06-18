@@ -26,11 +26,13 @@ class xmlImport {
 
 public:
     xmlImport();
-    bool importComps(std::string filename);
-    bool importProps(std::string filename);
+    void setFile(std::string filename);
+    bool importComps();
+    bool importProps();
  
 private:
     TiXmlHandle *pRoot;
+    std::string xmlFile;
 
 };
 
