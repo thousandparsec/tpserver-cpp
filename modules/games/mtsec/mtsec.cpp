@@ -58,6 +58,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/settings.h>
+#include <tpserver/net.h>
 #include "mtsecturn.h"
 #include "xmlimport.h"
 
@@ -172,12 +173,12 @@ void MTSec::createProperties()
 {
     Logger::getLogger()->debug( "Enter MTSec::createProperties");
 
-    xmlImport * xmlImporter = new xmlImport();
     if (xmlImporter->importProps()) {
         Logger::getLogger()->debug("Done reading XML file.");
     }
-    else
+    else {
         Logger::getLogger()->debug("XML File unsuccessful");
+    }
 
     Logger::getLogger()->debug( "Exit MTSec::createProperties");
 
@@ -189,12 +190,13 @@ void MTSec::createComponents()
 {
     Logger::getLogger()->debug( "Enter MTSec::createComponents");
 
-    xmlImport * xmlImporter = new xmlImport();
     if (xmlImporter->importComps()) {
         Logger::getLogger()->debug("Done reading XML file.");
     }
-    else
+    else {
         Logger::getLogger()->debug("XML File unsuccessful");
+    }
+
 
     Logger::getLogger()->debug( "Exit MTSec::createComponents");
 
