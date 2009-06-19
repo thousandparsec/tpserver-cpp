@@ -25,6 +25,7 @@
 #include <set>
 #include <stdint.h>
 #include <string>
+#include <exception>
 
 class Player;
 class IGObject;
@@ -136,6 +137,33 @@ class Game {
     Random* random;
     TurnTimer* turntimer;
 
+};
+
+/** Exception for when Ruleset::createGame fails.
+
+For example, in an implementation of createGame:
+
+if (failed) {
+    throw GameCreateFailed("Just can't perform createGame.");
+}
+ */
+class GameCreateFailed : public std::exception{
+    public:
+        /** Construct the GameCreateFailed exception.
+        @param reason The reason for the exception.
+         */
+        GameCreateFailed(const std::string& reason);
+        
+        /** Destructor.
+        */
+        virtual ~GameCreateFailed() throw();
+        
+        /** Return the reason for the exception.
+        @return String of the reason for the exception.
+         */
+        virtual const char* what() const throw();
+    private:
+        std::string why;
 };
 
 #endif
