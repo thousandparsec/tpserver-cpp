@@ -346,10 +346,19 @@
     </propertylist>
 </comp>
 
-
 </components>
 <properties>
     
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>_num-components</name>
+        <displayName>Number of Components</displayName>
+        <description>The total number of components in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " components"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction>(lambda (design) (cons #t ""))</tpclRequirementsFunction>
+    </prop>
+
     <prop>
         <PropertyIDName>Ships</PropertyIDName>
         <rank value="0"/>
