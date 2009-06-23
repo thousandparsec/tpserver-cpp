@@ -142,7 +142,8 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
-    compMax = 16;
+    //NOTE: remove the need for this, it is very annoying
+    compMax = 41;
 }
 
 
@@ -672,7 +673,9 @@ bool MTSec::onAddPlayer(Player* player)
 
 Design* MTSec::createScoutDesign( Player* owner)
 {
+    Logger::getLogger()->debug( "Enter MTSec::createScoutDesign");
     Game *game = Game::getGame();
+    DesignStore *ds = Game::getGame()->getDesignStore();
     Design* scout = new Design();
     std::map<uint32_t, uint32_t> componentList;
 
@@ -680,9 +683,10 @@ Design* MTSec::createScoutDesign( Player* owner)
     scout->setName( "Scout");
     scout->setDescription("Scout ship");
     scout->setOwner( owner->getID());
-    componentList[1] = 1;
+    componentList[ds->getComponentByName("Scout Hull")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
+    Logger::getLogger()->debug( "Exit MTSec::createBattleScoutDesign");
 
     return scout;
 }
@@ -691,6 +695,8 @@ Design* MTSec::createScoutDesign( Player* owner)
 Design* MTSec::createBattleScoutDesign( Player* owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
     Game *game = Game::getGame();
     Design* scout = new Design();
     std::map<uint32_t, uint32_t> componentList;
@@ -699,16 +705,15 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
     scout->setName( "BattleScout");
     scout->setDescription("Battle Scout ship");
     scout->setOwner( owner->getID());
-    componentList[2] = 1;
-    componentList[10] = 1;
-    componentList[3] = 1;
+    componentList[ds->getComponentByName("Battle Scout Hull")] = 1;
+    componentList[ds->getComponentByName("Alpha Missile Tube")] = 1;
+    componentList[ds->getComponentByName("Cerium 3 Explosives")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
 
     Logger::getLogger()->debug( "Exit MTSec::createBattleScoutDesign");
     return scout;
 }
-
 
 IGObject* MTSec::createEmptyFleet( Player*     owner,
                                    IGObject*   star,

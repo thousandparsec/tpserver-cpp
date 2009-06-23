@@ -11,7 +11,9 @@
         <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
         <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
         <Armor><![CDATA[(lambda (design) 2)]]></Armor>
+        <HitPoints><![CDATA[(lambda (design) 75)]]></HitPoints>
         <_num-components><![CDATA[(lambda (design) 1)]]></_num-components>
+        <Size><![CDATA[(lambda (design) 60)]]></Size>
     </propertylist>
 </comp>
 
@@ -35,9 +37,203 @@
         <HitPoints><![CDATA[(lambda (design) 100)]]></HitPoints>
         <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
         <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <Size><![CDATA[(lambda (design) 88)]]></Size>
     </propertylist>
 </comp>
 
+
+
+
+<comp>
+    <name>Advanced Battle Scout Hull</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The advanced battle scout hull, packing a bigger punch into a smaller and faster package</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 86 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 2)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 8)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 133 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 125)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 133)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Frigate</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Frigate, a cheap ship that can easily destroy larger ships</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 56 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 3)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 12)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 200 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 150)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 200)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battle Frigate</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battle Frigate, a slightly more powerful version of the frigate.  High speed to firepower ratio.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 45 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 5)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 18)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 200 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 150)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 200)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Destroyer</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Destroyer, a main offensive threat of any fleet.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 35 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 8)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 45)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 300 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 200)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 300)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battle Destroyer</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battle Destroyer, a poor man's Battleship</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 26 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 13)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 68)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 300 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 250)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 300)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battleship</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battleship, a ship that is hugely armored and armed.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 36 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 21)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 170)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 375 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 300)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 375)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Dreadnought</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The dreadnought is the largest moveable ship available.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 24 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 34)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 220)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 500 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 400)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 500)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Argonaut</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The argonaut is a huge ship that can't break orbit.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (if (< (designType.num-baytypes design) 2) (cons #t "") (cons #f "A ship can only have one type of missile bay")) (cons #f "A ship can only use one hull!")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 8 1000000))]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 55)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 300)]]></Armor>
+            <!--  To determine the total firepower of the ship, we multiply the 
+                  firepower of an individual missile bay by how many missile bays 
+                  the ship has. 
+                  To determine how many missile bays the ship can have, we divide 
+                  the ship size by the missile size. -->
+            <Firepower><![CDATA[(lambda (design) (* (floor (/ 1000 (designType.MissileSize design))) (designType.MissileFirepower design)))]]></Firepower>
+            <HitPoints><![CDATA[(lambda (design) 500)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <Size><![CDATA[(lambda (design) 1000)]]></Size>
+        </propertylist>
+    </comp>
 
 
 <comp>
@@ -200,12 +396,11 @@
 </comp>
 
 
-
 <comp>
     <name>Alpha Missile Tube</name>
     <ComponentIDName>Ships</ComponentIDName>
     <description>An alpha missile tube, capable of firing one alpha missile per combat round</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (if (< (designType.AmmoSize design) 4) (cons #t "") (cons #f "Explosive is too large foralpha missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (if (< (designType.AmmoSize design) 4) (cons #t "") (cons #f "Explosive is too large for alpha missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
     <propertylist>
         <Speed><![CDATA[(lambda (design) 0)]]></Speed>
         <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
@@ -224,6 +419,20 @@
     </propertylist>
 </comp>
 
+
+<comp>
+    <name>Alpha Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An alpha missile rack, capable of holding 2 alpha missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.num-ammo design) 3) (if (< (designType.AmmoSize design) 4) (cons #t "") (cons #f "Explosive is too large for alpha missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
+        </propertylist>
+</comp>
 
 
 <comp>
@@ -250,6 +459,21 @@
 </comp>
 
 
+<comp>
+    <name>Beta Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A beta missile rack, capable of holding 2 beta missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.num-ammo design) 3) (if (< (designType.AmmoSize design) 7) (cons #t "") (cons #f "Explosive is too large for beta missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+        </propertylist>
+ </comp>
+
+
 
 <comp>
     <name>Gamma Missile Tube</name>
@@ -274,6 +498,23 @@
     </propertylist>
 </comp>
 
+
+<comp>
+    <name>Gamma Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A gamma missile rack, capable of holding 2 gamma missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.num-ammo design) 3) (if (< (designType.AmmoSize design) 9) (cons #t "") (cons #f "Explosive is too large for gamma missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 16)]]></MissileSize>
+    </propertylist>
+</comp>
+
+
+
 <comp>
     <name>Delta Missile Tube</name>
     <ComponentIDName>Ships</ComponentIDName>
@@ -297,6 +538,22 @@
     </propertylist>
 </comp>
 
+
+<comp>
+    <name>Delta Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A delta missile rack, capable of holding 2 delta missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.num-ammo design) 3) (if (< (designType.AmmoSize design) 13) (cons #t "") (cons #f "Explosive is too large for delta missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 16)]]></MissileSize>
+    </propertylist>
+</comp>
+
+
 <comp>
     <name>Epsilon Missile Tube</name>
     <ComponentIDName>Ships</ComponentIDName>
@@ -319,6 +576,257 @@
             <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
         </propertylist>
 </comp>
+
+
+<comp>
+    <name>Epsilon Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An epsilon missile rack, capable of holding 2 epsilon missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.num-ammo design) 3) (if (< (designType.AmmoSize design) 25) (cons #t "") (cons #f "Explosive is too large for epsilon missiles")) (cons #f "Missiles can only handle one type of explosive")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 48)]]></MissileSize>
+    </propertylist>
+</comp>
+
+
+
+<comp>
+    <name>Omega Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An omega torpedoe tube, capable of firing one omega torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 41) (cons #t "") (cons #f "Explosive is too large for omega torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 40)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 40 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 40 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Omega Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An omega torpedoe rack, capable of holding 2 omega torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 41) (cons #t "") (cons #f "Explosive is too large for omega torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 40)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Upsilon Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An upsilon torpedoe tube, capable of firing one upsilon torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 61) (cons #t "") (cons #f "Explosive is too large for upsilon torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 60)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 60 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 60 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Upsilon Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An upsilon torpedoe rack, capable of holding 2 upsilon torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 61) (cons #t "") (cons #f "Explosive is too large for upsilon torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 60)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Tau Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A tau torpedoe tube, capable of firing one tau torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 81) (cons #t "") (cons #f "Explosive is too large for tau torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 80)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 80 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 80 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Tau Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A tau torpedoe rack, capable of holding 2 tau torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 81) (cons #t "") (cons #f "Explosive is too large for tau torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 80)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Sigma Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A sigma torpedoe tube, capable of firing one sigma torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 111) (cons #t "") (cons #f "Explosive is too large for sigma torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 110)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 110 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 110 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Sigma Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A sigma torpedoe rack, capable of holding 2 sigma torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 111) (cons #t "") (cons #f "Explosive is too large for sigma torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 110)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Rho Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A rho torpedoe tube, capable of firing one rho torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 151) (cons #t "") (cons #f "Explosive is too large for rho torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 150)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 150 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 150 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Rho Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A rho torpedoe rack, capable of holding 2 rho torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 151) (cons #t "") (cons #f "Explosive is too large for rho torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 150)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Xi Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A xi torpedoe tube, capable of firing one xi torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 201) (cons #t "") (cons #f "Explosive is too large for xi torpedoes")) )]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 200)]]></TorpedoeSize>
+        <!--  To get the torpedoe's firepower, we multiply the explosiveness of 
+              the material by how much material can fit in the warhead. 
+              How much material can fit in the warhead is the torpedoe size divided 
+              by the ammo size. -->
+        <TorpedoeFirepower><![CDATA[(lambda (design) (* (floor (/ 200 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)))]]></TorpedoeFirepower>
+        <!--  Torpedoe bay Cost is ammo cost times how much material can fit in the warhead -->
+        <TorpedoeCost><![CDATA[(lambda (design) (* (floor (/ 200 (designType.AmmoSize design))) (designType.AmmoCost design)))]]></TorpedoeCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Xi Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A xi torpedoe rack, capable of holding 2 xi torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (< (designType.AmmoSize design) 201) (cons #t "") (cons #f "Explosive is too large for xi torpedoes")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <BuildTime><![CDATA[(lambda (design) 1)]]></BuildTime>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 200)]]></TorpedoeSize>
+        </propertylist>
+</comp>
+
 
 <comp>
     <name>Armor</name>
@@ -454,6 +962,41 @@
     </prop>
     
     
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeCost</name>
+        <displayName>Torpedoe Cost</displayName>
+        <description>The relative cost of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeFirepower</name>
+        <displayName>Torpedoe Firepower</displayName>
+        <description>How much damage a torpedoe can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeSize</name>
+        <displayName>Torpedoe Size</displayName>
+        <description>The relative size of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+    
     
     <prop>
         <PropertyIDName>Ships</PropertyIDName>
@@ -543,6 +1086,16 @@
         <displayName>Number of hulls</displayName>
         <description>The number of hulls in the design</description>
         <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " hull"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>Size</name>
+        <displayName>Size of Ship</displayName>
+        <description>The size of the ship in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
