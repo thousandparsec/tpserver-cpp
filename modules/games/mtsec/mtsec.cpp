@@ -142,8 +142,6 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
-    //NOTE: remove the need for this, it is very annoying
-    compMax = 41;
 }
 
 
@@ -686,7 +684,7 @@ Design* MTSec::createScoutDesign( Player* owner)
     componentList[ds->getComponentByName("Scout Hull")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
-    Logger::getLogger()->debug( "Exit MTSec::createBattleScoutDesign");
+    Logger::getLogger()->debug( "Exit MTSec::createScoutDesign");
 
     return scout;
 }
@@ -882,9 +880,9 @@ void MTSec::setNewPlayerTech( Player* player)
       playerview->addVisibleObject(obv);
     }
 
-    for(uint32_t itcurr = 1; itcurr <= compMax; ++itcurr){
+   for(uint32_t itcurr = 1; itcurr <= game->getDesignStore()->getMaxComponentId(); ++itcurr){
       playerview->addUsableComponent(itcurr);
-    }
+   }
 
     Logger::getLogger()->debug( "Exit MTSec::setNewPlayerTech");
     return;

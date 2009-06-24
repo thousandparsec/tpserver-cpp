@@ -64,7 +64,6 @@ class MTSec : public Ruleset{
   void setNewPlayerTech( Player* player);
 
  private:
-  uint32_t compMax;
   xmlImport *xmlImporter;
 
 };
