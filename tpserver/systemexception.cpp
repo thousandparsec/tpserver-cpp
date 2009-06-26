@@ -20,6 +20,7 @@
 
 #include "systemexception.h"
 #include <errno.h>
+#include <string.h>
 
 SystemException::SystemException() : error_number(errno) {
 }
@@ -28,7 +29,7 @@ const char* SystemException::what() const throw() {
   return strerror(error_number);
 }
 
-int SystemException::getErrNo() {
+int SystemException::getErrNo() const {
   return error_number;
 }
 

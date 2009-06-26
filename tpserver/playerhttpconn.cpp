@@ -40,6 +40,7 @@
 #include "player.h"
 
 #include "playerhttpconn.h"
+#include "systemexception.h"
 
 
 PlayerHttpConnection::PlayerHttpConnection(int fd) : PlayerTcpConnection(fd), httpbuff()
@@ -62,22 +63,22 @@ int32_t PlayerHttpConnection::verCheckLastChance()
     bool found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
     if(!found){
       char* buff = new char[1024];
-      int32_t len = underlyingRead(buff, 1024);
-      if(len == 0){
-        Logger::getLogger()->info("Client disconnected");
-        close();
-        rtn = 0;
-      }else if(len > 0){
-        httpbuff.append(buff, len);
-        found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
-      }else{
-        if(len != -2){
-          Logger::getLogger()->warning("Socket error");
+      try {
+        int32_t len = underlyingRead(buff, 1024);
+        if(len == 0){
+          Logger::getLogger()->info("Client disconnected");
           close();
           rtn = 0;
+        }else if(len > 0){
+          httpbuff.append(buff, len);
+          found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
         }else{
           rtn = -2;
         }
+      } catch ( SystemException& e ) {
+        WARNING("Socket error -- %s", e.what());
+        close();
+        rtn = 0;
       }
       delete[] buff;
     }

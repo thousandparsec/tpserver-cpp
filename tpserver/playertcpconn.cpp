@@ -34,6 +34,7 @@
 #endif
 
 
+#include "systemexception.h"
 #include "logging.h"
 #include "net.h"
 #include "frame.h"
@@ -103,26 +104,28 @@ void PlayerTcpConnection::processWrite() {
       sbuffsize = sendqueue.front()->getLength();
     }
     if (sbuff != NULL) {
-      int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
-      if (len > 0) {
-        sbuffused += len;
-        if (sbuffused == sbuffsize) {
-          delete[] sbuff;
-          sbuff = NULL;
-          delete sendqueue.front();
-          sendqueue.pop();
-          ok = !sendqueue.empty();
-        }
-      } else {
-        ok = false;
-        if (len != -2) {
-          ERROR("PlayerTcpConnection : Socket error writing");
-          while (!sendqueue.empty()) {
+      try {
+        int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
+        if (len > 0) {
+          sbuffused += len;
+          if (sbuffused == sbuffsize) {
+            delete[] sbuff;
+            sbuff = NULL;
             delete sendqueue.front();
             sendqueue.pop();
+            ok = !sendqueue.empty();
           }
-          close();
+        } else {
+          ok = false;
         }
+      } catch ( SystemException& e ) {
+         ERROR("PlayerTcpConnection : Socket error writing : %s", e.what());
+         while (!sendqueue.empty()) {
+           delete sendqueue.front();
+           sendqueue.pop();
+         }
+         close();
+         return;
       }
     } else {
       ERROR("PlayerTcpConnection : Could not get packet from frame to send");
@@ -144,19 +147,17 @@ void PlayerTcpConnection::verCheck() {
 
   int32_t precheck = verCheckPreChecks();
   if (precheck != 1) {
-    rtn = false;
     if (precheck != -2) {
       // if not non-block wait
       if (precheck == 0) {
         INFO("PlayerTcpConnection : Client disconnected in pre-check");
-        close();
       } else {
         INFO("PlayerTcpConnection : Error in pre-check, disconnecting");
-        close();
       }
+      close();
     }
+    return;
   }
-  if (!rtn) return;
 
   Frame *recvframe = new Frame(fv0_3);
   uint32_t hlen = recvframe->getHeaderLength();
@@ -167,23 +168,24 @@ void PlayerTcpConnection::verCheck() {
   }
 
   if (rdatabuff == NULL && rbuffused < 4) {
-    int32_t len = underlyingRead(rheaderbuff+rbuffused, 4 - rbuffused);
-    if (len == 0) {
-      INFO("PlayerTcpConnection : Client disconnected");
-      close();
-      rtn = false;
-    } else if (len > 0) {
-      rbuffused += len;
-      if (rbuffused < 4) {
-        DEBUG("PlayerTcpConnection : ver check header not the length needed, delaying read");
+    try {
+      int32_t len = underlyingRead(rheaderbuff+rbuffused, 4 - rbuffused);
+      if (len == 0) {
+        INFO("PlayerTcpConnection : Client disconnected");
+        close();
+        rtn = false;
+      } else if (len > 0) {
+        rbuffused += len;
+        if (rbuffused < 4) {
+          DEBUG("PlayerTcpConnection : ver check header not the length needed, delaying read");
+          rtn = false;
+        }
+      } else {
         rtn = false;
       }
-    } else {
-      if (len != -2) {
-        WARNING("PlayerTcpConnection : Socket error");
-        close();
-      }
-      rtn = false;
+    } catch ( SystemException& e ) {
+      WARNING("PlayerTcpConnection : Socket error -- %s", e.what());
+      close();
     }
   }
   if (rtn && ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL)) {
@@ -204,8 +206,12 @@ void PlayerTcpConnection::verCheck() {
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
           char* buff = new char[1024];
-          int32_t len = underlyingRead(buff, 1024);
-          DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+          try {
+            int32_t len = underlyingRead(buff, 1024);
+            DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+          } catch( SystemException& ) {
+            // now what?
+          }
           delete[] buff;
           rtn = false;
         } else {
@@ -226,8 +232,12 @@ void PlayerTcpConnection::verCheck() {
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
           char* buff = new char[1024];
-          int32_t len = underlyingRead(buff, 1024);
-          DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+          try {
+            int32_t len = underlyingRead(buff, 1024);
+            DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+          } catch( SystemException& ) {
+            // now what?
+          }
           delete[] buff;
           rtn = false;
         }
@@ -238,8 +248,12 @@ void PlayerTcpConnection::verCheck() {
         //stay connected just in case they try again with a lower version
         // have to empty the receive queue though.
         char* buff = new char[1024];
-        int32_t len = underlyingRead(buff, 1024);
-        DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+        try {
+          int32_t len = underlyingRead(buff, 1024);
+          DEBUG("PlayerTcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
+        } catch( SystemException& ) {
+          // now what?
+        }
         delete[] buff;
 
         Frame *f = new Frame(fv0_3);
@@ -329,27 +343,29 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
   }
 
   if (rdatabuff == NULL && rbuffused != hlen) {
-    int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
-    if (len == 0) {
-      INFO("PlayerTcpConnection : Client disconnected");
-      close();
-      rtn = false;
-    } else if (len > 0) {
-      rbuffused += len;
-      if (rbuffused != hlen) {
-        DEBUG("PlayerTcpConnection : Read header not the length needed, delaying read");
+    try {
+      int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
+      if (len == 0) {
+        INFO("PlayerTcpConnection : Client disconnected");
+        close();
+        rtn = false;
+      } else if (len > 0) {
+        rbuffused += len;
+        if (rbuffused != hlen) {
+          DEBUG("PlayerTcpConnection : Read header not the length needed, delaying read");
+          rtn = false;
+        }
+      } else {
         rtn = false;
       }
-    } else {
-      if (len != -2) {
-        WARNING("PlayerTcpConnection : Socket error");
-        while (!sendqueue.empty()) {
-          delete sendqueue.front();
-          sendqueue.pop();
-        }
-        close();
+    } catch ( SystemException& e ) {
+      WARNING("PlayerTcpConnection : Socket error -- %s", e.what());
+      while (!sendqueue.empty()) {
+        delete sendqueue.front();
+        sendqueue.pop();
       }
-      rtn = false;
+      close();
+      return false;
     }
   }
 
@@ -384,27 +400,29 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     }
 
     if (rbuffused != datalen) {
-      int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
-      if (len == 0) {
-        INFO("PlayerTcpConnection : Client disconnected");
-        close();
-        rtn = false;
-      } else if (len > 0) {
-        rbuffused += len;
-        if (rbuffused != datalen) {
-          DEBUG("PlayerTcpConnection : Read data not the length needed, delaying read");
+      try {
+        int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
+        if (len == 0) {
+          INFO("PlayerTcpConnection : Client disconnected");
+          close();
+          rtn = false;
+        } else if (len > 0) {
+          rbuffused += len;
+          if (rbuffused != datalen) {
+            DEBUG("PlayerTcpConnection : Read data not the length needed, delaying read");
+            rtn = false;
+          }
+        }else{
           rtn = false;
         }
-      }else{
-        if(len != -2){
-          WARNING("PlayerTcpConnection : Socket error");
-          while(!sendqueue.empty()){
-            delete sendqueue.front();
-            sendqueue.pop();
-          }
-          close();
+      } catch( SystemException& e ) {
+        WARNING("PlayerTcpConnection : Socket error -- %s", e.what());
+        while (!sendqueue.empty()) {
+          delete sendqueue.front();
+          sendqueue.pop();
         }
-        rtn = false;
+        close();
+        return false;
       }
     }
 
@@ -455,11 +473,10 @@ void PlayerTcpConnection::sendData(const char* data, uint32_t size){
 int32_t PlayerTcpConnection::underlyingRead(char* buff, uint32_t size){
   int32_t len = recv(sockfd, buff, size, 0);
   if(len < 0){
-    if(errno != EAGAIN && errno != EWOULDBLOCK){
-      ERROR("PlayerTcpConnection : underlying read, tcp, error is: %s", strerror(errno));
-      len = -1;
+    if(errno == EAGAIN || errno == EWOULDBLOCK){
+      return -2;
     }else{
-      len = -2;
+      throw SystemException();
     }
   }
   return len;
@@ -468,11 +485,10 @@ int32_t PlayerTcpConnection::underlyingRead(char* buff, uint32_t size){
 int32_t PlayerTcpConnection::underlyingWrite(const char* buff, uint32_t size){
   int len = send(sockfd, buff, size, 0);
   if(len < 0){
-    if(errno != EAGAIN && errno != EWOULDBLOCK){
-      ERROR("PlayerTcpConnection : underlying write, tcp, error is: %s", strerror(errno));
-      len = -1;
-    }else{
+    if(errno == EAGAIN || errno == EWOULDBLOCK){
       len = -2;
+    }else{
+      throw SystemException();
     }
   }
   return len;
