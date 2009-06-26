@@ -37,7 +37,6 @@ class TcpConnection: public Connection {
     virtual void sendFrame( Frame* frame );
 
     void process();
-
     void processWrite();
 
     ProtocolVersion getProtocolVersion();
@@ -61,6 +60,8 @@ class TcpConnection: public Connection {
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
     bool queueEmpty() const;
+
+    bool getAuth( Frame* frame, std::string& username, std::string& password );
 
     // used by httpconnection
     // TODO: check!

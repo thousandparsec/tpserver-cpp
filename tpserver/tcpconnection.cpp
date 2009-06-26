@@ -551,3 +551,24 @@ bool TcpConnection::queueEmpty() const {
   return sendqueue.empty();
 }
 
+bool TcpConnection::getAuth( Frame* frame, std::string& username, std::string& password ) {
+  try{
+    if(!frame->isEnoughRemaining(10))
+      throw std::exception();
+    username = frame->unpackStdString();
+    if(!frame->isEnoughRemaining(5))
+      throw std::exception();
+    password = frame->unpackStdString();
+  }catch(std::exception e){
+    DEBUG("TcpConnection : Login - not enough data");
+    sendFail(frame, fec_FrameError, "Login Error - missing username or password");
+    return false;
+  }
+  username = username.substr(0, username.find('@'));
+  if (username.length() == 0 || password.length() == 0) {
+    DEBUG("TcpConnection : username or password == NULL");
+    sendFail(frame,fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
+    return false;
+  }
+  return true;
+}

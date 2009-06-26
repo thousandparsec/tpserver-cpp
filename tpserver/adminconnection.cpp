@@ -48,26 +48,12 @@ void AdminConnection::processLogin(){
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
       std::string username, password;
-      try{
-        if(!recvframe->isEnoughRemaining(10))
-          throw std::exception();
-        username = recvframe->unpackStdString();
-        if(!recvframe->isEnoughRemaining(5))
-          throw std::exception();
-        password = recvframe->unpackStdString();
-      }catch(std::exception e){
-        Logger::getLogger()->debug("Admin Login: not enough data");
-        Frame *failframe = createFrame(recvframe);
-        failframe->createFailFrame(fec_FrameError, "Admin Login Error - missing username or password");
-        sendFrame(failframe);
-        delete recvframe;
-        return;
-      }
-      username = username.substr(0, username.find('@'));
-      if (username.length() > 0 && password.length() > 0) {
-      bool authenticated = false;
+      
+      if ( getAuth( recvframe, username, password ) ) {
+
+        bool authenticated = false;
         try{
-	  if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
+          if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
             authenticated = true;
         }catch(std::exception e){
           Logger::getLogger()->debug("Admin Login: bad username or password");
@@ -84,7 +70,7 @@ void AdminConnection::processLogin(){
           sendFrame(okframe);
           Logger::getLogger()->info("Admin login ok by %s", username.c_str());
           logsink = new AdminLogger();
-	  logsink->setConnection(this);
+          logsink->setConnection(this);
           logextid = Logger::getLogger()->addLog(logsink);
           status = READY;
         } else {
@@ -93,14 +79,7 @@ void AdminConnection::processLogin(){
           failframe->createFailFrame(fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
           sendFrame(failframe);
         }
-      } else {
-              Logger::getLogger()->debug("username or password == NULL");
-              Frame *failframe = createFrame(recvframe);
-              failframe->createFailFrame(fec_FrameError, "Admin Login Error - no username or password");      // TODO - should be a const or enum, Login error
-              sendFrame(failframe);
-              //close();
       }
-
 
     }else{
       Logger::getLogger()->warning("In connected state but did not receive login");
@@ -118,24 +97,22 @@ void AdminConnection::processNormalFrame()
   Frame *frame = createFrame();
   if (readFrame(frame)) {
     switch (frame->getType()) {
-    case ftad_CommandDesc_Get:
-      processDescribeCommand(frame);
-      break;
-    case ftad_CommandTypes_Get:
-      processGetCommandTypes(frame);
-      break;
-    case ftad_Command:
-      processCommand(frame);
-      break;
-    default:
-      Logger::getLogger()->warning("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
-      Frame *of = createFrame(frame);
-      of->createFailFrame(fec_ProtocolError, "Did not understand that frame type.");
-      sendFrame(of);
-      break;
+      case ftad_CommandDesc_Get:
+        processDescribeCommand(frame);
+        break;
+      case ftad_CommandTypes_Get:
+        processGetCommandTypes(frame);
+        break;
+      case ftad_Command:
+        processCommand(frame);
+        break;
+      default:
+        WARNING("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
+        sendFail(frame,fec_ProtocolError, "Did not understand that frame type.");
+        break;
     }
   } else {
-    Logger::getLogger()->debug("noFrame :(");
+    DEBUG("noFrame :(");
     // client closed
   }
   delete frame;

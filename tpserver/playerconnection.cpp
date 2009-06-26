@@ -56,21 +56,8 @@ void PlayerConnection::processLogin(){
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
       std::string username, password;
-      try{
-        if(!recvframe->isEnoughRemaining(10))
-          throw std::exception();
-        username = recvframe->unpackStdString();
-        if(!recvframe->isEnoughRemaining(5))
-          throw std::exception();
-        password = recvframe->unpackStdString();
-      }catch(std::exception e){
-        DEBUG("PlayerConnection : Login - not enough data");
-        sendFail(recvframe, fec_FrameError, "Login Error - missing username or password");
-        delete recvframe;
-        return;
-      }
-      username = username.substr(0, username.find('@'));
-      if (username.length() > 0 && password.length() > 0) {
+
+      if ( getAuth( recvframe, username, password ) ) {
         Player* player = Game::getGame()->getPlayerManager()->findPlayer(username);
 
         if(player != NULL){
@@ -105,10 +92,6 @@ void PlayerConnection::processLogin(){
           INFO("PlayerConnection : Bad username or password");
           sendFail(recvframe,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
         }
-      } else {
-        DEBUG("PlayerConnection : username or password == NULL");
-        sendFail(recvframe,fec_FrameError, "Login Error - no username or password");	// TODO - should be a const or enum, Login error
-        //close();
       }
 
 
