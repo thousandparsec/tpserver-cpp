@@ -30,7 +30,6 @@ class PlayerConnection: public TcpConnection {
     virtual ~PlayerConnection();
 
     void process();
-    virtual void close() = 0;
     virtual void sendFrame(Frame * frame) = 0;
 
     Frame* createFrame(Frame* oldframe = NULL);

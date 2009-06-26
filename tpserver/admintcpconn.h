@@ -29,7 +29,6 @@ class AdminTcpConnection : public AdminConnection {
   explicit AdminTcpConnection(int fd);
   virtual ~AdminTcpConnection();
   
-  void close();
   void sendFrame(Frame * frame);
   void processWrite();
 
@@ -39,20 +38,6 @@ class AdminTcpConnection : public AdminConnection {
   virtual int32_t verCheckLastChance();
 
   bool readFrame(Frame * recvframe);
-
-  void sendData(const char* data, uint32_t size);
-  void sendDataAndClose(const char* data, uint32_t size);
-  
-  char* rheaderbuff;
-  char* rdatabuff;
-  uint32_t rbuffused;
-  
-  char* sbuff;
-  uint32_t sbuffused;
-  uint32_t sbuffsize;
-  std::queue<Frame*> sendqueue;
-  
-  bool sendandclose;
   
 };
 

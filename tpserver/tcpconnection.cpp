@@ -40,10 +40,43 @@
 #include "systemexception.h"
 #include "tcpconnection.h"
 
-TcpConnection::TcpConnection(int fd) : Connection(fd) {
+TcpConnection::TcpConnection(int fd) 
+  : Connection(fd), 
+    rheaderbuff( NULL ),
+    rdatabuff( NULL ),
+    rbuffused( 0 ),
+    sbuff( NULL ),
+    sbuffused( 0 ),
+    sbuffsize( 0 ),
+    sendandclose( false )
+{
+  fcntl(sockfd, F_SETFL, O_NONBLOCK);
 }
 
 TcpConnection::~TcpConnection() {
+  if (status != DISCONNECTED) {
+    close();
+  }
+  if(rheaderbuff != NULL)
+    delete[] rheaderbuff;
+  if(rdatabuff != NULL)
+    delete[] rdatabuff;
+  if(sbuff != NULL)
+    delete[] sbuff;
+  while(!sendqueue.empty()){
+    delete sendqueue.front();
+    sendqueue.pop();
+  }
+}
+
+void TcpConnection::close()
+{
+  if(sendqueue.empty()){
+    ::close(sockfd);
+    status = DISCONNECTED;
+  }else{
+    sendandclose = true;
+  }
 }
 
 int32_t TcpConnection::underlyingRead(char* buff, uint32_t size) {
@@ -67,5 +100,22 @@ int32_t TcpConnection::underlyingWrite(const char* buff, uint32_t size) {
     }
   }
   return len;
+}
+
+void TcpConnection::sendDataAndClose(const char* data, uint32_t size){
+  sendData(data, size);
+  close();
+}
+
+void TcpConnection::sendData(const char* data, uint32_t size){
+  while(!sendqueue.empty()){
+    delete sendqueue.front();
+    sendqueue.pop();
+  }
+  sbuff = new char[size];
+  memcpy(sbuff, data, size);
+  sbuffsize = size;
+  sbuffused = 0;
+  sendFrame(new Frame(fv0_3));
 }
 

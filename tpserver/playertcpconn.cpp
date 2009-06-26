@@ -43,41 +43,12 @@
 
 #include "playertcpconn.h"
 
-PlayerTcpConnection::PlayerTcpConnection(int fd) 
-  : PlayerConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), 
-    rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), 
-    sendandclose(false)
+PlayerTcpConnection::PlayerTcpConnection(int fd) : PlayerConnection(fd)
 {
-  fcntl(sockfd, F_SETFL, O_NONBLOCK);
 }
 
 PlayerTcpConnection::~PlayerTcpConnection()
 {
-  if (status != DISCONNECTED) {
-    close();
-  }
-  if(rheaderbuff != NULL)
-    delete[] rheaderbuff;
-  if(rdatabuff != NULL)
-    delete[] rdatabuff;
-  if(sbuff != NULL)
-    delete[] sbuff;
-  while(!sendqueue.empty()){
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
-}
-
-
-void PlayerTcpConnection::close()
-{
-  if(sendqueue.empty()){
-    DEBUG("PlayerTcpConnection : Closing connection");
-    ::close(sockfd);
-    status = DISCONNECTED;
-  }else{
-    sendandclose = true;
-  }
 }
 
 void PlayerTcpConnection::sendFrame(Frame * frame)
@@ -451,22 +422,5 @@ bool PlayerTcpConnection::readFrame(Frame * recvframe)
     rheaderbuff = NULL;
   }
   return rtn;
-}
-
-void PlayerTcpConnection::sendDataAndClose(const char* data, uint32_t size){
-  sendData(data, size);
-  close();
-}
-
-void PlayerTcpConnection::sendData(const char* data, uint32_t size){
-  while(!sendqueue.empty()){
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
-  sbuff = new char[size];
-  memcpy(sbuff, data, size);
-  sbuffsize = size;
-  sbuffused = 0;
-  sendFrame(new Frame(fv0_3));
 }
 

@@ -40,37 +40,12 @@
 
 #include "admintcpconn.h"
 
-AdminTcpConnection::AdminTcpConnection(int fd) : AdminConnection(fd), rheaderbuff(NULL), rdatabuff(NULL), rbuffused(0), sbuff(NULL), sbuffused(0), sbuffsize(0), sendqueue(), sendandclose(false)
+AdminTcpConnection::AdminTcpConnection(int fd) : AdminConnection(fd)
 {
-  fcntl(sockfd, F_SETFL, O_NONBLOCK);
 }
 
 AdminTcpConnection::~AdminTcpConnection()
 {
-	if (status != DISCONNECTED) {
-		close();
-	}
-        if(rheaderbuff != NULL)
-          delete[] rheaderbuff;
-        if(rdatabuff != NULL)
-          delete[] rdatabuff;
-        if(sbuff != NULL)
-          delete[] sbuff;
-        while(!sendqueue.empty()){
-          delete sendqueue.front();
-          sendqueue.pop();
-        }
-}
-
-
-void AdminTcpConnection::close()
-{
-  if(sendqueue.empty()){
-    ::close(sockfd);
-    status = DISCONNECTED;
-  }else{
-    sendandclose = true;
-  }
 }
 
 void AdminTcpConnection::sendFrame(Frame * frame)
@@ -433,20 +408,4 @@ bool AdminTcpConnection::readFrame(Frame * recvframe)
   return rtn;
 }
 
-void AdminTcpConnection::sendDataAndClose(const char* data, uint32_t size){
-  sendData(data, size);
-  close();
-}
-
-void AdminTcpConnection::sendData(const char* data, uint32_t size){
-  while(!sendqueue.empty()){
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
-  sbuff = new char[size];
-  memcpy(sbuff, data, size);
-  sbuffsize = size;
-  sbuffused = 0;
-  sendFrame(new Frame(fv0_3));
-}
 

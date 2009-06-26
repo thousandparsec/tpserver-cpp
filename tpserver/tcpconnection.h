@@ -21,14 +21,18 @@
  *
  */
 
+#include <queue>
 #include <stdint.h>
 #include <tpserver/connection.h>
+#include <tpserver/frame.h>
 
 class TcpConnection: public Connection {
   public:
     virtual ~TcpConnection();
 
-    virtual void close() = 0;
+    virtual void close();
+
+    virtual void sendFrame( Frame* frame ) = 0;
 
   protected:
     TcpConnection(int fd);
@@ -36,8 +40,22 @@ class TcpConnection: public Connection {
     virtual int32_t underlyingRead(char* buff, uint32_t size);
     virtual int32_t underlyingWrite(const char* buff, uint32_t size);
   
+    void sendDataAndClose(const char* data, uint32_t size);
+    void sendData(const char* data, uint32_t size);
+
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
+
+    char* rheaderbuff;
+    char* rdatabuff;
+    uint32_t rbuffused;
+  
+    char* sbuff;
+    uint32_t sbuffused;
+    uint32_t sbuffsize;
+    std::queue<Frame*> sendqueue;
+  
+    bool sendandclose;
 };
 
 #endif

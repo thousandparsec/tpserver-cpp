@@ -35,7 +35,6 @@ class AdminConnection: public TcpConnection {
   virtual ~AdminConnection();
   
   void process();
-  virtual void close() = 0;
   virtual void sendFrame(Frame * frame) = 0;
 
   Frame* createFrame(Frame* oldframe = NULL);
