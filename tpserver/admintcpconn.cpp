@@ -450,28 +450,3 @@ void AdminTcpConnection::sendData(const char* data, uint32_t size){
   sendFrame(new Frame(fv0_3));
 }
 
-int32_t AdminTcpConnection::underlyingRead(char* buff, uint32_t size){
-  int32_t len = recv(sockfd, buff, size, 0);
-  if(len < 0){
-    if(errno != EAGAIN && errno != EWOULDBLOCK){
-      Logger::getLogger()->error("underlying read, tcp, error is: %s", strerror(errno));
-      len = -1;
-    }else{
-      len = -2;
-    }
-  }
-  return len;
-}
-
-int32_t AdminTcpConnection::underlyingWrite(const char* buff, uint32_t size){
-  int len = send(sockfd, buff, size, 0);
-  if(len < 0){
-    if(errno != EAGAIN && errno != EWOULDBLOCK){
-      Logger::getLogger()->error("underlying write, tcp, error is: %s", strerror(errno));
-      len = -1;
-    }else{
-      len = -2;
-    }
-  }
-  return len;
-}

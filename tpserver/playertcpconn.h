@@ -44,9 +44,6 @@ class PlayerTcpConnection : public PlayerConnection {
   void sendData(const char* data, uint32_t size);
   void sendDataAndClose(const char* data, uint32_t size);
   
-  virtual int32_t underlyingRead(char* buff, uint32_t size);
-  virtual int32_t underlyingWrite(const char* buff, uint32_t size);
-  
   char* rheaderbuff;
   char* rdatabuff;
   uint32_t rbuffused;

@@ -34,7 +34,7 @@
 
 #include "adminconnection.h"
 
-AdminConnection::AdminConnection(int fd) : Connection(){
+AdminConnection::AdminConnection(int fd) : TcpConnection(){
   sockfd = fd;
   status = PRECONNECTED;
 }

@@ -470,26 +470,3 @@ void PlayerTcpConnection::sendData(const char* data, uint32_t size){
   sendFrame(new Frame(fv0_3));
 }
 
-int32_t PlayerTcpConnection::underlyingRead(char* buff, uint32_t size){
-  int32_t len = recv(sockfd, buff, size, 0);
-  if(len < 0){
-    if(errno == EAGAIN || errno == EWOULDBLOCK){
-      return -2;
-    }else{
-      throw SystemException();
-    }
-  }
-  return len;
-}
-
-int32_t PlayerTcpConnection::underlyingWrite(const char* buff, uint32_t size){
-  int len = send(sockfd, buff, size, 0);
-  if(len < 0){
-    if(errno == EAGAIN || errno == EWOULDBLOCK){
-      len = -2;
-    }else{
-      throw SystemException();
-    }
-  }
-  return len;
-}

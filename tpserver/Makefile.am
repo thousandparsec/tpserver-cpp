@@ -19,7 +19,7 @@ AVAHISOURCES =
 AVAHIHEADERS =
 endif
 
-tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
+tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp systemexception.cpp  \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
@@ -45,7 +45,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		battlexml/battlelogger.cpp
 		
 headersdir = $(includedir)/tpserver
-headers_HEADERS = connection.h \
+headers_HEADERS = connection.h tcpconnection.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h systemexception.h \

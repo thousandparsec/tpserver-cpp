@@ -22,10 +22,10 @@
 
 #include <stdint.h>
 #include <tpserver/frame.h>
-#include <tpserver/connection.h>
+#include <tpserver/tcpconnection.h>
 
 class PlayerAgent;
-class PlayerConnection: public Connection {
+class PlayerConnection: public TcpConnection {
   public:
     virtual ~PlayerConnection();
 

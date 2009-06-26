@@ -24,11 +24,11 @@
 
 #include <tpserver/frame.h>
 
-#include <tpserver/connection.h>
+#include <tpserver/tcpconnection.h>
 
 class AdminLogger;
 
-class AdminConnection: public Connection {
+class AdminConnection: public TcpConnection {
   
  public:
   AdminConnection(int fd);
