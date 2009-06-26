@@ -25,7 +25,7 @@
 #endif
 
 #include "logging.h"
-#include "playertcpconn.h"
+#include "playerconnection.h"
 #include "net.h"
 
 #include "tcpsocket.h"
@@ -49,5 +49,5 @@ void TcpSocket::openListen(const std::string& address, const std::string& port){
 PlayerConnection* TcpSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new tp (tcp) connection");
 
-    return new PlayerTcpConnection(fd);
+    return new PlayerConnection(fd);
 }

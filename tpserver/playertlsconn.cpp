@@ -35,7 +35,7 @@
 #include "playertlsconn.h"
 
 
-PlayerTlsConnection::PlayerTlsConnection(int fd) : PlayerTcpConnection(fd), handshakecomplete(false){
+PlayerTlsConnection::PlayerTlsConnection(int fd) : PlayerConnection(fd), handshakecomplete(false){
     TlsManager::getInstance()->reference();
 
     gnutls_init (&session, GNUTLS_SERVER);
@@ -67,7 +67,7 @@ void PlayerTlsConnection::close(){
     gnutls_bye (session, GNUTLS_SHUT_WR);
     gnutls_deinit (session);
   }
-  PlayerTcpConnection::close();
+  PlayerConnection::close();
 }
 
 

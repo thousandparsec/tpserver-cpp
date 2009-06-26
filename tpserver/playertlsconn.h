@@ -22,9 +22,9 @@
 
 typedef struct gnutls_session_int* gnutls_session_t;
 
-#include "playertcpconn.h"
+#include "playerconnection.h"
 
-class PlayerTlsConnection : public PlayerTcpConnection {
+class PlayerTlsConnection : public PlayerConnection {
  public:
   PlayerTlsConnection(int fd);
   virtual ~PlayerTlsConnection();

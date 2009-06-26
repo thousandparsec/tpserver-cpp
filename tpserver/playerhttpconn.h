@@ -22,9 +22,9 @@
 
 #include <string>
 
-#include "playertcpconn.h"
+#include "playerconnection.h"
 
-class PlayerHttpConnection : public PlayerTcpConnection {
+class PlayerHttpConnection : public PlayerConnection {
  public:
   PlayerHttpConnection(int fd);
   virtual ~PlayerHttpConnection();

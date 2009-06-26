@@ -36,16 +36,11 @@ class AdminConnection: public TcpConnection {
   
   void process();
 
-  Frame* createFrame(Frame* oldframe = NULL);
-
  protected:
 
-  virtual void verCheck() = 0;
   void login();
 
   void adminFrame();
-
-  virtual bool readFrame(Frame * recvframe) = 0;
 
   void processDescribeCommand(Frame * frame);
   void processGetCommandTypes(Frame * frame);

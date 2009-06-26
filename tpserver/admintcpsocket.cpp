@@ -25,7 +25,7 @@
 #endif
 
 #include "logging.h"
-#include "admintcpconn.h"
+#include "adminconnection.h"
 #include "net.h"
 
 #include "admintcpsocket.h"
@@ -49,5 +49,5 @@ void AdminTcpSocket::openListen(const std::string& address, const std::string& p
 AdminConnection* AdminTcpSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new admin (tcp) connection");
 
-    return new AdminTcpConnection(fd);
+    return new AdminConnection(fd);
 }

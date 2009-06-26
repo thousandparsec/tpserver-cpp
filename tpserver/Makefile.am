@@ -23,12 +23,12 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cp
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp systemexception.cpp  \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
-		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
+		playerconnection.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
 		persistence.cpp objectmanager.cpp playermanager.cpp listensocket.cpp boardmanager.cpp \
 		filelogger.cpp syslogger.cpp consolelogger.cpp resourcedescription.cpp \
 		resourcemanager.cpp pluginmanager.cpp httpsocket.cpp playerhttpconn.cpp \
-		admintcpsocket.cpp adminconnection.cpp admintcpconn.cpp adminlogger.cpp \
+		admintcpsocket.cpp adminconnection.cpp adminlogger.cpp \
 		command.cpp commandmanager.cpp \
 		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp \
 		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectorderparameter.cpp \
@@ -74,10 +74,10 @@ headerstinyxml_HEADERS = tinyxml/tinyxml.h
 headersbattlexmldir = $(headersdir)/battlexml
 headersbattlexml_HEADERS = battlexml/combatant.h battlexml/battleexceptions.h battlexml/battlelogger.h
 
-noinst_HEADERS = playertcpconn.h tcpsocket.h filelogger.h syslogger.h \
+noinst_HEADERS = tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
 	playerhttpconn.h $(AVAHIHEADERS) advertiser.h publisher.h metaserverpublisher.h \
-	admintcpsocket.h admintcpconn.h adminlogger.h \
+	admintcpsocket.h adminlogger.h \
 	metaserverconnection.h asyncframe.h asynctimeremaining.h basicturntimer.h \
 	thresholdturntimer.h playersfinishedturntimer.h
 

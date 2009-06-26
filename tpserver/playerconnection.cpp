@@ -39,7 +39,7 @@
 #include "playerconnection.h"
 
 PlayerConnection::PlayerConnection(int fd) 
-  : TcpConnection(fd), playeragent(NULL), paddingfilter(false)
+  : TcpConnection(fd), playeragent(NULL)
 {
   lastpingtime = time(NULL);
 }
@@ -50,11 +50,6 @@ PlayerConnection::~PlayerConnection(){
   }
 }
 
-void PlayerConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error ) {
-  Frame* frame = createFrame(oldframe);
-  frame->createFailFrame(code, error);
-  sendFrame(frame);
-}
 
 void PlayerConnection::process(){
   DEBUG("PlayerConnection : About to Process");
@@ -80,20 +75,6 @@ void PlayerConnection::process(){
       break;
   }
   DEBUG("PlayerConnection : Finished Processing");
-}
-
-Frame* PlayerConnection::createFrame(Frame* oldframe)
-{
-  Frame* newframe;
-  if(oldframe != NULL) {
-    newframe = new Frame(oldframe->getVersion());
-    newframe->setSequence(oldframe->getSequence());
-  } else {
-    newframe = new Frame(version);
-    newframe->setSequence(0);
-  }
-  newframe->enablePaddingStrings(paddingfilter);
-  return newframe;
 }
 
 void PlayerConnection::login(){

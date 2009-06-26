@@ -30,17 +30,11 @@ class PlayerConnection: public TcpConnection {
     virtual ~PlayerConnection();
 
     void process();
-    Frame* createFrame(Frame* oldframe = NULL);
 
-  protected:
     PlayerConnection(int fd);
 
-    virtual void verCheck() = 0;
-    virtual bool readFrame(Frame * recvframe) = 0;
-
+  protected:
     void processGetFeaturesFrame(Frame* frame);
-
-    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
   private:
     /// Blocked to disallow non-fd creation
@@ -56,7 +50,6 @@ class PlayerConnection: public TcpConnection {
     
     PlayerAgent *playeragent;
     uint64_t lastpingtime;
-    bool paddingfilter;
 };
 
 #endif

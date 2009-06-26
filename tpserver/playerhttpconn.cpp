@@ -43,7 +43,7 @@
 #include "systemexception.h"
 
 
-PlayerHttpConnection::PlayerHttpConnection(int fd) : PlayerTcpConnection(fd), httpbuff()
+PlayerHttpConnection::PlayerHttpConnection(int fd) : PlayerConnection(fd), httpbuff()
 {
 
 }

@@ -67,20 +67,6 @@ void AdminConnection::process(){
   Logger::getLogger()->debug("Finished Processing");
 }
 
-Frame* AdminConnection::createFrame(Frame* oldframe)
-{
-  Frame* newframe;
-  if(oldframe != NULL) {
-    newframe = new Frame(oldframe->getVersion());
-    newframe->setSequence(oldframe->getSequence());
-  } else {
-    newframe = new Frame(version);
-    newframe->setSequence(0);
-  }
-  newframe->enablePaddingStrings(false);  // TODO - what does this do?
-  return newframe;
-}
-
 void AdminConnection::login(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {

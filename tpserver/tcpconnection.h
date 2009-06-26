@@ -31,8 +31,11 @@ class TcpConnection: public Connection {
     virtual ~TcpConnection();
 
     virtual void close();
+    
+    Frame* createFrame(Frame* oldframe = NULL);
 
     virtual void sendFrame( Frame* frame );
+    virtual bool readFrame( Frame* recvframe );
 
     void processWrite();
 
@@ -47,8 +50,11 @@ class TcpConnection: public Connection {
     void sendDataAndClose(const char* data, uint32_t size);
     void sendData(const char* data, uint32_t size);
 
+    void verCheck();
     virtual int32_t verCheckPreChecks();
     virtual int32_t verCheckLastChance();
+    
+    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
@@ -65,6 +71,7 @@ class TcpConnection: public Connection {
     bool sendandclose;
     
     ProtocolVersion version;
+    bool paddingfilter;
 };
 
 #endif
