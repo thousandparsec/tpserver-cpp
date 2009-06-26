@@ -21,14 +21,11 @@
 #include "tlsexception.h"
 #include <gnutls/gnutls.h>
 
-TlsException::TlsException( int readLength ) : error_number(readLength) {
+TlsException::TlsException( int readLength ) {
+  error_number = readLength;
 }
 
-const char* TlsException::what() {
+const char* TlsException::what() const throw() {
   return gnutls_strerror(error_number);
-}
-
-int TlsException::getErrNo() {
-  return error_number;
 }
 

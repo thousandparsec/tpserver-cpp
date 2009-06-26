@@ -24,7 +24,7 @@
 SystemException::SystemException() : error_number(errno) {
 }
 
-const char* SystemException::what() {
+const char* SystemException::what() const throw() {
   return strerror(error_number);
 }
 

@@ -27,7 +27,7 @@ class SystemException : public std::exception {
     SystemException();
     virtual const char* what() const throw();
     int getErrNo() const;
-  private:
+  protected:
     int error_number;
 };
 

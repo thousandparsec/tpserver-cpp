@@ -28,6 +28,6 @@ class TlsException : public SystemException {
     virtual const char* what() const throw();
   private:
     TlsException() {}
-}
+};
 
 #endif
