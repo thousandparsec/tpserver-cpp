@@ -49,50 +49,6 @@ AdminTcpConnection::~AdminTcpConnection()
 }
 
 
-void AdminTcpConnection::processWrite(){
-  bool ok = !sendqueue.empty();
-  while(ok){
-    if(sbuff == NULL){
-      sbuff = sendqueue.front()->getPacket();
-      sbuffused = 0;
-      sbuffsize = sendqueue.front()->getLength();
-    }
-    if(sbuff != NULL){
-      int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
-      if(len > 0){
-        sbuffused += len;
-        if(sbuffused == sbuffsize){
-          delete[] sbuff;
-          sbuff = NULL;
-          delete sendqueue.front();
-          sendqueue.pop();
-          ok = !sendqueue.empty();
-        }
-      }else{
-        ok = false;
-        if(len != -2){
-          Logger::getLogger()->error("Socket error writing");
-          while(!sendqueue.empty()){
-            delete sendqueue.front();
-            sendqueue.pop();
-          }
-          close();
-        }
-      }
-    }else{
-      Logger::getLogger()->error("Could not get packet from frame to send");
-      delete sendqueue.front();
-      sendqueue.pop();
-      ok = false;
-    }
-  }
-  if(!sendqueue.empty()){
-    Network::getNetwork()->addToWriteQueue(this);
-  }else if(sendandclose){
-    close();
-  }
-}
-
 void AdminTcpConnection::verCheck(){
 
   bool rtn = true;
@@ -259,14 +215,6 @@ void AdminTcpConnection::verCheck(){
   }else{
     rtn = false;
   }
-}
-
-int32_t AdminTcpConnection::verCheckPreChecks(){
-  return 1;
-}
-
-int32_t AdminTcpConnection::verCheckLastChance(){
-  return -1;
 }
 
 bool AdminTcpConnection::readFrame(Frame * recvframe)

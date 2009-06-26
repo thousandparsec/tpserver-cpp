@@ -51,52 +51,6 @@ PlayerTcpConnection::~PlayerTcpConnection()
 {
 }
 
-void PlayerTcpConnection::processWrite() {
-  bool ok = !sendqueue.empty();
-  while (ok) {
-    if (sbuff == NULL) {
-      sbuff = sendqueue.front()->getPacket();
-      sbuffused = 0;
-      sbuffsize = sendqueue.front()->getLength();
-    }
-    if (sbuff != NULL) {
-      try {
-        int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
-        if (len > 0) {
-          sbuffused += len;
-          if (sbuffused == sbuffsize) {
-            delete[] sbuff;
-            sbuff = NULL;
-            delete sendqueue.front();
-            sendqueue.pop();
-            ok = !sendqueue.empty();
-          }
-        } else {
-          ok = false;
-        }
-      } catch ( SystemException& e ) {
-         ERROR("PlayerTcpConnection : Socket error writing : %s", e.what());
-         while (!sendqueue.empty()) {
-           delete sendqueue.front();
-           sendqueue.pop();
-         }
-         close();
-         return;
-      }
-    } else {
-      ERROR("PlayerTcpConnection : Could not get packet from frame to send");
-      delete sendqueue.front();
-      sendqueue.pop();
-      ok = false;
-    }
-  }
-  if (!sendqueue.empty()) {
-    Network::getNetwork()->addToWriteQueue(this);
-  } else if (sendandclose) {
-    close();
-  }
-}
-
 
 void PlayerTcpConnection::verCheck() {
   bool rtn = true;
@@ -274,14 +228,6 @@ void PlayerTcpConnection::verCheck() {
   } else {
     rtn = false;
   }
-}
-
-int32_t PlayerTcpConnection::verCheckPreChecks(){
-  return 1;
-}
-
-int32_t PlayerTcpConnection::verCheckLastChance(){
-  return -1;
 }
 
 bool PlayerTcpConnection::readFrame(Frame * recvframe)

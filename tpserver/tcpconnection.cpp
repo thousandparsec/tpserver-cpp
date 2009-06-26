@@ -80,6 +80,52 @@ void TcpConnection::close()
   }
 }
 
+void TcpConnection::processWrite() {
+  bool ok = !sendqueue.empty();
+  while (ok) {
+    if (sbuff == NULL) {
+      sbuff = sendqueue.front()->getPacket();
+      sbuffused = 0;
+      sbuffsize = sendqueue.front()->getLength();
+    }
+    if (sbuff != NULL) {
+      try {
+        int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
+        if (len > 0) {
+          sbuffused += len;
+          if (sbuffused == sbuffsize) {
+            delete[] sbuff;
+            sbuff = NULL;
+            delete sendqueue.front();
+            sendqueue.pop();
+            ok = !sendqueue.empty();
+          }
+        } else {
+          ok = false;
+        }
+      } catch ( SystemException& e ) {
+         ERROR("TcpConnection : Socket error writing : %s", e.what());
+         while (!sendqueue.empty()) {
+           delete sendqueue.front();
+           sendqueue.pop();
+         }
+         close();
+         return;
+      }
+    } else {
+      ERROR("TcpConnection : Could not get packet from frame to send");
+      delete sendqueue.front();
+      sendqueue.pop();
+      ok = false;
+    }
+  }
+  if (!sendqueue.empty()) {
+    Network::getNetwork()->addToWriteQueue(this);
+  } else if (sendandclose) {
+    close();
+  }
+}
+
 void TcpConnection::sendFrame( Frame* frame )
 {
   if (version != frame->getVersion()) {
@@ -138,5 +184,14 @@ void TcpConnection::sendData(const char* data, uint32_t size){
   sbuffsize = size;
   sbuffused = 0;
   sendFrame(new Frame(fv0_3));
+}
+
+
+int32_t TcpConnection::verCheckPreChecks(){
+  return 1;
+}
+
+int32_t TcpConnection::verCheckLastChance(){
+  return -1;
 }
 

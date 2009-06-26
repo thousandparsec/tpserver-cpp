@@ -34,6 +34,8 @@ class TcpConnection: public Connection {
 
     virtual void sendFrame( Frame* frame );
 
+    void processWrite();
+
     ProtocolVersion getProtocolVersion();
 
   protected:
@@ -44,6 +46,9 @@ class TcpConnection: public Connection {
   
     void sendDataAndClose(const char* data, uint32_t size);
     void sendData(const char* data, uint32_t size);
+
+    virtual int32_t verCheckPreChecks();
+    virtual int32_t verCheckLastChance();
 
     /// Blocked to disallow non-fd creation
     TcpConnection() {}

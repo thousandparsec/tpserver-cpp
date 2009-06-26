@@ -29,12 +29,8 @@ class PlayerTcpConnection : public PlayerConnection {
   PlayerTcpConnection(int fd);
   virtual ~PlayerTcpConnection();
   
-  void processWrite();
-  
  protected:
   void verCheck();
-  virtual int32_t verCheckPreChecks();
-  virtual int32_t verCheckLastChance();
   
   bool readFrame(Frame * recvframe);
   
