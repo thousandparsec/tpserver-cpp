@@ -4,8 +4,8 @@ bin_PROGRAMS = tpserver-cpp
 
 if GNUTLS
 GNUTLSSOURCES = tlsmanager.cpp tlssocket.cpp \
-		playertlsconn.cpp httpssocket.cpp
-GNUTLSHEADERS = tlsmanager.h tlssocket.h playertlsconn.h httpssocket.h 
+		playertlsconn.cpp httpssocket.cpp tlsexception.cpp
+GNUTLSHEADERS = tlsmanager.h tlssocket.h playertlsconn.h httpssocket.h tlsexception.h
 else
 GNUTLSSOURCES =
 GNUTLSHEADERS =
@@ -21,7 +21,7 @@ endif
 
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
-		order.cpp \
+		order.cpp systemexception.cpp  \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
 		playerconnection.cpp playertcpconn.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \
@@ -48,7 +48,7 @@ headersdir = $(includedir)/tpserver
 headers_HEADERS = connection.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
-	order.h \
+	order.h systemexception.h \
 	vector3d.h board.h message.h ordermanager.h \
 	objecttypemanager.h \
 	playerconnection.h adminconnection.h \
