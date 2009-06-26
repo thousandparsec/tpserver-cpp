@@ -29,13 +29,11 @@ class Player;
 
 class PlayerAgent {
 public:
-  PlayerAgent();
+  PlayerAgent( PlayerConnection* connection, Player* nplayer );
   ~PlayerAgent();
 
-  void setConnection(PlayerConnection * newcon);
   PlayerConnection *getConnection() const;
   
-  void setPlayer(Player* newplayer);
   Player* getPlayer() const;
   
   void processIGFrame(Frame * frame);
@@ -90,6 +88,8 @@ private:
   PlayerConnection *curConnection;
   Player* player;
 
+  // blocked default constructor
+  PlayerAgent() {}
 };
 
 #endif

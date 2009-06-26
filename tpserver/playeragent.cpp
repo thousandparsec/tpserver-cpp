@@ -54,24 +54,16 @@
 
 #include "playeragent.h"
 
-PlayerAgent::PlayerAgent(){
-  curConnection = NULL;
-  player = NULL;
+PlayerAgent::PlayerAgent( PlayerConnection* connection, Player* nplayer )
+  : curConnection ( connection ), player( nplayer )
+{
 }
 
 PlayerAgent::~PlayerAgent(){
 }
 
-void PlayerAgent::setConnection(PlayerConnection * newcon){
-  curConnection = newcon;
-}
-
 PlayerConnection *PlayerAgent::getConnection() const{
   return curConnection;
-}
-
-void PlayerAgent::setPlayer(Player * newpl){
-  player = newpl;
 }
 
 Player *PlayerAgent::getPlayer() const{

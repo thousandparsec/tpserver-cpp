@@ -41,6 +41,8 @@ class PlayerConnection: public TcpConnection {
     void processGetGameInfoFrame(Frame* frame);
     void processSetFilters(Frame* frame);
     void processTimeRemainingFrame(Frame* frame);
+    void processLoginFrame(Frame* frame);
+    void processAccountFrame(Frame* frame);
 
     
     PlayerAgent *playeragent;

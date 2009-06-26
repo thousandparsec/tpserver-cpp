@@ -55,83 +55,13 @@ void PlayerConnection::processLogin(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
-      std::string username, password;
-
-      if ( getAuth( recvframe, username, password ) ) {
-        Player* player = Game::getGame()->getPlayerManager()->findPlayer(username);
-
-        if(player != NULL){
-          if(player->getPass() != password){
-            //password doesn't match, fail
-            player = NULL;
-          }
-        }else{
-          //Player's name doesn't exist
-          if(Settings::getSettings()->get("autoadd_players") == "yes" &&
-              Settings::getSettings()->get("add_players") == "yes") {
-            INFO("PlayerConnection : Creating new player automatically");
-            player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
-            if(player == NULL){
-              sendFail(recvframe, fec_PermissionDenied, "Cannot create new player");
-              delete recvframe;
-              return;
-            }
-          }
-        }
-        if(player != NULL){
-          Frame *okframe = createFrame(recvframe);
-          okframe->setType(ft02_OK);
-          okframe->packString("Welcome");
-          sendFrame(okframe);
-          Logger::getLogger()->info("Login ok by %s", username.c_str());
-          playeragent = new PlayerAgent();
-          playeragent->setPlayer(player);
-          playeragent->setConnection(this);
-          status = READY;
-        } else {
-          INFO("PlayerConnection : Bad username or password");
-          sendFail(recvframe,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
-        }
-      }
-
-
+      processLoginFrame(recvframe);
     }else if(version >= fv0_3 && recvframe->getType() == ft03_Features_Get){
       processGetFeaturesFrame(recvframe);
     }else if(recvframe->getType() == ft02_Time_Remaining_Get){
       processTimeRemainingFrame(recvframe);
     }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
-      if(Settings::getSettings()->get("add_players") == "yes"){
-        std::string username = recvframe->unpackStdString();
-        std::string password = recvframe->unpackStdString();
-        username = username.substr(0, username.find('@'));
-        if (username.length() > 0 && password.length() > 0) {
-          INFO("PlayerConnection : Creating new player");
-          Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
-          if(player != NULL){
-            // also email address and comment strings
-            player->setEmail(recvframe->unpackStdString());
-            player->setComment(recvframe->unpackStdString());
-            Frame *okframe = createFrame(recvframe);
-            okframe->setType(ft02_OK);
-            okframe->packString("Account created.");
-            sendFrame(okframe);
-            INFO("PlayerConnection : Account created ok for %s", username.c_str());
-            playeragent = new PlayerAgent();
-            playeragent->setPlayer(player);
-            playeragent->setConnection(this);
-          }else{
-            INFO("PlayerConnection : Bad username or password in account creation");
-            sendFail(recvframe,fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
-          }
-        }else{
-          DEBUG("PlayerConnection : username or password == NULL in account frame");
-          sendFail(recvframe,fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
-          close();
-        }
-      }else{
-        INFO("PlayerConnection : Account creation disabled, not creating account");
-        sendFail(recvframe,fec_PermissionDenied, "Account creation Disabled, talk to game admin");
-      }
+      processAccountFrame(recvframe);
     }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
       processGetGameInfoFrame(recvframe);
     }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
@@ -143,6 +73,81 @@ void PlayerConnection::processLogin(){
   }
   delete recvframe;
 
+}
+
+void PlayerConnection::processAccountFrame(Frame* frame)
+{
+  if(Settings::getSettings()->get("add_players") == "yes"){
+    std::string username = frame->unpackStdString();
+    std::string password = frame->unpackStdString();
+    username = username.substr(0, username.find('@'));
+    if (username.length() > 0 && password.length() > 0) {
+      INFO("PlayerConnection : Creating new player");
+      Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+      if(player != NULL){
+        // also email address and comment strings
+        player->setEmail(frame->unpackStdString());
+        player->setComment(frame->unpackStdString());
+        Frame *okframe = createFrame(frame);
+        okframe->setType(ft02_OK);
+        okframe->packString("Account created.");
+        sendFrame(okframe);
+        INFO("PlayerConnection : Account created ok for %s", username.c_str());
+        playeragent = new PlayerAgent(this,player);
+      }else{
+        INFO("PlayerConnection : Bad username or password in account creation");
+        sendFail(frame,fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
+      }
+    }else{
+      DEBUG("PlayerConnection : username or password == NULL in account frame");
+      sendFail(frame,fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
+      close();
+    }
+  }else{
+    INFO("PlayerConnection : Account creation disabled, not creating account");
+    sendFail(frame,fec_PermissionDenied, "Account creation Disabled, talk to game admin");
+  }
+}
+
+void PlayerConnection::processLoginFrame(Frame* frame)
+{
+  std::string username, password;
+
+  // Get authentication data
+  if ( getAuth( frame, username, password ) ) {
+    Player* player = Game::getGame()->getPlayerManager()->findPlayer(username);
+
+    // if player exists
+    if(player != NULL){
+      if(player->getPass() != password){
+        // password doesn't match, fail
+        player = NULL;
+      }
+    } else {
+      //Player's name doesn't exist
+      if( Settings::getSettings()->get("autoadd_players") == "yes" &&
+          Settings::getSettings()->get("add_players") == "yes") {
+        INFO("PlayerConnection : Creating new player automatically");
+        player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+        if( player == NULL ) {
+          sendFail(frame, fec_PermissionDenied, "Cannot create new player");
+          return;
+        }
+      }
+    }
+    if(player != NULL){
+      Frame *okframe = createFrame(frame);
+      okframe->setType(ft02_OK);
+      okframe->packString("Welcome");
+      sendFrame(okframe);
+      Logger::getLogger()->info("Login ok by %s", username.c_str());
+      playeragent = new PlayerAgent(this,player);
+      status = READY;
+    } else {
+      INFO("PlayerConnection : Bad username or password");
+      sendFail(frame,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
+    }
+  }
 }
 
 void PlayerConnection::processNormalFrame()
