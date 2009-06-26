@@ -63,7 +63,7 @@ PlayerTlsConnection::~PlayerTlsConnection(){
 
 
 void PlayerTlsConnection::close(){
-  if(sendqueue.empty()){
+  if (queueEmpty()){
     gnutls_bye (session, GNUTLS_SHUT_WR);
     gnutls_deinit (session);
   }

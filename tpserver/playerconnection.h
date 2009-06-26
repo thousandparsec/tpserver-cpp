@@ -29,24 +29,19 @@ class PlayerConnection: public TcpConnection {
   public:
     virtual ~PlayerConnection();
 
-    void process();
-
     PlayerConnection(int fd);
 
   protected:
     void processGetFeaturesFrame(Frame* frame);
 
   private:
-    /// Blocked to disallow non-fd creation
-    PlayerConnection() {}
-    
-  private:
+    virtual void processNormalFrame();
+    virtual void processLogin();
+
     void processGetGameInfoFrame(Frame* frame);
     void processSetFilters(Frame* frame);
     void processTimeRemainingFrame(Frame* frame);
 
-    void inGameFrame();
-    void login();
     
     PlayerAgent *playeragent;
     uint64_t lastpingtime;

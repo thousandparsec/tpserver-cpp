@@ -81,6 +81,32 @@ void TcpConnection::close()
   }
 }
 
+void TcpConnection::process(){
+  DEBUG("TcpConnection : About to Process");
+  switch (status) {
+    case PRECONNECTED:
+      //check if user is really a TP protocol verNN client
+      DEBUG("TcpConnection : Stage 1 - pre-connect");
+      processVersionCheck();
+      break;
+    case CONNECTED:
+      //authorise the user
+      DEBUG("TcpConnection : Stage 2 - connected");
+      processLogin();
+      break;
+    case READY:
+      //process as normal
+      DEBUG("TcpConnection : Stage 3 - logged in");
+      processNormalFrame();
+      break;
+    case DISCONNECTED:
+      //do nothing
+      WARNING("TcpConnection : Tried to process connections that is closed or invalid");
+      break;
+  }
+  DEBUG("TcpConnection : Finished Processing");
+}
+
 void TcpConnection::processWrite() {
   bool ok = !sendqueue.empty();
   while (ok) {
@@ -321,7 +347,7 @@ bool TcpConnection::readFrame(Frame * recvframe)
   return rtn;
 }
 
-void TcpConnection::verCheck() {
+void TcpConnection::processVersionCheck() {
   bool rtn = true;
 
   int32_t precheck = verCheckPreChecks();
@@ -519,5 +545,9 @@ Frame* TcpConnection::createFrame(Frame* oldframe)
   }
   newframe->enablePaddingStrings(paddingfilter);
   return newframe;
+}
+
+bool TcpConnection::queueEmpty() const {
+  return sendqueue.empty();
 }
 

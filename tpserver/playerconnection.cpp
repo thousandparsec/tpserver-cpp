@@ -51,33 +51,7 @@ PlayerConnection::~PlayerConnection(){
 }
 
 
-void PlayerConnection::process(){
-  DEBUG("PlayerConnection : About to Process");
-  switch (status) {
-    case PRECONNECTED:
-      //check if user is really a TP protocol verNN client
-      DEBUG("PlayerConnection : Stage 1 - pre-connect");
-      verCheck();
-      break;
-    case CONNECTED:
-      //authorise the user
-      DEBUG("PlayerConnection : Stage 2 - connected");
-      login();
-      break;
-    case READY:
-      //process as normal
-      DEBUG("PlayerConnection : Stage 3 - logged in");
-      inGameFrame();
-      break;
-    case DISCONNECTED:
-      //do nothing
-      WARNING("PlayerConnection : Tried to process connections that is closed or invalid");
-      break;
-  }
-  DEBUG("PlayerConnection : Finished Processing");
-}
-
-void PlayerConnection::login(){
+void PlayerConnection::processLogin(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
@@ -188,7 +162,7 @@ void PlayerConnection::login(){
 
 }
 
-void PlayerConnection::inGameFrame()
+void PlayerConnection::processNormalFrame()
 {
   Frame *frame = createFrame();
   if (readFrame(frame)) {

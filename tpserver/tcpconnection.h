@@ -35,7 +35,8 @@ class TcpConnection: public Connection {
     Frame* createFrame(Frame* oldframe = NULL);
 
     virtual void sendFrame( Frame* frame );
-    virtual bool readFrame( Frame* recvframe );
+
+    void process();
 
     void processWrite();
 
@@ -50,16 +51,24 @@ class TcpConnection: public Connection {
     void sendDataAndClose(const char* data, uint32_t size);
     void sendData(const char* data, uint32_t size);
 
-    void verCheck();
+    void processVersionCheck();
+    virtual void processNormalFrame() = 0;
+    virtual void processLogin() = 0;
     virtual int32_t verCheckPreChecks();
     virtual int32_t verCheckLastChance();
     
+    virtual bool readFrame( Frame* recvframe );
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
+    bool queueEmpty() const;
+
+    // used by httpconnection
+    // TODO: check!
+    char* rheaderbuff;
+  private:
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
 
-    char* rheaderbuff;
     char* rdatabuff;
     uint32_t rbuffused;
   
@@ -69,8 +78,10 @@ class TcpConnection: public Connection {
     std::queue<Frame*> sendqueue;
   
     bool sendandclose;
-    
+
+  protected:
     ProtocolVersion version;
+
     bool paddingfilter;
 };
 

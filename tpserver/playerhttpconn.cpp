@@ -50,9 +50,7 @@ PlayerHttpConnection::PlayerHttpConnection(int fd) : PlayerConnection(fd), httpb
 
 PlayerHttpConnection::~PlayerHttpConnection()
 {
-	if (status != DISCONNECTED) {
-		close();
-	}
+
 }
 
 

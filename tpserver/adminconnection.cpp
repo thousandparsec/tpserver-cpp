@@ -34,9 +34,7 @@
 
 #include "adminconnection.h"
 
-AdminConnection::AdminConnection(int fd) : TcpConnection(){
-  sockfd = fd;
-  status = PRECONNECTED;
+AdminConnection::AdminConnection(int fd) : TcpConnection(fd){
 }
 
 AdminConnection::~AdminConnection(){
@@ -44,30 +42,8 @@ AdminConnection::~AdminConnection(){
   Logger::getLogger()->info("Admin client disconnected");
 }
 
-void AdminConnection::process(){
-  Logger::getLogger()->debug("About to Process");
-  switch (status) {
-  case PRECONNECTED:
-    //check if user is really an admin client
-    verCheck();
-    break;
-  case CONNECTED:
-    //authorise the user
-    login();
-    break;
-  case READY:
-    //process as normal
-    adminFrame();
-    break;
-  case DISCONNECTED:
-    //do nothing
-    Logger::getLogger()->warning("Tried to process connections that is closed or invalid");
-    break;
-  }
-  Logger::getLogger()->debug("Finished Processing");
-}
 
-void AdminConnection::login(){
+void AdminConnection::processLogin(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
     if(recvframe->getType() == ft02_Login){
@@ -137,7 +113,7 @@ void AdminConnection::login(){
 
 }
 
-void AdminConnection::adminFrame()
+void AdminConnection::processNormalFrame()
 {
   Frame *frame = createFrame();
   if (readFrame(frame)) {

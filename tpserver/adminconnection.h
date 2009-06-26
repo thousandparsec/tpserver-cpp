@@ -34,13 +34,10 @@ class AdminConnection: public TcpConnection {
   AdminConnection(int fd);
   virtual ~AdminConnection();
   
-  void process();
-
  protected:
 
-  void login();
-
-  void adminFrame();
+  virtual void processLogin();
+  virtual void processNormalFrame();
 
   void processDescribeCommand(Frame * frame);
   void processGetCommandTypes(Frame * frame);
@@ -49,8 +46,6 @@ class AdminConnection: public TcpConnection {
   AdminLogger* logsink;
   int logextid;
 
- private:
-  AdminConnection() {};
 };
 
 #endif
