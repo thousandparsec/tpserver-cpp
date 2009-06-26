@@ -56,12 +56,6 @@ void AdminConnection::processLogin(){
           if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
             authenticated = true;
         }catch(std::exception e){
-          Logger::getLogger()->debug("Admin Login: bad username or password");
-          Frame *failframe = createFrame(recvframe);
-          failframe->createFailFrame(fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
-          sendFrame(failframe);
-          delete recvframe;
-          return;
         }
         if(authenticated){
           Frame *okframe = createFrame(recvframe);
@@ -74,18 +68,14 @@ void AdminConnection::processLogin(){
           logextid = Logger::getLogger()->addLog(logsink);
           status = READY;
         } else {
-          Logger::getLogger()->info("Bad username or password");
-          Frame *failframe = createFrame(recvframe);
-          failframe->createFailFrame(fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
-          sendFrame(failframe);
+          INFO("Bad username or password");
+          sendFail(recvframe,fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
         }
       }
 
     }else{
-      Logger::getLogger()->warning("In connected state but did not receive login");
-      Frame *failframe = createFrame(recvframe);
-      failframe->createFailFrame(fec_FrameError, "Wrong type of frame in this state, wanted login");
-      sendFrame(failframe);
+      WARNING("In connected state but did not receive login");
+      sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login");
     }
   }
   delete recvframe;
@@ -123,18 +113,14 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   Logger::getLogger()->debug("doing describe command frame");
 
   if(frame->getDataLength() < 4){
-    Frame *of = createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    sendFrame(of);
+    sendFail(frame,fec_FrameError, "Invalid frame");
     return;
   }
 
   int numdesc = frame->unpackInt();
 
   if(frame->getDataLength() < 4 + 4 * numdesc){
-    Frame *of = createFrame(frame);
-    of->createFailFrame(fec_FrameError, "Invalid frame");
-    sendFrame(of);
+    sendFail(frame, fec_FrameError, "Invalid frame");
   }
 
   if(numdesc > 1){
@@ -145,10 +131,8 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   }
 
   if(numdesc == 0){
-    Frame *of = createFrame(frame);
-    Logger::getLogger()->debug("asked for no commands to describe");
-    of->createFailFrame(fec_NonExistant, "You didn't ask for any command descriptions, try again");
-    sendFrame(of);
+    DEBUG("asked for no commands to describe");
+    sendFail(frame,fec_NonExistant, "You didn't ask for any command descriptions, try again");
   }
 
   for(int i = 0; i < numdesc; i++){
@@ -160,7 +144,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
 }
 
 void AdminConnection::processGetCommandTypes(Frame * frame){
-  Logger::getLogger()->debug("doing get command types frame");
+  DEBUG("doing get command types frame");
 
   Frame *of = createFrame(frame);
   CommandManager::getCommandManager()->doGetCommandTypes(frame, of);
@@ -168,7 +152,7 @@ void AdminConnection::processGetCommandTypes(Frame * frame){
 }
 
 void AdminConnection::processCommand(Frame * frame){
-  Logger::getLogger()->debug("doing command frame");
+  DEBUG("doing command frame");
 
   Frame *of = createFrame(frame);
   CommandManager::getCommandManager()->executeCommand(frame, of);

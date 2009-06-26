@@ -43,7 +43,6 @@ class PlayerConnection: public TcpConnection {
     void processTimeRemainingFrame(Frame* frame);
     void processLoginFrame(Frame* frame);
     void processAccountFrame(Frame* frame);
-
     
     PlayerAgent *playeragent;
     uint64_t lastpingtime;
