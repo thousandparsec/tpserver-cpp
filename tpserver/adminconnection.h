@@ -35,11 +35,8 @@ class AdminConnection: public TcpConnection {
   virtual ~AdminConnection();
   
   void process();
-  virtual void sendFrame(Frame * frame) = 0;
 
   Frame* createFrame(Frame* oldframe = NULL);
-
-  ProtocolVersion getProcotolVersion();
 
  protected:
 
@@ -57,7 +54,6 @@ class AdminConnection: public TcpConnection {
   AdminLogger* logsink;
   int logextid;
 
-  ProtocolVersion version;
  private:
   AdminConnection() {};
 };

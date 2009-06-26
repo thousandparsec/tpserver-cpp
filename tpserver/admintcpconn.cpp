@@ -48,18 +48,6 @@ AdminTcpConnection::~AdminTcpConnection()
 {
 }
 
-void AdminTcpConnection::sendFrame(Frame * frame)
-{
-  if(version != frame->getVersion()){
-    Logger::getLogger()->warning("Version mis-match, packet %d, connection %d", frame->getVersion(), version);
-
-  }
-  FrameType type = frame->getType();
-  if(status != DISCONNECTED && !sendandclose){
-    sendqueue.push(frame);
-    processWrite();
-  }
-}
 
 void AdminTcpConnection::processWrite(){
   bool ok = !sendqueue.empty();

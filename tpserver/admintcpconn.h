@@ -29,7 +29,6 @@ class AdminTcpConnection : public AdminConnection {
   explicit AdminTcpConnection(int fd);
   virtual ~AdminTcpConnection();
   
-  void sendFrame(Frame * frame);
   void processWrite();
 
  protected:

@@ -39,7 +39,7 @@
 #include "playerconnection.h"
 
 PlayerConnection::PlayerConnection(int fd) 
-  : TcpConnection(fd), version(fv0_3), playeragent(NULL), paddingfilter(false)
+  : TcpConnection(fd), playeragent(NULL), paddingfilter(false)
 {
   lastpingtime = time(NULL);
 }

@@ -30,8 +30,6 @@ class PlayerConnection: public TcpConnection {
     virtual ~PlayerConnection();
 
     void process();
-    virtual void sendFrame(Frame * frame) = 0;
-
     Frame* createFrame(Frame* oldframe = NULL);
 
   protected:
@@ -44,7 +42,6 @@ class PlayerConnection: public TcpConnection {
 
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
-    ProtocolVersion version;
   private:
     /// Blocked to disallow non-fd creation
     PlayerConnection() {}

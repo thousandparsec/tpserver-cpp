@@ -48,7 +48,8 @@ TcpConnection::TcpConnection(int fd)
     sbuff( NULL ),
     sbuffused( 0 ),
     sbuffsize( 0 ),
-    sendandclose( false )
+    sendandclose( false ),
+    version(fv0_3)
 {
   fcntl(sockfd, F_SETFL, O_NONBLOCK);
 }
@@ -77,6 +78,26 @@ void TcpConnection::close()
   }else{
     sendandclose = true;
   }
+}
+
+void TcpConnection::sendFrame( Frame* frame )
+{
+  if (version != frame->getVersion()) {
+    WARNING("TcpConnection : Version mis-match, packet %d, connection %d", frame->getVersion(), version);
+  }
+  if (version == fv0_2 && frame->getType() >= ft02_Max) {
+    ERROR("TcpConnection : Tried to send a higher than version 2 frame on a version 2 connection, not sending frame");
+  } else {
+    if (status != DISCONNECTED && !sendandclose) {
+      sendqueue.push(frame);
+      processWrite();
+    }
+  }
+}
+
+ProtocolVersion TcpConnection::getProtocolVersion()
+{
+  return version;
 }
 
 int32_t TcpConnection::underlyingRead(char* buff, uint32_t size) {

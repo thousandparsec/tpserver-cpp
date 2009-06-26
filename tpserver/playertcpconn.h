@@ -29,8 +29,6 @@ class PlayerTcpConnection : public PlayerConnection {
   PlayerTcpConnection(int fd);
   virtual ~PlayerTcpConnection();
   
-
-  void sendFrame(Frame * frame);
   void processWrite();
   
  protected:

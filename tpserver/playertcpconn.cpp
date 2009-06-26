@@ -51,21 +51,6 @@ PlayerTcpConnection::~PlayerTcpConnection()
 {
 }
 
-void PlayerTcpConnection::sendFrame(Frame * frame)
-{
-  if (version != frame->getVersion()) {
-    WARNING("PlayerTcpConnection : Version mis-match, packet %d, connection %d", frame->getVersion(), version);
-  }
-  if (version == fv0_2 && frame->getType() >= ft02_Max) {
-    ERROR("PlayerTcpConnection : Tryed to send a higher than version 2 frame on a version 2 connection, not sending frame");
-  } else {
-    if (status != DISCONNECTED && !sendandclose) {
-      sendqueue.push(frame);
-      processWrite();
-    }
-  }
-}
-
 void PlayerTcpConnection::processWrite() {
   bool ok = !sendqueue.empty();
   while (ok) {

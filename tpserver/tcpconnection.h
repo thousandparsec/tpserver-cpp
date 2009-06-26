@@ -32,7 +32,9 @@ class TcpConnection: public Connection {
 
     virtual void close();
 
-    virtual void sendFrame( Frame* frame ) = 0;
+    virtual void sendFrame( Frame* frame );
+
+    ProtocolVersion getProtocolVersion();
 
   protected:
     TcpConnection(int fd);
@@ -56,6 +58,8 @@ class TcpConnection: public Connection {
     std::queue<Frame*> sendqueue;
   
     bool sendandclose;
+    
+    ProtocolVersion version;
 };
 
 #endif
