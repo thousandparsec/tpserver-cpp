@@ -65,10 +65,7 @@ TcpConnection::~TcpConnection() {
     delete[] rdatabuff;
   if(sbuff != NULL)
     delete[] sbuff;
-  while(!sendqueue.empty()){
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
+  clearQueue();
 }
 
 void TcpConnection::close()
@@ -108,8 +105,7 @@ void TcpConnection::process(){
 }
 
 void TcpConnection::processWrite() {
-  bool ok = !sendqueue.empty();
-  while (ok) {
+  while (!sendqueue.empty()) {
     if (sbuff == NULL) {
       sbuff = sendqueue.front()->getPacket();
       sbuffused = 0;
@@ -118,24 +114,17 @@ void TcpConnection::processWrite() {
     if (sbuff != NULL) {
       try {
         int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
-        if (len > 0) {
-          sbuffused += len;
-          if (sbuffused == sbuffsize) {
-            delete[] sbuff;
-            sbuff = NULL;
-            delete sendqueue.front();
-            sendqueue.pop();
-            ok = !sendqueue.empty();
-          }
-        } else {
-          ok = false;
+        if ( len <= 0 ) break;
+        sbuffused += len;
+        if (sbuffused == sbuffsize) {
+          delete[] sbuff;
+          sbuff = NULL;
+          delete sendqueue.front();
+          sendqueue.pop();
         }
       } catch ( SystemException& e ) {
          ERROR("TcpConnection : Socket error writing : %s", e.what());
-         while (!sendqueue.empty()) {
-           delete sendqueue.front();
-           sendqueue.pop();
-         }
+         clearQueue();
          close();
          return;
       }
@@ -143,7 +132,7 @@ void TcpConnection::processWrite() {
       ERROR("TcpConnection : Could not get packet from frame to send");
       delete sendqueue.front();
       sendqueue.pop();
-      ok = false;
+      break;
     }
   }
   if (!sendqueue.empty()) {
@@ -196,16 +185,10 @@ int32_t TcpConnection::underlyingWrite(const char* buff, uint32_t size) {
   return len;
 }
 
-void TcpConnection::sendDataAndClose(const char* data, uint32_t size){
-  sendData(data, size);
-  close();
-}
-
-void TcpConnection::sendData(const char* data, uint32_t size){
-  while(!sendqueue.empty()){
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
+void TcpConnection::sendString(const std::string& str){
+  size_t size = str.length();
+  const char* data = str.c_str();
+  clearQueue();
   sbuff = new char[size];
   memcpy(sbuff, data, size);
   sbuffsize = size;
@@ -224,10 +207,8 @@ int32_t TcpConnection::verCheckLastChance(){
 
 bool TcpConnection::readFrame(Frame * recvframe)
 {
-  bool rtn = !sendandclose;
+  if (sendandclose) return false;
 
-  if (!rtn)
-    return rtn;
 
   uint32_t hlen = recvframe->getHeaderLength();
 
@@ -242,30 +223,28 @@ bool TcpConnection::readFrame(Frame * recvframe)
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
-        rtn = false;
+        return false;
       } else if (len > 0) {
         rbuffused += len;
         if (rbuffused != hlen) {
           DEBUG("TcpConnection : Read header not the length needed, delaying read");
-          rtn = false;
+          return false;
         }
       } else {
-        rtn = false;
+        return false;
       }
     } catch ( SystemException& e ) {
       WARNING("TcpConnection : Socket error -- %s", e.what());
-      while (!sendqueue.empty()) {
-        delete sendqueue.front();
-        sendqueue.pop();
-      }
+      clearQueue();
       close();
       return false;
     }
   }
 
+
   uint32_t datalen;
 
-  if (rtn && ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL)) {
+  if  ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL) {
     int32_t signeddatalen = recvframe->setHeader(rheaderbuff);
     //check that the length field is probably valid
     // length could be negative from wire or from having no synchronisation symbol
@@ -282,11 +261,11 @@ bool TcpConnection::readFrame(Frame * recvframe)
         sendFail(recvframe, fec_ProtocolError, "Protocol Error, frame length too large");
       }
       close();
-      rtn = false;
+      return false;
     }
   }
 
-  if (rtn && datalen != 0) {
+  if (datalen != 0) {
 
     if (rdatabuff == NULL && rbuffused == hlen) {
       rbuffused = 0;
@@ -299,28 +278,25 @@ bool TcpConnection::readFrame(Frame * recvframe)
         if (len == 0) {
           INFO("TcpConnection : Client disconnected");
           close();
-          rtn = false;
+          return false;
         } else if (len > 0) {
           rbuffused += len;
           if (rbuffused != datalen) {
             DEBUG("TcpConnection : Read data not the length needed, delaying read");
-            rtn = false;
+            return false;
           }
         }else{
-          rtn = false;
+          return false;
         }
       } catch( SystemException& e ) {
         WARNING("TcpConnection : Socket error -- %s", e.what());
-        while (!sendqueue.empty()) {
-          delete sendqueue.front();
-          sendqueue.pop();
-        }
+        clearQueue();
         close();
         return false;
       }
     }
 
-    if(rtn && rbuffused == datalen){
+    if(rbuffused == datalen){
       recvframe->setData(rdatabuff, datalen);
       delete[] rheaderbuff;
       delete[] rdatabuff;
@@ -331,24 +307,23 @@ bool TcpConnection::readFrame(Frame * recvframe)
       if(version != recvframe->getVersion()){
         WARNING("TcpConnection : Client has sent us the wrong version number (%d) than the connection is (%d)", recvframe->getVersion(), version);
         sendFail(recvframe,fec_ProtocolError, "Protocol Error, wrong version number");
-        rtn = false;
+        return false;
       }
       FrameType type = recvframe->getType();
       if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max && type != ft04_TurnFinished) || (version == fv0_4 && type >= ft04_Max)) {
         WARNING("TcpConnection : Client has sent wrong frame type (%d)", type);
         sendFail(recvframe,fec_ProtocolError, "Protocol Error, frame type not known");
-        rtn = false;
+        return false;
       }
     }
-  }else if(rtn){
+  }else {
     delete[] rheaderbuff;
     rheaderbuff = NULL;
   }
-  return rtn;
+  return true;
 }
 
 void TcpConnection::processVersionCheck() {
-  bool rtn = true;
 
   int32_t precheck = verCheckPreChecks();
   if (precheck != 1) {
@@ -372,41 +347,42 @@ void TcpConnection::processVersionCheck() {
     rheaderbuff = new char[hlen];
   }
 
+
   if (rdatabuff == NULL && rbuffused < 4) {
     try {
       int32_t len = underlyingRead(rheaderbuff+rbuffused, 4 - rbuffused);
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
-        rtn = false;
+        return;
       } else if (len > 0) {
         rbuffused += len;
         if (rbuffused < 4) {
           DEBUG("TcpConnection : ver check header not the length needed, delaying read");
-          rtn = false;
+          return;
         }
       } else {
-        rtn = false;
+        return;
       }
     } catch ( SystemException& e ) {
       WARNING("TcpConnection : Socket error -- %s", e.what());
       close();
+      return;
     }
   }
-  if (rtn && ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL)) {
+
+  if ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL) {
     if (rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P') {
       //assume we have TP procotol
       if (rheaderbuff[2] == '0') {
         if (rheaderbuff[3] <= '2') {
           WARNING("TcpConnection : Client did not show correct version of protocol (version 2 or less)");
-          sendDataAndClose("You are not running the right version of TP, please upgrade\n", 60);
-          rtn = false;
+          sendString("You are not running the right version of TP, please upgrade\n");
+          close();
+          return;
         } else if (rheaderbuff[3] > '3') {
           //might be future version of protocol, just disconnect now
-          Frame *f = new Frame(fv0_3);
-          f->setSequence(0);
-          f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
-          sendFrame(f);
+          sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
@@ -418,7 +394,7 @@ void TcpConnection::processVersionCheck() {
             // now what?
           }
           delete[] buff;
-          rtn = false;
+          return;
         } else {
           char ver[] = {'\0','\0','\0'};
           memcpy(ver, rheaderbuff+2 , 2);
@@ -444,7 +420,7 @@ void TcpConnection::processVersionCheck() {
             // now what?
           }
           delete[] buff;
-          rtn = false;
+          return;
         }
       }else{
         //might be future version of protocol, just disconnect now
@@ -461,47 +437,40 @@ void TcpConnection::processVersionCheck() {
         }
         delete[] buff;
 
-        Frame *f = new Frame(fv0_3);
-        f->setSequence(0);
-        f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
-        sendFrame(f);
+        sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
         delete[] rheaderbuff;
         rheaderbuff = NULL;
         rbuffused = 0;
-        rtn = false;
+        return;
       }
 
-      if (rtn) {
-        INFO("TcpConnection : Client has version %d of protocol", version);
-        if(version != recvframe->getVersion()){
-          delete recvframe;
-          recvframe = new Frame(version);
-        }
-        if (readFrame(recvframe)) {
-          if (recvframe->getType() == ft02_Connect) {
-            std::string clientsoft = recvframe->unpackStdString();
-            INFO("TcpConnection : Client on connection %d is [%s]", sockfd, clientsoft.c_str());
+      INFO("TcpConnection : Client has version %d of protocol", version);
+      if(version != recvframe->getVersion()){
+        delete recvframe;
+        recvframe = new Frame(version);
+      }
+      if (readFrame(recvframe)) {
+        if (recvframe->getType() == ft02_Connect) {
+          std::string clientsoft = recvframe->unpackStdString();
+          INFO("TcpConnection : Client on connection %d is [%s]", sockfd, clientsoft.c_str());
 
-            status = CONNECTED;
+          status = CONNECTED;
 
-            Frame *okframe = createFrame(recvframe);
-            okframe->setType(ft02_OK);
-
-            okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
-            sendFrame(okframe);
+          Frame *okframe = createFrame(recvframe);
+          okframe->setType(ft02_OK);
+          okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
+          sendFrame(okframe);
 // TODO: features before connect unsupported!
 //          } else if (recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get) {
 //            WARNING("TcpConnection : Get Features request before Connect frame, continuing anyway");
 //            processGetFeaturesFrame(recvframe);
-          } else {
-            WARNING("TcpConnection : First frame wasn't Connect or GetFeatures, was %d", recvframe->getType());
-            sendFail(recvframe,fec_ProtocolError, "First frame wasn't Connect (or GetFeatures in tp03), please try again");
-          }
         } else {
-          DEBUG("TcpConnection : verCheck, did not get whole frame");
-          rtn = false;
+          WARNING("TcpConnection : First frame wasn't Connect or GetFeatures, was %d", recvframe->getType());
+          sendFail(recvframe,fec_ProtocolError, "First frame wasn't Connect (or GetFeatures in tp03), please try again");
         }
+      } else {
+        DEBUG("TcpConnection : verCheck, did not get whole frame");
       }
     } else {
       int32_t lastchance = verCheckLastChance();
@@ -511,18 +480,15 @@ void TcpConnection::processVersionCheck() {
         rheaderbuff = NULL;
       } else if (lastchance == -2) {
         //waiting for more data
-        rtn = false;
       } else {
         WARNING("TcpConnection : Client did not talk any variant of TPprotocol");
         if (lastchance != 0) {
           // send "I don't understand" message
-          sendDataAndClose("You are not running the correct protocol\n", 41);
+          sendString("You are not running the correct protocol\n");
+          close();
         }
-        rtn = false;
       }
     }
-  } else {
-    rtn = false;
   }
 }
 
@@ -549,6 +515,13 @@ Frame* TcpConnection::createFrame(Frame* oldframe)
 
 bool TcpConnection::queueEmpty() const {
   return sendqueue.empty();
+}
+
+void TcpConnection::clearQueue() {
+  while (!sendqueue.empty()) {
+    delete sendqueue.front();
+    sendqueue.pop();
+  }
 }
 
 bool TcpConnection::getAuth( Frame* frame, std::string& username, std::string& password ) {

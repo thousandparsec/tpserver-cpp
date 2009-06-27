@@ -47,8 +47,7 @@ class TcpConnection: public Connection {
     virtual int32_t underlyingRead(char* buff, uint32_t size);
     virtual int32_t underlyingWrite(const char* buff, uint32_t size);
   
-    void sendDataAndClose(const char* data, uint32_t size);
-    void sendData(const char* data, uint32_t size);
+    void sendString( const std::string& str );
 
     void processVersionCheck();
     virtual void processNormalFrame() = 0;
@@ -60,6 +59,7 @@ class TcpConnection: public Connection {
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
     bool queueEmpty() const;
+    void clearQueue();
 
     bool getAuth( Frame* frame, std::string& username, std::string& password );
 

@@ -91,10 +91,11 @@ int32_t PlayerHttpConnection::verCheckLastChance()
       response += "Pragma: no-cache\r\n\r\n";
       if(rheaderbuff[0] == 'G' || url == "/"){
         response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
-        sendDataAndClose(response.c_str(), response.length());
+        sendString(response);
+        close();
         rtn = 1;
       }else{
-        sendData(response.c_str(), response.length());
+        sendString(response);
         rtn = 1;
         httpbuff.clear();
       }
