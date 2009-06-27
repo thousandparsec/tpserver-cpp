@@ -41,6 +41,8 @@ class TcpConnection: public Connection {
 
     ProtocolVersion getProtocolVersion();
 
+    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
+    void sendSequence(Frame* oldframe, size_t sequence_size );
   protected:
     TcpConnection(int fd);
   
@@ -56,7 +58,6 @@ class TcpConnection: public Connection {
     virtual int32_t verCheckLastChance();
     
     virtual bool readFrame( Frame* recvframe );
-    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
 
     bool queueEmpty() const;
     void clearQueue();

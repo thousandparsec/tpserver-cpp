@@ -489,6 +489,15 @@ void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::st
   sendFrame(frame);
 }
 
+
+void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
+{
+  Frame* frame = createFrame(oldframe);
+  frame->setType( ft02_Sequence );
+  frame->packInt( sequence_size );
+  sendFrame(frame);
+}
+
 Frame* TcpConnection::createFrame(Frame* oldframe)
 {
   Frame* newframe;

@@ -82,6 +82,31 @@ private:
   
   void processTurnFinished(Frame* frame);
 
+  /**
+   * Checks if version is at least the one passed, if not, sends a fail message
+   * and returns false.
+   */
+  bool versionCheck( Frame* frame, ProtocolVersion min_version );
+  /**
+   * Checks if the length of the frame is equal to the given value, if not, sends
+   * an invalid packet error and returns false.
+   */
+  bool lengthCheck( Frame* frame, uint32_t length );
+  /**
+   * Checks if the length of the frame is at least the size of the given value, if 
+   * not, sends an invalid packet error and returns false.
+   */
+  bool lengthCheckMin( Frame* frame, uint32_t length );
+
+  /**
+   * Checks for initial length 4 of frame data, then unpacks the number of components.
+   * If not enough data 4 + 4 * number then returns 0. If 0 also returns 0. Anyway on
+   * 0 sends the proper error code.
+   *
+   * At the end if successful, sends the sequence via connection.
+   */
+  int queryCheck( Frame* frame );
+
   PlayerAgent(PlayerAgent & rhs);
   PlayerAgent operator=(PlayerAgent & rhs);
 
