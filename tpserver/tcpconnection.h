@@ -73,9 +73,9 @@ class TcpConnection: public Connection {
     char* rdatabuff;
     uint32_t rbuffused;
   
-    char* sbuff;
-    uint32_t sbuffused;
-    uint32_t sbuffsize;
+    std::string send_buffer;
+    size_t send_buffer_pos;
+
     std::queue<Frame*> sendqueue;
   
     bool sendandclose;

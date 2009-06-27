@@ -45,9 +45,6 @@ TcpConnection::TcpConnection(int fd)
     rheaderbuff( NULL ),
     rdatabuff( NULL ),
     rbuffused( 0 ),
-    sbuff( NULL ),
-    sbuffused( 0 ),
-    sbuffsize( 0 ),
     sendandclose( false ),
     version(fv0_3),
     paddingfilter( false )
@@ -63,8 +60,6 @@ TcpConnection::~TcpConnection() {
     delete[] rheaderbuff;
   if(rdatabuff != NULL)
     delete[] rdatabuff;
-  if(sbuff != NULL)
-    delete[] sbuff;
   clearQueue();
 }
 
@@ -106,19 +101,17 @@ void TcpConnection::process(){
 
 void TcpConnection::processWrite() {
   while (!sendqueue.empty()) {
-    if (sbuff == NULL) {
-      sbuff = sendqueue.front()->getPacket();
-      sbuffused = 0;
-      sbuffsize = sendqueue.front()->getLength();
+    if (send_buffer.empty()) {
+      send_buffer.assign( sendqueue.front()->getPacket(), sendqueue.front()->getLength() );
+      send_buffer_pos = 0;
     }
-    if (sbuff != NULL) {
+    if (!send_buffer.empty()) {
       try {
-        int len = underlyingWrite(sbuff+sbuffused, sbuffsize - sbuffused);
+        int len = underlyingWrite(send_buffer.c_str()+send_buffer_pos, send_buffer.length() - send_buffer_pos);
         if ( len <= 0 ) break;
-        sbuffused += len;
-        if (sbuffused == sbuffsize) {
-          delete[] sbuff;
-          sbuff = NULL;
+        send_buffer_pos += len;
+        if (send_buffer_pos == send_buffer.length()) {
+          send_buffer.clear();
           delete sendqueue.front();
           sendqueue.pop();
         }
@@ -186,13 +179,10 @@ int32_t TcpConnection::underlyingWrite(const char* buff, uint32_t size) {
 }
 
 void TcpConnection::sendString(const std::string& str){
-  size_t size = str.length();
-  const char* data = str.c_str();
   clearQueue();
-  sbuff = new char[size];
-  memcpy(sbuff, data, size);
-  sbuffsize = size;
-  sbuffused = 0;
+  send_buffer = str;
+  send_buffer_pos = 0;
+
   sendFrame(new Frame(fv0_3));
 }
 
