@@ -1738,13 +1738,13 @@ boost::shared_ptr<Board> MysqlPersistence::retrieveBoard(uint32_t boardid){
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve board %d - %s", boardid, mysql_error(conn));
         unlock();
-        return NULL;
+        return Board::Ptr();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve board: Could not store result - %s", mysql_error(conn));
         unlock();
-        return NULL;
+        return Board::Ptr();
     }
     unlock(); // finished with mysql for a bit
     
@@ -1752,10 +1752,10 @@ boost::shared_ptr<Board> MysqlPersistence::retrieveBoard(uint32_t boardid){
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such board %d", boardid);
         mysql_free_result(obresult);
-        return NULL;
+        return Board::Ptr();
     }
     Board::Ptr board( new Board(boardid,row[1],row[2]) );
-    board->setPersistanceData(atoi(row[3]),strtoull(row[4], NULL, 10));
+    board->setPersistenceData(atoi(row[3]),strtoull(row[4], NULL, 10));
     mysql_free_result(obresult);
     return board;
 }

@@ -48,13 +48,13 @@ class Board {
     Board( uint32_t id, const std::string& nname, const std::string& ndesc );
 
     /// Returns board ID
-    int getBoardID();
+    int getBoardID() const;
 
     /// Returns board name
-    std::string getName();
+    std::string getName() const;
 
     /// Returns board description
-    std::string getDescription();
+    std::string getDescription() const;
 
     /**
      * Adds a message at given position

@@ -35,15 +35,15 @@ Board::Board(uint32_t id, const std::string& nname, const std::string& ndesc) {
   mod_time = time(NULL);
 }
 
-int Board::getBoardID() {
+int Board::getBoardID() const {
   return boardid;
 }
 
-std::string Board::getName(){
+std::string Board::getName() const {
   return name;
 }
 
-std::string Board::getDescription() {
+std::string Board::getDescription() const {
   return description;
 }
 
