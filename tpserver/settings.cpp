@@ -120,7 +120,7 @@ bool Settings::readConfFile(const std::string& fname){
     }
     std::string   configString;
     uint32_t      lineCount = 0;
-    const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    const char* validKeyChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.";
 
     while ( ! configFile.eof() && getline( configFile, configString)) {
         std::string    savedConfigString = configString;
