@@ -65,11 +65,13 @@ class TcpConnection: public Connection {
 
     // used by httpconnection
     // TODO: check!
+    // TODO: change to std::string
     char* rheaderbuff;
   private:
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
 
+    // TODO: change to std::string
     char* rdatabuff;
     uint32_t rbuffused;
   

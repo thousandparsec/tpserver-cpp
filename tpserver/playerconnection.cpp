@@ -158,19 +158,7 @@ void PlayerConnection::processNormalFrame()
     if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
       processGetFeaturesFrame(frame);
     }else if(version >= fv0_3 && frame->getType() == ft03_Ping){
-      DEBUG("PlayerConnection : Processing Ping frame");
-      // check for the time of the last frame, ignore this if
-      //  less than 60 seconds ago.
-      if(lastpingtime < static_cast<uint64_t>(time(NULL)) - 60){
-        lastpingtime = time(NULL);
-        Frame *pong = createFrame(frame);
-        pong->setType(ft02_OK);
-        pong->packString("Keep alive ok, hope you're still there");
-        sendFrame(pong);
-        DEBUG("PlayerConnection : Did ping for client %d", sockfd);
-      }else{
-        WARNING("PlayerConnection : Client %d tried to ping within 60 seconds of the last ping", sockfd);
-      }
+      processPingFrame(frame);
     }else if(frame->getType() == ft02_Time_Remaining_Get){
       processTimeRemainingFrame(frame);
     }else if(version >= fv0_4 && frame->getType() == ft04_GameInfo_Get){
@@ -191,6 +179,23 @@ void PlayerConnection::processNormalFrame()
     // client closed
   }
   delete frame;
+}
+
+void PlayerConnection::processPingFrame(Frame* frame)
+{
+  DEBUG("PlayerConnection : Processing Ping frame");
+  // check for the time of the last frame, ignore this if
+  //  less than 60 seconds ago.
+  if(lastpingtime < static_cast<uint64_t>(time(NULL)) - 60){
+    lastpingtime = time(NULL);
+    Frame *pong = createFrame(frame);
+    pong->setType(ft02_OK);
+    pong->packString("Keep alive ok, hope you're still there");
+    sendFrame(pong);
+    DEBUG("PlayerConnection : Did ping for client %d", sockfd);
+  }else{
+    WARNING("PlayerConnection : Client %d tried to ping within 60 seconds of the last ping", sockfd);
+  }
 }
 
 void PlayerConnection::processGetFeaturesFrame(Frame* frame){
