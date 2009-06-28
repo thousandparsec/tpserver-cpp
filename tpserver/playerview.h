@@ -82,23 +82,20 @@ public:
 private:
   uint32_t pid;
 
-  std::set<uint32_t> visibleObjects;
-  std::set<uint32_t> ownedObjects;
-  std::map<uint32_t, ObjectView*> cacheObjects;
-  std::map<uint32_t, uint64_t> modlistObject;
-  uint32_t currObjSeq;
+  // TODO: modify persistence to make code common for all entity types
+  template< class EntityType >
+  struct EntityInfo {
+    std::set<uint32_t> visible;
+    std::set<uint32_t> actable;
+    std::map<uint32_t, EntityType*> cache;
+    std::map<uint32_t, uint64_t> modified;
+    uint32_t sequence;
+    EntityInfo() : sequence( 0 ) {}
+  };
 
-  std::set<uint32_t> visibleDesigns;
-  std::set<uint32_t> usableDesigns;
-  std::map<uint32_t, DesignView*> cacheDesigns;
-  std::map<uint32_t, uint64_t> modlistDesign;
-  uint32_t currDesignSeq;
-
-  std::set<uint32_t> visibleComponents;
-  std::set<uint32_t> usableComponents;
-  std::map<uint32_t, ComponentView*> cacheComponents;
-  std::map<uint32_t, uint64_t> modlistComp;
-  uint32_t currCompSeq;
+  EntityInfo< ObjectView > objects;
+  EntityInfo< DesignView > designs;
+  EntityInfo< ComponentView > components;
 
 };
 
