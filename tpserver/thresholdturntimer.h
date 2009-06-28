@@ -38,7 +38,7 @@ class ThresholdTurnTimer : public TurnTimer{
         void onPlayerFinishedTurn();
     
   private:
-    void updateTimer();
+    void updateTimerNowOverThreshold();
     void timerFinished();
     void thresholdDoneAndStartEOT();
     bool isOverThreshold();
