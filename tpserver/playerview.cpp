@@ -184,36 +184,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     }
   }
   
-  if(snum > objects.modified.size()){
-    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, objects.modified.size());
-    out->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > objects.modified.size() - snum){
-    numtoget = objects.modified.size() - snum;
-  }
-    
-  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
-    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-    
-  out->setType(ft03_ObjectIds_List);
-  out->packInt(objects.sequence);
-  out->packInt(objects.modified.size() - snum - numtoget);
-  out->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = objects.modified.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    out->packInt(itcurr->first);
-    out->packInt64(itcurr->second);
-  }
-  
-  if(out->getVersion() >= fv0_4){
-    out->packInt64(fromtime);
-  }
-  
+  designs.packEntityList( out, ft03_DesignIds_List, snum, numtoget, fromtime );
 }
 
 void PlayerView::addVisibleDesign(DesignView* design){
@@ -329,36 +300,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
     }
   }
   
-  if(snum > designs.modified.size()){
-    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, designs.visible.size());
-    out->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > designs.modified.size() - snum){
-    numtoget = designs.modified.size() - snum;
-  }
-    
-  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
-    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-    
-  out->setType(ft03_DesignIds_List);
-  out->packInt(designs.sequence);
-  out->packInt(designs.modified.size() - snum - numtoget);
-  out->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = designs.modified.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    out->packInt(itcurr->first);
-    out->packInt64(itcurr->second);
-  }
-  
-  if(out->getVersion() >= fv0_4){
-    out->packInt64(fromtime);
-  }
-  
+  designs.packEntityList( out, ft03_DesignIds_List, snum, numtoget, fromtime );
 }
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
@@ -474,37 +416,8 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
       }
     }
   }
-  
-  if(snum > components.modified.size()){
-    Logger::getLogger()->debug("Starting number too high, snum = %d, size = %d", snum, components.modified.size());
-    out->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > components.modified.size() - snum){
-    numtoget = components.modified.size() - snum;
-  }
-  
-  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
-    Logger::getLogger()->debug("Number of items to get too high, numtoget = %d", numtoget);
-    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-  
-  out->setType(ft03_ComponentIds_List);
-  out->packInt(components.sequence);
-  out->packInt(components.modified.size() - snum - numtoget);
-  out->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = components.modified.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    out->packInt(itcurr->first);
-    out->packInt64(itcurr->second);
-  }
-  
-  if(out->getVersion() >= fv0_4){
-    out->packInt64(fromtime);
-  }
-  
+
+  components.packEntityList( out, ft03_ComponentIds_List, snum, numtoget, fromtime );
 }
 
 void PlayerView::setVisibleObjects(const std::set<uint32_t>& obids){
@@ -529,4 +442,38 @@ void PlayerView::setVisibleComponents(const std::set<uint32_t>& cids){
 
 void PlayerView::setUsableComponents(const std::set<uint32_t>& cids){
   components.actable = cids;
+}
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime )
+{
+  if(snum > modified.size()){
+    DEBUG("Starting number too high, snum = %d, size = %d", snum, visible.size());
+    out->createFailFrame(fec_NonExistant, "Starting number too high");
+    return;
+  }
+  if(numtoget > modified.size() - snum){
+    numtoget = modified.size() - snum;
+  }
+    
+  if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
+    DEBUG("Number of items to get too high, numtoget = %d", numtoget);
+    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    return;
+  }
+    
+  out->setType(type);
+  out->packInt(sequence);
+  out->packInt(modified.size() - snum - numtoget);
+  out->packInt(numtoget);
+  std::map<uint32_t, uint64_t>::iterator itcurr = modified.begin();
+  std::advance(itcurr, snum);
+  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
+    out->packInt(itcurr->first);
+    out->packInt64(itcurr->second);
+  }
+  
+  if(out->getVersion() >= fv0_4){
+    out->packInt64(fromtime);
+  }
 }
