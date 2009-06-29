@@ -78,15 +78,14 @@ std::string Design::getFeedback() const{
 }
 
 double Design::getPropertyValue(uint32_t propid) const{
-  std::map<uint32_t, PropertyValue>::const_iterator itpos = properties.find(propid);
+  PropertyValue::Map::const_iterator itpos = properties.find(propid);
   if(itpos != properties.end()){
-    PropertyValue pv = itpos->second;
-    return pv.getValue();
+    return itpos->second.getValue();
   }else
     return 0.0;
 }
 
-std::map<uint32_t, PropertyValue> Design::getPropertyValues() const{
+PropertyValue::Map Design::getPropertyValues() const{
     return properties;
 }
 
@@ -146,7 +145,7 @@ void Design::eval(){
   scheme_intr->evalDesign(this);
 }
 
-void Design::setPropertyValues(std::map<uint32_t, PropertyValue> pvl){
+void Design::setPropertyValues(PropertyValue::Map pvl){
   properties = pvl;
 }
 

@@ -21,33 +21,37 @@
  */
 
 #include <string>
+#include <map>
 
 class Frame;
 
 class PropertyValue{
- public:
-  PropertyValue();
-  PropertyValue(const PropertyValue& rhs);
-  ~PropertyValue();
+  public:
+    /// Typedef for id-based map
+    typedef std::map< uint32_t, PropertyValue > Map;
 
-  PropertyValue operator=(const PropertyValue& rhs);
-  bool operator==(const PropertyValue& rhs) const;
-  bool operator<(const PropertyValue& rhs) const;
+    PropertyValue();
+    PropertyValue(const PropertyValue& rhs);
+    ~PropertyValue();
 
-  void packFrame(Frame* frame) const;
+    PropertyValue operator=(const PropertyValue& rhs);
+    bool operator==(const PropertyValue& rhs) const;
+    bool operator<(const PropertyValue& rhs) const;
 
-  uint32_t getPropertyId() const;
-  double getValue() const;
-  std::string getDisplayString() const;
+    void packFrame(Frame* frame) const;
 
-  void setPropertyId(uint32_t id);
-  void setValue(double v);
-  void setDisplayString(const std::string& d);
+    uint32_t getPropertyId() const;
+    double getValue() const;
+    std::string getDisplayString() const;
 
- private:
-  uint32_t propid;
-  double value;
-  std::string display;
+    void setPropertyId(uint32_t id);
+    void setValue(double v);
+    void setDisplayString(const std::string& d);
+
+  private:
+    uint32_t propid;
+    double value;
+    std::string display;
 
 };
 

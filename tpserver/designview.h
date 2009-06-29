@@ -29,63 +29,63 @@
 class Frame;
 
 class DesignView{
- public:
-  DesignView();
-  virtual ~DesignView();
+  public:
+    DesignView();
+    virtual ~DesignView();
 
-  void packFrame(Frame* frame) const;
+    void packFrame(Frame* frame) const;
 
-  uint32_t getDesignId() const;
-  bool isCompletelyVisible() const;
-  uint64_t getModTime() const;
+    uint32_t getDesignId() const;
+    bool isCompletelyVisible() const;
+    uint64_t getModTime() const;
 
-  std::string getVisibleName() const;
-  bool canSeeName() const;
-  std::string getVisibleDescription() const;
-  bool canSeeDescription() const;
-  uint32_t getVisibleOwner() const;
-  bool canSeeOwner() const;
-  std::map<uint32_t, uint32_t> getVisibleComponents() const;
-  uint32_t getVisibleNumExist() const;
-  bool canSeeNumExist() const;
-  std::map<uint32_t, PropertyValue> getVisiblePropertyValues() const;
+    std::string getVisibleName() const;
+    bool canSeeName() const;
+    std::string getVisibleDescription() const;
+    bool canSeeDescription() const;
+    uint32_t getVisibleOwner() const;
+    bool canSeeOwner() const;
+    std::map<uint32_t, uint32_t> getVisibleComponents() const;
+    uint32_t getVisibleNumExist() const;
+    bool canSeeNumExist() const;
+    PropertyValue::Map getVisiblePropertyValues() const;
 
 
-  void setDesignId(uint32_t id);
-  void setIsCompletelyVisible(bool ncv);
-  void setModTime(uint64_t nmt);
+    void setDesignId(uint32_t id);
+    void setIsCompletelyVisible(bool ncv);
+    void setModTime(uint64_t nmt);
 
-  void setVisibleName(const std::string& n);
-  void setCanSeeName(bool csn);
-  void setVisibleDescription(const std::string& d);
-  void setCanSeeDescription(bool csd);
-  void setVisibleOwner(uint32_t o);
-  void setCanSeeOwner(bool cso);
-  void setVisibleComponents(std::map<uint32_t, uint32_t> cl);
-  void setVisibleNumExist(uint32_t nne);
-  void setCanSeeNumExist(bool csn);
-  void setVisiblePropertyValues(std::map<uint32_t, PropertyValue> pvl);
+    void setVisibleName(const std::string& n);
+    void setCanSeeName(bool csn);
+    void setVisibleDescription(const std::string& d);
+    void setCanSeeDescription(bool csd);
+    void setVisibleOwner(uint32_t o);
+    void setCanSeeOwner(bool cso);
+    void setVisibleComponents(std::map<uint32_t, uint32_t> cl);
+    void setVisibleNumExist(uint32_t nne);
+    void setCanSeeNumExist(bool csn);
+    void setVisiblePropertyValues(PropertyValue::Map pvl);
 
- protected:
-  void touchModTime();
-  
-  uint32_t designid;
-  
-  bool completelyvisible;
-  
-  bool seename;
-  std::string name;
-  bool seedesc;
-  std::string description;
-  
-  bool seenum;
-  uint32_t exist;
-  bool seeowner;
-  uint32_t owner;
+  protected:
+    void touchModTime();
 
-  uint64_t timestamp;
-  std::map<uint32_t, uint32_t> components;
-  std::map<uint32_t, PropertyValue> properties;
+    uint32_t designid;
+
+    bool completelyvisible;
+
+    bool seename;
+    std::string name;
+    bool seedesc;
+    std::string description;
+
+    bool seenum;
+    uint32_t exist;
+    bool seeowner;
+    uint32_t owner;
+
+    uint64_t timestamp;
+    std::map<uint32_t, uint32_t> components;
+    PropertyValue::Map properties;
 
 };
 

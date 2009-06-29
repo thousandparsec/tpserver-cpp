@@ -36,22 +36,22 @@ class DesignStore{
 
     void init();
 
-  Category* getCategory(uint32_t id);
-  Design* getDesign(uint32_t id);
+  Category*  getCategory(uint32_t id);
+  Design*    getDesign(uint32_t id);
   Component* getComponent(uint32_t id);
-  Property* getProperty(uint32_t id);
+  Property*  getProperty(uint32_t id);
 
   std::set<uint32_t> getCategoryIds() const;
   std::set<uint32_t> getDesignIds() const;
   std::set<uint32_t> getComponentIds() const;
   std::set<uint32_t> getPropertyIds() const;
  
-  void addCategory(Category* c);
 
   bool addDesign(Design* d);
   bool modifyDesign(Design* d);
-    void designCountsUpdated(Design* d);
+  void designCountsUpdated(Design* d);
 
+  void addCategory(Category* c);
   void addComponent(Component* c);
   void addProperty(Property* p);
   
@@ -68,9 +68,9 @@ class DesignStore{
   uint32_t next_componentid;
   uint32_t next_propertyid;
   uint32_t next_categoryid;
+  std::map<uint32_t, Design*> designs;
   std::map<uint32_t, Category*> categories;
   std::map<std::string,uint32_t>  categoryIndex;
-  std::map<uint32_t, Design*> designs;
   std::map<uint32_t, Component*> components;
   std::map<std::string, uint32_t> componentIndex;
   std::map<uint32_t, Property*> properties;

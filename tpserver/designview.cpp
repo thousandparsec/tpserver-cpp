@@ -86,14 +86,14 @@ void DesignView::packFrame(Frame* frame) const{
   }else{
     frame->packString("");
   }
-  std::map<uint32_t, PropertyValue> proplist;
+  PropertyValue::Map proplist;
   if(completelyvisible){
     proplist = design->getPropertyValues();
   }else{
     proplist = properties;
   }
   frame->packInt(proplist.size());
-  for(std::map<uint32_t, PropertyValue>::const_iterator itcurr = proplist.begin();
+  for(PropertyValue::Map::const_iterator itcurr = proplist.begin();
       itcurr != proplist.end(); ++itcurr){
     itcurr->second.packFrame(frame);
   }
@@ -143,7 +143,7 @@ bool DesignView::canSeeNumExist() const{
   return seenum;
 }
 
-std::map<uint32_t, PropertyValue> DesignView::getVisiblePropertyValues() const{
+PropertyValue::Map DesignView::getVisiblePropertyValues() const{
     return properties;
 }
 
@@ -211,7 +211,7 @@ void DesignView::setModTime(uint64_t nmt){
     timestamp = nmt;
 }
 
-void DesignView::setVisiblePropertyValues(std::map<uint32_t, PropertyValue> pvl){
+void DesignView::setVisiblePropertyValues(PropertyValue::Map pvl){
   properties = pvl;
   touchModTime();
 }
