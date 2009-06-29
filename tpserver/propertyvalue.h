@@ -31,6 +31,7 @@ class PropertyValue{
     typedef std::map< uint32_t, PropertyValue > Map;
 
     PropertyValue();
+    PropertyValue( uint32_t pid, double pval );
     PropertyValue(const PropertyValue& rhs);
     ~PropertyValue();
 

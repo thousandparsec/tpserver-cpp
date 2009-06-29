@@ -186,10 +186,7 @@ void PlayerView::addVisibleDesign(DesignView* design){
 void PlayerView::addUsableDesign(uint32_t designid){
   designs.actable.insert(designid);
   if(!designs.isVisible(designid)){
-    DesignView* designview = new DesignView();
-    designview->setDesignId(designid);
-    designview->setIsCompletelyVisible(true);
-    addVisibleDesign(designview);
+    addVisibleDesign( new DesignView( designid, true ) );
   }else{
     DesignView* design = designs.cache[designid];
     if(design == NULL){

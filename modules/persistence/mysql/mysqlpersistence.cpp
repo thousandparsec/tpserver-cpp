@@ -2680,11 +2680,11 @@ bool MysqlPersistence::saveDesign(Design* design){
         }
         unlock();
     }
-    std::map<uint32_t, PropertyValue> proplist = design->getPropertyValues();
+    PropertyValue::Map proplist = design->getPropertyValues();
     if(!proplist.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO designproperty VALUES ";
-        for(std::map<uint32_t, PropertyValue>::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
+        for( PropertyValue::Map::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
             if(itcurr != proplist.begin())
                 querybuilder << ", ";
             PropertyValue pv = itcurr->second;
@@ -2751,11 +2751,11 @@ bool MysqlPersistence::updateDesign(Design* design){
         }
         unlock();
     }
-    std::map<uint32_t, PropertyValue> proplist = design->getPropertyValues();
+    PropertyValue::Map proplist = design->getPropertyValues();
     if(!proplist.empty()){
         querybuilder.str("");
         querybuilder << "INSERT INTO designproperty VALUES ";
-        for(std::map<uint32_t, PropertyValue>::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
+        for(std::map<uint32_t, PropertyValue::Map::iterator itcurr = proplist.begin(); itcurr != proplist.end(); ++itcurr){
             if(itcurr != proplist.begin())
                 querybuilder << ", ";
             PropertyValue pv = itcurr->second;
@@ -2850,12 +2850,10 @@ Design* MysqlPersistence::retrieveDesign(uint32_t designid){
     }
     unlock(); // finished with mysql for a bit
     
-    std::map<uint32_t, PropertyValue> pvlist;
+    PropertyValue::Map pvlist;
     MYSQL_ROW prow;
     while((prow = mysql_fetch_row(propresult)) != NULL){
-        PropertyValue pv;
-        pv.setPropertyId(atoi(prow[0]));
-        pv.setValue(atof(prow[1]));
+        PropertyValue pv( atoi(prow[0]), atof(prow[1]));
         pv.setDisplayString(prow[2]);
         pvlist[pv.getPropertyId()] = pv;
     }
@@ -3379,7 +3377,7 @@ bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
       unlock();
     }
     
-    std::map<uint32_t, PropertyValue> proplist = dv->getVisiblePropertyValues();
+    PropertyValue::Map proplist = dv->getVisiblePropertyValues();
     if(!proplist.empty()){
       querybuilder.str("");
       querybuilder << "INSERT INTO playerdesignviewprop VALUES ";
@@ -3482,10 +3480,9 @@ DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t des
     }
     unlock(); // finished with mysql for a bit
     
-    std::map<uint32_t, PropertyValue> pvlist;
+    PropertyValue::Map pvlist;
     while((row = mysql_fetch_row(propresult)) != NULL){
-        PropertyValue pv;
-        pv.setPropertyId(atoi(row[0]));
+        PropertyValue pv( atoi(row[0]), 0.0);
         pv.setDisplayString(row[1]);
         pvlist[pv.getPropertyId()] = pv;
     }

@@ -129,8 +129,7 @@ void TpMzScheme::evalDesign(Design* d){
       std::set<PropertyValue> localvalues;
       for(std::map<uint32_t, std::list<std::string> >::iterator piit = pilist.begin();
 	  piit != pilist.end(); ++piit){
-	PropertyValue propval;
-	propval.setPropertyId(piit->first);
+	PropertyValue propval(piit->first,0.0);
 	std::list<double> listvals;
 	std::list<std::string> lambdas = piit->second;
 	for(std::list<std::string>::iterator itlamb = lambdas.begin();

@@ -31,6 +31,7 @@ class Frame;
 class DesignView{
   public:
     DesignView();
+    DesignView( uint32_t desid, bool visibility );
     virtual ~DesignView();
 
     void packFrame(Frame* frame) const;

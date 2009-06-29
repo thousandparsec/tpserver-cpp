@@ -27,8 +27,13 @@
 
 #include "designview.h"
 
-DesignView::DesignView() : designid(0), completelyvisible(false), seename(false), name(), seedesc(false),
-    description(), seenum(false), exist(0), seeowner(false), owner(0), components(), properties(){
+DesignView::DesignView() : designid(0), completelyvisible(false), seename(false), seedesc(false),
+    seenum(false), exist(0), seeowner(false), owner(0) {
+  timestamp = time(NULL);
+}
+
+DesignView::DesignView( uint32_t desid, bool visibility ) : designid(desid), completelyvisible(visibility), seename(false), seedesc(false),
+    seenum(false), exist(0), seeowner(false), owner(0) {
   timestamp = time(NULL);
 }
 

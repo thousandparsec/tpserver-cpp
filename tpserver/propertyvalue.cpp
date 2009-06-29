@@ -22,9 +22,11 @@
 
 #include "propertyvalue.h"
 
-PropertyValue::PropertyValue(){
-  propid = 0;
-  value = 0.0;
+
+PropertyValue::PropertyValue( uint32_t pid, double pval ) : propid( 0 ), value( 0.0 ) 
+{}                                                          
+
+PropertyValue::PropertyValue( uint32_t pid, double pval ) : propid( pid ), value( pval ) {
 }
 
 PropertyValue::PropertyValue(const PropertyValue& rhs){
