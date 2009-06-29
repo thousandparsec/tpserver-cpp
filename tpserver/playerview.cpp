@@ -52,14 +52,12 @@ void PlayerView::doOnceATurn(){
 
 
 void PlayerView::addVisibleObject(ObjectView* obj){
-  objects.visible.insert(obj->getObjectId());
-  objects.cache[obj->getObjectId()] = obj;
+  objects.addVisible( obj, obj->getObjectId());
   Game::getGame()->getPersistence()->saveObjectView(pid, obj);
-  objects.sequence++;
 }
 
 ObjectView* PlayerView::getObjectView(uint32_t objid){
-  if(objects.visible.find(objid) != objects.visible.end()){
+  if(objects.isVisible(objid)){
     ObjectView* obj = objects.cache[objid];
     if(obj == NULL){
       obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
@@ -82,21 +80,13 @@ void PlayerView::removeVisibleObject(uint32_t objid){
   ObjectView* obj = getObjectView(objid);
   if(obj != NULL){
     objects.cache[objid]->setGone(true);
-    Game::getGame()->getPersistence()->saveObjectView(pid, objects.cache[objid]);
+    updateObjectView(objid);
   }
 }
 
 bool PlayerView::isVisibleObject(uint32_t objid){
-  if(objects.visible.find(objid) != objects.visible.end()){
-    ObjectView* obj = objects.cache[objid];
-    if(obj == NULL){
-      obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
-      if(obj != NULL){
-        objects.cache[objid] = obj;
-      }
-    }
-    return !(obj->isGone());
-  }
+  ObjectView* obj = getObjectView(objid);
+  if ( obj != NULL ) return !(obj->isGone());
   return false;
 }
 
@@ -109,7 +99,7 @@ void PlayerView::addOwnedObject(uint32_t objid){
   ObjectView* obj = getObjectView(objid);
   if(obj != NULL){
     obj->setCompletelyVisible(true);
-    Game::getGame()->getPersistence()->saveObjectView(pid, objects.cache[objid]);
+    updateObjectView(objid);
   }else{
     ObjectView* ov = new ObjectView();
     ov->setObjectId(objid);
@@ -119,7 +109,7 @@ void PlayerView::addOwnedObject(uint32_t objid){
 }
 
 void PlayerView::removeOwnedObject(uint32_t objid){
-  objects.actable.erase(objid);
+  objects.removeActable(objid);
 }
 
 uint32_t PlayerView::getNumberOwnedObjects() const{
@@ -131,7 +121,7 @@ std::set<uint32_t> PlayerView::getOwnedObjects() const{
 }
 
 void PlayerView::processGetObject(uint32_t objid, Frame* frame){
-  if(objects.visible.find(objid) == objects.visible.end()){
+  if(!objects.isVisible(objid)){
     frame->createFailFrame(fec_NonExistant, "No Such Object");
   }else{
     ObjectView* object = getObjectView(objid);
@@ -140,10 +130,10 @@ void PlayerView::processGetObject(uint32_t objid, Frame* frame){
 }
 
 void PlayerView::processGetObjectIds(Frame* in, Frame* out){
-  Logger::getLogger()->debug("doing Get Object Ids frame");
+  DEBUG("doing Get Object Ids frame");
   
   if(in->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
+    DEBUG("protocol version not high enough");
     out->createFailFrame(fec_FrameError, "Get Object ids isn't supported in this protocol");
     return;
   }
@@ -189,21 +179,13 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleDesign(DesignView* design){
   design->setModTime(time(NULL));
-  uint32_t designid = design->getDesignId();
-  designs.visible.insert(designid);
-  if(designs.cache.find(designid) != designs.cache.end()){
-    if(designs.cache[designid] != NULL){
-      delete designs.cache[designid];
-    }
-  }
-  designs.cache[designid] = design;
+  designs.addVisible( design, design->getDesignId() );
   Game::getGame()->getPersistence()->saveDesignView(pid, design);
-  designs.sequence++;
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
   designs.actable.insert(designid);
-  if(designs.visible.find(designid) == designs.visible.end()){
+  if(!designs.isVisible(designid)){
     DesignView* designview = new DesignView();
     designview->setDesignId(designid);
     designview->setIsCompletelyVisible(true);
@@ -223,13 +205,11 @@ void PlayerView::addUsableDesign(uint32_t designid){
 }
 
 void PlayerView::removeUsableDesign(uint32_t designid){
-  std::set<uint32_t>::iterator dicurr = designs.actable.find(designid);
-  if(dicurr != designs.actable.end())
-    designs.actable.erase(dicurr);
+  designs.removeActable(designid);
 }
 
 bool PlayerView::isUsableDesign(uint32_t designid) const{
-  return (designs.actable.find(designid) != designs.actable.end());
+  return designs.isActable(designid);
 }
 
 std::set<uint32_t> PlayerView::getUsableDesigns() const{
@@ -241,7 +221,7 @@ std::set<uint32_t> PlayerView::getVisibleDesigns() const{
 }
 
 void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
-  if(components.visible.find(designid) == designs.visible.end()){
+  if(!designs.isVisible(designid)){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
     DesignView* design = designs.cache.find(designid)->second;
@@ -256,10 +236,10 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
 }
 
 void PlayerView::processGetDesignIds(Frame* in, Frame* out){
-  Logger::getLogger()->debug("doing Get Design Ids frame");
+  DEBUG("doing Get Design Ids frame");
   
   if(in->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
+    DEBUG("protocol version not high enough");
     out->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
     return;
   }
@@ -305,16 +285,8 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
   comp->setModTime(time(NULL));
-  uint32_t compid = comp->getComponentId();
-  components.visible.insert(compid);
-  if(components.cache.find(compid) != components.cache.end()){
-    if(components.cache[compid] != NULL){
-      delete components.cache[compid];
-    }
-  }
-  components.cache[compid] = comp;
+  components.addVisible( comp, comp->getComponentId() );
   Game::getGame()->getPersistence()->saveComponentView(pid, comp);
-  components.sequence++;
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
@@ -339,9 +311,7 @@ void PlayerView::addUsableComponent(uint32_t compid){
 }
 
 void PlayerView::removeUsableComponent(uint32_t compid){
-  std::set<uint32_t>::iterator cicurr = components.actable.find(compid);
-  if(cicurr != components.actable.end())
-    components.actable.erase(cicurr);
+  components.removeActable(compid);
 }
 
 bool PlayerView::isUsableComponent(uint32_t compid) const{
@@ -372,10 +342,10 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
 }
 
 void PlayerView::processGetComponentIds(Frame* in, Frame* out){
-  Logger::getLogger()->debug("doing Get Component Ids frame");
+  DEBUG("doing Get Component Ids frame");
   
   if(in->getVersion() < fv0_3){
-    Logger::getLogger()->debug("protocol version not high enough");
+    DEBUG("protocol version not high enough");
     out->createFailFrame(fec_FrameError, "Get Component ids isn't supported in this protocol");
     return;
   }
@@ -476,4 +446,35 @@ void PlayerView::EntityInfo< EntityType >::packEntityList( Frame* out, FrameType
   if(out->getVersion() >= fv0_4){
     out->packInt64(fromtime);
   }
+}
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity, uint32_t id )
+{
+  visible.insert(id);
+  if (cache.find(id) != cache.end()){
+    delete cache[id];
+  }
+  cache[id] = entity;
+  sequence++;
+}
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::removeActable( uint32_t id )
+{
+  std::set<uint32_t>::iterator f = actable.find(id);
+  if(f != actable.end())
+    actable.erase(f);
+}
+
+template< class EntityType >
+bool PlayerView::EntityInfo< EntityType >::isActable( uint32_t id ) const
+{
+  return actable.find( id ) != actable.end();
+}
+
+template< class EntityType >
+bool PlayerView::EntityInfo< EntityType >::isVisible( uint32_t id ) const
+{
+  return visible.find( id ) != visible.end();
 }
