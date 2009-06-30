@@ -29,12 +29,10 @@
 
 DesignView::DesignView() : designid(0), completelyvisible(false), seename(false), seedesc(false),
     seenum(false), exist(0), seeowner(false), owner(0) {
-  timestamp = time(NULL);
 }
 
 DesignView::DesignView( uint32_t desid, bool visibility ) : designid(desid), completelyvisible(visibility), seename(false), seedesc(false),
     seenum(false), exist(0), seeowner(false), owner(0) {
-  timestamp = time(NULL);
 }
 
 DesignView::~DesignView(){
@@ -47,10 +45,10 @@ void DesignView::packFrame(Frame* frame) const{
   
   frame->setType(ft03_Design);
   frame->packInt(designid);
-  if(completelyvisible && timestamp < design->getModTime()){
+  if(completelyvisible && getModTime() < design->getModTime()){
     frame->packInt64(design->getModTime());
   }else{
-    frame->packInt64(timestamp);
+    frame->packInt64(getModTime());
   }
   frame->packInt(1);
   frame->packInt(design->getCategoryId());
@@ -152,15 +150,10 @@ PropertyValue::Map DesignView::getVisiblePropertyValues() const{
     return properties;
 }
 
-uint64_t DesignView::getModTime() const{
-    return timestamp;
-}
-
 void DesignView::setDesignId(uint32_t id){
   designid = id;
   touchModTime();
 }
-
 
 void DesignView::setIsCompletelyVisible(bool ncv){
   completelyvisible = ncv;
@@ -212,15 +205,8 @@ void DesignView::setCanSeeNumExist(bool csn){
   touchModTime();
 }
 
-void DesignView::setModTime(uint64_t nmt){
-    timestamp = nmt;
-}
-
 void DesignView::setVisiblePropertyValues(PropertyValue::Map pvl){
   properties = pvl;
   touchModTime();
 }
 
-void DesignView::touchModTime(){
-    timestamp = time(NULL);
-}

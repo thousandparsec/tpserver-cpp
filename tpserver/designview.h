@@ -25,10 +25,11 @@
 #include <stdint.h>
 
 #include <tpserver/propertyvalue.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
-class DesignView{
+class DesignView : public Modifiable {
   public:
     DesignView();
     DesignView( uint32_t desid, bool visibility );
@@ -38,7 +39,6 @@ class DesignView{
 
     uint32_t getDesignId() const;
     bool isCompletelyVisible() const;
-    uint64_t getModTime() const;
 
     std::string getVisibleName() const;
     bool canSeeName() const;
@@ -54,7 +54,6 @@ class DesignView{
 
     void setDesignId(uint32_t id);
     void setIsCompletelyVisible(bool ncv);
-    void setModTime(uint64_t nmt);
 
     void setVisibleName(const std::string& n);
     void setCanSeeName(bool csn);
@@ -67,7 +66,6 @@ class DesignView{
     void setCanSeeNumExist(bool csn);
     void setVisiblePropertyValues(PropertyValue::Map pvl);
 
-    void touchModTime();
   protected:
 
     uint32_t designid;
@@ -84,7 +82,6 @@ class DesignView{
     bool seeowner;
     uint32_t owner;
 
-    uint64_t timestamp;
     std::map<uint32_t, uint32_t> components;
     PropertyValue::Map properties;
 
