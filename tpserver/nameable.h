@@ -29,7 +29,7 @@ class Nameable : public Identifiable {
     Nameable( uint32_t new_id, const std::string& new_name = "" ) : Identifiable( new_id ), name( new_name ) {}
     const std::string& getName() const { return name; }
     void setName( const std::string& new_name ) { name = new_name; }
-  private:
+  protected:
     std::string name;
 };
 

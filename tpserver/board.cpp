@@ -79,8 +79,8 @@ bool Board::removeMessage(uint32_t pos){
 void Board::packBoard(Frame * frame){
   frame->setType(ft02_Board);
   frame->packInt(id);
-  frame->packString(getName().c_str());
-  frame->packString(getDescription().c_str());
+  frame->packString(name.c_str());
+  frame->packString(desc.c_str());
   frame->packInt(message_count);
   frame->packInt64(getModTime());
 }
@@ -101,8 +101,8 @@ void Board::packMessage(Frame * frame, uint32_t msgnum) {
       message->pack(frame);
     } else {
       frame->createFailFrame(fec_TempUnavailable, "Could not get Message at this time");
-      Logger::getLogger()->warning("Board has messages but persistence didn't get it");
-      Logger::getLogger()->warning("POSSIBLE DATABASE INCONSISTANCE");
+      WARNING("Board has messages but persistence didn't get it");
+      WARNING("POSSIBLE DATABASE INCONSISTANCE");
     }
   } else {
     frame->createFailFrame(fec_NonExistant, "No such Message on board");

@@ -88,6 +88,7 @@ class Board : public Modifiable, public Describable {
   private:
     /// Count of messages on the board
     uint32_t message_count;
+
     /// List of MessageID's belonging to this board
     IdList message_ids;
 

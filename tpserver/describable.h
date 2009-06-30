@@ -28,7 +28,7 @@ class Describable : public Nameable {
     Describable( uint32_t new_id, const std::string& new_name = "", const std::string& new_desc = "" ) : Nameable( new_id, new_name ), desc( new_desc ) {}
     const std::string& getDescription() const { return desc; }
     void setDescription( const std::string& new_desc ) { desc = new_desc; }
-  private:
+  protected:
     std::string desc;
 };
 
