@@ -22,11 +22,12 @@
 
 #include <string>
 #include <stdint.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 class Design;
 
-class Category{
+class Category : public Modifiable {
  public:
   Category();
   virtual ~Category();
@@ -34,7 +35,6 @@ class Category{
   uint32_t getCategoryId() const;
   std::string getName() const;
   std::string getDescription() const;
-  uint64_t getModTime() const;
   void packFrame(Frame* frame) const;
 
   virtual bool doAddDesign(Design* d);
@@ -43,14 +43,11 @@ class Category{
   void setCategoryId(uint32_t c);
   void setName(const std::string& n);
   void setDescription(const std::string& d);
-  void setModTime(uint64_t nmt);
 
  protected:
   uint32_t catid;
   std::string name;
   std::string desc;
-  uint64_t modtime;
-
 };
 
 #endif

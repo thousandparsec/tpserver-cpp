@@ -28,7 +28,6 @@
 
 Category::Category(){
   catid = 0;
-    modtime = time(NULL);
 }
 
 Category::~Category(){
@@ -46,13 +45,10 @@ std::string Category::getDescription() const{
   return desc;
 }
 
-uint64_t Category::getModTime() const{
-    return modtime;
-}
-
 void Category::packFrame(Frame* frame) const{
   frame->setType(ft03_Category);
   frame->packInt(catid);
+  // TODO: is this really correct???
   frame->packInt64(0LL); //timestamp
   frame->packString(name.c_str());
   frame->packString(desc.c_str());
@@ -78,6 +74,3 @@ void Category::setDescription(const std::string& d){
   desc = d;
 }
 
-void Category::setModTime(uint64_t nmt){
-    modtime = nmt;
-}
