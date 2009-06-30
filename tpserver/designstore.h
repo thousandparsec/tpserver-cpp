@@ -20,9 +20,7 @@
  *
  */
 
-#include <set>
-#include <map>
-#include <string>
+#include <tpserver/common.h>
 
 class Category;
 class Design;
@@ -41,10 +39,10 @@ class DesignStore{
   Component* getComponent(uint32_t id);
   Property*  getProperty(uint32_t id);
 
-  std::set<uint32_t> getCategoryIds() const;
-  std::set<uint32_t> getDesignIds() const;
-  std::set<uint32_t> getComponentIds() const;
-  std::set<uint32_t> getPropertyIds() const;
+  IdSet getCategoryIds() const;
+  IdSet getDesignIds() const;
+  IdSet getComponentIds() const;
+  IdSet getPropertyIds() const;
  
 
   bool addDesign(Design* d);
