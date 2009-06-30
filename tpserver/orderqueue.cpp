@@ -31,7 +31,6 @@
 
 OrderQueue::OrderQueue() : queueid(0), objectid(0), active(true), repeating(false) {
   nextOrderId = 1;
-  touchModTime();
 }
 
 OrderQueue::~OrderQueue(){
@@ -227,11 +226,8 @@ bool OrderQueue::isRepeating() const{
   return repeating;
 }
 
-uint64_t OrderQueue::getModTime() const{
-  return modtime;
-}
-
 void OrderQueue::touchModTime(){
+  Modifiable::touchModTime();
   modtime = time(NULL);
   if(objectid != 0){
     IGObject* robj = Game::getGame()->getObjectManager()->getObject(objectid);
@@ -241,11 +237,6 @@ void OrderQueue::touchModTime(){
     }
   }
 }
-
-void OrderQueue::setModTime(uint64_t nmt){
-  modtime = nmt;
-}
-
 
 void OrderQueue::removeAllOrders(){
   std::list<uint32_t>::iterator itpos = orderlist.begin();

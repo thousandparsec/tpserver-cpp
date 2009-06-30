@@ -25,10 +25,12 @@
 #include <list>
 
 #include <tpserver/result.h>
+#include <tpserver/modifiable.h>
+
 
 class Order;
 
-class OrderQueue{
+class OrderQueue : public Modifiable {
  public:
   OrderQueue();
   ~OrderQueue();
@@ -65,14 +67,12 @@ class OrderQueue{
   bool isActive() const;
   bool isRepeating() const;
   
-  uint64_t getModTime() const;
   void touchModTime();
 
   void removeAllOrders();
 
   //persistence only
   void setNextOrderId(uint32_t next);
-  void setModTime(uint64_t nmt);
   void setOwners(std::set<uint32_t> no);
   void setOrderSlots(std::list<uint32_t> nos);
   std::list<uint32_t> getOrderSlots() const;

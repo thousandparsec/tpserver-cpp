@@ -28,7 +28,7 @@ class Modifiable {
 public:
   Modifiable() { touchModTime(); }
   virtual uint64_t getModTime() const { return mod_time; }
-  void touchModTime() { mod_time = time(NULL); dirty = true; }
+  virtual void touchModTime() { mod_time = time(NULL); dirty = true; }
   void setModTime( uint64_t new_mod_time ) { mod_time = new_mod_time; }
   virtual bool isDirty() { return dirty; }
   virtual void setIsDirty( bool new_dirty ) { dirty = new_dirty; }
