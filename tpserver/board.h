@@ -23,13 +23,14 @@
 
 #include <tpserver/common.h>
 #include <tpserver/message.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
 /**
  * Board for posting messages
  */
-class Board {
+class Board : public Modifiable {
 
   public:
     /// typedef for shared pointer
@@ -81,11 +82,6 @@ class Board {
     void packMessage(Frame * frame, uint32_t msgnum);
 
     /**
-     * Returns last modification time
-     */
-    int64_t getModTime() const;
-
-    /**
      * Get count of messages on board
      */
     uint32_t getNumMessages() const;
@@ -106,8 +102,6 @@ class Board {
     std::string name;
     /// Board description
     std::string description;
-    /// Last modification time
-    int64_t mod_time;
     /// List of MessageID's belonging to this board
     IdList message_ids;
 

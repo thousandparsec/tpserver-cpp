@@ -32,7 +32,6 @@ Board::Board(uint32_t id, const std::string& nname, const std::string& ndesc) {
   boardid = id;
   name = nname;
   description = ndesc;
-  mod_time = time(NULL);
 }
 
 int Board::getBoardID() const {
@@ -65,7 +64,7 @@ void Board::addMessage(Message::Ptr msg, int pos) {
   message_count = message_ids.size();
   Game::getGame()->getPersistence()->saveMessageList(boardid, message_ids);
   Game::getGame()->getPersistence()->updateBoard(this);
-  mod_time = time(NULL);
+  touchModTime();
 }
 
 bool Board::removeMessage(uint32_t pos){
@@ -85,7 +84,7 @@ bool Board::removeMessage(uint32_t pos){
   Game::getGame()->getPersistence()->updateBoard(this);
 
   if (result) {
-    mod_time = time(NULL);
+    touchModTime();
   }
   return true;
 }
@@ -96,7 +95,7 @@ void Board::packBoard(Frame * frame){
   frame->packString(name.c_str());
   frame->packString(description.c_str());
   frame->packInt(message_count);
-  frame->packInt64(mod_time);
+  frame->packInt64(getModTime());
 }
 
 void Board::packMessage(Frame * frame, uint32_t msgnum) {
@@ -123,17 +122,13 @@ void Board::packMessage(Frame * frame, uint32_t msgnum) {
   }
 }
 
-int64_t Board::getModTime() const{
-  return mod_time;
-}
-
 uint32_t Board::getNumMessages() const{
   return message_count;
 }
 
 void Board::setPersistenceData( uint32_t nmessage_count, uint64_t nmod_time ) {
   message_count = nmessage_count;
-  mod_time = nmod_time;
+  setModTime(nmod_time);
 }
 
 void Board::retrieveMessageList() {
