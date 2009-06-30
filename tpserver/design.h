@@ -25,8 +25,9 @@
 #include <stdint.h>
 
 #include <tpserver/propertyvalue.h>
+#include <tpserver/modifiable.h>
 
-class Design{
+class Design : public Modifiable {
   public:
     Design();
     virtual ~Design();
@@ -43,7 +44,6 @@ class Design{
     std::string getFeedback() const;
     double getPropertyValue(uint32_t propid) const;
     PropertyValue::Map getPropertyValues() const;
-    uint64_t getModTime() const;
 
     void setDesignId(uint32_t id);
     void setCategoryId(uint32_t id);
@@ -53,7 +53,6 @@ class Design{
     void setComponents(std::map<uint32_t, uint32_t> cl);
     void setInUse(uint32_t niu);
     void setNumExist(uint32_t nne);
-    void setModTime(uint64_t nmt);
 
     void eval();
     void setPropertyValues(PropertyValue::Map pvl);
@@ -73,7 +72,6 @@ class Design{
     uint32_t exist;
     uint32_t owner;
     bool valid;
-    uint64_t timestamp;
     std::map<uint32_t, uint32_t> components;
     PropertyValue::Map properties;
     std::string feedback;

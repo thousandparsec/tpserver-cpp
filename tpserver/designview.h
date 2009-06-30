@@ -67,8 +67,8 @@ class DesignView{
     void setCanSeeNumExist(bool csn);
     void setVisiblePropertyValues(PropertyValue::Map pvl);
 
-  protected:
     void touchModTime();
+  protected:
 
     uint32_t designid;
 

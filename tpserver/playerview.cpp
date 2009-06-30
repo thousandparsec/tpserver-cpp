@@ -178,7 +178,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
 }
 
 void PlayerView::addVisibleDesign(DesignView* design){
-  design->setModTime(time(NULL));
+  design->touchModTime();
   designs.addVisible( design, design->getDesignId() );
   Game::getGame()->getPersistence()->saveDesignView(pid, design);
 }

@@ -18,8 +18,6 @@
  *
  */
 
-#include <time.h>
-
 #include "tpscheme.h"
 #include "game.h"
 
@@ -27,9 +25,8 @@
 
 Design::Design(){
   valid = false;
-    timestamp = time(NULL);
-    inuse = 0;
-    exist = 0;
+  inuse = 0;
+  exist = 0;
 }
 
 Design::~Design(){
@@ -89,10 +86,6 @@ PropertyValue::Map Design::getPropertyValues() const{
     return properties;
 }
 
-uint64_t Design::getModTime() const{
-    return timestamp;
-}
-
 void Design::setDesignId(uint32_t id){
   designid = id;
 }
@@ -128,10 +121,6 @@ void Design::setNumExist(uint32_t nne){
     exist = nne;
 }
 
-void Design::setModTime(uint64_t nmt){
-    timestamp = nmt;
-}
-
 void Design::eval(){
   // calculate design property values
   
@@ -156,20 +145,20 @@ void Design::setValid(bool v, const std::string& f){
 
 void Design::addUnderConstruction(uint32_t num){
     inuse += num;
-    timestamp = time(NULL);
+    touchModTime();
 }
 
 void Design::addComplete(uint32_t num){
     exist += num;
-    timestamp = time(NULL);
+    touchModTime();
 }
 
 void Design::removeCanceledConstruction(uint32_t num){
     inuse -= num;
-    timestamp = time(NULL);
+    touchModTime();
 }
 
 void Design::removeDestroyed(uint32_t num){
     inuse -= num;
-    timestamp = time(NULL);
+    touchModTime();
 }
