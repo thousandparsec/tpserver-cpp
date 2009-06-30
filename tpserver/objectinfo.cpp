@@ -25,7 +25,6 @@
 #include "objectinfo.h"
 
 ObjectInfoData::ObjectInfoData() : type(0), name(), desc(){
-  touchModTime();
 }
 
 ObjectInfoData::~ObjectInfoData(){
@@ -80,16 +79,8 @@ void ObjectInfoData::unpackModFrame(Frame* f){
   }
 }
 
-uint64_t ObjectInfoData::getModTime() const{
-  return modtime;
-}
-
 bool ObjectInfoData::isDirty() const{
   return dirty;
-}
-
-void ObjectInfoData::setModTime(uint64_t nmt){
-  modtime = nmt;
 }
 
 void ObjectInfoData::setIsDirty(bool id){
@@ -97,6 +88,6 @@ void ObjectInfoData::setIsDirty(bool id){
 }
 
 void ObjectInfoData::touchModTime(){
-  modtime = time(NULL);
+  Modifiable::touchModTime();
   dirty = true;
 }

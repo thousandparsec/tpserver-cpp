@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
@@ -30,7 +31,7 @@ class ObjectInfoData;
 
 typedef boost::shared_ptr<ObjectInfoData> ObjectInfoPtr;
 
-class ObjectInfoData {
+class ObjectInfoData : public Modifiable {
   public:
     ObjectInfoData();
     ~ObjectInfoData();
@@ -46,17 +47,14 @@ class ObjectInfoData {
     void packFrame(Frame* f);
     void unpackModFrame(Frame* f);
     
-    uint64_t getModTime() const;
     bool isDirty() const;
-    void setModTime(uint64_t nmt);
     void setIsDirty(bool id);
     
   private:
-    void touchModTime();
+    virtual void touchModTime();
     uint32_t type;
     std::string name;
     std::string desc;
-    uint64_t modtime;
     bool dirty;
 
 };

@@ -216,3 +216,9 @@ ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
   }
   return NULL;
 }
+
+void IGObject::touchModTime()
+{
+  Modifiable::touchModTime();
+  dirty = true;
+}

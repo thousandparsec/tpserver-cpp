@@ -82,6 +82,7 @@ class IGObject : public Modifiable {
     bool isDirty() const;
 
     virtual uint64_t getModTime() const;
+    virtual void touchModTime();
     // Only Persistence classes should call these
     void setParent(uint32_t pid);
     void setIsDirty(bool nd);
