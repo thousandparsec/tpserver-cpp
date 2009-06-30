@@ -28,9 +28,9 @@ class Modifiable {
 public:
   Modifiable() { touchModTime(); }
   uint64_t getModTime() const { return mod_time; }
+  void touchModTime() { mod_time = time(NULL); }
 protected:
   void setModTime( uint64_t new_mod_time ) { mod_time = new_mod_time; }
-  void touchModTime() { mod_time = time(NULL); }
 private:
   uint64_t mod_time;
 };

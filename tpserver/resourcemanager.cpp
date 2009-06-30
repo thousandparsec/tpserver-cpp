@@ -45,7 +45,7 @@ void ResourceManager::init(){
 
 uint32_t ResourceManager::addResourceDescription(ResourceDescription* res){
     res->setResourceType(nextid++);
-    res->setModTime(time(NULL));
+    res->touchModTime();
     resdescs[res->getResourceType()] = res;
     Game::getGame()->getPersistence()->saveResource(res);
     return res->getResourceType();

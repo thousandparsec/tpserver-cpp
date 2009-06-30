@@ -61,10 +61,6 @@ void ResourceDescription::setVolume(uint32_t nv){
     volume = nv;
 }
 
-void ResourceDescription::setModTime(uint64_t nmt){
-    modtime = nmt;
-}
-
 uint32_t ResourceDescription::getResourceType() const{
     return restype;
 }
@@ -97,10 +93,6 @@ uint32_t ResourceDescription::getVolume() const{
     return volume;
 }
 
-uint64_t ResourceDescription::getModTime() const{
-    return modtime;
-}
-
 void ResourceDescription::packFrame(Frame* frame) const{
     frame->setType(ft02_ResDesc);
     frame->packInt(restype);
@@ -111,5 +103,5 @@ void ResourceDescription::packFrame(Frame* frame) const{
     frame->packString(description.c_str());
     frame->packInt(mass);
     frame->packInt(volume);
-    frame->packInt64(modtime);
+    frame->packInt64(getModTime());
 }

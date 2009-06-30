@@ -21,17 +21,14 @@
 #define RESOURCEDESCRIPTION_H
 
 #include <string>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
-/**
-	@author Lee Begg <llnz@paradise.net.nz>
-*/
-class ResourceDescription
+class ResourceDescription : public Modifiable
 {
 public:
     ResourceDescription();
-
     ~ResourceDescription();
 
     void setResourceType(uint32_t resid);
@@ -42,7 +39,6 @@ public:
     void setDescription(const std::string& desc);
     void setMass(uint32_t nm);
     void setVolume(uint32_t nv);
-    void setModTime(uint64_t nmt);
     
     uint32_t getResourceType() const;
     std::string getNameSingular() const;
@@ -52,7 +48,6 @@ public:
     std::string getDescription() const;
     uint32_t getMass() const;
     uint32_t getVolume() const;
-    uint64_t getModTime() const;
     
     void packFrame(Frame* frame) const;
 
@@ -62,8 +57,6 @@ private:
     std::string unit_sig, unit_plur;
     std::string description;
     uint32_t mass, volume;
-    uint64_t modtime;
-
 };
 
 #endif
