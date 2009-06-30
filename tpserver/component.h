@@ -24,8 +24,9 @@
 #include <map>
 #include <set>
 #include <stdint.h>
+#include <tpserver/modifiable.h>
 
-class Component{
+class Component : public Modifiable {
  public:
   Component();
   virtual ~Component();
@@ -37,7 +38,6 @@ class Component{
   std::string getDescription() const;
   std::string getTpclRequirementsFunction() const;
   std::map<uint32_t, std::string> getPropertyList() const;
-  uint64_t getModTime() const;
 
   void setComponentId(uint32_t id);
   void setCategoryIds(const std::set<uint32_t>& ids);
@@ -46,7 +46,6 @@ class Component{
   void setDescription(const std::string& d);
   void setTpclRequirementsFunction(const std::string& a);
   void setPropertyList(std::map<uint32_t, std::string> pl);
-  void setModTime(uint64_t nmt);
   
   void setInUse(bool used=true);
   bool isInUse() const;
@@ -56,7 +55,6 @@ class Component{
  protected:
   uint32_t compid;
   std::set<uint32_t> catids;
-  uint64_t timestamp;
   std::string name;
   std::string description;
   std::string tpcl_requirements;

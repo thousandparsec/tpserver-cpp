@@ -281,7 +281,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
 }
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
-  comp->setModTime(time(NULL));
+  comp->touchModTime();
   components.addVisible( comp, comp->getComponentId() );
   Game::getGame()->getPersistence()->saveComponentView(pid, comp);
 }

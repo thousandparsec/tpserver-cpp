@@ -23,10 +23,11 @@
 #include <string>
 #include <set>
 #include <stdint.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
-class ComponentView{
+class ComponentView : public Modifiable {
  public:
   ComponentView();
   virtual ~ComponentView();
@@ -34,7 +35,6 @@ class ComponentView{
   void packFrame(Frame* frame) const;
 
   uint32_t getComponentId() const;
-  uint64_t getModTime() const;
   bool isCompletelyVisible() const;
   
   std::set<uint32_t> getVisibleCategories() const;
@@ -47,7 +47,6 @@ class ComponentView{
   
 
   void setComponentId(uint32_t id);
-  void setModTime(uint64_t nmt);
   void setCompletelyVisible(bool ncv);
   
   void setVisibleCategories(const std::set<uint32_t>& nvc);
@@ -62,10 +61,7 @@ class ComponentView{
   
   
  protected:
-   void touchModTime();
-   
   uint32_t compid;
-  uint64_t timestamp;
   bool completelyvisible;
   
   std::set<uint32_t> visiblecats;

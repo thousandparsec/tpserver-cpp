@@ -30,7 +30,6 @@
 ComponentView::ComponentView(): compid(0), completelyvisible(false), visiblecats(), seename(false),
                               visiblename(), seedesc(false), visibledesc(), seerequirements(false),
                               visibleproperties(){
-  timestamp = time(NULL);
 }
 
 ComponentView::~ComponentView(){
@@ -43,10 +42,10 @@ void ComponentView::packFrame(Frame* frame) const{
   
   frame->setType(ft03_Component);
   frame->packInt(compid);
-  if(completelyvisible && timestamp < comp->getModTime()){
+  if(completelyvisible && getModTime() < comp->getModTime()){
     frame->packInt64(comp->getModTime());
   }else{
-    frame->packInt64(timestamp);
+    frame->packInt64(getModTime());
   }
   std::set<uint32_t> catids;
   if(completelyvisible){
@@ -129,10 +128,6 @@ std::set<uint32_t> ComponentView::getVisiblePropertyFuncs() const{
   return visibleproperties;
 }
 
-uint64_t ComponentView::getModTime() const{
-    return timestamp;
-}
-
 void ComponentView::setComponentId(uint32_t id){
   compid = id;
   touchModTime();
@@ -192,10 +187,3 @@ void ComponentView::addVisiblePropertyFunc(uint32_t propid){
   touchModTime();
 }
 
-void ComponentView::setModTime(uint64_t nmt){
-    timestamp = nmt;
-}
-
-void ComponentView::touchModTime(){
-  timestamp = time(NULL);
-}

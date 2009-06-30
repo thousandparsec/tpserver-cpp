@@ -28,7 +28,6 @@
 
 Component::Component(): catids(), inuse(false), parentdesignid(0){
   compid = 0;
-    timestamp = time(NULL);
 }
 
 Component::~Component(){
@@ -63,10 +62,6 @@ std::map<uint32_t, std::string> Component::getPropertyList() const{
   return propertylist;
 }
 
-uint64_t Component::getModTime() const{
-    return timestamp;
-}
-
 void Component::setComponentId(uint32_t id){
   compid = id;
 }
@@ -93,10 +88,6 @@ void Component::setTpclRequirementsFunction(const std::string& a){
 
 void Component::setPropertyList(std::map<uint32_t, std::string> pl){
   propertylist = pl;
-}
-
-void Component::setModTime(uint64_t nmt){
-    timestamp = nmt;
 }
 
 void Component::setInUse(bool used){
