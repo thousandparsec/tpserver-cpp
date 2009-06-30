@@ -41,8 +41,6 @@
 
 IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), info(new ObjectInfoData()), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
-
-  touchModTime();
 }
 
 IGObject::IGObject(const IGObject & rhs){
@@ -181,13 +179,8 @@ void IGObject::setObjectBehaviour(ObjectBehaviour* nob){
   behaviour->setObject(this);
 }
 
-void IGObject::touchModTime(){
-  modtime = time(NULL);
-  dirty = true;
-}
-
 uint64_t IGObject::getModTime() const{
-  uint64_t maxmodtime = modtime;
+  uint64_t maxmodtime = Modifiable::getModTime();
   if(info->getModTime() > maxmodtime){
     maxmodtime = info->getModTime();
   }
@@ -202,10 +195,6 @@ bool IGObject::isDirty() const{
 
 void IGObject::setParent(uint32_t pid){
   relationships->setParent(pid);
-}
-
-void IGObject::setModTime(uint64_t time){
-  modtime = time;
 }
 
 void IGObject::setIsDirty(bool id){

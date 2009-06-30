@@ -28,13 +28,14 @@
 #include <tpserver/objectinfo.h>
 #include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 class ObjectBehaviour;
 class ObjectParameter;
 
 
-class IGObject {
+class IGObject : public Modifiable {
 
   public:
     IGObject();
@@ -78,19 +79,16 @@ class IGObject {
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
     
-    void touchModTime();
-    uint64_t getModTime() const;
     bool isDirty() const;
 
+    virtual uint64_t getModTime() const;
     // Only Persistence classes should call these
     void setParent(uint32_t pid);
-    void setModTime(uint64_t time);
     void setIsDirty(bool nd);
 
   private:
     uint32_t id;
     uint32_t turn;
-    uint64_t modtime;
     bool alive;
     bool dirty;
     
