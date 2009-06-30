@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <set>
 #include <boost/shared_ptr.hpp>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
@@ -30,7 +31,7 @@ class ObjectRelationshipsData;
 
 typedef boost::shared_ptr<ObjectRelationshipsData> ObjectRelationshipsPtr;
 
-class ObjectRelationshipsData {
+class ObjectRelationshipsData : public Modifiable {
   public:
     ObjectRelationshipsData();
     ~ObjectRelationshipsData();
@@ -46,14 +47,9 @@ class ObjectRelationshipsData {
     void packFrame(Frame* f, uint32_t playerid);
     void unpackModFrame(Frame* f);
     
-    bool isDirty() const;
-    void setIsDirty(bool id);
-
   private:
     uint32_t parentid;
     std::set<uint32_t> children;
-    bool dirty;
-
 };
 
 #endif

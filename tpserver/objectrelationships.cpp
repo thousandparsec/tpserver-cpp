@@ -26,7 +26,7 @@
 
 #include "objectrelationships.h"
 
-ObjectRelationshipsData::ObjectRelationshipsData() : parentid(0), children(), dirty(true){
+ObjectRelationshipsData::ObjectRelationshipsData() : parentid(0), children() {
 }
 
 ObjectRelationshipsData::~ObjectRelationshipsData(){
@@ -41,21 +41,21 @@ std::set<uint32_t> ObjectRelationshipsData::getChildren() const{
 }
 
 void ObjectRelationshipsData::setParent(uint32_t np){
-  dirty = (np != parentid);
+  setIsDirty( (np != parentid) );
   parentid = np;
 }
 
 void ObjectRelationshipsData::addChild(uint32_t nc){
-  dirty = children.insert(nc).second;
+  setIsDirty( children.insert(nc).second );
 }
 
 void ObjectRelationshipsData::removeChild(uint32_t oc){
-  dirty = (children.erase(oc) != 0);
+  setIsDirty( (children.erase(oc) != 0) );
 }
 
 void ObjectRelationshipsData::setChildren(const std::set<uint32_t> nc){
   children = nc;
-  dirty = true;
+  setIsDirty( true );
 }
 
 void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
@@ -91,12 +91,4 @@ void ObjectRelationshipsData::unpackModFrame(Frame* f){
   for(uint32_t i = 0; i < numchildren; i++){
     f->unpackInt();
   }
-}
-
-bool ObjectRelationshipsData::isDirty() const{
-  return dirty;
-}
-
-void ObjectRelationshipsData::setIsDirty(bool id){
-  dirty = id;
 }
