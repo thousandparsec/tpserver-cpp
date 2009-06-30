@@ -128,12 +128,12 @@ std::set<uint32_t> Persistence::getBoardIds(){
     return std::set<uint32_t>();
 }
 
-bool Persistence::saveMessage(uint32_t msgid, Message* msg){
+bool Persistence::saveMessage(uint32_t msgid, Message::Ptr msg){
     return false;
 }
 
-Message* Persistence::retrieveMessage(uint32_t msgid){
-    return NULL;
+boost::shared_ptr< Message > Persistence::retrieveMessage(uint32_t msgid){
+    return boost::shared_ptr< Message >();
 }
 
 bool Persistence::removeMessage(uint32_t msgid){

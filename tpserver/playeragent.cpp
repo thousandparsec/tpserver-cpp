@@ -762,7 +762,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
   currboard = Game::getGame()->getBoardManager()->getBoard(lboardid);
 
   if(currboard != NULL){
-    Message* msg = new Message();
+    Message::Ptr msg( new Message() );
     int msgtypes = frame->unpackInt(); // message type, no longer used
     for(int i = 0; i < msgtypes; i++){
       //have to clear the list of msgtypes

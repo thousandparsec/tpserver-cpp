@@ -22,8 +22,8 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/message.h>
 
-class Message;
 class Frame;
 
 /**
@@ -60,7 +60,7 @@ class Board {
      * If message is succesfully added modification time is updated and
      * board is updated.
      */
-    void addMessage(Message* msg, int pos);
+    void addMessage(Message::Ptr msg, int pos);
 
     /**
      * Removes message at given position

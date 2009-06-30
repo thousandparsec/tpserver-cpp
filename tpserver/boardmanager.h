@@ -59,16 +59,16 @@ public:
     /**
      * Posts message to top of passed board, by boardid.
      */
-    void postToBoard(Message* msg, uint32_t boardid);
+    void postToBoard(Message::Ptr msg, uint32_t boardid);
 
     // these methods *only* used by Board
-    uint32_t addMessage(Message* msg);
+    uint32_t addMessage(Message::Ptr msg);
     bool removeMessage(uint32_t message_id);
-    Message* getMessage(uint32_t message_id);
+    Message::Ptr getMessage(uint32_t message_id);
 
 private:
     typedef std::map<uint32_t, Board::Ptr>   BoardMap;
-    typedef std::map<uint32_t, Message*> MessageMap;
+    typedef std::map<uint32_t, Message::Ptr> MessageMap;
     
     BoardMap boards;
     MessageMap messagecache;

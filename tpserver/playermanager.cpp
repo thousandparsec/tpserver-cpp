@@ -72,7 +72,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         rtn->setBoardId(board->getBoardID());
 
         //add welcome message to player's board
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Welcome");
         msg->setBody("Welcome to Thousand Parsec!\nThis server is running on tpserver-cpp.  Please report any problems and enjoy the game.");
         msg->addReference(rst_Special, rssv_System);
@@ -85,7 +85,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         Game::getGame()->getRuleset()->onPlayerAdded(rtn);
         
         //tell the other players about it
-        msg = new Message();
+        msg.reset( new Message() );
         msg->setSubject("New Player");
         msg->setBody("New player " + name + " has joined the game.");
         msg->addReference(rst_Special, rssv_System);

@@ -20,9 +20,7 @@
  *
  */
 
-#include <string>
-#include <set>
-
+#include <tpserver/common.h>
 #include <tpserver/refsys.h>
 
 class Frame;
@@ -39,6 +37,9 @@ class Message {
     
     /// Type definition for a set of references
     typedef std::set<Ref> References;
+
+    /// Type defininition for shared pointer
+    typedef boost::shared_ptr<Message> Ptr;
 
   public:
     /**

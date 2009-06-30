@@ -65,16 +65,15 @@ Board::Ptr BoardManager::getBoard(uint32_t id) {
   return board;
 }
 
-void BoardManager::postToBoard(Message* msg, uint32_t boardid) {
-  Board::Ptr board = getBoard(boardid);
-  board->addMessage(msg,-1);
+void BoardManager::postToBoard(Message::Ptr msg, uint32_t boardid) {
+  getBoard(boardid)->addMessage(msg,-1);
 }
 
-uint32_t BoardManager::addMessage(Message* msg) {
+uint32_t BoardManager::addMessage(Message::Ptr msg) {
   uint32_t msgid = nextmid++;
   messagecache[msgid] = msg;
   if (!(Game::getGame()->getPersistence()->saveMessage(msgid, msg))) {
-    messagecache[msgid] = NULL;
+    messagecache[msgid].reset();
     // signal that the message is invalid
     return UINT32_NEG_ONE;
   }
@@ -87,14 +86,11 @@ bool BoardManager::removeMessage(uint32_t message_id) {
     // better to keep the message than get a segfault...
     return false;
   }
-  if ( messagecache[message_id] != NULL ) {
-    delete messagecache[message_id];
-    messagecache[message_id] = NULL;
-  }
+  messagecache[message_id].reset();
   return true;
 }
 
-Message* BoardManager::getMessage(uint32_t message_id) {
+Message::Ptr BoardManager::getMessage(uint32_t message_id) {
   if (messagecache[message_id] == NULL) {
     messagecache[message_id] = Game::getGame()->getPersistence()->retrieveMessage(message_id);
   }

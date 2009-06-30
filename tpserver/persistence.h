@@ -75,8 +75,8 @@ public:
     virtual uint32_t getMaxBoardId();
     virtual std::set<uint32_t> getBoardIds();
 
-    virtual bool saveMessage(uint32_t msgid, Message* msg);
-    virtual Message* retrieveMessage(uint32_t msgid);
+    virtual bool saveMessage(uint32_t msgid, boost::shared_ptr< Message > msg);
+    virtual boost::shared_ptr< Message > retrieveMessage(uint32_t msgid);
     virtual bool removeMessage(uint32_t msgid);
     virtual bool saveMessageList(uint32_t bid, std::list<uint32_t> list);
     virtual std::list<uint32_t> retrieveMessageList(uint32_t bid);

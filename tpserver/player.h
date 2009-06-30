@@ -55,6 +55,9 @@ public:
   uint32_t getBoardId() const;
   uint64_t getModTime() const;
 
+  // WARNING -- internally the pointer is converted to Shared_Ptr
+  // do not delete!
+  // TODO : make it take a shared ptr
   void postToBoard(Message* msg);
   
   PlayerView* getPlayerView() const;

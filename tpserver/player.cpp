@@ -78,7 +78,7 @@ void Player::setScore(uint32_t key, uint32_t value){
 }
 
 void Player::postToBoard(Message* msg){
-  Game::getGame()->getBoardManager()->postToBoard(msg,boardid);
+  Game::getGame()->getBoardManager()->postToBoard(Message::Ptr(msg),boardid);
 }
 
 std::string Player::getName() const{

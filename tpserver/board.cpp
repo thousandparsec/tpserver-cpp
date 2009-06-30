@@ -47,7 +47,7 @@ std::string Board::getDescription() const {
   return description;
 }
 
-void Board::addMessage(Message * msg, int pos) {
+void Board::addMessage(Message::Ptr msg, int pos) {
   retrieveMessageList();
   uint32_t msgid = Game::getGame()->getBoardManager()->addMessage(msg);
   if (msgid == UINT32_NEG_ONE)
@@ -101,7 +101,7 @@ void Board::packBoard(Frame * frame){
 
 void Board::packMessage(Frame * frame, uint32_t msgnum) {
   if (msgnum < message_count) {
-    Message* message = NULL;
+    Message::Ptr message;
     retrieveMessageList();
     if (msgnum < message_ids.size()) {
       IdList::iterator itpos = message_ids.begin();

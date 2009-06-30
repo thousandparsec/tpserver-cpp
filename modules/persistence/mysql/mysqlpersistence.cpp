@@ -1804,7 +1804,7 @@ std::set<uint32_t> MysqlPersistence::getBoardIds(){
     return vis;
 }
 
-bool MysqlPersistence::saveMessage(uint32_t msgid, Message* msg){
+bool MysqlPersistence::saveMessage(uint32_t msgid, boost::shared_ptr< Message > msg){
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO message VALUES (" << msgid << ", '" << addslashes(msg->getSubject()) << "', '";
     querybuilder << addslashes(msg->getBody()) << "', " << msg->getTurn() << ");";
@@ -1836,29 +1836,29 @@ bool MysqlPersistence::saveMessage(uint32_t msgid, Message* msg){
     return true;
 }
 
-Message* MysqlPersistence::retrieveMessage(uint32_t msgid){
+boost::shared_ptr< Message > MysqlPersistence::retrieveMessage(uint32_t msgid){
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM message WHERE messageid = " << msgid << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve message %d - %s", msgid, mysql_error(conn));
         unlock();
-        return NULL;
+        return boost::shared_ptr< Message >();
     }
     MYSQL_RES *msgresult = mysql_store_result(conn);
     if(msgresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve message: Could not store result - %s", mysql_error(conn));
         unlock();
-        return NULL;
+        return boost::shared_ptr< Message >();
     }
     unlock();
     MYSQL_ROW row = mysql_fetch_row(msgresult);
     if(row == NULL){
         mysql_free_result(msgresult);
         Logger::getLogger()->error("Mysql: retrieve message: no such message %d - %s", msgid, mysql_error(conn));
-        return NULL;
+        return boost::shared_ptr< Message >();
     }
-    Message* msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject(row[1]);
     msg->setBody(row[2]);
     msg->setTurn(atoi(row[3]));
@@ -1870,15 +1870,13 @@ Message* MysqlPersistence::retrieveMessage(uint32_t msgid){
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve message references %d - %s", msgid, mysql_error(conn));
         unlock();
-        delete msg;
-        return NULL;
+        return boost::shared_ptr< Message >();
     }
     msgresult = mysql_store_result(conn);
     if(msgresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve message references: Could not store result - %s", mysql_error(conn));
         unlock();
-        delete msg;
-        return NULL;
+        return boost::shared_ptr< Message >();
     }
     unlock();
     
