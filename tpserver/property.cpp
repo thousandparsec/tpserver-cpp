@@ -25,13 +25,12 @@
 #include "property.h"
 
 Property::Property() : propid(0), rank(0) {
-  timestamp = time(NULL);
 }
 
 void Property::packFrame(Frame* frame) const {
   frame->setType(ft03_Property);
   frame->packInt(propid);
-  frame->packInt64(timestamp);
+  frame->packInt64(getModTime());
   frame->packInt(catids.size());
   for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
     frame->packInt(*idit);
@@ -80,10 +79,6 @@ std::string Property::getTpclRequirementsFunction() const {
   return tpcl_requires;
 }
 
-uint64_t Property::getModTime() const {
-  return timestamp;
-}
-
 void Property::setPropertyId(uint32_t id) {
   propid = id;
 }
@@ -120,6 +115,3 @@ void Property::setTpclRequirementsFunction(const std::string& r) {
   tpcl_requires = r;
 }
 
-void Property::setModTime(uint64_t nmt) {
-  timestamp = nmt;
-}
