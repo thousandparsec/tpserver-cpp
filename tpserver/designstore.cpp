@@ -60,23 +60,23 @@ void DesignStore::init(){
   next_componentid = persistence->getMaxComponentId() + 1;
   next_propertyid = persistence->getMaxPropertyId() + 1;
   next_categoryid = persistence->getMaxCategoryId() + 1;
-  std::set<uint32_t> ids = persistence->getCategoryIds();
-  for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+  IdSet ids = persistence->getCategoryIds();
+  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
     categories[*itcurr] = NULL;
   }
   ids = persistence->getDesignIds();
-  for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
     designs[*itcurr] = NULL;
   }
   ids = persistence->getComponentIds();
-  for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
     components[*itcurr] = NULL;
     Component* tmpcomp = persistence->retrieveComponent(*itcurr);
     componentIndex[tmpcomp->getName()] = (*itcurr);
     delete tmpcomp;
   }
   ids = persistence->getPropertyIds();
-  for(std::set<uint32_t>::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
+  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
     properties[*itcurr] = persistence->retrieveProperty(*itcurr);
     propertyIndex[properties[*itcurr]->getName()] = (*itcurr);
   }
@@ -136,8 +136,8 @@ Property* DesignStore::getProperty(uint32_t id){
 }
 
 
-std::set<uint32_t> DesignStore::getCategoryIds() const{
-  std::set<uint32_t> set;
+IdSet DesignStore::getCategoryIds() const{
+  IdSet set;
   for(std::map<uint32_t, Category*>::const_iterator itcurr = categories.begin();
       itcurr != categories.end(); ++itcurr){
     set.insert(itcurr->first);
@@ -145,8 +145,8 @@ std::set<uint32_t> DesignStore::getCategoryIds() const{
   return set;
 }
 
-std::set<uint32_t> DesignStore::getDesignIds() const{
-  std::set<uint32_t> set;
+IdSet DesignStore::getDesignIds() const{
+  IdSet set;
   for(std::map<uint32_t, Design*>::const_iterator itcurr = designs.begin();
       itcurr != designs.end(); ++itcurr){
     set.insert(itcurr->first);
@@ -154,8 +154,8 @@ std::set<uint32_t> DesignStore::getDesignIds() const{
   return set;
 }
 
-std::set<uint32_t> DesignStore::getComponentIds() const{
-  std::set<uint32_t> set;
+IdSet DesignStore::getComponentIds() const{
+  IdSet set;
   for(std::map<uint32_t, Component*>::const_iterator itcurr = components.begin();
       itcurr != components.end(); ++itcurr){
     set.insert(itcurr->first);
@@ -163,8 +163,8 @@ std::set<uint32_t> DesignStore::getComponentIds() const{
   return set;
 }
 
-std::set<uint32_t> DesignStore::getPropertyIds() const{
-  std::set<uint32_t> set;
+IdSet DesignStore::getPropertyIds() const{
+  IdSet set;
   for(std::map<uint32_t, Property*>::const_iterator itcurr = properties.begin();
       itcurr != properties.end(); ++itcurr){
     set.insert(itcurr->first);

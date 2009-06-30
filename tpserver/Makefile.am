@@ -45,7 +45,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cp
 		battlexml/battlelogger.cpp
 		
 headersdir = $(includedir)/tpserver
-headers_HEADERS = connection.h tcpconnection.h \
+headers_HEADERS = common.h connection.h tcpconnection.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h systemexception.h \

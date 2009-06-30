@@ -20,12 +20,9 @@
  *
  */
 
-#include <set>
-#include <map>
 #include <list>
-#include <string>
 #include <stdint.h>
-#include <tpserver/protocol.h>
+#include <tpserver/common.h>
 
 class ObjectView;
 class DesignView;
@@ -45,11 +42,11 @@ public:
   void updateObjectView(uint32_t objid);
   void removeVisibleObject(uint32_t objid);
   bool isVisibleObject(uint32_t objid);
-  std::set<uint32_t> getVisibleObjects() const;
+  IdSet getVisibleObjects() const;
   void addOwnedObject(uint32_t objid);
   void removeOwnedObject(uint32_t objid);
   uint32_t getNumberOwnedObjects() const;
-  std::set<uint32_t> getOwnedObjects() const;
+  IdSet getOwnedObjects() const;
   void processGetObject(uint32_t objid, Frame* frame);
   void processGetObjectIds(Frame* in, Frame* out);
 
@@ -57,8 +54,8 @@ public:
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
   bool isUsableDesign(uint32_t designid) const;
-  std::set<uint32_t> getUsableDesigns() const;
-  std::set<uint32_t> getVisibleDesigns() const;
+  IdSet getUsableDesigns() const;
+  IdSet getVisibleDesigns() const;
   void processGetDesign(uint32_t designid, Frame* frame);
   void processGetDesignIds(Frame* in, Frame* out);
 
@@ -66,18 +63,18 @@ public:
   void addUsableComponent(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
   bool isUsableComponent(uint32_t compid) const;
-  std::set<uint32_t> getVisibleComponents() const;
-  std::set<uint32_t> getUsableComponents() const;
+  IdSet getVisibleComponents() const;
+  IdSet getUsableComponents() const;
   void processGetComponent(uint32_t compid, Frame* frame);
   void processGetComponentIds(Frame* in, Frame* out);
   
   //for persistence only!
-  void setVisibleObjects(const std::set<uint32_t>& obids);
-  void setOwnedObjects(const std::set<uint32_t>& obids);
-  void setVisibleDesigns(const std::set<uint32_t>& dids);
-  void setUsableDesigns(const std::set<uint32_t>& dids);
-  void setVisibleComponents(const std::set<uint32_t>& cids);
-  void setUsableComponents(const std::set<uint32_t>& cids);
+  void setVisibleObjects(const IdSet& obids);
+  void setOwnedObjects(const IdSet& obids);
+  void setVisibleDesigns(const IdSet& dids);
+  void setUsableDesigns(const IdSet& dids);
+  void setVisibleComponents(const IdSet& cids);
+  void setUsableComponents(const IdSet& cids);
 
 private:
   uint32_t pid;
@@ -85,8 +82,8 @@ private:
   // TODO: modify persistence to make code common for all entity types
   template< class EntityType >
   struct EntityInfo {
-    std::set<uint32_t> visible;
-    std::set<uint32_t> actable;
+    IdSet visible;
+    IdSet actable;
     std::map<uint32_t, EntityType*> cache;
     std::map<uint32_t, uint64_t> modified;
     uint32_t sequence;
