@@ -20,8 +20,7 @@
  *
  */
 
-#include <set>
-#include <string>
+#include <tpserver/common.h>
 
 class PlayerConnection;
 class Frame;

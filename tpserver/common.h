@@ -29,7 +29,13 @@
 #include <map>
 #include <list>
 
+/// Typedef for Id set
 typedef std::set< uint32_t >  IdSet;
+
+/// Typedef for Id list
 typedef std::list< uint32_t > IdList;
+
+/// Typedef for map between Id's and modify times
+typedef std::map< uint32_t, uint64_t > IdModList;
 
 #endif // COMMON_H

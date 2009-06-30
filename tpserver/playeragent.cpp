@@ -230,13 +230,13 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
   pos.unpack(frame);
   r = frame->unpackInt64();
 
-  std::set<uint32_t> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
+  IdSet oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
 
-  std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
+  IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
 
-  for(std::set<uint32_t>::iterator vischk = oblist.begin(); vischk != oblist.end();){
+  for(IdSet::iterator vischk = oblist.begin(); vischk != oblist.end();){
     if(visibleObjects.find(*vischk) == visibleObjects.end()){
-      std::set<uint32_t>::iterator temp = vischk;
+      IdSet::iterator temp = vischk;
       ++temp;
       oblist.erase(vischk);
       vischk = temp;
@@ -247,7 +247,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
   curConnection->sendSequence( frame, oblist.size() );
 
-  std::set<uint32_t>::iterator obCurr = oblist.begin();
+  IdSet::iterator obCurr = oblist.begin();
   for( ; obCurr != oblist.end(); ++obCurr) {
     of = curConnection->createFrame(frame);
     player->getPlayerView()->processGetObject(*obCurr, of);
@@ -273,11 +273,11 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
   pos.unpack(frame);
   r = frame->unpackInt64();
 
-  std::set<uint32_t> oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
-  std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
-  for(std::set<uint32_t>::iterator vischk = oblist.begin(); vischk != oblist.end();){
+  IdSet oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
+  IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
+  for(IdSet::iterator vischk = oblist.begin(); vischk != oblist.end();){
     if(visibleObjects.find(*vischk) == visibleObjects.end()){
-      std::set<uint32_t>::iterator temp = vischk;
+      IdSet::iterator temp = vischk;
       ++temp;
       oblist.erase(vischk);
       vischk = temp;
@@ -290,7 +290,7 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
   of->packInt(0);
   of->packInt(0);
   of->packInt(oblist.size());
-  for(std::set<uint32_t>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+  for(IdSet::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
     Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
@@ -303,17 +303,17 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   if (!lengthCheck( frame, 4 ) ) return;
   Frame *of = curConnection->createFrame(frame);
   uint32_t objectID = frame->unpackInt();
-  std::set<uint32_t> visibleObjects = player->getPlayerView()->getVisibleObjects();
+  IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
   if(visibleObjects.find(objectID) != visibleObjects.end()){
 
     IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
 
     if(o != NULL){
-      std::set<uint32_t> contain = o->getContainedObjects();
+      IdSet contain = o->getContainedObjects();
 
-      for(std::set<uint32_t>::iterator vischk = contain.begin(); vischk != contain.end();){
+      for(IdSet::iterator vischk = contain.begin(); vischk != contain.end();){
         if(visibleObjects.find(*vischk) == visibleObjects.end()){
-          std::set<uint32_t>::iterator temp = vischk;
+          IdSet::iterator temp = vischk;
           ++temp;
           contain.erase(vischk);
           vischk = temp;
@@ -326,7 +326,7 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
       of->packInt(0);
       of->packInt(0);
       of->packInt(contain.size());
-      for(std::set<uint32_t>::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
+      for(IdSet::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
         of->packInt(*itcurr);
         of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
         Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
@@ -881,10 +881,10 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   }
 
   ResourceManager* rm = Game::getGame()->getResourceManager();
-  std::set<uint32_t> idset = rm->getAllIds();
+  IdSet idset = rm->getAllIds();
 
-  std::map<uint32_t, uint64_t> modlist;
-  for(std::set<uint32_t>::iterator itcurr = idset.begin();
+  IdModList modlist;
+  for(IdSet::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const ResourceDescription * res = rm->getResourceDescription(*itcurr);
     if(fromtime == UINT64_NEG_ONE || res->getModTime() > fromtime){
@@ -910,19 +910,8 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_ResType_List);
   of->packInt(seqkey);
-  of->packInt(modlist.size() - snum - numtoget);
-  of->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(itcurr->first);
-    of->packInt64(itcurr->second);
-  }
-
-  if(of->getVersion() >= fv0_4){
-    of->packInt64(fromtime);
-  }
-
+  of->packIdModList(modlist,numtoget,snum);
+  if(of->getVersion() >= fv0_4) of->packInt64(fromtime);
   curConnection->sendFrame(of);
 }
 
@@ -975,7 +964,7 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
   PlayerManager* pm = Game::getGame()->getPlayerManager();
   std::set<playerid_t> idset = pm->getAllIds();
 
-  std::map<uint32_t, uint64_t> modlist;
+  IdModList modlist;
   for(std::set<playerid_t>::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const Player * pl = pm->getPlayer(*itcurr);
@@ -1002,17 +991,8 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft04_PlayerIds_List);
   of->packInt(seqkey);
-  of->packInt(modlist.size() - snum - numtoget);
-  of->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(itcurr->first);
-    of->packInt64(itcurr->second);
-  }
-
+  of->packIdModList(modlist,numtoget,snum);
   of->packInt64(fromtime);
-
   curConnection->sendFrame(of);
 }
 
@@ -1056,10 +1036,10 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
 
 
   DesignStore *ds = Game::getGame()->getDesignStore();
-  std::set<uint32_t> cids = ds->getCategoryIds();
+  IdSet cids = ds->getCategoryIds();
 
-  std::map<uint32_t, uint64_t> modlist;
-  for(std::set<uint32_t>::iterator itcurr = cids.begin();
+  IdModList modlist;
+  for(IdSet::iterator itcurr = cids.begin();
       itcurr != cids.end(); ++itcurr){
     Category * cat = ds->getCategory(*itcurr);
     if(fromtime == UINT64_NEG_ONE || cat->getModTime() > fromtime){
@@ -1086,15 +1066,8 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_CategoryIds_List);
   of->packInt(0); // seqkey
-  of->packInt(modlist.size() - snum - numtoget);
-  of->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(itcurr->first);
-    of->packInt64(itcurr->second);
-  }
-
+  of->packIdModList(modlist,numtoget,snum);
+  
   if(of->getVersion() >= fv0_4){
     of->packInt64(fromtime);
   }
@@ -1271,7 +1244,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
     return;
   }
 
-  std::set<uint32_t> propids = Game::getGame()->getDesignStore()->getPropertyIds();
+  IdSet propids = Game::getGame()->getDesignStore()->getPropertyIds();
   frame->unpackInt(); //seqnum
   uint32_t snum = frame->unpackInt();
   uint32_t numtoget = frame->unpackInt();
@@ -1282,8 +1255,8 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
 
   DesignStore *ds = Game::getGame()->getDesignStore();
 
-  std::map<uint32_t, uint64_t> modlist;
-  for(std::set<uint32_t>::iterator itcurr = propids.begin();
+  IdModList modlist;
+  for(IdSet::iterator itcurr = propids.begin();
       itcurr != propids.end(); ++itcurr){
     Property * prop = ds->getProperty(*itcurr);
     if(fromtime == UINT64_NEG_ONE || prop->getModTime() > fromtime){
@@ -1309,14 +1282,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   Frame *of = curConnection->createFrame(frame);
   of->setType(ft03_PropertyIds_List);
   of->packInt(0);
-  of->packInt(modlist.size() - snum - numtoget);
-  of->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    of->packInt(itcurr->first);
-    of->packInt64(itcurr->second);
-  }
+  of->packIdModList(modlist,numtoget,snum);
 
   if(of->getVersion() >= fv0_4){
     of->packInt64(fromtime);

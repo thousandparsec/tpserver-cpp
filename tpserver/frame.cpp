@@ -409,6 +409,19 @@ bool Frame::packData(uint32_t len, char* bdata){
   return true;
 }
 
+bool Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t from_position ){
+  if (count == 0) count = modlist.size();
+  packInt(modlist.size() - count - from_position);
+  packInt(count);
+  IdModList::const_iterator itcurr = modlist.begin();
+  if (from_position > 0 )
+    std::advance(itcurr, from_position);
+  for(uint32_t i = 0; i < count; i++, ++itcurr){
+    packInt(itcurr->first);
+    packInt64(itcurr->second);
+  }
+  return true;
+}
 bool Frame::isEnoughRemaining(uint32_t size) const{
   Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
   return (length - unpackptr) >= size;

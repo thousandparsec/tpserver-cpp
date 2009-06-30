@@ -20,11 +20,8 @@
  *
  */
 
-#include <stdint.h>
-#include <string>
-#include <list>
 
-#include <tpserver/protocol.h>
+#include <tpserver/common.h>
 
 /**
  * Frame class for representing TP protocol frames
@@ -114,6 +111,7 @@ class Frame {
     bool packInt64(int64_t val);
     bool packInt8(char val);
     bool packData(uint32_t len, char* bdata);
+    bool packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
 
     bool isEnoughRemaining(uint32_t size) const;
     // uses these functions with care
