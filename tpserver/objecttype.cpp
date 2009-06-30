@@ -46,10 +46,6 @@ std::string ObjectType::getTypeName() const{
   return nametype;
 }
 
-uint64_t ObjectType::getModTime() const{
-  return modtime;
-}
-
 void ObjectType::setType(uint32_t nt){
   type = nt;
 }
@@ -59,7 +55,7 @@ void ObjectType::packObjectDescFrame(Frame* frame){
   frame->packInt(type);
   frame->packString(nametype);
   frame->packString(typedesc);
-  frame->packInt64(modtime);
+  frame->packInt64(getModTime());
   frame->packInt(paramgroups.size());
   for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
@@ -90,9 +86,5 @@ ObjectParameterGroupDesc* ObjectType::getParameterGroupDesc(uint32_t groupid) co
     return paramgroups.find(groupid)->second;
   }
   return NULL;
-}
-
-void ObjectType::touchModTime(){
-  modtime = time(NULL);
 }
 
