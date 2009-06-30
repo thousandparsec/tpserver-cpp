@@ -1,7 +1,7 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef MODIFIABLE_H
+#define MODIFIABLE_H
 
-/*  Common defines, typedefs and enums
+/*  Modifiable trait class
  *
  *  Copyright (C) 2009 Kornel Kisielewicz and the Thousand Parsec Project
  *
@@ -22,20 +22,17 @@
  */
 
 #include <stdint.h>
-#include <tpserver/protocol.h>
-#include <boost/shared_ptr.hpp>
-#include <string>
-#include <set>
-#include <map>
-#include <list>
+#include <time.h>
 
-/// Typedef for Id set
-typedef std::set< uint32_t >  IdSet;
+class Modifiable {
+public:
+  Modifiable() { touchModTime() }
+  uint64_t getModTime() { return mod_time; }
+  void setModTime( uint64_t new_mod_time ) { mod_time = new_mod_time; }
+  void touchModTime() { mod_time = time(NULL); }
+private:
+  uint64_t mod_time;
+};
 
-/// Typedef for Id list
-typedef std::list< uint32_t > IdList;
+#endif // MODIFIABLE_H
 
-/// Typedef for map between Id's and modify times
-typedef std::map< uint32_t, uint64_t > IdModList;
-
-#endif // COMMON_H
