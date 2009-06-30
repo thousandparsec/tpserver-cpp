@@ -21,9 +21,7 @@
  *
  */
 
-#include <string>
-#include <list>
-#include <boost/shared_ptr.hpp>
+#include <tpserver/common.h>
 
 class Message;
 class Frame;
@@ -36,9 +34,6 @@ class Board {
   public:
     /// typedef for shared pointer
     typedef boost::shared_ptr< Board > Ptr;
-
-    /// List of Message ID's
-    typedef std::list< uint32_t > IdList;
 
     /**
      * Constructor

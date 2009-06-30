@@ -21,12 +21,15 @@
  *
  */
 
+#include <stdint.h>
 #include <tpserver/protocol.h>
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <set>
 #include <map>
+#include <list>
 
-typedef std::set< uint32_t > IdSet;
+typedef std::set< uint32_t >  IdSet;
+typedef std::list< uint32_t > IdList;
 
 #endif // COMMON_H
