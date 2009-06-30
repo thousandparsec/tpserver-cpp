@@ -79,15 +79,3 @@ void ObjectInfoData::unpackModFrame(Frame* f){
   }
 }
 
-bool ObjectInfoData::isDirty() const{
-  return dirty;
-}
-
-void ObjectInfoData::setIsDirty(bool id){
-  dirty = id;
-}
-
-void ObjectInfoData::touchModTime(){
-  Modifiable::touchModTime();
-  dirty = true;
-}

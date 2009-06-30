@@ -47,15 +47,10 @@ class ObjectInfoData : public Modifiable {
     void packFrame(Frame* f);
     void unpackModFrame(Frame* f);
     
-    bool isDirty() const;
-    void setIsDirty(bool id);
-    
   private:
-    virtual void touchModTime();
     uint32_t type;
     std::string name;
     std::string desc;
-    bool dirty;
 
 };
 

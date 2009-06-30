@@ -190,7 +190,7 @@ uint64_t IGObject::getModTime() const{
 
 bool IGObject::isDirty() const{
   bool dirtyparams = false; //TODO fix
-  return dirty || info->isDirty() || relationships->isDirty() || dirtyparams;
+  return isDirty() || info->isDirty() || relationships->isDirty() || dirtyparams;
 }
 
 void IGObject::setParent(uint32_t pid){
@@ -198,7 +198,7 @@ void IGObject::setParent(uint32_t pid){
 }
 
 void IGObject::setIsDirty(bool id){
-  dirty = id;
+  Modifiable::setIsDirty(id);
   info->setIsDirty(id);
   relationships->setIsDirty(id);
 }
@@ -215,10 +215,4 @@ ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
     }
   }
   return NULL;
-}
-
-void IGObject::touchModTime()
-{
-  Modifiable::touchModTime();
-  dirty = true;
 }

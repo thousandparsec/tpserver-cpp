@@ -28,11 +28,13 @@ class Modifiable {
 public:
   Modifiable() { touchModTime(); }
   virtual uint64_t getModTime() const { return mod_time; }
-  virtual void touchModTime() { mod_time = time(NULL); }
-protected:
+  void touchModTime() { mod_time = time(NULL); dirty = true; }
   void setModTime( uint64_t new_mod_time ) { mod_time = new_mod_time; }
+  virtual bool isDirty() { return dirty; }
+  virtual void setIsDirty( bool new_dirty ) { dirty = new_dirty; }
 private:
   uint64_t mod_time;
+  bool dirty;
 };
 
 #endif // MODIFIABLE_H

@@ -79,19 +79,16 @@ class IGObject : public Modifiable {
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
     
-    bool isDirty() const;
-
     virtual uint64_t getModTime() const;
-    virtual void touchModTime();
+    virtual void setIsDirty(bool id);
+    virtual bool isDirty() const;
     // Only Persistence classes should call these
     void setParent(uint32_t pid);
-    void setIsDirty(bool nd);
 
   private:
     uint32_t id;
     uint32_t turn;
     bool alive;
-    bool dirty;
     
     ObjectInfoPtr info;
     ObjectRelationshipsPtr relationships;
