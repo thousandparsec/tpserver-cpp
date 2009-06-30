@@ -85,7 +85,7 @@ private:
     IdSet visible;
     IdSet actable;
     std::map<uint32_t, EntityType*> cache;
-    std::map<uint32_t, uint64_t> modified;
+    IdModList modified;
     uint32_t sequence;
     EntityInfo() : sequence( 0 ) {}
     void packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime );

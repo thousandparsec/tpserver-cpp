@@ -431,15 +431,7 @@ void PlayerView::EntityInfo< EntityType >::packEntityList( Frame* out, FrameType
     
   out->setType(type);
   out->packInt(sequence);
-  out->packInt(modified.size() - snum - numtoget);
-  out->packInt(numtoget);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modified.begin();
-  std::advance(itcurr, snum);
-  for(uint32_t i = 0; i < numtoget; i++, ++itcurr){
-    out->packInt(itcurr->first);
-    out->packInt64(itcurr->second);
-  }
-  
+  out->packIdModList(modified,numtoget,snum);
   if(out->getVersion() >= fv0_4){
     out->packInt64(fromtime);
   }
