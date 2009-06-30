@@ -43,7 +43,6 @@
 
 ObjectView::ObjectView(): objid(0), completelyvisible(false), gone(false), seename(false),
                               visiblename(), seedesc(false), visibledesc(){
-  timestamp = time(NULL);
 }
 
 ObjectView::~ObjectView(){
@@ -66,7 +65,6 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
     if(completelyvisible || seename){
       frame->packString(object->getName());
     }else{
-      frame->packString(visiblename);
     }
     if(frame->getVersion() >= fv0_4){
       if(completelyvisible || seedesc){
@@ -201,10 +199,6 @@ std::string ObjectView::getVisibleDescription() const{
     return visibledesc;
 }
 
-uint64_t ObjectView::getModTime() const{
-    return timestamp;
-}
-
 void ObjectView::setObjectId(uint32_t id){
   objid = id;
   touchModTime();
@@ -245,11 +239,3 @@ void ObjectView::setVisibleDescription(const std::string& nvd){
   touchModTime();
 }
 
-
-void ObjectView::setModTime(uint64_t nmt){
-    timestamp = nmt;
-}
-
-void ObjectView::touchModTime(){
-  timestamp = time(NULL);
-}

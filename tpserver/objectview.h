@@ -23,10 +23,11 @@
 #include <string>
 #include <set>
 #include <stdint.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 
-class ObjectView{
+class ObjectView : public Modifiable {
  public:
   ObjectView();
   virtual ~ObjectView();
@@ -34,7 +35,6 @@ class ObjectView{
   void packFrame(Frame* frame, uint32_t playerid) const;
 
   uint32_t getObjectId() const;
-  uint64_t getModTime() const;
   bool isCompletelyVisible() const;
   bool isGone() const;
   
@@ -45,7 +45,6 @@ class ObjectView{
   
 
   void setObjectId(uint32_t id);
-  void setModTime(uint64_t nmt);
   void setCompletelyVisible(bool ncv);
   void setGone(bool nid);
   
@@ -54,12 +53,9 @@ class ObjectView{
   void setCanSeeDescription(bool csd);
   void setVisibleDescription(const std::string& nvd);
   
-  void touchModTime();
-  
  protected:
    
   uint32_t objid;
-  uint64_t timestamp;
   bool completelyvisible;
   bool gone;
   
