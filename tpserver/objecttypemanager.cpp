@@ -83,7 +83,7 @@ void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
     return;
   }
 
-  std::map<uint32_t, uint64_t> modlist;
+  IdModList modlist;
   for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
       itcurr != typeStore.end(); ++itcurr){
     uint32_t otmodtime = itcurr->second->getModTime();
@@ -108,16 +108,7 @@ void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
 
   of->setType(ft04_ObjectTypes_List);
   of->packInt(lseqkey);
-  of->packInt(modlist.size() - start - num);
-  of->packInt(num);
-  std::map<uint32_t, uint64_t>::iterator itcurr = modlist.begin();
-  advance(itcurr, start);
-  for(uint32_t i = 0; i < num; i++){
-    of->packInt(itcurr->first);
-    of->packInt64(itcurr->second);
-    ++itcurr;
-  }
-  
+  of->packIdModList(modlist,num,start);
   if(of->getVersion() >= fv0_4){
     of->packInt64(fromtime);
   }
