@@ -228,7 +228,6 @@ bool OrderQueue::isRepeating() const{
 
 void OrderQueue::touchModTime(){
   Modifiable::touchModTime();
-  modtime = time(NULL);
   if(objectid != 0){
     IGObject* robj = Game::getGame()->getObjectManager()->getObject(objectid);
     if(robj != NULL){

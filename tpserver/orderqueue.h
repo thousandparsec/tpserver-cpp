@@ -87,7 +87,6 @@ class OrderQueue : public Modifiable {
   uint32_t nextOrderId;
   bool active;
   bool repeating;
-  uint64_t modtime;
 
 };
 
