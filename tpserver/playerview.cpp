@@ -90,7 +90,7 @@ bool PlayerView::isVisibleObject(uint32_t objid){
   return false;
 }
 
-std::set<uint32_t> PlayerView::getVisibleObjects() const{
+IdSet PlayerView::getVisibleObjects() const{
   return objects.visible;
 }
 
@@ -116,7 +116,7 @@ uint32_t PlayerView::getNumberOwnedObjects() const{
   return objects.actable.size();
 }
 
-std::set<uint32_t> PlayerView::getOwnedObjects() const{
+IdSet PlayerView::getOwnedObjects() const{
   return objects.actable;
 }
 
@@ -159,7 +159,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
   
   if(seqnum == UINT32_NEG_ONE){
     objects.modified.clear();
-    for(std::set<uint32_t>::iterator itcurr = objects.visible.begin();
+    for(IdSet::iterator itcurr = objects.visible.begin();
         itcurr != objects.visible.end(); ++itcurr){
       ObjectView* obj = objects.cache[*itcurr];
       if(obj == NULL){
@@ -209,11 +209,11 @@ bool PlayerView::isUsableDesign(uint32_t designid) const{
   return designs.isActable(designid);
 }
 
-std::set<uint32_t> PlayerView::getUsableDesigns() const{
+IdSet PlayerView::getUsableDesigns() const{
   return designs.actable;
 }
 
-std::set<uint32_t> PlayerView::getVisibleDesigns() const{
+IdSet PlayerView::getVisibleDesigns() const{
   return designs.visible;
 }
 
@@ -262,7 +262,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
   
   if(seqnum == UINT32_NEG_ONE){
     designs.modified.clear();
-    for(std::set<uint32_t>::iterator itcurr = designs.visible.begin();
+    for(IdSet::iterator itcurr = designs.visible.begin();
         itcurr != designs.visible.end(); ++itcurr){
       DesignView* designv = designs.cache[*itcurr];
       if(designv == NULL){
@@ -315,11 +315,11 @@ bool PlayerView::isUsableComponent(uint32_t compid) const{
   return (components.actable.find(compid) != components.actable.end());
 }
 
-std::set<uint32_t> PlayerView::getVisibleComponents() const{
+IdSet PlayerView::getVisibleComponents() const{
   return components.visible;
 }
 
-std::set<uint32_t> PlayerView::getUsableComponents() const{
+IdSet PlayerView::getUsableComponents() const{
   return components.actable;
 }
 
@@ -369,7 +369,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   if(seqnum == UINT32_NEG_ONE){
     //clear current mod list in case it has stuff in it still
     components.modified.clear();
-    for(std::set<uint32_t>::iterator itcurr = components.visible.begin();
+    for(IdSet::iterator itcurr = components.visible.begin();
         itcurr != components.visible.end(); ++itcurr){
       ComponentView* component = components.cache[*itcurr];
       if(component == NULL){
@@ -387,27 +387,27 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
   components.packEntityList( out, ft03_ComponentIds_List, snum, numtoget, fromtime );
 }
 
-void PlayerView::setVisibleObjects(const std::set<uint32_t>& obids){
+void PlayerView::setVisibleObjects(const IdSet& obids){
   objects.visible = obids;
 }
 
-void PlayerView::setOwnedObjects(const std::set<uint32_t>& obids){
+void PlayerView::setOwnedObjects(const IdSet& obids){
   objects.actable = obids;
 }
 
-void PlayerView::setVisibleDesigns(const std::set<uint32_t>& dids){
+void PlayerView::setVisibleDesigns(const IdSet& dids){
   designs.visible = dids;
 }
 
-void PlayerView::setUsableDesigns(const std::set<uint32_t>& dids){
+void PlayerView::setUsableDesigns(const IdSet& dids){
   designs.actable = dids;
 }
 
-void PlayerView::setVisibleComponents(const std::set<uint32_t>& cids){
+void PlayerView::setVisibleComponents(const IdSet& cids){
   components.visible = cids;
 }
 
-void PlayerView::setUsableComponents(const std::set<uint32_t>& cids){
+void PlayerView::setUsableComponents(const IdSet& cids){
   components.actable = cids;
 }
 
@@ -459,7 +459,7 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity, uint3
 template< class EntityType >
 void PlayerView::EntityInfo< EntityType >::removeActable( uint32_t id )
 {
-  std::set<uint32_t>::iterator f = actable.find(id);
+  IdSet::iterator f = actable.find(id);
   if(f != actable.end())
     actable.erase(f);
 }
