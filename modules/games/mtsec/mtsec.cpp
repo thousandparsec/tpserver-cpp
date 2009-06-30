@@ -608,7 +608,13 @@ void MTSec::createGame()
     cat->setName("Ships");
     cat->setDescription("The Ship design and component category");
     ds->addCategory(cat);
-    assert(cat->getCategoryId() == 1);
+//  Don't think we need to asset that this category is 1 since we don't use the actual number 1 anywhere.
+//    assert(cat->getCategoryId() == 1);
+
+    cat = new Category();
+    cat->setName("Weapons");
+    cat->setDescription("The missile and torpedoe design and component category");
+    ds->addCategory(cat);
 
     createTechTree();
     createResources();
