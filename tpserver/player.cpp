@@ -33,7 +33,7 @@
 
 
 Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0), 
-               modtime(0), alive(true), score(){
+                alive(true), score(){
   playerview = new PlayerView();
 }
 
@@ -122,10 +122,6 @@ std::map<uint32_t, uint32_t> Player::getAllScores() const{
   return score;
 }
 
-uint64_t Player::getModTime() const{
-  return modtime;
-}
-
 void Player::setBoardId(uint32_t nbi){
   boardid = nbi;
   touchModTime();
@@ -142,10 +138,3 @@ void Player::packFrame(Frame* frame){
   frame->packString("Human");
 }
 
-void Player::setModTime(uint64_t nmt){
-  modtime = nmt;
-}
-
-void Player::touchModTime(){
-  modtime = time(NULL);
-}

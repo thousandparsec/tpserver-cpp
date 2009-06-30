@@ -24,15 +24,16 @@
 #include <map>
 #include <string>
 #include <stdint.h>
+#include <tpserver/modifiable.h>
 
 class Frame;
 class Message;
 class PlayerView;
 
-class Player {
+class Player : public Modifiable {
 public:
   Player();
-  ~Player();
+  virtual ~Player();
 
   void setName(const std::string& newname);
   void setPass(const std::string& newpass);
@@ -53,7 +54,6 @@ public:
   uint32_t getScore(uint32_t key) const;
   std::map<uint32_t, uint32_t> getAllScores() const;
   uint32_t getBoardId() const;
-  uint64_t getModTime() const;
 
   // WARNING -- internally the pointer is converted to Shared_Ptr
   // do not delete!
@@ -63,10 +63,6 @@ public:
   PlayerView* getPlayerView() const;
   
   void packFrame(Frame* frame);
-  
-
-  //for persistence only
-  void setModTime(uint64_t nmt);
 
 private:
 
@@ -77,15 +73,12 @@ private:
 
   uint32_t pid;
   uint32_t boardid;
-  uint64_t modtime;
   
   PlayerView* playerview;
   
   bool alive;
   std::map<uint32_t, uint32_t> score;
   
-  void touchModTime();
-
   Player(Player & rhs);
 
   Player operator=(Player & rhs);
