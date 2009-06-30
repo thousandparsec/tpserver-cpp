@@ -27,23 +27,10 @@
 
 #include "board.h"
 
-Board::Board(uint32_t id, const std::string& nname, const std::string& ndesc) {
+Board::Board(uint32_t nid, const std::string& nname, const std::string& ndesc) 
+  : Describable( nid, nname, ndesc )
+{
   message_count = 0;
-  boardid = id;
-  name = nname;
-  description = ndesc;
-}
-
-int Board::getBoardID() const {
-  return boardid;
-}
-
-std::string Board::getName() const {
-  return name;
-}
-
-std::string Board::getDescription() const {
-  return description;
 }
 
 void Board::addMessage(Message::Ptr msg, int pos) {
@@ -62,7 +49,7 @@ void Board::addMessage(Message::Ptr msg, int pos) {
     message_ids.insert(inspos, msgid);
   }
   message_count = message_ids.size();
-  Game::getGame()->getPersistence()->saveMessageList(boardid, message_ids);
+  Game::getGame()->getPersistence()->saveMessageList(id, message_ids);
   Game::getGame()->getPersistence()->updateBoard(this);
   touchModTime();
 }
@@ -80,7 +67,7 @@ bool Board::removeMessage(uint32_t pos){
 
   bool result = true;
   result = result && Game::getGame()->getBoardManager()->removeMessage(msgid);
-  result = result && Game::getGame()->getPersistence()->saveMessageList(boardid, message_ids);
+  result = result && Game::getGame()->getPersistence()->saveMessageList(id, message_ids);
   Game::getGame()->getPersistence()->updateBoard(this);
 
   if (result) {
@@ -91,9 +78,9 @@ bool Board::removeMessage(uint32_t pos){
 
 void Board::packBoard(Frame * frame){
   frame->setType(ft02_Board);
-  frame->packInt(boardid);
-  frame->packString(name.c_str());
-  frame->packString(description.c_str());
+  frame->packInt(id);
+  frame->packString(getName().c_str());
+  frame->packString(getDescription().c_str());
   frame->packInt(message_count);
   frame->packInt64(getModTime());
 }
@@ -109,7 +96,7 @@ void Board::packMessage(Frame * frame, uint32_t msgnum) {
     }
     if (message != NULL) {
       frame->setType(ft02_Message);
-      frame->packInt(boardid);
+      frame->packInt(id);
       frame->packInt(msgnum);
       message->pack(frame);
     } else {
@@ -133,6 +120,6 @@ void Board::setPersistenceData( uint32_t nmessage_count, uint64_t nmod_time ) {
 
 void Board::retrieveMessageList() {
   if (message_ids.empty()) {
-    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(boardid);
+    message_ids = Game::getGame()->getPersistence()->retrieveMessageList(id);
   }
 }

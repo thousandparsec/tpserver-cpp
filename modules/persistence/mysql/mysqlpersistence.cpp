@@ -1703,12 +1703,12 @@ bool MysqlPersistence::removeTimeParameter(uint32_t queueid, uint32_t ordid, uin
 
 bool MysqlPersistence::saveBoard(boost::shared_ptr<Board> board){
     std::ostringstream querybuilder;
-    querybuilder << "INSERT INTO board VALUES (" << board->getBoardID() << ", '" << addslashes(board->getName()) << "', '";
+    querybuilder << "INSERT INTO board VALUES (" << board->getId() << ", '" << addslashes(board->getName()) << "', '";
     querybuilder << addslashes(board->getDescription()) << "', " << board->getNumMessages() << ", ";
     querybuilder << board->getModTime() <<");";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not store board %d - %s", board->getBoardID(), mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not store board %d - %s", board->getId(), mysql_error(conn));
         unlock();
         return false;
     }
@@ -1720,10 +1720,10 @@ bool MysqlPersistence::updateBoard(const Board* board){
     std::ostringstream querybuilder;
     querybuilder << "UPDATE board SET name='" << addslashes(board->getName()) << "', description='" << addslashes(board->getDescription());
     querybuilder << "', nummessages=" << board->getNumMessages() << ", modtime=" << board->getModTime();
-    querybuilder << " WHERE boardid=" << board->getBoardID() << ";";
+    querybuilder << " WHERE boardid=" << board->getId() << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-        Logger::getLogger()->error("Mysql: Could not update board %d - %s", board->getBoardID(), mysql_error(conn));
+        Logger::getLogger()->error("Mysql: Could not update board %d - %s", board->getId(), mysql_error(conn));
         unlock();
         return false;
     }

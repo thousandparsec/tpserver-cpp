@@ -24,13 +24,14 @@
 #include <tpserver/common.h>
 #include <tpserver/message.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
 class Frame;
 
 /**
  * Board for posting messages
  */
-class Board : public Modifiable {
+class Board : public Modifiable, public Describable {
 
   public:
     /// typedef for shared pointer
@@ -41,16 +42,7 @@ class Board : public Modifiable {
      *
      * Sets modification time to now, and number of messages to zero.
      */
-    Board( uint32_t id, const std::string& nname, const std::string& ndesc );
-
-    /// Returns board ID
-    int getBoardID() const;
-
-    /// Returns board name
-    std::string getName() const;
-
-    /// Returns board description
-    std::string getDescription() const;
+    Board( uint32_t nid, const std::string& nname, const std::string& ndesc );
 
     /**
      * Adds a message at given position
@@ -96,21 +88,12 @@ class Board : public Modifiable {
   private:
     /// Count of messages on the board
     uint32_t message_count;
-    /// Board identification number
-    int boardid;
-    /// Board name
-    std::string name;
-    /// Board description
-    std::string description;
     /// List of MessageID's belonging to this board
     IdList message_ids;
 
     /// Retrieves if neccessary message list from persistence
     void retrieveMessageList();
 
-  private:
-    /// Blocked default constructor
-    Board() {}
 };
 
 #endif

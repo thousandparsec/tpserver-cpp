@@ -46,7 +46,7 @@ void BoardManager::init() {
 Board::Ptr BoardManager::createNewBoard(const std::string &name, const std::string &desc) {
   Board::Ptr board( new Board(nextbid++, name, desc) );
 
-  boards[board->getBoardID()] = board;
+  boards[board->getId()] = board;
   Game::getGame()->getPersistence()->saveBoard(board);
 
   return board;

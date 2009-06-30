@@ -46,6 +46,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h \
+	identifiable.h nameable.h describable.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h systemexception.h \
