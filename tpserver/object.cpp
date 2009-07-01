@@ -39,12 +39,12 @@
 #include "object.h"
 
 
-IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), info(new ObjectInfoData()), 
+IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), type(0), info(new ObjectInfoData()), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
 }
 
 IGObject::IGObject(const IGObject & rhs){
-  Logger::getLogger()->warning("Object Copy Constructor: copying Object ID");
+  WARNING("Object Copy Constructor: copying Object ID");
 }
 
 IGObject::~IGObject(){
@@ -56,7 +56,7 @@ IGObject::~IGObject(){
 
 IGObject& IGObject::operator=(const IGObject & rhs){
   //TODO
-  Logger::getLogger()->warning("Object Assignment operator");
+  WARNING("Object Assignment operator");
   return *this;
 }
 
@@ -65,15 +65,15 @@ uint32_t IGObject::getID() const{
 }
 
 uint32_t IGObject::getType() const{
-  return info->getType();
+  return type;
 }
 
 std::string IGObject::getName() const{
-  return info->getName();
+  return name;
 }
 
 std::string IGObject::getDescription() const{
-  return info->getDescription();
+  return desc;
 }
 
 bool IGObject::isAlive() const{
@@ -94,17 +94,17 @@ void IGObject::setID(uint32_t newid){
 }
 
 void IGObject::setType(uint32_t newtype){
-  info->setType(newtype);
+  type = newtype;
   touchModTime();
 }
 
 void IGObject::setName(const std::string &newname){
-  info->setName(newname);
+  name = newname;
   touchModTime();
 }
 
 void IGObject::setDescription(const std::string &newdesc){
-  info->setDescription(newdesc);
+  desc = newdesc;
   touchModTime();
 }
 
@@ -181,10 +181,6 @@ void IGObject::setObjectBehaviour(ObjectBehaviour* nob){
 
 uint64_t IGObject::getModTime() const{
   uint64_t maxmodtime = Modifiable::getModTime();
-  if(info->getModTime() > maxmodtime){
-    maxmodtime = info->getModTime();
-  }
-  
   return maxmodtime;
 }
 

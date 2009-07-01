@@ -89,6 +89,9 @@ class IGObject : public Modifiable {
     uint32_t id;
     uint32_t turn;
     bool alive;
+    std::string name;
+    std::string desc;
+    uint32_t type;
     
     ObjectInfoPtr info;
     ObjectRelationshipsPtr relationships;

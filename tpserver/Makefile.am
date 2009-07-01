@@ -38,7 +38,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cp
 		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp \
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
 		playerview.cpp componentview.cpp designview.cpp objectview.cpp objecttype.cpp \
-		objectparametergroupdesc.cpp objectbehaviour.cpp objectinfo.cpp objectrelationships.cpp \
+		objectparametergroupdesc.cpp objectbehaviour.cpp objectrelationships.cpp \
 		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp \
 		mediaobjectparam.cpp tinyxml/tinyxml.cpp tinyxml/tinyxmlerror.cpp \
 		tinyxml/tinyxmlparser.cpp battlexml/combatant.cpp battlexml/battleexceptions.cpp \
@@ -66,7 +66,7 @@ headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
-	objectbehaviour.h objectinfo.h objectrelationships.h protocol.h \
+	objectbehaviour.h objectrelationships.h protocol.h \
 	command.h commandmanager.h mediaobjectparam.h
 
 headerstinyxmldir = $(headersdir)/tinyxml
