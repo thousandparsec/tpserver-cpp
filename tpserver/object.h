@@ -25,7 +25,6 @@
 #include <stdint.h>
 #include <string>
 
-#include <tpserver/objectinfo.h>
 #include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/modifiable.h>
@@ -93,7 +92,6 @@ class IGObject : public Modifiable {
     std::string desc;
     uint32_t type;
     
-    ObjectInfoPtr info;
     ObjectRelationshipsPtr relationships;
     std::map<uint32_t, ObjectParameterGroupPtr> parameters;
     ObjectBehaviour* behaviour;

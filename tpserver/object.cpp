@@ -39,7 +39,7 @@
 #include "object.h"
 
 
-IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), type(0), info(new ObjectInfoData()), 
+IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), type(0), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
 }
 
@@ -186,7 +186,7 @@ uint64_t IGObject::getModTime() const{
 
 bool IGObject::isDirty() const{
   bool dirtyparams = false; //TODO fix
-  return isDirty() || info->isDirty() || relationships->isDirty() || dirtyparams;
+  return isDirty() || relationships->isDirty() || dirtyparams;
 }
 
 void IGObject::setParent(uint32_t pid){
@@ -195,7 +195,6 @@ void IGObject::setParent(uint32_t pid){
 
 void IGObject::setIsDirty(bool id){
   Modifiable::setIsDirty(id);
-  info->setIsDirty(id);
   relationships->setIsDirty(id);
 }
 
