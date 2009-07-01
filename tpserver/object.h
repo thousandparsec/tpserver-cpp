@@ -78,7 +78,6 @@ class IGObject : public Modifiable {
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
     
-    virtual uint64_t getModTime() const;
     virtual void setIsDirty(bool id);
     virtual bool isDirty() const;
     // Only Persistence classes should call these

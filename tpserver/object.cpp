@@ -179,11 +179,6 @@ void IGObject::setObjectBehaviour(ObjectBehaviour* nob){
   behaviour->setObject(this);
 }
 
-uint64_t IGObject::getModTime() const{
-  uint64_t maxmodtime = Modifiable::getModTime();
-  return maxmodtime;
-}
-
 bool IGObject::isDirty() const{
   bool dirtyparams = false; //TODO fix
   return isDirty() || relationships->isDirty() || dirtyparams;
