@@ -32,7 +32,7 @@
 #include "player.h"
 
 
-Player::Player() : name(), passwd(), email(), comment(), pid(0), boardid(0), 
+Player::Player() : Describable(0), passwd(), email(), boardid(0), 
                 alive(true), score(){
   playerview = new PlayerView();
 }
@@ -42,8 +42,8 @@ Player::~Player(){
 }
 
 void Player::setName(const std::string& newname){
-    name = newname;
-    touchModTime();
+  Describable::setName( newname );
+  touchModTime();
 }
 
 void Player::setPass(const std::string& newpass){
@@ -57,13 +57,13 @@ void Player::setEmail(const std::string& newemail){
 }
 
 void Player::setComment(const std::string& newcomm){
-  comment = newcomm;
+  Describable::setDescription( newcomm );
   touchModTime();
 }
 
 void Player::setId(uint32_t newid){
-  pid = newid;
-  playerview->setPlayerId(pid);
+  Describable::setId( newid );
+  playerview->setPlayerId(newid);
   touchModTime();
 }
 
@@ -81,10 +81,6 @@ void Player::postToBoard(Message* msg){
   Game::getGame()->getBoardManager()->postToBoard(Message::Ptr(msg),boardid);
 }
 
-std::string Player::getName() const{
-  return name;
-}
-
 std::string Player::getPass() const{
   return passwd;
 }
@@ -94,11 +90,11 @@ std::string Player::getEmail() const{
 }
 
 std::string Player::getComment() const{
-  return comment;
+  return getDescription();
 }
 
 uint32_t Player::getID() const{
-  return pid;
+  return getId();
 }
 
 uint32_t Player::getBoardId() const{
@@ -133,7 +129,7 @@ PlayerView* Player::getPlayerView() const{
 
 void Player::packFrame(Frame* frame){
   frame->setType(ft03_Player);
-  frame->packInt(pid);
+  frame->packInt(id);
   frame->packString(name.c_str());
   frame->packString("Human");
 }

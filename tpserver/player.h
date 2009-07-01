@@ -25,12 +25,13 @@
 #include <string>
 #include <stdint.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
 class Frame;
 class Message;
 class PlayerView;
 
-class Player : public Modifiable {
+class Player : public Modifiable, public Describable {
 public:
   Player();
   virtual ~Player();
@@ -44,11 +45,10 @@ public:
   void setScore(uint32_t key, uint32_t value);
   void setBoardId(uint32_t nbi);
   
-
-  std::string getName() const;
   std::string getPass() const;
   std::string getEmail() const;
   std::string getComment() const;
+  // TODO: remove
   uint32_t getID() const;
   bool isAlive() const;
   uint32_t getScore(uint32_t key) const;
@@ -66,12 +66,9 @@ public:
 
 private:
 
-  std::string name;
   std::string passwd;
   std::string email;
-  std::string comment;
 
-  uint32_t pid;
   uint32_t boardid;
   
   PlayerView* playerview;
