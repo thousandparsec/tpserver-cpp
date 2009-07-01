@@ -26,28 +26,19 @@
 #include "category.h"
 
 
-Category::Category(){
-  catid = 0;
+Category::Category() : Describable(0) {
 }
 
 Category::~Category(){
 }
 
 uint32_t Category::getCategoryId() const{
-  return catid;
-}
-
-std::string Category::getName() const{
-  return name;
-}
-
-std::string Category::getDescription() const{
-  return desc;
+  return getId();
 }
 
 void Category::packFrame(Frame* frame) const{
   frame->setType(ft03_Category);
-  frame->packInt(catid);
+  frame->packInt(id);
   // TODO: is this really correct???
   frame->packInt64(0LL); //timestamp
   frame->packString(name.c_str());
@@ -63,14 +54,7 @@ bool Category::doModifyDesign(Design* d){
 }
 
 void Category::setCategoryId(uint32_t c){
-  catid = c;
+  setId( c );
 }
 
-void Category::setName(const std::string& n){
-  name = n;
-}
-
-void Category::setDescription(const std::string& d){
-  desc = d;
-}
 

@@ -23,31 +23,25 @@
 #include <string>
 #include <stdint.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
 class Frame;
 class Design;
 
-class Category : public Modifiable {
- public:
-  Category();
-  virtual ~Category();
+class Category : public Modifiable, public Describable {
+  public:
+    Category();
+    virtual ~Category();
 
-  uint32_t getCategoryId() const;
-  std::string getName() const;
-  std::string getDescription() const;
-  void packFrame(Frame* frame) const;
+    /// TODO: Remove, use getId instead
+    uint32_t getCategoryId() const;
+    void packFrame(Frame* frame) const;
 
-  virtual bool doAddDesign(Design* d);
-  virtual bool doModifyDesign(Design* d);
+    virtual bool doAddDesign(Design* d);
+    virtual bool doModifyDesign(Design* d);
 
-  void setCategoryId(uint32_t c);
-  void setName(const std::string& n);
-  void setDescription(const std::string& d);
-
- protected:
-  uint32_t catid;
-  std::string name;
-  std::string desc;
+    /// TODO: Remove, use setId instead
+    void setCategoryId(uint32_t c);
 };
 
 #endif

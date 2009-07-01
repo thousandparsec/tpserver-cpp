@@ -174,8 +174,8 @@ IdSet DesignStore::getPropertyIds() const{
 
 void DesignStore::addCategory(Category* c){
   c->setCategoryId(next_categoryid++);
-  categories[c->getCategoryId()] = c;
-  categoryIndex[c->getName()] = c->getCategoryId();
+  categories[c->getId()] = c;
+  categoryIndex[c->getName()] = c->getId();
   Game::getGame()->getPersistence()->saveCategory(c);
 }
 
