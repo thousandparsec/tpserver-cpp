@@ -25,6 +25,7 @@
 #include <string>
 #include <list>
 #include <tpserver/objectparametergroup.h>
+#include <tpserver/describable.h>
 
 class Frame;
 class ObjectParameter;
@@ -52,33 +53,26 @@ class ObjectParameterDesc{
   
 };
 
-class ObjectParameterGroupDesc {
-
+class ObjectParameterGroupDesc : public Describable {
   public:
-        
-	ObjectParameterGroupDesc();
-        ~ObjectParameterGroupDesc();
+    ObjectParameterGroupDesc();
+    ~ObjectParameterGroupDesc();
 
-	uint32_t getGroupId() const;
-	std::string getName() const;
-        std::string getDescription() const;
-        
-        void setGroupId(uint32_t ni);
-        void setName(const std::string& nn);
-        void setDescription(const std::string& nd);
-        
-        void addParameter(const ObjectParameterDesc& op);
-        void addParameter(uint32_t type, const std::string& name, const std::string& desc);
-        
-        void packObjectDescFrame(Frame* f) const;
-        ObjectParameterGroupPtr createObjectParameterGroup() const;
+    //TODO: remove
+    uint32_t getGroupId() const;
+
+    // TODO: remove
+    void setGroupId(uint32_t ni);
+
+    void addParameter(const ObjectParameterDesc& op);
+    void addParameter(uint32_t type, const std::string& name, const std::string& desc);
+
+    void packObjectDescFrame(Frame* f) const;
+    ObjectParameterGroupPtr createObjectParameterGroup() const;
 
 
-      protected:
-	 uint32_t groupid;
-	 std::string name;
-         std::string description;
-         std::list<ObjectParameterDesc> parameters;
+  protected:
+    std::list<ObjectParameterDesc> parameters;
 
 };
 

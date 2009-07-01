@@ -82,34 +82,18 @@ void ObjectParameterDesc::packObjectDescFrame(Frame* f)const {
   }
 }
 
-ObjectParameterGroupDesc::ObjectParameterGroupDesc() : groupid(0), name(), description(), parameters(){
+ObjectParameterGroupDesc::ObjectParameterGroupDesc() : Describable(0), parameters(){
 }
 
 ObjectParameterGroupDesc::~ObjectParameterGroupDesc(){
 }
 
 uint32_t ObjectParameterGroupDesc::getGroupId() const{
-  return groupid;
-}
-
-std::string ObjectParameterGroupDesc::getName() const{
-  return name;
-}
-
-std::string ObjectParameterGroupDesc::getDescription() const{
-  return description;
+  return getId();
 }
 
 void ObjectParameterGroupDesc::setGroupId(uint32_t ni){
-  groupid = ni;
-}
-
-void ObjectParameterGroupDesc::setName(const std::string& nn){
-  name = nn;
-}
-
-void ObjectParameterGroupDesc::setDescription(const std::string& nd){
-  description = nd;
+  setId( ni );
 }
 
 void ObjectParameterGroupDesc::addParameter(const ObjectParameterDesc &op){
@@ -126,9 +110,9 @@ void ObjectParameterGroupDesc::addParameter(uint32_t type, const std::string& na
 
 void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{
 
-  f->packInt(groupid);
+  f->packInt(id);
   f->packString(name);
-  f->packString(description);
+  f->packString(desc);
   f->packInt(parameters.size());
   for(std::list<ObjectParameterDesc>::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
@@ -138,7 +122,7 @@ void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{
 
 ObjectParameterGroupPtr ObjectParameterGroupDesc::createObjectParameterGroup() const{
   ObjectParameterGroupPtr pg(new ObjectParameterGroupData());
-  pg->setGroupId(groupid);
+  pg->setGroupId(id);
   for(std::list<ObjectParameterDesc>::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     ObjectParameter* param = NULL;
