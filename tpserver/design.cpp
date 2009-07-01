@@ -23,7 +23,7 @@
 
 #include "design.h"
 
-Design::Design(){
+Design::Design() : Describable(0) {
   valid = false;
   inuse = 0;
   exist = 0;
@@ -35,19 +35,11 @@ Design::~Design(){
 
 
 uint32_t Design::getDesignId() const{
-  return designid;
+  return getId();
 }
 
 uint32_t Design::getCategoryId() const{
   return catid;
-}
-
-std::string Design::getName() const{
-  return name;
-}
-
-std::string Design::getDescription() const{
-    return description;
 }
 
 uint32_t Design::getOwner() const{
@@ -86,20 +78,12 @@ PropertyValue::Map Design::getPropertyValues() const{
     return properties;
 }
 
-void Design::setDesignId(uint32_t id){
-  designid = id;
+void Design::setDesignId(uint32_t nid){
+  setId(nid);
 }
 
 void Design::setCategoryId(uint32_t id){
   catid = id;
-}
-
-void Design::setName(const std::string& n){
-  name = n;
-}
-
-void Design::setDescription(const std::string& d){
-  description = d;
 }
 
 void Design::setOwner(uint32_t o){

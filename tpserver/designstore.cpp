@@ -197,13 +197,13 @@ bool DesignStore::addDesign(Design* d){
     comp->setInUse();
   }
   d->eval();
-  designs[d->getDesignId()] = d;
+  designs[d->getId()] = d;
   getCategory(d->getCategoryId())->doAddDesign(d);
 
   if(d->isValid()){
-    playerview->addUsableDesign(d->getDesignId());
+    playerview->addUsableDesign(d->getId());
   }else{
-    playerview->addVisibleDesign( new DesignView( d->getDesignId(), true ) );
+    playerview->addVisibleDesign( new DesignView( d->getId(), true ) );
   }
 
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
@@ -212,12 +212,12 @@ bool DesignStore::addDesign(Design* d){
 }
 
 bool DesignStore::modifyDesign(Design* d){
-  Design* current = designs[d->getDesignId()];
+  Design* current = designs[d->getId()];
   if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView* playerview = player->getPlayerView();
-  playerview->removeUsableDesign(d->getDesignId());
+  playerview->removeUsableDesign(d->getId());
 
   std::map<uint32_t, uint32_t> cl = current->getComponents();
   for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
@@ -238,7 +238,7 @@ bool DesignStore::modifyDesign(Design* d){
   d->eval();
   bool rtv;
   if(getCategory(d->getCategoryId())->doModifyDesign(d)){
-    designs[d->getDesignId()] = d;
+    designs[d->getId()] = d;
     delete current;
     rtv = true;
   }else{
@@ -247,7 +247,7 @@ bool DesignStore::modifyDesign(Design* d){
     rtv = false;
   }
   if(d->isValid()){
-    playerview->addUsableDesign(d->getDesignId());
+    playerview->addUsableDesign(d->getId());
   }
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());
   Game::getGame()->getPersistence()->updateDesign(d);

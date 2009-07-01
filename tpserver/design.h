@@ -26,16 +26,16 @@
 
 #include <tpserver/propertyvalue.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
-class Design : public Modifiable {
+class Design : public Modifiable, public Describable {
   public:
     Design();
     virtual ~Design();
 
+    // TODO: remove
     uint32_t getDesignId() const;
     uint32_t getCategoryId() const;
-    std::string getName() const;
-    std::string getDescription() const;
     uint32_t getOwner() const;
     std::map<uint32_t, uint32_t> getComponents() const;
     uint32_t getNumExist() const;
@@ -45,10 +45,9 @@ class Design : public Modifiable {
     double getPropertyValue(uint32_t propid) const;
     PropertyValue::Map getPropertyValues() const;
 
+    // TODO: remove
     void setDesignId(uint32_t id);
     void setCategoryId(uint32_t id);
-    void setName(const std::string& n);
-    void setDescription(const std::string& d);
     void setOwner(uint32_t o);
     void setComponents(std::map<uint32_t, uint32_t> cl);
     void setInUse(uint32_t niu);
@@ -64,10 +63,7 @@ class Design : public Modifiable {
     void removeDestroyed(uint32_t num);
 
   protected:
-    uint32_t designid;
     uint32_t catid;
-    std::string name;
-    std::string description;
     uint32_t inuse;
     uint32_t exist;
     uint32_t owner;
