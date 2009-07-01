@@ -24,12 +24,12 @@
 
 #include "property.h"
 
-Property::Property() : propid(0), rank(0) {
+Property::Property() : Describable(0), rank(0) {
 }
 
 void Property::packFrame(Frame* frame) const {
   frame->setType(ft03_Property);
-  frame->packInt(propid);
+  frame->packInt(id);
   frame->packInt64(getModTime());
   frame->packInt(catids.size());
   for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
@@ -38,13 +38,13 @@ void Property::packFrame(Frame* frame) const {
   frame->packInt(rank);
   frame->packString(name.c_str());
   frame->packString(display.c_str());
-  frame->packString(description.c_str());
+  frame->packString(desc.c_str());
   frame->packString(tpcl_display.c_str());
   frame->packString(tpcl_requires.c_str());
 }
 
 uint32_t Property::getPropertyId() const {
-  return propid;
+  return getId();
 }
 
 std::set<uint32_t> Property::getCategoryIds() const {
@@ -59,16 +59,8 @@ uint32_t Property::getRank() const {
   return rank;
 }
 
-std::string Property::getName() const {
-  return name;
-}
-
 std::string Property::getDisplayName() const {
   return display;
-}
-
-std::string Property::getDescription() const {
-  return description;
 }
 
 std::string Property::getTpclDisplayFunction() const {
@@ -79,8 +71,8 @@ std::string Property::getTpclRequirementsFunction() const {
   return tpcl_requires;
 }
 
-void Property::setPropertyId(uint32_t id) {
-  propid = id;
+void Property::setPropertyId(uint32_t nid) {
+  setId( nid );
 }
 
 void Property::addCategoryId(uint32_t id) {
@@ -95,16 +87,8 @@ void Property::setRank(uint32_t r) {
   rank = r;
 }
 
-void Property::setName(const std::string& n) {
-  name = n;
-}
-
 void Property::setDisplayName(const std::string& d) {
   display = d;
-}
-
-void Property::setDescription(const std::string& d) {
-  description = d;
 }
 
 void Property::setTpclDisplayFunction(const std::string& d) {

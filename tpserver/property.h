@@ -23,48 +23,46 @@
 #include <string>
 #include <set>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
 class Frame;
 
-class Property : public Modifiable {
+class Property : public Modifiable, public Describable {
   public:
     /**
      * Default constructor
      */
+    // TODO: should take proper parameters
     Property();
+
 
     /**
      * Pack property data into a frame
      */
     void packFrame(Frame* frame) const;
 
+    /// TODO: remove
     uint32_t getPropertyId() const;
     std::set<uint32_t> getCategoryIds() const;
     bool isInCategory(uint32_t catid) const;
     uint32_t getRank() const;
-    std::string getName() const;
     std::string getDisplayName() const;
-    std::string getDescription() const;
     std::string getTpclDisplayFunction() const;
     std::string getTpclRequirementsFunction() const;
 
+    /// TODO: remove
     void setPropertyId(uint32_t id);
     void addCategoryId(uint32_t id);
     void setCategoryIds(const std::set<uint32_t>& idset);
     void setRank(uint32_t r);
-    void setName(const std::string& n);
     void setDisplayName(const std::string& d);
-    void setDescription(const std::string& d);
     void setTpclDisplayFunction(const std::string& d);
     void setTpclRequirementsFunction(const std::string& r);
 
   private:
-    uint32_t propid;
     std::set<uint32_t> catids;
     uint32_t rank;
-    std::string name;
     std::string display;
-    std::string description;
     std::string tpcl_display;
     std::string tpcl_requires;
 

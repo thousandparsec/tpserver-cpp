@@ -267,8 +267,8 @@ void DesignStore::addComponent(Component* c){
 
 void DesignStore::addProperty(Property* p){
   p->setPropertyId(next_propertyid++);
-  properties[p->getPropertyId()] = p;
-  propertyIndex[p->getName()] = p->getPropertyId();
+  properties[p->getId()] = p;
+  propertyIndex[p->getName()] = p->getId();
   Game::getGame()->getPersistence()->saveProperty(p);
 }
 
