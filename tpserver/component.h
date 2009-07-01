@@ -25,25 +25,24 @@
 #include <set>
 #include <stdint.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
-class Component : public Modifiable {
+class Component : public Modifiable, public Describable {
  public:
   Component();
   virtual ~Component();
 
+  /// TODO: remove
   uint32_t getComponentId() const;
   std::set<uint32_t> getCategoryIds() const;
   bool isInCategory(uint32_t id) const;
-  std::string getName() const;
-  std::string getDescription() const;
   std::string getTpclRequirementsFunction() const;
   std::map<uint32_t, std::string> getPropertyList() const;
 
+  /// TODO: remove
   void setComponentId(uint32_t id);
   void setCategoryIds(const std::set<uint32_t>& ids);
   void addCategoryId(uint32_t id);
-  void setName(const std::string& n);
-  void setDescription(const std::string& d);
   void setTpclRequirementsFunction(const std::string& a);
   void setPropertyList(std::map<uint32_t, std::string> pl);
   
@@ -53,10 +52,7 @@ class Component : public Modifiable {
   uint32_t getParentDesignId() const;
   
  protected:
-  uint32_t compid;
   std::set<uint32_t> catids;
-  std::string name;
-  std::string description;
   std::string tpcl_requirements;
   std::map<uint32_t, std::string> propertylist;
   bool inuse;

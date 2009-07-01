@@ -26,8 +26,7 @@
 
 #include "component.h"
 
-Component::Component(): catids(), inuse(false), parentdesignid(0){
-  compid = 0;
+Component::Component(): Describable(0), catids(), inuse(false), parentdesignid(0){
 }
 
 Component::~Component(){
@@ -35,7 +34,7 @@ Component::~Component(){
 }
 
 uint32_t Component::getComponentId() const{
-  return compid;
+  return getId();
 }
 
 std::set<uint32_t> Component::getCategoryIds() const{
@@ -46,14 +45,6 @@ bool Component::isInCategory(uint32_t id) const{
   return catids.count(id) != 0;
 }
 
-std::string Component::getName() const{
-  return name;
-}
-
-std::string Component::getDescription() const{
-    return description;
-}
-
 std::string Component::getTpclRequirementsFunction() const{
   return tpcl_requirements;
 }
@@ -62,8 +53,8 @@ std::map<uint32_t, std::string> Component::getPropertyList() const{
   return propertylist;
 }
 
-void Component::setComponentId(uint32_t id){
-  compid = id;
+void Component::setComponentId(uint32_t nid){
+  setId(nid);
 }
 
 void Component::setCategoryIds(const std::set<uint32_t>& ids){
@@ -72,14 +63,6 @@ void Component::setCategoryIds(const std::set<uint32_t>& ids){
 
 void Component::addCategoryId(uint32_t id){
   catids.insert(id);
-}
-
-void Component::setName(const std::string& n){
-  name = n;
-}
-
-void Component::setDescription(const std::string& d){
-  description = d;
 }
 
 void Component::setTpclRequirementsFunction(const std::string& a){

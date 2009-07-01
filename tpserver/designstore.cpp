@@ -260,8 +260,8 @@ void DesignStore::designCountsUpdated(Design* d){
 
 void DesignStore::addComponent(Component* c){
   c->setComponentId(next_componentid++);
-  components[c->getComponentId()] = c;
-  componentIndex[c->getName()] = c->getComponentId();
+  components[c->getId()] = c;
+  componentIndex[c->getName()] = c->getId();
   Game::getGame()->getPersistence()->saveComponent(c);
 }
 
