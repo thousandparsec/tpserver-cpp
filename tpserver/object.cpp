@@ -39,12 +39,8 @@
 #include "object.h"
 
 
-IGObject::IGObject() : id(0xffffffff), turn(0), alive(true), type(0), 
+IGObject::IGObject() : Describable(0xffffffff), turn(0), alive(true), type(0), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
-}
-
-IGObject::IGObject(const IGObject & rhs){
-  WARNING("Object Copy Constructor: copying Object ID");
 }
 
 IGObject::~IGObject(){
@@ -68,13 +64,6 @@ uint32_t IGObject::getType() const{
   return type;
 }
 
-std::string IGObject::getName() const{
-  return name;
-}
-
-std::string IGObject::getDescription() const{
-  return desc;
-}
 
 bool IGObject::isAlive() const{
   return alive;
@@ -99,12 +88,12 @@ void IGObject::setType(uint32_t newtype){
 }
 
 void IGObject::setName(const std::string &newname){
-  name = newname;
+  setName(newname);
   touchModTime();
 }
 
 void IGObject::setDescription(const std::string &newdesc){
-  desc = newdesc;
+  setDescription(newdesc);
   touchModTime();
 }
 

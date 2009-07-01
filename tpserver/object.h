@@ -28,35 +28,37 @@
 #include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/describable.h>
 
 class Frame;
 class ObjectBehaviour;
 class ObjectParameter;
 
 
-class IGObject : public Modifiable {
+class IGObject : public Modifiable, public Describable {
 
   public:
     IGObject();
-    IGObject(const IGObject & rhs);
     
     ~IGObject();
     
     IGObject& operator=(const IGObject & rhs);
 
+    // TODO: remove and replace with getId
     uint32_t getID() const;
     uint32_t getType() const;
-    std::string getName() const;
-    std::string getDescription() const;
     bool isAlive() const;
     uint32_t getTurn() const;
     
 
     uint32_t getParent() const;
 
+    // mods time
     void setID(uint32_t newid);
     void setType(uint32_t newtype);
+    // mods time
     void setName(const std::string &newname);
+    // mods time
     void setDescription(const std::string &newdesc);
     void setIsAlive(bool ia);
     void setTurn(uint32_t nt);
@@ -84,11 +86,8 @@ class IGObject : public Modifiable {
     void setParent(uint32_t pid);
 
   private:
-    uint32_t id;
     uint32_t turn;
     bool alive;
-    std::string name;
-    std::string desc;
     uint32_t type;
     
     ObjectRelationshipsPtr relationships;
