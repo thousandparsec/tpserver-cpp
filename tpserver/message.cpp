@@ -70,8 +70,8 @@ void Message::pack(Frame * frame) {
   } else {
     frame->packInt(0);
   }
-  frame->packString(subject.c_str());
-  frame->packString(body.c_str());
+  frame->packString(subject);
+  frame->packString(body);
   if (frame->getVersion() > fv0_2) {
     frame->packInt(turn_number);
     frame->packInt(references.size());

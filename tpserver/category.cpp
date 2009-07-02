@@ -41,8 +41,8 @@ void Category::packFrame(Frame* frame) const{
   frame->packInt(id);
   // TODO: is this really correct???
   frame->packInt64(0LL); //timestamp
-  frame->packString(name.c_str());
-  frame->packString(desc.c_str());
+  frame->packString(name);
+  frame->packString(desc);
 }
 
 bool Category::doAddDesign(Design* d){

@@ -132,8 +132,8 @@ void Order::describeOrder(Frame * f) const
 {
   f->setType(ft02_OrderDesc);
   f->packInt(type);
-  f->packString(name.c_str());
-  f->packString(description.c_str());
+  f->packString(name);
+  f->packString(description);
   f->packInt(parameters.size());
   for(std::list<OrderParameter*>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){

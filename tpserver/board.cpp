@@ -79,8 +79,8 @@ bool Board::removeMessage(uint32_t pos){
 void Board::packBoard(Frame * frame){
   frame->setType(ft02_Board);
   frame->packInt(id);
-  frame->packString(name.c_str());
-  frame->packString(desc.c_str());
+  frame->packString(name);
+  frame->packString(desc);
   frame->packInt(message_count);
   frame->packInt64(getModTime());
 }

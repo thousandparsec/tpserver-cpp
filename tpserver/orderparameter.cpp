@@ -55,9 +55,9 @@ void OrderParameter::setDescription(const std::string& nd){
 
 void OrderParameter::packOrderDescFrame(Frame * f) const{
 
-  f->packString(name.c_str());
+  f->packString(name);
   f->packInt(type);
-  f->packString(description.c_str());
+  f->packString(description);
   
 }
 

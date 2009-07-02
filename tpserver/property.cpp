@@ -36,11 +36,11 @@ void Property::packFrame(Frame* frame) const {
     frame->packInt(*idit);
   }
   frame->packInt(rank);
-  frame->packString(name.c_str());
-  frame->packString(display.c_str());
-  frame->packString(desc.c_str());
-  frame->packString(tpcl_display.c_str());
-  frame->packString(tpcl_requires.c_str());
+  frame->packString(name);
+  frame->packString(display);
+  frame->packString(desc);
+  frame->packString(tpcl_display);
+  frame->packString(tpcl_requires);
 }
 
 uint32_t Property::getPropertyId() const {

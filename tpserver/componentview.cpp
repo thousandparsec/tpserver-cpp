@@ -86,7 +86,7 @@ void ComponentView::packFrame(Frame* frame) const{
   frame->packInt(propertylist.size());
   for(std::map<uint32_t, std::string>::const_iterator itcurr = propertylist.begin(); itcurr != propertylist.end(); ++itcurr){
     frame->packInt(itcurr->first);
-    frame->packString(itcurr->second.c_str());
+    frame->packString(itcurr->second);
   }
 }
 

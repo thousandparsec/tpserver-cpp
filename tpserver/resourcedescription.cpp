@@ -96,11 +96,11 @@ uint32_t ResourceDescription::getVolume() const{
 void ResourceDescription::packFrame(Frame* frame) const{
     frame->setType(ft02_ResDesc);
     frame->packInt(restype);
-    frame->packString(name_sig.c_str());
-    frame->packString(name_plur.c_str());
-    frame->packString(unit_sig.c_str());
-    frame->packString(unit_plur.c_str());
-    frame->packString(description.c_str());
+    frame->packString(name_sig);
+    frame->packString(name_plur);
+    frame->packString(unit_sig);
+    frame->packString(unit_plur);
+    frame->packString(description);
     frame->packInt(mass);
     frame->packInt(volume);
     frame->packInt64(getModTime());

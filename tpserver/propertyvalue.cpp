@@ -56,7 +56,7 @@ bool PropertyValue::operator<(const PropertyValue& rhs) const{
 
 void PropertyValue::packFrame(Frame* frame) const{
   frame->packInt(propid);
-  frame->packString(display.c_str());
+  frame->packString(display);
 }
 
 uint32_t PropertyValue::getPropertyId() const{

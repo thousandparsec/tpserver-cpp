@@ -130,7 +130,7 @@ PlayerView* Player::getPlayerView() const{
 void Player::packFrame(Frame* frame){
   frame->setType(ft03_Player);
   frame->packInt(id);
-  frame->packString(name.c_str());
+  frame->packString(name);
   frame->packString("Human");
 }
 
