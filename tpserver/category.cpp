@@ -25,7 +25,7 @@
 #include "category.h"
 
 
-Category::Category() : Describable(0) {
+Category::Category() : ProtocolObject(ft03_Category,0,"","") {
 }
 
 Category::~Category(){

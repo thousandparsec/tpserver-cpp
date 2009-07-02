@@ -22,14 +22,11 @@
 
 #include <string>
 #include <stdint.h>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
-#include <tpserver/packable.h>
+#include <tpserver/protocolobject.h>
 
-class Frame;
 class Design;
 
-class Category : public Modifiable, public Describable, public Packable {
+class Category : public ProtocolObject {
   public:
     Category();
     virtual ~Category();
