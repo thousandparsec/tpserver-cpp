@@ -20,14 +20,13 @@
  *
  */
 
-#include <string>
-#include <set>
 #include <stdint.h>
-#include <tpserver/modifiable.h>
+#include <tpserver/protocolview.h>
+#include <tpserver/common.h>
 
 class Frame;
 
-class ComponentView : public Modifiable {
+class ComponentView : public ProtocolView {
  public:
   ComponentView();
   virtual ~ComponentView();
@@ -35,46 +34,23 @@ class ComponentView : public Modifiable {
   void packFrame(Frame* frame) const;
 
   uint32_t getComponentId() const;
-  bool isCompletelyVisible() const;
   
-  std::set<uint32_t> getVisibleCategories() const;
-  bool canSeeName() const;
-  std::string getVisibleName() const;
-  bool canSeeDescription() const;
-  std::string getVisibleDescription() const;
+  IdSet getVisibleCategories() const;
+  IdSet getVisiblePropertyFuncs() const;
   bool canSeeRequirementsFunc() const;
-  std::set<uint32_t> getVisiblePropertyFuncs() const;
   
-
   void setComponentId(uint32_t id);
-  void setCompletelyVisible(bool ncv);
   
-  void setVisibleCategories(const std::set<uint32_t>& nvc);
+  void setVisibleCategories(const IdSet& nvc);
   void addVisibleCategory(uint32_t catid);
-  void setCanSeeName(bool csn);
-  void setVisibleName(const std::string& nvn);
-  void setCanSeeDescription(bool csd);
-  void setVisibleDescription(const std::string& nvd);
   void setCanSeeRequirementsFunc(bool csr);
-  void setVisiblePropertyFuncs(const std::set<uint32_t>& nvp);
+  void setVisiblePropertyFuncs(const IdSet& nvp);
   void addVisiblePropertyFunc(uint32_t propid);
   
-  
  protected:
-  uint32_t compid;
-  bool completelyvisible;
-  
-  std::set<uint32_t> visiblecats;
-  
-  bool seename;
-  std::string visiblename;
-  
-  bool seedesc;
-  std::string visibledesc;
-  
-  bool seerequirements;
-  
-  std::set<uint32_t> visibleproperties;
+  bool requirements_visible;
+  IdSet cats_visible;
+  IdSet properties_visible;
   
 
 };

@@ -33,11 +33,11 @@ class ProtocolView : public ProtocolObject {
     bool canSeeDescription() const { return desc_visible; }
     std::string getVisibleDescription() const { return desc; }
 
-    void setCompletelyVisible(bool visibility) { completely_visible = visibility; }
-    void setCanSeeName(bool visibility) { name_visible = visibility; }
-    void setVisibleName(const std::string& new_name) { setName( new_name ); }
-    void setCanSeeDescription(bool visibility) { desc_visible = visibility; }
-    void setVisibleDescription(const std::string& new_desc) { setDescription( new_desc ); }
+    void setCompletelyVisible(bool visibility) { completely_visible = visibility; touchModTime(); }
+    void setCanSeeName(bool visibility) { name_visible = visibility; touchModTime(); }
+    void setVisibleName(const std::string& new_name) { setName( new_name ); touchModTime(); }
+    void setCanSeeDescription(bool visibility) { desc_visible = visibility; touchModTime(); }
+    void setVisibleDescription(const std::string& new_desc) { setDescription( new_desc ); touchModTime(); }
   protected:
     bool completely_visible;
     bool name_visible;

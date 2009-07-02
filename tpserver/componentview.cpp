@@ -27,9 +27,8 @@
 
 #include "componentview.h"
 
-ComponentView::ComponentView(): compid(0), completelyvisible(false), visiblecats(), seename(false),
-                              visiblename(), seedesc(false), visibledesc(), seerequirements(false),
-                              visibleproperties(){
+ComponentView::ComponentView(): ProtocolView(ft03_Component), requirements_visible(false)
+{
 }
 
 ComponentView::~ComponentView(){
@@ -38,48 +37,45 @@ ComponentView::~ComponentView(){
 
 void ComponentView::packFrame(Frame* frame) const{
   
-  Component* comp = Game::getGame()->getDesignStore()->getComponent(compid);
+  Component* comp = Game::getGame()->getDesignStore()->getComponent(id);
   
   frame->setType(ft03_Component);
-  frame->packInt(compid);
-  if(completelyvisible && getModTime() < comp->getModTime()){
+  frame->packInt(id);
+  if(completely_visible && getModTime() < comp->getModTime()){
     frame->packInt64(comp->getModTime());
   }else{
     frame->packInt64(getModTime());
   }
-  std::set<uint32_t> catids;
-  if(completelyvisible){
+  IdSet catids;
+  if(completely_visible){
     catids = comp->getCategoryIds();
   }else{
-    catids = visiblecats;
+    catids = cats_visible;
   }
   //Maybe: filter catids list for non-visible categories?
-  frame->packInt(catids.size());
-  for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
-    frame->packInt(*idit);
-  }
-  if(completelyvisible || seename){
+  frame->packIdSet(catids);
+  if(completely_visible || name_visible){
     frame->packString(comp->getName());
   }else{
-    frame->packString(visiblename);
+    frame->packString(name);
   }
-  if(completelyvisible || seedesc){
+  if(completely_visible || desc_visible){
     frame->packString(comp->getDescription());
   }else{
-    frame->packString(visibledesc);
+    frame->packString(desc);
   }
-  if(completelyvisible || seerequirements){
+  if(completely_visible || requirements_visible){
     frame->packString(comp->getTpclRequirementsFunction());
   }else{
     frame->packString("(lamda (design) (cons #f \"Unknown Component. \")))");
   }
   std::map<uint32_t, std::string> propertylist;
-  if(completelyvisible){
+  if(completely_visible){
     propertylist = comp->getPropertyList();
   }else{
     std::map<uint32_t, std::string> compproplist = comp->getPropertyList();
-    for(std::set<uint32_t>::const_iterator itcurr = visibleproperties.begin();
-        itcurr != visibleproperties.end(); ++itcurr){
+    for(std::set<uint32_t>::const_iterator itcurr = properties_visible.begin();
+        itcurr != properties_visible.end(); ++itcurr){
       propertylist[*itcurr] = compproplist[*itcurr];
     }
   }
@@ -91,99 +87,52 @@ void ComponentView::packFrame(Frame* frame) const{
 }
 
 uint32_t ComponentView::getComponentId() const{
-  return compid;
+  return id;
 }
 
-bool ComponentView::isCompletelyVisible() const{
-  return completelyvisible;
-}
-
-std::set<uint32_t> ComponentView::getVisibleCategories() const{
+IdSet ComponentView::getVisibleCategories() const{
   //maybe: filter out non-visible cats
-  return visiblecats;
-}
-
-bool ComponentView::canSeeName() const{
-  return seename;
-}
-
-std::string ComponentView::getVisibleName() const{
-  return visiblename;
-}
-
-bool ComponentView::canSeeDescription() const{
-  return seedesc;
-}
-
-std::string ComponentView::getVisibleDescription() const{
-    return visibledesc;
+  return cats_visible;
 }
 
 bool ComponentView::canSeeRequirementsFunc() const{
-  return seerequirements;
+  return requirements_visible;
 }
 
 
-std::set<uint32_t> ComponentView::getVisiblePropertyFuncs() const{
-  return visibleproperties;
+IdSet ComponentView::getVisiblePropertyFuncs() const{
+  return properties_visible;
 }
 
 void ComponentView::setComponentId(uint32_t id){
-  compid = id;
+  setId(id);
   touchModTime();
 }
 
-void ComponentView::setCompletelyVisible(bool ncv){
-  if(ncv != completelyvisible)
-    touchModTime();
-  completelyvisible = ncv;
-}
-
-void ComponentView::setVisibleCategories(const std::set<uint32_t>& nvc){
-  visiblecats = nvc;
+void ComponentView::setVisibleCategories(const IdSet& nvc){
+  cats_visible = nvc;
   touchModTime();
 }
 
 void ComponentView::addVisibleCategory(uint32_t catid){
-  visiblecats.insert(catid);
+  cats_visible.insert(catid);
   touchModTime();
 }
 
-void ComponentView::setCanSeeName(bool csn){
-  if(csn != seename)
-    touchModTime();
-  seename = csn;
-}
-
-void ComponentView::setVisibleName(const std::string& nvn){
-  visiblename = nvn;
-  touchModTime();
-}
-
-void ComponentView::setCanSeeDescription(bool csd){
-  if(csd != seedesc)
-    touchModTime();
-  seedesc = csd;
-}
-
-void ComponentView::setVisibleDescription(const std::string& nvd){
-  visibledesc = nvd;
-  touchModTime();
-}
 
 void ComponentView::setCanSeeRequirementsFunc(bool csr){
-  if(csr != seerequirements)
+  if(csr != requirements_visible)
     touchModTime();
-  seerequirements = csr;
+  requirements_visible = csr;
 }
 
-void ComponentView::setVisiblePropertyFuncs(const std::set<uint32_t>& nvp){
-  visibleproperties = nvp;
+void ComponentView::setVisiblePropertyFuncs(const IdSet& nvp){
+  properties_visible = nvp;
   touchModTime();
 }
 
 void ComponentView::addVisiblePropertyFunc(uint32_t propid){
-  visibleproperties.insert(propid);
+  properties_visible.insert(propid);
   touchModTime();
 }
 
