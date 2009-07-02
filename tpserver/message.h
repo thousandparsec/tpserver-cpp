@@ -22,6 +22,7 @@
 
 #include <tpserver/common.h>
 #include <tpserver/refsys.h>
+#include <tpserver/packable.h>
 
 class Frame;
 
@@ -30,7 +31,7 @@ class Frame;
  *
  * A message consists of a subject, body, turn number and references.
  */
-class Message {
+class Message : public Packable {
   public:
     /// Type definition for a single reference
     typedef std::pair<RefSysType, uint32_t> Ref;
@@ -88,7 +89,7 @@ class Message {
     /**
      * Packs the Message into a frame
      */
-    void pack(Frame * frame);
+    void pack(Frame * frame) const;
 
   private:
     /// Message subject
