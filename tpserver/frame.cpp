@@ -391,6 +391,16 @@ bool Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t fro
   }
   return true;
 }
+
+bool Frame::packIdSet(const IdSet& idset)
+{
+  packInt(idset.size());
+  for(IdSet::const_iterator idit = idset.begin(); idit != idset.end(); ++idit){
+    packInt(*idit);
+  }
+  return true;
+}
+
 bool Frame::isEnoughRemaining(uint32_t size) const{
   Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
   return (length - unpackptr) >= size;

@@ -1224,7 +1224,7 @@ void PlayerAgent::processGetProperty(Frame* frame){
     if(property == NULL){
       of->createFailFrame(fec_NonExistant, "No Such Property");
     }else{
-      property->packFrame(of);
+      property->pack(of);
     }
     curConnection->sendFrame(of);
   }

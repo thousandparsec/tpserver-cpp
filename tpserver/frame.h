@@ -110,6 +110,7 @@ class Frame {
     bool packInt64(int64_t val);
     bool packInt8(char val);
     bool packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
+    bool packIdSet(const IdSet& idset);
 
     bool isEnoughRemaining(uint32_t size) const;
     // uses these functions with care

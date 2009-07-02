@@ -24,17 +24,14 @@
 
 #include "property.h"
 
-Property::Property() : Describable(0), rank(0) {
+Property::Property() : ProtocolObject(ft03_Property,0,"",""), rank(0) {
 }
 
-void Property::packFrame(Frame* frame) const {
+void Property::pack(Frame* frame) const {
   frame->setType(ft03_Property);
   frame->packInt(id);
   frame->packInt64(getModTime());
-  frame->packInt(catids.size());
-  for(std::set<uint32_t>::const_iterator idit = catids.begin(); idit != catids.end(); ++idit){
-    frame->packInt(*idit);
-  }
+  frame->packIdSet(catids);
   frame->packInt(rank);
   frame->packString(name);
   frame->packString(display);

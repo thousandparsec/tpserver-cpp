@@ -22,12 +22,12 @@
 
 #include <string>
 #include <set>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
+#include <tpserver/protocolobject.h>
+#include <tpserver/common.h>
 
 class Frame;
 
-class Property : public Modifiable, public Describable {
+class Property : public ProtocolObject {
   public:
     /**
      * Default constructor
@@ -39,7 +39,7 @@ class Property : public Modifiable, public Describable {
     /**
      * Pack property data into a frame
      */
-    void packFrame(Frame* frame) const;
+    void pack(Frame* frame) const;
 
     /// TODO: remove
     uint32_t getPropertyId() const;
@@ -60,7 +60,7 @@ class Property : public Modifiable, public Describable {
     void setTpclRequirementsFunction(const std::string& r);
 
   private:
-    std::set<uint32_t> catids;
+    IdSet catids;
     uint32_t rank;
     std::string display;
     std::string tpcl_display;
