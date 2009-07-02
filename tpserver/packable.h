@@ -25,7 +25,7 @@
 
 class Packable {
   public:
-    void pack( Frame* frame ) const = 0;
+    virtual void pack( Frame* frame ) const = 0;
 };
 
 #endif // PACKABLE_H
