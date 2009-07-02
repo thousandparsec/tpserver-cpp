@@ -31,6 +31,7 @@ class ObjectView : public ProtocolView {
     virtual ~ObjectView();
 
     void packFrame(Frame* frame, uint32_t playerid) const;
+    void pack(Frame* frame) const { throw 0; }
 
     uint32_t getObjectId() const;
     bool isGone() const;

@@ -27,7 +27,6 @@ class ProtocolView : public ProtocolObject {
     ProtocolView( FrameType frame_type ) 
       : ProtocolObject( frame_type, 0, "", "" ), completely_visible( false ), name_visible( false ), desc_visible( false ) {}
     virtual ~ProtocolView() {}
-    void pack(Frame* frame) const {};
     bool isCompletelyVisible() const { return completely_visible; }
     bool canSeeName() const { return name_visible; }
     std::string getVisibleName() const { return name; }

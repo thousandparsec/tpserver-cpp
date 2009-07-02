@@ -35,7 +35,7 @@ ComponentView::~ComponentView(){
 
 }
 
-void ComponentView::packFrame(Frame* frame) const{
+void ComponentView::pack(Frame* frame) const{
   
   Component* comp = Game::getGame()->getDesignStore()->getComponent(id);
   

@@ -228,7 +228,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
         designs.cache[designid] = design;
       }
     }
-    design->packFrame(frame);
+    design->pack(frame);
   }
 }
 
@@ -334,7 +334,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
         components.cache[compid] = component;
       }
     }
-    component->packFrame(frame);
+    component->pack(frame);
   }
 }
 

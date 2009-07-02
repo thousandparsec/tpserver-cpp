@@ -31,7 +31,7 @@ class ComponentView : public ProtocolView {
   ComponentView();
   virtual ~ComponentView();
 
-  void packFrame(Frame* frame) const;
+  void pack(Frame* frame) const;
 
   uint32_t getComponentId() const;
   

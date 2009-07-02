@@ -35,7 +35,7 @@ class DesignView : public ProtocolView {
     DesignView( uint32_t desid, bool visibility );
     virtual ~DesignView();
 
-    void packFrame(Frame* frame) const;
+    void pack(Frame* frame) const;
 
     uint32_t getDesignId() const;
     

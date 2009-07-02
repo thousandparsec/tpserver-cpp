@@ -43,7 +43,7 @@ DesignView::~DesignView(){
 
 }
 
-void DesignView::packFrame(Frame* frame) const{
+void DesignView::pack(Frame* frame) const{
   
   Design* design = Game::getGame()->getDesignStore()->getDesign(id);
   
