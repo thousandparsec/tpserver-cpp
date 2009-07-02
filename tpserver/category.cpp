@@ -21,7 +21,6 @@
 #include <time.h>
 
 #include "design.h"
-#include "frame.h"
 
 #include "category.h"
 
@@ -36,7 +35,7 @@ uint32_t Category::getCategoryId() const{
   return getId();
 }
 
-void Category::packFrame(Frame* frame) const{
+void Category::pack(Frame* frame) const{
   frame->setType(ft03_Category);
   frame->packInt(id);
   // TODO: is this really correct???

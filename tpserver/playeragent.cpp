@@ -1009,7 +1009,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
     if(cat == NULL){
       of->createFailFrame(fec_NonExistant, "No Such Category");
     }else{
-      cat->packFrame(of);
+      cat->pack(of);
     }
     curConnection->sendFrame(of);
   }

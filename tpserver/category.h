@@ -24,18 +24,19 @@
 #include <stdint.h>
 #include <tpserver/modifiable.h>
 #include <tpserver/describable.h>
+#include <tpserver/packable.h>
 
 class Frame;
 class Design;
 
-class Category : public Modifiable, public Describable {
+class Category : public Modifiable, public Describable, public Packable {
   public:
     Category();
     virtual ~Category();
 
     /// TODO: Remove, use getId instead
     uint32_t getCategoryId() const;
-    void packFrame(Frame* frame) const;
+    void pack(Frame* frame) const;
 
     virtual bool doAddDesign(Design* d);
     virtual bool doModifyDesign(Design* d);
