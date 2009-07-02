@@ -24,14 +24,12 @@
 #include <map>
 #include <string>
 #include <stdint.h>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
+#include <tpserver/protocolobject.h>
 
-class Frame;
 class Message;
 class PlayerView;
 
-class Player : public Modifiable, public Describable {
+class Player : public ProtocolObject {
 public:
   Player();
   virtual ~Player();
@@ -62,7 +60,7 @@ public:
   
   PlayerView* getPlayerView() const;
   
-  void packFrame(Frame* frame);
+  void pack(Frame* frame) const;
 
 private:
 

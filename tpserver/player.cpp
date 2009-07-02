@@ -32,7 +32,7 @@
 #include "player.h"
 
 
-Player::Player() : Describable(0), passwd(), email(), boardid(0), 
+Player::Player() : ProtocolObject(ft03_Player,0,"",""), passwd(), email(), boardid(0), 
                 alive(true), score(){
   playerview = new PlayerView();
 }
@@ -127,7 +127,7 @@ PlayerView* Player::getPlayerView() const{
   return playerview;
 }
 
-void Player::packFrame(Frame* frame){
+void Player::pack(Frame* frame) const {
   frame->setType(ft03_Player);
   frame->packInt(id);
   frame->packString(name);

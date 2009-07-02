@@ -925,12 +925,12 @@ void PlayerAgent::processGetPlayer(Frame* frame){
     Frame *of = curConnection->createFrame(frame);
     int pnum = frame->unpackInt();
     if(pnum == 0){
-      player->packFrame(of);
+      player->pack(of);
     }else{
       if(pnum != -1){
         Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
         if(p != NULL){
-          p->packFrame(of);
+          p->pack(of);
         }else{
           of->createFailFrame(fec_NonExistant, "Player doesn't exist");
         }
