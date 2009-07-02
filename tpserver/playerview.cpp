@@ -52,7 +52,7 @@ void PlayerView::doOnceATurn(){
 
 
 void PlayerView::addVisibleObject(ObjectView* obj){
-  objects.addVisible( obj, obj->getObjectId());
+  objects.addVisible( obj, obj->getId());
   Game::getGame()->getPersistence()->saveObjectView(pid, obj);
 }
 
@@ -101,9 +101,7 @@ void PlayerView::addOwnedObject(uint32_t objid){
     obj->setCompletelyVisible(true);
     updateObjectView(objid);
   }else{
-    ObjectView* ov = new ObjectView();
-    ov->setObjectId(objid);
-    ov->setCompletelyVisible(true);
+    ObjectView* ov = new ObjectView(objid, true);
     addVisibleObject(ov);
   }
 }
@@ -179,7 +177,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleDesign(DesignView* design){
   design->touchModTime();
-  designs.addVisible( design, design->getDesignId() );
+  designs.addVisible( design, design->getId() );
   Game::getGame()->getPersistence()->saveDesignView(pid, design);
 }
 
@@ -282,7 +280,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
   comp->touchModTime();
-  components.addVisible( comp, comp->getComponentId() );
+  components.addVisible( comp, comp->getId() );
   Game::getGame()->getPersistence()->saveComponentView(pid, comp);
 }
 

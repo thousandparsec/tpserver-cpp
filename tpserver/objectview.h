@@ -28,6 +28,7 @@
 class ObjectView : public ProtocolView {
   public:
     ObjectView();
+    ObjectView( uint32_t new_id, bool visibility );
     virtual ~ObjectView();
 
     void packFrame(Frame* frame, uint32_t playerid) const;

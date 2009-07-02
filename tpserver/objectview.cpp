@@ -43,6 +43,10 @@
 
 ObjectView::ObjectView(): ProtocolView(ft02_Object), gone(false) { 
 }
+ObjectView::ObjectView( uint32_t new_id, bool visibility ) : ProtocolView(ft02_Object), gone(false) { 
+  setId( new_id );
+  setCompletelyVisible( visibility );
+}
 
 ObjectView::~ObjectView(){
 
