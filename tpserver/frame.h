@@ -84,7 +84,6 @@ class Frame {
     int getLength() const;
 
     // Data
-    char *getData() const;
     bool setData(char *newdata, int dlen);
 
     // Type
@@ -110,7 +109,6 @@ class Frame {
     bool packInt(int val);
     bool packInt64(int64_t val);
     bool packInt8(char val);
-    bool packData(uint32_t len, char* bdata);
     bool packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
 
     bool isEnoughRemaining(uint32_t size) const;
@@ -122,7 +120,6 @@ class Frame {
     std::string unpackStdString();
     int64_t unpackInt64();
     char unpackInt8();
-    void unpackData(uint32_t len, char* bdata);
 
     void createFailFrame(FrameErrorCode code, const std::string& reason);
     void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);

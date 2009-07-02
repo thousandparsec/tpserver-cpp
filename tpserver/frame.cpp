@@ -192,15 +192,6 @@ int Frame::getDataLength() const
   return length;
 }
 
-char *Frame::getData() const
-{
-  char *tortn = (char *) malloc(length);
-  if (tortn != NULL) {
-    memcpy(tortn, data, length);
-  }
-  return tortn;
-}
-
 int Frame::setHeader(char *newhead)
 {
   char* temp = newhead;
@@ -386,28 +377,6 @@ bool Frame::packInt8(char val){
   return true;
 }
 
-bool Frame::packData(uint32_t len, char* bdata){
-  char *temp = (char *) realloc(data, length + len + 3);
-
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-    memcpy(temp, bdata, len);
-    length += len;
-    if(padstrings){
-      int pad = length % 4;
-      if(pad != 0){
-        for(int i = 0; i < 4-pad; i++){
-          *temp = '\0';
-          temp++;
-        }
-      }
-    }
-  }else{
-    return false;
-  }
-  return true;
-}
 
 bool Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t from_position ){
   if (count == 0) count = modlist.size();
@@ -487,19 +456,6 @@ char Frame::unpackInt8(){
   if(padstrings)
     unpackptr += 3;
   return rval;
-}
-
-void Frame::unpackData(uint32_t len, char* bdata){
-  Logger::getLogger()->warning("Using unpackData, might not be safe");
-
-  memcpy(bdata, data + unpackptr, len);
-  unpackptr += len;
-  if(padstrings){
-    int pad = unpackptr % 4;
-    if(pad != 0){
-      unpackptr += 4-pad;
-    }
-  }
 }
 
 void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){
