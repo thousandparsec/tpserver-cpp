@@ -25,11 +25,11 @@
 #include <stdint.h>
 
 #include <tpserver/propertyvalue.h>
-#include <tpserver/modifiable.h>
+#include <tpserver/protocolview.h>
 
 class Frame;
 
-class DesignView : public Modifiable {
+class DesignView : public ProtocolView {
   public:
     DesignView();
     DesignView( uint32_t desid, bool visibility );
@@ -38,12 +38,7 @@ class DesignView : public Modifiable {
     void packFrame(Frame* frame) const;
 
     uint32_t getDesignId() const;
-    bool isCompletelyVisible() const;
-
-    std::string getVisibleName() const;
-    bool canSeeName() const;
-    std::string getVisibleDescription() const;
-    bool canSeeDescription() const;
+    
     uint32_t getVisibleOwner() const;
     bool canSeeOwner() const;
     std::map<uint32_t, uint32_t> getVisibleComponents() const;
@@ -51,14 +46,8 @@ class DesignView : public Modifiable {
     bool canSeeNumExist() const;
     PropertyValue::Map getVisiblePropertyValues() const;
 
-
     void setDesignId(uint32_t id);
-    void setIsCompletelyVisible(bool ncv);
 
-    void setVisibleName(const std::string& n);
-    void setCanSeeName(bool csn);
-    void setVisibleDescription(const std::string& d);
-    void setCanSeeDescription(bool csd);
     void setVisibleOwner(uint32_t o);
     void setCanSeeOwner(bool cso);
     void setVisibleComponents(std::map<uint32_t, uint32_t> cl);
@@ -67,15 +56,6 @@ class DesignView : public Modifiable {
     void setVisiblePropertyValues(PropertyValue::Map pvl);
 
   protected:
-
-    uint32_t designid;
-
-    bool completelyvisible;
-
-    bool seename;
-    std::string name;
-    bool seedesc;
-    std::string description;
 
     bool seenum;
     uint32_t exist;

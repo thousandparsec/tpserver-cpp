@@ -195,7 +195,7 @@ void PlayerView::addUsableDesign(uint32_t designid){
         designs.cache[designid] = design;
       }
     }
-    design->setIsCompletelyVisible(true);
+    design->setCompletelyVisible(true);
     Game::getGame()->getPersistence()->saveDesignView(pid, design);
     components.sequence++;
   }

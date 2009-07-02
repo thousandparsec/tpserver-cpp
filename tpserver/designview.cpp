@@ -27,12 +27,16 @@
 
 #include "designview.h"
 
-DesignView::DesignView() : designid(0), completelyvisible(false), seename(false), seedesc(false),
-    seenum(false), exist(0), seeowner(false), owner(0) {
+DesignView::DesignView() : ProtocolView( ft03_Design ), 
+    seenum(false), exist(0), seeowner(false), owner(0) 
+{
 }
 
-DesignView::DesignView( uint32_t desid, bool visibility ) : designid(desid), completelyvisible(visibility), seename(false), seedesc(false),
-    seenum(false), exist(0), seeowner(false), owner(0) {
+DesignView::DesignView( uint32_t desid, bool visibility ) : ProtocolView( ft03_Design ),
+    seenum(false), exist(0), seeowner(false), owner(0) 
+{
+  setId( desid );
+  completely_visible = visibility;
 }
 
 DesignView::~DesignView(){
@@ -41,39 +45,39 @@ DesignView::~DesignView(){
 
 void DesignView::packFrame(Frame* frame) const{
   
-  Design* design = Game::getGame()->getDesignStore()->getDesign(designid);
+  Design* design = Game::getGame()->getDesignStore()->getDesign(id);
   
   frame->setType(ft03_Design);
-  frame->packInt(designid);
-  if(completelyvisible && getModTime() < design->getModTime()){
+  frame->packInt(id);
+  if(completely_visible && getModTime() < design->getModTime()){
     frame->packInt64(design->getModTime());
   }else{
     frame->packInt64(getModTime());
   }
   frame->packInt(1);
   frame->packInt(design->getCategoryId());
-  if(completelyvisible || seename){
+  if(completely_visible || name_visible){
     frame->packString(design->getName());
   }else{
     frame->packString(name);
   }
-  if(completelyvisible || seedesc){
+  if(completely_visible || desc_visible){
     frame->packString(design->getDescription());
   }else{
-    frame->packString(description);
+    frame->packString(desc);
   }
-  if(completelyvisible || seenum){
+  if(completely_visible || seenum){
     frame->packInt(design->isValid() ? design->getInUse() : UINT32_NEG_ONE);
   }else{
     frame->packInt(exist);
   }
-  if(completelyvisible || seeowner){
+  if(completely_visible || seeowner){
     frame->packInt(design->getOwner());
   }else{
     frame->packInt(owner);
   }
   std::map<uint32_t, uint32_t> complist;
-  if(completelyvisible){
+  if(completely_visible){
     complist = design->getComponents();
   }else{
     complist = components;
@@ -84,13 +88,13 @@ void DesignView::packFrame(Frame* frame) const{
     frame->packInt(itcurr->first);
     frame->packInt(itcurr->second);
   }
-  if(completelyvisible){
+  if(completely_visible){
     frame->packString(design->getFeedback());
   }else{
     frame->packString("");
   }
   PropertyValue::Map proplist;
-  if(completelyvisible){
+  if(completely_visible){
     proplist = design->getPropertyValues();
   }else{
     proplist = properties;
@@ -103,27 +107,7 @@ void DesignView::packFrame(Frame* frame) const{
 }
 
 uint32_t DesignView::getDesignId() const{
-  return designid;
-}
-
-bool DesignView::isCompletelyVisible() const{
-  return completelyvisible;
-}
-
-std::string DesignView::getVisibleName() const{
-  return name;
-}
-
-bool DesignView::canSeeName() const{
-  return seename;
-}
-
-std::string DesignView::getVisibleDescription() const{
-    return description;
-}
-
-bool DesignView::canSeeDescription() const{
-  return seedesc;
+  return id;
 }
 
 uint32_t DesignView::getVisibleOwner() const{
@@ -151,32 +135,7 @@ PropertyValue::Map DesignView::getVisiblePropertyValues() const{
 }
 
 void DesignView::setDesignId(uint32_t id){
-  designid = id;
-  touchModTime();
-}
-
-void DesignView::setIsCompletelyVisible(bool ncv){
-  completelyvisible = ncv;
-  touchModTime();
-}
-
-void DesignView::setVisibleName(const std::string& n){
-  name = n;
-  touchModTime();
-}
-
-void DesignView::setCanSeeName(bool csn){
-  seename = csn;
-  touchModTime();
-}
-
-void DesignView::setVisibleDescription(const std::string& d){
-  description = d;
-  touchModTime();
-}
-
-void DesignView::setCanSeeDescription(bool csd){
-  seedesc = csd;
+  setId( id );
   touchModTime();
 }
 
