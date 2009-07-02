@@ -21,13 +21,26 @@
  *
  */
 
+#include <tpserver/protocol.h>
 #include <tpserver/packable.h>
 #include <tpserver/describable.h>
 #include <tpserver/modifiable.h>
 
 class ProtocolObject : public Packable, public Describable, public Modifiable {
 public:
-  ProtocolObject( uint32_t new_id, const std::string& new_name = "", const std::string& new_desc = "" ) : Describable( new_id, new_name, new_desc ) {}
+  ProtocolObject( FrameType new_frame_type, uint32_t new_id, const std::string& new_name = "", const std::string& new_desc = "" ) : Describable( new_id, new_name, new_desc ) 
+  {
+    frame_type = new_frame_type;
+  }
+  virtual void pack( Frame* frame ) const
+  {
+    frame->setType(frame_type);
+    frame->packInt(id);
+    frame->packString(name);
+    frame->packString(desc);
+  }
+private:
+  FrameType frame_type;
 };
 
 #endif // PROTOCOLOBJECT_H

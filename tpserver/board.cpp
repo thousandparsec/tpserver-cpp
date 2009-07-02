@@ -28,7 +28,7 @@
 #include "board.h"
 
 Board::Board(uint32_t nid, const std::string& nname, const std::string& ndesc) 
-  : ProtocolObject( nid, nname, ndesc )
+  : ProtocolObject( ft02_Board, nid, nname, ndesc )
 {
   message_count = 0;
 }
@@ -77,10 +77,7 @@ bool Board::removeMessage(uint32_t pos){
 }
 
 void Board::pack(Frame * frame) const {
-  frame->setType(ft02_Board);
-  frame->packInt(id);
-  frame->packString(name);
-  frame->packString(desc);
+  ProtocolObject::pack( frame );
   frame->packInt(message_count);
   frame->packInt64(getModTime());
 }
