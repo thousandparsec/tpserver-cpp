@@ -124,12 +124,12 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
     DesignView* othersView = new DesignView();
     ownerView->setDesignId(ship->getDesignId());
     othersView->setDesignId(ship->getDesignId());
-    ownerView->setIsCompletelyVisible(true);
+    ownerView->setCompletelyVisible(true);
     if(fleetType == PASSENGER_FLEET) {
         //Colonist ship types are not viewable by enemy players
-        othersView->setIsCompletelyVisible(false);
+        othersView->setCompletelyVisible(false);
     } else {
-        othersView->setIsCompletelyVisible(true);
+        othersView->setCompletelyVisible(true);
     }
 
     std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();

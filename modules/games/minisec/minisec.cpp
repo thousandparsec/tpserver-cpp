@@ -756,9 +756,7 @@ void MiniSec::onPlayerAdded(Player* player){
     //Can see all other designs
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
     for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
-      DesignView* dv = new DesignView();
-      dv->setDesignId(*desid);
-      dv->setIsCompletelyVisible(true);
+      DesignView* dv = new DesignView(*desid,true);
       playerview->addVisibleDesign(dv);
     }
     
@@ -957,9 +955,7 @@ void MiniSec::onPlayerAdded(Player* player){
       
       Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
       for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
-        DesignView* dv = new DesignView();
-        dv->setDesignId(*desid);
-        dv->setIsCompletelyVisible(true);
+        DesignView* dv = new DesignView(*desid,true);
         oplayer->getPlayerView()->addVisibleDesign(dv);
       }
       game->getPlayerManager()->updatePlayer(oplayer->getID());
