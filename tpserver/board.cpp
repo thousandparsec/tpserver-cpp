@@ -76,7 +76,7 @@ bool Board::removeMessage(uint32_t pos){
   return true;
 }
 
-void Board::packBoard(Frame * frame){
+void Board::pack(Frame * frame) const {
   frame->setType(ft02_Board);
   frame->packInt(id);
   frame->packString(name);

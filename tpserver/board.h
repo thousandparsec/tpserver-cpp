@@ -25,13 +25,12 @@
 #include <tpserver/message.h>
 #include <tpserver/modifiable.h>
 #include <tpserver/describable.h>
-
-class Frame;
+#include <tpserver/packable.h>
 
 /**
  * Board for posting messages
  */
-class Board : public Modifiable, public Describable {
+class Board : public Modifiable, public Describable, public Packable {
 
   public:
     /// typedef for shared pointer
@@ -66,7 +65,7 @@ class Board : public Modifiable, public Describable {
     /**
      * Packs board information into a frame.
      */
-    void packBoard(Frame * frame);
+    void pack(Frame * frame) const;
 
     /**
      * Packs the requested message into the frame

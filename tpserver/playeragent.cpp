@@ -650,7 +650,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
-      board->packBoard(of);
+      board->pack(of);
     }else{
       //boards in the game object
       of->createFailFrame(fec_PermUnavailable, "No non-player boards yet");
