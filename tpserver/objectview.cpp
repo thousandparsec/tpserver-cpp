@@ -41,8 +41,7 @@
 
 #include "objectview.h"
 
-ObjectView::ObjectView(): objid(0), completelyvisible(false), gone(false), seename(false),
-                              visiblename(), seedesc(false), visibledesc(){
+ObjectView::ObjectView(): ProtocolView(ft02_Object), gone(false) { 
 }
 
 ObjectView::~ObjectView(){
@@ -50,27 +49,27 @@ ObjectView::~ObjectView(){
 }
 
 void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
-  IGObject* object = Game::getGame()->getObjectManager()->getObject(objid);
+  IGObject* object = Game::getGame()->getObjectManager()->getObject(id);
   
-  if(gone || (completelyvisible && (object == NULL || !object->isAlive()))){
+  if(gone || (completely_visible && (object == NULL || !object->isAlive()))){
     frame->createFailFrame(fec_NonExistant, "No such object");
   }else{
     frame->setType(ft02_Object);
-    frame->packInt(objid);
+    frame->packInt(id);
     
     PlayerView* playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
     
     //type
     frame->packInt(object->getType());
-    if(completelyvisible || seename){
+    if(completely_visible || name_visible){
       frame->packString(object->getName());
     }else{
     }
     if(frame->getVersion() >= fv0_4){
-      if(completelyvisible || seedesc){
+      if(completely_visible || desc_visible){
         frame->packString(object->getDescription());
       }else{
-        frame->packString(visibledesc);
+        frame->packString(desc);
       }
     }
     
@@ -103,14 +102,14 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
     
     }
     
-    std::set<uint32_t> children = object->getContainedObjects();
-    std::set<uint32_t>::iterator itcurr, itend;
+    IdSet children = object->getContainedObjects();
+    IdSet::iterator itcurr, itend;
     itcurr = children.begin();
     itend = children.end();
     
     while(itcurr != itend){
       if(!playerview->isVisibleObject(*itcurr)){
-        std::set<uint32_t>::iterator itemp = itcurr;
+        IdSet::iterator itemp = itcurr;
         ++itcurr;
         children.erase(itemp);
       }else{
@@ -118,12 +117,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       }
     }
     
-    frame->packInt(children.size());
-    //for loop for children objects
-    itend = children.end();
-    for (itcurr = children.begin(); itcurr != itend; itcurr++) {
-      frame->packInt(*itcurr);
-    }
+    frame->packIdSet(children);
   
     if(frame->getVersion() <= fv0_3){
     
@@ -132,9 +126,9 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       if(oq != NULL){
         OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
         if(queue->isOwner(playerid)){
-          std::set<uint32_t> allowedtypes = queue->getAllowedOrderTypes();
+          IdSet allowedtypes = queue->getAllowedOrderTypes();
           frame->packInt(allowedtypes.size());
-          for(std::set<uint32_t>::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
+          for(IdSet::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
               ++itcurr){
             frame->packInt(*itcurr);
           }
@@ -172,42 +166,16 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
 }
 
 uint32_t ObjectView::getObjectId() const{
-  return objid;
-}
-
-bool ObjectView::isCompletelyVisible() const{
-  return completelyvisible;
+  return id;
 }
 
 bool ObjectView::isGone() const{
   return gone;
 }
 
-bool ObjectView::canSeeName() const{
-  return seename;
-}
-
-std::string ObjectView::getVisibleName() const{
-  return visiblename;
-}
-
-bool ObjectView::canSeeDescription() const{
-  return seedesc;
-}
-
-std::string ObjectView::getVisibleDescription() const{
-    return visibledesc;
-}
-
 void ObjectView::setObjectId(uint32_t id){
-  objid = id;
+  setId( id );
   touchModTime();
-}
-
-void ObjectView::setCompletelyVisible(bool ncv){
-  if(ncv != completelyvisible)
-    touchModTime();
-  completelyvisible = ncv;
 }
 
 void ObjectView::setGone(bool nid){
@@ -215,27 +183,5 @@ void ObjectView::setGone(bool nid){
     touchModTime();
     gone = nid;
   }
-}
-
-void ObjectView::setCanSeeName(bool csn){
-  if(csn != seename)
-    touchModTime();
-  seename = csn;
-}
-
-void ObjectView::setVisibleName(const std::string& nvn){
-  visiblename = nvn;
-  touchModTime();
-}
-
-void ObjectView::setCanSeeDescription(bool csd){
-  if(csd != seedesc)
-    touchModTime();
-  seedesc = csd;
-}
-
-void ObjectView::setVisibleDescription(const std::string& nvd){
-  visibledesc = nvd;
-  touchModTime();
 }
 

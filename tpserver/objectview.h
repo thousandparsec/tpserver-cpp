@@ -23,50 +23,23 @@
 #include <string>
 #include <set>
 #include <stdint.h>
-#include <tpserver/modifiable.h>
+#include <tpserver/protocolview.h>
 
-class Frame;
+class ObjectView : public ProtocolView {
+  public:
+    ObjectView();
+    virtual ~ObjectView();
 
-class ObjectView : public Modifiable {
- public:
-  ObjectView();
-  virtual ~ObjectView();
+    void packFrame(Frame* frame, uint32_t playerid) const;
 
-  void packFrame(Frame* frame, uint32_t playerid) const;
+    uint32_t getObjectId() const;
+    bool isGone() const;
 
-  uint32_t getObjectId() const;
-  bool isCompletelyVisible() const;
-  bool isGone() const;
-  
-  bool canSeeName() const;
-  std::string getVisibleName() const;
-  bool canSeeDescription() const;
-  std::string getVisibleDescription() const;
-  
+    void setObjectId(uint32_t id);
+    void setGone(bool nid);
 
-  void setObjectId(uint32_t id);
-  void setCompletelyVisible(bool ncv);
-  void setGone(bool nid);
-  
-  void setCanSeeName(bool csn);
-  void setVisibleName(const std::string& nvn);
-  void setCanSeeDescription(bool csd);
-  void setVisibleDescription(const std::string& nvd);
-  
- protected:
-   
-  uint32_t objid;
-  bool completelyvisible;
-  bool gone;
-  
-  bool seename;
-  std::string visiblename;
-  
-  bool seedesc;
-  std::string visibledesc;
-  
-  
-
+  protected:
+    bool gone;
 };
 
 
