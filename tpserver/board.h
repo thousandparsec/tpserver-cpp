@@ -23,14 +23,12 @@
 
 #include <tpserver/common.h>
 #include <tpserver/message.h>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
-#include <tpserver/packable.h>
+#include <tpserver/protocolobject.h>
 
 /**
  * Board for posting messages
  */
-class Board : public Modifiable, public Describable, public Packable {
+class Board : public ProtocolObject {
 
   public:
     /// typedef for shared pointer

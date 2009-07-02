@@ -28,7 +28,7 @@
 #include "board.h"
 
 Board::Board(uint32_t nid, const std::string& nname, const std::string& ndesc) 
-  : Describable( nid, nname, ndesc )
+  : ProtocolObject( nid, nname, ndesc )
 {
   message_count = 0;
 }
