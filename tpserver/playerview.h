@@ -89,7 +89,7 @@ private:
     uint32_t sequence;
     EntityInfo() : sequence( 0 ) {}
     void packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime );
-    void addVisible( EntityType* entity, uint32_t id );
+    void addVisible( EntityType* entity );
     void removeActable( uint32_t id );
     bool isActable( uint32_t id ) const;
     bool isVisible( uint32_t id ) const;

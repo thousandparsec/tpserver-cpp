@@ -52,8 +52,7 @@ void PlayerView::doOnceATurn(){
 
 
 void PlayerView::addVisibleObject(ObjectView* obj){
-  objects.addVisible( obj, obj->getId());
-  Game::getGame()->getPersistence()->saveObjectView(pid, obj);
+  objects.addVisible( obj );
 }
 
 ObjectView* PlayerView::getObjectView(uint32_t objid){
@@ -176,9 +175,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
 }
 
 void PlayerView::addVisibleDesign(DesignView* design){
-  design->touchModTime();
-  designs.addVisible( design, design->getId() );
-  Game::getGame()->getPersistence()->saveDesignView(pid, design);
+  designs.addVisible( design );
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
@@ -279,9 +276,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
 }
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
-  comp->touchModTime();
-  components.addVisible( comp, comp->getId() );
-  Game::getGame()->getPersistence()->saveComponentView(pid, comp);
+  components.addVisible( comp );
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
@@ -436,8 +431,11 @@ void PlayerView::EntityInfo< EntityType >::packEntityList( Frame* out, FrameType
 }
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity, uint32_t id )
+void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
 {
+  uint32_t id = entity->getId();
+  entity->touchModTime();
+  Game::getGame()->getPersistence()->saveProtocolView(id, entity);
   visible.insert(id);
   if (cache.find(id) != cache.end()){
     delete cache[id];
