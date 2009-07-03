@@ -39,6 +39,7 @@ public:
     frame->packString(name);
     frame->packString(desc);
   }
+  FrameType getFrameType() const { return frame_type; } 
 private:
   FrameType frame_type;
 };
