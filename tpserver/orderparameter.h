@@ -20,8 +20,7 @@
  *
  */
 
-#include <stdint.h>
-#include <string>
+#include <tpserver/describable.h>
 
 typedef enum {
 	opT_Invalid = -1,
@@ -39,30 +38,19 @@ typedef enum {
 
 class Frame;
 
-class OrderParameter {
+class OrderParameter : public Describable {
+  public:
+    OrderParameter();
+    virtual ~OrderParameter();
 
-      public:
-	OrderParameter();
-        virtual ~OrderParameter();
+    uint32_t getType() const;
 
-	uint32_t getType() const;
-	std::string getName() const;
-        std::string getDescription() const;
-        
-        void setName(const std::string& nn);
-        void setDescription(const std::string& nd);
-        
-	virtual void packOrderFrame(Frame * f) = 0;
-        void packOrderDescFrame(Frame* f) const;
-	virtual bool unpackFrame(Frame * f, uint32_t playerid) = 0;
+    virtual void packOrderFrame(Frame * f) = 0;
+    void packOrderDescFrame(Frame* f) const;
+    virtual bool unpackFrame(Frame * f, uint32_t playerid) = 0;
 
 
-	virtual OrderParameter *clone() const = 0;
-
-      protected:
-	 uint32_t type;
-	 std::string name;
-         std::string description;
+    virtual OrderParameter *clone() const = 0;
 
 };
 

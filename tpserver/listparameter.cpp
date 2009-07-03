@@ -25,7 +25,7 @@
 #include "listparameter.h"
 
 ListParameter::ListParameter() : OrderParameter(), list(), optionscallback(){
-  type = opT_List;
+  id = opT_List;
 }
 
 ListParameter::~ListParameter(){

@@ -26,7 +26,7 @@
 #include "spacecoordparam.h"
 
 SpaceCoordParam::SpaceCoordParam() : OrderParameter(), position(){
-  type = opT_Space_Coord_Abs;
+  id = opT_Space_Coord_Abs;
 }
 
 SpaceCoordParam::~SpaceCoordParam(){

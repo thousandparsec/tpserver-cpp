@@ -25,7 +25,7 @@
 #include "objectorderparameter.h"
 
 ObjectOrderParameter::ObjectOrderParameter() : OrderParameter(), object(0){
-  type = opT_Object_ID;
+  id = opT_Object_ID;
 }
 
 ObjectOrderParameter::~ObjectOrderParameter(){
@@ -65,8 +65,8 @@ uint32_t ObjectOrderParameter::getObjectId() const{
   return object;
 }
 
-void ObjectOrderParameter::setObjectId(uint32_t id){
-  object = id;
+void ObjectOrderParameter::setObjectId(uint32_t oid){
+  object = oid;
 }
 
 std::set<objecttypeid_t> ObjectOrderParameter::getAllowedObjectTypes() const{

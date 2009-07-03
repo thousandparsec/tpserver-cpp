@@ -25,7 +25,7 @@
 
 #include "orderparameter.h"
 
-OrderParameter::OrderParameter() : type(0), name(), description(){
+OrderParameter::OrderParameter() : Describable(0){
 }
 
 OrderParameter::~OrderParameter(){
@@ -34,30 +34,14 @@ OrderParameter::~OrderParameter(){
 
 uint32_t OrderParameter::getType() const
 {
-  return type;
-}
-
-std::string OrderParameter::getName() const{
-  return name;
-}
-
-std::string OrderParameter::getDescription() const{
-  return description;
-}
-
-void OrderParameter::setName(const std::string& nn){
-  name = nn;
-}
-
-void OrderParameter::setDescription(const std::string& nd){
-  description = nd;
+  return id;
 }
 
 void OrderParameter::packOrderDescFrame(Frame * f) const{
 
   f->packString(name);
-  f->packInt(type);
-  f->packString(description);
+  f->packInt(id);
+  f->packString(desc);
   
 }
 

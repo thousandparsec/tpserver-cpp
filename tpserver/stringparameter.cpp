@@ -25,7 +25,7 @@
 #include "stringparameter.h"
 
 StringParameter::StringParameter() : OrderParameter(), string(), max(1024){
-  type = opT_String;
+  id = opT_String;
 }
 
 StringParameter::~StringParameter(){

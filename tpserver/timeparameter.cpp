@@ -26,7 +26,7 @@
 #include "timeparameter.h"
 
 TimeParameter::TimeParameter() : OrderParameter(), turns(0), max(0){
-  type = opT_Time;
+  id = opT_Time;
 }
 
 TimeParameter::~TimeParameter(){
