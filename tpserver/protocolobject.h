@@ -39,9 +39,9 @@ public:
     frame->packString(name);
     frame->packString(desc);
   }
-  FrameType getFrameType() const { return frame_type; } 
+  static FrameType getFrameType() { return frame_type; } 
 private:
-  FrameType frame_type;
+  static FrameType frame_type;
 };
 
 #endif // PROTOCOLOBJECT_H

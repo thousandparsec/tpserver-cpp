@@ -87,12 +87,14 @@ private:
     std::map<uint32_t, EntityType*> cache;
     IdModList modified;
     uint32_t sequence;
+    uint32_t pid;
     EntityInfo() : sequence( 0 ) {}
     void packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime );
     void addVisible( EntityType* entity );
     void removeActable( uint32_t id );
     bool isActable( uint32_t id ) const;
     bool isVisible( uint32_t id ) const;
+    EntityType* retrieve( uint32_t id );
   };
 
   EntityInfo< ObjectView > objects;

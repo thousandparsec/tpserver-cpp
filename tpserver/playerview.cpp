@@ -42,6 +42,9 @@ PlayerView::~PlayerView(){
 
 void PlayerView::setPlayerId(uint32_t newid){
   pid = newid;
+  objects.pid = newid;
+  designs.pid = newid;
+  components.pid = newid;
 }
 
 void PlayerView::doOnceATurn(){
@@ -57,14 +60,7 @@ void PlayerView::addVisibleObject(ObjectView* obj){
 
 ObjectView* PlayerView::getObjectView(uint32_t objid){
   if(objects.isVisible(objid)){
-    ObjectView* obj = objects.cache[objid];
-    if(obj == NULL){
-      obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, objid);
-      if(obj != NULL){
-        objects.cache[objid] = obj;
-      }
-    }
-    return obj;
+    return objects.retrieve(objid);
   }else{
     return NULL;
   }
@@ -158,13 +154,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     objects.modified.clear();
     for(IdSet::iterator itcurr = objects.visible.begin();
         itcurr != objects.visible.end(); ++itcurr){
-      ObjectView* obj = objects.cache[*itcurr];
-      if(obj == NULL){
-        obj = Game::getGame()->getPersistence()->retrieveObjectView(pid, *itcurr);
-        if(obj != NULL){
-          objects.cache[*itcurr] = obj;
-        }
-      }
+      ObjectView* obj = objects.retrieve(*itcurr);
       if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
         objects.modified[*itcurr] = obj->getModTime();
       }
@@ -183,16 +173,10 @@ void PlayerView::addUsableDesign(uint32_t designid){
   if(!designs.isVisible(designid)){
     addVisibleDesign( new DesignView( designid, true ) );
   }else{
-    DesignView* design = designs.cache[designid];
-    if(design == NULL){
-      design = Game::getGame()->getPersistence()->retrieveDesignView(pid, designid);
-      if(design != NULL){
-        designs.cache[designid] = design;
-      }
-    }
+    DesignView* design = designs.retrieve(designid);
     design->setCompletelyVisible(true);
     Game::getGame()->getPersistence()->saveDesignView(pid, design);
-    components.sequence++;
+    designs.sequence++;
   }
 }
 
@@ -216,13 +200,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
   if(!designs.isVisible(designid)){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
-    DesignView* design = designs.cache.find(designid)->second;
-    if(design == NULL){
-      design = Game::getGame()->getPersistence()->retrieveDesignView(pid, designid);
-      if(design != NULL){
-        designs.cache[designid] = design;
-      }
-    }
+    DesignView* design = designs.retrieve(designid);
     design->pack(frame);
   }
 }
@@ -259,13 +237,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
     designs.modified.clear();
     for(IdSet::iterator itcurr = designs.visible.begin();
         itcurr != designs.visible.end(); ++itcurr){
-      DesignView* designv = designs.cache[*itcurr];
-      if(designv == NULL){
-        designv = Game::getGame()->getPersistence()->retrieveDesignView(pid, *itcurr);
-        if(designv != NULL){
-          designs.cache[*itcurr] = designv;
-        }
-      }
+      DesignView* designv = designs.retrieve(*itcurr);
       if(fromtime == UINT64_NEG_ONE || designv->getModTime() > fromtime){
         designs.modified[*itcurr] = designv->getModTime();
       }
@@ -287,13 +259,7 @@ void PlayerView::addUsableComponent(uint32_t compid){
     compview->setCompletelyVisible(true);
     addVisibleComponent(compview);
   }else{
-    ComponentView* compv = components.cache[compid];
-    if(compv == NULL){
-      compv = Game::getGame()->getPersistence()->retrieveComponentView(pid, compid);
-      if(compv != NULL){
-        components.cache[compid] = compv;
-      }
-    }
+    ComponentView* compv = components.retrieve(compid);
     compv->setCompletelyVisible(true);
     Game::getGame()->getPersistence()->saveComponentView(pid, compv);
     components.sequence++;
@@ -320,13 +286,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
   if(components.visible.find(compid) == components.visible.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
-    ComponentView* component = components.cache.find(compid)->second;
-    if(component == NULL){
-      component = Game::getGame()->getPersistence()->retrieveComponentView(pid, compid);
-      if(component != NULL){
-        components.cache[compid] = component;
-      }
-    }
+    ComponentView* component = components.retrieve(compid);
     component->pack(frame);
   }
 }
@@ -364,13 +324,7 @@ void PlayerView::processGetComponentIds(Frame* in, Frame* out){
     components.modified.clear();
     for(IdSet::iterator itcurr = components.visible.begin();
         itcurr != components.visible.end(); ++itcurr){
-      ComponentView* component = components.cache[*itcurr];
-      if(component == NULL){
-        component = Game::getGame()->getPersistence()->retrieveComponentView(pid, *itcurr);
-        if(component != NULL){
-          components.cache[*itcurr] = component;
-        }
-      }
+      ComponentView* component = components.retrieve(*itcurr);
       if(fromtime == UINT64_NEG_ONE || component->getModTime() > fromtime){
         components.modified[*itcurr] = component->getModTime();
       }
@@ -435,7 +389,7 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
 {
   uint32_t id = entity->getId();
   entity->touchModTime();
-  Game::getGame()->getPersistence()->saveProtocolView(id, entity);
+  Game::getGame()->getPersistence()->saveProtocolView(pid, entity);
   visible.insert(id);
   if (cache.find(id) != cache.end()){
     delete cache[id];
@@ -462,4 +416,17 @@ template< class EntityType >
 bool PlayerView::EntityInfo< EntityType >::isVisible( uint32_t id ) const
 {
   return visible.find( id ) != visible.end();
+}
+
+template< class EntityType >
+EntityType* PlayerView::EntityInfo< EntityType >::retrieve( uint32_t id ) 
+{
+  EntityType* entity = cache[id];
+  if(entity == NULL){
+    entity = dynamic_cast< EntityType* >(Game::getGame()->getPersistence()->retrieveProtocolView(EntityType::getFrameType(), pid, id));
+    if(entity != NULL){
+      cache[id] = entity;
+    }
+  }
+  return entity;
 }
