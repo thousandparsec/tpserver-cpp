@@ -39,7 +39,7 @@
 #include "object.h"
 
 
-IGObject::IGObject() : Describable(0xffffffff), turn(0), alive(true), type(0), 
+IGObject::IGObject(uint32_t newid) : Describable(newid), turn(0), alive(true), type(0), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
 }
 
@@ -75,11 +75,6 @@ uint32_t IGObject::getTurn() const{
 
 uint32_t IGObject::getParent() const{
   return relationships->getParent();
-}
-
-void IGObject::setID(uint32_t newid){
-  touchModTime();
-  id = newid;
 }
 
 void IGObject::setType(uint32_t newtype){

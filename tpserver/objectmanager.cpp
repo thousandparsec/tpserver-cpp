@@ -49,9 +49,7 @@ void ObjectManager::init(){
 }
 
 IGObject* ObjectManager::createNewObject(){
-    IGObject* obj = new IGObject();
-    obj->setID(nextid++);
-    return obj;
+    return new IGObject(nextid++);
 }
 
 void ObjectManager::addObject(IGObject* obj){

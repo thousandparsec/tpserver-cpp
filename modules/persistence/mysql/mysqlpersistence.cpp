@@ -603,8 +603,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
         mysql_free_result(childres);
         return NULL;
     }
-    IGObject* object = new IGObject();
-    object->setID(obid);
+    IGObject* object = new IGObject(obid);
     Game::getGame()->getObjectTypeManager()->setupObject(object, atoi(row[3]));
     object->setIsAlive(atoi(row[2]) == 1);
     object->setName(row[4]);

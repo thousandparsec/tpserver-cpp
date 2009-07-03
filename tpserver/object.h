@@ -38,7 +38,7 @@ class ObjectParameter;
 class IGObject : public Modifiable, public Describable {
 
   public:
-    IGObject();
+    IGObject( uint32_t newid );
     
     ~IGObject();
     
@@ -54,7 +54,6 @@ class IGObject : public Modifiable, public Describable {
     uint32_t getParent() const;
 
     // mods time
-    void setID(uint32_t newid);
     void setType(uint32_t newtype);
     // mods time
     void setName(const std::string &newname);
