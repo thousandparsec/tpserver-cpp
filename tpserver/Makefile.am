@@ -19,7 +19,7 @@ AVAHISOURCES =
 AVAHIHEADERS =
 endif
 
-tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp connection.cpp tcpconnection.cpp \
+tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.cpp tcpconnection.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp systemexception.cpp  \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \

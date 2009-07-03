@@ -1,6 +1,3 @@
-#ifndef PROTOCOLOBJECT_H
-#define PROTOCOLOBJECT_H
-
 /*  Protocol Object class
  *
  *  Copyright (C) 2009 Kornel Kisielewicz and the Thousand Parsec Project
@@ -21,21 +18,18 @@
  *
  */
 
-#include <tpserver/protocol.h>
-#include <tpserver/packable.h>
-#include <tpserver/describable.h>
-#include <tpserver/modifiable.h>
+#include "common.h"
+#include "protocol.h"
+#include "protocolobject.h"
 
-class ProtocolObject : public Packable, public Describable, public Modifiable {
-public:
-  ProtocolObject( FrameType new_frame_type, uint32_t new_id, const std::string& new_name = "", const std::string& new_desc = "" ) : Describable( new_id, new_name, new_desc ) 
-  {
-    frame_type = new_frame_type;
-  }
-  virtual void pack( Frame* frame ) const;
-  static FrameType getFrameType() { return frame_type; } 
-private:
-  static FrameType frame_type;
-};
+FrameType ProtocolObject::frame_type = ft02_Invalid;
 
-#endif // PROTOCOLOBJECT_H
+void ProtocolObject::pack( Frame* frame ) const
+{
+  frame->setType(frame_type);
+  frame->packInt(id);
+  frame->packString(name);
+  frame->packString(desc);
+}
+
+
