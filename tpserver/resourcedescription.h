@@ -36,7 +36,6 @@ public:
     void setNamePlural(const std::string& name);
     void setUnitSingular(const std::string& unit);
     void setUnitPlural(const std::string& unit);
-    void setDescription(const std::string& desc);
     void setMass(uint32_t nm);
     void setVolume(uint32_t nv);
     
@@ -45,17 +44,14 @@ public:
     std::string getNamePlural() const;
     std::string getUnitSingular() const;
     std::string getUnitPlural() const;
-    std::string getDescription() const;
     uint32_t getMass() const;
     uint32_t getVolume() const;
     
     void pack(Frame* frame) const;
 
 private:
-    uint32_t restype;
     std::string name_plur;
     std::string unit_sig, unit_plur;
-    std::string description;
     uint32_t mass, volume;
 };
 
