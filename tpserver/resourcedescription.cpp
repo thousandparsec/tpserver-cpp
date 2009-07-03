@@ -23,6 +23,7 @@
 #include "resourcedescription.h"
 
 ResourceDescription::ResourceDescription()
+  : ProtocolObject(ft02_ResDesc,0,"","")
 {}
 
 
@@ -30,11 +31,11 @@ ResourceDescription::~ResourceDescription()
 {}
 
 void ResourceDescription::setResourceType(uint32_t resid){
-    restype = resid;
+    setId( resid );
 }
 
 void ResourceDescription::setNameSingular(const std::string& name){
-    name_sig = name;
+    setName( name );
 }
 
 void ResourceDescription::setNamePlural(const std::string& name){
@@ -49,10 +50,6 @@ void ResourceDescription::setUnitPlural(const std::string& unit){
     unit_plur = unit;
 }
 
-void ResourceDescription::setDescription(const std::string& desc){
-    description = desc;
-}
-
 void ResourceDescription::setMass(uint32_t nm){
     mass = nm;
 }
@@ -62,11 +59,11 @@ void ResourceDescription::setVolume(uint32_t nv){
 }
 
 uint32_t ResourceDescription::getResourceType() const{
-    return restype;
+    return id;
 }
 
 std::string ResourceDescription::getNameSingular() const{
-    return name_sig;
+    return name;
 }
 
 std::string ResourceDescription::getNamePlural() const{
@@ -81,10 +78,6 @@ std::string ResourceDescription::getUnitPlural() const{
     return unit_plur;
 }
 
-std::string ResourceDescription::getDescription() const{
-    return description;
-}
-
 uint32_t ResourceDescription::getMass() const{
     return mass;
 }
@@ -93,14 +86,14 @@ uint32_t ResourceDescription::getVolume() const{
     return volume;
 }
 
-void ResourceDescription::packFrame(Frame* frame) const{
+void ResourceDescription::pack(Frame* frame) const{
     frame->setType(ft02_ResDesc);
-    frame->packInt(restype);
-    frame->packString(name_sig);
+    frame->packInt(id);
+    frame->packString(name);
     frame->packString(name_plur);
     frame->packString(unit_sig);
     frame->packString(unit_plur);
-    frame->packString(description);
+    frame->packString(desc);
     frame->packInt(mass);
     frame->packInt(volume);
     frame->packInt64(getModTime());

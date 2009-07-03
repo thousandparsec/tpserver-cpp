@@ -848,7 +848,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
 
     const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
     if(res != NULL){
-      res->packFrame(of);
+      res->pack(of);
     }else{
       of->createFailFrame(fec_NonExistant, "No Resource Descriptions available");
     }

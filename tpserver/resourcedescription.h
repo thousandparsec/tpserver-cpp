@@ -21,15 +21,15 @@
 #define RESOURCEDESCRIPTION_H
 
 #include <string>
-#include <tpserver/modifiable.h>
+#include <tpserver/protocolobject.h>
 
 class Frame;
 
-class ResourceDescription : public Modifiable
+class ResourceDescription : public ProtocolObject
 {
 public:
     ResourceDescription();
-    ~ResourceDescription();
+    virtual ~ResourceDescription();
 
     void setResourceType(uint32_t resid);
     void setNameSingular(const std::string& name);
@@ -49,11 +49,11 @@ public:
     uint32_t getMass() const;
     uint32_t getVolume() const;
     
-    void packFrame(Frame* frame) const;
+    void pack(Frame* frame) const;
 
 private:
     uint32_t restype;
-    std::string name_sig, name_plur;
+    std::string name_plur;
     std::string unit_sig, unit_plur;
     std::string description;
     uint32_t mass, volume;
