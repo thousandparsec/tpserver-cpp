@@ -25,6 +25,8 @@
 #include <set>
 #include <stdint.h>
 #include <boost/shared_ptr.hpp>
+#include <tpserver/protocolview.h>
+#include <tpserver/protocolobject.h>
 
 class IGObject;
 class Order;
@@ -122,6 +124,9 @@ public:
     
     virtual bool saveComponentView(uint32_t playerid, ComponentView*);
     virtual ComponentView* retrieveComponentView(uint32_t playerid, uint32_t componentid);
+
+    bool saveProtocolView(uint32_t playerid, ProtocolView* view);
+    ProtocolView* retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid);
 
 };
 

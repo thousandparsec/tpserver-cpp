@@ -30,6 +30,9 @@
 #include "design.h"
 #include "component.h"
 #include "property.h"
+#include "objectview.h"
+#include "designview.h"
+#include "componentview.h"
 
 #include "persistence.h"
 
@@ -278,4 +281,24 @@ bool Persistence::saveComponentView(uint32_t playerid, ComponentView*){
 
 ComponentView* Persistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
   return NULL;
+}
+
+bool Persistence::saveProtocolView(uint32_t playerid, ProtocolView* view)
+{
+  switch(view->getFrameType()) {
+    case ft03_Component : return saveComponentView( playerid, dynamic_cast<ComponentView*>(view)); 
+    case ft03_Design : return saveDesignView( playerid, dynamic_cast<DesignView*>(view)); 
+    case ft02_Object : return saveObjectView( playerid, dynamic_cast<ObjectView*>(view)); 
+    default : return false;
+  }
+}
+
+ProtocolView* Persistence::retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid)
+{
+  switch(viewtype) {
+    case ft03_Component : return retrieveComponentView( playerid, objectid );
+    case ft03_Design : return retrieveDesignView( playerid, objectid );
+    case ft02_Object : return retrieveObjectView( playerid, objectid );
+    default : return NULL;
+  }
 }
