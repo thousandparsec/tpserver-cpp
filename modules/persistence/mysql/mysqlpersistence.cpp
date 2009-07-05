@@ -448,31 +448,21 @@ bool MysqlPersistence::saveGameInfo(){
     querybuilder << "INSERT INTO gameinfo VALUES ('" << addslashes(game->getKey()) << "', ";
     querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber();
     querybuilder << ", '" << game->getTurnName() << "');";
-    executeQuery( querybuilder.str() );
+    MysqlQuery query( conn, querybuilder.str(); );
   } catch ( MysqlException& e ) {
     return false;
   }
-  return true;;
+  return true;
 }
 
 bool MysqlPersistence::retrieveGameInfo(){
   try {
-    MYSQL_RES* result = resultQuery( "SELECT * FROM gameinfo;");
-    MYSQL_ROW row = mysql_fetch_row(giresult);
-    if(row == NULL){
-      Logger::getLogger()->warning("Mysql: No existing gameinfo");
-      mysql_free_result(giresult);
-      return false;
-    }
-  
+    MysqlQuery query( "SELECT * FROM gameinfo;" );
     Game* game = Game::getGame();
-  
-    game->setKey(row[0]);
-    game->setGameStartTime(strtoull(row[1], NULL, 10));
-    game->setTurnNumber(atoi(row[2]));
-    game->setTurnName(row[3]);
-  
-    mysql_free_result(giresult);
+    game->setKey(query->get(0));
+    game->setGameStartTime(query->getU64(1));
+    game->setTurnNumber(query->getInt(2));
+    game->setTurnName(query->get(3));
   } catch ( MysqlException& e ) { return false; }
   return true;
 }
@@ -4130,9 +4120,11 @@ bool MysqlPersistence::retrieveSizeObjectParam(uint32_t objid, uint32_t turn, ui
 }
 
 void MysqlPersistence::lock(){
+  MysqlQuery::lock();
 }
 
 void MysqlPersistence::unlock(){
+  MysqlQuery::unlock();
 }
 
 void MysqlPersistence::idSetToStream( std::ostringstream& stream, const uint32_t id, const IdSet& idset ) const {
@@ -4142,8 +4134,7 @@ void MysqlPersistence::idSetToStream( std::ostringstream& stream, const uint32_t
   }
 }
 
-void MysqlPersistence::executeQuery( const std::string& query )
-{
+void MysqlPersistence::executeQuery( const std::string& query ){
   lock();
   if ( mysql_query( conn, query.c_str() ) != 0 ) {
     unlock();
@@ -4152,8 +4143,7 @@ void MysqlPersistence::executeQuery( const std::string& query )
   unlock();
 }
 
-MYSQL_RES* resultQuery( const std::string& query )
-{
+MYSQL_RES* resultQuery( const std::string& query ){
   lock();
   if ( mysql_query( conn, query.c_str() ) != 0 ) {
     unlock();
@@ -4178,8 +4168,7 @@ MysqlQuery::MysqlQuery( MYSQL *conn, const std::string& new_query )
   }
 }
 
-const std::string& MysqlQuery::get( uint32_t index )
-{
+const std::string& MysqlQuery::get( uint32_t index ) {
   if ( result == NULL ) 
   {
     fetchResult();
@@ -4191,10 +4180,8 @@ const std::string& MysqlQuery::get( uint32_t index )
   return row[index];
 }
 
-int MysqlQuery::getInt( uint32_t index )
-{
-  if ( result == NULL ) 
-  {
+int MysqlQuery::getInt( uint32_t index ) {
+  if ( result == NULL ) {
     fetchResult();
     nextRow();
   }
@@ -4202,6 +4189,17 @@ int MysqlQuery::getInt( uint32_t index )
     throw MysqlException( "Query '"+query+"' row empty!");
   }
   return atoi(row[index]);
+}
+
+uint64_t MysqlQuery::getU64( uint32_t index ) {
+  if ( result == NULL ) {
+    fetchResult();
+    nextRow();
+  }
+  if ( row == NULL ) {
+    throw MysqlException( "Query '"+query+"' row empty!");
+  }
+  return strtoull(row[index],NULL,10);
 }
 
 MysqlQuery::fetchResult() {
@@ -4212,22 +4210,20 @@ MysqlQuery::fetchResult() {
   unlock(); 
 }
     
-bool MysqlQuery::validRow()
-{
-  if ( result == NULL ) 
-  {
+bool MysqlQuery::validRow() {
+  if ( result == NULL ) {
     fetchResult();
     nextRow();
   }
   return row != NULL;
 }
 
-bool MysqlQuery::nextRow()
-{
+bool MysqlQuery::nextRow() {
   if ( result == NULL ) fetchResult();
   row = mysql_fetch_row(result);
   return row != NULL;
 }
+
 MysqlQuery::~MysqlQuery() {
   if ( result != NULL ) mysql_free_result(result);
   unlock(); // unlock needs to be multiunlock safe

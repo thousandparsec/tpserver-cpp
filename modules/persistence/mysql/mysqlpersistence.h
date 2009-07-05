@@ -166,11 +166,7 @@ private:
     void unlock();
     MYSQL *conn;
 
-  // TODO: create an automagical MysqlQuery class
   void idSetToStream( std::ostringstream& stream, const uint32_t id, const IdSet& idset ) const;
-  void executeQuery( const std::string& query );
-  MYSQL_RES* resultQuery( const std::string& query );
-  
 };
 
 class MysqlQuery {
@@ -183,6 +179,7 @@ class MysqlQuery {
 
     const std::string& get( uint32_t index );
     int getInt( uint32_t index );
+    uint64_t getU64( uint32_t index );
     bool validRow();
     bool nextRow();
 
