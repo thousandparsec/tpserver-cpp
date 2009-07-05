@@ -79,7 +79,7 @@ public:
 private:
   uint32_t pid;
 
-  // TODO: modify persistence to make code common for all entity types
+  // TODO: modify to be based on interfaces not templates
   template< class EntityType >
   struct EntityInfo {
     IdSet visible;
