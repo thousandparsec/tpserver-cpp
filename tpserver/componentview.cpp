@@ -31,6 +31,12 @@ ComponentView::ComponentView(): ProtocolView(ft03_Component), requirements_visib
 {
 }
 
+ComponentView::ComponentView( uint32_t new_id, bool visibility ): ProtocolView(ft03_Component), requirements_visible(false)
+{
+  setId( new_id );
+  setCompletelyVisible( visibility );
+}
+
 ComponentView::~ComponentView(){
 
 }

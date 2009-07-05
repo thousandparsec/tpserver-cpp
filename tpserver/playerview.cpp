@@ -155,6 +155,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
     for(IdSet::iterator itcurr = objects.visible.begin();
         itcurr != objects.visible.end(); ++itcurr){
       ObjectView* obj = objects.retrieve(*itcurr);
+      // TODO: find out the significance of isGone and make this generic!
       if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
         objects.modified[*itcurr] = obj->getModTime();
       }
@@ -397,6 +398,12 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
   cache[id] = entity;
   sequence++;
 }
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::addActable( uint32_t id )
+{
+}
+
 
 template< class EntityType >
 void PlayerView::EntityInfo< EntityType >::removeActable( uint32_t id )

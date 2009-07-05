@@ -29,6 +29,7 @@ class Frame;
 class ComponentView : public ProtocolView {
  public:
   ComponentView();
+  ComponentView( uint32_t new_id, bool visibility );
   virtual ~ComponentView();
 
   void pack(Frame* frame) const;
