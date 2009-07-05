@@ -90,15 +90,7 @@ IdSet PlayerView::getVisibleObjects() const{
 }
 
 void PlayerView::addOwnedObject(uint32_t objid){
-  objects.actable.insert(objid);
-  ObjectView* obj = getObjectView(objid);
-  if(obj != NULL){
-    obj->setCompletelyVisible(true);
-    updateObjectView(objid);
-  }else{
-    ObjectView* ov = new ObjectView(objid, true);
-    addVisibleObject(ov);
-  }
+  objects.addActable( objid );
 }
 
 void PlayerView::removeOwnedObject(uint32_t objid){
@@ -170,15 +162,7 @@ void PlayerView::addVisibleDesign(DesignView* design){
 }
 
 void PlayerView::addUsableDesign(uint32_t designid){
-  designs.actable.insert(designid);
-  if(!designs.isVisible(designid)){
-    addVisibleDesign( new DesignView( designid, true ) );
-  }else{
-    DesignView* design = designs.retrieve(designid);
-    design->setCompletelyVisible(true);
-    Game::getGame()->getPersistence()->saveDesignView(pid, design);
-    designs.sequence++;
-  }
+  designs.addActable( designid );
 }
 
 void PlayerView::removeUsableDesign(uint32_t designid){
@@ -253,18 +237,7 @@ void PlayerView::addVisibleComponent(ComponentView* comp){
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
-  components.actable.insert(compid);
-  if(components.visible.find(compid) == components.visible.end()){
-    ComponentView* compview = new ComponentView();
-    compview->setComponentId(compid);
-    compview->setCompletelyVisible(true);
-    addVisibleComponent(compview);
-  }else{
-    ComponentView* compv = components.retrieve(compid);
-    compv->setCompletelyVisible(true);
-    Game::getGame()->getPersistence()->saveComponentView(pid, compv);
-    components.sequence++;
-  }
+  components.addActable( compid );
 }
 
 void PlayerView::removeUsableComponent(uint32_t compid){
@@ -402,6 +375,15 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
 template< class EntityType >
 void PlayerView::EntityInfo< EntityType >::addActable( uint32_t id )
 {
+  actable.insert(id);
+  if(visible.find(id) == visible.end()){
+    addVisible( new EntityType( id, true ) );
+  }else{
+    EntityType* view = retrieve(id);
+    view->setCompletelyVisible(true);
+    Game::getGame()->getPersistence()->saveProtocolView(pid, view);
+    sequence++;
+  }
 }
 
 
