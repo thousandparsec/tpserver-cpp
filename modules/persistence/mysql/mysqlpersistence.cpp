@@ -4168,3 +4168,68 @@ MYSQL_RES* resultQuery( const std::string& query )
   return result;
 }
 
+MysqlQuery::MysqlQuery( MYSQL *conn, const std::string& new_query ) 
+ : connection( conn ), result( NULL ), row( NULL ), query( new_query ) 
+{
+  lock();
+  if ( mysql_query( conn, query.c_str() ) != 0 ) {
+    unlock(); // Destructor WON'T get called if throw is in constructor 
+    throw MysqlException( "Query '"+query+"' failed!");
+  }
+}
+
+const std::string& MysqlQuery::get( uint32_t index )
+{
+  if ( result == NULL ) 
+  {
+    fetchResult();
+    nextRow();
+  }
+  if ( row == NULL ) {
+    throw MysqlException( "Query '"+query+"' row empty!");
+  }
+  return row[index];
+}
+
+int MysqlQuery::getInt( uint32_t index )
+{
+  if ( result == NULL ) 
+  {
+    fetchResult();
+    nextRow();
+  }
+  if ( row == NULL ) {
+    throw MysqlException( "Query '"+query+"' row empty!");
+  }
+  return atoi(row[index]);
+}
+
+MysqlQuery::fetchResult() {
+  result = mysql_store_result(connection);
+  if ( result == NULL ) {
+    throw MysqlException( "Query '"+query+"' result failed!");
+  }
+  unlock(); 
+}
+    
+bool MysqlQuery::validRow()
+{
+  if ( result == NULL ) 
+  {
+    fetchResult();
+    nextRow();
+  }
+  return row != NULL;
+}
+
+bool MysqlQuery::nextRow()
+{
+  if ( result == NULL ) fetchResult();
+  row = mysql_fetch_row(result);
+  return row != NULL;
+}
+MysqlQuery::~MysqlQuery() {
+  if ( result != NULL ) mysql_free_result(result);
+  unlock(); // unlock needs to be multiunlock safe
+}
+

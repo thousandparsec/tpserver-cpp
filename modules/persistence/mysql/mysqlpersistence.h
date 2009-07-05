@@ -173,4 +173,29 @@ private:
   
 };
 
+class MysqlQuery {
+  public:
+    MysqlQuery( MYSQL *conn, const std::string& new_query );
+    ~MysqlQuery();
+       
+    static void lock() {}
+    static void unlock() {}
+
+    const std::string& get( uint32_t index );
+    int getInt( uint32_t index );
+    bool validRow();
+    bool nextRow();
+
+  private:
+    void fetchResult();
+
+    MYSQL *connection;
+    MYSQL_RES* result;
+    MYSQL_ROW row;
+    
+    std::string query;
+
+    MysqlQuery() {};
+};
+
 #endif
