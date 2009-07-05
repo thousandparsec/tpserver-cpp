@@ -73,6 +73,19 @@ extern "C" {
   }
 }
 
+class MysqlException : public std::exception {
+  public:
+    MysqlException( MYSQL* conn, const std::string& error ) {
+      errorstr = error + " " + std::string( mysql_error(conn) );
+      Logger::getLogger()->error( "MySQL : "+errorstr );
+    }
+    const char* what() const throws() {
+      return errorstr.c_str();
+    }
+  private:
+    std::string errorstr;
+}
+
 MysqlPersistence::MysqlPersistence() : conn(NULL){
 }
 
@@ -540,7 +553,7 @@ bool MysqlPersistence::saveObject(IGObject* ob){
                     break;
                   default:
                     Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
-                    throw new std::exception();
+                    throw std::exception();
                     break;
                 }
                 ppos++;
@@ -658,7 +671,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
                     break;
                   default:
                     Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
-                    throw new std::exception();
+                    throw std::exception();
                     break;
                 }
                 ppos++;
@@ -700,23 +713,23 @@ uint32_t MysqlPersistence::getMaxObjectId(){
     return maxid;
 }
 
-std::set<uint32_t> MysqlPersistence::getObjectIds(){
+IsSet MysqlPersistence::getObjectIds(){
     lock();
     if(mysql_query(conn, "SELECT objectid FROM object;") != 0){
         Logger::getLogger()->error("Mysql: Could not query object ids - %s", mysql_error(conn));
         unlock();
-        return std::set<uint32_t>();
+        return IdSet();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     unlock();
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: get objectids: Could not store result - %s", mysql_error(conn));
-        return std::set<uint32_t>();
+        return IdSet();
     }
-    MYSQL_ROW max;
-    std::set<uint32_t> vis;
-    while((max = mysql_fetch_row(obresult)) != NULL){
-        vis.insert(atoi(max[0]));
+    MYSQL_ROW row;
+    IdSet vis;
+    while((row = mysql_fetch_row(obresult)) != NULL){
+        vis.insert(atoi(row[0]));
     }
     mysql_free_result(obresult);
     return vis;
@@ -754,16 +767,11 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
     }
     unlock();
   }
-  std::set<uint32_t> owners = oq->getOwner();
+  IdSet owners = oq->getOwner();
   if(!owners.empty()){
     querybuilder.str("");
     querybuilder << "INSERT INTO orderqueueowner VALUES ";
-    for(std::set<uint32_t>::iterator itcurr = owners.begin(); itcurr != owners.end(); ++itcurr){
-      if(itcurr != owners.begin()){
-        querybuilder << ", ";
-      }
-      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
-    }
+    idSetToStream( querybuilder, oq->getQueueId(), owners );
     querybuilder << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -773,16 +781,11 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
     }
     unlock();
   }
-  std::set<uint32_t> ordertypes = oq->getAllowedOrderTypes();
+  IdSet ordertypes = oq->getAllowedOrderTypes();
   if(!ordertypes.empty()){
     querybuilder.str("");
     querybuilder << "INSERT INTO orderqueueallowedtype VALUES ";
-    for(std::set<uint32_t>::iterator itcurr = ordertypes.begin(); itcurr != ordertypes.end(); ++itcurr){
-      if(itcurr != ordertypes.begin()){
-        querybuilder << ", ";
-      }
-      querybuilder << "(" << oq->getQueueId() << ", " << (*itcurr) << ")";
-    }
+    idSetToStream( querybuilder, oq->getQueueId(), ordertypes );
     querybuilder << ";";
     lock();
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
@@ -3600,9 +3603,7 @@ ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32
         mysql_free_result(obresult);
         return NULL;
     }
-    ComponentView* comp = new ComponentView();
-    comp->setComponentId(componentid);
-    comp->setCompletelyVisible(atoi(row[2]) == 1);
+    ComponentView* comp = new ComponentView( componentid, atoi(row[2]) == 1);
     comp->setCanSeeName(atoi(row[3]) == 1);
     comp->setVisibleName(row[4]);
     comp->setCanSeeDescription(atoi(row[5]) == 1);
@@ -3702,7 +3703,7 @@ bool MysqlPersistence::updatePosition3dObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparamposition VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << pob->getPosition().getX() << ", " << pob->getPosition().getY() << ", " << pob->getPosition().getZ() << ", " << pob->getRelative() << ");";
@@ -3710,7 +3711,7 @@ bool MysqlPersistence::updatePosition3dObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -3723,13 +3724,13 @@ bool MysqlPersistence::retrievePosition3dObjectParam(uint32_t objid, uint32_t tu
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve position3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve position3d param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -3737,7 +3738,7 @@ bool MysqlPersistence::retrievePosition3dObjectParam(uint32_t objid, uint32_t tu
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such position3d param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     pob->setPosition(Vector3d(strtoll(row[0], NULL, 10), strtoll(row[1], NULL, 10), strtoll(row[2], NULL, 10)));
     pob->setRelative(atoi(row[3]));
@@ -3752,7 +3753,7 @@ bool MysqlPersistence::updateVelocity3dObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparamvelocity VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << vob->getVelocity().getX() << ", " << vob->getVelocity().getY() << ", " << vob->getVelocity().getZ() << ", " << vob->getRelative() << ");";
@@ -3760,7 +3761,7 @@ bool MysqlPersistence::updateVelocity3dObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -3773,13 +3774,13 @@ bool MysqlPersistence::retrieveVelocity3dObjectParam(uint32_t objid, uint32_t tu
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve velocity3d param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve velocity3d param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -3787,7 +3788,7 @@ bool MysqlPersistence::retrieveVelocity3dObjectParam(uint32_t objid, uint32_t tu
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such velocity3d param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     vob->setVelocity(Vector3d(strtoll(row[0], NULL, 10), strtoll(row[1], NULL, 10), strtoll(row[2], NULL, 10)));
     vob->setRelative(atoi(row[3]));
@@ -3802,7 +3803,7 @@ bool MysqlPersistence::updateOrderQueueObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old orderqueue param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparamorderqueue VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << oob->getQueueId() << ");";
@@ -3810,7 +3811,7 @@ bool MysqlPersistence::updateOrderQueueObjectParam(uint32_t objid, uint32_t turn
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert orderqueue param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -3823,13 +3824,13 @@ bool MysqlPersistence::retrieveOrderQueueObjectParam(uint32_t objid, uint32_t tu
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve orderqueue param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve orderqueue param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -3837,7 +3838,7 @@ bool MysqlPersistence::retrieveOrderQueueObjectParam(uint32_t objid, uint32_t tu
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such orderqueue param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     oob->setQueueId(atoi(row[0]));
     mysql_free_result(obresult);
@@ -3851,7 +3852,7 @@ bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t tu
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     querybuilder.str("");
@@ -3874,7 +3875,7 @@ bool MysqlPersistence::updateResourceListObjectParam(uint32_t objid, uint32_t tu
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -3892,14 +3893,14 @@ bool MysqlPersistence::retrieveResourceListObjectParam(uint32_t objid, uint32_t 
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve resourcelist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve resourcelist param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -3927,7 +3928,7 @@ bool MysqlPersistence::updateReferenceObjectParam(uint32_t objid, uint32_t turn,
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old reference param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparamreference VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << rob->getReferenceType() << ", " << rob->getReferencedId() << ");";
@@ -3935,7 +3936,7 @@ bool MysqlPersistence::updateReferenceObjectParam(uint32_t objid, uint32_t turn,
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert reference param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -3948,13 +3949,13 @@ bool MysqlPersistence::retrieveReferenceObjectParam(uint32_t objid, uint32_t tur
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve reference param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve reference param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -3962,7 +3963,7 @@ bool MysqlPersistence::retrieveReferenceObjectParam(uint32_t objid, uint32_t tur
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such reference param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     rob->setReferenceType(atoi(row[0]));
     rob->setReferencedId(atoi(row[1]));
@@ -3977,7 +3978,7 @@ bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old refquantitylist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     querybuilder.str("");
@@ -4000,7 +4001,7 @@ bool MysqlPersistence::updateRefQuantityListObjectParam(uint32_t objid, uint32_t
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert refquantitylist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -4016,13 +4017,13 @@ bool MysqlPersistence::retrieveRefQuantityListObjectParam(uint32_t objid, uint32
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve refquantitylist param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve refquantitylist param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -4051,7 +4052,7 @@ bool MysqlPersistence::updateIntegerObjectParam(uint32_t objid, uint32_t turn, u
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparaminteger VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << iob->getValue() << ");";
@@ -4059,7 +4060,7 @@ bool MysqlPersistence::updateIntegerObjectParam(uint32_t objid, uint32_t turn, u
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -4072,13 +4073,13 @@ bool MysqlPersistence::retrieveIntegerObjectParam(uint32_t objid, uint32_t turn,
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve integer param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve integer param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -4086,7 +4087,7 @@ bool MysqlPersistence::retrieveIntegerObjectParam(uint32_t objid, uint32_t turn,
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such integer param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     iob->setValue(atoi(row[0]));
     mysql_free_result(obresult);
@@ -4100,7 +4101,7 @@ bool MysqlPersistence::updateSizeObjectParam(uint32_t objid, uint32_t turn, uint
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not delete old size param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     querybuilder.str("");
     querybuilder << "INSERT INTO objectparamsize VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", " << sob->getSize() << ");";
@@ -4108,7 +4109,7 @@ bool MysqlPersistence::updateSizeObjectParam(uint32_t objid, uint32_t turn, uint
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not insert size param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock();
     return true;
@@ -4121,13 +4122,13 @@ bool MysqlPersistence::retrieveSizeObjectParam(uint32_t objid, uint32_t turn, ui
     if(mysql_query(conn, querybuilder.str().c_str()) != 0){
         Logger::getLogger()->error("Mysql: Could not retrieve size param %d,%d - %s", objid, pgroup, mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     MYSQL_RES *obresult = mysql_store_result(conn);
     if(obresult == NULL){
         Logger::getLogger()->error("Mysql: retrieve size param: Could not store result - %s", mysql_error(conn));
         unlock();
-        throw new std::exception();
+        throw std::exception();
     }
     unlock(); // finished with mysql
     
@@ -4135,7 +4136,7 @@ bool MysqlPersistence::retrieveSizeObjectParam(uint32_t objid, uint32_t turn, ui
     if(row == NULL){
         Logger::getLogger()->warning("Mysql: No such size param %d,%d", objid, pgroup);
         mysql_free_result(obresult);
-        throw new std::exception();
+        throw std::exception();
     }
     sob->setSize(strtoll(row[0], NULL, 10));
     mysql_free_result(obresult);
@@ -4147,3 +4148,37 @@ void MysqlPersistence::lock(){
 
 void MysqlPersistence::unlock(){
 }
+
+void MysqlPersistence::idSetToStream( std::ostringstream& stream, const uint32_t id, const IdSet& idset ) const {
+  for ( IdSet::const_iterator it = idset.begin(); it != idset.end(); ++it ) {
+    if ( it != idset.begin() ) stream << ", ";
+    stream << "(" << id << ", " << (*itcurr) << ")";
+  }
+}
+
+void MysqlPersistence::executeQuery( const std::string& query )
+{
+  lock();
+  if ( mysql_query( conn, query.c_str() ) != 0 ) {
+    unlock();
+    throw MysqlException( "Query '"+query+"' failed!");
+  }
+  unlock();
+}
+
+MYSQL_RES* resultQuery( const std::string& query )
+{
+  lock();
+  if ( mysql_query( conn, query.c_str() ) != 0 ) {
+    unlock();
+    throw MysqlException( "Query '"+query+"' failed!");
+  }
+  MYSQL_RES *result = mysql_store_result(conn);
+  if ( result == NULL ) {
+    unlock() 
+    throw MysqlException( "Query '"+query+"' result failed!");
+  }
+  unlock();
+  return result;
+}
+

@@ -66,8 +66,8 @@ uint32_t Persistence::getMaxObjectId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getObjectIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getObjectIds(){
+    return IdSet();
 }
 
 bool Persistence::saveOrderQueue(const OrderQueue* oq){
@@ -86,8 +86,8 @@ bool Persistence::removeOrderQueue(uint32_t oqid){
   return false;
 }
 
-std::set<uint32_t> Persistence::getOrderQueueIds(){
-  return std::set<uint32_t>();
+IdSet Persistence::getOrderQueueIds(){
+  return IdSet();
 }
 
 uint32_t Persistence::getMaxOrderQueueId(){
@@ -127,8 +127,8 @@ uint32_t Persistence::getMaxBoardId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getBoardIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getBoardIds(){
+    return IdSet();
 }
 
 bool Persistence::saveMessage(uint32_t msgid, Message::Ptr msg){
@@ -167,8 +167,8 @@ uint32_t Persistence::getMaxResourceId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getResourceIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getResourceIds(){
+    return IdSet();
 }
 
 bool Persistence::savePlayer(Player* player){
@@ -187,8 +187,8 @@ uint32_t Persistence::getMaxPlayerId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getPlayerIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getPlayerIds(){
+    return IdSet();
 }
 
 bool Persistence::saveCategory(Category* cat){
@@ -203,8 +203,8 @@ uint32_t Persistence::getMaxCategoryId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getCategoryIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getCategoryIds(){
+    return IdSet();
 }
 
 bool Persistence::saveDesign(Design* design){
@@ -223,8 +223,8 @@ uint32_t Persistence::getMaxDesignId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getDesignIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getDesignIds(){
+    return IdSet();
 }
 
 bool Persistence::saveComponent(Component* comp){
@@ -239,8 +239,8 @@ uint32_t Persistence::getMaxComponentId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getComponentIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getComponentIds(){
+    return IdSet();
 }
 
 bool Persistence::saveProperty(Property* prop){
@@ -255,8 +255,8 @@ uint32_t Persistence::getMaxPropertyId(){
     return 0;
 }
 
-std::set<uint32_t> Persistence::getPropertyIds(){
-    return std::set<uint32_t>();
+IdSet Persistence::getPropertyIds(){
+    return IdSet();
 }
 
 bool Persistence::saveObjectView(uint32_t playerid, ObjectView*){
