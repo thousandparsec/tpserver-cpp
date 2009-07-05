@@ -442,52 +442,38 @@ bool MysqlPersistence::saveGameInfo(){
   lock();
   mysql_query(conn, "DELETE FROM gameinfo;");
   unlock();
-  std::ostringstream querybuilder;
-  Game* game = Game::getGame();
-  querybuilder << "INSERT INTO gameinfo VALUES ('" << addslashes(game->getKey()) << "', ";
-  querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber();
-  querybuilder << ", '" << game->getTurnName() << "');";
-  lock();
-  if(mysql_query(conn, querybuilder.str().c_str()) != 0){
-    Logger::getLogger()->error("Mysql: Could not save gameinfo - %s", mysql_error(conn));
-    unlock();
+  try {
+    std::ostringstream querybuilder;
+    Game* game = Game::getGame();
+    querybuilder << "INSERT INTO gameinfo VALUES ('" << addslashes(game->getKey()) << "', ";
+    querybuilder << game->getGameStartTime() << ", " << game->getTurnNumber();
+    querybuilder << ", '" << game->getTurnName() << "');";
+    executeQuery( querybuilder.str() );
+  } catch ( MysqlException& e ) {
     return false;
   }
-  unlock();
   return true;;
 }
 
 bool MysqlPersistence::retrieveGameInfo(){
-  lock();
-  if(mysql_query(conn, "SELECT * FROM gameinfo;") != 0){
-    Logger::getLogger()->error("Mysql: Could not retrieve gameinfo - %s", mysql_error(conn));
-    unlock();
-    return false;
-  }
-  MYSQL_RES *giresult = mysql_store_result(conn);
-  if(giresult == NULL){
-    Logger::getLogger()->error("Mysql: retrieve gameinfo: Could not store result - %s", mysql_error(conn));
-    unlock();
-    return false;
-  }
-  unlock();
+  try {
+    MYSQL_RES* result = resultQuery( "SELECT * FROM gameinfo;");
+    MYSQL_ROW row = mysql_fetch_row(giresult);
+    if(row == NULL){
+      Logger::getLogger()->warning("Mysql: No existing gameinfo");
+      mysql_free_result(giresult);
+      return false;
+    }
   
-  MYSQL_ROW row = mysql_fetch_row(giresult);
-  if(row == NULL){
-    Logger::getLogger()->warning("Mysql: No existing gameinfo");
+    Game* game = Game::getGame();
+  
+    game->setKey(row[0]);
+    game->setGameStartTime(strtoull(row[1], NULL, 10));
+    game->setTurnNumber(atoi(row[2]));
+    game->setTurnName(row[3]);
+  
     mysql_free_result(giresult);
-    return false;
-  }
-  
-  Game* game = Game::getGame();
-  
-  game->setKey(row[0]);
-  game->setGameStartTime(strtoull(row[1], NULL, 10));
-  game->setTurnNumber(atoi(row[2]));
-  game->setTurnName(row[3]);
-  
-  mysql_free_result(giresult);
-  
+  } catch ( MysqlException& e ) { return false; }
   return true;
 }
 
