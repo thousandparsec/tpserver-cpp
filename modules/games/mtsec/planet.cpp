@@ -27,10 +27,14 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/resourcemanager.h>
+#include <tpserver/resourcedescription.h>
+#include <iostream>
 
 #include "planet.h"
 
-PlanetType::PlanetType():OwnedObjectType(){
+PlanetType::PlanetType():OwnedObjectType()
+{
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Resources");
   group->setDescription("The planets resources");
@@ -55,7 +59,9 @@ ObjectBehaviour* PlanetType::createObjectBehaviour() const{
 }
 
 
-Planet::Planet(){
+Planet::Planet()
+:maxProduction(100)
+{
 }
 
 Planet::~Planet(){
@@ -85,7 +91,18 @@ void Planet::packExtraData(Frame * frame){
 
 void Planet::doOnceATurn()
 {
-
+  if (getOwner() != 0) {
+    Game* game = Game::getGame();
+    ResourceManager* resman = game->getResourceManager();
+    std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+    const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+    const uint32_t resvalue = reslist.find(restype)->first;
+    if (resvalue < maxProduction)
+    {
+      addResource(restype, resvalue+1);
+      std::cout << "ADDED RESOURCE FOR PLANET: " << obj->getName() << "\n\n\n";
+    }
+  }
 }
 
 int Planet::getContainerType(){
