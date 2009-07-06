@@ -41,17 +41,17 @@ class OrderQueue : public Modifiable {
   void addOwner(uint32_t playerid);
   void removeOwner(uint32_t playerid);
   bool isOwner(uint32_t playerid) const;
-  std::set<uint32_t> getOwner() const;
+  IdSet getOwner() const;
   
   void setObjectId(uint32_t oid);
   uint32_t getObjectId() const;
   
   bool checkOrderType(uint32_t type, uint32_t playerid) const;
   
-  std::set<uint32_t> getAllowedOrderTypes() const;
+  IdSet getAllowedOrderTypes() const;
   void addAllowedOrderType(uint32_t type);
   void removeAllowedOrderType(uint32_t type);
-  void setAllowedOrderTypes(const std::set<uint32_t>& ao);
+  void setAllowedOrderTypes(const IdSet& ao);
 
   uint32_t getNumberOrders() const;
   
@@ -73,17 +73,17 @@ class OrderQueue : public Modifiable {
 
   //persistence only
   void setNextOrderId(uint32_t next);
-  void setOwners(std::set<uint32_t> no);
-  void setOrderSlots(std::list<uint32_t> nos);
-  std::list<uint32_t> getOrderSlots() const;
+  void setOwners(IdSet no);
+  void setOrderSlots(IdList nos);
+  IdList getOrderSlots() const;
 
  private:
   uint32_t queueid;
   uint32_t objectid;
-  std::list<uint32_t> orderlist;
+  IdList orderlist;
   std::map<uint32_t, Order*> ordercache;
-  std::set<uint32_t> allowedtypes;
-  std::set<uint32_t> owner;
+  IdSet allowedtypes;
+  IdSet owner;
   uint32_t nextOrderId;
   bool active;
   bool repeating;

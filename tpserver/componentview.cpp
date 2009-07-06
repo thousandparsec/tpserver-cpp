@@ -80,7 +80,7 @@ void ComponentView::pack(Frame* frame) const{
     propertylist = comp->getPropertyList();
   }else{
     std::map<uint32_t, std::string> compproplist = comp->getPropertyList();
-    for(std::set<uint32_t>::const_iterator itcurr = properties_visible.begin();
+    for(IdSet::const_iterator itcurr = properties_visible.begin();
         itcurr != properties_visible.end(); ++itcurr){
       propertylist[*itcurr] = compproplist[*itcurr];
     }

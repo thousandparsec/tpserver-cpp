@@ -36,7 +36,7 @@ uint32_t ObjectRelationshipsData::getParent() const{
   return parentid;
 }
 
-std::set<uint32_t> ObjectRelationshipsData::getChildren() const{
+IdSet ObjectRelationshipsData::getChildren() const{
   return children;
 }
 
@@ -53,22 +53,20 @@ void ObjectRelationshipsData::removeChild(uint32_t oc){
   setIsDirty( (children.erase(oc) != 0) );
 }
 
-void ObjectRelationshipsData::setChildren(const std::set<uint32_t> nc){
+void ObjectRelationshipsData::setChildren(const IdSet nc){
   children = nc;
   setIsDirty( true );
 }
 
 void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
- 
- 
-  std::set<uint32_t> temp = children;
-  std::set <uint32_t>::iterator itcurr, itend;
+  IdSet temp = children;
+  IdSet::iterator itcurr, itend;
   itcurr = temp.begin();
   itend = temp.end();
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   while(itcurr != itend){
     if(!player->getPlayerView()->isVisibleObject(*itcurr)){
-      std::set<uint32_t>::iterator itemp = itcurr;
+      IdSet::iterator itemp = itcurr;
       ++itcurr;
       temp.erase(itemp);
     }else{
@@ -76,19 +74,11 @@ void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
     }
   }
 
-  frame->packInt(temp.size());
-  //for loop for children objects
-  itend = temp.end();
-  for (itcurr = temp.begin(); itcurr != itend; itcurr++) {
-    frame->packInt(*itcurr);
-  }
+  frame->packIdSet(temp);
 }
 
 void ObjectRelationshipsData::unpackModFrame(Frame* f){
   //discard all data
   f->unpackInt();
-  uint32_t numchildren = f->unpackInt();
-  for(uint32_t i = 0; i < numchildren; i++){
-    f->unpackInt();
-  }
+  f->unpackIdSet();
 }

@@ -44,8 +44,8 @@ public:
   uint32_t getNumOrders() const;
 
   
-  std::set<uint32_t> getAllowedOrders() const;
-  void setAllowedOrders(std::set<uint32_t> ao);
+  IdSet getAllowedOrders() const;
+  void setAllowedOrders(IdSet ao);
 
 protected:
   uint32_t queueid;

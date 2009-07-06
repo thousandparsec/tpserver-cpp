@@ -20,8 +20,7 @@
  *
  */
 
-#include <map>
-#include <string>
+#include <tpserver/common.h>
 
 class Player;
 
@@ -40,7 +39,7 @@ public:
     void updateAll();
     void updatePlayer(uint32_t id);
 
-    std::set<uint32_t> getAllIds();
+    IdSet getAllIds();
     
     uint32_t getNumPlayers() const;
 

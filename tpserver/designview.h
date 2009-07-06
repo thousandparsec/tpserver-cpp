@@ -41,7 +41,7 @@ class DesignView : public ProtocolView {
     
     uint32_t getVisibleOwner() const;
     bool canSeeOwner() const;
-    std::map<uint32_t, uint32_t> getVisibleComponents() const;
+    IdMap getVisibleComponents() const;
     uint32_t getVisibleNumExist() const;
     bool canSeeNumExist() const;
     PropertyValue::Map getVisiblePropertyValues() const;
@@ -50,7 +50,7 @@ class DesignView : public ProtocolView {
 
     void setVisibleOwner(uint32_t o);
     void setCanSeeOwner(bool cso);
-    void setVisibleComponents(std::map<uint32_t, uint32_t> cl);
+    void setVisibleComponents(IdMap cl);
     void setVisibleNumExist(uint32_t nne);
     void setCanSeeNumExist(bool csn);
     void setVisiblePropertyValues(PropertyValue::Map pvl);
@@ -62,7 +62,7 @@ class DesignView : public ProtocolView {
     bool seeowner;
     uint32_t owner;
 
-    std::map<uint32_t, uint32_t> components;
+    IdMap components;
     PropertyValue::Map properties;
 
 };

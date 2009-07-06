@@ -115,13 +115,13 @@ public:
 
   virtual OrderParameter *clone() const;
 
-  std::map<uint32_t,uint32_t> getList() const;
-  void setList(std::map<uint32_t,uint32_t> nlist);
+  IdMap getList() const;
+  void setList(IdMap nlist);
   
   void setListOptionsCallback(ListOptionCallback cb);
 
 protected:
-  std::map<uint32_t,uint32_t> list;
+  IdMap list;
   ListOptionCallback optionscallback;
 
 };

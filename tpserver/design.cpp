@@ -46,7 +46,7 @@ uint32_t Design::getOwner() const{
   return owner;
 }
 
-std::map<uint32_t, uint32_t> Design::getComponents() const{
+IdMap Design::getComponents() const{
   return components;
 }
 
@@ -90,7 +90,7 @@ void Design::setOwner(uint32_t o){
   owner = o;
 }
 
-void Design::setComponents(std::map<uint32_t, uint32_t> cl){
+void Design::setComponents(IdMap cl){
   components = cl;
   valid = false;
   properties.clear();

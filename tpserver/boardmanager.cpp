@@ -36,9 +36,9 @@ void BoardManager::init() {
   Persistence* persist = Game::getGame()->getPersistence();
   nextbid = persist->getMaxBoardId() + 1;
   nextmid = persist->getMaxMessageId() + 1;
-  std::set<uint32_t> bidset(persist->getBoardIds());
+  IdSet bidset(persist->getBoardIds());
 
-  for(std::set<uint32_t>::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
+  for(IdSet::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
     boards[*itcurr] = Board::Ptr();
   }
 }

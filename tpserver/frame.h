@@ -111,6 +111,7 @@ class Frame {
     bool packInt8(char val);
     bool packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
     bool packIdSet(const IdSet& idset);
+    bool packIdMap(const IdMap& idmap);
 
     bool isEnoughRemaining(uint32_t size) const;
     // uses these functions with care
@@ -122,6 +123,7 @@ class Frame {
     int64_t unpackInt64();
     char unpackInt8();
     IdMap unpackMap();
+    IdSet unpackIdSet();
 
     void createFailFrame(FrameErrorCode code, const std::string& reason);
     void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);

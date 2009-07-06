@@ -43,12 +43,8 @@ void ListParameter::packOrderFrame(Frame * f){
     f->packString(itcurr->second.first);
     f->packInt(itcurr->second.second);
   }
-  
-  f->packInt(list.size());
-  for(std::map<uint32_t,uint32_t>::iterator itcurr = list.begin(); itcurr != list.end(); ++itcurr){
-    f->packInt(itcurr->first);
-    f->packInt(itcurr->second);
-  }
+ 
+  f->packIdMap(list);
 }
 
 bool ListParameter::unpackFrame(Frame *f, uint32_t playerid){
@@ -65,15 +61,7 @@ bool ListParameter::unpackFrame(Frame *f, uint32_t playerid){
     f->unpackInt(); 
   }
   
-  int listsize = f->unpackInt();
-  if(!f->isEnoughRemaining(listsize * 8))
-    return false;
-  for(int i = listsize; i > 0; i--){
-    uint32_t key = f->unpackInt();
-    uint32_t value = f->unpackInt();
-    list[key] = value;
-  }
-  
+  list = f->unpackMap();
   return true;
 }
 
@@ -81,11 +69,11 @@ OrderParameter *ListParameter::clone() const{
   return new ListParameter();
 }
 
-std::map<uint32_t,uint32_t> ListParameter::getList() const{
+IdMap ListParameter::getList() const{
   return list;
 }
 
-void ListParameter::setList(std::map<uint32_t,uint32_t> nlist){
+void ListParameter::setList(IdMap nlist){
   list = nlist;
 }
 

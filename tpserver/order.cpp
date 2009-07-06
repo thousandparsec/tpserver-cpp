@@ -36,7 +36,7 @@ Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resou
 }
 
 Order::~Order(){
- for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     delete (*itcurr);
   }
@@ -44,7 +44,7 @@ Order::~Order(){
 
 uint32_t Order::getType() const
 {
-	return type;
+  return type;
 }
 
 void Order::setType(uint32_t ntype){
@@ -63,7 +63,7 @@ void Order::setTurns(uint32_t nturns){
   turns = nturns;
 }
 
-std::map<uint32_t, uint32_t> Order::getResources() const{
+IdMap Order::getResources() const{
   return resources;
 }
 
@@ -87,12 +87,7 @@ void Order::createFrame(Frame * f, int pos)
   f->packInt(pos);
   f->packInt(type);
   f->packInt(turns);
-  f->packInt(resources.size());
-  for(std::map<uint32_t,uint32_t>::iterator itcurr = resources.begin(); itcurr != resources.end();
-      ++itcurr){
-    f->packInt(itcurr->first);
-    f->packInt(itcurr->second);
-  }
+  f->packIdMap(resources);
   for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     (*itcurr)->packOrderFrame(f);
@@ -123,7 +118,7 @@ Result Order::inputFrame(Frame * f, uint32_t playerid)
   if (rtv) {
     return Success();
   } else {
-	return Failure("Unable to unpack Frame.");
+    return Failure("Unable to unpack Frame.");
   }
 }
 

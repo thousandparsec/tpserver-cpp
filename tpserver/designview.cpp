@@ -76,18 +76,13 @@ void DesignView::pack(Frame* frame) const{
   }else{
     frame->packInt(owner);
   }
-  std::map<uint32_t, uint32_t> complist;
+  IdMap complist;
   if(completely_visible){
     complist = design->getComponents();
   }else{
     complist = components;
   }
-  frame->packInt(complist.size());
-  for(std::map<uint32_t, uint32_t>::const_iterator itcurr = complist.begin();
-      itcurr != complist.end(); ++itcurr){
-    frame->packInt(itcurr->first);
-    frame->packInt(itcurr->second);
-  }
+  frame->packIdMap(complist);
   if(completely_visible){
     frame->packString(design->getFeedback());
   }else{
@@ -118,7 +113,7 @@ bool DesignView::canSeeOwner() const{
   return seeowner;
 }
 
-std::map<uint32_t, uint32_t> DesignView::getVisibleComponents() const{
+IdMap DesignView::getVisibleComponents() const{
   return components;
 }
 
@@ -149,7 +144,7 @@ void DesignView::setCanSeeOwner(bool cso){
   touchModTime();
 }
 
-void DesignView::setVisibleComponents(std::map<uint32_t, uint32_t> cl){
+void DesignView::setVisibleComponents(IdMap cl){
   components = cl;
   touchModTime();
 }

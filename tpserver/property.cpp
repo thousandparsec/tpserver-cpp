@@ -44,7 +44,7 @@ uint32_t Property::getPropertyId() const {
   return getId();
 }
 
-std::set<uint32_t> Property::getCategoryIds() const {
+IdSet Property::getCategoryIds() const {
   return catids;
 }
 
@@ -76,7 +76,7 @@ void Property::addCategoryId(uint32_t id) {
   catids.insert(id);
 }
 
-void Property::setCategoryIds(const std::set<uint32_t>& ids) {
+void Property::setCategoryIds(const IdSet& ids) {
   catids = ids;
 }
 

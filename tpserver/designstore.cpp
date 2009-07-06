@@ -183,10 +183,10 @@ bool DesignStore::addDesign(Design* d){
   d->setDesignId(next_designid++);
 
   //check components all come from this category
-  std::map<uint32_t, uint32_t> cl = d->getComponents();
+  IdMap cl = d->getComponents();
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView* playerview = player->getPlayerView();
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
+  for(IdMap::iterator itcurr = cl.begin(); 
       itcurr != cl.end(); ++itcurr){
     if(!(playerview->isUsableComponent(itcurr->first)))
       return false;
@@ -219,14 +219,12 @@ bool DesignStore::modifyDesign(Design* d){
   PlayerView* playerview = player->getPlayerView();
   playerview->removeUsableDesign(d->getId());
 
-  std::map<uint32_t, uint32_t> cl = current->getComponents();
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
-      itcurr != cl.end(); ++itcurr){
+  IdMap cl = current->getComponents();
+  for(IdMap::iterator itcurr = cl.begin(); itcurr != cl.end(); ++itcurr){
     Component* comp = components[itcurr->first];
     comp->setInUse(false);
   }
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = cl.begin(); 
-      itcurr != cl.end(); ++itcurr){
+  for(IdMap::iterator itcurr = cl.begin(); itcurr != cl.end(); ++itcurr){
     if(!(playerview->isUsableComponent(itcurr->first)))
       return false;
     std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);

@@ -50,7 +50,7 @@ public:
   uint32_t getID() const;
   bool isAlive() const;
   uint32_t getScore(uint32_t key) const;
-  std::map<uint32_t, uint32_t> getAllScores() const;
+  IdMap getAllScores() const;
   uint32_t getBoardId() const;
 
   // WARNING -- internally the pointer is converted to Shared_Ptr

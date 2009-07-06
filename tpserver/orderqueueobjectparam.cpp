@@ -40,13 +40,8 @@ void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
     f->packInt(queueid);
     f->packInt(orderqueue->getNumberOrders());
     // order types
-    std::set<uint32_t> allowedtypes = orderqueue->getAllowedOrderTypes();
-    f->packInt(allowedtypes.size());
-    for(std::set<uint32_t>::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
-        ++itcurr){
-      f->packInt(*itcurr);
-    }
-    
+    IdSet allowedtypes = orderqueue->getAllowedOrderTypes();
+    f->packIdSet(allowedtypes);
   }else{
     f->packInt(0);
     f->packInt(0);
@@ -89,12 +84,12 @@ uint32_t OrderQueueObjectParam::getNumOrders() const{
   return orderqueue->getNumberOrders();
 }
 
-std::set<uint32_t> OrderQueueObjectParam::getAllowedOrders() const{
+IdSet OrderQueueObjectParam::getAllowedOrders() const{
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   return orderqueue->getAllowedOrderTypes();
 }
 
-void OrderQueueObjectParam::setAllowedOrders(std::set<uint32_t> ao){
+void OrderQueueObjectParam::setAllowedOrders(IdSet ao){
   OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   orderqueue->setAllowedOrderTypes(ao);
   Game::getGame()->getOrderManager()->updateOrderQueue(queueid);

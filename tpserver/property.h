@@ -43,7 +43,7 @@ class Property : public ProtocolObject {
 
     /// TODO: remove
     uint32_t getPropertyId() const;
-    std::set<uint32_t> getCategoryIds() const;
+    IdSet getCategoryIds() const;
     bool isInCategory(uint32_t catid) const;
     uint32_t getRank() const;
     std::string getDisplayName() const;

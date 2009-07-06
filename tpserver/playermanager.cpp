@@ -44,8 +44,8 @@ PlayerManager::~PlayerManager(){
 void PlayerManager::init(){
     Persistence* persist = Game::getGame()->getPersistence();
     nextid = persist->getMaxPlayerId() + 1;
-    std::set<uint32_t> pidset(persist->getPlayerIds());
-    for(std::set<uint32_t>::iterator itcurr = pidset.begin(); itcurr != pidset.end(); ++itcurr){
+    IdSet pidset(persist->getPlayerIds());
+    for(IdSet::iterator itcurr = pidset.begin(); itcurr != pidset.end(); ++itcurr){
         players[*itcurr] = NULL;
     }
 }
@@ -174,8 +174,8 @@ void PlayerManager::updatePlayer(uint32_t id){
     Game::getGame()->getPersistence()->updatePlayer(players[id]);
 }
 
-std::set<uint32_t> PlayerManager::getAllIds(){
-    std::set<uint32_t> vis;
+IdSet PlayerManager::getAllIds(){
+    IdSet vis;
     for(std::map<uint32_t, Player*>::const_iterator itid = players.begin();
         itid != players.end(); ++itid){
         vis.insert(itid->first);

@@ -34,14 +34,14 @@ class Component : public Modifiable, public Describable {
 
   /// TODO: remove
   uint32_t getComponentId() const;
-  std::set<uint32_t> getCategoryIds() const;
+  IdSet getCategoryIds() const;
   bool isInCategory(uint32_t id) const;
   std::string getTpclRequirementsFunction() const;
   std::map<uint32_t, std::string> getPropertyList() const;
 
   /// TODO: remove
   void setComponentId(uint32_t id);
-  void setCategoryIds(const std::set<uint32_t>& ids);
+  void setCategoryIds(const IdSet& ids);
   void addCategoryId(uint32_t id);
   void setTpclRequirementsFunction(const std::string& a);
   void setPropertyList(std::map<uint32_t, std::string> pl);
@@ -52,7 +52,7 @@ class Component : public Modifiable, public Describable {
   uint32_t getParentDesignId() const;
   
  protected:
-  std::set<uint32_t> catids;
+  IdSet catids;
   std::string tpcl_requirements;
   std::map<uint32_t, std::string> propertylist;
   bool inuse;

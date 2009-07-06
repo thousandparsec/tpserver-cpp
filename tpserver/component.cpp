@@ -37,7 +37,7 @@ uint32_t Component::getComponentId() const{
   return getId();
 }
 
-std::set<uint32_t> Component::getCategoryIds() const{
+IdSet Component::getCategoryIds() const{
   return catids;
 }
 
@@ -57,7 +57,7 @@ void Component::setComponentId(uint32_t nid){
   setId(nid);
 }
 
-void Component::setCategoryIds(const std::set<uint32_t>& ids){
+void Component::setCategoryIds(const IdSet& ids){
   catids = ids;
 }
 

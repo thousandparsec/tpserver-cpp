@@ -27,6 +27,7 @@
 #include <tpserver/propertyvalue.h>
 #include <tpserver/modifiable.h>
 #include <tpserver/describable.h>
+#include <tpserver/common.h>
 
 class Design : public Modifiable, public Describable {
   public:
@@ -37,7 +38,7 @@ class Design : public Modifiable, public Describable {
     uint32_t getDesignId() const;
     uint32_t getCategoryId() const;
     uint32_t getOwner() const;
-    std::map<uint32_t, uint32_t> getComponents() const;
+    IdMap getComponents() const;
     uint32_t getNumExist() const;
     uint32_t getInUse() const;
     bool isValid() const;
@@ -49,7 +50,7 @@ class Design : public Modifiable, public Describable {
     void setDesignId(uint32_t id);
     void setCategoryId(uint32_t id);
     void setOwner(uint32_t o);
-    void setComponents(std::map<uint32_t, uint32_t> cl);
+    void setComponents(IdMap cl);
     void setInUse(uint32_t niu);
     void setNumExist(uint32_t nne);
 
@@ -68,7 +69,7 @@ class Design : public Modifiable, public Describable {
     uint32_t exist;
     uint32_t owner;
     bool valid;
-    std::map<uint32_t, uint32_t> components;
+    IdMap components;
     PropertyValue::Map properties;
     std::string feedback;
 

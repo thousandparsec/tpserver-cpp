@@ -114,7 +114,7 @@ uint32_t Player::getScore(uint32_t key) const{
   }
 }
 
-std::map<uint32_t, uint32_t> Player::getAllScores() const{
+IdMap Player::getAllScores() const{
   return score;
 }
 

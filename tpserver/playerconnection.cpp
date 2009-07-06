@@ -202,7 +202,7 @@ void PlayerConnection::processGetFeaturesFrame(Frame* frame){
   DEBUG("PlayerConnection : Processing Get Features frame");
   Frame *features = createFrame(frame);
   features->setType(ft03_Features);
-  std::set<uint32_t> fids;
+  IdSet fids;
   fids.insert(fid_keep_alive);
   fids.insert(fid_serverside_property);
   if(frame->getVersion() >= fv0_4){
@@ -212,10 +212,7 @@ void PlayerConnection::processGetFeaturesFrame(Frame* frame){
     fids.insert(fid_account_register);
   }
 
-  features->packInt(fids.size());
-  for(std::set<uint32_t>::iterator itcurr = fids.begin(); itcurr != fids.end(); ++itcurr){
-    features->packInt(*itcurr);
-  }
+  features->packIdSet(fids);
   sendFrame(features);
 }
 
@@ -229,13 +226,9 @@ void PlayerConnection::processGetGameInfoFrame(Frame* frame){
 void PlayerConnection::processSetFilters(Frame* frame){
   DEBUG("PlayerConnection : Processing set filters");
   Frame* rtnframe = createFrame(frame);
-  uint32_t numfilters = frame->unpackInt();
-  std::set<uint32_t> filters_wanted;
-  for(uint32_t i = 0; i < numfilters; i++){
-    filters_wanted.insert(frame->unpackInt());
-  }
+  IdSet filters_wanted = frame->unpackIdSet();
 
-  std::set<uint32_t> filters_setup;
+  IdSet filters_setup;
   if(filters_wanted.count(fid_filter_stringpad) != 0){
     filters_setup.insert(fid_filter_stringpad);
   }

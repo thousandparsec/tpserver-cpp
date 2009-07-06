@@ -60,11 +60,11 @@ bool OrderQueue::isOwner(uint32_t playerid) const{
   return owner.find(playerid) != owner.end();
 }
 
-std::set<uint32_t> OrderQueue::getOwner() const{
+IdSet OrderQueue::getOwner() const{
   return owner;
 }
 
-void OrderQueue::setOwners(std::set<uint32_t> no){
+void OrderQueue::setOwners(IdSet no){
   owner = no;
 }
 
@@ -83,7 +83,7 @@ bool OrderQueue::checkOrderType(uint32_t type, uint32_t playerid) const{
   return false;
 }
 
-std::set<uint32_t> OrderQueue::getAllowedOrderTypes() const{
+IdSet OrderQueue::getAllowedOrderTypes() const{
   return allowedtypes;
 }
 
@@ -97,7 +97,7 @@ void OrderQueue::removeAllowedOrderType(uint32_t type){
   touchModTime();
 }
 
-void OrderQueue::setAllowedOrderTypes(const std::set<uint32_t>& ao){
+void OrderQueue::setAllowedOrderTypes(const IdSet& ao){
   allowedtypes = ao;
   touchModTime();
 }
@@ -116,7 +116,7 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
     if (pos == UINT32_NEG_ONE) {
       orderlist.push_back(orderid);
     } else {
-      std::list<uint32_t>::iterator inspos = orderlist.begin();
+      IdList::iterator inspos = orderlist.begin();
       advance(inspos, pos);
       orderlist.insert(inspos, orderid);
     }
@@ -137,7 +137,7 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
       return Failure("Order slot to remove is passed end of order slots.");
     }
 
-    std::list<uint32_t>::iterator itpos = orderlist.begin();
+    IdList::iterator itpos = orderlist.begin();
     advance(itpos, pos);
     uint32_t orderid = *itpos;
     Order* ord = ordercache[orderid];
@@ -166,7 +166,7 @@ Order* OrderQueue::getOrder(uint32_t pos, uint32_t playerid){
       return NULL;
     }
 
-    std::list<uint32_t>::iterator itpos = orderlist.begin();
+    IdList::iterator itpos = orderlist.begin();
     advance(itpos, pos);
     uint32_t orderid = *itpos;
     Order* ord = ordercache[orderid];
@@ -238,9 +238,9 @@ void OrderQueue::touchModTime(){
 }
 
 void OrderQueue::removeAllOrders(){
-  std::list<uint32_t>::iterator itpos = orderlist.begin();
+  IdList::iterator itpos = orderlist.begin();
   
-  for(std::list<uint32_t>::iterator itpos = orderlist.begin(); itpos != orderlist.end(); ++itpos){
+  for(IdList::iterator itpos = orderlist.begin(); itpos != orderlist.end(); ++itpos){
     uint32_t orderid = *itpos;
     Order* ord = ordercache[orderid];
     if(ord == NULL){
@@ -260,10 +260,10 @@ void OrderQueue::setNextOrderId(uint32_t next){
   nextOrderId = next;
 }
 
-void OrderQueue::setOrderSlots(std::list<uint32_t> nos){
+void OrderQueue::setOrderSlots(IdList nos){
   orderlist = nos;
 }
 
-std::list<uint32_t> OrderQueue::getOrderSlots() const{
+IdList OrderQueue::getOrderSlots() const{
   return orderlist;
 }

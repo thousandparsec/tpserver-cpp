@@ -401,6 +401,16 @@ bool Frame::packIdSet(const IdSet& idset)
   return true;
 }
 
+bool Frame::packIdMap(const IdMap& idmap)
+{
+  packInt(idmap.size());
+  for(IdMap::const_iterator idit = idmap.begin(); idit != idmap.end(); ++idit){
+    packInt(idit->first);
+    packInt(idit->second);
+  }
+  return true;
+}
+
 bool Frame::isEnoughRemaining(uint32_t size) const{
   Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
   return (length - unpackptr) >= size;
@@ -475,6 +485,16 @@ IdMap Frame::unpackMap(){
     uint32_t idx = unpackInt();
     map[idx] = unpackInt();
   }
+  return map;
+}
+
+IdSet Frame::unpackIdSet(){
+  IdSet set;
+  uint32_t msize = unpackInt();
+  for(uint32_t i = 0; i < msize; ++i){
+    set.insert( unpackInt() );
+  }
+  return set;
 }
 
 void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){

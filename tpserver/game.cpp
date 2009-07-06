@@ -167,9 +167,9 @@ bool Game::start(){
     }
     
     //set num of dead players in the TurnTimer for accurate threshold calcuation
-    std::set<uint32_t> players = playermanager->getAllIds();
+    IdSet players = playermanager->getAllIds();
     uint32_t numdeadplayers = 0;
-    for(std::set<uint32_t>::iterator itcurr = players.begin();
+    for(IdSet::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
       Player* player = playermanager->getPlayer(*itcurr);
       if(!player->isAlive()){
@@ -304,9 +304,9 @@ void Game::doEndOfTurn(){
     // DO END OF TURN STUFF HERE
     turnprocess->doTurn();
 
-    std::set<uint32_t> players = playermanager->getAllIds();
+    IdSet players = playermanager->getAllIds();
     uint32_t numdeadplayers = 0;
-    for(std::set<uint32_t>::iterator itcurr = players.begin();
+    for(IdSet::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
       Player* player = playermanager->getPlayer(*itcurr);
       player->getPlayerView()->doOnceATurn();

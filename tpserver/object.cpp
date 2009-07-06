@@ -118,7 +118,7 @@ int IGObject::getContainerType(){
   return 0;
 }
 
-std::set<uint32_t> IGObject::getContainedObjects(){
+IdSet IGObject::getContainedObjects(){
   return relationships->getChildren();
 }
 

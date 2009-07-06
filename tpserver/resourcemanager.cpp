@@ -37,8 +37,8 @@ ResourceManager::~ResourceManager()
 void ResourceManager::init(){
     Persistence* persist = Game::getGame()->getPersistence();
     nextid = persist->getMaxResourceId() + 1;
-    std::set<uint32_t> ridset(persist->getResourceIds());
-    for(std::set<uint32_t>::iterator itcurr = ridset.begin(); itcurr != ridset.end(); ++itcurr){
+    IdSet ridset(persist->getResourceIds());
+    for(IdSet::iterator itcurr = ridset.begin(); itcurr != ridset.end(); ++itcurr){
         resdescs[*itcurr] = NULL;
     }
 }
@@ -76,8 +76,8 @@ const ResourceDescription* ResourceManager::getResourceDescription(const std::st
     return NULL;
 }
 
-std::set<uint32_t> ResourceManager::getAllIds(){
-    std::set<uint32_t> vis;
+IdSet ResourceManager::getAllIds(){
+    IdSet vis;
     for(std::map<uint32_t, ResourceDescription*>::const_iterator itid = resdescs.begin();
             itid != resdescs.end(); ++itid){
         vis.insert(itid->first);

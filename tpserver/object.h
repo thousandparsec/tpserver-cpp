@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <string>
 
+#include <tpserver/common.h>
 #include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/modifiable.h>
@@ -66,7 +67,7 @@ class IGObject : public Modifiable, public Describable {
     void addToParent(uint32_t pid);
 
     int getContainerType();
-    std::set<uint32_t> getContainedObjects();
+    IdSet getContainedObjects();
     void addContainedObject(uint32_t addObjectID);
     void removeContainedObject(uint32_t removeObjectID);
 

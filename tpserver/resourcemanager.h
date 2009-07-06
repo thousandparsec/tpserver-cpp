@@ -42,7 +42,7 @@ public:
     const ResourceDescription* getResourceDescription(uint32_t restype);
     const ResourceDescription* getResourceDescription(const std::string& restype);
     
-    std::set<uint32_t> getAllIds();
+    IdSet getAllIds();
 
 private:
     std::map<uint32_t, ResourceDescription*> resdescs;

@@ -37,19 +37,19 @@ class ObjectRelationshipsData : public Modifiable {
     ~ObjectRelationshipsData();
     
     uint32_t getParent() const;
-    std::set<uint32_t> getChildren() const;
+    IdSet getChildren() const;
 
     void setParent(uint32_t np);
     void addChild(uint32_t nc);
     void removeChild(uint32_t oc);
-    void setChildren(const std::set<uint32_t> nc);
+    void setChildren(const IdSet nc);
 
     void packFrame(Frame* f, uint32_t playerid);
     void unpackModFrame(Frame* f);
     
   private:
     uint32_t parentid;
-    std::set<uint32_t> children;
+    IdSet children;
 };
 
 #endif

@@ -962,10 +962,10 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
   fromtime = frame->unpackInt64();
 
   PlayerManager* pm = Game::getGame()->getPlayerManager();
-  std::set<playerid_t> idset = pm->getAllIds();
+  IdSet idset = pm->getAllIds();
 
   IdModList modlist;
-  for(std::set<playerid_t>::iterator itcurr = idset.begin();
+  for(IdSet::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
     const Player * pl = pm->getPlayer(*itcurr);
     if(fromtime == UINT64_NEG_ONE || pl->getModTime() > fromtime){

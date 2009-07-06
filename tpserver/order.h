@@ -26,6 +26,7 @@
 #include <string>
 
 #include "result.h"
+#include <tpserver/common.h>
 
 class Frame;
 class IGObject;
@@ -33,44 +34,44 @@ class OrderParameter;
 
 class Order {
 
-      public:
-	Order();
-        virtual ~Order();
+  public:
+    Order();
+    virtual ~Order();
 
-	uint32_t getType() const;
-	void setType(uint32_t ntype);
-        std::string getName() const;
-        uint32_t getTurns() const;
-        void setTurns(uint32_t nturns);
-        std::map<uint32_t, uint32_t> getResources() const;
-        void addResource(uint32_t resid, uint32_t amount);
-        std::list<OrderParameter*> getParameters() const;
-        uint64_t getDescriptionModTime() const;
+    uint32_t getType() const;
+    void setType(uint32_t ntype);
+    std::string getName() const;
+    uint32_t getTurns() const;
+    void setTurns(uint32_t nturns);
+    IdMap getResources() const;
+    void addResource(uint32_t resid, uint32_t amount);
+    std::list<OrderParameter*> getParameters() const;
+    uint64_t getDescriptionModTime() const;
 
-	virtual void createFrame(Frame * f, int pos);
-	virtual Result inputFrame(Frame * f, uint32_t playerid);
+    virtual void createFrame(Frame * f, int pos);
+    virtual Result inputFrame(Frame * f, uint32_t playerid);
 
-	virtual bool doOrder(IGObject * ob) = 0;
+    virtual bool doOrder(IGObject * ob) = 0;
 
-	void describeOrder(Frame * f) const;
-	virtual Order *clone() const = 0;
+    void describeOrder(Frame * f) const;
+    virtual Order *clone() const = 0;
 
-        //For OrderQueue only
-        void setOrderQueueId(uint32_t id);
-        uint32_t getOrderQueueId() const;
-        
-      protected:
-        void addOrderParameter(OrderParameter* op);
-        uint32_t orderqueueid;
-	 uint32_t type;
-	 uint64_t descmodtime;
-         std::string name;
-         std::string description;
-         uint32_t turns;
-         std::map<uint32_t, uint32_t> resources;
-         
-      private:
-         std::list<OrderParameter*> parameters;
+    //For OrderQueue only
+    void setOrderQueueId(uint32_t id);
+    uint32_t getOrderQueueId() const;
+
+  protected:
+    void addOrderParameter(OrderParameter* op);
+    uint32_t orderqueueid;
+    uint32_t type;
+    uint64_t descmodtime;
+    std::string name;
+    std::string description;
+    uint32_t turns;
+    IdMap resources;
+
+  private:
+    std::list<OrderParameter*> parameters;
 
 };
 

@@ -43,15 +43,15 @@ class ObjectManager{
     void scheduleRemoveObject(uint32_t id);
     void clearRemovedObjects();
     
-    std::set<uint32_t> getObjectsByPos(const Vector3d & pos, uint64_t r);
+    IdSet getObjectsByPos(const Vector3d & pos, uint64_t r);
     
-    std::set<uint32_t> getAllIds();
+    IdSet getAllIds();
     
     uint32_t getNumObjects() const;
 
  private:
     std::map<uint32_t, IGObject *> objects;
-    std::set<uint32_t> scheduleRemove;
+    IdSet scheduleRemove;
     uint32_t nextid;
 };
 
