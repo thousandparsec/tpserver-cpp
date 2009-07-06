@@ -468,6 +468,15 @@ char Frame::unpackInt8(){
   return rval;
 }
 
+IdMap Frame::unpackMap(){
+  IdMap map;
+  uint32_t msize = unpackInt();
+  for(uint32_t i = 0; i < msize; ++i){
+    uint32_t idx = unpackInt();
+    map[idx] = unpackInt();
+  }
+}
+
 void Frame::createFailFrame(FrameErrorCode code, const std::string& reason){
   createFailFrame(code, reason, std::list<std::pair<reftype_t, refvalue_t> >());
 }

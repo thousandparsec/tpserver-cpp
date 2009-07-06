@@ -106,7 +106,7 @@ bool Player::isAlive() const{
 }
 
 uint32_t Player::getScore(uint32_t key) const{
-  std::map<uint32_t,uint32_t>::const_iterator itval = score.find(key);
+  IdMap::const_iterator itval = score.find(key);
   if(itval != score.end()){
     return itval->second;
   }else{

@@ -1115,13 +1115,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
   if(player->getID() != tpid){
     DEBUG("Odd, client sent wrong player id %d", tpid);
   }
-  uint32_t numcomp = frame->unpackInt();
-  std::map<uint32_t, uint32_t> comps;
-  for(uint32_t i = 0; i < numcomp; i++){
-    uint32_t compid = frame->unpackInt();
-    comps[compid] = (frame->unpackInt());
-  }
-  design->setComponents(comps);
+  design->setComponents( frame->unpackMap());
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -1161,13 +1155,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
   if(player->getID() != tpid){
     DEBUG("Odd, client sent wrong player id %d", tpid);
   }
-  uint32_t numcomp = frame->unpackInt();
-  std::map<uint32_t, uint32_t> comps;
-  for(uint32_t i = 0; i < numcomp; i++){
-    uint32_t compid = frame->unpackInt();
-    comps[compid] = (frame->unpackInt());
-  }
-  design->setComponents(comps);
+  design->setComponents(frame->unpackMap());
   //discard rest of frame
 
   DesignStore* ds = Game::getGame()->getDesignStore();

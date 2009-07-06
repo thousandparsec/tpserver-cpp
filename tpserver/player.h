@@ -72,7 +72,7 @@ private:
   PlayerView* playerview;
   
   bool alive;
-  std::map<uint32_t, uint32_t> score;
+  IdMap score;
   
   Player(Player & rhs);
 

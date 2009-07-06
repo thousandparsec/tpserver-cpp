@@ -121,6 +121,7 @@ class Frame {
     std::string unpackStdString();
     int64_t unpackInt64();
     char unpackInt8();
+    IdMap unpackMap();
 
     void createFailFrame(FrameErrorCode code, const std::string& reason);
     void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);
