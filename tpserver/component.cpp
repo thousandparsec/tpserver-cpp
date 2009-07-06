@@ -49,7 +49,7 @@ std::string Component::getTpclRequirementsFunction() const{
   return tpcl_requirements;
 }
 
-std::map<uint32_t, std::string> Component::getPropertyList() const{
+IdStringMap Component::getPropertyList() const{
   return propertylist;
 }
 
@@ -69,7 +69,7 @@ void Component::setTpclRequirementsFunction(const std::string& a){
   tpcl_requirements = a;
 }
 
-void Component::setPropertyList(std::map<uint32_t, std::string> pl){
+void Component::setPropertyList(const IdStringMap& pl){
   propertylist = pl;
 }
 

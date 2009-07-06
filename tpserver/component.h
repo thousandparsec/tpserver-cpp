@@ -20,10 +20,7 @@
  *
  */
 
-#include <string>
-#include <map>
-#include <set>
-#include <stdint.h>
+#include <tpserver/common.h>
 #include <tpserver/modifiable.h>
 #include <tpserver/describable.h>
 
@@ -37,14 +34,14 @@ class Component : public Modifiable, public Describable {
   IdSet getCategoryIds() const;
   bool isInCategory(uint32_t id) const;
   std::string getTpclRequirementsFunction() const;
-  std::map<uint32_t, std::string> getPropertyList() const;
+  IdStringMap getPropertyList() const;
 
   /// TODO: remove
   void setComponentId(uint32_t id);
   void setCategoryIds(const IdSet& ids);
   void addCategoryId(uint32_t id);
   void setTpclRequirementsFunction(const std::string& a);
-  void setPropertyList(std::map<uint32_t, std::string> pl);
+  void setPropertyList(const IdStringMap& pl);
   
   void setInUse(bool used=true);
   bool isInUse() const;
@@ -54,7 +51,7 @@ class Component : public Modifiable, public Describable {
  protected:
   IdSet catids;
   std::string tpcl_requirements;
-  std::map<uint32_t, std::string> propertylist;
+  IdStringMap propertylist;
   bool inuse;
   uint32_t parentdesignid;
 

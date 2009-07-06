@@ -411,6 +411,16 @@ bool Frame::packIdMap(const IdMap& idmap)
   return true;
 }
 
+bool Frame::packIdStringMap(const IdStringMap& idmap)
+{
+  packInt(idmap.size());
+  for(IdStringMap::const_iterator idit = idmap.begin(); idit != idmap.end(); ++idit){
+    packInt(idit->first);
+    packString(idit->second);
+  }
+  return true;
+}
+
 bool Frame::isEnoughRemaining(uint32_t size) const{
   Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
   return (length - unpackptr) >= size;

@@ -75,21 +75,18 @@ void ComponentView::pack(Frame* frame) const{
   }else{
     frame->packString("(lamda (design) (cons #f \"Unknown Component. \")))");
   }
-  std::map<uint32_t, std::string> propertylist;
+  IdStringMap propertylist;
   if(completely_visible){
     propertylist = comp->getPropertyList();
   }else{
-    std::map<uint32_t, std::string> compproplist = comp->getPropertyList();
+    // TODO: WTF? isn't this the same???
+    IdStringMap compproplist = comp->getPropertyList();
     for(IdSet::const_iterator itcurr = properties_visible.begin();
         itcurr != properties_visible.end(); ++itcurr){
       propertylist[*itcurr] = compproplist[*itcurr];
     }
   }
-  frame->packInt(propertylist.size());
-  for(std::map<uint32_t, std::string>::const_iterator itcurr = propertylist.begin(); itcurr != propertylist.end(); ++itcurr){
-    frame->packInt(itcurr->first);
-    frame->packString(itcurr->second);
-  }
+  frame->packIdStringMap(propertylist);
 }
 
 uint32_t ComponentView::getComponentId() const{
