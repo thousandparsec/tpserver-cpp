@@ -24,7 +24,7 @@
 #include <string>
 #include <set>
 
-#include "vector3d.h"
+#include <tpserver/vector3d.h>
 
 class TiXmlDocument;
 class TiXmlElement;

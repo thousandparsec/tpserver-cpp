@@ -22,10 +22,15 @@
 
 #include <map>
 #include <set>
+#include <vector>
 #include <stdint.h>
 
 class IGObject;
 class Combatant;
+
+namespace BattleXML {
+    class BattleLogger;
+}
 
 class RSPCombat{
  public:
@@ -36,11 +41,16 @@ class RSPCombat{
 
 
  private:
-  void resolveDamage(Combatant* fleet, std::set<uint32_t> objects);
+  std::map<Combatant*, uint32_t> buildShotList(std::vector<Combatant*> combatants, bool isDraw = false);
+  void doDamage(std::map<Combatant*, uint32_t> shotlist, std::vector<Combatant*> targets);
+  bool isAllDead(std::vector<Combatant*> combatants);
+  void resolveCombatantsToObjects(std::vector<Combatant*> combatants);
    
   uint32_t obT_Fleet;
   uint32_t obT_Planet;
   std::map<uint32_t, IGObject*> objectcache;
+  std::map<uint32_t, std::string> msgstrings;
+  BattleXML::BattleLogger* battlelogger;
 };
 
 #endif

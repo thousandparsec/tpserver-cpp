@@ -2,7 +2,7 @@
 #define COMBATANT_H
 /*  Combatant class
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,32 +24,37 @@
 #include <list>
 #include <stdint.h>
 
+#include <tpserver/protocol.h>
 #include <tpserver/vector3d.h>
+#include <tpserver/battlexml/combatant.h>
 
 
-class Combatant{
+class Combatant : public BattleXML::Combatant{
   public:
     Combatant();
     ~Combatant();
 
-    uint32_t getOwner() const;
-    void setOwner(uint32_t no);
+    playerid_t getOwner() const;
+    void setOwner(playerid_t no);
+    
+    objectid_t getObject() const;
+    void setObject(objectid_t no);
 
-    void addShips(uint32_t type, uint32_t number);
-    bool removeShips(uint32_t type, uint32_t number);
-    uint32_t numShips(uint32_t type);
-    std::map<uint32_t, uint32_t> getShips() const;
-    uint32_t totalShips() const;
+    void setShipType(designid_t type);
+    designid_t getShipType() const;
 
-    std::list<uint32_t> firepower(bool draw);
-    bool hit(std::list<uint32_t> firepower);
+    uint32_t firepower(bool draw);
+    bool hit(uint32_t firepower);
 
     uint32_t getDamage() const;
     void setDamage(uint32_t nd);
+    
+    bool isDead() const;
 
   private:
-    uint32_t playerref;
-    std::map<uint32_t, uint32_t> shiplist;
+    playerid_t playerref;
+    objectid_t objectref;
+    designid_t shiptype;
     uint32_t damage;
 
 };

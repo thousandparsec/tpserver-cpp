@@ -1,6 +1,6 @@
 /*  Rock-Scissor-Paper combat
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  */
 
 #include <string>
+#include <vector>
+#include <boost/format.hpp>
 
 #include <tpserver/object.h>
 #include "fleet.h"
@@ -35,9 +37,19 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
+#include <tpserver/designstore.h>
+#include <tpserver/design.h>
+#include <tpserver/battlexml/battlelogger.h>
 #include "combatant.h"
 
 #include "rspcombat.h"
+
+// CombatantSorter, for sorting the combatants into the best order
+struct CombatantSorter{
+    bool operator()(Combatant* a, Combatant* b){
+        return a->getShipType() > b->getShipType();
+    }
+};
 
 RSPCombat::RSPCombat() : objectcache(){
   obT_Fleet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
@@ -49,308 +61,389 @@ RSPCombat::~RSPCombat(){
 
 
 void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
-  std::set<uint32_t> listallobids;
-  std::set<uint32_t> listallplayerids;
-  
-  std::map<uint32_t, Combatant*> fleetcache;
-  
-  for(std::map<uint32_t, std::set<uint32_t> >::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
-    std::set<uint32_t> theset = itmap->second;
-    Combatant* f1 = new Combatant();
-    f1->setOwner(itmap->first);
-    for(std::set<uint32_t>::iterator itset = theset.begin(); itset != theset.end(); ++itset){
-      listallobids.insert(*itset);
-      IGObject* obj = Game::getGame()->getObjectManager()->getObject(*itset);
-      objectcache[*itset] = obj;
-      if(obj->getType() == obT_Fleet){
-        Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
-        std::map<uint32_t, uint32_t> shiplist = f2->getShips();
-        for(std::map<uint32_t, uint32_t>::iterator itship = shiplist.begin(); itship != shiplist.end(); ++itship){
-          f1->addShips(itship->first, itship->second);
+    Game* game = Game::getGame();
+    PlayerManager* playermanager = game->getPlayerManager();
+    ObjectManager* objectmanager = game->getObjectManager();
+    DesignStore* ds = game->getDesignStore();
+    
+    const char * const rsp[] = {"rock", "scissors", "paper"};
+    
+    std::set<uint32_t> listallobids;
+    std::set<uint32_t> listallplayerids;
+    
+    std::map<uint32_t, std::vector<Combatant*> > fleetcache;
+    
+    battlelogger = new BattleXML::BattleLogger();
+    
+    for(std::map<uint32_t, std::set<uint32_t> >::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
+        std::vector<Combatant*> pcombatant;
+        Player* player = playermanager->getPlayer(itmap->first);
+        battlelogger->startSide(player->getName());
+        std::set<uint32_t> theset = itmap->second;
+        for(std::set<uint32_t>::iterator itset = theset.begin(); itset != theset.end(); ++itset){
+            listallobids.insert(*itset);
+            IGObject* obj = objectmanager->getObject (*itset);
+            objectcache[*itset] = obj;
+            if(obj->getType() == obT_Fleet){
+                Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
+                std::map<uint32_t, uint32_t> shiplist = f2->getShips();
+                uint32_t damage = f2->getDamage();
+                for(std::map<uint32_t, uint32_t>::reverse_iterator itship = shiplist.rbegin(); itship != shiplist.rend(); ++itship){
+                    for(uint32_t i = 0; i < itship->second; i++){
+                        Combatant* f1 = new Combatant();
+                        f1->setOwner(itmap->first);
+                        f1->setObject(obj->getID());
+                        f1->setShipType(itship->first);
+                        uint32_t mydamage = damage / (shiplist.size() - i);
+                        f1->setDamage(mydamage);
+                        damage -= mydamage;
+                        std::string type = ds->getDesign(itship->first)->getName();
+                        f1->setBattleXmlType(type);
+                        f1->setBattleXmlId(str(boost::format("%1%-%2%-%3%") % type % obj->getID() % i));
+                        f1->setBattleXmlName(str(boost::format("%1%'s %2%, %3% %4%") % player->getName() % obj->getName() % type % i));
+                        battlelogger->addCombatant(f1);
+                        pcombatant.push_back(f1);
+                    }
+                }
+            }else{
+                int shipcount = 2;
+                if(((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1){
+                    //three more for home planets
+                    shipcount += 3;
+                }
+                for(int i = 0; i < shipcount; i++){
+                    Combatant* f1 = new Combatant();
+                    f1->setOwner(itmap->first);
+                    f1->setObject(obj->getID());
+                    f1->setShipType(0);
+                    f1->setBattleXmlType("planet");
+                    f1->setBattleXmlId(str(boost::format("planet-%1%-%2%") % obj->getID() % i));
+                    f1->setBattleXmlName(str(boost::format("%1%'s colony on %2%, Defense battery %3%") % player->getName() % obj->getName() % i));
+                    battlelogger->addCombatant(f1);
+                    pcombatant.push_back(f1);
+                }
+            }
         }
-        f1->setDamage(f1->getDamage() + f2->getDamage());
-      }else{
-        std::set<uint32_t> playershiptypes = Game::getGame()->getPlayerManager()->getPlayer(itmap->first)->getPlayerView()->getUsableDesigns();
-        std::set<uint32_t>::iterator itbs = playershiptypes.begin();
-        itbs++;
-        itbs++;
-        f1->addShips(*itbs, 2);
-        if(((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1){
-          //two more for home planets
-          f1->addShips(*itbs, 2);
-        }
-      }
+        listallplayerids.insert(itmap->first);
+        battlelogger->endSide();
+        //sort combatant list by ship type, descending
+        sort(pcombatant.begin(), pcombatant.end(), CombatantSorter());
+        fleetcache[itmap->first] = pcombatant;
     }
-    listallplayerids.insert(itmap->first);
-    fleetcache[itmap->first] = f1;
-  }
-  
-  std::map<uint32_t, std::string> msgstrings;
-  for(std::set<uint32_t>::iterator itplayer = listallplayerids.begin(); itplayer != listallplayerids.end(); ++itplayer){
-    msgstrings[*itplayer] = "";
-  }
+
+    for(std::set<uint32_t>::iterator itplayer = listallplayerids.begin(); itplayer != listallplayerids.end(); ++itplayer){
+        msgstrings[*itplayer] = "";
+    }
   
   
 
-  Random* random = Game::getGame()->getRandom();
-  
-  Logger::getLogger()->debug("Combat start");
-  
-  while(fleetcache.size() >= 2){
-    uint32_t pos1, pos2;
-    if(fleetcache.size() == 2){
-      pos1 = 0;
-      pos2 = 1;
-    }else{
-      pos1 = pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
-      while(pos2 == pos1){
-        pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
-      }
-    }
+    Random* random = Game::getGame()->getRandom();
     
-    std::map<uint32_t, Combatant*>::iterator itpa = fleetcache.begin();
-    advance(itpa, pos1);
-    std::map<uint32_t, Combatant*>::iterator itpb = fleetcache.begin();
-    advance(itpb, pos2);
+    Logger::getLogger()->debug("Combat start");
     
-    Combatant* f1 = itpa->second;
-    Combatant* f2 = itpb->second;
-    
-    uint32_t ownerid1 = f1->getOwner();
-    uint32_t ownerid2 = f2->getOwner();
-        
-    int32_t r1 = random->getInRange((int32_t)0, (int32_t)2);
-    
-    std::list<uint32_t> d1, d2;
-    
-    if(r1 == 0){
-      //draw
-      d1 = f1->firepower(true);
-      d2 = f2->firepower(true);
-    }else if(r1 == 1){
-      //pa win
-      d1 = f1->firepower(false);
-      uint32_t nscout = 0;
-      for(std::list<uint32_t>::iterator itcurr = d1.begin(); itcurr != d1.end(); ++itcurr){
-        if((*itcurr) == 0)
-          nscout++;
-      }
-      if(nscout == d1.size() || random->getReal1() < ((double)((double)nscout / (double)(d1.size()))) ){
-        msgstrings[ownerid1] += "Your Fleet escaped. ";
-        for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
-            msgit != msgstrings.end(); ++msgit){
-          if(msgit->first == ownerid1)
-            continue;
-          msgit->second += "Their fleet of escaped. ";
-        }
-        resolveDamage(f1, sides[ownerid1]);
-        delete f1;
-        fleetcache.erase(itpa);
-        continue;
-      }
-    }else{
-      //pb win
-      d2 = f2->firepower(false);
-      if(d2.empty())
-        Logger::getLogger()->debug("Empty shot list from fleet 2");
-      uint32_t nscout = 0;
-      for(std::list<uint32_t>::iterator itcurr = d2.begin(); itcurr != d2.end(); ++itcurr){
-        if((*itcurr) == 0)
-          nscout++;
-      }
-      if(nscout == d2.size() || random->getReal1() < ((double)((double)nscout / (double)(d2.size()))) ){
-        msgstrings[ownerid2] += "Your Fleet escaped. ";
-        for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
-            msgit != msgstrings.end(); ++msgit){
-          if(msgit->first == ownerid2)
-            continue;
-          msgit->second += "Their fleet of escaped. ";
-        }
-        resolveDamage(f2, sides[ownerid2]);
-        delete f2;
-        fleetcache.erase(itpb);
-        continue;
-      }
-    }
-
-    Logger::getLogger()->debug("f1 hit by %d shots from d2", d2.size());
-    
-    if(!f1->hit(d2)){
-      msgstrings[ownerid1] += "Your fleet was destroyed. ";
-      msgstrings[ownerid2] += "You destroyed their fleet. ";
-      for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
-          msgit != msgstrings.end(); ++msgit){
-        if(msgit->first == ownerid1 || msgit->first == ownerid2)
-          continue;
-        msgit->second += "An enemy destroyed an enemy fleet. ";
-      }
-      
-      resolveDamage(f1, sides[ownerid1]);
-      delete f1;
-      fleetcache.erase(itpa);
-    }
-    
-    Logger::getLogger()->debug("f2 hit by %d shots from d1", d1.size());
-    
-    if(!f2->hit(d1)){
-      msgstrings[ownerid2] += "Your fleet was destroyed. ";
-      msgstrings[ownerid1] += "You destroyed their fleet. ";
-      for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
-          msgit != msgstrings.end(); ++msgit){
-        if(msgit->first == ownerid2 || msgit->first == ownerid1)
-          continue;
-        msgit->second += "An enemy destroyed an enemy fleet. ";
-      }
-      
-      resolveDamage(f2, sides[ownerid2]);
-      delete f2;
-      fleetcache.erase(itpb);
-    }
-
-  }
-  
-  Combatant* flast = fleetcache.begin()->second;
-  resolveDamage(flast, sides[flast->getOwner()]);
-  delete flast;
-  fleetcache.erase(fleetcache.begin());
-  if(!fleetcache.empty()){
-    Logger::getLogger()->warning("fleetcache not empty at end of combat");
-  }
-  
-  for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
-      msgit != msgstrings.end(); ++msgit){
-    Message *msg;
-    msg = new Message();
-    msg->setSubject("Combat");
-    for(std::set<uint32_t>::iterator itob = listallobids.begin(); itob != listallobids.end();
-        ++itob){
-      msg->addReference(rst_Object, *itob);
-    }
-    for(std::set<uint32_t>::iterator itpl = listallplayerids.begin();
-        itpl != listallplayerids.end(); ++itpl){
-      msg->addReference(rst_Player, *itpl);
-    }
-    
-    msg->setBody(msgit->second);
-    
-    Game::getGame()->getPlayerManager()->getPlayer(msgit->first)->postToBoard(msg);
-  }
-  
-  for(std::map<uint32_t, IGObject*>::iterator itob = objectcache.begin(); 
-      itob != objectcache.end(); ++itob){
-    Game::getGame()->getObjectManager()->doneWithObject(itob->first);
-  }
-  objectcache.clear();
-  
-}
-
-void RSPCombat::resolveDamage(Combatant* fleet, std::set<uint32_t> objects){
-  std::map<uint32_t, uint32_t> fleetlist = fleet->getShips();
-  
-  uint32_t temp;
-  
-  std::set<uint32_t> playershiptypes = Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->getUsableDesigns();
-  std::set<uint32_t>::iterator itbs = playershiptypes.begin();
-  temp = fleetlist[*itbs];
-  itbs++;
-  temp = fleetlist[*itbs];
-  itbs++;
-  temp = fleetlist[*itbs];
-  uint32_t planetshiptype = *itbs;
-  
-  for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end();
-      ++itob){
-    IGObject* obj = objectcache[*itob];
-    if(obj->getType() == obT_Fleet){
-      ((Fleet*)(obj->getObjectBehaviour()))->setDamage(0);
-    }
-  }
-  
-  bool damageassigned = false;
-  
-  for(std::map<uint32_t, uint32_t>::reverse_iterator itship = fleetlist.rbegin(); 
-      itship != fleetlist.rend(); ++itship){
-    uint32_t shiptype = itship->first;
-    uint32_t squant = itship->second;
-    for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end();
-        ++itob){
-      IGObject* obj = objectcache[*itob];
-      
-      if(shiptype == planetshiptype && obj->getType() == obT_Planet){
-        uint32_t shipquant = 2;
-        bool ishomeplanet = (((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1);
-        if(ishomeplanet)
-          shipquant += 2;
-        
-        if(squant == 0){
-          //planet has fallen
-          if(ishomeplanet){
-            ((Planet*)(obj->getObjectBehaviour()))->removeResource(2, 1);
-          }
-          uint32_t oldowner = ((Planet*)(obj->getObjectBehaviour()))->getOwner();
-          ((Planet*)(obj->getObjectBehaviour()))->setOwner(0);
-          uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
-          OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-          queue->removeOwner(oldowner);
-          queue->removeAllOrders();
-          Game::getGame()->getPlayerManager()->getPlayer(oldowner)->getPlayerView()->removeOwnedObject(obj->getID());
+    while(fleetcache.size() >= 2){
+        battlelogger->startRound();
+        uint32_t pos1, pos2;
+        if(fleetcache.size() == 2){
+            pos1 = 0;
+            pos2 = 1;
         }else{
-          if(squant <= shipquant){
-            squant = 0;
-            fleet->setDamage(0);
-            damageassigned = true;
-          }else{
-            uint32_t dmgship = fleet->getDamage()/squant;
-            uint32_t dmgresd = fleet->getDamage()%squant;
-            if(dmgresd > shipquant)
-              dmgresd = shipquant;
-            squant -= shipquant;
-            fleet->setDamage(fleet->getDamage() - (shipquant * dmgship + dmgresd));
-          }
+            pos1 = pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
+            while(pos2 == pos1){
+                pos2 = random->getInRange(0U, ((uint32_t)(fleetcache.size() - 1)));
+            }
         }
-      }else if(obj->getType() == obT_Fleet){
-        Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
         
-        std::map<uint32_t, uint32_t> shiplist = f2->getShips();
-        uint32_t shipquant = shiplist[shiptype];
-        if(shipquant != 0){
-          if(squant == 0){
-            f2->removeShips(shiptype, shipquant);
-          }else if(squant <= shipquant){
-            f2->removeShips(shiptype, shipquant - squant);
-            if(!damageassigned){
-              fleet->setDamage(0);
-              f2->setDamage(fleet->getDamage());
-              damageassigned = true;
-            }
-            squant = 0;
+        std::map<uint32_t, std::vector<Combatant*> >::iterator itpa = fleetcache.begin();
+        advance(itpa, pos1);
+        std::map<uint32_t, std::vector<Combatant*> >::iterator itpb = fleetcache.begin();
+        advance(itpb, pos2);
+        
+        std::vector<Combatant*> f1 = itpa->second;
+        std::vector<Combatant*> f2 = itpb->second;
+        
+        uint32_t ownerid1 = f1[0]->getOwner();
+        uint32_t ownerid2 = f2[0]->getOwner();
+        
+        std::string p1name = playermanager->getPlayer(ownerid1)->getName();
+        std::string p2name = playermanager->getPlayer(ownerid2)->getName();
             
-          }else{
-            if(!damageassigned){
-              uint32_t dmgship = fleet->getDamage()/squant;
-              uint32_t dmgresd = fleet->getDamage()%squant;
-              if(dmgresd > shipquant)
-                dmgresd = shipquant;
-              squant -= shipquant;
-              f2->setDamage(shipquant * dmgship + dmgresd);
-              fleet->setDamage(fleet->getDamage() - f2->getDamage());
+        int32_t r1 = random->getInRange((int32_t)0, (int32_t)2);
+        int32_t r2 = random->getInRange((int32_t)0, (int32_t)2);
+        
+        std::map<Combatant*, uint32_t> d1, d2;
+        
+        battlelogger->log(str(boost::format("%1%'s fleet chooses %2%.") % p1name % rsp[r2]));
+        battlelogger->log(str(boost::format("%1%'s fleet chooses %2%.") % p2name % rsp[(r2 + r1) % 3]));
+        
+        if(r1 == 0){
+            //draw
+            battlelogger->log("It's a draw");
+            d1 = buildShotList(f1, true);
+            d2 = buildShotList(f2, true);
+        }else{
+            
+            if(r1 == 1){
+                //pa win
+                battlelogger->log(str(boost::format("%1% wins.") % p1name));
+            
+                d1 = buildShotList(f1);
+                if(d1.size() == 0){
+                    battlelogger->log(str(boost::format("%1%'s forces escape") % p1name));
+                    msgstrings[ownerid1] += "Your Fleet escaped. ";
+                    for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
+                            msgit != msgstrings.end(); ++msgit){
+                        if(msgit->first == ownerid1)
+                            continue;
+                        msgit->second += str(boost::format("%1%'s fleet of escaped. ") % p1name);
+                    }
+                    resolveCombatantsToObjects(f1);
+                    for(std::vector<Combatant*>::iterator itcombatant = f1.begin(); itcombatant != f1.end();
+                            ++itcombatant){
+                        delete *itcombatant;
+                    }
+                    fleetcache.erase(itpa);
+                    continue;
+                }
+                doDamage(d1, f2);
+            }else{
+                //pb win
+                battlelogger->log(str(boost::format("%1% wins.") % p2name));
+                d2 = buildShotList(f2);
+                if(d2.size() == 0){
+                    battlelogger->log(str(boost::format("%1%'s forces escape") % p2name));
+                    msgstrings[ownerid2] += "Your Fleet escaped. ";
+                    for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
+                            msgit != msgstrings.end(); ++msgit){
+                        if(msgit->first == ownerid2)
+                            continue;
+                        msgit->second += str(boost::format("%1%'s fleet of escaped. ") % p2name);
+                    }
+                    resolveCombatantsToObjects(f2);
+                    for(std::vector<Combatant*>::iterator itcombatant = f2.begin(); itcombatant != f2.end();
+                            ++itcombatant){
+                        delete *itcombatant;
+                    }
+                    fleetcache.erase(itpb);
+                    continue;
+                }
+                doDamage(d2, f1);
             }
-            squant -= shipquant;
-          }
+            
         }
-      }
+        
+        if(isAllDead(f1)){
+            msgstrings[ownerid1] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p2name);
+            msgstrings[ownerid2] += str(boost::format("You destroyed %1%'s fleet. ") % p1name);
+            std::string deathmsg = str(boost::format("%1%'s fleet destoryed %2%'s fleet. ") % p1name % p2name);
+            for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
+                    msgit != msgstrings.end(); ++msgit){
+                if(msgit->first == ownerid1 || msgit->first == ownerid2)
+                    continue;
+                msgit->second += deathmsg;
+            }
+            resolveCombatantsToObjects(f1);
+            for(std::vector<Combatant*>::iterator itcombatant = f1.begin(); itcombatant != f1.end();
+                    ++itcombatant){
+                delete *itcombatant;
+            }
+            fleetcache.erase(itpa);
+        }
+        if(isAllDead(f2)){
+            msgstrings[ownerid1] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p1name);
+            msgstrings[ownerid2] += str(boost::format("You destroyed %1%'s fleet. ") % p2name);
+            std::string deathmsg = str(boost::format("%1%'s fleet destoryed %2%'s fleet. ") % p2name % p1name);
+            for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
+                    msgit != msgstrings.end(); ++msgit){
+                if(msgit->first == ownerid1 || msgit->first == ownerid2)
+                    continue;
+                msgit->second += deathmsg;
+            }
+            resolveCombatantsToObjects(f2);
+            for(std::vector<Combatant*>::iterator itcombatant = f2.begin(); itcombatant != f2.end();
+                    ++itcombatant){
+                delete *itcombatant;
+            }
+            fleetcache.erase(itpb);
+        }
+    
+        battlelogger->endRound();
+    
     }
-  }
-  
-  for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end();
-      ++itob){
-    IGObject* obj = objectcache[*itob];
-    if(obj->getType() == obT_Fleet){
-      if(((Fleet*)(obj->getObjectBehaviour()))->totalShips() == 0){
-        Game::getGame()->getObjectManager()->scheduleRemoveObject(*itob);
-        Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(obj->getObjectBehaviour()))->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
-      }
+    
+    std::vector<Combatant*> flast = fleetcache.begin()->second;
+    resolveCombatantsToObjects(flast);
+    msgstrings[flast[0]->getOwner()] += "Your Fleet survived combat.";
+    for(std::vector<Combatant*>::iterator itcombatant = flast.begin(); itcombatant != flast.end();
+            ++itcombatant){
+        delete *itcombatant;
     }
-  }
+    fleetcache.erase(fleetcache.begin());
+    if(!fleetcache.empty()){
+        Logger::getLogger()->warning("fleetcache not empty at end of combat");
+    }
+    
+    for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
+        msgit != msgstrings.end(); ++msgit){
+        Message *msg;
+        msg = new Message();
+        msg->setSubject("Combat");
+        for(std::set<uint32_t>::iterator itob = listallobids.begin(); itob != listallobids.end();
+              ++itob){
+            msg->addReference(rst_Object, *itob);
+        }
+        for(std::set<uint32_t>::iterator itpl = listallplayerids.begin();
+                itpl != listallplayerids.end(); ++itpl){
+            msg->addReference(rst_Player, *itpl);
+        }
+        
+        msg->setBody(msgit->second);
+        
+        Game::getGame()->getPlayerManager()->getPlayer(msgit->first)->postToBoard(msg);
+    }
+    
+    for(std::map<uint32_t, IGObject*>::iterator itob = objectcache.begin(); 
+        itob != objectcache.end(); ++itob){
+        Game::getGame()->getObjectManager()->doneWithObject(itob->first);
+    }
+    objectcache.clear();
   
 }
+
+std::map<Combatant*, uint32_t> RSPCombat::buildShotList(std::vector<Combatant*> combatants, bool isDraw){
+    std::map<Combatant*, uint32_t> shotlist;
+    uint32_t scoutcount;
+    designid_t biggestaliveshiptype = UINT32_NEG_ONE;
+    for(std::vector<Combatant*>::iterator itc = combatants.begin(); itc != combatants.end();
+            ++itc){
+        if(!(*itc)->isDead()){
+            if(biggestaliveshiptype == UINT32_NEG_ONE){
+                biggestaliveshiptype = (*itc)->getShipType();
+            }
+            uint32_t shot = (*itc)->firepower(isDraw);
+            if(!isDraw && shot == 0){
+                scoutcount++;
+            }
+            if((*itc)->getShipType() == biggestaliveshiptype){
+                shotlist[*itc] = shot;
+            }
+        }
+    }
+    if(!isDraw){
+        //check if scouts allow escape
+        if(scoutcount == combatants.size()){
+            shotlist.clear();
+        }else if(scoutcount != 0){
+            if(Game::getGame()->getRandom()->getReal1() < (double)scoutcount / (double)(combatants.size())){
+                shotlist.clear();
+            }
+        }
+    }
+    return shotlist;
+}
+
+void RSPCombat::doDamage(std::map<Combatant*, uint32_t> shotlist, std::vector<Combatant*> targets){
+    for(std::map<Combatant*, uint32_t>::iterator itshot = shotlist.begin(); itshot != shotlist.end();
+            ++itshot){
+        std::vector<Combatant*> possibletarget;
+        for(std::vector<Combatant*>::iterator ittarget = targets.begin(); ittarget != targets.end();
+                ++ittarget){
+            if(!(*ittarget)->isDead()){
+                if(possibletarget.size() == 0 || (*ittarget)->getShipType() == possibletarget[0]->getShipType()){
+                    possibletarget.push_back(*ittarget);
+                }
+            }
+            if(possibletarget.size() != 0 && (*ittarget)->getShipType() != possibletarget[0]->getShipType()){
+                break;
+            }
+        }
+        
+        if(possibletarget.size() == 0){
+            //all dead
+            return;
+        }
+        
+        uint32_t targetidx = 0;
+        //find least damaged to shoot
+        for(uint32_t i = 1; i < possibletarget.size(); i++){
+            if(possibletarget[i]->getDamage() < possibletarget[targetidx]->getDamage()){
+                targetidx = i;
+            }
+        }
+        
+        battlelogger->fire(itshot->first, possibletarget[targetidx]);
+        
+        battlelogger->damage(possibletarget[targetidx], itshot->second);
+        
+        if(possibletarget[targetidx]->hit(itshot->second)){
+            battlelogger->death(possibletarget[targetidx]);
+        }
+        
+        
+    }
+}
+
+bool RSPCombat::isAllDead(std::vector<Combatant*> combatants){
+    for(std::vector<Combatant*>::iterator itcurr = combatants.begin(); itcurr != combatants.end(); ++itcurr){
+        if(!(*itcurr)->isDead()) return false;
+    }
+    return true;
+}
+
+void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
+    
+    std::map<objectid_t, bool> colonydead;
+    
+    for(std::vector<Combatant*>::iterator itcombat = combatants.begin(); itcombat != combatants.end(); ++itcombat){
+        Combatant* combatant = *itcombat;
+        if(combatant->getShipType() == 0){
+            //special for planets
+            std::map<objectid_t, bool>::iterator itplanet = colonydead.find(combatant->getObject());
+            if(itplanet == colonydead.end()){
+                colonydead[combatant->getObject()] = combatant->isDead();
+            }else{
+                itplanet->second &= combatant->isDead();
+            }
+        }else if(combatant->isDead()){
+            IGObject* obj = objectcache[combatant->getObject()];
+            Fleet* fleet = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
+            if(fleet != NULL){
+                fleet->removeShips(combatant->getShipType(), 1);
+                if(fleet->totalShips() == 0){
+                    //the fleet dead
+                    //message player
+                    msgstrings[combatant->getOwner()] += str(boost::format("Your fleet %1% was destroyed. ") % obj->getName());
+                    //remove object
+                    Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
+                    Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
+                }
+            }
+        }
+    }
+
+    for(std::map<objectid_t, bool>::iterator itplanet = colonydead.begin(); itplanet != colonydead.end(); ++itplanet){
+        if(itplanet->second){
+            IGObject* obj = objectcache[itplanet->first];
+            Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
+            if(planet == NULL){
+                warningLog("Planet was not a planet");
+                continue;
+            }
+            bool ishomeplanet = (planet->getResource(2) == 1);
+            
+            //planet has fallen
+            if(ishomeplanet){
+                planet->removeResource(2, 1);
+            }
+            uint32_t oldowner = planet->getOwner();
+            planet->setOwner(0);
+            uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
+            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            queue->removeOwner(oldowner);
+            queue->removeAllOrders();
+            Game::getGame()->getPlayerManager()->getPlayer(oldowner)->getPlayerView()->removeOwnedObject(obj->getID());
+        }
+    }
+    
+}
+
