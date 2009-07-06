@@ -110,6 +110,10 @@ void TpGuile::defineDesignType( Design * d)
     formater.str( "");
     formater << "(define design (make-struct " << d->getName() << "DesignType 0))";
     temp = scm_c_eval_string( formater.str().c_str());
+    
+    for(counter = ds->getMaxPropertyId(); counter >= 0; counter--){
+        setDesignPropertyValue(counter, 0.0);
+    }
 
     return;
 }
@@ -147,10 +151,14 @@ void TpGuile::definePropertyAccessors()
 // Set the property value for the current design in Guile
 void TpGuile::setDesignPropertyValue( const PropertyValue & pv)
 {
+    setDesignPropertyValue(pv.getPropertyId(), pv.getValue());
+}
+
+void TpGuile::setDesignPropertyValue(uint32_t propid, double value){
     scm_call_3( scm_variable_ref( scm_c_lookup( "struct-set!")),
                 scm_variable_ref( scm_c_lookup( "design")),
-                scm_from_int( pv.getPropertyId() + 1),
-                scm_from_double( pv.getValue()));
+                scm_from_int( propid + 1),
+                scm_from_double( value ));
 }
 
 
