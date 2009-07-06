@@ -43,6 +43,7 @@
 #include "nop.h"
 #include "move.h"
 #include "build.h"
+#include "enhance.h"
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
@@ -142,6 +143,7 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
+    ordm->addOrderType(new Enhance());
 }
 
 

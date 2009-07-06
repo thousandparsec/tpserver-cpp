@@ -70,6 +70,7 @@ void Planet::setDefaultOrderTypes(){
   OrderManager * om = Game::getGame()->getOrderManager();
   std::set<uint32_t> allowedlist;
   allowedlist.insert(om->getOrderTypeByName("Build Fleet"));
+  allowedlist.insert(om->getOrderTypeByName("Enhance"));
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
 }
