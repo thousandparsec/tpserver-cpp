@@ -56,13 +56,13 @@ public:
     virtual bool saveObject(IGObject* ob);
     virtual IGObject* retrieveObject(uint32_t obid);
     virtual uint32_t getMaxObjectId();
-    virtual std::set<uint32_t> getObjectIds();
+    virtual IdSet getObjectIds();
 
     virtual bool saveOrderQueue(const OrderQueue* oq);
     virtual bool updateOrderQueue(const OrderQueue* oq);
     virtual OrderQueue* retrieveOrderQueue(uint32_t oqid);
     virtual bool removeOrderQueue(uint32_t oqid);
-    virtual std::set<uint32_t> getOrderQueueIds();
+    virtual IdSet getOrderQueueIds();
     virtual uint32_t getMaxOrderQueueId();
     
     virtual bool saveOrder(uint32_t queueid, uint32_t ordid, Order* ord);
@@ -75,7 +75,7 @@ public:
     virtual bool updateBoard(const Board* board);
     virtual boost::shared_ptr< Board > retrieveBoard(uint32_t boardid);
     virtual uint32_t getMaxBoardId();
-    virtual std::set<uint32_t> getBoardIds();
+    virtual IdSet getBoardIds();
 
     virtual bool saveMessage(uint32_t msgid, boost::shared_ptr< Message > msg);
     virtual boost::shared_ptr< Message > retrieveMessage(uint32_t msgid);
@@ -87,34 +87,34 @@ public:
     virtual bool saveResource(ResourceDescription* res);
     virtual ResourceDescription* retrieveResource(uint32_t restype);
     virtual uint32_t getMaxResourceId();
-    virtual std::set<uint32_t> getResourceIds();
+    virtual IdSet getResourceIds();
 
     virtual bool savePlayer(Player* player);
     virtual bool updatePlayer(Player* player);
     virtual Player* retrievePlayer(uint32_t playerid);
     virtual uint32_t getMaxPlayerId();
-    virtual std::set<uint32_t> getPlayerIds();
+    virtual IdSet getPlayerIds();
 
     virtual bool saveCategory(Category* cat);
     virtual Category* retrieveCategory(uint32_t catid);
     virtual uint32_t getMaxCategoryId();
-    virtual std::set<uint32_t> getCategoryIds();
+    virtual IdSet getCategoryIds();
 
     virtual bool saveDesign(Design* design);
     virtual bool updateDesign(Design* design);
     virtual Design* retrieveDesign(uint32_t designid);
     virtual uint32_t getMaxDesignId();
-    virtual std::set<uint32_t> getDesignIds();
+    virtual IdSet getDesignIds();
 
     virtual bool saveComponent(Component* comp);
     virtual Component* retrieveComponent(uint32_t compid);
     virtual uint32_t getMaxComponentId();
-    virtual std::set<uint32_t> getComponentIds();
+    virtual IdSet getComponentIds();
 
     virtual bool saveProperty(Property* prop);
     virtual Property* retrieveProperty(uint32_t propid);
     virtual uint32_t getMaxPropertyId();
-    virtual std::set<uint32_t> getPropertyIds();
+    virtual IdSet getPropertyIds();
     
     virtual bool saveObjectView(uint32_t playerid, ObjectView*);
     virtual ObjectView* retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);

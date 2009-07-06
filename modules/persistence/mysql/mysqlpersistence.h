@@ -166,7 +166,24 @@ private:
     void unlock();
     MYSQL *conn;
 
-  void idSetToStream( std::ostringstream& stream, const uint32_t id, const IdSet& idset ) const;
+  static void idSetToStream( std::ostringstream& stream, const uint32_t id, const IdSet& idset ) const;
+  static void idSetToStream( std::ostringstream& stream, const uint32_t id, const uint32_t id2, const IdSet& idset ) const;
+  static void idListToStream( std::ostringstream& stream, const uint32_t id, const IdList& idlist ) const;
+  static void idMapToStream( std::ostringstream& stream, const uint32_t id, const IdMap& idmap ) const;
+  static void idMapToStream( std::ostringstream& stream, const uint32_t id, const uint32_t id2, const IdMap& idmap ) const;
+
+  void insertSet ( const std::string& table, uint32_t id, const IdSet& idset );
+  void insertSet ( const std::string& table, uint32_t id, uint32_t id2, const IdSet& idset );
+  void insertList( const std::string& table, uint32_t id, const IdList& idlist );
+  void insertMap ( const std::string& table, uint32_t id, const IdMap& idmap );
+  void insertMap ( const std::string& table, uint32_t id, uint32_t id2, const IdMap& idmap );
+
+  void singleQuery( const std::string& query );
+  uint32_t valueQuery( const std::string& query );
+
+  const IdSet& idSetQuery( const std::string& query );
+  const IdList& idListQuery( const std::string& query );
+  const IdMap& idMapQuery( const std::string& query );
 };
 
 class MysqlQuery {
@@ -184,8 +201,8 @@ class MysqlQuery {
     bool nextRow();
 
   private:
-    void fetchResult();
 
+    void fetchResult();
     MYSQL *connection;
     MYSQL_RES* result;
     MYSQL_ROW row;
