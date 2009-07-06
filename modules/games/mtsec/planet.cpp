@@ -29,7 +29,6 @@
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
-#include <iostream>
 
 #include "planet.h"
 
@@ -99,8 +98,7 @@ void Planet::doOnceATurn()
     const uint32_t resvalue = reslist.find(restype)->first;
     if (resvalue < maxProduction)
     {
-      addResource(restype, resvalue+1);
-      std::cout << "ADDED RESOURCE FOR PLANET: " << obj->getName() << "\n\n\n";
+      addResource(restype, 1);
     }
   }
 }
