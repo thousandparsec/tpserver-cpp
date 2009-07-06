@@ -19,6 +19,7 @@
  */
 
 #include <math.h>
+#include <iostream>
 
 #include <tpserver/result.h>
 #include <tpserver/frame.h>
@@ -54,16 +55,18 @@ Build::Build() : Order()
   description = "Build a fleet";
   
   fleetlist = new ListParameter();
-  fleetlist->setName("ships");
+  fleetlist->setName("Ships");
   fleetlist->setDescription("The type of ship to build");
   fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
   addOrderParameter(fleetlist);
   
   fleetname = new StringParameter();
-  fleetname->setName("name");
+  fleetname->setName("Name");
   fleetname->setDescription("The name of the new fleet being built");
   fleetname->setMax(1024);
   addOrderParameter(fleetname);
+
+  turns = 1;
 }
 
 Build::~Build(){
@@ -71,12 +74,16 @@ Build::~Build(){
 
 void Build::createFrame(Frame *f, int pos)
 {
-  IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-  
+  Logger::getLogger()->debug("Enter: Build::createFrame()");
+
+  //IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+/*
   // number of turns
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectBehaviour())->getResources();
   Game::getGame()->getObjectManager()->doneWithObject(planet->getID());
+
   uint32_t res_current;
+
   if(presources.find(1) != presources.end()){
     res_current = presources.find(1)->second.first;
   }else{
@@ -92,16 +99,20 @@ void Build::createFrame(Frame *f, int pos)
       turns = usedshipres - res_current;
     }
   }
-  
-  
+  */
+  turns = 1;
+
   Order::createFrame(f, pos);
+  Logger::getLogger()->debug("Exit: Build::createFrame()");
 
 }
 
 std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(){
+  Logger::getLogger()->debug("Entering Build::generateListOptions");
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
   std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
+
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
@@ -119,18 +130,21 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
     options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
   
+  Logger::getLogger()->debug("Exiting Build::generateListOptions");
   return options;
 }
 
 Result Build::inputFrame(Frame *f, uint32_t playerid)
 {
+  Logger::getLogger()->debug("Enter: Build::inputFrame()");
+
   Result r = Order::inputFrame(f, playerid);
   if(!r) return r;
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
   
-  uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
+  uint32_t bldTmPropID = ds->getPropertyByName("ProductCost");
   
   std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
   uint32_t usedshipres = 0;
@@ -165,16 +179,23 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
 
 bool Build::doOrder(IGObject *ob)
 {
+  Logger::getLogger()->debug("Entering Build::doOrder");
+
   
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
   uint32_t usedshipres = resources[1];
   
-  if(usedshipres == 0)
+/*
+  if(usedshipres == 0) {
+    Logger::getLogger()->debug("Exiting Build::doOrder on usedshipres != 0");
     return true;
+  }
+*/
 
   int ownerid = planet->getOwner();
   if(ownerid == 0){
+      Logger::getLogger()->debug("Exiting Build::doOrder ownerid == 0");
       //currently not owned by anyone, just forget about it
       return true;
   }
@@ -230,9 +251,12 @@ bool Build::doOrder(IGObject *ob)
     msg->addReference(rst_Object, ob->getID());
  
     Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+    Logger::getLogger()->debug("Exiting Build::doOrder on Success");
 
     return true;
   }
+  Logger::getLogger()->debug("Exiting Build::doOrder on failure");
+
   return false;
 }
 
