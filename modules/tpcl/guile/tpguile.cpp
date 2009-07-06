@@ -1,6 +1,6 @@
 /*  Tp Guile Interpreter class
  *
- *  Copyright (C) 2005,2006,2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2007, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
