@@ -44,10 +44,7 @@ PlayerManager::~PlayerManager(){
 void PlayerManager::init(){
     Persistence* persist = Game::getGame()->getPersistence();
     nextid = persist->getMaxPlayerId() + 1;
-    IdSet pidset(persist->getPlayerIds());
-    for(IdSet::iterator itcurr = pidset.begin(); itcurr != pidset.end(); ++itcurr){
-        players[*itcurr] = NULL;
-    }
+    clear(persist->getPlayerIds());
 }
 
 Player* PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
@@ -79,7 +76,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         msg->addReference(rst_Player, rtn->getID());
         board->addMessage(msg, -1);
         
-        players[rtn->getID()] = (rtn);
+        map[rtn->getID()] = (rtn);
         Game::getGame()->getPersistence()->savePlayer(rtn);
         
         Game::getGame()->getRuleset()->onPlayerAdded(rtn);
@@ -92,12 +89,12 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         msg->addReference(rst_Action_Player, rspav_Joined);
         msg->addReference(rst_Player, rtn->getID());
         
-        for(std::map<uint32_t, Player*>::const_iterator itid = players.begin();
-                itid != players.end(); ++itid){
+        for(std::map<uint32_t, Player*>::const_iterator itid = map.begin();
+                itid != map.end(); ++itid){
             Player* op = itid->second;
             if(op == NULL){
                 op = Game::getGame()->getPersistence()->retrievePlayer(itid->first);
-                players[itid->first] = op;
+                map[itid->first] = op;
             }
             if(op != NULL && op != rtn){
                 op->postToBoard(new Message(*msg));
@@ -122,8 +119,8 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
 
 Player* PlayerManager::getPlayer(uint32_t id){
     Player* rtn = NULL;
-    std::map<uint32_t, Player*>::iterator pl = players.find(id);
-    if(pl != players.end()){
+    std::map<uint32_t, Player*>::iterator pl = map.find(id);
+    if(pl != map.end()){
         rtn = (*pl).second;
     }else{
         //player does not exist
@@ -132,7 +129,7 @@ Player* PlayerManager::getPlayer(uint32_t id){
     if(rtn == NULL){
         rtn = Game::getGame()->getPersistence()->retrievePlayer(id);
         if(rtn != NULL){
-          players[id] = rtn;
+          map[id] = rtn;
         }
     }
     return rtn;
@@ -146,7 +143,7 @@ Player* PlayerManager::findPlayer(const std::string &name){
 
     std::map<uint32_t, Player*>::iterator itcurr;
 
-    for (itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
+    for (itcurr = map.begin(); itcurr != map.end(); ++itcurr) {
         Player* p = (*itcurr).second;
         if(p == NULL){
             p = Game::getGame()->getPersistence()->retrievePlayer(itcurr->first);
@@ -165,24 +162,15 @@ Player* PlayerManager::findPlayer(const std::string &name){
 }
 
 void PlayerManager::updateAll(){
-    for(std::map<uint32_t, Player*>::iterator itcurr = players.begin(); itcurr != players.end(); ++itcurr){
+    for(std::map<uint32_t, Player*>::iterator itcurr = map.begin(); itcurr != map.end(); ++itcurr){
         Game::getGame()->getPersistence()->updatePlayer(itcurr->second);
     }
 }
 
 void PlayerManager::updatePlayer(uint32_t id){
-    Game::getGame()->getPersistence()->updatePlayer(players[id]);
-}
-
-IdSet PlayerManager::getAllIds(){
-    IdSet vis;
-    for(std::map<uint32_t, Player*>::const_iterator itid = players.begin();
-        itid != players.end(); ++itid){
-        vis.insert(itid->first);
-    }
-    return vis;
+    Game::getGame()->getPersistence()->updatePlayer(map[id]);
 }
 
 uint32_t PlayerManager::getNumPlayers() const{
-  return players.size();
+  return size();
 }

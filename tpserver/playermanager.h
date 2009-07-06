@@ -20,11 +20,10 @@
  *
  */
 
-#include <tpserver/common.h>
+#include <tpserver/manager.h>
+#include <tpserver/player.h>
 
-class Player;
-
-class PlayerManager{
+class PlayerManager : public Manager<Player>{
 public:
     PlayerManager();
     ~PlayerManager();
@@ -39,12 +38,9 @@ public:
     void updateAll();
     void updatePlayer(uint32_t id);
 
-    IdSet getAllIds();
-    
     uint32_t getNumPlayers() const;
 
 private:
-    std::map<uint32_t, Player*> players;
     uint32_t nextid;
 };
 

@@ -27,15 +27,16 @@ class Manager {
   public:
     typedef std::map<uint32_t, ManagedObject*> Map;
 
-    const IdSet& getAllIds(){
+    IdSet getAllIds(){
       IdSet all;
-      for(Map::const_iterator it = map.begin(); it != map.end(); ++it){
+      typename Map::const_iterator it = map.begin();
+      for(; it != map.end(); ++it){
         all.insert(it->first);
       }
       return all;
     }
 
-    uint32_t size(){
+    const uint32_t size() const {
       return map.size();
     }
 
@@ -47,6 +48,6 @@ class Manager {
     }
 
     Map map;
-}
+};
 
 #endif // MANAGER_H
