@@ -90,7 +90,7 @@ bool Enhance::doOrder(IGObject *ob)
   ResourceManager* resman = game->getResourceManager();
   const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
 std::cout << "ADDING TO RESOURCE TYPE " << restype << "WITH " << points->getTime()%10 << "\n\n\n";
-  planet->addResource(restype, (points->getTime()));
+  planet->addResource(restype, (points->getTime()%10));
   Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
   return true;
 }
