@@ -97,8 +97,14 @@ void TpGuile::defineDesignType( Design * d)
     std::ostringstream formater;
 
     // Create the vtable, with name <design>DesignType
+    std::string safename = d->getName();
+    size_t spacepos = safename.find(" ");
+    while(spacepos != safename.npos){
+        safename[spacepos] = '_';
+        spacepos = safename.find(" ");
+    }
     formater.str( "");
-    formater << "(define " << d->getName() << "DesignType (make-design-vtable \"";
+    formater << "(define " << safename << "DesignType (make-design-vtable \"";
     for ( counter = ds->getMaxPropertyId(); counter >= 0; counter--) {
         formater << "pw";
     }
@@ -108,7 +114,7 @@ void TpGuile::defineDesignType( Design * d)
 
     // Now create the design structure itself, with name 'design'
     formater.str( "");
-    formater << "(define design (make-struct " << d->getName() << "DesignType 0))";
+    formater << "(define design (make-struct " << safename << "DesignType 0))";
     temp = scm_c_eval_string( formater.str().c_str());
     
     for(counter = ds->getMaxPropertyId(); counter >= 0; counter--){
