@@ -22,6 +22,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <stdint.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

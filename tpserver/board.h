@@ -22,6 +22,7 @@
  */
 
 #include <string>
+#include <stdint.h>
 
 class Message;
 class Frame;
