@@ -89,7 +89,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         msg->addReference(rst_Action_Player, rspav_Joined);
         msg->addReference(rst_Player, rtn->getID());
         
-        for(std::map<uint32_t, Player*>::const_iterator itid = map.begin();
+        for(Map::const_iterator itid = map.begin();
                 itid != map.end(); ++itid){
             Player* op = itid->second;
             if(op == NULL){
@@ -119,7 +119,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
 
 Player* PlayerManager::getPlayer(uint32_t id){
     Player* rtn = NULL;
-    std::map<uint32_t, Player*>::iterator pl = map.find(id);
+    Map::iterator pl = map.find(id);
     if(pl != map.end()){
         rtn = (*pl).second;
     }else{
@@ -141,7 +141,7 @@ Player* PlayerManager::findPlayer(const std::string &name){
     //look for current/known players
     Player *rtn = NULL;
 
-    std::map<uint32_t, Player*>::iterator itcurr;
+    Map::iterator itcurr;
 
     for (itcurr = map.begin(); itcurr != map.end(); ++itcurr) {
         Player* p = (*itcurr).second;
@@ -162,7 +162,7 @@ Player* PlayerManager::findPlayer(const std::string &name){
 }
 
 void PlayerManager::updateAll(){
-    for(std::map<uint32_t, Player*>::iterator itcurr = map.begin(); itcurr != map.end(); ++itcurr){
+    for(Map::iterator itcurr = map.begin(); itcurr != map.end(); ++itcurr){
         Game::getGame()->getPersistence()->updatePlayer(itcurr->second);
     }
 }

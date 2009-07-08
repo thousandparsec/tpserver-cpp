@@ -234,21 +234,14 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
 
-  for(IdSet::iterator vischk = oblist.begin(); vischk != oblist.end();){
-    if(visibleObjects.find(*vischk) == visibleObjects.end()){
-      IdSet::iterator temp = vischk;
-      ++temp;
-      oblist.erase(vischk);
-      vischk = temp;
-    }else{
-      ++vischk;
-    }
-  }
+  IdSet intersection;
+  std::set_intersection( oblist.begin(), oblist.end(), visibleObjects.begin(), visibleObjects.end(),
+      std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
+  
+  curConnection->sendSequence( frame, intersection.size() );
 
-  curConnection->sendSequence( frame, oblist.size() );
-
-  IdSet::iterator obCurr = oblist.begin();
-  for( ; obCurr != oblist.end(); ++obCurr) {
+  IdSet::iterator obCurr = intersection.begin();
+  for( ; obCurr != intersection.end(); ++obCurr) {
     of = curConnection->createFrame(frame);
     player->getPlayerView()->processGetObject(*obCurr, of);
     curConnection->sendFrame(of);
@@ -275,22 +268,15 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
 
   IdSet oblist = Game::getGame()->getObjectManager()->getObjectsByPos(pos, r);
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
-  for(IdSet::iterator vischk = oblist.begin(); vischk != oblist.end();){
-    if(visibleObjects.find(*vischk) == visibleObjects.end()){
-      IdSet::iterator temp = vischk;
-      ++temp;
-      oblist.erase(vischk);
-      vischk = temp;
-    }else{
-      ++vischk;
-    }
-  }
+  IdSet intersection;
+  std::set_intersection( oblist.begin(), oblist.end(), visibleObjects.begin(), visibleObjects.end(),
+      std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
 
   of->setType(ft03_ObjectIds_List);
   of->packInt(0);
   of->packInt(0);
-  of->packInt(oblist.size());
-  for(IdSet::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
+  of->packInt(intersection.size());
+  for(IdSet::iterator itcurr = intersection.begin(); itcurr != intersection.end(); ++itcurr){
     of->packInt(*itcurr);
     of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
     Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
@@ -310,23 +296,15 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
 
     if(o != NULL){
       IdSet contain = o->getContainedObjects();
-
-      for(IdSet::iterator vischk = contain.begin(); vischk != contain.end();){
-        if(visibleObjects.find(*vischk) == visibleObjects.end()){
-          IdSet::iterator temp = vischk;
-          ++temp;
-          contain.erase(vischk);
-          vischk = temp;
-        }else{
-          ++vischk;
-        }
-      }
+      IdSet intersection;
+      std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
+        std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
 
       of->setType(ft03_ObjectIds_List);
       of->packInt(0);
       of->packInt(0);
-      of->packInt(contain.size());
-      for(IdSet::iterator itcurr = contain.begin(); itcurr != contain.end(); ++itcurr){
+      of->packInt(intersection.size());
+      for(IdSet::iterator itcurr = intersection.begin(); itcurr != intersection.end(); ++itcurr){
         of->packInt(*itcurr);
         of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
         Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
