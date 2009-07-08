@@ -64,27 +64,29 @@ void Move::setDest(const Vector3d & ndest)
 }
 
 int Move::getETA(IGObject *ob) const{
+  Logger::getLogger()->debug("Enter Move::getETA");
   Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
   uint64_t distance = coords->getPosition().getDistance(fleet->getPosition());
-  uint32_t max_speed = 3000000;
+  uint32_t max_speed = fleet->maxSpeed();
   
   if(distance == 0) 
     return 1;
+  Logger::getLogger()->debug("Exit Move::getETA");
   return (int)((distance - 1) / max_speed) + 1;
 }
 
 void Move::createFrame(Frame * f, int pos)
 {
-  Game* game = Game::getGame();
-  IGObject* obj = game->getObjectManager()->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Logger::getLogger()->debug("Enter Move::createFrame");
+  IGObject* obj = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   if(obj != NULL){
     turns = getETA(obj);
-    game->getObjectManager()->doneWithObject(obj->getID());
+    Game::getGame()->getObjectManager()->doneWithObject(obj->getID());
   }else{
     turns = 0;
     Logger::getLogger()->error("Move create frame: object not found, id = %d", obj->getID());
   }
-  
+  Logger::getLogger()->debug("Exit Move::createFrame");
   Order::createFrame(f, pos);	
 }
 
@@ -97,10 +99,10 @@ bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
   Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
   uint64_t distance = dest.getDistance(fleet->getPosition());
-  uint64_t max_speed = 3000000;
+  uint64_t max_speed = fleet->maxSpeed();
 
-  Logger::getLogger()->debug("Moving %lld at %lld speed", distance, max_speed);
-
+  Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
+	ob->getID(), distance, max_speed, distance/max_speed);
   if(distance <= max_speed){
     uint32_t parentid;
 
@@ -232,3 +234,4 @@ Order* Move::clone() const{
   nm->type = type;
   return nm;
 }
+
