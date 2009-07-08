@@ -35,62 +35,62 @@ class TimerCallback;
 
 class Network {
 
-      public:
-	static Network *getNetwork();
+  public:
+    static Network *getNetwork();
 
-	//stuff
+    //stuff
 
-	void addConnection(Connection* conn);
-	void removeConnection(Connection* conn);
-        void addToWriteQueue(Connection* conn);
-        
-        void addTimer(TimerCallback callback);
-        bool removeTimer(TimerCallback callback);
+    void addConnection(Connection* conn);
+    void removeConnection(Connection* conn);
+    void addToWriteQueue(Connection* conn);
 
-	void start();
+    void addTimer(TimerCallback callback);
+    bool removeTimer(TimerCallback callback);
 
-	void stop();
-        
-        bool isStarted() const;
+    void start();
 
-	void adminStart();
+    void stop();
 
-	void adminStop();
+    bool isStarted() const;
 
-        void sendToAll(AsyncFrame* aframe);
-        void doneEOT();
-        
-        Advertiser* getAdvertiser() const;
+    void adminStart();
 
-	// don't you even think about calling these functions
+    void adminStop();
 
-	void masterLoop();
-	void stopMainLoop();
-        
+    void sendToAll(AsyncFrame* aframe);
+    void doneEOT();
 
-      private:
-	 Network();
-	~Network();
-	 Network(Network & rhs);
-	Network operator=(Network & rhs);
+    Advertiser* getAdvertiser() const;
 
-	static Network *myInstance;
+    // don't you even think about calling these functions
 
-	fd_set master_set;
-	int max_fd;
-	bool active;
-
-	//pthread_t master;
+    void masterLoop();
+    void stopMainLoop();
 
 
-	volatile bool halt;
+  private:
+    typedef std::map< int, Connection*> ConnMap;
+    Network();
+    ~Network();
+    Network(Network & rhs);
+    Network operator=(Network & rhs);
 
-	 std::map < int, Connection * >connections;
-         std::map<int, Connection*> writequeue;
-         
-         std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
-         
-         Advertiser* advertiser;
+    static Network *myInstance;
+
+    fd_set master_set;
+    int max_fd;
+    bool active;
+
+    //pthread_t master;
+
+    volatile bool halt;
+
+    ConnMap connections;
+    ConnMap writequeue;
+
+    std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
+
+    Advertiser* advertiser;
 
 };
 

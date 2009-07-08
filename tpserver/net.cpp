@@ -63,15 +63,15 @@ Network *Network::myInstance = NULL;
 
 Network *Network::getNetwork()
 {
-	if (myInstance == NULL) {
-		myInstance = new Network();
-	}
-	return myInstance;
+  if (myInstance == NULL) {
+    myInstance = new Network();
+  }
+  return myInstance;
 }
 
 void Network::addConnection(Connection* conn)
 {
-  Logger::getLogger()->debug("Adding a file descriptor %d", conn->getFD());
+  DEBUG("Adding a file descriptor %d", conn->getFD());
   connections[conn->getFD()] = conn;
   FD_SET(conn->getFD(), &master_set);
   if (max_fd < conn->getFD()) {
@@ -81,21 +81,19 @@ void Network::addConnection(Connection* conn)
 
 void Network::removeConnection(Connection* conn)
 {
-  Logger::getLogger()->debug("Removing a file descriptor %d", conn->getFD());
+  DEBUG("Removing a file descriptor %d", conn->getFD());
   FD_CLR(conn->getFD(), &master_set);
   connections.erase(connections.find(conn->getFD()));
   if (max_fd == conn->getFD()) {
-    Logger::getLogger()->debug("Changing max_fd");
+    DEBUG("Changing max_fd");
     max_fd = 0;
-    std::map < int, Connection * >::iterator itcurr, itend;
+    ConnMap::iterator itcurr, itend;
     itend = connections.end();
     for (itcurr = connections.begin(); itcurr != itend; itcurr++) {
-      
       if (max_fd < (*itcurr).first)
-	max_fd = (*itcurr).first;
-      
+        max_fd = (*itcurr).first;
     }
-    
+
   }
 }
 
@@ -109,119 +107,113 @@ void Network::addTimer(TimerCallback callback){
 
 void Network::start()
 {
-	if (active == true) {
-		Logger::getLogger()->warning("Network already running");
-		return;
-	}
+  if (active == true) {
+    WARNING("Network already running");
+    return;
+  }
 
-	if(Game::getGame()->isLoaded()){
-	  Logger::getLogger()->info("Starting Network");
-          
+  if(Game::getGame()->isLoaded()){
+    INFO("Starting Network");
 
-	  uint32_t numsocks = 0;
-	  TcpSocket* listensocket = new TcpSocket();
-            listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
-	  if(listensocket->getStatus() != Connection::DISCONNECTED){
-	    addConnection(listensocket);
-	    numsocks++;
-            advertiser->addService("tp", listensocket->getPort());
 
-	  }else{
-	    delete listensocket;
-	    Logger::getLogger()->warning("Could not listen on TP (tcp) socket");
-	  }
-          if(Settings::getSettings()->get("http") == "yes"){
-            HttpSocket* httpsocket = new HttpSocket();
-            httpsocket->openListen(Settings::getSettings()->get("http_addr"), Settings::getSettings()->get("http_port"));
-            if(httpsocket->getStatus() != Connection::DISCONNECTED){
-              addConnection(httpsocket);
-              numsocks++;
-              advertiser->addService("tp+http", httpsocket->getPort());
-            }else{
-              delete httpsocket;
-              Logger::getLogger()->warning("Could not listen on HTTP (http tunneling) socket");
-            }
-          }else{
-            Logger::getLogger()->info("Not configured to start http socket");
-          }
+    uint32_t numsocks = 0;
+    TcpSocket* listensocket = new TcpSocket();
+    listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
+    if(listensocket->getStatus() != Connection::DISCONNECTED){
+      addConnection(listensocket);
+      numsocks++;
+      advertiser->addService("tp", listensocket->getPort());
+    }else{
+      delete listensocket;
+      WARNING("Could not listen on TP (tcp) socket");
+    }
+    if(Settings::getSettings()->get("http") == "yes"){
+      HttpSocket* httpsocket = new HttpSocket();
+      httpsocket->openListen(Settings::getSettings()->get("http_addr"), Settings::getSettings()->get("http_port"));
+      if(httpsocket->getStatus() != Connection::DISCONNECTED){
+        addConnection(httpsocket);
+        numsocks++;
+        advertiser->addService("tp+http", httpsocket->getPort());
+      }else{
+        delete httpsocket;
+        WARNING("Could not listen on HTTP (http tunneling) socket");
+      }
+    }else{
+      INFO("Not configured to start http socket");
+    }
 #ifdef HAVE_LIBGNUTLS
-            if(Settings::getSettings()->get("tps") == "yes"){
-                TlsSocket* secsocket = new TlsSocket();
-                secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
-                if(secsocket->getStatus() != Connection::DISCONNECTED){
-                    addConnection(secsocket);
-                    numsocks++;
-                    advertiser->addService("tps", secsocket->getPort());
-                }else{
-                    delete secsocket;
-                    Logger::getLogger()->warning("Could not listen on TPS (tls) socket");
-                }
-            }else{
-                Logger::getLogger()->info("Not configured to start tps socket");
-            }
-            if(Settings::getSettings()->get("https") == "yes"){
-                HttpsSocket* secsocket = new HttpsSocket();
-                secsocket->openListen(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
-                if(secsocket->getStatus() != Connection::DISCONNECTED){
-                    addConnection(secsocket);
-                    numsocks++;
-                    advertiser->addService("tp+https", secsocket->getPort());
-                }else{
-                    delete secsocket;
-                    Logger::getLogger()->warning("Could not listen on HTTPS (https tunneling) socket");
-                }
-            }else{
-                Logger::getLogger()->info("Not configured to start https socket");
-            }
+    if(Settings::getSettings()->get("tps") == "yes"){
+      TlsSocket* secsocket = new TlsSocket();
+      secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
+      if(secsocket->getStatus() != Connection::DISCONNECTED){
+        addConnection(secsocket);
+        numsocks++;
+        advertiser->addService("tps", secsocket->getPort());
+      }else{
+        delete secsocket;
+        WARNING("Could not listen on TPS (tls) socket");
+      }
+    }else{
+      INFO("Not configured to start tps socket");
+    }
+    if(Settings::getSettings()->get("https") == "yes"){
+      HttpsSocket* secsocket = new HttpsSocket();
+      secsocket->openListen(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
+      if(secsocket->getStatus() != Connection::DISCONNECTED){
+        addConnection(secsocket);
+        numsocks++;
+        advertiser->addService("tp+https", secsocket->getPort());
+      }else{
+        delete secsocket;
+        WARNING("Could not listen on HTTPS (https tunneling) socket");
+      }
+    }else{
+      INFO("Not configured to start https socket");
+    }
 #endif
-            if(numsocks != 0){
-                Logger::getLogger()->info("Started network with %d listeners", numsocks);
-                active = true;
-            }
+    if(numsocks != 0){
+      INFO("Started network with %d listeners", numsocks);
+      active = true;
+    }
 
-            advertiser->publish();
+    advertiser->publish();
 
-	}else{
-	   Logger::getLogger()->warning("Not starting network, game not yet loaded");
-	}
-
-
+  }else{
+    WARNING("Not starting network, game not yet loaded");
+  }
 
 }
 
 
 void Network::stop()
 {
-	if (active) {
-		Logger::getLogger()->info("Stopping Network");
+  if (active) {
+    INFO("Stopping Network");
 
-		  std::map<int, Connection*>::iterator itcurr = connections.begin();
-		  while (itcurr != connections.end()) {
-		    PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
-		    if(pc != NULL){
-		      ++itcurr;
-		      pc->close();
-		      removeConnection(pc);
-		      delete pc;
-		    }else{
-                        ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
-		      if(ts != NULL && ts->isPlayer()){
-			++itcurr;
-			removeConnection(ts);
-			delete ts;
-		      }else{
-                        ++itcurr;
-		      }
-		    }
-		  }
+    ConnMap::iterator itcurr = connections.begin();
+    while (itcurr != connections.end()) {
+      PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
+      if(pc != NULL){
+        pc->close();
+        removeConnection(pc);
+        delete pc;
+      }else{
+        ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
+        if(ts != NULL && ts->isPlayer()){
+          removeConnection(ts);
+          delete ts;
+        }
+      }
+      ++itcurr;
+    }
 
-                  advertiser->unpublish();
+    advertiser->unpublish();
 
-		active = false;
+    active = false;
 
-	} else {
-		Logger::getLogger()->warning("Network already stopped");
-	}
+  } else {
+    WARNING("Network already stopped");
+  }
 }
 
 bool Network::isStarted() const{
@@ -236,37 +228,34 @@ void Network::adminStart(){
       addConnection(admintcpsocket);
     }else{
       delete admintcpsocket;
-      Logger::getLogger()->warning("Could not listen on admin TCP socket");
+      WARNING("Could not listen on admin TCP socket");
     }
   }else{
-    Logger::getLogger()->info("Not configured to start admin TCP socket");
+    INFO("Not configured to start admin TCP socket");
   }
 }
 
 void Network::adminStop(){
-  std::map<int, Connection*>::iterator itcurr = connections.begin();
+  ConnMap::iterator itcurr = connections.begin();
   while (itcurr != connections.end()) {
     AdminConnection* ac = dynamic_cast<AdminConnection*>(itcurr->second);
     if(ac != NULL){
-      ++itcurr;
       ac->close();
       removeConnection(ac);
       delete ac;
     }else{
       ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
       if(ts != NULL){
-        ++itcurr;
         removeConnection(ts);
         delete ts;
-      }else{
-        ++itcurr;
       }
     }
+    ++itcurr;
   }
 }
 
 void Network::sendToAll(AsyncFrame* aframe){
-  std::map < int, Connection * >::iterator itcurr;
+  ConnMap::iterator itcurr;
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
     PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
     if(currConn != NULL && currConn->getStatus() == Connection::READY){
@@ -289,103 +278,94 @@ Advertiser* Network::getAdvertiser() const{
 
 void Network::masterLoop()
 {
-	struct timeval tv;
-	fd_set cur_set;
-	halt = false;
-	while (!halt) {
+  struct timeval tv;
+  fd_set cur_set;
+  halt = false;
+  while (!halt) {
 
-		//sleep(1);
-	  bool netstat = active;
+    //sleep(1);
+    bool netstat = active;
 
-                while(!timers.empty() && (timers.top().getExpireTime() <= static_cast<uint64_t>(time(NULL)) ||
-							 !(timers.top().isValid()))){
-                  TimerCallback callback = timers.top();
-                  timers.pop();
-                  if(callback.isValid())
-                    callback.call();
-                }
-                if(timers.empty()){
-                  tv.tv_sec = 60;
-                  tv.tv_usec = 0;
-                }else{
-                  tv.tv_sec = (timers.top().getExpireTime() - time(NULL)) - 1;
-                  if(tv.tv_sec <= 0){
-                    tv.tv_sec = 0;
-                    tv.tv_usec = 200000;
-                  }else{
-                    tv.tv_usec = 0;
-                  }
-                }
-                fd_set write_set;
-                FD_ZERO(&write_set);
-                for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();
-                    itcurr != writequeue.end(); ++itcurr){
-                  FD_SET(itcurr->first, &write_set);
-                }
+    while(!timers.empty() && (timers.top().getExpireTime() <= static_cast<uint64_t>(time(NULL)) ||
+          !(timers.top().isValid()))){
+      TimerCallback callback = timers.top();
+      timers.pop();
+      if(callback.isValid())
+        callback.call();
+    }
+    if(timers.empty()){
+      tv.tv_sec = 60;
+      tv.tv_usec = 0;
+    }else{
+      tv.tv_sec = (timers.top().getExpireTime() - time(NULL)) - 1;
+      if(tv.tv_sec <= 0){
+        tv.tv_sec = 0;
+        tv.tv_usec = 200000;
+      }else{
+        tv.tv_usec = 0;
+      }
+    }
+    fd_set write_set;
+    FD_ZERO(&write_set);
+    for(ConnMap::iterator itcurr = writequeue.begin();
+        itcurr != writequeue.end(); ++itcurr){
+      FD_SET(itcurr->first, &write_set);
+    }
 
-                cur_set = master_set;
+    cur_set = master_set;
 
-		if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) > 0) {
-                  
-                  for(std::map<int, Connection*>::iterator itcurr = writequeue.begin();
-                      itcurr != writequeue.end(); ++itcurr){
-                    if(FD_ISSET(itcurr->first, &write_set)){
-                      Connection* conn = itcurr->second;
-                      writequeue.erase(itcurr);
-                      conn->processWrite();
-                      //use select again, don't check rest of list as it has changed.
-                      break;
-                    }
-                  }
+    if (select(max_fd + 1, &cur_set, &write_set, NULL, &tv) > 0) {
 
-			std::map < int, Connection * >::iterator itcurr;
-			for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-				if (FD_ISSET((*itcurr).first, &cur_set)) {
-					(*itcurr).second->process();
-				}
-				if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
-				  Logger::getLogger()->info("Closed connection %d", (*itcurr).second->getFD());
-				  Connection* conn = itcurr->second;
-				  removeConnection(conn);
-                                  delete conn;
-                                    //use select again, don't check rest of list as it has changed.
-                                    break;
-				}
-			}
+      for(ConnMap::iterator itcurr = writequeue.begin();
+          itcurr != writequeue.end(); ++itcurr){
+        if(FD_ISSET(itcurr->first, &write_set)){
+          Connection* conn = itcurr->second;
+          writequeue.erase(itcurr);
+          conn->processWrite();
+          //use select again, don't check rest of list as it has changed.
+          break;
+        }
+      }
 
-		}
+      ConnMap::iterator itcurr;
+      for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
+        if (FD_ISSET((*itcurr).first, &cur_set)) {
+          (*itcurr).second->process();
+        }
+        if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
+          INFO("Closed connection %d", (*itcurr).second->getFD());
+          Connection* conn = itcurr->second;
+          removeConnection(conn);
+          delete conn;
+          //use select again, don't check rest of list as it has changed.
+          break;
+        }
+      }
 
-                //advertiser->poll();
+    }
 
-		if(netstat != active && active == false){
-		  std::map<int, Connection*>::iterator itcurr = connections.begin();
-		  while (itcurr != connections.end()) {
-		    PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
-		    if(pc != NULL){
-		      ++itcurr;
-		      pc->close();
-		      removeConnection(pc);
-		      delete pc;
-		    }else{
-		      TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
-		      if(ts != NULL){
-			++itcurr;
-			removeConnection(ts);
-			delete ts;
-		      }else{
-			++itcurr;
-		      }
-		    }
-		  }
-		  Logger::getLogger()->debug("Network really stopped");
-		}
+    //advertiser->poll();
 
-
-	}
-
-
-
-
+    if(netstat != active && active == false){
+      ConnMap::iterator itcurr = connections.begin();
+      while (itcurr != connections.end()) {
+        PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
+        if(pc != NULL){
+          pc->close();
+          removeConnection(pc);
+          delete pc;
+        }else{
+          TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
+          if(ts != NULL){
+            removeConnection(ts);
+            delete ts;
+          }
+        }
+        ++itcurr;
+      }
+      DEBUG("Network really stopped");
+    }
+  }
 }
 
 void Network::stopMainLoop(){
@@ -397,10 +377,10 @@ Network::Network()
 {
 
   max_fd = 0;
-    FD_ZERO(&master_set);
+  FD_ZERO(&master_set);
 
-	halt = false;
-	active = false;
+  halt = false;
+  active = false;
 
   advertiser = new Advertiser();
 
