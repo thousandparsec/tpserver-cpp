@@ -35,6 +35,7 @@ class OrderParameter;
 class Order {
 
   public:
+    typedef std::list<OrderParameter*> ParameterList;
     Order();
     virtual ~Order();
 
@@ -45,7 +46,7 @@ class Order {
     void setTurns(uint32_t nturns);
     IdMap getResources() const;
     void addResource(uint32_t resid, uint32_t amount);
-    std::list<OrderParameter*> getParameters() const;
+    ParameterList getParameters() const;
     uint64_t getDescriptionModTime() const;
 
     virtual void createFrame(Frame * f, int pos);
@@ -71,7 +72,7 @@ class Order {
     IdMap resources;
 
   private:
-    std::list<OrderParameter*> parameters;
+    ParameterList parameters;
 
 };
 

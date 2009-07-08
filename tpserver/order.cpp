@@ -36,7 +36,7 @@ Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resou
 }
 
 Order::~Order(){
-  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     delete (*itcurr);
   }
@@ -71,13 +71,12 @@ void Order::addResource(uint32_t resid, uint32_t amount){
   resources[resid] = amount;
 }
 
-std::list<OrderParameter*> Order::getParameters() const{
+Order::ParameterList Order::getParameters() const{
   return parameters;
 }
 
 void Order::createFrame(Frame * f, int pos)
 {
-
   f->setType(ft02_Order);
   if(f->getVersion() <= fv0_3){
     f->packInt(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
@@ -88,7 +87,7 @@ void Order::createFrame(Frame * f, int pos)
   f->packInt(type);
   f->packInt(turns);
   f->packIdMap(resources);
-  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     (*itcurr)->packOrderFrame(f);
   }
@@ -109,7 +108,7 @@ Result Order::inputFrame(Frame * f, uint32_t playerid)
     f->unpackInt(); //The amount of the resource
   }
   bool rtv = true;
-  for(std::list<OrderParameter*>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     rtv = rtv && (*itcurr)->unpackFrame(f, playerid);
     if(!rtv)
@@ -130,7 +129,7 @@ void Order::describeOrder(Frame * f) const
   f->packString(name);
   f->packString(description);
   f->packInt(parameters.size());
-  for(std::list<OrderParameter*>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(ParameterList::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     (*itcurr)->packOrderDescFrame(f);
   }
