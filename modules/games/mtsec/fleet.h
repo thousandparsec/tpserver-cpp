@@ -49,6 +49,7 @@ class Fleet : public OwnedObject {
 	uint32_t numShips(uint32_t type);
 	std::map<uint32_t, uint32_t> getShips() const;
 	uint32_t totalShips() const;
+	int64_t maxSpeed();
 
 
         uint32_t getDamage() const;

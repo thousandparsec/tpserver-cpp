@@ -37,6 +37,7 @@
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/logging.h>
 
 #include "fleet.h"
 
@@ -136,6 +137,19 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
     ships[itcurr->first.second] = itcurr->second;
   }
   return ships;
+}
+
+int64_t Fleet::maxSpeed(){
+  Logger::getLogger()->debug("Enter Fleet::maxSpeed");
+  double speed = 1e100;
+  DesignStore* ds = Game::getGame()->getDesignStore();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+        speed = fmin(speed, ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Speed")));
+  }
+  Logger::getLogger()->debug("Exit Fleet::maxSpeed");
+  return (int64_t)(floor(speed));
 }
 
 uint32_t Fleet::totalShips() const{
