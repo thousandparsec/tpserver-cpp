@@ -52,7 +52,7 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
-Enhance::Enhance() : Order()
+Enhance::Enhance() : Order(), maxSize(100)
 {
   name = "Enhance";
   description = "Enhance your Production";
@@ -86,9 +86,16 @@ bool Enhance::doOrder(IGObject *ob)
 
   Game* game = Game::getGame();
   ResourceManager* resman = game->getResourceManager();
-  const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-  planet->addResource(restype, floor(points->getTime()/10));
-Logger::getLogger()->debug("Adding %d points to Factories", points->getTime());
+  const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
+  const uint32_t resValue = planet->getResourceSurfaceValue(resType);
+  const uint32_t enhanceValue = floor(points->getTime()/10);
+  if (resValue + enhanceValue > maxSize) {
+    planet->addResource(resType, maxSize - resValue);
+    Logger::getLogger()->debug("Enhance::doOrder Value(%d) Exceeds 100, Adding %d points to Factories", resValue, maxSize - resValue);
+  } else {
+    planet->addResource(resType, enhanceValue);
+    Logger::getLogger()->debug("Enhance::doOrder Adding %d points to Factories(%d)", enhanceValue, resValue);
+  }
   Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
   return true;
 }

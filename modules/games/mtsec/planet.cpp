@@ -29,6 +29,7 @@
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
+#include <tpserver/logging.h>
 
 #include "planet.h"
 
@@ -94,11 +95,11 @@ void Planet::doOnceATurn()
   if (getOwner() != 0) {
     Game* game = Game::getGame();
     ResourceManager* resman = game->getResourceManager();
-    std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
     const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-    const uint32_t resvalue = reslist.find(restype)->first;
+    const uint32_t resvalue = getResourceSurfaceValue(restype);
     if (resvalue < maxProduction)
     {
+      Logger::getLogger()->debug("Planet::doOnceATurn Factories(%d) less than 100, incrementing by 1", resvalue);
       addResource(restype, 1);
     }
   }
@@ -118,6 +119,14 @@ uint32_t Planet::getResource(uint32_t restype) const{
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
   if(reslist.find(restype) != reslist.end()){
     return reslist.find(restype)->first;
+  }
+  return 0;
+}
+
+uint32_t Planet::getResourceSurfaceValue(uint32_t restype) const {
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  if(reslist.find(restype) != reslist.end()){
+    return reslist.find(restype)->second.first;
   }
   return 0;
 }

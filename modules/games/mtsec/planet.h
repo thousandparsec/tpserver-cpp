@@ -50,6 +50,7 @@ class Planet:public OwnedObject {
 
         std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
         uint32_t getResource(uint32_t restype) const;
+        uint32_t getResourceSurfaceValue(uint32_t restype) const;
         
         void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
         void addResource(uint32_t restype, uint32_t amount);
