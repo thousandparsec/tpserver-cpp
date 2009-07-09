@@ -20,7 +20,7 @@
  *
  */
 
-#include "tinyxml.h"
+#include <tpserver/tinyxml/tinyxml.h>
 
 class xmlImport {
 
