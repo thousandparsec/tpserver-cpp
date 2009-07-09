@@ -117,7 +117,12 @@ bool Game::load()
         key = Settings::getSettings()->get("metaserver_key_unsafe");
       }
       persistence->saveGameInfo();
-      ruleset->createGame();
+      try{
+        ruleset->createGame();
+      }catch(GameCreateFailed& excep){
+          Logger::getLogger()->error("Failed to create game, ruleset gave reason \"%s\"", excep.what());
+          return false;
+      }
     }else{
       objectmanager->init();
       ordermanager->init();
@@ -431,7 +436,7 @@ void Game::packGameInfoFrame(Frame* frame){
   if(!settings->get("game_media_base").empty()){
     frame->packString(settings->get("game_media_base"));
   }else{
-    frame->packString("http://darcs.thousandparsec.net/repos/media/client/");
+    frame->packString("http://svn.thousandparsec.net/svn/media/client/");
   }
   
 }
@@ -514,4 +519,14 @@ Game Game::operator=(Game & rhs)
   //only here to stop people doing funny things...
   assert(0);
   return *this;
+}
+
+GameCreateFailed::GameCreateFailed(const std::string& reason) : std::exception(){
+    why = reason;
+}
+
+GameCreateFailed::~GameCreateFailed() throw() {}
+
+const char* GameCreateFailed::what() const throw(){
+    return why.c_str();
 }

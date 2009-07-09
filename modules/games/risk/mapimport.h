@@ -25,7 +25,7 @@
 
 #include <wormhole.h>
 
-#include <tinyxml.h>
+#include <tpserver/tinyxml/tinyxml.h>
 
 #include <vector>
 #include <string>

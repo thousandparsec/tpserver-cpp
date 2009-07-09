@@ -2,7 +2,7 @@
 #define OWNEDOBJECT_H
 /*  Owned Object class
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,12 @@ class OwnedObject : public SpaceObject {
 
 
         virtual void setupObject();
+        
+    protected:
+        static const uint32_t OWNERGRPID;
+        static const uint32_t OWNERPARAMID;
+        static const uint32_t ORDERGRPID;
+        static const uint32_t ORDERQPARAMID;
 
 };
 

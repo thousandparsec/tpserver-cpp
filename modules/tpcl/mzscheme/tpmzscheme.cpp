@@ -97,6 +97,14 @@ void TpMzScheme::evalDesign(Design* d){
         std::map<uint32_t, uint32_t> complist = d->getComponents();
 
     temp = scheme_eval_string("(define design (make-designType))", env);
+    
+    for(std::set<uint32_t>::iterator propit = propids.begin();
+            propit != propids.end(); ++propit){
+        formater.str("");
+        formater << "(property-designType-set! design " 
+                 << *propit << " 0.0)";
+        temp = scheme_eval_string(formater.str().c_str(), env);
+    }
 
         std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > propranking;
         for(std::map<uint32_t, uint32_t>::iterator compit = complist.begin();

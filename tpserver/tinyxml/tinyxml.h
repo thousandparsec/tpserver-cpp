@@ -22,6 +22,9 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+/* Notice of modification
+This version of tinyxml has be modified to suit tpserver-cpp
+*/
 
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
@@ -44,14 +47,15 @@ distribution.
 #define DEBUG
 #endif
 
+#define TIXML_USE_STL
+
 #ifdef TIXML_USE_STL
 	#include <string>
  	#include <iostream>
 	#include <sstream>
 	#define TIXML_STRING		std::string
 #else
-	#include "tinystr.h"
-	#define TIXML_STRING		TiXmlString
+        #error( "TinyXML trying to use TiString, which has been removed from this version" )
 #endif
 
 // Deprecated library function hell. Compilers want to use the

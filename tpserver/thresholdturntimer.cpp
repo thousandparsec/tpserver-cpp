@@ -47,8 +47,7 @@ void ThresholdTurnTimer::onPlayerFinishedTurn(){
         allDoneStartEOT();
     }else if(!overthreshold && isOverThreshold()){
         Logger::getLogger()->info("Threshold of players finished, setting over threshold turn length.");
-        updateTimer();
-        overthreshold = true;
+        updateTimerNowOverThreshold();
     }
 }
 
@@ -87,8 +86,9 @@ void ThresholdTurnTimer::resetTimer(){
     timer = NULL;
   }
   
-  uint64_t increment;
+  int64_t increment;
   if(isOverThreshold()){
+    overthreshold = true;
     increment = atoi(settings->get("turn_length_over_threshold").c_str());
     if(increment == 0 && atoi(settings->get("turn_player_threshold").c_str()) > 0){
       // if no increment and threshold is greater than 0, the do the end of turn straight away
@@ -100,6 +100,7 @@ void ThresholdTurnTimer::resetTimer(){
       increment = 60;
     }
   }else{
+    overthreshold = false;
     increment = atoi(settings->get("turn_length_under_threshold").c_str());
     if(increment == 0){
       // wait forever, don't set timer
@@ -118,9 +119,11 @@ void ThresholdTurnTimer::resetTimer(){
   
 }
 
-void ThresholdTurnTimer::updateTimer(){
+void ThresholdTurnTimer::updateTimerNowOverThreshold(){
   Settings * settings = Settings::getSettings();
-  uint32_t increment = atoi(settings->get("turn_length_over_threshold").c_str());
+  int32_t increment = atoi(settings->get("turn_length_over_threshold").c_str());
+  
+  overthreshold = true;
   
   if(increment == 0 && atoi(settings->get("turn_player_threshold").c_str()) > 0){
     // if no increment and threshold is greater than 0, the do the end of turn straight away
@@ -135,8 +138,10 @@ void ThresholdTurnTimer::updateTimer(){
     increment = 60;
   }
   
+  uint32_t realincrement = increment;
+  
   if(timer != NULL){
-    if(timer->getExpireTime() <= increment + time(NULL)){
+    if(timer->getExpireTime() <= realincrement + time(NULL)){
       // current timer is shorter, keep using it
       return;
     }
@@ -144,11 +149,11 @@ void ThresholdTurnTimer::updateTimer(){
     delete timer;
   }
   
-  timer = new TimerCallback(this, &ThresholdTurnTimer::timerFinished, increment);
+  timer = new TimerCallback(this, &ThresholdTurnTimer::timerFinished, realincrement);
   Network::getNetwork()->addTimer(*timer);
   
-  // send frame to all connections that the end of turn has started
-  timerExpiredStartEOT();
+  // send frame to all connections that a new timer is in use.
+  thresholdFinishedNewTimer();
 }
 
 void ThresholdTurnTimer::timerFinished(){
@@ -166,13 +171,11 @@ bool ThresholdTurnTimer::isOverThreshold(){
 void ThresholdTurnTimer::thresholdChanged(const std::string& key, const std::string& val){
   if(isOverThreshold()){
     if(!overthreshold){
-      updateTimer();
-      overthreshold = true;
+      updateTimerNowOverThreshold();
     }
   }else{
     if(overthreshold){
       resetTimer();
-      overthreshold = false;
     }
   }
 }

@@ -1,6 +1,6 @@
 /*  SplitFleet order
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/objecttypemanager.h>
 #include <tpserver/playerview.h>
+
+#include "minisec.h"
 
 #include "splitfleet.h"
 
@@ -99,6 +101,8 @@ bool SplitFleet::doOrder(IGObject * ob){
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nfleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     nf->setDefaultOrderTypes();
+    nf->setIcon("common/object-icons/ship");
+    nf->setMedia("common-2d/foreign/vegastrike/ship-small/" + ((MiniSec*)(Game::getGame()->getRuleset()))->getFleetMediaNames()->getName());
   
   std::map<uint32_t, uint32_t> ships = shiplist->getList();
   for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){

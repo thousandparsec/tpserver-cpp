@@ -23,6 +23,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <stdint.h>
 
 class Publisher;
 class TimerCallback;

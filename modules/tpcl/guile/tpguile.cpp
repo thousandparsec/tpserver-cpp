@@ -1,6 +1,6 @@
 /*  Tp Guile Interpreter class
  *
- *  Copyright (C) 2005,2006,2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2007, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -97,8 +97,14 @@ void TpGuile::defineDesignType( Design * d)
     std::ostringstream formater;
 
     // Create the vtable, with name <design>DesignType
+    std::string safename = d->getName();
+    size_t spacepos = safename.find(" ");
+    while(spacepos != safename.npos){
+        safename[spacepos] = '_';
+        spacepos = safename.find(" ");
+    }
     formater.str( "");
-    formater << "(define " << d->getName() << "DesignType (make-design-vtable \"";
+    formater << "(define " << safename << "DesignType (make-design-vtable \"";
     for ( counter = ds->getMaxPropertyId(); counter >= 0; counter--) {
         formater << "pw";
     }
@@ -108,8 +114,12 @@ void TpGuile::defineDesignType( Design * d)
 
     // Now create the design structure itself, with name 'design'
     formater.str( "");
-    formater << "(define design (make-struct " << d->getName() << "DesignType 0))";
+    formater << "(define design (make-struct " << safename << "DesignType 0))";
     temp = scm_c_eval_string( formater.str().c_str());
+    
+    for(counter = ds->getMaxPropertyId(); counter >= 0; counter--){
+        setDesignPropertyValue(counter, 0.0);
+    }
 
     return;
 }
@@ -147,10 +157,14 @@ void TpGuile::definePropertyAccessors()
 // Set the property value for the current design in Guile
 void TpGuile::setDesignPropertyValue( const PropertyValue & pv)
 {
+    setDesignPropertyValue(pv.getPropertyId(), pv.getValue());
+}
+
+void TpGuile::setDesignPropertyValue(uint32_t propid, double value){
     scm_call_3( scm_variable_ref( scm_c_lookup( "struct-set!")),
                 scm_variable_ref( scm_c_lookup( "design")),
-                scm_from_int( pv.getPropertyId() + 1),
-                scm_from_double( pv.getValue()));
+                scm_from_int( propid + 1),
+                scm_from_double( value ));
 }
 
 

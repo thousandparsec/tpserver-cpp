@@ -22,6 +22,7 @@
 
 #include <list>
 #include <string>
+#include <stdint.h>
 
 typedef enum {
     cpT_Invalid = -1,

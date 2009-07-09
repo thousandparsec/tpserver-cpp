@@ -17,13 +17,13 @@ echo autoheader...
 autoheader
 
 echo libtoolize...
-(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
+(libtoolize --version || glibtoolize --version) < /dev/null > /dev/null 2>&1 || {
     echo libtoolize not found
     exit 1
 }
 
 #try with recursive first, then without
-libtoolize --automake --copy --force --ltdl --recursive || libtoolize --automake --copy --force --ltdl
+libtoolize --automake --copy --force --ltdl --recursive || libtoolize --automake --copy --force --ltdl || glibtoolize --automake --copy --force --ltdl --recursive || glibtoolize --automake --copy --force --ltdl
 
 echo automake...
 (automake --version) < /dev/null > /dev/null 2>&1 || {

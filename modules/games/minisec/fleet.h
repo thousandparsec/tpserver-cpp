@@ -2,7 +2,7 @@
 #define FLEET_H
 /*  Fleet Object class
  *
- *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007, 2008, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,6 +61,11 @@ class Fleet : public OwnedObject {
         void setupObject();
 
 	int getContainerType();
+        
+    private:
+        static const uint32_t SHIPSGRPID;
+        static const uint32_t SHIPSPARAMID;
+        static const uint32_t DAMAGEPARAMID;
 };
 
 #endif
