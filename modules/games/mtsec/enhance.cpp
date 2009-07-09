@@ -87,7 +87,8 @@ bool Enhance::doOrder(IGObject *ob)
   Game* game = Game::getGame();
   ResourceManager* resman = game->getResourceManager();
   const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-  planet->addResource(restype, (points->getTime()%10));
+  planet->addResource(restype, floor(points->getTime()/10));
+Logger::getLogger()->debug("Adding %d points to Factories", points->getTime());
   Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
   return true;
 }
