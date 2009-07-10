@@ -41,12 +41,6 @@ PlanetType::PlanetType():OwnedObjectType()
   group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
   addParameterGroupDesc(group);
 
-  group = new ObjectParameterGroupDesc();
-  group->setName("Orders");
-  group->setDescription("The order queues of the planet");
-  group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this planet");
-  addParameterGroupDesc(group);
-  
   nametype = "Planet";
   typedesc = "A planet object";
 }
