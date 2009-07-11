@@ -2,6 +2,7 @@
 #define PLANET_H
 /*  Planet ObjectData class
  *
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
  *  Copyright (C) 2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify

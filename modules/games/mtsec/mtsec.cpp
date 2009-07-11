@@ -47,6 +47,7 @@
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
+#include "sendpoints.h"
 #include "tpserver/property.h"
 #include "tpserver/component.h"
 #include "tpserver/design.h"
@@ -143,7 +144,9 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
-    ordm->addOrderType(new Enhance());
+//    ordm->addOrderType(new Enhance());
+    ordm->addOrderType(new SendPoints());
+
 }
 
 

@@ -1,9 +1,9 @@
-#ifndef MOVE_H
-#define MOVE_H
-/*  Move Order
+#ifndef SENDPOINTS_H
+#define SENDPOINTS_H
+/*  SendPoints order
  *
  *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,31 +21,24 @@
  *
  */
 
+#include <map>
+#include <string>
+
 #include <tpserver/result.h>
 #include <tpserver/order.h>
-#include <tpserver/vector3d.h>
 class SpaceCoordParam;
+class SendPoints : public Order{
+ public:
+  SendPoints();
+  virtual ~SendPoints();
+  bool doOrder(IGObject *ob);
+  Order* clone() const;
 
-class Move : public Order{
-      public:
-	Move();
-	virtual ~Move();
-
-	Vector3d getDest() const;
-	void setDest(const Vector3d & ndest);
-
-	int getETA(IGObject* ob) const;
-
-	void createFrame(Frame * f, int pos);
-	Result inputFrame(Frame * f, uint32_t playerid);
-
-	bool doOrder(IGObject * ob);
-
-	Order* clone() const;
-
-      private:
-	SpaceCoordParam* coords;
-
+ private:
+  TimeParameter* points; //number of points to use
+  uint32_t maxPoints;
+  double getPercentage(IGObject *ob) const;
+  SpaceCoordParam* coords;
 
 };
 
