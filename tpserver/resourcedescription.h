@@ -29,6 +29,7 @@ class ResourceDescription : public ProtocolObject
 {
 public:
     ResourceDescription();
+    ResourceDescription( const std::string& nname, const std::string& nunit, const std::string& ndesc);
     virtual ~ResourceDescription();
 
     void setResourceType(uint32_t resid);

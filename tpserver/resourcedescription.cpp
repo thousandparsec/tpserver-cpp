@@ -23,8 +23,16 @@
 #include "resourcedescription.h"
 
 ResourceDescription::ResourceDescription()
-  : ProtocolObject(ft02_ResDesc,0,"","")
+  : ProtocolObject(ft02_ResDesc,0), mass( 0 ), volume( 0 )
 {}
+
+ResourceDescription::ResourceDescription( const std::string& nname, const std::string& nunit, const std::string& ndesc )
+  : ProtocolObject(ft02_ResDesc,0,nname,ndesc), mass( 0 ), volume( 0 )
+{
+  name_plur = nname + "s";
+  unit_sig = nunit;
+  unit_plur = nunit + "s";
+}
 
 
 ResourceDescription::~ResourceDescription()

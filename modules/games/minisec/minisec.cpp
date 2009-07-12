@@ -671,25 +671,8 @@ void MiniSec::createGame(){
   }
   
     //setup Resources
-    ResourceDescription* res = new ResourceDescription();
-    res->setNameSingular("Ship part");
-    res->setNamePlural("Ship parts");
-    res->setUnitSingular("part");
-    res->setUnitPlural("parts");
-    res->setDescription("Ships parts that can be used to create ships");
-    res->setMass(0);
-    res->setVolume(0);
-    game->getResourceManager()->addResourceDescription(res);
-    
-    res = new ResourceDescription();
-    res->setNameSingular("Home Planet");
-    res->setNamePlural("Home Planets");
-    res->setUnitSingular("unit");
-    res->setUnitPlural("units");
-    res->setDescription("The home planet for a race.");
-    res->setMass(0);
-    res->setVolume(0);
-    game->getResourceManager()->addResourceDescription(res);
+    game->getResourceManager()->addResourceDescription( new ResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships") );
+    game->getResourceManager()->addResourceDescription( new ResourceDescription( "Home Planet", "unit", "The home planet for a race.") );
   
     game->getPlayerManager()->createNewPlayer("guest", "guest");
 
@@ -697,32 +680,16 @@ void MiniSec::createGame(){
 }
 
 void MiniSec::startGame(){
-    
-    if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
-        Logger::getLogger()->info("Setting up ship part resource that had not been setup");
-        ResourceDescription* res = new ResourceDescription();
-        res->setNameSingular("Ship part");
-        res->setNamePlural("Ship parts");
-        res->setUnitSingular("part");
-        res->setUnitPlural("parts");
-        res->setDescription("Ships parts that can be used to create ships");
-        res->setMass(0);
-        res->setVolume(0);
-        Game::getGame()->getResourceManager()->addResourceDescription(res);
-    }
-    if(Game::getGame()->getResourceManager()->getResourceDescription(2) == NULL){
-      Logger::getLogger()->info("Setting up home planet resource that had not been setup");
-        ResourceDescription* res = new ResourceDescription();
-        res->setNameSingular("Home Planet");
-        res->setNamePlural("Home Planets");
-        res->setUnitSingular("unit");
-        res->setUnitPlural("units");
-        res->setDescription("The home planet for a race.");
-        res->setMass(0);
-        res->setVolume(0);
-        Game::getGame()->getResourceManager()->addResourceDescription(res);
-    }
-    
+
+  if(Game::getGame()->getResourceManager()->getResourceDescription(1) == NULL){
+    Logger::getLogger()->info("Setting up ship part resource that had not been setup");
+    Game::getGame()->getResourceManager()->addResourceDescription( new ResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships") );
+  }
+  if(Game::getGame()->getResourceManager()->getResourceDescription(2) == NULL){
+    Logger::getLogger()->info("Setting up home planet resource that had not been setup");
+    Game::getGame()->getResourceManager()->addResourceDescription( new ResourceDescription( "Home Planet", "unit", "The home planet for a race.") );
+  }
+
   Settings* settings = Settings::getSettings();
   if(settings->get("turn_length_over_threshold") == ""){
     settings->set("turn_length_over_threshold", "600");
@@ -732,7 +699,6 @@ void MiniSec::startGame(){
 }
 
 bool MiniSec::onAddPlayer(Player* player){
-  
   return true;
 }
 
