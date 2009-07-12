@@ -58,6 +58,11 @@ void PlayerView::addVisibleObject(ObjectView* obj){
   objects.addVisible( obj );
 }
 
+void PlayerView::addVisibleObjects( const IdSet& obids ) {
+  objects.addVisible( obids );
+}
+
+
 ObjectView* PlayerView::getObjectView(uint32_t objid){
   if(objects.isVisible(objid)){
     return objects.retrieve(objid);
@@ -161,6 +166,10 @@ void PlayerView::addVisibleDesign(DesignView* design){
   designs.addVisible( design );
 }
 
+void PlayerView::addVisibleDesigns( const IdSet& obids ) {
+  designs.addVisible( obids );
+}
+
 void PlayerView::addUsableDesign(uint32_t designid){
   designs.addActable( designid );
 }
@@ -234,6 +243,10 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
   components.addVisible( comp );
+}
+
+void PlayerView::addVisibleComponents( const IdSet& obids ) {
+  components.addVisible( obids );
 }
 
 void PlayerView::addUsableComponent(uint32_t compid){
@@ -370,6 +383,13 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
   }
   cache[id] = entity;
   sequence++;
+}
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::addVisible( const IdSet& obids ){
+  for (IdSet::const_iterator it = obids.begin(); it != obids.end(); ++it ) {
+    addVisible( new EntityType( *it, true ) );
+  }
 }
 
 template< class EntityType >

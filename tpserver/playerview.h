@@ -38,6 +38,7 @@ public:
   void doOnceATurn();
 
   void addVisibleObject(ObjectView* obj);
+  void addVisibleObjects( const IdSet& obids );
   ObjectView* getObjectView(uint32_t objid);
   void updateObjectView(uint32_t objid);
   void removeVisibleObject(uint32_t objid);
@@ -51,6 +52,7 @@ public:
   void processGetObjectIds(Frame* in, Frame* out);
 
   void addVisibleDesign(DesignView* design);
+  void addVisibleDesigns( const IdSet& obids );
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
   bool isUsableDesign(uint32_t designid) const;
@@ -60,6 +62,7 @@ public:
   void processGetDesignIds(Frame* in, Frame* out);
 
   void addVisibleComponent(ComponentView* comp);
+  void addVisibleComponents( const IdSet& obids );
   void addUsableComponent(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
   bool isUsableComponent(uint32_t compid) const;
@@ -91,6 +94,7 @@ private:
     EntityInfo() : sequence( 0 ) {}
     void packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime );
     void addVisible( EntityType* entity );
+    void addVisible( const IdSet& obids );
     void addActable( uint32_t id );
     void removeActable( uint32_t id );
     bool isActable( uint32_t id ) const;

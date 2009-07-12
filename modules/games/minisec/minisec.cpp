@@ -81,50 +81,50 @@ static char const * const defaultSystemNames[] = {
   "Atlantis",        "Draconis",            "Muir's Gold",
   "Fools Errand",    "Wrenganis",           "Humph",
   "Byzantis",        "Torontis",            "Radiant Pool"};
-  
+
 static char const * const defaultSystemMedia[] = {
-    "blue", "red", "yellow", "purple-large", 
-    "purple-small", "rainbow"
+  "blue", "red", "yellow", "purple-large", 
+  "purple-small", "rainbow"
 };
 
 static char const * const defaultPlanetMedia[] = {
-    "barren1", "barren2", "barren3", "desert1", "desert2",
-    "desert3", "gasgiant1", "gasgiant2", "gasgiant3",
-    "inferno1", "inferno2", "inferno3", "ocean1", "ocean2",
-    "ocean3", "radiated1", "radiated2", "radiaged3",
-    "swamp1", "swamp2", "swamp3", "terran1", "terran2",
-    "terran3", "toxic1", "toxic2", "toxic3", "tundra1",
-    "tundra2", "tundra3"
+  "barren1", "barren2", "barren3", "desert1", "desert2",
+  "desert3", "gasgiant1", "gasgiant2", "gasgiant3",
+  "inferno1", "inferno2", "inferno3", "ocean1", "ocean2",
+  "ocean3", "radiated1", "radiated2", "radiaged3",
+  "swamp1", "swamp2", "swamp3", "terran1", "terran2",
+  "terran3", "toxic1", "toxic2", "toxic3", "tundra1",
+  "tundra2", "tundra3"
 };
 
 static char const * const defaultFleetMedia[] = {
-    "aeon-hud", "ancestor-hud", "andolian_dostoevsky-hud",
-    "andolian_sartre-hud", "andolian_schroedinger-hud",
-    "ariston-hud", "clydesdale-hud", "confed_gawain-hud",
-    "confed_schroedinger-hud", "destroyer-hud",
-    "franklin-hud", "gawain-hud", "highborn_gawain-hud",
-    "kyta-hud", "purist_admonisher-hud", "purist_gawain-hud",
-    "sartre-hud", "schroedinger-hud", "shaper_ancestor-hud",
-    "watson-hud"
+  "aeon-hud", "ancestor-hud", "andolian_dostoevsky-hud",
+  "andolian_sartre-hud", "andolian_schroedinger-hud",
+  "ariston-hud", "clydesdale-hud", "confed_gawain-hud",
+  "confed_schroedinger-hud", "destroyer-hud",
+  "franklin-hud", "gawain-hud", "highborn_gawain-hud",
+  "kyta-hud", "purist_admonisher-hud", "purist_gawain-hud",
+  "sartre-hud", "schroedinger-hud", "shaper_ancestor-hud",
+  "watson-hud"
 };
 
 /**
-* Base class for various ways to get names for starsystems.
-*/
+ * Base class for various ways to get names for starsystems.
+ */
 
 Names::Names(const std::string& defaultname) : systems(0), prefix(defaultname) {
-	
+
 }
 
 /**
  * Get a name which is "System xx".
  */
 std::string Names::getName() {
-    std::ostringstream name;
-    name.str("");
-    name << prefix << " " << ++systems;
+  std::ostringstream name;
+  name.str("");
+  name << prefix << " " << ++systems;
 
-    return name.str();
+  return name.str();
 }
 
 Names::~Names() {};
@@ -139,11 +139,11 @@ class NamesSet : public Names {
   Random* rand;
   bool replace;
 
-public:
+  public:
   NamesSet(Random* r, char const * const defaultNames[], bool withreplacement, const std::string& defaultprefix) :
-      Names(defaultprefix),
-      names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))),
-      replace(withreplacement)
+    Names(defaultprefix),
+    names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))),
+    replace(withreplacement)
   {
     rand  = r;
   }
@@ -181,12 +181,12 @@ public:
  * @return    A stripped string
  */
 inline std::string strip(std::string const& str, char const* sep) {
-    std::string::size_type first = str.find_first_not_of(sep);
-    std::string::size_type last  = str.find_last_not_of(sep);
-    if ( first == std::string::npos || last  == std::string::npos )
-        return std::string("");
+  std::string::size_type first = str.find_first_not_of(sep);
+  std::string::size_type last  = str.find_last_not_of(sep);
+  if ( first == std::string::npos || last  == std::string::npos )
+    return std::string("");
 
-    return str.substr(first, (last-first)+1);
+  return str.substr(first, (last-first)+1);
 }
 /**
  * Does a string start with another string?
@@ -195,12 +195,12 @@ inline std::string strip(std::string const& str, char const* sep) {
  * @param starting What the string should start with.
  * @return Does the string start with starting?
  */
-inline bool startswith(std::string const& str, std::string const& starting) {
+  inline bool startswith(std::string const& str, std::string const& starting) {
     if (str.length() < starting.length())
-        return false;
+      return false;
 
     return str.substr(0, starting.length()) == starting;
-}
+  }
 
 
 #define BUFFERSIZE 1024
@@ -220,25 +220,25 @@ class NamesFile : public Names {
     // Get the next line
     // Loop while the buffer is empty 
     while (buffer.size() == 0 || m_file->fail()) {
-        // Temporary storage for the line
-        char cbuffer[BUFFERSIZE];
-        uint32_t cbuffer_amount = 0;
+      // Temporary storage for the line
+      char cbuffer[BUFFERSIZE];
+      uint32_t cbuffer_amount = 0;
 
-        m_file->getline(cbuffer, BUFFERSIZE);
-        cbuffer_amount = m_file->gcount();      // The amount of data which was put in our buffer
+      m_file->getline(cbuffer, BUFFERSIZE);
+      cbuffer_amount = m_file->gcount();      // The amount of data which was put in our buffer
 
-        if (cbuffer_amount > 0)
-            buffer.append(std::string(cbuffer, cbuffer_amount-1));
+      if (cbuffer_amount > 0)
+        buffer.append(std::string(cbuffer, cbuffer_amount-1));
 
-        // Have we reached the end of the file
-        if (m_file->eof())
-            break;
+      // Have we reached the end of the file
+      if (m_file->eof())
+        break;
     }
 
     return buffer;
   }
 
-public:
+  public:
   NamesFile(std::istream* f, const std::string& defaultname) : Names(defaultname) {
     m_file = f;
 
@@ -266,23 +266,23 @@ public:
 
 
 extern "C" {
-  #define tp_init libminisec_LTX_tp_init
+#define tp_init libminisec_LTX_tp_init
   bool tp_init(){
     return Game::getGame()->setRuleset(new MiniSec());
   }
 }
 
 MiniSec::MiniSec() : random(NULL){
-    systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, true, "");
-    planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, true, "");
-    fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, true, "");
+  systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, true, "");
+  planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, true, "");
+  fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, true, "");
 }
 
 MiniSec::~MiniSec(){
   if(random != NULL){
     delete random;
   }
-  
+
 }
 
 std::string MiniSec::getName(){
@@ -295,10 +295,10 @@ std::string MiniSec::getVersion(){
 
 void MiniSec::initGame(){
   Game* game = Game::getGame();
-  
+
   MinisecTurn* turn = new MinisecTurn();
   game->setTurnProcess(turn);
-  
+
 
   ObjectTypeManager* obdm = game->getObjectTypeManager();
   obdm->addNewObjectType( new UniverseType() );
@@ -306,7 +306,7 @@ void MiniSec::initGame(){
   obdm->addNewObjectType( new EmptyObjectType( "Star System", "The Star System Object type") );
   uint32_t pt = obdm->addNewObjectType(new PlanetType());
   uint32_t ft = obdm->addNewObjectType(new FleetType());
-  
+
   turn->setPlanetType(pt);
   turn->setFleetType(ft);
 
@@ -322,152 +322,152 @@ void MiniSec::initGame(){
 
 void MiniSec::createGame(){
   Game* game = Game::getGame();
-  
+
   std::set<uint32_t> catids;
-  
-    DesignStore *ds = game->getDesignStore();
-    Category * cat = new Category();
-    cat->setName("Ships");
-    cat->setDescription("The Ship design and component category");
-    ds->addCategory(cat);
-    catids.insert(cat->getCategoryId());
-    
-    Property* prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("Speed");
-    prop->setDisplayName("Speed");
-    prop->setDescription("The number of units the ship can move each turn");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("BuildTime");
-    prop->setDisplayName("Build Time");
-    prop->setDescription("The number of turns to build the ship");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("Armour");
-    prop->setDisplayName("Armour");
-    prop->setDescription("The amount of amour on the ship");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("WeaponWin");
-    prop->setDisplayName("Weapon Strength at Win");
-    prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("WeaponDraw");
-    prop->setDisplayName("Weapon Strength at Draw");
-    prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("Colonise");
-    prop->setDisplayName("Can Colonise Planets");
-    prop->setDescription("Can the ship colonise planets");
-    prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
-    prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    prop = new Property();
-    prop->setCategoryIds(catids);
-    prop->setRank(0);
-    prop->setName("_num-components");
-    prop->setDisplayName("Number of Conponents");
-    prop->setDescription("The total number of components in the design");
-    prop->setTpclDisplayFunction(
-        "(lambda (design bits)"
-        "(let ((n (apply + bits)))"
-        "(cons n (string-append (number->string n) \" components\"))))");
-        prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
-    ds->addProperty(prop);
-    
-    std::map<uint32_t, std::string> propertylist;
-    
-    Component* comp = new Component();
-    comp->setCategoryIds(catids);
-    comp->setName("ScoutHull");
-    comp->setDescription("The scout hull, fitted out with everything a scout needs");
-    comp->setTpclRequirementsFunction(
-        "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-            "(cons #t \"\") "
-            "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist[1] = "(lambda (design) 500000000)";
-    propertylist[2] = "(lambda (design) 1)";
-    propertylist[3] = "(lambda (design) 2)";
-    propertylist[4] = "(lambda (design) 0)";
-    propertylist[5] = "(lambda (design) 0)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-    
-    comp = new Component();
-    comp->setCategoryIds(catids);
-    comp->setName("FrigateHull");
-    comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
-    comp->setTpclRequirementsFunction(
-        "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-            "(cons #t \"\") "
-            "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist.clear();
-    propertylist[1] = "(lambda (design) 200000000)";
-    propertylist[2] = "(lambda (design) 2)";
-    propertylist[3] = "(lambda (design) 4)";
-    propertylist[4] = "(lambda (design) 2)";
-    propertylist[5] = "(lambda (design) 0)";
-    propertylist[6] = "(lambda (design) 1)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-    
-    comp = new Component();
-    comp->setCategoryIds(catids);
-    comp->setName("BattleshipHull");
-    comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
-    comp->setTpclRequirementsFunction(
-            "(lambda (design) "
-            "(if (= (designType._num-components design) 1) "
-                "(cons #t \"\") "
-                "(cons #f \"This is a complete component, nothing else can be included\")))");
-    propertylist.clear();
-    propertylist[1] = "(lambda (design) 300000000)";
-    propertylist[2] = "(lambda (design) 4)";
-    propertylist[3] = "(lambda (design) 6)";
-    propertylist[4] = "(lambda (design) 3)";
-    propertylist[5] = "(lambda (design) 1)";
-    propertylist[7] = "(lambda (design) 1)";
-    comp->setPropertyList(propertylist);
-    ds->addComponent(comp);
-  
-  
+
+  DesignStore *ds = game->getDesignStore();
+  Category * cat = new Category();
+  cat->setName("Ships");
+  cat->setDescription("The Ship design and component category");
+  ds->addCategory(cat);
+  catids.insert(cat->getCategoryId());
+
+  Property* prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("Speed");
+  prop->setDisplayName("Speed");
+  prop->setDescription("The number of units the ship can move each turn");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) \" mega-units\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("BuildTime");
+  prop->setDisplayName("Build Time");
+  prop->setDescription("The number of turns to build the ship");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" turns\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("Armour");
+  prop->setDisplayName("Armour");
+  prop->setDescription("The amount of amour on the ship");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("WeaponWin");
+  prop->setDisplayName("Weapon Strength at Win");
+  prop->setDescription("The number of HP to do to the fired at ship when RSP wins");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("WeaponDraw");
+  prop->setDisplayName("Weapon Strength at Draw");
+  prop->setDescription("The number of HP to do to the fired at ship when RSP draws");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) \" HP\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("Colonise");
+  prop->setDisplayName("Can Colonise Planets");
+  prop->setDescription("Can the ship colonise planets");
+  prop->setTpclDisplayFunction("(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) \"Yes\" \"No\")) ) )");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  prop = new Property();
+  prop->setCategoryIds(catids);
+  prop->setRank(0);
+  prop->setName("_num-components");
+  prop->setDisplayName("Number of Conponents");
+  prop->setDescription("The total number of components in the design");
+  prop->setTpclDisplayFunction(
+      "(lambda (design bits)"
+      "(let ((n (apply + bits)))"
+      "(cons n (string-append (number->string n) \" components\"))))");
+  prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
+  ds->addProperty(prop);
+
+  std::map<uint32_t, std::string> propertylist;
+
+  Component* comp = new Component();
+  comp->setCategoryIds(catids);
+  comp->setName("ScoutHull");
+  comp->setDescription("The scout hull, fitted out with everything a scout needs");
+  comp->setTpclRequirementsFunction(
+      "(lambda (design) "
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
+      "(cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist[1] = "(lambda (design) 500000000)";
+  propertylist[2] = "(lambda (design) 1)";
+  propertylist[3] = "(lambda (design) 2)";
+  propertylist[4] = "(lambda (design) 0)";
+  propertylist[5] = "(lambda (design) 0)";
+  propertylist[7] = "(lambda (design) 1)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+  comp = new Component();
+  comp->setCategoryIds(catids);
+  comp->setName("FrigateHull");
+  comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
+  comp->setTpclRequirementsFunction(
+      "(lambda (design) "
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
+      "(cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist.clear();
+  propertylist[1] = "(lambda (design) 200000000)";
+  propertylist[2] = "(lambda (design) 2)";
+  propertylist[3] = "(lambda (design) 4)";
+  propertylist[4] = "(lambda (design) 2)";
+  propertylist[5] = "(lambda (design) 0)";
+  propertylist[6] = "(lambda (design) 1)";
+  propertylist[7] = "(lambda (design) 1)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+  comp = new Component();
+  comp->setCategoryIds(catids);
+  comp->setName("BattleshipHull");
+  comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
+  comp->setTpclRequirementsFunction(
+      "(lambda (design) "
+      "(if (= (designType._num-components design) 1) "
+      "(cons #t \"\") "
+      "(cons #f \"This is a complete component, nothing else can be included\")))");
+  propertylist.clear();
+  propertylist[1] = "(lambda (design) 300000000)";
+  propertylist[2] = "(lambda (design) 4)";
+  propertylist[3] = "(lambda (design) 6)";
+  propertylist[4] = "(lambda (design) 3)";
+  propertylist[5] = "(lambda (design) 1)";
+  propertylist[7] = "(lambda (design) 1)";
+  comp->setPropertyList(propertylist);
+  ds->addComponent(comp);
+
+
   ObjectManager* obman = game->getObjectManager();
   ObjectTypeManager* otypeman = game->getObjectTypeManager();
-  
+
   uint32_t obT_Universe = otypeman->getObjectTypeByName("Universe");
   uint32_t obT_Galaxy = otypeman->getObjectTypeByName("Galaxy");
   uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
@@ -482,7 +482,7 @@ void MiniSec::createGame(){
   theuniverse->setIcon("common/object-icons/system");
   theuniverse->setMedia("common-2d/foreign/freeorion/nebula-small/nebula3");
   obman->addObject(universe);
-  
+
   //add contained objects
   IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
   otypeman->setupObject(mw_galaxy, obT_Galaxy);
@@ -494,7 +494,7 @@ void MiniSec::createGame(){
   eo->setIcon("common/object-icons/system");
   eo->setMedia("common-2d/foreign/freeorion/nebula-small/nebula1");
   obman->addObject(mw_galaxy);
-  
+
   // star system 1
   IGObject *sol = game->getObjectManager()->createNewObject();
   otypeman->setupObject(sol, obT_Star_System);
@@ -518,7 +518,7 @@ void MiniSec::createGame(){
   theac->setMedia("common-2d/star-small/purple-large");
   ac->addToParent(mw_galaxy->getID());
   obman->addObject(ac);
-  
+
   // star system 3
   IGObject *sirius = game->getObjectManager()->createNewObject();
   otypeman->setupObject(sirius, obT_Star_System);
@@ -531,7 +531,7 @@ void MiniSec::createGame(){
   sirius->addToParent(mw_galaxy->getID());
   obman->addObject(sirius);
 
-  
+
   // now for some planets
   IGObject *earth = game->getObjectManager()->createNewObject();
   otypeman->setupObject(earth, obT_Planet);
@@ -550,7 +550,7 @@ void MiniSec::createGame(){
   theearth->setMedia("common-2d/foreign/freeorion/planet-small/animation/terran1");
   earth->addToParent(sol->getID());
   obman->addObject(earth);
-  
+
   IGObject *venus = game->getObjectManager()->createNewObject();
   otypeman->setupObject(venus, obT_Planet);
   Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
@@ -568,7 +568,7 @@ void MiniSec::createGame(){
   thevenus->setMedia("common-2d/foreign/freeorion/planet-small/animation/desert1");
   venus->addToParent(sol->getID());
   obman->addObject(venus);
-  
+
   IGObject *mars = game->getObjectManager()->createNewObject();
   otypeman->setupObject(mars, obT_Planet);
   Planet* themars = (Planet*)(mars->getObjectBehaviour());
@@ -586,7 +586,7 @@ void MiniSec::createGame(){
   themars->setMedia("common-2d/foreign/freeorion/planet-small/animation/inferno1");
   mars->addToParent(sol->getID());
   obman->addObject(mars);
-  
+
   IGObject *acprime = game->getObjectManager()->createNewObject();
   otypeman->setupObject(acprime, obT_Planet);
   Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
@@ -604,7 +604,7 @@ void MiniSec::createGame(){
   theacprime->setMedia("common-2d/foreign/freeorion/planet-small/animation/toxic1");
   acprime->addToParent(ac->getID());
   obman->addObject(acprime);
-  
+
   IGObject *s1 = game->getObjectManager()->createNewObject();
   otypeman->setupObject(s1, obT_Planet);
   Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
@@ -622,7 +622,7 @@ void MiniSec::createGame(){
   thes1->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
   s1->addToParent(sirius->getID());
   obman->addObject(s1);
- 
+
   //create random systems
   Random * currandom;
 
@@ -669,12 +669,12 @@ void MiniSec::createGame(){
     if(total_planets <= 0)
       break;
   }
-  
-    //setup Resources
-    game->getResourceManager()->addResourceDescription( new ResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships") );
-    game->getResourceManager()->addResourceDescription( new ResourceDescription( "Home Planet", "unit", "The home planet for a race.") );
-  
-    game->getPlayerManager()->createNewPlayer("guest", "guest");
+
+  //setup Resources
+  game->getResourceManager()->addResourceDescription( new ResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships") );
+  game->getResourceManager()->addResourceDescription( new ResourceDescription( "Home Planet", "unit", "The home planet for a race.") );
+
+  game->getPlayerManager()->createNewPlayer("guest", "guest");
 
   delete names;    
 }
@@ -706,81 +706,77 @@ void MiniSec::onPlayerAdded(Player* player){
   Game *game = Game::getGame();
 
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
-  
+
   PlayerView* playerview = player->getPlayerView();
-  
+
   if(std::string(player->getName()) == "guest"){
     player->setIsAlive(false);
   }else{
-    
+
     //Can see all other designs
-    std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
-    for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
-      DesignView* dv = new DesignView(*desid,true);
-      playerview->addVisibleDesign(dv);
-    }
-    
-    std::set<uint32_t> mydesignids;
-    
+    playerview->addVisibleDesigns( Game::getGame()->getDesignStore()->getDesignIds() );
+
+    IdSet mydesignids;
+
     //temporarily add the components as usable to get the designs done
     playerview->addUsableComponent(1);
     playerview->addUsableComponent(2);
     playerview->addUsableComponent(3);
-  
+
     Design* scout = new Design();
     scout->setCategoryId(1);
     scout->setName("Scout");
     scout->setDescription("Scout ship");
     scout->setOwner(player->getID());
-      IdMap cl;
-      cl[1] = 1;
+    IdMap cl;
+    cl[1] = 1;
     scout->setComponents(cl);
     game->getDesignStore()->addDesign(scout);
     mydesignids.insert(scout->getDesignId());
-  
-      Design* frigate = new Design();
+
+    Design* frigate = new Design();
     frigate->setCategoryId(1);
     frigate->setName("Frigate");
     frigate->setDescription("Frigate ship");
     frigate->setOwner(player->getID());
     cl.clear();
-      cl[2] = 1;
+    cl[2] = 1;
     frigate->setComponents(cl);
     game->getDesignStore()->addDesign(frigate);
-uint32_t frigateid = frigate->getDesignId();
+    uint32_t frigateid = frigate->getDesignId();
     mydesignids.insert(frigate->getDesignId());
-  
+
     Design* design = new Design();
     design->setCategoryId(1);
     design->setName("Battleship");
     design->setDescription("Battleship ship");
     design->setOwner(player->getID());
     cl.clear();
-      cl[3] = 1;
+    cl[3] = 1;
     design->setComponents(cl);
     game->getDesignStore()->addDesign(design);
     mydesignids.insert(design->getDesignId());
-  
+
     //remove temporarily added usable components
     playerview->removeUsableComponent(1);
     playerview->removeUsableComponent(2);
     playerview->removeUsableComponent(3);
     // the components are still visible
-    
-    
+
+
     uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
     uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
     uint32_t obT_Star_System = game->getObjectTypeManager()->getObjectTypeByName("Star System");
-  
+
     Random * currandom;
     if(random != NULL){
       currandom = random;
     }else{
       currandom = game->getRandom();
     }
-    
+
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
-    
+
     std::string name = player->getName();
     IGObject *star = game->getObjectManager()->createNewObject();
     otypeman->setupObject(star, obT_Star_System);
@@ -788,27 +784,27 @@ uint32_t frigateid = frigate->getDesignId();
     thestar->setSize(80000ll);
     star->setName(name + " Star System");
     thestar->setPosition(Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
-                              (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
-                              /*(int64_t)(((rand() % 1000) - 500) * 10000000)*/ 0));
+          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10000000),
+          /*(int64_t)(((rand() % 1000) - 500) * 10000000)*/ 0));
     thestar->setIcon("common/object-icons/system");
     thestar->setMedia("common-2d/star-small/" + systemmedia->getName());
     star->addToParent(1);
     game->getObjectManager()->addObject(star);
-    
+
     IGObject *planet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(planet, obT_Planet);
-    
+
     planet->setName(name + " Planet");
-    
+
     Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
-    
+
     theplanet->setSize(2);
-    
+
     theplanet->setOwner(player->getID());
     theplanet->addResource(2, 1);
     theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000)* 10),
-                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
+          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+          /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     theplanet->setIcon("common/object-icons/planet");
     theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
     OrderQueue *planetoq = new OrderQueue();
@@ -818,11 +814,11 @@ uint32_t frigateid = frigate->getDesignId();
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(planetoq->getQueueId());
     theplanet->setDefaultOrderTypes();
-    
+
     planet->addToParent(star->getID());
     game->getObjectManager()->addObject(planet);
     playerview->addOwnedObject(planet->getID());
-    
+
     IGObject *fleet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(fleet, obT_Fleet);
     Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
@@ -830,10 +826,10 @@ uint32_t frigateid = frigate->getDesignId();
     fleet->setName(name + " First Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
+          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+          /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    
+
     OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(player->getID());
@@ -844,11 +840,11 @@ uint32_t frigateid = frigate->getDesignId();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
-    
+
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
     playerview->addOwnedObject(fleet->getID());
-    
+
     //number 2
     fleet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(fleet, obT_Fleet);
@@ -857,10 +853,10 @@ uint32_t frigateid = frigate->getDesignId();
     fleet->setName(name + " Second Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
+          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+          /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    
+
     fleetoq = new OrderQueue();
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(player->getID());
@@ -871,7 +867,7 @@ uint32_t frigateid = frigate->getDesignId();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
-    
+
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
     playerview->addOwnedObject(fleet->getID());
@@ -884,10 +880,10 @@ uint32_t frigateid = frigate->getDesignId();
     fleet->setName(name + " Thrid Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-                                                      /*(int64_t)((rand() % 10000) - 5000)*/ 0));
+          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+          /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    
+
     fleetoq = new OrderQueue();
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(player->getID());
@@ -898,43 +894,29 @@ uint32_t frigateid = frigate->getDesignId();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
     thefleet->addShips(frigateid, 1);
-    
+
     fleet->addToParent(star->getID());
     game->getObjectManager()->addObject(fleet);
     playerview->addOwnedObject(fleet->getID());
-    
-    
+
+
     frigate->addUnderConstruction(3);
     frigate->addComplete(3);
     game->getDesignStore()->designCountsUpdated(frigate);
-    
-      std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
+
+    std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
       if(*playerit == player->getID())
         continue;
-      
+
       Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
-      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
-        DesignView* dv = new DesignView(*desid,true);
-        oplayer->getPlayerView()->addVisibleDesign(dv);
-      }
+      oplayer->getPlayerView()->addVisibleDesigns( mydesignids );
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
   }
 
-  std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
-  for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
-      ++itcurr){
-    ObjectView* obv = new ObjectView();
-    obv->setObjectId(*itcurr);
-    obv->setCompletelyVisible(true);
-    playerview->addVisibleObject(obv);
-  }
-  
+  playerview->addVisibleObjects( game->getObjectManager()->getAllIds() );
   game->getPlayerManager()->updatePlayer(player->getID());
-  
-  
-  
 }
 
 Names* MiniSec::getFleetMediaNames() const{
