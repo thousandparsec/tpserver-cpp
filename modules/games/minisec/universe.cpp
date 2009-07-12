@@ -25,14 +25,12 @@
 
 #include "universe.h"
 
-UniverseType::UniverseType() : SpaceObjectType(){
+UniverseType::UniverseType() : SpaceObjectType("Universe","The Universe"){
   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
   group->setName("Informational");
   group->setDescription("Information about the universe");
   group->addParameter(obpT_Integer, "Year", "The Age of the universe");
   addParameterGroupDesc(group);
-  nametype = "Universe";
-  typedesc = "The Universe";
 }
 
 UniverseType::~UniverseType(){

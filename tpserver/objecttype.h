@@ -33,7 +33,9 @@ class ObjectBehaviour;
 class ObjectType : public Modifiable {
 
   public:
+    /// DEPRECATED
     ObjectType();
+    ObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~ObjectType();
 
     uint32_t getType() const;

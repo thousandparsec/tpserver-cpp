@@ -29,7 +29,7 @@
 
 #include "spaceobject.h"
 
-SpaceObjectType::SpaceObjectType():ObjectType(){
+SpaceObjectType::SpaceObjectType( const std::string& nname, const std::string& ndesc ):ObjectType(nname, ndesc){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Positional");
   group->setDescription("Positional information");

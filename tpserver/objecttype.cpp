@@ -31,6 +31,10 @@ ObjectType::ObjectType() : nametype(), typedesc(), type(0), nextparamgroupid(1){
   touchModTime();
 }
 
+ObjectType::ObjectType( const std::string& nname, const std::string& ndesc ) : nametype(nname), typedesc(ndesc), type(0), nextparamgroupid(1){
+  touchModTime();
+}
+
 ObjectType::~ObjectType(){
   for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
