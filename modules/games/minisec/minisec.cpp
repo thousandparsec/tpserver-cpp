@@ -772,7 +772,7 @@ void MiniSec::onPlayerAdded(Player* player){
     scout->setName("Scout");
     scout->setDescription("Scout ship");
     scout->setOwner(player->getID());
-      std::map<uint32_t, uint32_t> cl;
+      IdMap cl;
       cl[1] = 1;
     scout->setComponents(cl);
     game->getDesignStore()->addDesign(scout);
@@ -787,7 +787,7 @@ void MiniSec::onPlayerAdded(Player* player){
       cl[2] = 1;
     frigate->setComponents(cl);
     game->getDesignStore()->addDesign(frigate);
-    uint32_t frigateid = frigate->getDesignId();
+uint32_t frigateid = frigate->getDesignId();
     mydesignids.insert(frigate->getDesignId());
   
     Design* design = new Design();

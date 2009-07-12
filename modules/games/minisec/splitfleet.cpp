@@ -104,8 +104,8 @@ bool SplitFleet::doOrder(IGObject * ob){
     nf->setIcon("common/object-icons/ship");
     nf->setMedia("common-2d/foreign/vegastrike/ship-small/" + ((MiniSec*)(Game::getGame()->getRuleset()))->getFleetMediaNames()->getName());
   
-  std::map<uint32_t, uint32_t> ships = shiplist->getList();
-  for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
+  IdMap ships = shiplist->getList();
+  for(IdMap::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
     if(of->removeShips(scurr->first, scurr->second)){
       nf->addShips(scurr->first, scurr->second);
     }else{
@@ -117,7 +117,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   if(of->totalShips() == 0){
     // whole fleet moved, put it back
     Logger::getLogger()->debug("Whole fleet split, putting it back");
-    for(std::map<uint32_t, uint32_t>::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
+    for(IdMap::iterator scurr = ships.begin(); scurr != ships.end(); ++scurr){
       of->addShips(scurr->first, scurr->second);
     }
     Game::getGame()->getObjectManager()->discardNewObject(nfleet);

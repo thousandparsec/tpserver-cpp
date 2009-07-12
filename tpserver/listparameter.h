@@ -21,7 +21,7 @@
  */
 
 #include <tpserver/orderparameter.h>
-#include <map>
+#include <tpserver/common.h>
 
 
 class ListOptionCallbackBase{

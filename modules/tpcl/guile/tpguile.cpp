@@ -179,13 +179,13 @@ void TpGuile::setDesignComponentCount( const uint32_t count)
 
 
 std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
-TpGuile::createPropertyRankingMap( std::map<uint32_t, uint32_t> & complist)
+TpGuile::createPropertyRankingMap( IdMap & complist)
 {
     DesignStore *ds = Game::getGame()->getDesignStore();
     std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > * propranking =
         new std::map<uint32_t, std::map<uint32_t, std::list<std::string> > >();
 
-    for ( std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
+    for ( IdMap::iterator compit = complist.begin();
           compit != complist.end(); ++compit) {
         Component *c = ds->getComponent( compit->first);
         std::map<uint32_t, std::string> pilist = c->getPropertyList();
@@ -286,7 +286,7 @@ std::map<uint32_t, PropertyValue> *
   DesignStore *ds = Game::getGame()->getDesignStore();
   // This includes not only the component IDs for the design,
   // but also how many of each component are needed for the design.
-  std::map<uint32_t, uint32_t> complist = d->getComponents();
+  IdMap complist = d->getComponents();
   // map for holding set of property values contributed by each component
   // that is part of the design.  This is structured first by rank so
   // that all the properties of lower rank are calculated before any
@@ -380,13 +380,13 @@ bool TpGuile::canCompGoInDesign( uint32_t componentID, std::string & why)
 void TpGuile::validateDesign( Design* d,
                               std::map<uint32_t, PropertyValue> & propertyvalues)
 {
-    std::map<uint32_t, uint32_t> complist = d->getComponents();
+    IdMap complist = d->getComponents();
     bool           valid = true;
     std::string    feedback = "";
 
     Logger::getLogger()->debug( "About to process requirement functions");
 
-    for ( std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
+    for ( IdMap::iterator compit = complist.begin();
           compit != complist.end();
           ++compit) {
         std::string    why;

@@ -20,8 +20,7 @@
  *
  */
 
-#include <map>
-#include <set>
+#include <tpserver/common.h>
 
 class IGObject;
 class Vector3d;

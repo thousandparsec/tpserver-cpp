@@ -425,25 +425,25 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
 }
 
 IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
-                      const map<uint32_t, uint32_t>& ships) {
+                      const IdMap& ships) {
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
    
-   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+   for(IdMap::const_iterator i = ships.begin(); i != ships.end(); ++i)
       fleetData->addShips(i->first, i->second);
 
    return fleet;
 }
 
 pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const map<uint32_t, uint32_t>& ships, Planet *planetData) {
+                      const IdMap& ships, Planet *planetData) {
                       
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
 
    bool complete = true;
 
-   for(map<uint32_t, uint32_t>::const_iterator i = ships.begin(); i != ships.end(); ++i)
+   for(IdMap::const_iterator i = ships.begin(); i != ships.end(); ++i)
    {
       uint32_t designCost = Rfts::getProductionInfo().getResourceCost(
                   Game::getGame()->getDesignStore()->getDesign(i->first)->getName());

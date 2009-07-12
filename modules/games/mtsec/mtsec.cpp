@@ -702,7 +702,7 @@ Design* MTSec::createScoutDesign( Player* owner)
     Game *game = Game::getGame();
     DesignStore *ds = Game::getGame()->getDesignStore();
     Design* scout = new Design();
-    std::map<uint32_t, uint32_t> componentList;
+    IdMap componentList;
 
     scout->setCategoryId(1);
     scout->setName( "Scout");
@@ -725,7 +725,7 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
 
     Game *game = Game::getGame();
     Design* scout = new Design();
-    std::map<uint32_t, uint32_t> componentList;
+    IdMap componentList;
 
     scout->setCategoryId(1);
     scout->setName( "BattleScout");

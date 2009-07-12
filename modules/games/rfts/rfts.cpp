@@ -757,7 +757,7 @@ Component* createTransportComponent() {
 Design* createMarkDesign(Player *owner, char level) {
    Design *mark = new Design();
    DesignStore *ds = Game::getGame()->getDesignStore();
-   map<uint32_t, uint32_t> componentList;
+   IdMap componentList;
 
    string name = string("Mark") + level;
 
@@ -777,7 +777,7 @@ Design* createMarkDesign(Player *owner, char level) {
 
 Design* createScoutDesign(Player *owner) {
    Design* scout = new Design();
-   map<uint32_t, uint32_t> componentList;
+   IdMap componentList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 
@@ -795,7 +795,7 @@ Design* createScoutDesign(Player *owner) {
 
 Design* createTransportDesign(Player *owner) {
    Design* trans = new Design();
-   map<uint32_t, uint32_t> componentList;
+   IdMap componentList;
 
    DesignStore *ds = Game::getGame()->getDesignStore();
 

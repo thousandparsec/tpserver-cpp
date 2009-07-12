@@ -157,13 +157,13 @@ Result BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    
-   map<uint32_t, uint32_t> localShipList = shipList->getList();
+   IdMap localShipList = shipList->getList();
    uint32_t fleetCostRP = 0;
    
-   for(map<uint32_t, uint32_t>::iterator i = localShipList.begin(); i != localShipList.end(); ++i)
+   for(IdMap::iterator i = localShipList.begin(); i != localShipList.end(); ++i)
    {
       uint32_t type = i->first;
-      unsigned &numToBuild = i->second;
+      uint32_t numToBuild = i->second;
       
 
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
@@ -176,6 +176,8 @@ Result BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
          // if they're out or RP and trying to build more, reset them to current max
          if(fleetCostRP > planetData->getCurrentRP() )
             numToBuild = (fleetCostRP -  planetData->getCurrentRP()) / shipCost;
+
+         i->second = numToBuild;
          
          ds->designCountsUpdated(design);
       }

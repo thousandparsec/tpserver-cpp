@@ -119,11 +119,11 @@ bool Colonize::doOrder(IGObject *obj) {
    Logger::getLogger()->debug("Starting a Colonize::doOrder on %s.",origin->getName().c_str());
    
    //Get the list of objects and the # of units to colonize
-   map<uint32_t,uint32_t> list = targetPlanet->getList();
+   IdMap list = targetPlanet->getList();
    
    //Collect all of the players bids and restrain them to 1 less than the current units
    map<IGObject*,uint32_t> bids;
-   for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+   for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
       IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);     
@@ -242,10 +242,10 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
                assert(colonize);
 
                //Get the list of planetIDs and the # of units to move
-               map<uint32_t,uint32_t> list = colonize->getTargetList()->getList();
+               IdMap list = colonize->getTargetList()->getList();
                
                //Iterate over all suborders
-               for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+               for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
                   uint32_t planetID = i->first;
                   uint32_t numUnits = i->second;
                   

@@ -20,9 +20,7 @@
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
 
-#include <string>
-#include <map>
-#include <set>
+#include <tpserver/common.h>
 
 class ResourceDescription;
 

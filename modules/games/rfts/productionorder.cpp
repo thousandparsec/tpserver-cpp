@@ -148,13 +148,13 @@ bool ProductionOrder::doOrder(IGObject *obj) {
    Planet *planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(planet);
 
-   map<uint32_t, uint32_t> list = productionList->getList();
+   IdMap list = productionList->getList();
    planet->setResource("Ship Technology", 0);
 
    uint32_t totalRPUsed = 0;
    std::ostringstream resourcesAddedMsg;
    
-   for(map<uint32_t, uint32_t> ::iterator i = list.begin(); i != list.end(); ++i)
+   for(IdMap::iterator i = list.begin(); i != list.end(); ++i)
    {
       // remove the RPs for this each of this resource
       string resTypeName = resMan->getResourceDescription(i->first)->getNameSingular();

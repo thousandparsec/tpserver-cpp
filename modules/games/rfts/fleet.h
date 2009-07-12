@@ -94,9 +94,9 @@ class Fleet : public StaticObject, public OwnedObject
 //helper functions
 IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
 IGObject* createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const std::map<uint32_t, uint32_t>& ships);
+                      const IdMap& ships);
 std::pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
-                      const std::map<uint32_t, uint32_t>& ships, Planet *planetData);
+                      const IdMap& ships, Planet *planetData);
 
 }
 

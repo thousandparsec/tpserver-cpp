@@ -87,8 +87,8 @@ bool SplitFleet::doOrder(IGObject *obj) {
    msg->setSubject("Split Fleet order complete");
    msg->addReference(rst_Object, obj->getID());
    
-   map<uint32_t, uint32_t> ships = shipList->getList();
-   for(map<uint32_t, uint32_t>::iterator i = ships.begin(); i != ships.end(); ++i)
+   IdMap ships = shipList->getList();
+   for(IdMap::iterator i = ships.begin(); i != ships.end(); ++i)
    {
       if(!fleetData->removeShips(i->first, i->second))
          failed = true;
@@ -99,7 +99,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
    {
       // whole fleet moved, put it back
       Logger::getLogger()->debug("Whole fleet split, putting it back");
-      for(std::map<uint32_t, uint32_t>::iterator i = ships.begin(); i != ships.end(); ++i)
+      for(IdMap::iterator i = ships.begin(); i != ships.end(); ++i)
       {
          fleetData->addShips(i->first, i->second);
       }

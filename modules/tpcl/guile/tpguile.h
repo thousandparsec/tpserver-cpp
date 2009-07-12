@@ -48,7 +48,7 @@ class TpGuile : public TpScheme{
   void setDesignPropertyValue(uint32_t propid, double value);
   void setDesignComponentCount( const uint32_t count);
   std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
-      createPropertyRankingMap( std::map<uint32_t, uint32_t> & complist);
+      createPropertyRankingMap( IdMap & complist);
   double evalCompProperty( std::string lambdaStr);
   PropertyValue getPropertyValue( Property * p,
                                   std::list<std::string> & compPropStrList);

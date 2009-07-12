@@ -133,10 +133,10 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
   
   uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
   
-  std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
+  IdMap fleettype = fleetlist->getList();
   uint32_t usedshipres = 0;
   
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
+  for(IdMap::iterator itcurr = fleettype.begin();
      itcurr != fleettype.end(); ++itcurr){
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
@@ -214,8 +214,8 @@ bool Build::doOrder(IGObject *ob)
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + ((MiniSec*)(game->getRuleset()))->getFleetMediaNames()->getName());
     
     //set ship type
-    std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
-    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+    IdMap fleettype = fleetlist->getList();
+    for(IdMap::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
         Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
         design->addComplete(itcurr->second);

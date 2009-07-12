@@ -20,10 +20,7 @@
  *
  */
 
-#include <map>
-#include <set>
-#include <list>
-
+#include <tpserver/common.h>
 #include <tpserver/result.h>
 #include <tpserver/modifiable.h>
 

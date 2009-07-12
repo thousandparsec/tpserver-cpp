@@ -142,9 +142,9 @@ Result BuildFleet::inputFrame(Frame *f, uint32_t playerid)
 
   uint32_t total =0;
 
-  std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
+  IdMap fleettype = fleetlist->getList();
 
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
+  for(IdMap::iterator itcurr = fleettype.begin();
      itcurr != fleettype.end(); ++itcurr){
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
@@ -236,8 +236,8 @@ bool BuildFleet::doOrder(IGObject *ob)
     thefleet->setDefaultOrderTypes();
 
     //set ship type
-    std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
-    for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
+    IdMap fleettype = fleetlist->getList();
+    for(IdMap::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
         Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
         design->addComplete(itcurr->second);

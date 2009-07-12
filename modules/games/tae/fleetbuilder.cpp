@@ -167,7 +167,7 @@ bool FleetBuilder::shipsEmpty() {
 //Create a passenger ship of the specified type for the owner
 Design* FleetBuilder::createPassengerShip(Player* owner, int type) {
     Design* ship = new Design();
-    map<uint32_t, uint32_t> componentList;
+    IdMap componentList;
 
     DesignStore * ds = Game::getGame()->getDesignStore();
 
@@ -217,7 +217,7 @@ Design* FleetBuilder::createRandomPassengerShip(Player* owner) {
 //Create a leader's ship
 Design* FleetBuilder::createVIPTransport(Player* owner, int type) {
     Design* ship = new Design();
-    map<uint32_t, uint32_t> componentList;
+    IdMap componentList;
 
     DesignStore * ds = Game::getGame()->getDesignStore();
 
@@ -247,7 +247,7 @@ Design* FleetBuilder::createVIPTransport(Player* owner, int type) {
 //Create a bomber
 Design* FleetBuilder::createBomber(Player* owner) {
     Design* ship = new Design();
-    map<uint32_t, uint32_t> componentList;
+    IdMap componentList;
 
     DesignStore * ds = Game::getGame()->getDesignStore();
 

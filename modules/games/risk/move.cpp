@@ -154,10 +154,10 @@ bool Move::doOrder(IGObject* obj) {
 
    
    //Get the list of planetIDs and the # of units to move
-   map<uint32_t,uint32_t> list = targetPlanet->getList();
+   IdMap list = targetPlanet->getList();
    
    //Iterate over all planetIDs and # of units to move to them
-   for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+   for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
       
@@ -338,10 +338,10 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
             assert(move);            
 
             //Get the list of planetIDs and the # of units to move
-            map<uint32_t,uint32_t> list = move->getTargetList()->getList();
+            IdMap list = move->getTargetList()->getList();
             
             //Iterate over all suborders
-            for(map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+            for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
                uint32_t planetID = i->first;
                
                IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
