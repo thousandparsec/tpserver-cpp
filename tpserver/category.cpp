@@ -28,6 +28,9 @@
 Category::Category() : ProtocolObject(ft03_Category,0,"","") {
 }
 
+Category::Category( const std::string& nname, const std::string& ndesc ) : ProtocolObject(ft03_Category,0,nname,ndesc) {
+}
+
 Category::~Category(){
 }
 

@@ -323,14 +323,13 @@ void MiniSec::initGame(){
 void MiniSec::createGame(){
   Game* game = Game::getGame();
 
-  std::set<uint32_t> catids;
 
   DesignStore *ds = game->getDesignStore();
-  Category * cat = new Category();
-  cat->setName("Ships");
-  cat->setDescription("The Ship design and component category");
+  Category * cat = new Category( "Ships", "The Ship design and component category" );
   ds->addCategory(cat);
-  catids.insert(cat->getCategoryId());
+  
+  IdSet catids;
+  catids.insert(cat->getId());
 
   Property* prop = new Property();
   prop->setCategoryIds(catids);

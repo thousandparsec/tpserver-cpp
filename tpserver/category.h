@@ -28,7 +28,9 @@ class Design;
 
 class Category : public ProtocolObject {
   public:
+    /// Deprecated
     Category();
+    Category( const std::string& nname, const std::string& ndesc );
     virtual ~Category();
 
     /// TODO: Remove, use getId instead
