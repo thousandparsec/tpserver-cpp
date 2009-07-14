@@ -90,12 +90,11 @@ bool SendPoints::doOrder(IGObject *ob)
   Logger::getLogger()->debug("Entering SendPoints::doOrder");
   Vector3d dest = coords->getPosition();
   Game* game = Game::getGame();
-  ObjectManager* obman = new ObjectManager();
+  ObjectManager* obman = game->getObjectManager();
   ObjectTypeManager* obtm = game->getObjectTypeManager();
   std::set<uint32_t> ids = obman->getObjectsByPos(dest, 1);
   for (std::set<uint32_t>::iterator itcurr=ids.begin(); itcurr != ids.end(); itcurr++) {
     IGObject* temp = obman->getObject(*itcurr);
-    Logger::getLogger()->debug("Planet is type of: %s", temp->getType());
     if(temp->getType() == obtm->getObjectTypeByName("Planet")) {
       Planet* dest = static_cast<Planet*>(temp->getObjectBehaviour());
       Logger::getLogger()->debug("SendPoints::doOrder Found Planet at coordinates");
