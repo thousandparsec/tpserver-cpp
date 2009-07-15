@@ -26,20 +26,21 @@
 
 #include <tpserver/result.h>
 #include <tpserver/order.h>
-class SpaceCoordParam;
+class ListParameter;
+class TimeParameter;
 class SendPoints : public Order{
  public:
   SendPoints();
   virtual ~SendPoints();
   bool doOrder(IGObject *ob);
   Order* clone() const;
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+
 
  private:
-  TimeParameter* points; //number of points to use
+  ListParameter* targetPlanet;
   uint32_t maxPoints;
   double getPercentage(IGObject *ob) const;
-  SpaceCoordParam* coords;
-
 };
 
 #endif

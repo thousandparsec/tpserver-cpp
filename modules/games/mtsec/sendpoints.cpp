@@ -1,5 +1,6 @@
 /*  SendPoints object for Send Points orders
  *
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
  *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -38,7 +39,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objecttypemanager.h>
-#include <tpserver/spacecoordparam.h>
+#include <tpserver/listparameter.h>
 #include <tpserver/timeparameter.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/resourcemanager.h>
@@ -55,16 +56,11 @@ SendPoints::SendPoints() : Order()
   name = "Send Points";
   description = "Send Production Points";
 
-  coords = new SpaceCoordParam();
-  coords->setName("pos");
-  coords->setDescription("The position in space to move to");
-  addOrderParameter(coords);
-
-  points = new TimeParameter();
-  points->setName("Production Points");
-  points->setMax(100);
-  points->setDescription("The number of production points you want to send.");
-  addOrderParameter(points);
+  targetPlanet = new ListParameter();
+  targetPlanet->setName("Planet");
+  targetPlanet->setDescription("The Planet to send points to.");
+  targetPlanet->setListOptionsCallback(ListOptionCallback(this, &SendPoints::generateListOptions));
+  addOrderParameter(targetPlanet);
 
   maxPoints = 100;
 
@@ -76,39 +72,72 @@ SendPoints::~SendPoints(){
 
 double SendPoints::getPercentage(IGObject *ob) const{
   Logger::getLogger()->debug("Enter SendPoints::getPercentage");
-  Planet* planet = (dynamic_cast<Planet*>(ob->getObjectBehaviour()));
-  uint64_t distance = coords->getPosition().getDistance(planet->getPosition());
-  if(distance == 0) 
-    return 1;
-  Logger::getLogger()->debug("Exit SendPoints::getPercentage Distance: %lld", distance);
-  return (distance%9)/10; //temporary return value
+//  Planet* planet = (dynamic_cast<Planet*>(ob->getObjectBehaviour()));
+//  uint64_t distance = coords->getPosition().getDistance(planet->getPosition());
+//  if(distance == 0) 
+//    return 1;
+  return 0.5; //temporary return value
 }
 
 
 bool SendPoints::doOrder(IGObject *ob)
 {
   Logger::getLogger()->debug("Entering SendPoints::doOrder");
-  Vector3d dest = coords->getPosition();
   Game* game = Game::getGame();
   ObjectManager* obman = game->getObjectManager();
-  ObjectTypeManager* obtm = game->getObjectTypeManager();
-  std::set<uint32_t> ids = obman->getObjectsByPos(dest, 1);
-  for (std::set<uint32_t>::iterator itcurr=ids.begin(); itcurr != ids.end(); itcurr++) {
-    IGObject* temp = obman->getObject(*itcurr);
-    if(temp->getType() == obtm->getObjectTypeByName("Planet")) {
-      Planet* dest = static_cast<Planet*>(temp->getObjectBehaviour());
-      Logger::getLogger()->debug("SendPoints::doOrder Found Planet at coordinates");
-      Planet* source = static_cast<Planet*>(ob->getObjectBehaviour());
+  Planet* source = dynamic_cast<Planet*>(ob->getObjectBehaviour());
+
+  std::map<uint32_t,uint32_t> list = targetPlanet->getList();
+  Logger::getLogger()->debug("SendPoints::doOrder List Size: %d", list.size());
+  for(std::map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+    uint32_t destID = i->first;
+    uint32_t numRes = i->second;
+
+    IGObject* destObj = obman->getObject(destID);
+    Planet* destPlanet = dynamic_cast<Planet*>(destObj->getObjectBehaviour());
+    if (destPlanet->getOwner() != 0) {
+      Logger::getLogger()->debug("Found Planet(%s), Sending %d Points", destObj->getName().c_str(), i->second);
       ResourceManager* resman = game->getResourceManager();
       const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
-      if (source->removeResource(resType, points->getTime()) == true) {
-        dest->addResource(resType, points->getTime());
+      if (source->removeResource(resType, numRes) == true) {
+        destPlanet->addResource(resType, numRes);
         return true;
       }
+
     }
   }
   return false;
 }
+
+std::map<uint32_t, std::pair<std::string, uint32_t> > SendPoints::generateListOptions() {
+   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
+   Game* game = Game::getGame();
+   ObjectManager* obman = game->getObjectManager();
+   ObjectTypeManager* obtm = game->getObjectTypeManager();
+   ResourceManager* resman = game->getResourceManager();
+
+   IGObject* selectedObj = game->getObjectManager()->getObject(
+      game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
+   assert(planet);
+   game->getObjectManager()->doneWithObject(selectedObj->getID());
+
+   std::set<uint32_t> ids = obman->getAllIds();
+
+   for(std::set<uint32_t>::iterator i = ids.begin(); i != ids.end(); i++) {
+      IGObject* curObject = obman->getObject(*i);
+      if (curObject->getType() == obtm->getObjectTypeByName("Planet")) {
+         Planet* curPlanet = dynamic_cast<Planet*>(curObject->getObjectBehaviour());
+         if (curPlanet->getOwner() != 0) {
+            const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
+            options[curObject->getID()] = std::pair<std::string, uint32_t>(curObject->getName(), planet->getResourceSurfaceValue(resType));
+         }
+      }
+   }   
+
+   return options;
+}
+
 
 
 Order* SendPoints::clone() const{
