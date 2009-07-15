@@ -47,7 +47,7 @@ class Planet:public OwnedObject {
 	void doOnceATurn();
 
 	int getContainerType();
-	
+	void addNextTurn(uint32_t, uint32_t);
 
         std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
         uint32_t getResource(uint32_t restype) const;
@@ -56,9 +56,12 @@ class Planet:public OwnedObject {
         void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
         void addResource(uint32_t restype, uint32_t amount);
         bool removeResource(uint32_t restype, uint32_t amount);
+        void setResource(uint32_t restype, uint32_t amount);
+
     private:
         const uint32_t maxProduction;
-
+        std::pair<uint32_t,uint32_t> thisTurn;
+        uint32_t factories;
 };
 
 #endif

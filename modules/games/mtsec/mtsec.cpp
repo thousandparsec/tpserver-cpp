@@ -144,7 +144,7 @@ void MTSec::initGame() {
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
-//    ordm->addOrderType(new Enhance());
+    ordm->addOrderType(new Enhance());
     ordm->addOrderType(new SendPoints());
 
 }

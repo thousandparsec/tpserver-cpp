@@ -56,6 +56,8 @@ ObjectBehaviour* PlanetType::createObjectBehaviour() const{
 Planet::Planet()
 :maxProduction(100)
 {
+thisTurn = std::pair<uint32_t, uint32_t>(0, 0);
+factories = 0; //just in case
 }
 
 Planet::~Planet(){
@@ -88,15 +90,20 @@ void Planet::packExtraData(Frame * frame){
 void Planet::doOnceATurn()
 {
   if (getOwner() != 0) {
-    Game* game = Game::getGame();
-    ResourceManager* resman = game->getResourceManager();
-    const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-    const uint32_t resvalue = getResourceSurfaceValue(restype);
-    if (resvalue < maxProduction)
+    if (factories < maxProduction)
     {
-      Logger::getLogger()->debug("Planet::doOnceATurn Factories(%d) less than 100, incrementing by 1", resvalue);
-      addResource(restype, 1);
+      Logger::getLogger()->debug("Planet::doOnceATurn Factories(%d) less than 100, incrementing by 1", factories);
+      factories++;
+      ResourceManager* resman = Game::getGame()->getResourceManager();
+      const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+      //reset factories resource every turn, assume all points used
+      setResource(restype, factories);
     }
+    // Add the once-per-turn points
+    Logger::getLogger()->debug("Planet::doOnceATurn Adding once-per-turn points: %d of type %d", thisTurn.second, thisTurn.first);
+    addResource(thisTurn.first, thisTurn.second);
+    Logger::getLogger()->debug("Planet::doOnceATurn Pair 1st value: %d 2nd Value: %d", thisTurn.first, thisTurn.second);
+    thisTurn = std::pair<uint32_t, uint32_t>(0,0);
   }
 }
 
@@ -129,6 +136,10 @@ uint32_t Planet::getResourceSurfaceValue(uint32_t restype) const {
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
     ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(ress);
     obj->touchModTime();
+    Game* game = Game::getGame();
+    ResourceManager* resman = game->getResourceManager();
+    const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+    factories = getResourceSurfaceValue(restype);
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
@@ -138,6 +149,19 @@ void Planet::addResource(uint32_t restype, uint32_t amount){
     reslist[restype] = respair;
     ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
     obj->touchModTime();
+}
+
+void Planet::setResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+    std::pair<uint32_t, uint32_t> respair = reslist[restype];
+    respair.first = amount;
+    reslist[restype] = respair;
+    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+    obj->touchModTime();
+}
+
+void Planet::addNextTurn(uint32_t restype, uint32_t amount){
+  thisTurn = std::pair<uint32_t,uint32_t>(restype,amount);
 }
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){

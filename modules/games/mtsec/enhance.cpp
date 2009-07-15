@@ -74,7 +74,6 @@ bool Enhance::doOrder(IGObject *ob)
 {
   Logger::getLogger()->debug("Entering Enhance::doOrder");
 
-  
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
   int ownerid = planet->getOwner();
@@ -89,15 +88,20 @@ bool Enhance::doOrder(IGObject *ob)
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
   const uint32_t resValue = planet->getResourceSurfaceValue(resType);
   const uint32_t enhanceValue = floor(points->getTime()/10);
-  if (resValue + enhanceValue > maxSize) {
-    planet->addResource(resType, maxSize - resValue);
-    Logger::getLogger()->debug("Enhance::doOrder Value(%d) Exceeds 100, Adding %d points to Factories", resValue, maxSize - resValue);
+  if (resValue >= points->getTime()) {
+    if (planet->removeResource(resType, points->getTime())) {
+      planet->addNextTurn(resType, enhanceValue);
+      Logger::getLogger()->debug("Enhance::doOrder Value(%d) Adding %d points to Factories next turn", resValue, enhanceValue);
+      Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
+      return true;
+    }
   } else {
-    planet->addResource(resType, enhanceValue);
-    Logger::getLogger()->debug("Enhance::doOrder Adding %d points to Factories(%d)", enhanceValue, resValue);
+    Message* message = new Message();
+    message->setSubject("Not enough points for Enhance Order");
+    message->setBody("There were not enough points on " + ob->getName() + " to fulfill your Enhance order.  Please check this order.");
+    game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(message);
   }
-  Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
-  return true;
+  return false;
 }
 
 Order* Enhance::clone() const{
