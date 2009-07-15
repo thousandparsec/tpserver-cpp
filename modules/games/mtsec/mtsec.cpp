@@ -256,7 +256,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     theacprime->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
@@ -308,7 +308,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     thes1->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
@@ -382,7 +382,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
         ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
         ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-        ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+        ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
         theplanet->setResources(ress);
         
         OrderQueue *planetoq = new OrderQueue();
@@ -439,7 +439,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     ((Planet*)(earth->getObjectBehaviour()))->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
@@ -467,7 +467,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     thevenus->setResources(ress);
     
     planetoq = new OrderQueue();
@@ -495,7 +495,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Cerium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(5, 50));
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
-    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(1, game->getRandom()->getInRange(1, 15));
+    ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     themars->setResources(ress);
     
     planetoq = new OrderQueue();
