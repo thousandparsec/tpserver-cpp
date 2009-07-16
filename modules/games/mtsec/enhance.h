@@ -36,7 +36,6 @@ class Enhance : public Order{
 
  private:
   TimeParameter* points; //number of points to use
-  const uint32_t maxSize;
 
 };
 

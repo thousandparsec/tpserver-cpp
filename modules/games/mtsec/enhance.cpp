@@ -52,7 +52,7 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
-Enhance::Enhance() : Order(), maxSize(100)
+Enhance::Enhance() : Order()
 {
   name = "Enhance";
   description = "Enhance your Production";
@@ -90,7 +90,7 @@ bool Enhance::doOrder(IGObject *ob)
   const uint32_t enhanceValue = floor(points->getTime()/10);
   if (resValue >= points->getTime()) {
     if (planet->removeResource(resType, points->getTime())) {
-      planet->addNextTurn(resType, enhanceValue);
+      planet->addFactories(enhanceValue);
       Logger::getLogger()->debug("Enhance::doOrder Value(%d) Adding %d points to Factories next turn", resValue, enhanceValue);
       Logger::getLogger()->debug("Exiting Enhance::doOrder on success");
       return true;

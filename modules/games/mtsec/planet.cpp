@@ -24,12 +24,13 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/game.h>
 #include <tpserver/resourcelistobjectparam.h>
-#include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/logging.h>
+#include <tpserver/integerobjectparam.h>
 
 #include "planet.h"
 
@@ -37,8 +38,15 @@ PlanetType::PlanetType():OwnedObjectType()
 {
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Resources");
-  group->setDescription("The planets resources");
+  group->setDescription("The planet's resources");
   group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
+  addParameterGroupDesc(group);
+
+  group = new ObjectParameterGroupDesc();
+  group->setName("Factories");
+  group->setDescription("The planet's factories");
+  group->addParameter(obpT_Integer, "Factories", "The factories that the planet has available");
+  group->addParameter(obpT_Integer, "One Time", "The factories to be enhanced one time only");
   addParameterGroupDesc(group);
 
   nametype = "Planet";
@@ -54,10 +62,7 @@ ObjectBehaviour* PlanetType::createObjectBehaviour() const{
 
 
 Planet::Planet()
-:maxProduction(100)
 {
-thisTurn = std::pair<uint32_t, uint32_t>(0, 0);
-factories = 0; //just in case
 }
 
 Planet::~Planet(){
@@ -85,25 +90,31 @@ void Planet::packExtraData(Frame * frame){
         frame->packInt(itcurr->second.second);
         frame->packInt(0);
     }
+  //unneeded as per llnz, doesn't allow client to connect
+  //frame->packInt(dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->getValue());
+
 }
 
 void Planet::doOnceATurn()
 {
   if (getOwner() != 0) {
-    if (factories < maxProduction)
+    uint32_t factories = dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->getValue();
+    ResourceManager* resman = Game::getGame()->getResourceManager();
+    const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+
+    if (factories < 100)
     {
       Logger::getLogger()->debug("Planet::doOnceATurn Factories(%d) less than 100, incrementing by 1", factories);
       factories++;
-      ResourceManager* resman = Game::getGame()->getResourceManager();
-      const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+      dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(factories);
       //reset factories resource every turn, assume all points used
       setResource(restype, factories);
     }
     // Add the once-per-turn points
-    Logger::getLogger()->debug("Planet::doOnceATurn Adding once-per-turn points: %d of type %d", thisTurn.second, thisTurn.first);
-    addResource(thisTurn.first, thisTurn.second);
-    Logger::getLogger()->debug("Planet::doOnceATurn Pair 1st value: %d 2nd Value: %d", thisTurn.first, thisTurn.second);
-    thisTurn = std::pair<uint32_t, uint32_t>(0,0);
+    const uint32_t sentPoints = dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->getValue();
+    Logger::getLogger()->debug("Planet::doOnceATurn Adding once-per-turn points: %d", sentPoints);
+    addResource(restype, sentPoints);
+    dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(0);
   }
 }
 
@@ -139,7 +150,8 @@ void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > res
     Game* game = Game::getGame();
     ResourceManager* resman = game->getResourceManager();
     const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-    factories = getResourceSurfaceValue(restype);
+    dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(getResourceSurfaceValue(restype));
+    dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(0);
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
@@ -160,8 +172,13 @@ void Planet::setResource(uint32_t restype, uint32_t amount){
     obj->touchModTime();
 }
 
-void Planet::addNextTurn(uint32_t restype, uint32_t amount){
-  thisTurn = std::pair<uint32_t,uint32_t>(restype,amount);
+void Planet::addFactoriesNextTurn(uint32_t amount){
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(amount);
+}
+
+void Planet::addFactories(uint32_t amount){
+  int32_t current = dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->getValue();
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(current+amount);
 }
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){
