@@ -100,7 +100,7 @@ bool SendPoints::doOrder(IGObject *ob)
       ResourceManager* resman = game->getResourceManager();
       const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
       if (source->removeResource(resType, numRes) == true) {
-        destPlanet->addFactories(numRes);
+        destPlanet->addFactoriesNextTurn(numRes);
         return true;
       }
 

@@ -76,6 +76,11 @@ void Planet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Send Points"));
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+  Game* game = Game::getGame();
+  ResourceManager* resman = game->getResourceManager();
+  const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(getResourceSurfaceValue(restype));
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(0);
 }
 
 void Planet::packExtraData(Frame * frame){
@@ -147,11 +152,6 @@ uint32_t Planet::getResourceSurfaceValue(uint32_t restype) const {
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
     ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(ress);
     obj->touchModTime();
-    Game* game = Game::getGame();
-    ResourceManager* resman = game->getResourceManager();
-    const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
-    dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(getResourceSurfaceValue(restype));
-    dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(0);
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
