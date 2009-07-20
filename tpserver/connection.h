@@ -83,7 +83,7 @@ class Connection : public boost::enable_shared_from_this< Connection > {
      */
     // TODO: Remove!
     int getFD();
-
+    
   protected:
     /// Connection socket file descriptor
     int sockfd;

@@ -190,7 +190,6 @@ void Network::stop()
     while (itcurr != connections.end()) {
       PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
       if(pc){
-        pc->close();
         removeConnection(pc->getFD());
       }else{
         ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
@@ -233,7 +232,6 @@ void Network::adminStop(){
   while (itcurr != connections.end()) {
     AdminConnection::Ptr ac = boost::dynamic_pointer_cast<AdminConnection>(itcurr->second);
     if(ac != NULL){
-      ac->close();
       removeConnection(ac->getFD());
     }else{
       ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
@@ -320,13 +318,13 @@ void Network::masterLoop()
 
       ConnMap::iterator itcurr;
       for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-        if (FD_ISSET((*itcurr).first, &cur_set)) {
-          (*itcurr).second->process();
+        Connection::Ptr connection = itcurr->second;
+        if (FD_ISSET(itcurr->first, &cur_set)) {
+          connection->process();
         }
-        if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
-          INFO("Closed connection %d", (*itcurr).second->getFD());
-          Connection::Ptr conn = itcurr->second;
-          removeConnection(conn->getFD());
+        if (connection->getStatus() == Connection::DISCONNECTED) {
+          INFO("Closed connection %d", connection->getFD());
+          removeConnection(itcurr->first);
           //use select again, don't check rest of list as it has changed.
           break;
         }
@@ -339,16 +337,7 @@ void Network::masterLoop()
     if(netstat != active && active == false){
       ConnMap::iterator itcurr = connections.begin();
       while (itcurr != connections.end()) {
-        PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
-        if(pc != NULL){
-          pc->close();
-          removeConnection(pc->getFD());
-        }else{
-          TcpSocket::Ptr ts = boost::dynamic_pointer_cast<TcpSocket>(itcurr->second);
-          if(ts != NULL){
-            removeConnection(ts->getFD());
-          }
-        }
+        removeConnection( itcurr->first );
         ++itcurr;
       }
       DEBUG("Network really stopped");
