@@ -29,8 +29,8 @@
 class AdminLogger;
 
 class AdminConnection: public TcpConnection {
-  
  public:
+   typedef boost::shared_ptr< AdminConnection > Ptr;
   AdminConnection(int fd);
   virtual ~AdminConnection();
   

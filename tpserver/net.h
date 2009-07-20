@@ -21,11 +21,11 @@
  */
 
 //#include <pthread.h>
-#include <map>
 #include <queue>
 #include <functional>
 #include <algorithm>
 #include <tpserver/advertiser.h>
+#include <tpserver/connection.h>
 
 
 class Connection;
@@ -41,9 +41,12 @@ class Network {
 
     //stuff
 
-    void addConnection(Connection* conn);
+    // TODO : fix avahi's this issue
+    void addConnection(Connection::Ptr conn);
+    // TODO : refactor to take FD - then fix avahi
     void removeConnection(Connection* conn);
-    void addToWriteQueue(Connection* conn);
+    // TODO : refactor to take FD - then fix avahi
+    void addToWriteQueue(Connection::Ptr conn);
 
     void addTimer(TimerCallback callback);
     bool removeTimer(TimerCallback callback);
@@ -70,7 +73,7 @@ class Network {
 
 
   private:
-    typedef std::map< int, Connection*> ConnMap;
+    typedef std::map< int, Connection::Ptr> ConnMap;
     Network();
     ~Network();
     Network(Network & rhs);

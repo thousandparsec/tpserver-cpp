@@ -20,18 +20,18 @@
  *
  */
 
-#include <string>
-
 #include <tpserver/listensocket.h>
 
 class AdminTcpSocket : public ListenSocket {
- public:
+  public:
+    /// Typedef for shared pointer
+    typedef boost::shared_ptr< AdminTcpSocket > Ptr;
     AdminTcpSocket();
-  virtual ~AdminTcpSocket();
+    virtual ~AdminTcpSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
 
-protected:
+  protected:
     AdminConnection* acceptConnection(int fd);
 
 };

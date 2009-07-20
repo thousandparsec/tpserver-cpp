@@ -69,7 +69,7 @@ Network *Network::getNetwork()
   return myInstance;
 }
 
-void Network::addConnection(Connection* conn)
+void Network::addConnection(Connection::Ptr conn)
 {
   DEBUG("Adding a file descriptor %d", conn->getFD());
   connections[conn->getFD()] = conn;
@@ -97,7 +97,7 @@ void Network::removeConnection(Connection* conn)
   }
 }
 
-void Network::addToWriteQueue(Connection* conn){
+void Network::addToWriteQueue(Connection::Ptr conn){
   writequeue[conn->getFD()] = conn;
 }
 
@@ -117,25 +117,23 @@ void Network::start()
 
 
     uint32_t numsocks = 0;
-    TcpSocket* listensocket = new TcpSocket();
+    TcpSocket::Ptr listensocket( new TcpSocket() );
     listensocket->openListen(Settings::getSettings()->get("tp_addr"), Settings::getSettings()->get("tp_port"));
     if(listensocket->getStatus() != Connection::DISCONNECTED){
       addConnection(listensocket);
       numsocks++;
       advertiser->addService("tp", listensocket->getPort());
     }else{
-      delete listensocket;
       WARNING("Could not listen on TP (tcp) socket");
     }
     if(Settings::getSettings()->get("http") == "yes"){
-      HttpSocket* httpsocket = new HttpSocket();
+      HttpSocket::Ptr httpsocket( new HttpSocket() );
       httpsocket->openListen(Settings::getSettings()->get("http_addr"), Settings::getSettings()->get("http_port"));
       if(httpsocket->getStatus() != Connection::DISCONNECTED){
         addConnection(httpsocket);
         numsocks++;
         advertiser->addService("tp+http", httpsocket->getPort());
       }else{
-        delete httpsocket;
         WARNING("Could not listen on HTTP (http tunneling) socket");
       }
     }else{
@@ -143,28 +141,26 @@ void Network::start()
     }
 #ifdef HAVE_LIBGNUTLS
     if(Settings::getSettings()->get("tps") == "yes"){
-      TlsSocket* secsocket = new TlsSocket();
+      TlsSocket::Ptr secsocket( new TlsSocket() );
       secsocket->openListen(Settings::getSettings()->get("tps_addr"), Settings::getSettings()->get("tps_port"));
       if(secsocket->getStatus() != Connection::DISCONNECTED){
         addConnection(secsocket);
         numsocks++;
         advertiser->addService("tps", secsocket->getPort());
       }else{
-        delete secsocket;
         WARNING("Could not listen on TPS (tls) socket");
       }
     }else{
       INFO("Not configured to start tps socket");
     }
     if(Settings::getSettings()->get("https") == "yes"){
-      HttpsSocket* secsocket = new HttpsSocket();
+      HttpsSocket::Ptr secsocket( new HttpsSocket() );
       secsocket->openListen(Settings::getSettings()->get("https_addr"), Settings::getSettings()->get("https_port"));
       if(secsocket->getStatus() != Connection::DISCONNECTED){
         addConnection(secsocket);
         numsocks++;
         advertiser->addService("tp+https", secsocket->getPort());
       }else{
-        delete secsocket;
         WARNING("Could not listen on HTTPS (https tunneling) socket");
       }
     }else{
@@ -192,16 +188,14 @@ void Network::stop()
 
     ConnMap::iterator itcurr = connections.begin();
     while (itcurr != connections.end()) {
-      PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
-      if(pc != NULL){
+      PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
+      if(pc){
         pc->close();
-        removeConnection(pc);
-        delete pc;
+        removeConnection(pc.get());
       }else{
-        ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
+        ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
         if(ts != NULL && ts->isPlayer()){
-          removeConnection(ts);
-          delete ts;
+          removeConnection(ts.get());
         }
       }
       ++itcurr;
@@ -222,12 +216,11 @@ bool Network::isStarted() const{
 
 void Network::adminStart(){
   if(Settings::getSettings()->get("admin_tcp") == "yes"){
-    AdminTcpSocket* admintcpsocket = new AdminTcpSocket();
+    AdminTcpSocket::Ptr admintcpsocket( new AdminTcpSocket() );
     admintcpsocket->openListen(Settings::getSettings()->get("admin_tcp_addr"), Settings::getSettings()->get("admin_tcp_port"));
     if(admintcpsocket->getStatus() != Connection::DISCONNECTED){
       addConnection(admintcpsocket);
     }else{
-      delete admintcpsocket;
       WARNING("Could not listen on admin TCP socket");
     }
   }else{
@@ -238,16 +231,14 @@ void Network::adminStart(){
 void Network::adminStop(){
   ConnMap::iterator itcurr = connections.begin();
   while (itcurr != connections.end()) {
-    AdminConnection* ac = dynamic_cast<AdminConnection*>(itcurr->second);
+    AdminConnection::Ptr ac = boost::dynamic_pointer_cast<AdminConnection>(itcurr->second);
     if(ac != NULL){
       ac->close();
-      removeConnection(ac);
-      delete ac;
+      removeConnection(ac.get());
     }else{
-      ListenSocket* ts = dynamic_cast<ListenSocket*>(itcurr->second);
+      ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
       if(ts != NULL){
-        removeConnection(ts);
-        delete ts;
+        removeConnection(ts.get());
       }
     }
     ++itcurr;
@@ -257,7 +248,7 @@ void Network::adminStop(){
 void Network::sendToAll(AsyncFrame* aframe){
   ConnMap::iterator itcurr;
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
-    PlayerConnection * currConn = dynamic_cast<PlayerConnection*>(itcurr->second);
+    PlayerConnection::Ptr currConn = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
     if(currConn != NULL && currConn->getStatus() == Connection::READY){
       Frame * currFrame = currConn->createFrame(NULL);
       if(aframe->createFrame(currFrame)){
@@ -319,7 +310,7 @@ void Network::masterLoop()
       for(ConnMap::iterator itcurr = writequeue.begin();
           itcurr != writequeue.end(); ++itcurr){
         if(FD_ISSET(itcurr->first, &write_set)){
-          Connection* conn = itcurr->second;
+          Connection::Ptr conn = itcurr->second;
           writequeue.erase(itcurr);
           conn->processWrite();
           //use select again, don't check rest of list as it has changed.
@@ -334,9 +325,8 @@ void Network::masterLoop()
         }
         if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
           INFO("Closed connection %d", (*itcurr).second->getFD());
-          Connection* conn = itcurr->second;
-          removeConnection(conn);
-          delete conn;
+          Connection::Ptr conn = itcurr->second;
+          removeConnection(conn.get());
           //use select again, don't check rest of list as it has changed.
           break;
         }
@@ -349,16 +339,14 @@ void Network::masterLoop()
     if(netstat != active && active == false){
       ConnMap::iterator itcurr = connections.begin();
       while (itcurr != connections.end()) {
-        PlayerConnection* pc = dynamic_cast<PlayerConnection*>(itcurr->second);
+        PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
         if(pc != NULL){
           pc->close();
-          removeConnection(pc);
-          delete pc;
+          removeConnection(pc.get());
         }else{
-          TcpSocket* ts = dynamic_cast<TcpSocket*>(itcurr->second);
+          TcpSocket::Ptr ts = boost::dynamic_pointer_cast<TcpSocket>(itcurr->second);
           if(ts != NULL){
-            removeConnection(ts);
-            delete ts;
+            removeConnection(ts.get());
           }
         }
         ++itcurr;

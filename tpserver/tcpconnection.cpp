@@ -129,7 +129,7 @@ void TcpConnection::processWrite() {
     }
   }
   if (!sendqueue.empty()) {
-    Network::getNetwork()->addToWriteQueue(this);
+    Network::getNetwork()->addToWriteQueue(shared_from_this());
   } else if (sendandclose) {
     close();
   }

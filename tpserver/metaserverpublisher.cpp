@@ -62,7 +62,7 @@ MetaserverPublisher::~MetaserverPublisher(){
 
 void MetaserverPublisher::poll(){
     // create MetaserverConnection and send info.
-  MetaserverConnection* msc = new MetaserverConnection(this);
+  MetaserverConnection::Ptr msc( new MetaserverConnection(this) );
   if(msc->sendUpdate()){
     Network::getNetwork()->addConnection(msc);
     lastpublishtime = time(NULL);
@@ -78,7 +78,6 @@ void MetaserverPublisher::poll(){
       lastpublishtime = time(NULL) + 600; //wait 12 minutes before trying again
       Logger::getLogger()->warning("Not trying metaserver for 12 minutes");
     }
-    delete msc;
   }
   setTimer();
 }

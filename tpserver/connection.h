@@ -21,11 +21,12 @@
  */
 
 #include <tpserver/common.h>
+#include <boost/enable_shared_from_this.hpp>
 
 /**
  * Abstract connection class
  */
-class Connection {
+class Connection : public boost::enable_shared_from_this< Connection > {
   public:
     /// Shared pointer to connection typedef
     typedef boost::shared_ptr< Connection > Ptr;

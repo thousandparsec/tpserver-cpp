@@ -29,6 +29,7 @@ class MetaserverPublisher;
 
 class MetaserverConnection : public Connection {
  public:
+   typedef boost::shared_ptr< MetaserverConnection > Ptr;
   MetaserverConnection(MetaserverPublisher* pub);
   virtual ~MetaserverConnection();
 

@@ -185,7 +185,8 @@ void ListenSocket::process(){
         temp = acceptConnection(accept(sockfd, NULL, 0));
 #endif
         if(temp != NULL)
-            Network::getNetwork()->addConnection(temp);
+          // TODO/HACK : accept should return shared!
+            Network::getNetwork()->addConnection(Connection::Ptr(temp));
     }catch(std::exception e){
         Logger::getLogger()->warning("Could not establish connection");
     }
