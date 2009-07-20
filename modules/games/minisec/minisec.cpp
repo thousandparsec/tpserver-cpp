@@ -327,7 +327,6 @@ void MiniSec::createGame(){
   DesignStore *ds = game->getDesignStore();
   Category * cat = new Category( "Ships", "The Ship design and component category" );
   ds->addCategory(cat);
-  
   IdSet catids;
   catids.insert(cat->getId());
 

@@ -22,6 +22,7 @@
 
 #include <tpserver/describable.h>
 
+// Used only by persistence
 typedef enum {
 	opT_Invalid = -1,
 	opT_Space_Coord_Abs = 0,
@@ -43,6 +44,7 @@ class OrderParameter : public Describable {
     OrderParameter();
     virtual ~OrderParameter();
 
+    // used only by persistence
     uint32_t getType() const;
 
     virtual void packOrderFrame(Frame * f) = 0;

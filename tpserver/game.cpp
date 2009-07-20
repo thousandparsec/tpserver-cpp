@@ -348,7 +348,6 @@ void Game::saveAndClose()
 void Game::packGameInfoFrame(Frame* frame){
   frame->setType(ft04_GameInfo);
   Settings* settings = Settings::getSettings();
-  Advertiser* advertiser = Network::getNetwork()->getAdvertiser();
   if(settings->get("game_shortname").empty()){
     frame->packString("tp");
   }else{
@@ -367,9 +366,10 @@ void Game::packGameInfoFrame(Frame* frame){
     frame->packString("");
     frame->packString("");
   }
-  std::map<std::string, uint16_t> services = advertiser->getServices();
+
+  Advertiser::ServiceMap services = Network::getNetwork()->getAdvertiser()->getServices();
   frame->packInt(services.size());
-  for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
+  for(Advertiser::ServiceMap::iterator itcurr = services.begin();
       itcurr != services.end(); ++itcurr){
     frame->packString(itcurr->first);
     if(settings->get("metaserver_fake_dns") != ""){
@@ -384,6 +384,7 @@ void Game::packGameInfoFrame(Frame* frame){
     }
     frame->packInt(itcurr->second);
   }
+
   std::map<uint32_t, std::pair<std::string, uint32_t> > optionalparams;
   if(!settings->get("admin_email").empty()){
     optionalparams[4] = std::pair<std::string, uint32_t>(settings->get("admin_email"), 0);

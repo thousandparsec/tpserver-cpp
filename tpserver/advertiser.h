@@ -20,21 +20,24 @@
 #ifndef ADVERTISER_H
 #define ADVERTISER_H
 
-#include <map>
-#include <set>
-#include <string>
+#include <tpserver/common.h>
 #include <stdint.h>
 
 class Publisher;
 class TimerCallback;
 
 /**
-Abstraction for registration and publishing of services provided
- 
-	@author Lee Begg <llnz@paradise.net.nz>
-*/
+ * Abstraction for registration and publishing of services provided
+ * @author Lee Begg <llnz@paradise.net.nz>
+ */
 class Advertiser{
 public:
+  /// Typedef for shared pointer
+  typedef boost::shared_ptr< Advertiser > Ptr;
+
+  /// Typedef for map of services
+  typedef std::map<std::string, uint16_t> ServiceMap;
+  
   Advertiser();
 
   ~Advertiser();
@@ -43,7 +46,7 @@ public:
   void removeService(const std::string &name);
   void removeAll();
   
-  std::map<std::string, uint16_t> getServices();
+  ServiceMap getServices();
   
   void publish();
   void unpublish();
@@ -51,13 +54,18 @@ public:
   void updatePublishers();
 
 private:
+  /// Typedef for publisher set
+  typedef std::set<Publisher*> PublisherSet;
+
   void settingChanged(const std::string& skey, const std::string& value);
   void metaserverWarning();
-  std::map<std::string, uint16_t> services;
-  std::set<Publisher*> publishers;
-  bool publishing;
-  TimerCallback *metaserver_warning;
 
+  ServiceMap services;
+  PublisherSet publishers;
+
+  bool publishing;
+
+  TimerCallback *metaserver_warning;
 };
 
 #endif
