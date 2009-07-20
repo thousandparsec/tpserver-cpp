@@ -20,32 +20,33 @@
  *
  */
 
-#include <string>
-
 #include <tpserver/connection.h>
 
 //class PlayerConnection;
 
 class ListenSocket : public Connection {
- public:
-  ListenSocket();
-  virtual ~ListenSocket();
+  public:
+    /// Shared pointer typedef
+    typedef boost::shared_ptr< ListenSocket > Ptr;
+
+    ListenSocket();
+    virtual ~ListenSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
 
-  virtual void process();
-  
-  uint16_t getPort() const;
+    virtual void process();
 
-  bool isPlayer();
+    uint16_t getPort() const;
 
-protected:
+    bool isPlayer();
+
+  protected:
     virtual Connection* acceptConnection(int fd) = 0;
 
-  bool player;
-    
-private:
-  uint16_t portnum;
+    bool player;
+
+  private:
+    uint16_t portnum;
 
 };
 

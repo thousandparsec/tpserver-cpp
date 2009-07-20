@@ -27,6 +27,9 @@
 class PlayerAgent;
 class PlayerConnection: public TcpConnection {
   public:
+    /// Shared pointer typedef
+    typedef boost::shared_ptr< PlayerConnection > Ptr;
+
     virtual ~PlayerConnection();
 
     PlayerConnection(int fd);

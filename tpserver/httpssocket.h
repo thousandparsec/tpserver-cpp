@@ -20,18 +20,18 @@
  *
  */
 
-#include <string>
-
-#include "tlssocket.h"
+#include <tpserver/tlssocket.h>
 
 class HttpsSocket : public TlsSocket {
- public:
-  HttpsSocket();
-  virtual ~HttpsSocket();
+  public:
+    /// Shared pointer typedef
+    typedef boost::shared_ptr< HttpsSocket > Ptr;
+    HttpsSocket();
+    virtual ~HttpsSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
 
-protected:
+  protected:
     PlayerConnection* acceptConnection(int fd);
 };
 

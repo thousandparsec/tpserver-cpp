@@ -20,18 +20,19 @@
  *
  */
 
-#include <string>
-
 #include <tpserver/listensocket.h>
 
 class TcpSocket : public ListenSocket {
- public:
+  public:
+    /// Shared pointer typedef
+    typedef boost::shared_ptr< TcpSocket > Ptr;
+
     TcpSocket();
-  virtual ~TcpSocket();
+    virtual ~TcpSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
 
-protected:
+  protected:
     PlayerConnection* acceptConnection(int fd);
 
 };
