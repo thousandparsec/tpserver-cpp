@@ -25,10 +25,11 @@
 #include <queue>
 #include <functional>
 #include <algorithm>
+#include <tpserver/advertiser.h>
+
 
 class Connection;
 class Frame;
-class Advertiser;
 class AsyncFrame;
 
 class TimerCallback;
@@ -60,7 +61,7 @@ class Network {
     void sendToAll(AsyncFrame* aframe);
     void doneEOT();
 
-    Advertiser* getAdvertiser() const;
+    Advertiser::Ptr getAdvertiser() const;
 
     // don't you even think about calling these functions
 
@@ -90,7 +91,7 @@ class Network {
 
     std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
 
-    Advertiser* advertiser;
+    Advertiser::Ptr advertiser;
 
 };
 

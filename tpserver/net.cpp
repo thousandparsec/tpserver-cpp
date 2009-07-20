@@ -272,7 +272,7 @@ void Network::doneEOT(){
   advertiser->updatePublishers();
 }
 
-Advertiser* Network::getAdvertiser() const{
+Advertiser::Ptr Network::getAdvertiser() const{
   return advertiser;
 }
 
@@ -382,14 +382,13 @@ Network::Network()
   halt = false;
   active = false;
 
-  advertiser = new Advertiser();
+  advertiser = Advertiser::Ptr( new Advertiser() );
 
 }
 
 
 Network::~Network()
 {
-  delete advertiser;
 }
 
 
