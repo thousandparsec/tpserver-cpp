@@ -138,14 +138,13 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
 // declarations for avahipoll api
 class AvahiWatch : public Connection{
  public:
+   typedef boost::shared_ptr< AvahiWatch > Ptr;
   AvahiWatch(int fd, AvahiWatchCallback cb, void* ud): Connection(), callback(cb), watchedEvents(), happenedEvents(), userdata(ud){
     sockfd = fd;
     status = PRECONNECTED;
-    Network::getNetwork()->addConnection(this);
   }
   
   ~AvahiWatch(){
-    Network::getNetwork()->removeConnection(this);
   }
   
   void process(){
@@ -159,7 +158,7 @@ class AvahiWatch : public Connection{
     if(watchedEvents == AVAHI_WATCH_OUT){
       happenedEvents = AVAHI_WATCH_OUT;
       callback(this, sockfd, happenedEvents, userdata);
-      Network::getNetwork()->addToWriteQueue(this);
+      Network::getNetwork()->addToWriteQueue(shared_from_this());
     }
   }
   
@@ -167,7 +166,7 @@ class AvahiWatch : public Connection{
     watchedEvents = e;
     happenedEvents = (AvahiWatchEvent)0;
     if(watchedEvents == AVAHI_WATCH_OUT){
-      Network::getNetwork()->addToWriteQueue(this);
+      Network::getNetwork()->addToWriteQueue(shared_from_this());
     }
     if(watchedEvents == AVAHI_WATCH_ERR || watchedEvents == AVAHI_WATCH_HUP){
       Logger::getLogger()->debug("AvahiWatch update withe ERR or HUP event set %x", watchedEvents);
@@ -226,9 +225,11 @@ class AvahiTimeout{
 };
 
 AvahiWatch* watch_new(const AvahiPoll* api, int fd, AvahiWatchEvent e, AvahiWatchCallback callback, void *userdata){
-  AvahiWatch* watch = new AvahiWatch(fd, callback, userdata);
+  AvahiWatch::Ptr watch( new AvahiWatch(fd, callback, userdata) );
+  Network::getNetwork()->addConnection(watch);
   watch->update(e);
-  return watch;
+  // this is tricky but should work as long as AvahiWatch isn't deleted manualy
+  return watch.get();
 }
 
 void watch_update(AvahiWatch* w, AvahiWatchEvent event){
@@ -240,7 +241,7 @@ AvahiWatchEvent watch_get_events(AvahiWatch *w){
 }
 
 void watch_free(AvahiWatch *w){
-  delete w;
+  Network::getNetwork()->removeConnection(w->getFD());
 }
 
 AvahiTimeout* timeout_new(const AvahiPoll* api, const struct timeval* tv, AvahiTimeoutCallback callback, void* userdata){
