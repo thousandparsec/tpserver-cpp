@@ -67,7 +67,7 @@ void Advertiser::publish(){
   }
 #endif
   if(Settings::getSettings()->get("metaserver_enable") == "yes"){
-    publishers.insert(new MetaserverPublisher(this));
+    publishers.insert(new MetaserverPublisher());
   }else{
     WARNING("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
     if(Settings::getSettings()->get("metaserver_enable") != "no"){
@@ -144,7 +144,7 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
           }
         }
         if(!found){
-          publishers.insert(new MetaserverPublisher(this));
+          publishers.insert(new MetaserverPublisher());
         }
       }
     }

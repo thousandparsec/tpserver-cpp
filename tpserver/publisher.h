@@ -29,15 +29,12 @@ class Advertiser;
 */
 class Publisher{
 public:
-  Publisher(Advertiser* ad){advertiser = ad;};
+  Publisher(){};
 
   virtual ~Publisher(){};
   
   virtual void update() = 0;
   
-protected:
-  Advertiser * advertiser;
-
 };
 
 #endif

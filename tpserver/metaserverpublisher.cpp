@@ -28,7 +28,6 @@
 #endif
 #endif
 
-#include "advertiser.h"
 #include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
@@ -38,7 +37,7 @@
 
 #include "metaserverpublisher.h"
 
-MetaserverPublisher::MetaserverPublisher(Advertiser* ad) : Publisher(ad), lastpublishtime(0), needtoupdate(true), timer(NULL), errorcount(0){
+MetaserverPublisher::MetaserverPublisher() : Publisher(), lastpublishtime(0), needtoupdate(true), timer(NULL), errorcount(0){
   Settings* settings = Settings::getSettings();
   settings->setCallback("metaserver_fake_ip", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
   settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));

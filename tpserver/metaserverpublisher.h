@@ -34,7 +34,7 @@ Metaserver Publisher for tpserver-cpp
 */
 class MetaserverPublisher : public Publisher{
 public:
-  MetaserverPublisher(Advertiser* ad);
+  MetaserverPublisher();
 
   virtual ~MetaserverPublisher();
   
