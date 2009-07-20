@@ -37,7 +37,7 @@ Avahi mDNS-SD implementation for tpserver-cpp
 */
 class Avahi : public Publisher{
 public:
-  Avahi(Advertiser* ad);
+  Avahi();
 
   virtual ~Avahi();
   

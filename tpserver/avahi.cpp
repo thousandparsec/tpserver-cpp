@@ -40,7 +40,6 @@
 #endif
 #endif
 
-#include "advertiser.h"
 #include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
@@ -263,7 +262,7 @@ void timeout_free(AvahiTimeout *t){
   delete t;
 }
 
-Avahi::Avahi(Advertiser* ad) : Publisher(ad), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(NULL){
+Avahi::Avahi() : Publisher(), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(NULL){
   
   std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
@@ -313,10 +312,10 @@ void Avahi::update(){
 
 void Avahi::createServices(){
   int ret;
-  std::map<std::string, uint16_t> services = advertiser->getServices();
+  Advertiser::ServiceMap services = Network::getNetwork()->getAdvertiser()->getServices();
   
   // Don't export tp+http and tp+https unless they are the only ones
-  std::map<std::string, uint16_t> nservices = services;
+  Advertiser::ServiceMap nservices = services;
   nservices.erase("tp+http");
   nservices.erase("tp+https");
   if(!nservices.empty()){
@@ -366,7 +365,7 @@ void Avahi::createServices(){
   Logger::getLogger()->debug("Adding service '%s'", name);
   avahi_entry_group_reset(group);
   
-  for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
+  for(Advertiser::ServiceMap::iterator itcurr = services.begin();
       itcurr != services.end(); ++itcurr){
         std::string sertype = itcurr->first;
         size_t pos;

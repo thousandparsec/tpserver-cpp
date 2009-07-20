@@ -60,7 +60,7 @@ Advertiser::~Advertiser(){
 void Advertiser::publish(){
 #ifdef HAVE_AVAHI
   try{
-    publishers.insert(new Avahi(this));
+    publishers.insert(new Avahi());
   }catch(std::exception e){
     // do nothing, maybe warn of no mdns-sd
       WARNING("Failed to start Avahi");
