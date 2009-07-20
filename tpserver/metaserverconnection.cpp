@@ -63,7 +63,7 @@
 #define NI_MAXSERV 32
 #endif 
 
-MetaserverConnection::MetaserverConnection(Advertiser* ad, MetaserverPublisher* pub) : Connection(), advertiser(ad), publisher(pub){
+MetaserverConnection::MetaserverConnection( MetaserverPublisher* pub) : Connection(), publisher(pub){
 
 }
 
@@ -298,8 +298,8 @@ bool MetaserverConnection::sendUpdate(){
     formater << "&turn=" << (Game::getGame()->getTurnNumber());
   
   int servicenumber = 0;
-  std::map<std::string, uint16_t> services = advertiser->getServices();
-  for(std::map<std::string, uint16_t>::iterator itcurr = services.begin();
+  Advertiser::ServiceMap services = Network::getNetwork()->getAdvertiser()->getServices();
+  for(Advertiser::ServiceMap::iterator itcurr = services.begin();
       itcurr != services.end(); ++itcurr){
     std::string servtype = itcurr->first;
     if((pos = servtype.find('+')) != servtype.npos){

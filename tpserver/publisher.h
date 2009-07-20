@@ -23,9 +23,9 @@
 class Advertiser;
 
 /**
- Registration publisher abstraction for tpserver-cpp
- 
-	@author Lee Begg <llnz@paradise.net.nz>
+ * Registration publisher abstraction for tpserver-cpp
+ *
+ * @author Lee Begg <llnz@paradise.net.nz>
 */
 class Publisher{
 public:

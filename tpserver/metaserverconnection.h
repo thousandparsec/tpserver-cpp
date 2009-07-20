@@ -29,7 +29,7 @@ class MetaserverPublisher;
 
 class MetaserverConnection : public Connection {
  public:
-  MetaserverConnection(Advertiser* ad, MetaserverPublisher* pub);
+  MetaserverConnection(MetaserverPublisher* pub);
   virtual ~MetaserverConnection();
 
   bool sendUpdate();
@@ -37,7 +37,6 @@ class MetaserverConnection : public Connection {
   virtual void process();
 
  private:
-  Advertiser* advertiser;
   MetaserverPublisher* publisher;
   std::string response;
 

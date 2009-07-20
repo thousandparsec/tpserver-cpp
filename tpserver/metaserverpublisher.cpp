@@ -63,7 +63,7 @@ MetaserverPublisher::~MetaserverPublisher(){
 
 void MetaserverPublisher::poll(){
     // create MetaserverConnection and send info.
-  MetaserverConnection* msc = new MetaserverConnection(advertiser, this);
+  MetaserverConnection* msc = new MetaserverConnection(this);
   if(msc->sendUpdate()){
     Network::getNetwork()->addConnection(msc);
     lastpublishtime = time(NULL);
