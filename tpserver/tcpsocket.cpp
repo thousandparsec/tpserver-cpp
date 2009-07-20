@@ -46,8 +46,8 @@ void TcpSocket::openListen(const std::string& address, const std::string& port){
 }
 
 
-PlayerConnection* TcpSocket::acceptConnection(int fd){
+Connection::Ptr TcpSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new tp (tcp) connection");
 
-    return new PlayerConnection(fd);
+    return Connection::Ptr( new PlayerConnection(fd) );
 }

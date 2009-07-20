@@ -48,8 +48,8 @@ void TlsSocket::openListen(const std::string& address, const std::string& port){
     }
 }
 
-PlayerConnection* TlsSocket::acceptConnection(int fd){
+Connection::Ptr TlsSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new tps (tls) connection");
 
-    return new PlayerTlsConnection(fd);
+    return Connection::Ptr( new PlayerTlsConnection(fd) );
 }

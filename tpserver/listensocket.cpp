@@ -152,7 +152,7 @@ void ListenSocket::openListen(const std::string &address, const std::string &por
 void ListenSocket::process(){
     Logger::getLogger()->info("Accepting new a connection");
     try{
-        Connection *temp = NULL;
+      Connection::Ptr temp;
 #ifdef HAVE_IPV6
         struct sockaddr_storage clientaddr;
         socklen_t addrlen = sizeof(clientaddr);
@@ -184,9 +184,8 @@ void ListenSocket::process(){
         
         temp = acceptConnection(accept(sockfd, NULL, 0));
 #endif
-        if(temp != NULL)
-          // TODO/HACK : accept should return shared!
-            Network::getNetwork()->addConnection(Connection::Ptr(temp));
+        if(temp)
+            Network::getNetwork()->addConnection(temp);
     }catch(std::exception e){
         Logger::getLogger()->warning("Could not establish connection");
     }

@@ -32,7 +32,7 @@ class AdminTcpSocket : public ListenSocket {
     virtual void openListen(const std::string& address, const std::string& port);
 
   protected:
-    AdminConnection* acceptConnection(int fd);
+    Connection::Ptr acceptConnection(int fd);
 
 };
 

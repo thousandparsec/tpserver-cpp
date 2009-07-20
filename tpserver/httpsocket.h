@@ -33,7 +33,7 @@ class HttpSocket : public ListenSocket {
     virtual void openListen(const std::string& address, const std::string& port);
 
   protected:
-    PlayerConnection* acceptConnection(int fd);
+    Connection::Ptr acceptConnection(int fd);
 };
 
 #endif

@@ -44,8 +44,8 @@ void HttpsSocket::openListen(const std::string& address, const std::string& port
     }
 }
 
-PlayerConnection* HttpsSocket::acceptConnection(int fd){
+Connection::Ptr HttpsSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new https (tp tunneled over https) connection");
 
-    return new PlayerTlsConnection(fd);
+    return Connection::Ptr( new PlayerTlsConnection(fd) );
 }

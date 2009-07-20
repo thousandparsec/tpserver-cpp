@@ -46,8 +46,8 @@ void AdminTcpSocket::openListen(const std::string& address, const std::string& p
 }
 
 
-AdminConnection* AdminTcpSocket::acceptConnection(int fd){
+Connection::Ptr AdminTcpSocket::acceptConnection(int fd){
     Logger::getLogger()->info("Accepting new admin (tcp) connection");
 
-    return new AdminConnection(fd);
+    return Connection::Ptr( new AdminConnection(fd) );
 }

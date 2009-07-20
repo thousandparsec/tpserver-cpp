@@ -41,7 +41,7 @@ class ListenSocket : public Connection {
     bool isPlayer();
 
   protected:
-    virtual Connection* acceptConnection(int fd) = 0;
+    virtual Connection::Ptr acceptConnection(int fd) = 0;
 
     bool player;
 
