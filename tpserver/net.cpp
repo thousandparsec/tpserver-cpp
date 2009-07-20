@@ -79,12 +79,12 @@ void Network::addConnection(Connection::Ptr conn)
   }
 }
 
-void Network::removeConnection(Connection* conn)
+void Network::removeConnection( int fd )
 {
-  DEBUG("Removing a file descriptor %d", conn->getFD());
-  FD_CLR(conn->getFD(), &master_set);
-  connections.erase(connections.find(conn->getFD()));
-  if (max_fd == conn->getFD()) {
+  DEBUG("Removing a file descriptor %d", fd);
+  FD_CLR(fd, &master_set);
+  connections.erase(connections.find(fd));
+  if (max_fd == fd ) {
     DEBUG("Changing max_fd");
     max_fd = 0;
     ConnMap::iterator itcurr, itend;
@@ -191,11 +191,11 @@ void Network::stop()
       PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
       if(pc){
         pc->close();
-        removeConnection(pc.get());
+        removeConnection(pc->getFD());
       }else{
         ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
         if(ts != NULL && ts->isPlayer()){
-          removeConnection(ts.get());
+          removeConnection(ts->getFD());
         }
       }
       ++itcurr;
@@ -234,11 +234,11 @@ void Network::adminStop(){
     AdminConnection::Ptr ac = boost::dynamic_pointer_cast<AdminConnection>(itcurr->second);
     if(ac != NULL){
       ac->close();
-      removeConnection(ac.get());
+      removeConnection(ac->getFD());
     }else{
       ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
       if(ts != NULL){
-        removeConnection(ts.get());
+        removeConnection(ts->getFD());
       }
     }
     ++itcurr;
@@ -326,7 +326,7 @@ void Network::masterLoop()
         if ((*itcurr).second->getStatus() == Connection::DISCONNECTED) {
           INFO("Closed connection %d", (*itcurr).second->getFD());
           Connection::Ptr conn = itcurr->second;
-          removeConnection(conn.get());
+          removeConnection(conn->getFD());
           //use select again, don't check rest of list as it has changed.
           break;
         }
@@ -342,11 +342,11 @@ void Network::masterLoop()
         PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
         if(pc != NULL){
           pc->close();
-          removeConnection(pc.get());
+          removeConnection(pc->getFD());
         }else{
           TcpSocket::Ptr ts = boost::dynamic_pointer_cast<TcpSocket>(itcurr->second);
           if(ts != NULL){
-            removeConnection(ts.get());
+            removeConnection(ts->getFD());
           }
         }
         ++itcurr;

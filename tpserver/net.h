@@ -43,8 +43,7 @@ class Network {
 
     // TODO : fix avahi's this issue
     void addConnection(Connection::Ptr conn);
-    // TODO : refactor to take FD - then fix avahi
-    void removeConnection(Connection* conn);
+    void removeConnection( int fd );
     // TODO : refactor to take FD - then fix avahi
     void addToWriteQueue(Connection::Ptr conn);
 
