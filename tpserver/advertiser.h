@@ -21,9 +21,8 @@
 #define ADVERTISER_H
 
 #include <tpserver/common.h>
-#include <stdint.h>
+#include <tpserver/publisher.h>
 
-class Publisher;
 class TimerCallback;
 
 /**
@@ -55,7 +54,7 @@ public:
 
 private:
   /// Typedef for publisher set
-  typedef std::set<Publisher*> PublisherSet;
+  typedef std::set<Publisher::Ptr> PublisherSet;
 
   void settingChanged(const std::string& skey, const std::string& value);
   void metaserverWarning();

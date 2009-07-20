@@ -25,7 +25,6 @@
 #include "logging.h"
 #include "settings.h"
 #include "settingscallback.h"
-#include "publisher.h"
 #include "timercallback.h"
 #include "net.h"
 
@@ -60,14 +59,14 @@ Advertiser::~Advertiser(){
 void Advertiser::publish(){
 #ifdef HAVE_AVAHI
   try{
-    publishers.insert(new Avahi());
+    publishers.insert( Publisher::Ptr( new Avahi() ) );
   }catch(std::exception e){
     // do nothing, maybe warn of no mdns-sd
       WARNING("Failed to start Avahi");
   }
 #endif
   if(Settings::getSettings()->get("metaserver_enable") == "yes"){
-    publishers.insert(new MetaserverPublisher());
+    publishers.insert( Publisher::Ptr( new MetaserverPublisher() ));
   }else{
     WARNING("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
     if(Settings::getSettings()->get("metaserver_enable") != "no"){
@@ -85,9 +84,6 @@ void Advertiser::unpublish(){
     metaserver_warning->setValid(false);
     delete metaserver_warning;
     metaserver_warning = NULL;
-  }
-  for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-    delete (*itcurr);
   }
   publishers.clear();
 }
@@ -124,8 +120,7 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
     if(publishing){
       if(value != "yes"){
         for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-          if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
-            delete (*itcurr);
+          if(boost::dynamic_pointer_cast<MetaserverPublisher>(*itcurr) != NULL){
             publishers.erase(itcurr);
             break;
           }
@@ -138,13 +133,13 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
         }
         bool found = false;
         for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-          if(dynamic_cast<MetaserverPublisher*>(*itcurr) != NULL){
+          if(boost::dynamic_pointer_cast<MetaserverPublisher>(*itcurr) != NULL){
             found = true;
             break;
           }
         }
         if(!found){
-          publishers.insert(new MetaserverPublisher());
+          publishers.insert( Publisher::Ptr( new MetaserverPublisher() ));
         }
       }
     }

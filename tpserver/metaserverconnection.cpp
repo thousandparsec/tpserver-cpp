@@ -43,7 +43,6 @@
 #endif
 
 #include "logging.h"
-#include "advertiser.h"
 #include "metaserverpublisher.h"
 #include "net.h"
 #include "game.h"
@@ -53,6 +52,7 @@
 #include "objectmanager.h"
 #include "turntimer.h"
 #include "prng.h"
+#include "advertiser.h"
 
 #include "metaserverconnection.h"
 

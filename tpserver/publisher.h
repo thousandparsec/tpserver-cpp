@@ -20,6 +20,8 @@
 #ifndef PUBLISHER_H
 #define PUBLISHER_H
 
+#include <tpserver/common.h>
+
 class Advertiser;
 
 /**
@@ -29,6 +31,8 @@ class Advertiser;
 */
 class Publisher{
 public:
+  typedef boost::shared_ptr< Publisher > Ptr;
+
   Publisher(){};
 
   virtual ~Publisher(){};
