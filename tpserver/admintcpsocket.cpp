@@ -30,7 +30,7 @@
 
 #include "admintcpsocket.h"
 
-AdminTcpSocket::AdminTcpSocket() : ListenSocket(){
+AdminTcpSocket::AdminTcpSocket() : ListenSocket(LISTENADMIN){
   player = false;
 }
 

@@ -38,7 +38,7 @@
 
 #include "listensocket.h"
 
-ListenSocket::ListenSocket() : Connection(){
+ListenSocket::ListenSocket(Type aType) : Connection(aType){
 }
 
 ListenSocket::~ListenSocket(){

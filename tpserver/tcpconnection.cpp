@@ -40,8 +40,8 @@
 #include "systemexception.h"
 #include "tcpconnection.h"
 
-TcpConnection::TcpConnection(int fd) 
-  : Connection(fd), 
+TcpConnection::TcpConnection(int fd, Type aType) 
+  : Connection(fd,aType), 
     rheaderbuff( NULL ),
     rdatabuff( NULL ),
     rbuffused( 0 ),

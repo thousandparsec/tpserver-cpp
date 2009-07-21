@@ -34,7 +34,7 @@
 
 #include "adminconnection.h"
 
-AdminConnection::AdminConnection(int fd) : TcpConnection(fd){
+AdminConnection::AdminConnection(int fd) : TcpConnection(fd,ADMIN){
 }
 
 AdminConnection::~AdminConnection(){

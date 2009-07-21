@@ -44,7 +44,7 @@ class TcpConnection: public Connection {
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
     void sendSequence(Frame* oldframe, size_t sequence_size );
   protected:
-    TcpConnection(int fd);
+    TcpConnection(int fd, Type aType);
   
     virtual int32_t underlyingRead(char* buff, uint32_t size);
     virtual int32_t underlyingWrite(const char* buff, uint32_t size);

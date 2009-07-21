@@ -27,13 +27,13 @@
 
 #include "connection.h"
 
-Connection::Connection()
-  : sockfd(0), status(DISCONNECTED)
+Connection::Connection(Type aType)
+  : sockfd(0), status(DISCONNECTED), type(aType)
 {
 }
 
-Connection::Connection(int fd)
-  : sockfd(fd), status(PRECONNECTED)
+Connection::Connection(int fd, Type aType)
+  : sockfd(fd), status(PRECONNECTED), type(aType)
 {
 }
 
@@ -46,6 +46,11 @@ Connection::~Connection()
 int Connection::getFD()
 {
   return sockfd;
+}
+
+Connection::Type Connection::getType()
+{
+  return type;
 }
 
 

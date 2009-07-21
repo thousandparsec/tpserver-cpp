@@ -29,7 +29,7 @@
 
 #include "httpsocket.h"
 
-HttpSocket::HttpSocket() : ListenSocket(){
+HttpSocket::HttpSocket() : ListenSocket(LISTEN){
   player = true;
 }
 

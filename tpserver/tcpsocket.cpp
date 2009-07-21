@@ -30,7 +30,7 @@
 
 #include "tcpsocket.h"
 
-TcpSocket::TcpSocket() : ListenSocket(){
+TcpSocket::TcpSocket() : ListenSocket(LISTEN){
   player = true;
 }
 

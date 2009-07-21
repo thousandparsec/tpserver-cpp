@@ -42,18 +42,30 @@ class Connection : public boost::enable_shared_from_this< Connection > {
     };
 
     /**
+     * Connection type
+     */
+    enum Type {
+      PLAYER = 0,  //!< Player connection
+      ADMIN,       //!< Admin connection
+      LISTEN,      //!< Listen socket
+      LISTENADMIN, //!< Listen admin socket
+      METASERVER,  //!< Metaserver socket
+      AVAHI        //!< Avahi socket
+    };
+
+    /**
      * Default constructor
      *
      * Zeroes all fields
      */
-    Connection();
+    Connection( Type aType);
     
     /**
      * Explicit FD constructor
      *
      * Sets status to preconnected, and fd to the passed value
      */
-    explicit Connection(int fd);
+    explicit Connection(int fd, Type aType );
 
 
     /**
@@ -83,12 +95,21 @@ class Connection : public boost::enable_shared_from_this< Connection > {
      */
     // TODO: Remove!
     int getFD();
+
+    /**
+     * Gets connection type (admin, player, listen, meta, avahi)
+     */
+    Type getType();
     
   protected:
+    Connection() {}
     /// Connection socket file descriptor
     int sockfd;
     /// Connection status
     Status status;
+  private:
+    /// Connection type
+    Type type;
 };
 
 #endif

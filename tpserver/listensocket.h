@@ -29,7 +29,7 @@ class ListenSocket : public Connection {
     /// Shared pointer typedef
     typedef boost::shared_ptr< ListenSocket > Ptr;
 
-    ListenSocket();
+    ListenSocket(Type aType);
     virtual ~ListenSocket();
 
     virtual void openListen(const std::string& address, const std::string& port);
