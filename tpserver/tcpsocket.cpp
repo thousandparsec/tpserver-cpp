@@ -31,7 +31,6 @@
 #include "tcpsocket.h"
 
 TcpSocket::TcpSocket() : ListenSocket(LISTEN){
-  player = true;
 }
 
 TcpSocket::~TcpSocket(){

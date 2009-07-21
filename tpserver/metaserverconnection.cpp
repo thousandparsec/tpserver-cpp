@@ -63,7 +63,7 @@
 #define NI_MAXSERV 32
 #endif 
 
-MetaserverConnection::MetaserverConnection( MetaserverPublisher* pub) : Connection(), publisher(pub){
+MetaserverConnection::MetaserverConnection( MetaserverPublisher* pub) : Connection(METASERVER), publisher(pub){
 
 }
 

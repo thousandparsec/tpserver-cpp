@@ -139,9 +139,7 @@ void entry_group_callback(AvahiEntryGroup *g, AvahiEntryGroupState state, AVAHI_
 class AvahiWatch : public Connection{
  public:
    typedef boost::shared_ptr< AvahiWatch > Ptr;
-  AvahiWatch(int fd, AvahiWatchCallback cb, void* ud): Connection(), callback(cb), watchedEvents(), happenedEvents(), userdata(ud){
-    sockfd = fd;
-    status = PRECONNECTED;
+  AvahiWatch(int fd, AvahiWatchCallback cb, void* ud): Connection(sockfd, AVAHI), callback(cb), watchedEvents(), happenedEvents(), userdata(ud){
   }
   
   ~AvahiWatch(){

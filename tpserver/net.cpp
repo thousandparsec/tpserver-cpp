@@ -193,7 +193,7 @@ void Network::stop()
         removeConnection(pc->getFD());
       }else{
         ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
-        if(ts != NULL && ts->isPlayer()){
+        if(ts != NULL && ts->getType() != Connection::LISTENADMIN){
           removeConnection(ts->getFD());
         }
       }

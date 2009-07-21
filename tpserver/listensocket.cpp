@@ -196,6 +196,3 @@ uint16_t ListenSocket::getPort() const{
   return portnum;
 }
 
-bool ListenSocket::isPlayer(){
-  return player;
-}

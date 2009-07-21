@@ -30,7 +30,6 @@
 #include "httpsocket.h"
 
 HttpSocket::HttpSocket() : ListenSocket(LISTEN){
-  player = true;
 }
 
 HttpSocket::~HttpSocket(){
