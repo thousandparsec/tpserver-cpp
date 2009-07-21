@@ -188,22 +188,13 @@ void Network::stop()
 
     ConnMap::iterator itcurr = connections.begin();
     while (itcurr != connections.end()) {
-      PlayerConnection::Ptr pc = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
-      if(pc){
-        removeConnection(pc->getFD());
-      }else{
-        ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
-        if(ts != NULL && ts->getType() != Connection::LISTENADMIN){
-          removeConnection(ts->getFD());
-        }
-      }
+      if ( itcurr->second->getType() == Connection::PLAYER || itcurr->second->getType() == Connection::LISTEN )
+        removeConnection(itcurr->first);
       ++itcurr;
     }
-
     advertiser->unpublish();
 
     active = false;
-
   } else {
     WARNING("Network already stopped");
   }
@@ -230,15 +221,9 @@ void Network::adminStart(){
 void Network::adminStop(){
   ConnMap::iterator itcurr = connections.begin();
   while (itcurr != connections.end()) {
-    AdminConnection::Ptr ac = boost::dynamic_pointer_cast<AdminConnection>(itcurr->second);
-    if(ac != NULL){
-      removeConnection(ac->getFD());
-    }else{
-      ListenSocket::Ptr ts = boost::dynamic_pointer_cast<ListenSocket>(itcurr->second);
-      if(ts != NULL){
-        removeConnection(ts->getFD());
-      }
-    }
+    if ( itcurr->second->getType() == Connection::ADMIN || 
+         itcurr->second->getType() == Connection::LISTENADMIN )
+      removeConnection(itcurr->first);
     ++itcurr;
   }
 }
