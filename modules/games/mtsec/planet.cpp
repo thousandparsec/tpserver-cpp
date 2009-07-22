@@ -154,6 +154,10 @@ void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > res
     obj->touchModTime();
 }
 
+uint32_t Planet::getFactoriesPerTurn(){
+    return dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->getValue();
+}
+
 void Planet::addResource(uint32_t restype, uint32_t amount){
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
     std::pair<uint32_t, uint32_t> respair = reslist[restype];

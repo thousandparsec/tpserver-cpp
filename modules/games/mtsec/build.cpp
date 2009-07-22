@@ -41,6 +41,10 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objecttypemanager.h>
+#include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/resourcemanager.h>
+#include <tpserver/resourcedescription.h>
+#include <tpserver/integerobjectparam.h>
 
 #include "planet.h"
 
@@ -75,33 +79,7 @@ Build::~Build(){
 void Build::createFrame(Frame *f, int pos)
 {
   Logger::getLogger()->debug("Enter: Build::createFrame()");
-
-  //IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-/*
-  // number of turns
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectBehaviour())->getResources();
-  Game::getGame()->getObjectManager()->doneWithObject(planet->getID());
-
-  uint32_t res_current;
-
-  if(presources.find(1) != presources.end()){
-    res_current = presources.find(1)->second.first;
-  }else{
-    res_current = 0;
-  }
-  uint32_t usedshipres = resources[1];
-  if(pos != 0 || usedshipres == 0){
-      turns = usedshipres;
-  }else{
-    if(usedshipres <= res_current){
-      turns = 1;
-    }else{
-      turns = usedshipres - res_current;
-    }
-  }
-  */
-  turns = 1;
-
+  // set it to the high end of the production cost... this is a best case scenario where it gets all the factories
   Order::createFrame(f, pos);
   Logger::getLogger()->debug("Exit: Build::createFrame()");
 
@@ -129,7 +107,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
     Design * design = (*itcurr);
     options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
-  
+
   Logger::getLogger()->debug("Exiting Build::generateListOptions");
   return options;
 }
@@ -140,37 +118,41 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
 
   Result r = Order::inputFrame(f, playerid);
   if(!r) return r;
-  
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-  DesignStore* ds = Game::getGame()->getDesignStore();
-  
+
+  Game* game = Game::getGame();
+
+  Player* player = game->getPlayerManager()->getPlayer(playerid);
+  DesignStore* ds = game->getDesignStore();
+  ResourceManager* resman = game->getResourceManager();
+  IGObject * igobj = game->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Planet * planet = dynamic_cast<Planet*>(igobj->getObjectBehaviour());
+
+  const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
+  const uint32_t resValue = planet->getResourceSurfaceValue(resType);
   uint32_t bldTmPropID = ds->getPropertyByName("ProductCost");
-  
+
+  uint32_t total =0;
+
   std::map<uint32_t, uint32_t> fleettype = fleetlist->getList();
-  uint32_t usedshipres = 0;
-  
+
   for(std::map<uint32_t, uint32_t>::iterator itcurr = fleettype.begin();
      itcurr != fleettype.end(); ++itcurr){
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
-    
-    if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
-      
-      Design* design = ds->getDesign(type);
-      usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
-        design->addUnderConstruction(number);
-        ds->designCountsUpdated(design);
 
+    if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
+      Design* design = ds->getDesign(type);
+      design->addUnderConstruction(number);
+      ds->designCountsUpdated(design);
+      total += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
     }else{
       return Failure("The requested design was not valid.");
     }
   }
-  if(usedshipres == 0 && !fleettype.empty()){
-    return Failure("To build was empty...");
-  }
-  
-  resources[1] = usedshipres;
-  
+  turns = (int)(ceil(total/resValue));
+  resources[1] = total;
+
+
   if(fleetname->getString().length() == 0){
       fleetname->setString("A Fleet");
   }
@@ -181,17 +163,12 @@ bool Build::doOrder(IGObject *ob)
 {
   Logger::getLogger()->debug("Entering Build::doOrder");
 
-  
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
-  uint32_t usedshipres = resources[1];
-  
-/*
-  if(usedshipres == 0) {
-    Logger::getLogger()->debug("Exiting Build::doOrder on usedshipres != 0");
-    return true;
-  }
-*/
+  Game* game = Game::getGame();
+  ResourceManager* resman = game->getResourceManager();
+  const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
+  const uint32_t resValue = planet->getResourceSurfaceValue(resType);
 
   int ownerid = planet->getOwner();
   if(ownerid == 0){
@@ -199,30 +176,48 @@ bool Build::doOrder(IGObject *ob)
       //currently not owned by anyone, just forget about it
       return true;
   }
-  
-  planet->addResource(1, 1);
-    
-  if(planet->removeResource(1, usedshipres)){
+
+  uint32_t runningTotal = resources[1];
+  if (resValue == 0) {
+    Message * msg = new Message();
+    msg->setSubject("Build Fleet order error");
+    msg->setBody(std::string("The construction of your  new fleet \"") + fleetname->getString() + "\" has been delayed, you do not have any production points this turn.");
+    Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+    return false;
+  } else if(runningTotal > resValue) {
+    if (planet->removeResource(resType, resValue)) {
+      removeResource(1, resValue);
+      runningTotal = resources[1];
+      uint32_t planetFactories = planet->getFactoriesPerTurn();
+      turns = ceil(runningTotal / planetFactories);
+      Message * msg = new Message();
+      msg->setSubject("Build Fleet order slowed");
+      msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" has been delayed.");
+      Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+      return false;
+    }
+  } else if(runningTotal <= resValue && planet->removeResource(resType, runningTotal)){
     //create fleet
-    
+
+    //this is probably unnecessary
+    resources[1] = 0;
     Game* game = Game::getGame();
-    
-    
+
     IGObject *fleet = game->getObjectManager()->createNewObject();
     game->getObjectTypeManager()->setupObject(fleet, game->getObjectTypeManager()->getObjectTypeByName("Fleet"));
-    
+
     //add fleet to container
     fleet->addToParent(ob->getID());
-    
+
     fleet->setName(fleetname->getString().c_str());
-    
+
     Fleet * thefleet = ((Fleet*)(fleet->getObjectBehaviour()));
-    
+
     thefleet->setSize(2);
     thefleet->setOwner(ownerid); // set ownerid
     thefleet->setPosition(planet->getPosition());
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-    
+
     OrderQueue *fleetoq = new OrderQueue();
     fleetoq->setObjectId(fleet->getID());
     fleetoq->addOwner(ownerid);
@@ -230,7 +225,7 @@ bool Build::doOrder(IGObject *ob)
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(fleetoq->getQueueId());
     thefleet->setDefaultOrderTypes();
-    
+
     //set ship type
     std::map<uint32_t,uint32_t> fleettype = fleetlist->getList();
     for(std::map<uint32_t,uint32_t>::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
@@ -260,6 +255,15 @@ bool Build::doOrder(IGObject *ob)
   return false;
 }
 
+bool Build::removeResource(uint32_t restype, uint32_t amount){
+    if(resources.find(restype) != resources.end()){
+          if (resources[restype] - amount > 0) {
+            resources[restype] -= amount;
+            return true;
+          }
+        }
+    return false;
+}
 
 Order* Build::clone() const{
   Build* nb = new Build();
