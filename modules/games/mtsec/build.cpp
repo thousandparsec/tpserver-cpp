@@ -1,5 +1,6 @@
 /*  Build object for BuildFleet orders
  *
+ *  Copyright (C) 2009  Alan P. Laudicina and the Thousand Parsec Project
  *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -16,6 +17,12 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/* TODO GSoC Cleanup Period:
+ * Get rid of removeResource, as it's not really needed.  Make it so that
+ * resources[1] refers to a name instead of a seemingly arbitrary number,
+ * make the code a bit more clear
  */
 
 #include <math.h>
