@@ -20,9 +20,7 @@
  *
  */
 
-#include <map>
-#include <list>
-
+#include <tpserver/common.h>
 #include <tpserver/vector3d.h>
 #include "ownedobject.h"
 
@@ -32,40 +30,40 @@ class FleetType : public OwnedObjectType{
   public:
     FleetType();
     virtual ~FleetType();
-    
+
   protected:
     ObjectBehaviour* createObjectBehaviour() const;
 };
 
 class Fleet : public OwnedObject {
-      public:
-	Fleet();
-	virtual ~Fleet();
-        
+  public:
+    Fleet();
+    virtual ~Fleet();
 
-        void setDefaultOrderTypes();
-	void addShips(uint32_t type, uint32_t number);
-	bool removeShips(uint32_t type, uint32_t number);
-	uint32_t numShips(uint32_t type);
-	std::map<uint32_t, uint32_t> getShips() const;
-	uint32_t totalShips() const;
 
-	int64_t maxSpeed();
+    void setDefaultOrderTypes();
+    void addShips(uint32_t type, uint32_t number);
+    bool removeShips(uint32_t type, uint32_t number);
+    uint32_t numShips(uint32_t type);
+    IdMap getShips() const;
+    uint32_t totalShips() const;
 
-        uint32_t getDamage() const;
-        void setDamage(uint32_t nd);
+    int64_t maxSpeed();
 
-	void packExtraData(Frame * frame);
+    uint32_t getDamage() const;
+    void setDamage(uint32_t nd);
 
-	void doOnceATurn();
-        void setupObject();
+    void packExtraData(Frame * frame);
 
-	int getContainerType();
-        
-    private:
-        static const uint32_t SHIPSGRPID;
-        static const uint32_t SHIPSPARAMID;
-        static const uint32_t DAMAGEPARAMID;
+    void doOnceATurn();
+    void setupObject();
+
+    int getContainerType();
+
+  private:
+    static const uint32_t SHIPSGRPID;
+    static const uint32_t SHIPSPARAMID;
+    static const uint32_t DAMAGEPARAMID;
 };
 
 #endif

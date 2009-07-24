@@ -20,11 +20,7 @@
  *
  */
 
-#include <map>
-#include <list>
-#include <stdint.h>
-
-#include <tpserver/protocol.h>
+#include <tpserver/common.h>
 #include <tpserver/vector3d.h>
 #include <tpserver/battlexml/combatant.h>
 
@@ -56,6 +52,7 @@ class Combatant : public BattleXML::Combatant{
     objectid_t objectref;
     designid_t shiptype;
     uint32_t damage;
+    IdMap shiplist;
 
 };
 

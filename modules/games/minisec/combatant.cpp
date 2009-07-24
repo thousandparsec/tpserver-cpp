@@ -82,12 +82,10 @@ bool Combatant::isDead() const{
     }
     DesignStore* ds = Game::getGame()->getDesignStore();
     
-    
     propertyid_t armourprop = ds->getPropertyByName("Armour");
     if(armourprop == 0){
         armourprop = ds->getPropertyByName("Amour");
     }
-    
     
     Design *design = ds->getDesign(shiptype);
     return (damage > (uint32_t)design->getPropertyValue(armourprop));

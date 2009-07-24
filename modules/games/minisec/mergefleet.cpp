@@ -89,8 +89,8 @@ bool MergeFleet::doOrder(IGObject * ob){
     Fleet *tfleet = (Fleet*)(target->getObjectBehaviour());
       
 
-    std::map<uint32_t, uint32_t> ships = myfleet->getShips();
-    for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin();
+    IdMap ships = myfleet->getShips();
+    for(IdMap::iterator itcurr = ships.begin();
         itcurr != ships.end(); ++itcurr){
       tfleet->addShips(itcurr->first, itcurr->second);
     }

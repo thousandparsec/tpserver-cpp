@@ -129,8 +129,8 @@ uint32_t Fleet::numShips(uint32_t type){
   return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
-std::map<uint32_t, uint32_t> Fleet::getShips() const{
-  std::map<uint32_t, uint32_t> ships;
+IdMap Fleet::getShips() const{
+  IdMap ships;
   std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = (( RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
       itcurr != shipsref.end(); ++itcurr){

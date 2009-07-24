@@ -37,7 +37,7 @@ class RSPCombat{
   RSPCombat();
   ~RSPCombat();
 
-  void doCombat(std::map<uint32_t, std::set<uint32_t> > sides);
+  void doCombat(std::map<uint32_t, IdSet > sides);
 
 
  private:
