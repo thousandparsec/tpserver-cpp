@@ -32,8 +32,6 @@ public:
   virtual void packOrderFrame(Frame * f);
   virtual bool unpackFrame(Frame * f, uint32_t playerid);
 
-  virtual OrderParameter *clone() const;
-
   Vector3d getPosition() const;
   void setPosition(const Vector3d& pos);
 

@@ -46,12 +46,6 @@ bool StringParameter::unpackFrame(Frame *f, uint32_t playerid){
   return true;
 }
 
-OrderParameter *StringParameter::clone() const{
-  StringParameter* sp = new StringParameter();
-  sp->max = max;
-  return sp;
-}
-
 std::string StringParameter::getString() const{
   return string;
 }

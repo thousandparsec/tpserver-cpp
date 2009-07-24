@@ -31,8 +31,6 @@ public:
   virtual void packOrderFrame(Frame * f);
   virtual bool unpackFrame(Frame * f, uint32_t playerid);
 
-  virtual OrderParameter *clone() const;
-
   std::string getString() const;
   void setString(const std::string& rhs);
 

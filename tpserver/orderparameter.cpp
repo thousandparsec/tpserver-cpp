@@ -42,6 +42,5 @@ void OrderParameter::packOrderDescFrame(Frame * f) const{
   f->packString(name);
   f->packInt(id);
   f->packString(desc);
-  
 }
 

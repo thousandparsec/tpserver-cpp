@@ -45,10 +45,6 @@ bool SpaceCoordParam::unpackFrame(Frame *f, uint32_t playerid){
   return true;
 }
 
-OrderParameter* SpaceCoordParam::clone() const{
-  return new SpaceCoordParam();
-}
-
 void SpaceCoordParam::setPosition(const Vector3d &npos){
   position = npos;
 }

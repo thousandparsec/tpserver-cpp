@@ -47,12 +47,6 @@ bool TimeParameter::unpackFrame(Frame *f, uint32_t playerid){
   return true;
 }
 
-OrderParameter *TimeParameter::clone() const{
-  TimeParameter* tp = new TimeParameter();
-  tp->max = max;
-  return tp;
-}
-
 uint32_t TimeParameter::getTime() const{
   return turns;
 }

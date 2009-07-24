@@ -57,10 +57,6 @@ bool ObjectOrderParameter::unpackFrame(Frame *f, uint32_t playerid){
   
 }
 
-OrderParameter *ObjectOrderParameter::clone() const{
-  return new ObjectOrderParameter();
-}
-
 uint32_t ObjectOrderParameter::getObjectId() const{
   return object;
 }

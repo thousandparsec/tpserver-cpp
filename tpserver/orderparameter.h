@@ -51,9 +51,6 @@ class OrderParameter : public Describable {
     void packOrderDescFrame(Frame* f) const;
     virtual bool unpackFrame(Frame * f, uint32_t playerid) = 0;
 
-
-    virtual OrderParameter *clone() const = 0;
-
 };
 
 #endif

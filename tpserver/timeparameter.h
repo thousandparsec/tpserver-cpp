@@ -31,8 +31,6 @@ public:
   virtual void packOrderFrame(Frame * f);
   virtual bool unpackFrame(Frame * f, uint32_t playerid);
 
-  virtual OrderParameter *clone() const;
-
   uint32_t getTime() const;
   void setTime(uint32_t time);
   

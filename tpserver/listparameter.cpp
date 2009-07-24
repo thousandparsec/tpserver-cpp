@@ -65,10 +65,6 @@ bool ListParameter::unpackFrame(Frame *f, uint32_t playerid){
   return true;
 }
 
-OrderParameter *ListParameter::clone() const{
-  return new ListParameter();
-}
-
 IdMap ListParameter::getList() const{
   return list;
 }
