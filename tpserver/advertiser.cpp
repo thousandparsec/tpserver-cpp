@@ -109,9 +109,7 @@ Advertiser::ServiceMap Advertiser::getServices(){
 
 void Advertiser::updatePublishers(){
   if(publishing){
-    for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-      (*itcurr)->update();
-    }
+    std::for_each( publishers.begin(), publishers.end(), boost::mem_fn( &Publisher::update ) );
   }
 }
 
