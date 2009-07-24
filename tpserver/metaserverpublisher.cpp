@@ -19,6 +19,7 @@
  */
 
 #include <time.h>
+#include <boost/bind.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -30,7 +31,6 @@
 
 #include "logging.h"
 #include "settings.h"
-#include "settingscallback.h"
 #include "net.h"
 #include "timercallback.h"
 #include "metaserverconnection.h"
@@ -39,10 +39,10 @@
 
 MetaserverPublisher::MetaserverPublisher() : Publisher(), lastpublishtime(0), needtoupdate(true), timer(NULL), errorcount(0){
   Settings* settings = Settings::getSettings();
-  settings->setCallback("metaserver_fake_ip", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
-  settings->setCallback("metaserver_fake_dns", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
-  settings->setCallback("metaserver_address", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
-  settings->setCallback("metaserver_port", SettingsCallback(this, &MetaserverPublisher::metaserverSettingChanged));
+  settings->setCallback("metaserver_fake_ip",  boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
+  settings->setCallback("metaserver_fake_dns", boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
+  settings->setCallback("metaserver_address",  boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
+  settings->setCallback("metaserver_port",     boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
   lastpublishtime = time(NULL);
   setTimer();
 }

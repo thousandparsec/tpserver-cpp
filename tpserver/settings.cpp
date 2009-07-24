@@ -31,7 +31,6 @@
 #endif
 
 #include "logging.h"
-#include "settingscallback.h"
 #include "settings.h"
 
 Settings *Settings::instance = NULL;
@@ -217,7 +216,7 @@ bool Settings::readConfFile(const std::string& fname){
 void Settings::set(std::string item, std::string value){
   store[item] = value;
   if (callbacks.find(item) != callbacks.end()) {
-    callbacks[item].call(item, value);
+    callbacks[item](item, value);
   }
 }
 

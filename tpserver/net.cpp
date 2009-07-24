@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cassert>
+#include <boost/bind.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -34,7 +35,6 @@
 
 #include "logging.h"
 #include "settings.h"
-#include "settingscallback.h"
 #include "connection.h"
 #include "playerconnection.h"
 #include "adminconnection.h"

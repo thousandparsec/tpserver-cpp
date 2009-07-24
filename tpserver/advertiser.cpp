@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <boost/bind.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -24,7 +25,6 @@
 
 #include "logging.h"
 #include "settings.h"
-#include "settingscallback.h"
 #include "timercallback.h"
 #include "net.h"
 
@@ -38,11 +38,11 @@
 
 Advertiser::Advertiser() : publishing(false), metaserver_warning(NULL){
   Settings* settings = Settings::getSettings();
-  settings->setCallback("game_name", SettingsCallback(this, &Advertiser::settingChanged));
-  settings->setCallback("game_shortname", SettingsCallback(this, &Advertiser::settingChanged));
-  settings->setCallback("game_comment", SettingsCallback(this, &Advertiser::settingChanged));
-  settings->setCallback("admin_email", SettingsCallback(this, &Advertiser::settingChanged));
-  settings->setCallback("metaserver_enable", SettingsCallback(this, &Advertiser::settingChanged));
+  settings->setCallback("game_name",         boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
+  settings->setCallback("game_shortname",    boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
+  settings->setCallback("game_comment",      boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
+  settings->setCallback("admin_email",       boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
+  settings->setCallback("metaserver_enable", boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
 }
 
 

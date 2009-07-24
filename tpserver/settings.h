@@ -22,14 +22,16 @@
 
 #include <string>
 #include <map>
-
-class SettingsCallback;
+#include <boost/function.hpp>
 
 /**
  * Settings manager singleton
  */
 class Settings {
   public:
+    /// Settings callback
+    typedef boost::function< void ( const std::string&, const std::string& ) > SettingsCallback;
+
     /**
      * Singleton accessor
      */

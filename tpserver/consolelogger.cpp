@@ -21,6 +21,7 @@
 #include <time.h>
 #include <iostream>
 #include <sstream>
+#include <boost/bind.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -28,10 +29,9 @@
 
 #include "consolelogger.h"
 #include "settings.h"
-#include "settingscallback.h"
 
 ConsoleLogger::ConsoleLogger() {
-  Settings::getSettings()->setCallback("log_colour", SettingsCallback(this, &ConsoleLogger::reconfigure));
+  Settings::getSettings()->setCallback("log_colour", boost::bind( &ConsoleLogger::reconfigure, this, _1, _2 ));
   reconfigure("", "");
 }
 

@@ -19,18 +19,18 @@
  */
 
 #include <ctime>
+#include <boost/bind.hpp>
 
 #include "timercallback.h"
 #include "logging.h"
 #include "net.h"
 #include "settings.h"
-#include "settingscallback.h"
 #include "protocol.h"
 
 #include "thresholdturntimer.h"
 
 ThresholdTurnTimer::ThresholdTurnTimer(): TurnTimer(), timer(NULL), overthreshold(false){
-  Settings::getSettings()->setCallback("turn_player_threshold", SettingsCallback(this, &ThresholdTurnTimer::thresholdChanged));
+  Settings::getSettings()->setCallback("turn_player_threshold", boost::bind( &ThresholdTurnTimer::thresholdChanged, this, _1, _2 ));
 }
 
 ThresholdTurnTimer::~ThresholdTurnTimer(){

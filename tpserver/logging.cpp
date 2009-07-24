@@ -23,14 +23,13 @@
 #include <stdarg.h>
 #include <sstream>
 #include <cstdlib>
+#include <boost/bind.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "settings.h"
-#include "settingscallback.h"
-
 #include "logging.h"
 #include "filelogger.h"
 #include "syslogger.h"
@@ -206,10 +205,10 @@ Logger::Logger() : sink_count(0)
 {
   reconfigure("","");
   info("Logger started");
-  Settings::getSettings()->setCallback("log_level",   SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_console", SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_syslog",  SettingsCallback(this, &Logger::reconfigure));
-  Settings::getSettings()->setCallback("log_file",    SettingsCallback(this, &Logger::reconfigure));
+  Settings::getSettings()->setCallback("log_level",   boost::bind( &Logger::reconfigure, this, _1, _2 ));
+  Settings::getSettings()->setCallback("log_console", boost::bind( &Logger::reconfigure, this, _1, _2 ));
+  Settings::getSettings()->setCallback("log_syslog",  boost::bind( &Logger::reconfigure, this, _1, _2 ));
+  Settings::getSettings()->setCallback("log_file",    boost::bind( &Logger::reconfigure, this, _1, _2 ));
 }
 
 Logger::~Logger()
