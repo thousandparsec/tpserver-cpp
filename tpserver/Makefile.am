@@ -58,7 +58,7 @@ headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h packable.h 
 	ruleset.h tpscheme.h category.h persistence.h \
 	objectmanager.h \
 	playermanager.h listensocket.h boardmanager.h \
-	resourcedescription.h resourcemanager.h settingscallback.h \
+	resourcedescription.h resourcemanager.h  \
 	orderparameter.h spacecoordparam.h timeparameter.h objectorderparameter.h stringparameter.h \
 	listparameter.h timercallback.h prng.h playeragent.h turnprocess.h result.h \
 	objectparameter.h objectparametergroup.h position3dobjectparam.h \
