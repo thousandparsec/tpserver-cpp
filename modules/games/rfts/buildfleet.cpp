@@ -62,11 +62,7 @@ BuildFleet::BuildFleet() {
    name = "Build Fleet";
    description = "Build a fleet of ships";
 
-   shipList = new ListParameter("Ships","The ships to build");
-   shipList->setListOptionsCallback(ListOptionCallback(this, &BuildFleet::generateListOptions));
-   
-   addOrderParameter(shipList);
-
+   shipList  = (ListParameter*)  addOrderParameter( new ListParameter("Ships","The ships to build", boost::bind( &BuildFleet::generateListOptions, this )));
    fleetName = (StringParameter*)addOrderParameter( new StringParameter( "Name",  "The name of the fleet to build") );
 
    turns = 1;

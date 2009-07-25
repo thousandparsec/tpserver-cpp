@@ -49,9 +49,7 @@ SplitFleet::SplitFleet() {
    name = "Split Fleet";
    description = "Split off a new fleet.";
    
-   shipList = new ListParameter("ships","The ships to make a new fleet out of");
-   shipList->setListOptionsCallback(ListOptionCallback(this, &SplitFleet::generateListOptions));
-   addOrderParameter(shipList);
+   shipList = (ListParameter*) addOrderParameter( new ListParameter("ships","The ships to make a new fleet out of", boost::bind( &SplitFleet::generateListOptions, this )));
    
    turns = 1;
 }

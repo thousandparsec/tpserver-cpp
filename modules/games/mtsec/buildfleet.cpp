@@ -42,7 +42,6 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/listparameter.h>
 #include <tpserver/stringparameter.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
@@ -67,10 +66,7 @@ BuildFleet::BuildFleet() : Order()
   name = "Build Fleet";
   description = "Build a fleet";
   
-  fleetlist = new ListParameter("ships", "The type of ship to build");
-  fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
-  addOrderParameter(fleetlist);
-  
+  fleetlist = (ListParameter*) addOrderParameter( new ListParameter("ships", "The type of ship to build", boost::bind( &Build::generateListOptions, this ) ) );
   fleetname = (StringParameter*)addOrderParameter( new StringParameter("name", "The name of the new fleet being built") );
   turns = 1;
 }
@@ -87,17 +83,15 @@ void BuildFleet::createFrame(Frame *f, int pos)
 
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > BuildFleet::generateListOptions(){
-  Logger::getLogger()->debug("Entering BuildFleet::generateListOptions");
-  std::map<uint32_t, std::pair<std::string, uint32_t> > options;
+ListParameter::Options BuildFleet::generateListOptions(){
+  ListParameter::Options options;
   
-  std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer((dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
-
+  IdSet designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();
 
   std::set<Design*> usable;
-  for(std::set<uint32_t>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
+  for(IdSet::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
       Design* design = ds->getDesign(*itcurr);
       if(design->getCategoryId() == 1){
           usable.insert(design);
@@ -107,7 +101,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > BuildFleet::generateListOp
   for(std::set<Design*>::iterator itcurr = usable.begin();
       itcurr != usable.end(); ++itcurr){
     Design * design = (*itcurr);
-    options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
+    options[design->getDesignId()] = ListParameter::Option(design->getName(), 100);
   }
 
   Logger::getLogger()->debug("Exiting BuildFleet::generateListOptions");

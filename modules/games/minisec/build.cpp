@@ -34,7 +34,6 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/listparameter.h>
 #include <tpserver/stringparameter.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
@@ -54,10 +53,7 @@ Build::Build() : Order()
   name = "Build Fleet";
   description = "Build a fleet";
   
-  fleetlist = new ListParameter("ships","The type of ship to build");
-  fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
-  addOrderParameter(fleetlist);
-  
+  fleetlist = (ListParameter*)  addOrderParameter( new ListParameter("ships","The type of ship to build", boost::bind( &Build::generateListOptions, this )) );
   fleetname = (StringParameter*)addOrderParameter( new StringParameter( "name", "The name of the new fleet being built") );
 }
 

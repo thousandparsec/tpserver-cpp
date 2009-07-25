@@ -21,8 +21,7 @@
  */
 
 #include <tpserver/order.h>
-#include <map>
-class ListParameter;
+#include <tpserver/listparameter.h>
 
 namespace MTSecRuleset {
 
@@ -37,7 +36,7 @@ class SplitFleet : public Order{
   
  private:
   ListParameter* shiplist;
-  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+  ListParameter::Options generateListOptions();
 
 };
 

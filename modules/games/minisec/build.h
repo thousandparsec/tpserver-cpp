@@ -20,11 +20,9 @@
  *
  */
 
-#include <map>
-#include <string>
-
 #include <tpserver/result.h>
 #include <tpserver/order.h>
+#include <tpserver/listparameter.h>
 
 class ListParameter;
 class StringParameter;
@@ -42,8 +40,7 @@ class Build : public Order{
   Order* clone() const;
 
  private:
-  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
-
+  ListParameter::Options generateListOptions();
   ListParameter * fleetlist;
   StringParameter * fleetname;
 };

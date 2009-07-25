@@ -22,92 +22,17 @@
 
 #include <tpserver/orderparameter.h>
 #include <tpserver/common.h>
-
-
-class ListOptionCallbackBase{
-  public:
-    ListOptionCallbackBase(): ref(0) {}
-    virtual ~ListOptionCallbackBase(){};
-    virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call() = 0;
-    int ref;
-};
-
-/** A simple callback for ListOptions
-	@author Lee Begg <llnz@paradise.net.nz>
-*/
-template<typename C , typename M>
-    class ListOptionCallbackImpl;
-
-template<typename C , typename M>
-class ListOptionCallbackImpl : public ListOptionCallbackBase
-{
-public:
-  ListOptionCallbackImpl(C const&objPtr, M mem_ptr)
-  : ListOptionCallbackBase(), object (objPtr), method (mem_ptr){};
-
-  virtual ~ListOptionCallbackImpl(){};
-  
-  virtual std::map<uint32_t, std::pair<std::string, uint32_t> > call(){
-    return ((*object).*method)();
-  }
-  
-private:
-  C const object;
-  M method;
-
-};
-
-
-
-class ListOptionCallback{
-  public:
-  template <typename OBJ_PTR, typename MEM_PTR>
-    ListOptionCallback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
-        : impl (new ListOptionCallbackImpl<OBJ_PTR,MEM_PTR> (objPtr, mem_ptr)){
-      impl->ref++;
-    }
-    
-    ListOptionCallback(const ListOptionCallback& rhs){
-      impl = rhs.impl;
-      if(impl != NULL)
-        impl->ref++;
-    }
-    
-    ListOptionCallback(): impl(NULL) {};
-    
-    ~ListOptionCallback(){
-      if(impl != NULL){
-        impl->ref--;
-        if(impl->ref == 0)
-          delete impl;
-      }
-    }
-    
-    ListOptionCallback operator=(const ListOptionCallback & rhs){
-      if(impl != NULL){
-        impl->ref--;
-        if(impl->ref == 0)
-          delete impl;
-      }
-      impl = rhs.impl;
-      impl->ref++;
-      return *this;
-    }
-    
-    std::map<uint32_t, std::pair<std::string, uint32_t> > call(){
-      return impl->call();
-    }
-  
-  private:
-    ListOptionCallbackBase * impl;
-};
-
-
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 class ListParameter : public OrderParameter{
 
 public:
-  ListParameter(const std::string& aname, const std::string& adesc);
+  typedef std::pair<std::string, uint32_t> Option;
+  typedef std::map< uint32_t, Option> Options;
+  typedef boost::function< Options () > Callback;
+
+  ListParameter(const std::string& aname, const std::string& adesc, Callback acallback);
   virtual ~ListParameter();
 
   virtual void packOrderFrame(Frame * f);
@@ -116,12 +41,9 @@ public:
   IdMap getList() const;
   void setList(IdMap nlist);
   
-  void setListOptionsCallback(ListOptionCallback cb);
-
 protected:
   IdMap list;
-  ListOptionCallback optionscallback;
-
+  Callback callback;
 };
 
 #endif

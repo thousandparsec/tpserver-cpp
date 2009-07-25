@@ -53,9 +53,7 @@ ProductionOrder::ProductionOrder() {
    name = "Produce";
    description = "Order the production of planetary stats";
    
-   productionList = new ListParameter("Planetary stats","The production orders");
-   productionList->setListOptionsCallback(ListOptionCallback(this,
-            &ProductionOrder::generateListOptions));
+   productionList = (ListParameter*) addOrderParameter( new ListParameter("Planetary stats","The production orders", boost::bind( &ProductionOrder::generateListOptions, this )));
    
    addOrderParameter(productionList);
 

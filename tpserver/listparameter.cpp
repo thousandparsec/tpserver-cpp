@@ -24,7 +24,7 @@
 
 #include "listparameter.h"
 
-ListParameter::ListParameter(const std::string& aname, const std::string& adesc) : OrderParameter(aname,adesc),  optionscallback(){
+ListParameter::ListParameter(const std::string& aname, const std::string& adesc, Callback acallback) : OrderParameter(aname,adesc),  callback(acallback){
   id = opT_List;
 }
 
@@ -34,10 +34,9 @@ ListParameter::~ListParameter(){
 
 
 void ListParameter::packOrderFrame(Frame * f){
-  std::map<uint32_t, std::pair<std::string, uint32_t> > options 
-      = optionscallback.call();
+  Options options = callback();
   f->packInt(options.size());
-  for(std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator itcurr = options.begin();
+  for(Options::iterator itcurr = options.begin();
       itcurr != options.end(); ++itcurr){
     f->packInt(itcurr->first);
     f->packString(itcurr->second.first);
@@ -73,6 +72,3 @@ void ListParameter::setList(IdMap nlist){
   list = nlist;
 }
 
-void ListParameter::setListOptionsCallback(ListOptionCallback cb){
-  optionscallback = cb;
-}
