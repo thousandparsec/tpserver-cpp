@@ -38,7 +38,7 @@ void SpaceCoordParam::packOrderFrame(Frame * f){
   position.pack(f);
 }
 
-bool SpaceCoordParam::unpackFrame(Frame *f, uint32_t playerid){
+bool SpaceCoordParam::unpack(Frame *f){
   if(!f->isEnoughRemaining(24))
     return false;
   position.unpack(f);

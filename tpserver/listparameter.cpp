@@ -47,7 +47,7 @@ void ListParameter::packOrderFrame(Frame * f){
   f->packIdMap(list);
 }
 
-bool ListParameter::unpackFrame(Frame *f, uint32_t playerid){
+bool ListParameter::unpack(Frame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   int selsize = f->unpackInt(); // selectable list (should be zero)

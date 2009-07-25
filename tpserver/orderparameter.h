@@ -49,7 +49,7 @@ class OrderParameter : public Describable {
 
     virtual void packOrderFrame(Frame * f) = 0;
     void packOrderDescFrame(Frame* f) const;
-    virtual bool unpackFrame(Frame * f, uint32_t playerid) = 0;
+    virtual bool unpack(Frame * f) = 0;
 
 };
 

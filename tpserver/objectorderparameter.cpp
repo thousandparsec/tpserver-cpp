@@ -42,7 +42,7 @@ void ObjectOrderParameter::packOrderFrame(Frame * f){
   }
 }
 
-bool ObjectOrderParameter::unpackFrame(Frame *f, uint32_t playerid){
+bool ObjectOrderParameter::unpackFrame(Frame *f){
   if(f->isEnoughRemaining(8)){
     object = f->unpackInt();
     uint32_t numtoskip = f->unpackInt();

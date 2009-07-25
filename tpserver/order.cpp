@@ -110,7 +110,7 @@ Result Order::inputFrame(Frame * f, uint32_t playerid)
   bool rtv = true;
   for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
-    rtv = rtv && (*itcurr)->unpackFrame(f, playerid);
+    rtv = rtv && (*itcurr)->unpack(f);
     if(!rtv)
       break;
   }

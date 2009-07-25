@@ -38,7 +38,7 @@ void StringParameter::packOrderFrame(Frame * f){
   f->packString(string);
 }
 
-bool StringParameter::unpackFrame(Frame *f, uint32_t playerid){
+bool StringParameter::unpack(Frame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt();

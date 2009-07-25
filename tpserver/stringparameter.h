@@ -29,7 +29,7 @@ public:
   virtual ~StringParameter();
 
   virtual void packOrderFrame(Frame * f);
-  virtual bool unpackFrame(Frame * f, uint32_t playerid);
+  virtual bool unpack(Frame * f);
 
   std::string getString() const;
   void setString(const std::string& rhs);
@@ -39,6 +39,7 @@ public:
 
 protected:
   std::string string;
+  // TODO : is this needed?? O.o
   uint32_t max;
 
 };

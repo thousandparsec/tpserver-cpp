@@ -34,7 +34,7 @@ public:
   virtual ~ObjectOrderParameter();
 
   virtual void packOrderFrame(Frame * f);
-  virtual bool unpackFrame(Frame * f, uint32_t playerid);
+  virtual bool unpack(Frame * f);
 
   uint32_t getObjectId() const;
   void setObjectId(uint32_t id);

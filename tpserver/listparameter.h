@@ -111,7 +111,7 @@ public:
   virtual ~ListParameter();
 
   virtual void packOrderFrame(Frame * f);
-  virtual bool unpackFrame(Frame * f, uint32_t playerid);
+  virtual bool unpack(Frame * f);
 
   IdMap getList() const;
   void setList(IdMap nlist);
