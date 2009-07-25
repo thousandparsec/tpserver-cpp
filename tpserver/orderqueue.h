@@ -21,7 +21,6 @@
  */
 
 #include <tpserver/common.h>
-#include <tpserver/result.h>
 #include <tpserver/modifiable.h>
 
 
@@ -53,7 +52,7 @@ class OrderQueue : public Modifiable {
   uint32_t getNumberOrders() const;
   
   bool addOrder(Order* ord, uint32_t pos, uint32_t playerid);
-  Result removeOrder(uint32_t pos, uint32_t playerid);
+  bool removeOrder(uint32_t pos, uint32_t playerid);
   Order* getOrder(uint32_t pos, uint32_t playerid);
   Order * getFirstOrder();
   void removeFirstOrder();

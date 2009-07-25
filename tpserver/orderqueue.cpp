@@ -131,10 +131,10 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
 
 }
 
-Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
+bool OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
   if(isOwner(playerid)){
     if (pos >= orderlist.size()) {
-      return Failure("Order slot to remove is passed end of order slots.");
+      return false;
     }
 
     IdList::iterator itpos = orderlist.begin();
@@ -153,11 +153,11 @@ Result OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
       Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
       touchModTime();
       Game::getGame()->getPersistence()->updateOrderQueue(this);
-      return Success();
+      return true;
     }
-    return Failure("No such Order");
+    return false;
   }
-  return Failure("Not allowed");
+  return false;
 }
 
 Order* OrderQueue::getOrder(uint32_t pos, uint32_t playerid){
