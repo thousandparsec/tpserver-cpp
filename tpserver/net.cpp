@@ -87,13 +87,10 @@ void Network::removeConnection( int fd )
   if (max_fd == fd ) {
     DEBUG("Changing max_fd");
     max_fd = 0;
-    ConnMap::iterator itcurr, itend;
-    itend = connections.end();
-    for (itcurr = connections.begin(); itcurr != itend; itcurr++) {
-      if (max_fd < (*itcurr).first)
-        max_fd = (*itcurr).first;
+    // Map by int is sorted by int
+    if ( !connections.empty() ) {
+      max_fd = connections.rbegin()->first;
     }
-
   }
 }
 
