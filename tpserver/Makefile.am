@@ -49,7 +49,7 @@ headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h packable.h 
 	identifiable.h nameable.h describable.h manager.h \
 	frame.h game.h logging.h net.h settings.h \
 	player.h object.h \
-	order.h systemexception.h \
+	order.h systemexception.h frameexception.h \
 	vector3d.h board.h message.h ordermanager.h \
 	objecttypemanager.h \
 	playerconnection.h adminconnection.h \
