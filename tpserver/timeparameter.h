@@ -25,7 +25,7 @@
 class TimeParameter : public OrderParameter{
 
 public:
-  TimeParameter();
+  TimeParameter( const std::string& aname, const std::string& adesc, uint32_t time = 0 );
   virtual ~TimeParameter();
 
   virtual void packOrderFrame(Frame * f);
@@ -34,13 +34,11 @@ public:
   uint32_t getTime() const;
   void setTime(uint32_t time);
   
-  uint32_t getMax() const;
-  void setMax(uint32_t nmax);
-
 protected:
   uint32_t turns;
-  uint32_t max;
 
+private:
+  TimeParameter() {}
 };
 
 #endif

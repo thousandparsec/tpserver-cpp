@@ -25,7 +25,7 @@
 class StringParameter : public OrderParameter{
 
 public:
-  StringParameter();
+  StringParameter( const std::string& aname, const std::string& adesc );
   virtual ~StringParameter();
 
   virtual void packOrderFrame(Frame * f);
@@ -34,14 +34,11 @@ public:
   std::string getString() const;
   void setString(const std::string& rhs);
 
-  uint32_t getMax() const;
-  void setMax(uint32_t nmax);
-
 protected:
   std::string string;
-  // TODO : is this needed?? O.o
-  uint32_t max;
 
+private:
+  StringParameter() {}
 };
 
 #endif

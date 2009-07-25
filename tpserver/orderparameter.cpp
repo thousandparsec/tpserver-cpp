@@ -25,6 +25,8 @@
 
 #include "orderparameter.h"
 
+OrderParameter::OrderParameter(const std::string& aname, const std::string& adesc ) : Describable(0,aname,adesc){
+}
 OrderParameter::OrderParameter() : Describable(0){
 }
 

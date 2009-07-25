@@ -69,11 +69,7 @@ BuildFleet::BuildFleet() {
    
    addOrderParameter(shipList);
 
-   fleetName = new StringParameter();
-   fleetName->setName("Name");
-   fleetName->setDescription("The name of the fleet to build");
-   
-   addOrderParameter(fleetName);
+   addOrderParameter( new StringParameter( "Name",  "The name of the fleet to build") );
 
    turns = 1;
 }

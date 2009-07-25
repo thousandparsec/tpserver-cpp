@@ -73,13 +73,8 @@ BuildFleet::BuildFleet() : Order()
   fleetlist->setListOptionsCallback(ListOptionCallback(this, &BuildFleet::generateListOptions));
   addOrderParameter(fleetlist);
   
-  fleetname = new StringParameter();
-  fleetname->setName("Name");
-  fleetname->setDescription("The name of the new fleet being built");
-  fleetname->setMax(1024);
-  addOrderParameter(fleetname);
-
-  turns = 1;
+  addOrderParameter( new StringParameter("name", "The name of the new fleet being built") );
+  truns = 1;
 }
 
 BuildFleet::~BuildFleet(){

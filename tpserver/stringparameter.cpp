@@ -24,7 +24,7 @@
 
 #include "stringparameter.h"
 
-StringParameter::StringParameter() : OrderParameter(), string(), max(1024){
+StringParameter::StringParameter( const std::string& aname, const std::string& adesc ) : OrderParameter(aname,adesc) {
   id = opT_String;
 }
 
@@ -34,7 +34,7 @@ StringParameter::~StringParameter(){
 
 
 void StringParameter::packOrderFrame(Frame * f){
-  f->packInt(max);
+  f->packInt(1024);
   f->packString(string);
 }
 
@@ -52,13 +52,5 @@ std::string StringParameter::getString() const{
 
 void StringParameter::setString(const std::string& rhs){
   string = rhs;
-}
-
-uint32_t StringParameter::getMax() const{
-  return max;
-}
-
-void StringParameter::setMax(uint32_t nmax){
-  max = nmax;
 }
 

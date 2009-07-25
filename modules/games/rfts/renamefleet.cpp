@@ -32,11 +32,7 @@ RenameFleet::RenameFleet() {
    name = "Rename Fleet";
    description = "Rename this fleet";
 
-   newName = new StringParameter();
-   newName->setName("New Name");
-   newName->setDescription("The new name of the fleet");
-   addOrderParameter(newName);
-
+   addOrderParameter( new StringParameter( "New Name", "The new name of the fleet") );
    turns = 1;
 }
 

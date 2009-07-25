@@ -25,7 +25,7 @@
 
 #include "timeparameter.h"
 
-TimeParameter::TimeParameter() : OrderParameter(), turns(0), max(0){
+TimeParameter::TimeParameter( const std::string& aname, const std::string& adesc, uint32_t time ) : OrderParameter(aname,adesc), turns(time) {
   id = opT_Time;
 }
 
@@ -36,7 +36,7 @@ TimeParameter::~TimeParameter(){
 
 void TimeParameter::packOrderFrame(Frame * f){
   f->packInt(turns);
-  f->packInt(max);
+  f->packInt(1000);
 }
 
 bool TimeParameter::unpack(Frame *f){
@@ -55,10 +55,3 @@ void TimeParameter::setTime(uint32_t time){
   turns = time;
 }
 
-uint32_t TimeParameter::getMax() const{
-  return max;
-}
-
-void TimeParameter::setMax(uint32_t nmax){
-  max = nmax;
-}

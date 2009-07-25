@@ -38,12 +38,7 @@ Nop::Nop() : Order()
   name = "No Operation";
   description = "Object does nothing for a given number of turns";
   
-  timeparam = new TimeParameter();
-  timeparam->setMax(1000);
-  timeparam->setName("wait");
-  timeparam->setDescription("The number of turns to wait");
-  addOrderParameter(timeparam);
-
+  addOrderParameter( new TimeParameter("wait","The number of turns to wait") );
 }
 
 Nop::~Nop(){
