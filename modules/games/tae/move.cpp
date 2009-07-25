@@ -70,9 +70,8 @@ void Move::createFrame(Frame *f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 
-Result Move::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = FleetOrder::inputFrame(f, playerid);
-    if(!r) return r;
+void Move::inputFrame(Frame *f, uint32_t playerid) {
+    FleetOrder::inputFrame(f, playerid);
 
     Game *game = Game::getGame();
     ObjectManager *obm = game->getObjectManager();
@@ -91,8 +90,6 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
             Logger::getLogger()->debug("Player tried to occupy a system which would join two or more regions.");
         }
     }    
-
-    return Success();
 }
 
 bool Move::doOrder(IGObject * obj) {

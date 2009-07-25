@@ -25,8 +25,8 @@
 #include <map>
 #include <string>
 
-#include "result.h"
 #include <tpserver/common.h>
+#include <tpserver/frameexception.h>
 
 class Frame;
 class IGObject;
@@ -50,7 +50,8 @@ class Order {
     uint64_t getDescriptionModTime() const;
 
     virtual void createFrame(Frame * f, int pos);
-    virtual Result inputFrame(Frame * f, uint32_t playerid);
+    // throws FrameException
+    virtual void inputFrame(Frame * f, uint32_t playerid);
 
     virtual bool doOrder(IGObject * ob) = 0;
 

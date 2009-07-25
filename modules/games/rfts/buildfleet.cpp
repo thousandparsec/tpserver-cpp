@@ -44,10 +44,7 @@
 #include "productioninfo.h"
 #include "rfts.h"
 #include "playerinfo.h"
-
 #include "buildfleet.h"
-
-
 
 namespace RFTS_ {
 
@@ -132,11 +129,9 @@ void BuildFleet::createFrame(Frame *f, int pos) {
 	Order::createFrame(f, pos);
 }
 
-Result BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
+void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
 
-   Result r = Order::inputFrame(f, playerid);
-   if(!r) return r;
-
+   Order::inputFrame(f, playerid);
 
    Game *game = Game::getGame();
    Player* player = game->getPlayerManager()->getPlayer(playerid);
@@ -172,15 +167,13 @@ Result BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
       }
       else
       {
-         return Failure("The requested design was not valid.");
+         throw FrameException("The requested design was not valid.");
       }
    }
    if(fleetCostRP == 0 && !localShipList.empty())
-      return Failure("To build was empty...");
+      throw FrameException("To build was empty...");
 
    shipList->setList(localShipList); // save the list back in case of changes
-   
-   return Success();
 }
 
 bool BuildFleet::doOrder(IGObject *ob)

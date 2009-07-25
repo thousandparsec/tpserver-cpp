@@ -125,11 +125,11 @@ void ProductionOrder::createFrame(Frame *f, int pos) {
 			this->turns = 2;
 			break;
 	}
-   Order::createFrame(f, pos);
+  Order::createFrame(f, pos);
 }
 
-Result ProductionOrder::inputFrame(Frame *f, uint32_t playerid) {
-   return Order::inputFrame(f, playerid);
+void ProductionOrder::inputFrame(Frame *f, uint32_t playerid) {
+  Order::inputFrame(f, playerid);
 }
 
 bool ProductionOrder::doOrder(IGObject *obj) {

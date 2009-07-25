@@ -26,6 +26,7 @@ class FrameException : public std::exception {
   public:
     explicit FrameException( const std::string& arg ) : reason(arg) {}
     virtual const char* what() const throw() { return reason.c_str(); }
+    virtual ~FrameException() throw() {}
   private:
     std::string reason;
 };

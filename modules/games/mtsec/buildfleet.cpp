@@ -28,7 +28,6 @@
 #include <math.h>
 #include <iostream>
 
-#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -107,27 +106,15 @@ ListParameter::Options BuildFleet::generateListOptions(){
   return options;
 }
 
-Result BuildFleet::inputFrame(Frame *f, uint32_t playerid)
+void BuildFleet::inputFrame(Frame *f, uint32_t playerid)
 {
-  Logger::getLogger()->debug("Enter: BuildFleet::inputFrame()");
-
-  Result r = Order::inputFrame(f, playerid);
-  if(!r) return r;
-
-  Game* game = Game::getGame();
-
-  Player* player = game->getPlayerManager()->getPlayer(playerid);
-  DesignStore* ds = game->getDesignStore();
-  ResourceManager* resman = game->getResourceManager();
-  IGObject * igobj = game->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-  Planet * planet = dynamic_cast<Planet*>(igobj->getObjectBehaviour());
-
-  const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
-  const uint32_t resValue = planet->getResourceSurfaceValue(resType);
-  uint32_t bldTmPropID = ds->getPropertyByName("ProductCost");
-
-  uint32_t total =0;
-
+  Order::inputFrame(f, playerid);
+  
+  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
+  DesignStore* ds = Game::getGame()->getDesignStore();
+  
+  uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
+  uint32_t total = 0;
   IdMap fleettype = fleetlist->getList();
 
   for(IdMap::iterator itcurr = fleettype.begin();
@@ -141,17 +128,18 @@ Result BuildFleet::inputFrame(Frame *f, uint32_t playerid)
       ds->designCountsUpdated(design);
       total += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
     }else{
-      return Failure("The requested design was not valid.");
+      throw FrameException("The requested design was not valid.");
     }
   }
-  turns = (int)(ceil(total/resValue));
-  resources[1] = total;
-
-
+  if(usedshipres == 0 && !fleettype.empty()){
+    throw FrameException("To build was empty...");
+  }
+  
+  resources[1] = usedshipres;
+  
   if(fleetname->getString().length() == 0){
       fleetname->setString("A Fleet");
   }
-  return Success();
 }
 
 bool BuildFleet::doOrder(IGObject *ob)

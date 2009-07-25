@@ -49,12 +49,10 @@ void Nop::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);
 }
 
-Result Nop::inputFrame(Frame * f, uint32_t playerid)
+void Nop::inputFrame(Frame * f, uint32_t playerid)
 {
-  Result rtv = Order::inputFrame(f, playerid);
+  Order::inputFrame(f, playerid);
   turns = timeparam->getTime();
-
-  return rtv;
 }
 
 bool Nop::doOrder(IGObject * ob){

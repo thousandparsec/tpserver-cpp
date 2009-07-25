@@ -23,7 +23,6 @@
 #include <cassert>
 
 #include <tpserver/frame.h>
-#include <tpserver/objectorderparameter.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -38,6 +37,7 @@
 #include <tpserver/logging.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
+#include <tpserver/orderparameters.h>
 
 #include "ownedobject.h"
 #include "starsystem.h"
@@ -63,9 +63,8 @@ void FleetOrder::createFrame(Frame *f, int pos) {
 }
 
 //Used to check to see if the input is valid
-Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = Order::inputFrame(f, playerid);
-    if(!r) return r;
+void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
+    Order::inputFrame(f, playerid);
 
     turns = 0;
     int numOrders = 0;
@@ -132,8 +131,6 @@ Result FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
         starSys->setObjectId(0);
         Logger::getLogger()->debug("Player has already issued 2 or more orders this turn.");
     }
-
-    return Success();
 }
 
 //Returns the regions bordering the fleet

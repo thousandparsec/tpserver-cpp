@@ -58,8 +58,8 @@ void Reinforce::createFrame(Frame *f, int pos) {
     Order::createFrame(f, pos);
 }
 
-Result Reinforce::inputFrame(Frame *f, uint32_t playerid) {
-    return Success();
+void Reinforce::inputFrame(Frame *f, uint32_t playerid) {
+    return;
 }
 
 bool Reinforce::doOrder(IGObject * obj) {

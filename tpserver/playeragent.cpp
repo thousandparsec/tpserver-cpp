@@ -441,28 +441,30 @@ void PlayerAgent::processAddOrder(Frame * frame){
       of->createFailFrame(fec_NonExistant, "No such order type");
     } else {
       ord->setOrderQueueId(orderqueueid);
-      Result r = ord->inputFrame(frame, player->getID());
-      if (r){
-        if(orderqueue->addOrder(ord, pos, player->getID())) {
-          if(of->getVersion() >= fv0_4){
-            ord->createFrame(of, pos);
-          }else{
-            of->setType(ft02_OK);
-            of->packString("Order Added");
-          }
-          //update ObjectView
-          uint32_t objid = orderqueue->getObjectId();
-          if(objid != 0){
-            ObjectView* obv = player->getPlayerView()->getObjectView(objid);
-            obv->touchModTime();
-            player->getPlayerView()->updateObjectView(objid);
-          }
-        } else {
-          of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
+      try {
+        ord->inputFrame(frame, player->getID());
+      } catch ( FrameException& fe ) {
+        of->createFailFrame(fec_FrameError, std::string("Could not add order : ") + std::string(fe.what()));
+        curConnection->sendFrame(of);
+        return;
+      }
+
+      if(orderqueue->addOrder(ord, pos, player->getID())) {
+        if(of->getVersion() >= fv0_4){
+          ord->createFrame(of, pos);
+        }else{
+          of->setType(ft02_OK);
+          of->packString("Order Added");
         }
-      }else{
-        // FIXME: This isn't always a FrameError really...
-        of->createFailFrame(fec_FrameError, (std::string("Could not add order, ") + r).c_str());
+        //update ObjectView
+        uint32_t objid = orderqueue->getObjectId();
+        if(objid != 0){
+          ObjectView* obv = player->getPlayerView()->getObjectView(objid);
+          obv->touchModTime();
+          player->getPlayerView()->updateObjectView(objid);
+        }
+      } else {
+        of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
       }
     }
   } else {
@@ -599,10 +601,11 @@ void PlayerAgent::processProbeOrder(Frame * frame){
     of->createFailFrame(fec_NonExistant, "No such order type");
   }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     ord->setOrderQueueId(orderqueueid);
-    if(ord->inputFrame(frame, player->getID())){
+    try {
+      ord->inputFrame(frame, player->getID());
       ord->createFrame(of, pos);
-    }else{
-      of->createFailFrame(fec_FrameError, "Order could not be unpacked correctly, invalid order");
+    } catch ( FrameException& fe ) {
+      of->createFailFrame(fec_FrameError, std::string("Order could not be unpacked correctly : ") + std::string( fe.what() ));
       DEBUG("Probe Order, could not unpack order");
     }
 

@@ -68,9 +68,8 @@ void Move::createFrame(Frame *f, int pos) {
    Order::createFrame(f, pos);
 }
 
-Result Move::inputFrame(Frame *f, uint32_t playerid) {
-   Result r = Order::inputFrame(f, playerid);
-   if(!r) return r;
+void Move::inputFrame(Frame *f, uint32_t playerid) {
+   Order::inputFrame(f, playerid);
 
    turns = 0;
       
@@ -104,8 +103,6 @@ Result Move::inputFrame(Frame *f, uint32_t playerid) {
    turns = static_cast<uint32_t>(getWrappingUnitDist(*fleetData, *starSysData) / fleetData->getSpeed()  + .5);
    
    om->doneWithObject(fleet->getID());
-
-   return Success();
 }
 
 bool Move::doOrder(IGObject * obj) {

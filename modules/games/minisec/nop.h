@@ -22,21 +22,20 @@
 
 //class Order;
 #include <tpserver/order.h>
-#include <tpserver/result.h>
 
 class TimeParameter;
 
 class Nop:public Order {
-      public:
-	Nop();
-	virtual ~Nop();
+  public:
+    Nop();
+    virtual ~Nop();
 
-	void createFrame(Frame * f, int pos);
-	Result inputFrame(Frame * f, uint32_t playerid);
+    void createFrame(Frame * f, int pos);
+    void inputFrame(Frame * f, uint32_t playerid);
 
-	bool doOrder(IGObject * ob);
+    bool doOrder(IGObject * ob);
 
-	Order* clone() const;
+    Order* clone() const;
 
   private:
     TimeParameter* timeparam;

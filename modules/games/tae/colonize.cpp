@@ -85,9 +85,8 @@ void Colonize::createFrame(Frame *f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 
-Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
-    Result r = FleetOrder::inputFrame(f, playerid);
-    if(!r) return r;
+void Colonize::inputFrame(Frame *f, uint32_t playerid) {
+    FleetOrder::inputFrame(f, playerid);
 
     Game *game = Game::getGame();
     ObjectManager *obm = game->getObjectManager();
@@ -101,8 +100,6 @@ Result Colonize::inputFrame(Frame *f, uint32_t playerid) {
         starSys->setObjectId(0);
         Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
     }        
-
-    return Success();
 }
 
 //The colonize order checks to make sure the system is valid, then adds a resource to the planet, checks for

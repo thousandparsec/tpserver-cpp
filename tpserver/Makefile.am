@@ -60,7 +60,7 @@ headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h packable.h 
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h  \
 	orderparameter.h orderparameters.h  \
-	timercallback.h prng.h playeragent.h turnprocess.h result.h \
+	timercallback.h prng.h playeragent.h turnprocess.h \
 	objectparameter.h objectparametergroup.h position3dobjectparam.h \
 	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \

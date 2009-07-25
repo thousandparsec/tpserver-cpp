@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
@@ -85,9 +84,9 @@ void Move::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);	
 }
 
-Result Move::inputFrame(Frame * f, uint32_t playerid)
+void Move::inputFrame(Frame * f, uint32_t playerid)
 {
-  return Order::inputFrame(f, playerid);
+  Order::inputFrame(f, playerid);
 }
 
 bool Move::doOrder(IGObject * ob){

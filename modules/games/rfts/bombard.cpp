@@ -61,9 +61,8 @@ Order* Bombard::clone() const {
    return b;
 }
 
-Result Bombard::inputFrame(Frame * f, uint32_t playerid) {
-   Result r = Order::inputFrame(f, playerid);
-   if(!r) return r;
+void Bombard::inputFrame(Frame * f, uint32_t playerid) {
+   Order::inputFrame(f, playerid);
 
    ObjectManager *om = Game::getGame()->getObjectManager();
 
@@ -74,8 +73,6 @@ Result Bombard::inputFrame(Frame * f, uint32_t playerid) {
       planet->setObjectId(0);
    else if(planetData->getOwner() == playerid)
       planet->setObjectId(0);
-
-   return Success();
 }
 
 bool Bombard::doOrder(IGObject *fleet) {

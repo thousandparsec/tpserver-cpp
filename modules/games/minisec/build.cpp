@@ -20,7 +20,6 @@
 
 #include <math.h>
 
-#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -112,10 +111,9 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
   return options;
 }
 
-Result Build::inputFrame(Frame *f, uint32_t playerid)
+void Build::inputFrame(Frame *f, uint32_t playerid)
 {
-  Result r = Order::inputFrame(f, playerid);
-  if(!r) return r;
+  Order::inputFrame(f, playerid);
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore* ds = Game::getGame()->getDesignStore();
@@ -126,7 +124,7 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
   uint32_t usedshipres = 0;
   
   for(IdMap::iterator itcurr = fleettype.begin();
-     itcurr != fleettype.end(); ++itcurr){
+     itcurr != fleettype.end(); ++itcurr) {
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
     
@@ -138,19 +136,18 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
         ds->designCountsUpdated(design);
 
     }else{
-      return Failure("The requested design was not valid.");
+      throw FrameException("The requested design was not valid.");
     }
   }
   if(usedshipres == 0 && !fleettype.empty()){
-    return Failure("To build was empty...");
+    throw FrameException("To build was empty...");
   }
   
   resources[1] = usedshipres;
   
   if(fleetname->getString().length() == 0){
-      fleetname->setString("A Fleet");
+    fleetname->setString("A Fleet");
   }
-  return Success();
 }
 
 bool Build::doOrder(IGObject *ob)

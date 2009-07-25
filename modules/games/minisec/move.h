@@ -26,24 +26,24 @@
 class SpaceCoordParam;
 
 class Move : public Order{
-      public:
-	Move();
-	virtual ~Move();
+  public:
+    Move();
+    virtual ~Move();
 
-	Vector3d getDest() const;
-	void setDest(const Vector3d & ndest);
+    Vector3d getDest() const;
+    void setDest(const Vector3d & ndest);
 
-	int getETA(IGObject* ob) const;
+    int getETA(IGObject* ob) const;
 
-	void createFrame(Frame * f, int pos);
-	Result inputFrame(Frame * f, uint32_t playerid);
+    void createFrame(Frame * f, int pos);
+    void inputFrame(Frame * f, uint32_t playerid);
 
-	bool doOrder(IGObject * ob);
+    bool doOrder(IGObject * ob);
 
-	Order* clone() const;
+    Order* clone() const;
 
-      private:
-	SpaceCoordParam* coords;
+  private:
+    SpaceCoordParam* coords;
 
 
 };

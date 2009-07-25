@@ -20,26 +20,25 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/orderparameters.h>
 
 class Build : public Order{
- public:
-  Build();
-  virtual ~Build();
+  public:
+    Build();
+    virtual ~Build();
 
-  void createFrame(Frame *f, int pos);
-  Result inputFrame(Frame *f, uint32_t playerid);
+    void createFrame(Frame *f, int pos);
+    void inputFrame(Frame *f, uint32_t playerid);
 
-  bool doOrder(IGObject *ob);
+    bool doOrder(IGObject *ob);
 
-  Order* clone() const;
+    Order* clone() const;
 
- private:
-  ListParameter::Options generateListOptions();
-  ListParameter * fleetlist;
-  StringParameter * fleetname;
+  private:
+    ListParameter::Options generateListOptions();
+    ListParameter * fleetlist;
+    StringParameter * fleetname;
 };
 
 #endif

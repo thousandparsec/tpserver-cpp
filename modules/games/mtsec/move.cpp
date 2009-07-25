@@ -89,12 +89,6 @@ void Move::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);	
 }
 
-Result Move::inputFrame(Frame * f, uint32_t playerid)
-{
-  Logger::getLogger()->debug("Enter Move::inputFrame");
-  return Order::inputFrame(f, playerid);
-}
-
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());

@@ -71,10 +71,6 @@ void Attack::createFrame(Frame *f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 
-Result Attack::inputFrame(Frame *f, uint32_t playerid) {
-    return FleetOrder::inputFrame(f, playerid);
-}
-
 // The attack order must check to make sure the target is valid, then
 // remove any colony or leader, and finally add the "destroyed" resource to
 // prevent further colonization or occupation.
