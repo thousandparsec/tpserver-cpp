@@ -21,7 +21,7 @@
  */
 
 #include <tpserver/describable.h>
-//#include <tpserver/packable.h>
+#include <tpserver/packable.h>
 
 // Used only by persistence
 typedef enum {
@@ -40,12 +40,10 @@ typedef enum {
 
 class Frame;
 
-class OrderParameter : public Describable {
+class OrderParameter : public Describable, public Packable {
   public:
     OrderParameter(const std::string& aname, const std::string& adesc );
     virtual ~OrderParameter();
-
-    virtual void packOrderFrame( Frame* f ) = 0; 
 
     // used only by persistence
     uint32_t getType() const;

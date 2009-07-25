@@ -89,7 +89,7 @@ void Order::createFrame(Frame * f, int pos)
   f->packIdMap(resources);
   for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
-    (*itcurr)->packOrderFrame(f);
+    (*itcurr)->pack(f);
   }
 }
 
