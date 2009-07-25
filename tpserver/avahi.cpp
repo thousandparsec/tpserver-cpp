@@ -188,18 +188,17 @@ class AvahiTimeout{
     }
     
     ~AvahiTimeout(){
+      disableTimer();
     }
     
     void setTimer(uint64_t sec){
-      if(timer){
-        timer->invalidate();
-      }
+      disableTimer();
       timer.reset( new TimerCallback( boost::bind(&AvahiTimeout::timeout, this), sec) );
       Network::getNetwork()->addTimer(timer);
     }
     
     void disableTimer(){
-      if(timer != NULL){
+      if (timer){
         timer->invalidate();
         timer.reset();
       }
