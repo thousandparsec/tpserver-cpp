@@ -22,107 +22,43 @@
 
 #include <ctime>
 #include <stdint.h>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
 
-/** Baseclass for TimerCallback
-
-*/
-class TimerCallbackBase{
-  public:
-    TimerCallbackBase(): ref(0), valid(true) {}
-    virtual ~TimerCallbackBase(){};
-    virtual void call() const = 0;
-    int ref;
-    bool valid;
-};
-
-/** A simple callback for Timer
-	@author Lee Begg <llnz@paradise.net.nz>
-*/
-template<typename C , typename M>
-    class TimerCallbackImpl;
-
-template<typename C , typename M>
-class TimerCallbackImpl : public TimerCallbackBase
-{
-public:
-  TimerCallbackImpl(C const&objPtr, M mem_ptr)
-  : TimerCallbackBase(), object (objPtr), method (mem_ptr){};
-
-  virtual ~TimerCallbackImpl(){};
-  
-  virtual void call() const{
-    ((*object).*method)();
-  }
-  
-private:
-  C const object;
-  M method;
-
-};
-
-
+/** Baseclass for TimerCallback */
 
 class TimerCallback{
   public:
-  template <typename OBJ_PTR, typename MEM_PTR>
-    TimerCallback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr, uint64_t sec)
-        : impl (new TimerCallbackImpl<OBJ_PTR,MEM_PTR> (objPtr, mem_ptr)) {
-      impl->ref++;
+    /// typedef for callback function
+    typedef boost::function< void() > Callback;
+    /// typedef for shared pointer
+    typedef boost::shared_ptr< TimerCallback > Ptr;
+
+    TimerCallback (Callback acallback, uint32_t sec) : callback(acallback) {
       expiretime = sec + time(NULL);
     }
     
-    TimerCallback(const TimerCallback& rhs){
-      impl = rhs.impl;
-      if(impl != NULL)
-        impl->ref++;
-      expiretime = rhs.expiretime;
-    }
-    
-    TimerCallback(): impl(NULL), expiretime(0) {};
-    
-    ~TimerCallback(){
-      if(impl != NULL){
-        impl->ref--;
-        if(impl->ref == 0)
-          delete impl;
-      }
-    }
+    TimerCallback(): callback(NULL), expiretime(0) {};
     
     uint64_t getExpireTime() const{
       return expiretime;
     }
     
     bool isValid() const{
-      return (impl != NULL) ? impl->valid : false;
+      return (callback != NULL);
     }
     
-    void setValid(bool value){
-      if(impl != NULL)
-        impl->valid = value;
-    }
-    
-    TimerCallback operator=(const TimerCallback & rhs){
-      if(impl != NULL){
-        impl->ref--;
-        if(impl->ref == 0)
-          delete impl;
-      }
-      impl = rhs.impl;
-      impl->ref++;
-      expiretime = rhs.expiretime;
-      return *this;
-    }
-    
-    bool operator>(const TimerCallback & rhs) const{
-      return (expiretime > rhs.expiretime);
+    void invalidate() {
+      callback = NULL;
     }
     
     void call() const {
-      impl->call();
+      callback();
     }
   
   private:
-    TimerCallbackBase * impl;
+    Callback callback;
     uint64_t expiretime;
 };
 

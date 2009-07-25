@@ -36,7 +36,7 @@
 #include "advertiser.h"
 
 
-Advertiser::Advertiser() : publishing(false), metaserver_warning(NULL){
+Advertiser::Advertiser() : publishing(false) {
   Settings* settings = Settings::getSettings();
   settings->setCallback("game_name",         boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
   settings->setCallback("game_shortname",    boost::bind( &Advertiser::settingChanged, this, _1, _2 ));
@@ -70,8 +70,8 @@ void Advertiser::publish(){
   }else{
     WARNING("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
     if(Settings::getSettings()->get("metaserver_enable") != "no"){
-      metaserver_warning = new TimerCallback(this, &Advertiser::metaserverWarning, 600);
-      Network::getNetwork()->addTimer(*metaserver_warning);
+      metaserver_warning.reset( new TimerCallback( boost::bind( &Advertiser::metaserverWarning, this ), 600) );
+      Network::getNetwork()->addTimer( metaserver_warning );
     }
   }
   publishing = true;
@@ -80,10 +80,9 @@ void Advertiser::publish(){
 
 void Advertiser::unpublish(){
   publishing = false;
-  if(metaserver_warning != NULL){
-    metaserver_warning->setValid(false);
-    delete metaserver_warning;
-    metaserver_warning = NULL;
+  if(metaserver_warning){
+    metaserver_warning->invalidate();
+    metaserver_warning.reset();
   }
   publishers.clear();
 }
@@ -124,10 +123,9 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
           }
         }
       }else{
-        if(metaserver_warning != NULL){
-          metaserver_warning->setValid(false);
-          delete metaserver_warning;
-          metaserver_warning = NULL;
+        if(metaserver_warning){
+          metaserver_warning->invalidate();
+          metaserver_warning.reset();
         }
         bool found = false;
         for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
@@ -148,7 +146,6 @@ void Advertiser::settingChanged(const std::string& skey, const std::string& valu
 
 void Advertiser::metaserverWarning(){
   WARNING("Metaserver updates disabled, set metaserver_enable to \"yes\" to enable them");
-  delete metaserver_warning;
-  metaserver_warning = new TimerCallback(this, &Advertiser::metaserverWarning, 600);
-  Network::getNetwork()->addTimer(*metaserver_warning);
+  metaserver_warning.reset( new TimerCallback( boost::bind( &Advertiser::metaserverWarning, this ), 600) );
+  Network::getNetwork()->addTimer(metaserver_warning);
 }

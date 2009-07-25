@@ -24,6 +24,7 @@
 #include "playermanager.h"
 #include "player.h"
 #include "frame.h"
+#include "settings.h"
 #include "asynctimeremaining.h"
 
 #include "turntimer.h"
@@ -32,8 +33,29 @@ TurnTimer::TurnTimer(): finishedPlayers(), numdead(0){
 }
 
 TurnTimer::~TurnTimer(){
+  if(timer){
+      timer->invalidate();
+      timer.reset();
+  }
   finishedPlayers.clear();
 }
+uint32_t TurnTimer::secondsToEOT() const{
+    if(timer != NULL){
+        return timer->getExpireTime() - time(NULL);
+    }
+    return UINT32_NEG_ONE;
+}
+
+uint32_t TurnTimer::getTurnLength() const{
+    Settings* settings = Settings::getSettings();
+  
+    uint32_t len = atoi(settings->get("turn_length").c_str());
+    if(len == 0){
+        len = UINT32_NEG_ONE;
+    }
+    return len;
+}
+
 
 void TurnTimer::playerFinishedTurn(uint32_t playerid){
   Logger::getLogger()->info("Player %d finished turn (%d other players finished).", playerid, finishedPlayers.size());
@@ -106,4 +128,9 @@ void TurnTimer::doEndOfTurn(){
     finishedPlayers.clear();
     resetTimer();
     Network::getNetwork()->doneEOT();
+}
+
+void TurnTimer::timerFinished(){
+    //EOT
+    timerExpiredStartEOT();
 }

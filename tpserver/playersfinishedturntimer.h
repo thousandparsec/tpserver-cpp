@@ -22,24 +22,12 @@
 
 #include "turntimer.h"
 
-class TimerCallback;
-
 class PlayersFinishedTurnTimer : public TurnTimer{
-    public:
-        PlayersFinishedTurnTimer();
-        ~PlayersFinishedTurnTimer();
-        
-        uint32_t secondsToEOT() const;
-        uint32_t getTurnLength() const;
-    
-        void resetTimer();
-        
-    protected:
-        void onPlayerFinishedTurn();
-        
-    private:
-        void timerFinished();
-        TimerCallback* timer;
-};
+  public:
+    PlayersFinishedTurnTimer();
+    void resetTimer();
 
+  protected:
+    void onPlayerFinishedTurn();
+};
 #endif

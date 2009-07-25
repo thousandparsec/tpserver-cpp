@@ -20,23 +20,12 @@
  *
  */
 
-#include "turntimer.h"
-
-class TimerCallback;
+#include <tpserver/turntimer.h>
 
 class BasicTurnTimer : public TurnTimer{
-    public:
-        BasicTurnTimer();
-        virtual ~BasicTurnTimer();
-        
-        uint32_t getTurnLength() const;
-        uint32_t secondsToEOT() const;
-        void resetTimer();
-
-    private:
-        void timerFinished();
-        TimerCallback* timer;
-
+  public:
+    BasicTurnTimer();
+    void resetTimer();
 };
 
 #endif

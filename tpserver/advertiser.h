@@ -22,6 +22,7 @@
 
 #include <tpserver/common.h>
 #include <tpserver/publisher.h>
+#include <tpserver/timercallback.h>
 
 class TimerCallback;
 
@@ -64,7 +65,7 @@ private:
 
   bool publishing;
 
-  TimerCallback *metaserver_warning;
+  TimerCallback::Ptr metaserver_warning;
 };
 
 #endif

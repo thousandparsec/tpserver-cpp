@@ -29,15 +29,11 @@
 
 #include "thresholdturntimer.h"
 
-ThresholdTurnTimer::ThresholdTurnTimer(): TurnTimer(), timer(NULL), overthreshold(false){
+ThresholdTurnTimer::ThresholdTurnTimer(): TurnTimer(), overthreshold(false){
   Settings::getSettings()->setCallback("turn_player_threshold", boost::bind( &ThresholdTurnTimer::thresholdChanged, this, _1, _2 ));
 }
 
 ThresholdTurnTimer::~ThresholdTurnTimer(){
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
-  }
   Settings::getSettings()->removeCallback("turn_player_threshold");
 }
 
@@ -49,14 +45,6 @@ void ThresholdTurnTimer::onPlayerFinishedTurn(){
         Logger::getLogger()->info("Threshold of players finished, setting over threshold turn length.");
         updateTimerNowOverThreshold();
     }
-}
-
-
-uint32_t ThresholdTurnTimer::secondsToEOT() const{
-  if(timer != NULL){
-    return timer->getExpireTime() - time(NULL);
-  }
-  return UINT32_NEG_ONE;
 }
 
 uint32_t ThresholdTurnTimer::getTurnLength() const{
@@ -80,10 +68,8 @@ uint32_t ThresholdTurnTimer::getTurnLength() const{
 void ThresholdTurnTimer::resetTimer(){
   Settings* settings = Settings::getSettings();
   
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
-    timer = NULL;
+  if (timer){
+    timer->invalidate();
   }
   
   int64_t increment;
@@ -111,8 +97,8 @@ void ThresholdTurnTimer::resetTimer(){
     }
   }
 
-  timer = new TimerCallback(this, &ThresholdTurnTimer::timerFinished, increment);
-  Network::getNetwork()->addTimer(*timer);
+  timer.reset( new TimerCallback( boost::bind( &ThresholdTurnTimer::timerFinished, this), increment ));
+  Network::getNetwork()->addTimer(timer);
   
   // send frame to all connections that the end of turn has started
   timerStarted();
@@ -145,22 +131,15 @@ void ThresholdTurnTimer::updateTimerNowOverThreshold(){
       // current timer is shorter, keep using it
       return;
     }
-    timer->setValid(false);
-    delete timer;
+    timer->invalidate();
   }
   
-  timer = new TimerCallback(this, &ThresholdTurnTimer::timerFinished, realincrement);
-  Network::getNetwork()->addTimer(*timer);
+  timer.reset( new TimerCallback( boost::bind( &ThresholdTurnTimer::timerFinished, this ), increment) );
+  Network::getNetwork()->addTimer(timer);
   
   // send frame to all connections that a new timer is in use.
   thresholdFinishedNewTimer();
 }
-
-void ThresholdTurnTimer::timerFinished(){
-    //Turn timer expired, do end of turn
-    timerExpiredStartEOT();
-}
-
 
 bool ThresholdTurnTimer::isOverThreshold(){
   uint32_t threshold = atoi(Settings::getSettings()->get("turn_player_threshold").c_str());

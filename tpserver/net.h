@@ -26,13 +26,11 @@
 #include <algorithm>
 #include <tpserver/advertiser.h>
 #include <tpserver/connection.h>
+#include <tpserver/timercallback.h>
 
 
-class Connection;
 class Frame;
 class AsyncFrame;
-
-class TimerCallback;
 
 class Network {
 
@@ -47,8 +45,7 @@ class Network {
     // TODO : refactor to take FD - then fix avahi
     void addToWriteQueue(Connection::Ptr conn);
 
-    void addTimer(TimerCallback callback);
-    bool removeTimer(TimerCallback callback);
+    void addTimer(TimerCallback::Ptr callback);
 
     void start();
 
@@ -72,6 +69,14 @@ class Network {
 
 
   private:
+    struct CompareTimerCallback : public std::binary_function<TimerCallback::Ptr, TimerCallback::Ptr, bool>
+    {
+      bool operator()(TimerCallback::Ptr x, TimerCallback::Ptr y) const
+      {
+        return x->getExpireTime() < y->getExpireTime();
+      }
+    };
+
     typedef std::map< int, Connection::Ptr> ConnMap;
     Network();
     ~Network();
@@ -91,7 +96,7 @@ class Network {
     ConnMap connections;
     ConnMap writequeue;
 
-    std::priority_queue<TimerCallback, std::vector<TimerCallback>, std::greater<TimerCallback> > timers;
+    std::priority_queue<TimerCallback::Ptr, std::vector<TimerCallback::Ptr>, CompareTimerCallback > timers;
 
     Advertiser::Ptr advertiser;
 

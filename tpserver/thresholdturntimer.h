@@ -28,23 +28,17 @@ class ThresholdTurnTimer : public TurnTimer{
   public:
     ThresholdTurnTimer();
     virtual ~ThresholdTurnTimer();
-    
-    uint32_t secondsToEOT() const;
     uint32_t getTurnLength() const;
-    
     void resetTimer();
     
     protected:
         void onPlayerFinishedTurn();
     
   private:
-    void updateTimerNowOverThreshold();
-    void timerFinished();
+    void updateTimer();
     void thresholdDoneAndStartEOT();
     bool isOverThreshold();
     void thresholdChanged(const std::string& key, const std::string& val);
-    
-    TimerCallback* timer;
     bool overthreshold;
 };
 

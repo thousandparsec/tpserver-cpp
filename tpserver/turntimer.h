@@ -22,40 +22,44 @@
 
 #include <stdint.h>
 #include <set>
+#include <tpserver/timercallback.h>
 
 class TurnTimer{
   public:
     TurnTimer();
     virtual ~TurnTimer();
-    
-    virtual uint32_t secondsToEOT() const = 0;
-    virtual uint32_t getTurnLength() const = 0;
-    
+
+    virtual uint32_t secondsToEOT() const;
+    virtual uint32_t getTurnLength() const;
+
     virtual void resetTimer() = 0;
-    
+
     void manuallyRunEndOfTurn();
-    
+
     void playerFinishedTurn(uint32_t playerid);
     void setNumberDeadPlayers(uint32_t ndp);
+
+    void timerFinished();
+  protected:
+    uint32_t getNumActivePlayers() const;
+    uint32_t getNumDonePlayers() const;
+
+    virtual void onPlayerFinishedTurn();
+
+    //Triggers EOT
+    void timerExpiredStartEOT();
+    void allDoneStartEOT();
+
+    //Triggers alerts
+    void timerStarted();
+    void thresholdFinishedNewTimer();
+    void advancedWarningOfTimer();
     
-    protected:
-        uint32_t getNumActivePlayers() const;
-        uint32_t getNumDonePlayers() const;
-        
-        virtual void onPlayerFinishedTurn();
-        
-        //Triggers EOT
-        void timerExpiredStartEOT();
-        void allDoneStartEOT();
-    
-        //Triggers alerts
-        void timerStarted();
-        void thresholdFinishedNewTimer();
-        void advancedWarningOfTimer();
-        
-    private:
-        void sendTimeRemaining(uint32_t remaining, uint32_t reason);
-        void doEndOfTurn();
+    TimerCallback::Ptr timer;
+
+  private:
+    void sendTimeRemaining(uint32_t remaining, uint32_t reason);
+    void doEndOfTurn();
     std::set<uint32_t> finishedPlayers;
     uint32_t numdead;
 };

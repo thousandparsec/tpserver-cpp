@@ -27,38 +27,15 @@
 
 #include "basicturntimer.h"
 
-BasicTurnTimer::BasicTurnTimer() : TurnTimer(), timer(NULL){
+BasicTurnTimer::BasicTurnTimer() : TurnTimer() {
     
-}
-
-BasicTurnTimer::~BasicTurnTimer(){
-    if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
-    }
-}
-
-uint32_t BasicTurnTimer::secondsToEOT() const{
-    if(timer != NULL){
-        return timer->getExpireTime() - time(NULL);
-    }
-    return UINT32_NEG_ONE;
-}
-
-uint32_t BasicTurnTimer::getTurnLength() const{
-    Settings* settings = Settings::getSettings();
-  
-    uint32_t len = atoi(settings->get("turn_length").c_str());
-    return len;
 }
 
 void BasicTurnTimer::resetTimer(){
     Settings* settings = Settings::getSettings();
   
-    if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
-        timer = NULL;
+    if (timer) {
+        timer->invalidate();
     }
     
     uint32_t len = atoi(settings->get("turn_length").c_str());
@@ -67,14 +44,10 @@ void BasicTurnTimer::resetTimer(){
         len = 60;
     }
     
-    timer = new TimerCallback(this, &BasicTurnTimer::timerFinished, len);
-    Network::getNetwork()->addTimer(*timer);
+    timer.reset( new TimerCallback( boost::bind( &BasicTurnTimer::timerFinished, this), len) );
+    Network::getNetwork()->addTimer(timer);
     
     //Alert players
     timerStarted();
 }
 
-void BasicTurnTimer::timerFinished(){
-    //EOT
-    timerExpiredStartEOT();
-}

@@ -25,44 +25,20 @@
 
 #include "playersfinishedturntimer.h"
 
-PlayersFinishedTurnTimer::PlayersFinishedTurnTimer() : TurnTimer(), timer(NULL){
+PlayersFinishedTurnTimer::PlayersFinishedTurnTimer() : TurnTimer() {
     
-}
-
-PlayersFinishedTurnTimer::~PlayersFinishedTurnTimer(){
-    if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
-    }
-}
-
-uint32_t PlayersFinishedTurnTimer::secondsToEOT() const{
-    if(timer != NULL){
-        return timer->getExpireTime() - time(NULL);
-    }
-    return UINT32_NEG_ONE;
-}
-
-uint32_t PlayersFinishedTurnTimer::getTurnLength() const{
-    Settings* settings = Settings::getSettings();
-  
-    uint32_t len = atoi(settings->get("turn_length").c_str());
-    if(len == 0){
-        len = UINT32_NEG_ONE;
-    }
-    return len;
 }
 
 void PlayersFinishedTurnTimer::resetTimer(){
     if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
+        timer->invalidate();
+        timer.reset();
     }
     uint32_t len = atoi(Settings::getSettings()->get("turn_length").c_str());
     
     if(len != 0){
-        timer = new TimerCallback(this, &PlayersFinishedTurnTimer::timerFinished, len);
-        Network::getNetwork()->addTimer(*timer);
+        timer.reset( new TimerCallback( boost::bind( &PlayersFinishedTurnTimer::timerFinished, this ), len) );
+        Network::getNetwork()->addTimer(timer);
     
         //Alert players
         timerStarted();
@@ -73,9 +49,4 @@ void PlayersFinishedTurnTimer::onPlayerFinishedTurn(){
     if(getNumActivePlayers() > 1 && getNumActivePlayers() == getNumDonePlayers()){
         allDoneStartEOT();
     }
-}
-
-void PlayersFinishedTurnTimer::timerFinished(){
-    //EOT
-    timerExpiredStartEOT();
 }

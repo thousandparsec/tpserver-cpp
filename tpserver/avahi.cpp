@@ -41,7 +41,6 @@
 #endif
 
 #include "logging.h"
-#include "settings.h"
 #include "settingscallback.h"
 #include "game.h"
 #include "ruleset.h"
@@ -189,27 +188,21 @@ class AvahiTimeout{
     }
     
     ~AvahiTimeout(){
-      if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
-      }
     }
     
     void setTimer(uint64_t sec){
-      if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
+      if(timer){
+        timer->invalidate();
       }
-      timer = new TimerCallback(this, &AvahiTimeout::timeout, sec);
-      Network::getNetwork()->addTimer(*timer);
+      timer.reset( new TimerCallback( boost::bind(&AvahiTimeout::timeout, this), sec) );
+      Network::getNetwork()->addTimer(timer);
     }
     
     void disableTimer(){
       if(timer != NULL){
-        timer->setValid(false);
-        delete timer;
+        timer->invalidate();
+        timer.reset();
       }
-      timer = NULL;
     }
     
     void timeout(){
@@ -217,7 +210,7 @@ class AvahiTimeout{
     }
     
   private:
-    TimerCallback* timer;
+    TimerCallback::Ptr timer;
     AvahiTimeoutCallback callback;
     void* userdata;
 };

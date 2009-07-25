@@ -32,12 +32,11 @@
 #include "logging.h"
 #include "settings.h"
 #include "net.h"
-#include "timercallback.h"
 #include "metaserverconnection.h"
 
 #include "metaserverpublisher.h"
 
-MetaserverPublisher::MetaserverPublisher() : Publisher(), lastpublishtime(0), needtoupdate(true), timer(NULL), errorcount(0){
+MetaserverPublisher::MetaserverPublisher() : Publisher(), lastpublishtime(0), needtoupdate(true),  errorcount(0){
   Settings* settings = Settings::getSettings();
   settings->setCallback("metaserver_fake_ip",  boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
   settings->setCallback("metaserver_fake_dns", boost::bind( &MetaserverPublisher::metaserverSettingChanged, this, _1, _2 ));
@@ -54,9 +53,8 @@ MetaserverPublisher::~MetaserverPublisher(){
   settings->removeCallback("metaserver_fake_dns");
   settings->removeCallback("metaserver_address");
   settings->removeCallback("metaserver_port");
-  if(timer != NULL){
-    timer->setValid(false);
-    delete timer;
+  if (timer) {
+    timer->invalidate();
   }
 }
 
@@ -106,15 +104,14 @@ void MetaserverPublisher::setTimer(){
   }
   uint64_t seconds = nextupdatetime - time(NULL);
   
-  if(timer != NULL){
+  if(timer){
     if(timer->getExpireTime() == nextupdatetime){
       //timer doesn't need updating, don't touch it
       return;
     }
-    timer->setValid(false);
-    delete timer;
+    timer->invalidate();
   }
   
-  timer = new TimerCallback(this, &MetaserverPublisher::poll, seconds);
-  Network::getNetwork()->addTimer(*timer);
+  timer.reset( new TimerCallback( boost::bind( &MetaserverPublisher::poll, this ), seconds ) );
+  Network::getNetwork()->addTimer(timer);
 }

@@ -101,7 +101,7 @@ void Network::addToWriteQueue(Connection::Ptr conn){
   writequeue[conn->getFD()] = conn;
 }
 
-void Network::addTimer(TimerCallback callback){
+void Network::addTimer(TimerCallback::Ptr callback){
   timers.push(callback);
 }
 
@@ -260,18 +260,18 @@ void Network::masterLoop()
     //sleep(1);
     bool netstat = active;
 
-    while(!timers.empty() && (timers.top().getExpireTime() <= static_cast<uint64_t>(time(NULL)) ||
-          !(timers.top().isValid()))){
-      TimerCallback callback = timers.top();
+    while(!timers.empty() && (timers.top()->getExpireTime() <= static_cast<uint64_t>(time(NULL)) ||
+          !(timers.top()->isValid()))){
+      TimerCallback::Ptr callback = timers.top();
       timers.pop();
-      if(callback.isValid())
-        callback.call();
+      if(callback->isValid())
+        callback->call();
     }
     if(timers.empty()){
       tv.tv_sec = 60;
       tv.tv_usec = 0;
     }else{
-      tv.tv_sec = (timers.top().getExpireTime() - time(NULL)) - 1;
+      tv.tv_sec = (timers.top()->getExpireTime() - time(NULL)) - 1;
       if(tv.tv_sec <= 0){
         tv.tv_sec = 0;
         tv.tv_usec = 200000;

@@ -23,9 +23,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "publisher.h"
-
-class TimerCallback;
+#include <tpserver/publisher.h>
+#include <tpserver/timercallback.h>
 
 /**
 Metaserver Publisher for tpserver-cpp
@@ -47,7 +46,7 @@ private:
   void metaserverSettingChanged(const std::string& skey, const std::string& value);
   uint64_t lastpublishtime;
   bool needtoupdate;
-  TimerCallback* timer;
+  TimerCallback::Ptr timer;
   int errorcount;
 
 };

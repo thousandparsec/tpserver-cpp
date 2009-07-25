@@ -26,7 +26,7 @@ ListParameter::ListParameter(const std::string& aname, const std::string& adesc,
   id = opT_List;
 }
 
-void ListParameter::pack(Frame * f){
+void ListParameter::pack(Frame * f) const {
   Options options = callback();
   f->packInt(options.size());
   for(Options::iterator itcurr = options.begin();
@@ -61,7 +61,7 @@ StringParameter::StringParameter( const std::string& aname, const std::string& a
   id = opT_String;
 }
 
-void StringParameter::pack(Frame * f){
+void StringParameter::pack(Frame * f) const {
   f->packInt(1024);
   f->packString(string);
 }
@@ -78,7 +78,7 @@ TimeParameter::TimeParameter( const std::string& aname, const std::string& adesc
   id = opT_Time;
 }
 
-void TimeParameter::pack(Frame * f){
+void TimeParameter::pack(Frame * f) const {
   f->packInt(turns);
   f->packInt(1000);
 }
@@ -95,7 +95,7 @@ SpaceCoordParam::SpaceCoordParam( const std::string& aname, const std::string ad
   id = opT_Space_Coord_Abs;
 }
 
-void SpaceCoordParam::pack(Frame * f){
+void SpaceCoordParam::pack(Frame * f) const {
   position.pack(f);
 }
 
@@ -110,7 +110,7 @@ ObjectOrderParameter::ObjectOrderParameter( const std::string& aname, const std:
   id = opT_Object_ID;
 }
 
-void ObjectOrderParameter::pack(Frame * f){
+void ObjectOrderParameter::pack(Frame * f) const {
   f->packInt(object);
 }
 
