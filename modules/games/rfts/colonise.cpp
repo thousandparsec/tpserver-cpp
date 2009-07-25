@@ -44,10 +44,7 @@ Colonise::Colonise() {
    name = "Colonise";
    description = "Colonise a planet";
 
-   planet = new ObjectOrderParameter();
-   planet->setName("Planet");
-   planet->setDescription("The planet to colonise");
-   addOrderParameter(planet);
+   planet = (ObjectOrderParameter*)addOrderParameter( new ObjectOrderParameter("Planet", "The planet to colonise") );
 
    turns = 1;
 }

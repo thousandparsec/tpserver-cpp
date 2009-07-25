@@ -44,10 +44,7 @@ MergeFleet::MergeFleet() {
    name = "Merge Fleet";
    description = "Merge this fleet with another";
 
-   otherFleet = new ObjectOrderParameter();
-   otherFleet->setName("Other fleet");
-   otherFleet->setDescription("The other fleet to merge with.");
-   addOrderParameter(otherFleet);
+   otherFleet = (ObjectOrderParameter*) addOrderParameter( new ObjectOrderParameter( "Other fleet", "The other fleet to merge with.") );
    
    turns = 1;
 }

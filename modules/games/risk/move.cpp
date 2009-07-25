@@ -54,9 +54,7 @@ Move::Move() : Order() {
    name = "Move";
    description = "Move any number of units to an adjacent planet";
 
-   targetPlanet = new ListParameter();
-   targetPlanet->setName("Planet");
-   targetPlanet->setDescription("The Planet to move to.");
+   targetPlanet = new ListParameter("Planet","The Planet to move to.");
    targetPlanet->setListOptionsCallback(ListOptionCallback(this,
       &Move::generateListOptions));
    addOrderParameter(targetPlanet);

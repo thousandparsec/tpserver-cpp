@@ -47,7 +47,7 @@ Reinforce::Reinforce() {
    name = "Reinforce";
    description = "Reinforce a planet";
 
-   addOrderParameter( new TimeParameter("Units","The number of units to reinforce with.") );
+   numberUnits = (TimeParameter*) addOrderParameter( new TimeParameter("Units","The number of units to reinforce with.") );
 
    turns = 1;
 }

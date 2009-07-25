@@ -67,14 +67,12 @@ BuildFleet::BuildFleet() : Order()
   name = "Build Fleet";
   description = "Build a fleet";
   
-  fleetlist = new ListParameter();
-  fleetlist->setName("Ships");
-  fleetlist->setDescription("The type of ship to build");
-  fleetlist->setListOptionsCallback(ListOptionCallback(this, &BuildFleet::generateListOptions));
+  fleetlist = new ListParameter("ships", "The type of ship to build");
+  fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
   addOrderParameter(fleetlist);
   
-  addOrderParameter( new StringParameter("name", "The name of the new fleet being built") );
-  truns = 1;
+  fleetname = (StringParameter*)addOrderParameter( new StringParameter("name", "The name of the new fleet being built") );
+  turns = 1;
 }
 
 BuildFleet::~BuildFleet(){

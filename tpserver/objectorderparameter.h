@@ -30,7 +30,7 @@
 class ObjectOrderParameter : public OrderParameter{
 
 public:
-  ObjectOrderParameter();
+  ObjectOrderParameter( const std::string& aname, const std::string& adesc );
   virtual ~ObjectOrderParameter();
 
   virtual void packOrderFrame(Frame * f);

@@ -53,9 +53,7 @@ ProductionOrder::ProductionOrder() {
    name = "Produce";
    description = "Order the production of planetary stats";
    
-   productionList = new ListParameter();
-   productionList->setName("Planetary stats");
-   productionList->setDescription("The production orders");
+   productionList = new ListParameter("Planetary stats","The production orders");
    productionList->setListOptionsCallback(ListOptionCallback(this,
             &ProductionOrder::generateListOptions));
    

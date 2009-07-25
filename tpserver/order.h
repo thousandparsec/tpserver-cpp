@@ -62,7 +62,7 @@ class Order {
     uint32_t getOrderQueueId() const;
 
   protected:
-    void addOrderParameter(OrderParameter* op);
+    OrderParameter* addOrderParameter(OrderParameter* op);
     uint32_t orderqueueid;
     uint32_t type;
     uint64_t descmodtime;

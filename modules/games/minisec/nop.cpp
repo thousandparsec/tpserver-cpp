@@ -36,7 +36,7 @@ Nop::Nop() : Order()
   name = "No Operation";
   description = "Object does nothing for a given number of turns";
   
-  addOrderParameter( new TimeParameter( "wait", "The number of turns to wait") );
+  timeparam = (TimeParameter*) addOrderParameter( new TimeParameter( "wait", "The number of turns to wait") );
 
 }
 

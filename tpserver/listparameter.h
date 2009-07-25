@@ -107,7 +107,7 @@ class ListOptionCallback{
 class ListParameter : public OrderParameter{
 
 public:
-  ListParameter();
+  ListParameter(const std::string& aname, const std::string& adesc);
   virtual ~ListParameter();
 
   virtual void packOrderFrame(Frame * f);

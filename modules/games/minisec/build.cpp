@@ -54,13 +54,11 @@ Build::Build() : Order()
   name = "Build Fleet";
   description = "Build a fleet";
   
-  fleetlist = new ListParameter();
-  fleetlist->setName("ships");
-  fleetlist->setDescription("The type of ship to build");
+  fleetlist = new ListParameter("ships","The type of ship to build");
   fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
   addOrderParameter(fleetlist);
   
-  addOrderParameter( new StringParameter( "name", "The name of the new fleet being built") );
+  fleetname = (StringParameter*)addOrderParameter( new StringParameter( "name", "The name of the new fleet being built") );
 }
 
 Build::~Build(){

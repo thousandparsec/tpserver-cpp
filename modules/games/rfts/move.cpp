@@ -51,10 +51,7 @@ Move::Move() : Order() {
    name = "Move";
    description = "Move to a given planet";
    
-   starSys = new ObjectOrderParameter();
-   starSys->setName("Star System");
-   starSys->setDescription("The star system to move to");
-   addOrderParameter(starSys);
+   starSys = (ObjectOrderParameter*)addOrderParameter( new ObjectOrderParameter( "Star System", "The star system to move to") );
 }
 
 Move::~Move() {

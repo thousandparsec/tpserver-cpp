@@ -53,9 +53,7 @@ Colonize::Colonize() : Order()  {
    description = "Colonize a planet";
 
    //ASK: Work with Lee to get colonize order available on unowned planets
-   targetPlanet = new ListParameter();
-   targetPlanet->setName("Planet");
-   targetPlanet->setDescription("The Planet to bid on.");
+   targetPlanet = new ListParameter("Planet","The Planet to bid on.");
    targetPlanet->setListOptionsCallback(ListOptionCallback(this,
       &Colonize::generateListOptions));
    addOrderParameter(targetPlanet);

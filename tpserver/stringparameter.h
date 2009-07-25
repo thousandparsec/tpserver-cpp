@@ -37,8 +37,6 @@ public:
 protected:
   std::string string;
 
-private:
-  StringParameter() {}
 };
 
 #endif

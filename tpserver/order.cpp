@@ -140,8 +140,9 @@ uint64_t Order::getDescriptionModTime() const{
   return descmodtime;
 }
 
-void Order::addOrderParameter(OrderParameter* op){
+OrderParameter* Order::addOrderParameter(OrderParameter* op){
   parameters.push_back(op);
+  return op;
 }
 
 void Order::setOrderQueueId(uint32_t id){

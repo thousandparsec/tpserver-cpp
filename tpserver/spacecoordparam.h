@@ -26,7 +26,7 @@
 class SpaceCoordParam : public OrderParameter{
 
 public:
-  SpaceCoordParam();
+  SpaceCoordParam( const std::string& aname, const std::string adesc );
   virtual ~SpaceCoordParam();
 
   virtual void packOrderFrame(Frame * f);

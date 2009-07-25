@@ -42,8 +42,6 @@ class Frame;
 class OrderParameter : public Describable {
   public:
     OrderParameter(const std::string& aname, const std::string& adesc );
-    /// DEPRECATED
-    OrderParameter();
     virtual ~OrderParameter();
 
     // used only by persistence

@@ -37,8 +37,6 @@ public:
 protected:
   uint32_t turns;
 
-private:
-  TimeParameter() {}
 };
 
 #endif

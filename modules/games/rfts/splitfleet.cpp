@@ -49,9 +49,7 @@ SplitFleet::SplitFleet() {
    name = "Split Fleet";
    description = "Split off a new fleet.";
    
-   shipList = new ListParameter();
-   shipList->setName("ships");
-   shipList->setDescription("The ships to make a new fleet out of");
+   shipList = new ListParameter("ships","The ships to make a new fleet out of");
    shipList->setListOptionsCallback(ListOptionCallback(this, &SplitFleet::generateListOptions));
    addOrderParameter(shipList);
    

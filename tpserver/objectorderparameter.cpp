@@ -24,7 +24,7 @@
 
 #include "objectorderparameter.h"
 
-ObjectOrderParameter::ObjectOrderParameter() : OrderParameter(), object(0){
+ObjectOrderParameter::ObjectOrderParameter( const std::string& aname, const std::string& adesc ) : OrderParameter(aname,adesc), object(0){
   id = opT_Object_ID;
 }
 

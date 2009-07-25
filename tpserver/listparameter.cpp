@@ -24,7 +24,7 @@
 
 #include "listparameter.h"
 
-ListParameter::ListParameter() : OrderParameter(), list(), optionscallback(){
+ListParameter::ListParameter(const std::string& aname, const std::string& adesc) : OrderParameter(aname,adesc),  optionscallback(){
   id = opT_List;
 }
 

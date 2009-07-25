@@ -51,10 +51,7 @@ using std::string;
 using std::list;
 
 FleetOrder::FleetOrder() : Order() {
-    starSys = new ObjectOrderParameter();
-    starSys->setName("Star System");
-    starSys->setDescription("The star system associated with this order");
-    addOrderParameter(starSys);
+    starSys = (ObjectOrderParameter*) addOrderParameter( new ObjectOrderParameter("Star System", "The star system associated with this order") );
 }
 
 FleetOrder::~FleetOrder() {

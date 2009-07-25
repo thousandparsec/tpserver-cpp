@@ -46,10 +46,7 @@ Bombard::Bombard() {
    name = "Bombard";
    description = "Bombard a planet, damaging it's resources";
 
-   planet = new ObjectOrderParameter();
-   planet->setName("Planet");
-   planet->setDescription("The planet to bombard");
-   addOrderParameter(planet);
+   planet = (ObjectOrderParameter*)addOrderParameter( new ObjectOrderParameter( "Planet", "The planet to bombard") );
 
    turns = 1;
 }

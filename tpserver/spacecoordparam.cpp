@@ -25,7 +25,7 @@
 
 #include "spacecoordparam.h"
 
-SpaceCoordParam::SpaceCoordParam() : OrderParameter(), position(){
+SpaceCoordParam::SpaceCoordParam( const std::string& aname, const std::string adesc ) :  OrderParameter(aname,adesc), position(){
   id = opT_Space_Coord_Abs;
 }
 

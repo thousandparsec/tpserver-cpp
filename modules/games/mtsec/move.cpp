@@ -45,10 +45,7 @@ Move::Move() : Order()
   name = "Move";
   description = "Move to a given position absolute in space";
   
-  coords = new SpaceCoordParam();
-  coords->setName("pos");
-  coords->setDescription("The position in space to move to");
-  addOrderParameter(coords);
+  coords = (SpaceCoordParam*) addOrderParameter( new SpaceCoordParam("pos","The position in space to move to") );
 }
 
 Move::~Move(){
