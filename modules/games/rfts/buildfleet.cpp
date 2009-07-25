@@ -22,8 +22,7 @@
 #include <cmath>
 #include <cassert>
 
-#include <tpserver/listparameter.h>
-#include <tpserver/stringparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/game.h>

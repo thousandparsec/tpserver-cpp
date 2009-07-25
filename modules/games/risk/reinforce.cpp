@@ -20,7 +20,7 @@
  *
  */
  
-#include <tpserver/objectorderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/message.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -30,7 +30,6 @@
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
 #include <tpserver/logging.h>
-#include <tpserver/timeparameter.h>
 #include <tpserver/message.h>
 
 #include <boost/format.hpp>

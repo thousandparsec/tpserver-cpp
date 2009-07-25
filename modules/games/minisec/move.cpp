@@ -29,7 +29,7 @@
 #include "fleet.h"
 #include <tpserver/message.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/spacecoordparam.h>
+#include <tpserver/orderparameters.h>
 #include "minisecturn.h"
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>

@@ -21,7 +21,7 @@
  */
 
 #include <tpserver/order.h>
-#include <tpserver/listparameter.h>
+#include <tpserver/orderparameters.h>
 
 namespace MTSecRuleset {
 

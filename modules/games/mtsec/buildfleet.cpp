@@ -42,7 +42,6 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/stringparameter.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>

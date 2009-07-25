@@ -31,8 +31,8 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.c
 		admintcpsocket.cpp adminconnection.cpp adminlogger.cpp \
 		command.cpp commandmanager.cpp \
 		$(AVAHISOURCES) advertiser.cpp metaserverpublisher.cpp metaserverconnection.cpp \
-		orderparameter.cpp spacecoordparam.cpp timeparameter.cpp objectorderparameter.cpp \
-		stringparameter.cpp listparameter.cpp prng.cpp playeragent.cpp turnprocess.cpp \
+		orderparameter.cpp orderparameters.cpp \
+		prng.cpp playeragent.cpp turnprocess.cpp \
 		objectparameter.cpp objectparametergroup.cpp position3dobjectparam.cpp \
 		velocity3dobjectparam.cpp sizeobjectparam.cpp integerobjectparam.cpp \
 		referenceobjectparam.cpp refquantitylistobjectparam.cpp resourcelistobjectparam.cpp \
@@ -59,8 +59,8 @@ headers_HEADERS = modifiable.h common.h connection.h tcpconnection.h packable.h 
 	objectmanager.h \
 	playermanager.h listensocket.h boardmanager.h \
 	resourcedescription.h resourcemanager.h  \
-	orderparameter.h spacecoordparam.h timeparameter.h objectorderparameter.h stringparameter.h \
-	listparameter.h timercallback.h prng.h playeragent.h turnprocess.h result.h \
+	orderparameter.h orderparameters.h  \
+	timercallback.h prng.h playeragent.h turnprocess.h result.h \
 	objectparameter.h objectparametergroup.h position3dobjectparam.h \
 	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \

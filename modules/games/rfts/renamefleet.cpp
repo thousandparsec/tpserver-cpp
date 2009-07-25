@@ -20,7 +20,7 @@
 
 #include <tpserver/object.h>
 
-#include <tpserver/stringparameter.h>
+#include <tpserver/orderparameters.h>
 
 #include "fleet.h"
 

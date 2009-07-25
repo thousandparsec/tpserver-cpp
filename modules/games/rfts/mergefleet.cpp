@@ -24,7 +24,7 @@
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
-#include <tpserver/objectorderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>

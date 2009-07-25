@@ -19,7 +19,7 @@
  *
  */
 
-#include <tpserver/objectorderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/message.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>

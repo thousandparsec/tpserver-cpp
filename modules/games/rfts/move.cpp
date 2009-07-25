@@ -22,7 +22,7 @@
 #include <cassert>
 
 #include <tpserver/frame.h>
-#include <tpserver/objectorderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>

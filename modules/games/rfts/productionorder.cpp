@@ -29,7 +29,7 @@
 #include <tpserver/resourcemanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
-#include <tpserver/listparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
@@ -54,8 +54,6 @@ ProductionOrder::ProductionOrder() {
    description = "Order the production of planetary stats";
    
    productionList = (ListParameter*) addOrderParameter( new ListParameter("Planetary stats","The production orders", boost::bind( &ProductionOrder::generateListOptions, this )));
-   
-   addOrderParameter(productionList);
 
    turns = 0;
 }

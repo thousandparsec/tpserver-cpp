@@ -22,10 +22,7 @@
 
 #include <tpserver/result.h>
 #include <tpserver/order.h>
-#include <tpserver/listparameter.h>
-
-class ListParameter;
-class StringParameter;
+#include <tpserver/orderparameters.h>
 
 class Build : public Order{
  public:

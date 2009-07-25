@@ -19,7 +19,7 @@
  */
 
 #include <tpserver/frame.h>
-#include <tpserver/objectorderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -31,7 +31,6 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/logging.h>
-#include <tpserver/listparameter.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/prng.h>

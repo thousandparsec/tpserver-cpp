@@ -30,11 +30,7 @@
 #include <tpserver/orderqueue.h>
 #include <tpserver/order.h>
 #include <tpserver/orderparameter.h>
-#include <tpserver/listparameter.h>
-#include <tpserver/objectorderparameter.h>
-#include <tpserver/spacecoordparam.h>
-#include <tpserver/stringparameter.h>
-#include <tpserver/timeparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/board.h>
 #include <tpserver/message.h>
 #include <tpserver/resourcedescription.h>

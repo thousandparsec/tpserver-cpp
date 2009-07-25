@@ -26,7 +26,7 @@
 #include <tpserver/message.h>
 #include "ownedobject.h"
 #include <tpserver/playermanager.h>
-#include <tpserver/timeparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/logging.h>
 
 #include "nop.h"

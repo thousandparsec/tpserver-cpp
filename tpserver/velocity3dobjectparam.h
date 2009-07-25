@@ -20,7 +20,9 @@
  *
  */
 
-#include <stdint.h>
+#include <tpserver/result.h>
+#include <tpserver/order.h>
+#include <tpserver/orderparameters.h>
 
 #include <tpserver/objectparameter.h>
 #include <tpserver/vector3d.h>
