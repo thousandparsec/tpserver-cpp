@@ -31,36 +31,36 @@ class Frame;
 class OrderQueue;
 
 class OrderManager{
- public:
-  OrderManager();
-  ~OrderManager();
+  public:
+    OrderManager();
+    ~OrderManager();
 
-  
-  bool checkOrderType(uint32_t type);
-  void describeOrder(uint32_t ordertype, Frame * f);
-  void addOrderType(Order* prototype);
-  uint32_t getOrderTypeByName(const std::string &name);
-  void doGetOrderTypes(Frame * frame, Frame * result);
+    bool checkOrderType(uint32_t type);
+    void describeOrder(uint32_t ordertype, Frame * f);
+    void addOrderType(Order* prototype);
+    uint32_t getOrderTypeByName(const std::string &name);
+    void doGetOrderTypes(Frame * frame, Frame * result);
 
-  Order* createOrder(uint32_t ot);
-  
-  bool addOrderQueue(OrderQueue* oq);
-  void updateOrderQueue(uint32_t oqid);
-  bool removeOrderQueue(uint32_t oqid);
-  OrderQueue* getOrderQueue(uint32_t oqid);
+    Order* createOrder(uint32_t ot);
 
-  void init();
+    bool addOrderQueue(OrderQueue* oq);
+    void updateOrderQueue(uint32_t oqid);
+    bool removeOrderQueue(uint32_t oqid);
+    OrderQueue* getOrderQueue(uint32_t oqid);
 
- private:
-  std::map<uint32_t, Order*> prototypeStore;
-  std::map<std::string, uint32_t> typeNames;
-  uint32_t nextType;
-  uint32_t nextOrderQueueId;
+    void init();
 
-  uint32_t seqkey;
+  private:
+    typedef std::map<uint32_t, Order*> PrototypeStore;
+    typedef std::map<uint32_t, OrderQueues*> OrderQueueStore;
 
-  std::map<uint32_t, OrderQueue*> orderqueues;
+    PrototypeStore  prototype_store;
+    OrderQueueStore orderqueue_store;
+    NameMap typename_map;
 
+    uint32_t prototype_next;
+    uint32_t orderqueue_next;
+    uint32_t seqkey;
 };
 
 #endif

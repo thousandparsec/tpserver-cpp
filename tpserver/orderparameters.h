@@ -28,85 +28,85 @@
 
 class ListParameter : public OrderParameter{
 
-public:
-  typedef std::pair<std::string, uint32_t> Option;
-  typedef std::map< uint32_t, Option> Options;
-  typedef boost::function< Options () > Callback;
+  public:
+    typedef std::pair<std::string, uint32_t> Option;
+    typedef std::map< uint32_t, Option> Options;
+    typedef boost::function< Options () > Callback;
 
-  ListParameter(const std::string& aname, const std::string& adesc, Callback acallback);
+    ListParameter(const std::string& aname, const std::string& adesc, Callback acallback);
 
-  virtual void pack(Frame * f) const;
-  virtual bool unpack(Frame * f);
+    virtual void pack(Frame * f) const;
+    virtual bool unpack(Frame * f);
 
-  IdMap getList() const { return list; };
-  void setList(IdMap nlist) { list = nlist; }; 
-  
-protected:
-  IdMap list;
-  Callback callback;
+    IdMap getList() const { return list; };
+    void setList(IdMap nlist) { list = nlist; }; 
+
+  protected:
+    IdMap list;
+    Callback callback;
 };
 
 class TimeParameter : public OrderParameter{
 
-public:
-  TimeParameter( const std::string& aname, const std::string& adesc, uint32_t time = 0 );
+  public:
+    TimeParameter( const std::string& aname, const std::string& adesc, uint32_t time = 0 );
 
-  virtual void pack(Frame * f) const;
-  virtual bool unpack(Frame * f);
+    virtual void pack(Frame * f) const;
+    virtual bool unpack(Frame * f);
 
-  uint32_t getTime() const { return turns; }
-  void setTime(uint32_t time) { turns = time; }
-  
-protected:
-  uint32_t turns;
+    uint32_t getTime() const { return turns; }
+    void setTime(uint32_t time) { turns = time; }
+
+  protected:
+    uint32_t turns;
 
 };
 
 class StringParameter : public OrderParameter{
 
-public:
-  StringParameter( const std::string& aname, const std::string& adesc );
+  public:
+    StringParameter( const std::string& aname, const std::string& adesc );
 
-  virtual void pack(Frame * f) const;
-  virtual bool unpack(Frame * f);
+    virtual void pack(Frame * f) const;
+    virtual bool unpack(Frame * f);
 
-  std::string getString() const { return string; };
-  void setString(const std::string& rhs) { string = rhs; };
+    std::string getString() const { return string; };
+    void setString(const std::string& rhs) { string = rhs; };
 
-protected:
-  std::string string;
+  protected:
+    std::string string;
 
 };
 
 class SpaceCoordParam : public OrderParameter{
 
-public:
-  SpaceCoordParam( const std::string& aname, const std::string adesc );
+  public:
+    SpaceCoordParam( const std::string& aname, const std::string adesc );
 
-  virtual void pack(Frame * f) const;
-  virtual bool unpack(Frame * f);
+    virtual void pack(Frame * f) const;
+    virtual bool unpack(Frame * f);
 
-  Vector3d getPosition() const { return position; }
-  void setPosition(const Vector3d& pos) { position = pos; } 
+    Vector3d getPosition() const { return position; }
+    void setPosition(const Vector3d& pos) { position = pos; } 
 
-protected:
-  Vector3d position;
+  protected:
+    Vector3d position;
 
 };
 
 class ObjectOrderParameter : public OrderParameter{
 
-public:
-  ObjectOrderParameter( const std::string& aname, const std::string& adesc );
+  public:
+    ObjectOrderParameter( const std::string& aname, const std::string& adesc );
 
-  virtual void pack(Frame * f) const;
-  virtual bool unpack(Frame * f);
+    virtual void pack(Frame * f) const;
+    virtual bool unpack(Frame * f);
 
-  uint32_t getObjectId() const;
-  void setObjectId(uint32_t id);
+    uint32_t getObjectId() const;
+    void setObjectId(uint32_t id);
 
-protected:
-  uint32_t object;
+  protected:
+    uint32_t object;
 
 };
 

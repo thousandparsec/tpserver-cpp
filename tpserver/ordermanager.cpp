@@ -27,51 +27,47 @@
 
 #include "ordermanager.h"
 
-OrderManager::OrderManager(){
-  nextType = 0;
-  nextOrderQueueId = 1;
-  seqkey = 1;
+OrderManager::OrderManager() : prototype_next(0), orderqueue_next(1), seqkey(1) {
 }
 
 OrderManager::~OrderManager(){
-  // I should clear the prototypeStore
-  for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin(); itcurr != prototypeStore.end(); ++itcurr){
+  // I should clear the prototype_store
+  for(std::map<uint32_t, Order*>::iterator itcurr = prototype_store.begin(); itcurr != prototype_store.end(); ++itcurr){
     delete itcurr->second;
   }
-
 }
 
 bool OrderManager::checkOrderType(uint32_t type){
-  return (type >= 0 && type <= nextType - 1);
+  return (type >= 0 && type <= prototype_next - 1);
 }
 
 void OrderManager::describeOrder(uint32_t ordertype, Frame * f){
-  if(prototypeStore.find(ordertype) != prototypeStore.end()){
-    prototypeStore[ordertype]->describeOrder(f);
+  if(prototype_store.find(ordertype) != prototype_store.end()){
+    prototype_store[ordertype]->describeOrder(f);
   }else{
     f->createFailFrame(fec_NonExistant, "Order type does not exist");
   }
 }
 
 Order* OrderManager::createOrder(uint32_t ot){
-  if(prototypeStore.find(ot) != prototypeStore.end()){
-    return prototypeStore[ot]->clone();
+  if(prototype_store.find(ot) != prototype_store.end()){
+    return prototype_store[ot]->clone();
   }
   return NULL;
 }
 
 void OrderManager::addOrderType(Order* prototype){
-  prototype->setType(nextType);
-  prototypeStore[nextType++] = prototype;
-  typeNames[prototype->getName()] = prototype->getType();
+  prototype->setType(prototype_next);
+  prototype_store[prototype_next++] = prototype;
+  typename_map[prototype->getName()] = prototype->getType();
   seqkey++;
 }
 
 uint32_t OrderManager::getOrderTypeByName(const std::string& name){
-  if(typeNames.find(name) == typeNames.end()){
+  if(typename_map.find(name) == typename_map.end()){
     return UINT32_NEG_ONE;
   }else
-    return typeNames[name];
+    return typename_map[name];
 }
 
 void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
@@ -87,30 +83,30 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   if(frame->getVersion() >= fv0_4){
     fromtime = frame->unpackInt64();
   }
-  
+
   if(lseqkey != seqkey){
     of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
     return;
   }
 
   IdModList modlist;
-  for(std::map<uint32_t, Order*>::iterator itcurr = prototypeStore.begin();
-      itcurr != prototypeStore.end(); ++itcurr){
+  for(PrototypeStore::iterator itcurr = prototype_store.begin();
+      itcurr != prototype_store.end(); ++itcurr){
     Order* type = itcurr->second;
     if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() > fromtime){
       modlist[itcurr->first] = type->getDescriptionModTime();
     }
   }
-  
+
   if(start > modlist.size()){
     of->createFailFrame(fec_NonExistant, "Starting number too high");
     return;
   }
-  
+
   if(num > modlist.size() - start){
     num = modlist.size() - start;
   }
-  
+
   if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
     of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
     return;
@@ -122,30 +118,30 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   if(of->getVersion() >= fv0_4){
     of->packInt64(fromtime);
   }
-  
+
 }
 
 bool OrderManager::addOrderQueue(OrderQueue* oq){
-  oq->setQueueId(nextOrderQueueId++);
-  orderqueues[oq->getQueueId()] = oq;
+  oq->setQueueId(orderqueue_next++);
+  orderqueue_store[oq->getQueueId()] = oq;
   Game::getGame()->getPersistence()->saveOrderQueue(oq);
   return true;
 }
 
 void OrderManager::updateOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueues[oqid];
+  OrderQueue *oq = orderqueue_store[oqid];
   Game::getGame()->getPersistence()->updateOrderQueue(oq);
 }
 
 bool OrderManager::removeOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueues[oqid];
+  OrderQueue *oq = orderqueue_store[oqid];
   if(oq == NULL){
     oq = Game::getGame()->getPersistence()->retrieveOrderQueue(oqid);
   }
   if(oq != NULL){
     Game::getGame()->getPersistence()->removeOrderQueue(oqid);
     delete oq;
-    orderqueues.erase(oqid);
+    orderqueue_store.erase(oqid);
     return true;
   }else{
     return false;
@@ -153,14 +149,14 @@ bool OrderManager::removeOrderQueue(uint32_t oqid){
 }
 
 OrderQueue* OrderManager::getOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueues[oqid];
+  OrderQueue *oq = orderqueue_store[oqid];
   if(oq == NULL){
     oq = Game::getGame()->getPersistence()->retrieveOrderQueue(oqid);
-    orderqueues[oqid] = oq;
+    orderqueue_store[oqid] = oq;
   }
   return oq;
 }
 
 void OrderManager::init(){
-  nextOrderQueueId = Game::getGame()->getPersistence()->getMaxOrderQueueId() + 1;
+  orderqueue_next = Game::getGame()->getPersistence()->getMaxOrderQueueId() + 1;
 }

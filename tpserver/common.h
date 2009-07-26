@@ -44,4 +44,7 @@ typedef std::map< uint32_t, uint64_t > IdModList;
 /// Typedef for map between Id's and strings
 typedef std::map< uint32_t, std::string > IdStringMap;
 
+/// Typedef for map between strings and Id's
+typedef std::map< std::string, uint32_t > NameMap;
+
 #endif // COMMON_H
