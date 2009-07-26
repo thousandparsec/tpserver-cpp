@@ -1,5 +1,5 @@
-#ifndef BUILD_H
-#define BUILD_H
+#ifndef BUILDFLEET_H
+#define BUILDFLEET_H
 /*  BuildFleet order
  *
  *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
@@ -29,10 +29,10 @@
 class ListParameter;
 class StringParameter;
 
-class Build : public Order{
+class BuildFleet : public Order{
  public:
-  Build();
-  virtual ~Build();
+  BuildFleet();
+  virtual ~BuildFleet();
 
   void createFrame(Frame *f, int pos);
   Result inputFrame(Frame *f, uint32_t playerid);

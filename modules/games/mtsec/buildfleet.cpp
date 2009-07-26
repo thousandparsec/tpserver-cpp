@@ -55,12 +55,12 @@
 
 #include "planet.h"
 
-#include "build.h"
+#include "buildfleet.h"
 
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
-Build::Build() : Order()
+BuildFleet::BuildFleet() : Order()
 {
   name = "Build Fleet";
   description = "Build a fleet";
@@ -68,7 +68,7 @@ Build::Build() : Order()
   fleetlist = new ListParameter();
   fleetlist->setName("Ships");
   fleetlist->setDescription("The type of ship to build");
-  fleetlist->setListOptionsCallback(ListOptionCallback(this, &Build::generateListOptions));
+  fleetlist->setListOptionsCallback(ListOptionCallback(this, &BuildFleet::generateListOptions));
   addOrderParameter(fleetlist);
   
   fleetname = new StringParameter();
@@ -80,20 +80,20 @@ Build::Build() : Order()
   turns = 1;
 }
 
-Build::~Build(){
+BuildFleet::~BuildFleet(){
 }
 
-void Build::createFrame(Frame *f, int pos)
+void BuildFleet::createFrame(Frame *f, int pos)
 {
-  Logger::getLogger()->debug("Enter: Build::createFrame()");
+  Logger::getLogger()->debug("Enter: BuildFleet::createFrame()");
   // set it to the high end of the production cost... this is a best case scenario where it gets all the factories
   Order::createFrame(f, pos);
-  Logger::getLogger()->debug("Exit: Build::createFrame()");
+  Logger::getLogger()->debug("Exit: BuildFleet::createFrame()");
 
 }
 
-std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions(){
-  Logger::getLogger()->debug("Entering Build::generateListOptions");
+std::map<uint32_t, std::pair<std::string, uint32_t> > BuildFleet::generateListOptions(){
+  Logger::getLogger()->debug("Entering BuildFleet::generateListOptions");
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
   std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
@@ -115,13 +115,13 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
     options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
 
-  Logger::getLogger()->debug("Exiting Build::generateListOptions");
+  Logger::getLogger()->debug("Exiting BuildFleet::generateListOptions");
   return options;
 }
 
-Result Build::inputFrame(Frame *f, uint32_t playerid)
+Result BuildFleet::inputFrame(Frame *f, uint32_t playerid)
 {
-  Logger::getLogger()->debug("Enter: Build::inputFrame()");
+  Logger::getLogger()->debug("Enter: BuildFleet::inputFrame()");
 
   Result r = Order::inputFrame(f, playerid);
   if(!r) return r;
@@ -166,9 +166,9 @@ Result Build::inputFrame(Frame *f, uint32_t playerid)
   return Success();
 }
 
-bool Build::doOrder(IGObject *ob)
+bool BuildFleet::doOrder(IGObject *ob)
 {
-  Logger::getLogger()->debug("Entering Build::doOrder");
+  Logger::getLogger()->debug("Entering BuildFleet::doOrder");
 
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
@@ -179,7 +179,7 @@ bool Build::doOrder(IGObject *ob)
 
   int ownerid = planet->getOwner();
   if(ownerid == 0){
-      Logger::getLogger()->debug("Exiting Build::doOrder ownerid == 0");
+      Logger::getLogger()->debug("Exiting BuildFleet::doOrder ownerid == 0");
       //currently not owned by anyone, just forget about it
       return true;
   }
@@ -253,16 +253,16 @@ bool Build::doOrder(IGObject *ob)
     msg->addReference(rst_Object, ob->getID());
  
     Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
-    Logger::getLogger()->debug("Exiting Build::doOrder on Success");
+    Logger::getLogger()->debug("Exiting BuildFleet::doOrder on Success");
 
     return true;
   }
-  Logger::getLogger()->debug("Exiting Build::doOrder on failure");
+  Logger::getLogger()->debug("Exiting BuildFleet::doOrder on failure");
 
   return false;
 }
 
-bool Build::removeResource(uint32_t restype, uint32_t amount){
+bool BuildFleet::removeResource(uint32_t restype, uint32_t amount){
     if(resources.find(restype) != resources.end()){
           if (resources[restype] - amount > 0) {
             resources[restype] -= amount;
@@ -272,8 +272,8 @@ bool Build::removeResource(uint32_t restype, uint32_t amount){
     return false;
 }
 
-Order* Build::clone() const{
-  Build* nb = new Build();
+Order* BuildFleet::clone() const{
+  BuildFleet* nb = new BuildFleet();
   nb->type = type;
   return nb;
 }

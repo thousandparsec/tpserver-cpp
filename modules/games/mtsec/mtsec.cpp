@@ -42,7 +42,7 @@
 #include "tpserver/ordermanager.h"
 #include "nop.h"
 #include "move.h"
-#include "build.h"
+#include "buildfleet.h"
 #include "enhance.h"
 #include "colonise.h"
 #include "splitfleet.h"
@@ -140,7 +140,7 @@ void MTSec::initGame() {
     OrderManager* ordm = game->getOrderManager();
     ordm->addOrderType(new Nop());
     ordm->addOrderType(new Move());
-    ordm->addOrderType(new Build());
+    ordm->addOrderType(new BuildFleet());
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());

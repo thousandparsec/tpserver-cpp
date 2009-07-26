@@ -5,7 +5,7 @@ rulesetlib_LTLIBRARIES = libmtsec.la
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
 libmtsec_la_SOURCES = universe.cpp planet.cpp fleet.cpp \
-		nop.cpp move.cpp build.cpp sendpoints.cpp \
+		nop.cpp move.cpp buildfleet.cpp sendpoints.cpp \
 		colonise.cpp enhance.cpp \
 		splitfleet.cpp mergefleet.cpp \
 		avacombat.cpp mtsec.cpp \
@@ -15,7 +15,7 @@ libmtsec_la_SOURCES = universe.cpp planet.cpp fleet.cpp \
 
 libmtsec_la_LDFLAGS = -module
 
-noinst_HEADERS = planet.h fleet.h nop.h move.h build.h sendpoints.h colonise.h splitfleet.h mergefleet.h  \
+noinst_HEADERS = planet.h fleet.h nop.h move.h buildfleet.h sendpoints.h colonise.h splitfleet.h mergefleet.h  \
 		enhance.h universe.h avacombat.h mtsec.h mtsecturn.h emptyobject.h \
 		spaceobject.h ownedobject.h 
 
