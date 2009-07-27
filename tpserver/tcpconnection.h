@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <tpserver/connection.h>
 #include <tpserver/frame.h>
+#include <tpserver/packable.h>
 
 class TcpConnection: public Connection {
   public:
@@ -43,6 +44,7 @@ class TcpConnection: public Connection {
 
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
     void sendSequence(Frame* oldframe, size_t sequence_size );
+    void send(Frame* oldframe, Packable* packable );
   protected:
     TcpConnection(int fd, Type aType);
   

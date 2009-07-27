@@ -167,7 +167,7 @@ int32_t TcpConnection::underlyingRead(char* buff, uint32_t size) {
   return len;
 }
 int32_t TcpConnection::underlyingWrite(const char* buff, uint32_t size) {
-  int len = send(sockfd, buff, size, 0);
+  int len = ::send(sockfd, buff, size, 0);
   if(len < 0){
     if(errno == EAGAIN || errno == EWOULDBLOCK){
       len = -2;
@@ -494,6 +494,13 @@ void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
   Frame* frame = createFrame(oldframe);
   frame->setType( ft02_Sequence );
   frame->packInt( sequence_size );
+  sendFrame(frame);
+}
+
+void TcpConnection::send(Frame* oldframe, Packable* packable )
+{
+  Frame* frame = createFrame(oldframe);
+  packable->pack( frame );
   sendFrame(frame);
 }
 
