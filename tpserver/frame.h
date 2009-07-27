@@ -140,7 +140,7 @@ class Frame {
     /// Blocked copy constructor
     Frame(const Frame &rhs) {};
     /// Blocked assignemnt operator
-    Frame operator=(const Frame &rhs) {};
+    Frame operator=(const Frame &rhs) { return Frame(); };
 
 };
 

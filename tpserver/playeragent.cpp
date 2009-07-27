@@ -287,7 +287,6 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
 void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   DEBUG("doing get object ids by container frame");
   if (!lengthCheck( frame, 4 ) ) return;
-  Frame *of = curConnection->createFrame(frame);
   uint32_t objectID = frame->unpackInt();
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
   if(visibleObjects.find(objectID) != visibleObjects.end()){
@@ -295,6 +294,7 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
     IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
 
     if(o != NULL){
+      Frame *of = curConnection->createFrame(frame);
       IdSet contain = o->getContainedObjects();
       IdSet intersection;
       std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
@@ -310,15 +310,13 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
         Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
       }
       Game::getGame()->getObjectManager()->doneWithObject(objectID);
-
+      curConnection->sendFrame(of);
     }else{
-      of->createFailFrame(fec_NonExistant, "No such Object");
+      curConnection->sendFail(frame,fec_NonExistant, "No such Object");
     }
-
   }else{
-    of->createFailFrame(fec_NonExistant, "No such Object");
+    curConnection->sendFail(frame,fec_NonExistant, "No such Object");
   }
-  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processGetObjectDesc(Frame * frame){
@@ -387,25 +385,23 @@ void PlayerAgent::processGetOrder(Frame * frame){
   }
 
   for(int i = 0; i < num_orders; i++){
-    Frame *of = curConnection->createFrame(frame);
 
     int ordpos = frame->unpackInt();
     Order *ord = orderqueue->getOrder(ordpos, player->getID());
     if (ord != NULL) {
+      Frame *of = curConnection->createFrame(frame);
       ord->createFrame(of, ordpos);
+      curConnection->sendFrame(of);
     } else {
-      of->createFailFrame(fec_TempUnavailable, "Could not get Order");
+      curConnection->sendFail(frame,fec_TempUnavailable, "Could not get Order");
     }
-    curConnection->sendFrame(of);
   }
-
 
 }
 
 
 void PlayerAgent::processAddOrder(Frame * frame){
   DEBUG("doing add order frame");
-  Frame *of = curConnection->createFrame(frame);
   if (frame->getDataLength() >= 8) {
 
     // See if we have a valid orderqueue id
@@ -438,18 +434,18 @@ void PlayerAgent::processAddOrder(Frame * frame){
     // See if we have a valid order
     Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
     if (ord == NULL) {
-      of->createFailFrame(fec_NonExistant, "No such order type");
+      curConnection->sendFail(frame,fec_NonExistant, "No such order type");
     } else {
       ord->setOrderQueueId(orderqueueid);
       try {
         ord->inputFrame(frame, player->getID());
       } catch ( FrameException& fe ) {
-        of->createFailFrame(fec_FrameError, std::string("Could not add order : ") + std::string(fe.what()));
-        curConnection->sendFrame(of);
+        curConnection->sendFail(frame, fec_FrameError, std::string("Could not add order : ") + std::string(fe.what()));
         return;
       }
 
       if(orderqueue->addOrder(ord, pos, player->getID())) {
+        Frame *of = curConnection->createFrame(frame);
         if(of->getVersion() >= fv0_4){
           ord->createFrame(of, pos);
         }else{
@@ -463,14 +459,14 @@ void PlayerAgent::processAddOrder(Frame * frame){
           obv->touchModTime();
           player->getPlayerView()->updateObjectView(objid);
         }
+        curConnection->sendFrame(of);
       } else {
-        of->createFailFrame(fec_TempUnavailable, "Not allowed to add that order type.");
+        curConnection->sendFail(frame,fec_TempUnavailable, "Not allowed to add that order type.");
       }
     }
   } else {
-    of->createFailFrame(fec_FrameError, "Invalid frame, Add Order, too short");
+    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Add Order, too short");
   }
-  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processRemoveOrder(Frame * frame){
@@ -509,9 +505,9 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
   }
 
   for(int i = 0; i < num_orders; i++){
-    Frame *of = curConnection->createFrame(frame);
     int ordpos = frame->unpackInt();
     if (orderqueue->removeOrder(ordpos, player->getID())) {
+      Frame *of = curConnection->createFrame(frame);
       of->setType(ft02_OK);
       of->packString("Order removed");
       //update ObjectView
@@ -521,14 +517,11 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
         obv->touchModTime();
         player->getPlayerView()->updateObjectView(objid);
       }
+      curConnection->sendFrame(of);
     } else {
-      of->createFailFrame(fec_TempUnavailable, "Could not remove Order");
+      curConnection->sendFail(frame,fec_TempUnavailable, "Could not remove Order");
     }
-
-    curConnection->sendFrame(of);
-
   }
-
 }
 
 
@@ -550,18 +543,17 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
 void PlayerAgent::processGetOrderTypes(Frame * frame){
   DEBUG("doing get order types frame");
 
-  Frame *of = curConnection->createFrame(frame);
-
   if ( !versionCheck(frame,fv0_3) ) return;
 
   if(frame->getDataLength() != 12 && frame->getVersion() == fv0_3) {
-    of->createFailFrame(fec_FrameError, "Invalid frame, Get Order Types (TP03), Frame too short (<12 bytes)");
+    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Order Types (TP03), Frame too short (<12 bytes)");
   } else if (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4) {
-    of->createFailFrame(fec_FrameError, "Invalid frame, Get Order Types (TP04), Frame too short (<20 bytes)");
+    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Order Types (TP04), Frame too short (<20 bytes)");
   } else {
+    Frame *of = curConnection->createFrame(frame);
     Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
+    curConnection->sendFrame(of);
   }
-  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processProbeOrder(Frame * frame){
@@ -594,30 +586,27 @@ void PlayerAgent::processProbeOrder(Frame * frame){
 
   int pos = frame->unpackInt();
 
-  Frame *of = curConnection->createFrame(frame);
   // See if we have a valid order
   Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
   if (ord == NULL) {
-    of->createFailFrame(fec_NonExistant, "No such order type");
+    curConnection->sendFail(frame,fec_NonExistant, "No such order type");
   }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     ord->setOrderQueueId(orderqueueid);
+    Frame *of = curConnection->createFrame(frame);
     try {
       ord->inputFrame(frame, player->getID());
       ord->createFrame(of, pos);
+      curConnection->sendFrame(of);
     } catch ( FrameException& fe ) {
-      of->createFailFrame(fec_FrameError, std::string("Order could not be unpacked correctly : ") + std::string( fe.what() ));
+      delete of;
+      curConnection->sendFail(frame,fec_FrameError, std::string("Order could not be unpacked correctly : ") + std::string( fe.what() ));
       DEBUG("Probe Order, could not unpack order");
     }
-
   }else{
-
     DEBUG("The order to be probed is not allowed on this object");
-    of->createFailFrame(fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
-
+    curConnection->sendFail(frame,fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
   }
   delete ord;
-  curConnection->sendFrame(of);
-
 }
 
 void PlayerAgent::processGetBoards(Frame * frame){
@@ -627,16 +616,16 @@ void PlayerAgent::processGetBoards(Frame * frame){
   if ( numboards == 0 ) return;
 
   for(int i = 0; i < numboards; i++){
-    Frame *of = curConnection->createFrame(frame);
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
+      Frame *of = curConnection->createFrame(frame);
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
       board->pack(of);
+      curConnection->sendFrame(of);
     }else{
       //boards in the game object
-      of->createFailFrame(fec_PermUnavailable, "No non-player boards yet");
+      curConnection->sendFail(frame,fec_PermUnavailable, "No non-player boards yet");
     }
-    curConnection->sendFrame(of);
   }
 }
 
@@ -728,7 +717,6 @@ void PlayerAgent::processGetMessages(Frame * frame){
 void PlayerAgent::processPostMessage(Frame * frame){
   DEBUG("doing Post Messages frame");
 
-  Frame *of = curConnection->createFrame(frame);
 
   if ( !lengthCheckMin( frame, 28 ) ) return;
 
@@ -763,15 +751,13 @@ void PlayerAgent::processPostMessage(Frame * frame){
     }
     currboard->addMessage(msg, pos);
 
+    Frame *of = curConnection->createFrame(frame);
     of->setType(ft02_OK);
     of->packString("Message posted");
-
+    curConnection->sendFrame(of);
   }else{
-    of->createFailFrame(fec_NonExistant, "Board does not exist");
+    curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
   }
-
-  curConnection->sendFrame(of);
-
 }
 
 void PlayerAgent::processRemoveMessages(Frame * frame){
@@ -797,20 +783,17 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
 
   if(currboard != NULL){
     for(int i = 0; i < nummsg; i++){
-      Frame *of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
 
       if(currboard->removeMessage(msgnum)){
+        Frame *of = curConnection->createFrame(frame);
         of->setType(ft02_OK);
         of->packString("Message removed");
+        curConnection->sendFrame(of);
       }else{
-        of->createFailFrame(fec_NonExistant, "Message not removed, does exist");
+        curConnection->sendFail(frame,fec_NonExistant, "Message not removed, does exist");
       }
-
-      curConnection->sendFrame(of);
-
     }
-
   }else{
     curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
   }
@@ -824,17 +807,16 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
   if ( numress == 0 ) return;
 
   for(int i = 0; i < numress; i++){
-    Frame *of = curConnection->createFrame(frame);
     int rnum = frame->unpackInt();
 
     const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
     if(res != NULL){
+      Frame *of = curConnection->createFrame(frame);
       res->pack(of);
+      curConnection->sendFrame(of);
     }else{
-      of->createFailFrame(fec_NonExistant, "No Resource Descriptions available");
+      curConnection->sendFail(frame,fec_NonExistant, "No Resource Descriptions available");
     }
-
-    curConnection->sendFrame(of);
   }
 }
 
@@ -903,23 +885,25 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   if ( numplayers == 0 ) return;
 
   for(int i = 0; i < numplayers; i++){
-    Frame *of = curConnection->createFrame(frame);
     int pnum = frame->unpackInt();
     if(pnum == 0){
+      Frame *of = curConnection->createFrame(frame);
       player->pack(of);
+      curConnection->sendFrame(of);
     }else{
       if(pnum != -1){
         Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
         if(p != NULL){
+          Frame *of = curConnection->createFrame(frame);
           p->pack(of);
+          curConnection->sendFrame(of);
         }else{
-          of->createFailFrame(fec_NonExistant, "Player doesn't exist");
+          curConnection->sendFail(frame,fec_NonExistant, "Player doesn't exist");
         }
       }else{
-        of->createFailFrame(fec_NonExistant, "Player -1 doesn't exist, invalid player id");
+        curConnection->sendFail(frame,fec_NonExistant, "Player -1 doesn't exist, invalid player id");
       }
     }
-    curConnection->sendFrame(of);
   }
 }
 
@@ -984,15 +968,15 @@ void PlayerAgent::processGetCategory(Frame* frame){
   if ( numcats == 0 ) return;
 
   for(int i = 0; i < numcats; i++){
-    Frame *of = curConnection->createFrame(frame);
     int catnum = frame->unpackInt();
     Category* cat = Game::getGame()->getDesignStore()->getCategory(catnum);
     if(cat == NULL){
-      of->createFailFrame(fec_NonExistant, "No Such Category");
+      curConnection->sendFail(frame,fec_NonExistant, "No Such Category");
     }else{
+      Frame *of = curConnection->createFrame(frame);
       cat->pack(of);
+      curConnection->sendFrame(of);
     }
-    curConnection->sendFrame(of);
   }
 
 }
@@ -1101,13 +1085,11 @@ void PlayerAgent::processAddDesign(Frame* frame){
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
-  Frame *of = curConnection->createFrame(frame);
   if(ds->addDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
-    of->createFailFrame(fec_FrameError, "Could not add design");
+    curConnection->sendFail(frame,fec_FrameError, "Could not add design");
   }
-  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processModifyDesign(Frame* frame){
@@ -1141,13 +1123,11 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 
   DesignStore* ds = Game::getGame()->getDesignStore();
 
-  Frame *of = curConnection->createFrame(frame);
   if(ds->modifyDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
-    of->createFailFrame(fec_FrameError, "Could not modify design");
+    curConnection->sendFail(frame,fec_FrameError, "Could not modify design");
   }
-  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processGetDesignIds(Frame* frame){
@@ -1187,15 +1167,15 @@ void PlayerAgent::processGetProperty(Frame* frame){
   curConnection->sendSequence(frame,numprops);
 
   for(int i = 0; i < numprops; i++){
-    Frame *of = curConnection->createFrame(frame);
     int propnum = frame->unpackInt();
     Property* property = ds->getProperty(propnum);
     if(property == NULL){
-      of->createFailFrame(fec_NonExistant, "No Such Property");
+      curConnection->sendFail(frame,fec_NonExistant, "No Such Property");
     }else{
+      Frame *of = curConnection->createFrame(frame);
       property->pack(of);
+      curConnection->sendFrame(of);
     }
-    curConnection->sendFrame(of);
   }
 }
 

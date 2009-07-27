@@ -141,9 +141,7 @@ int Frame::getLength() const
 
 int Frame::getHeaderLength() const
 {
-
   return 16;
-
 }
 
 int Frame::getDataLength() const
@@ -201,7 +199,6 @@ int Frame::setHeader(char *newhead)
 
 bool Frame::setType(FrameType nt)
 {
-
   if ((nt < ft_Invalid || (version == fv0_3 && nt > ft03_Max) || (version == fv0_4 && nt > ft04_Max)) && (nt < ftad_LogMessage || nt > ftad_Max)) // TODO - may want better admin checking here
     return false;
 
