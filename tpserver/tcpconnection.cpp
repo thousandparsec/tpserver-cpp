@@ -504,6 +504,14 @@ void TcpConnection::send(Frame* oldframe, Packable* packable )
   sendFrame(frame);
 }
 
+void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
+{
+  Frame* frame = createFrame(oldframe);
+  frame->setType( ft02_OK );
+  frame->packString( message );
+  sendFrame(frame);
+}
+
 Frame* TcpConnection::createFrame(Frame* oldframe)
 {
   Frame* newframe;
