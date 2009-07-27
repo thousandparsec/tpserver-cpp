@@ -20,7 +20,6 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/vector3d.h>
 class SpaceCoordParam;

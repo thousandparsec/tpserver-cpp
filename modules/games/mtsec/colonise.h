@@ -20,10 +20,8 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 
-class Move;
 class ObjectOrderParameter;
 
 namespace MTSecRuleset {

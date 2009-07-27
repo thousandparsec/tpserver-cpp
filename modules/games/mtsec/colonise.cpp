@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
