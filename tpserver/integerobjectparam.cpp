@@ -41,7 +41,7 @@ bool IntegerObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
   if(!f->isEnoughRemaining(4))
     return false;
   //value = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 4);
+  f->advance(4);
   return true;
 }
 

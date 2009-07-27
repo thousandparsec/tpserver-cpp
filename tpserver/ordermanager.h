@@ -52,7 +52,7 @@ class OrderManager{
 
   private:
     typedef std::map<uint32_t, Order*> PrototypeStore;
-    typedef std::map<uint32_t, OrderQueues*> OrderQueueStore;
+    typedef std::map<uint32_t, OrderQueue*> OrderQueueStore;
 
     PrototypeStore  prototype_store;
     OrderQueueStore orderqueue_store;

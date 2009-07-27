@@ -43,7 +43,7 @@ bool ReferenceObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
     return false;
   //reftype = f->unpackInt();
   //refid = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 8);
+  f->advance(8);
   return true;
 }
 

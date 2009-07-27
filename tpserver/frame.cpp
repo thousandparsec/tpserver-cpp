@@ -426,19 +426,12 @@ bool Frame::isEnoughRemaining(uint32_t size) const{
   return (length - unpackptr) >= size;
 }
 
-uint32_t Frame::getUnpackOffset() const
+void Frame::advance( uint32_t amount )
 {
-  return unpackptr;
-}
-
-bool Frame::setUnpackOffset(uint32_t newoffset)
-{
-  if (newoffset < length - 4 && newoffset >= 0)
+  uint32_t newoffset = unpackptr + amount;
+  if (newoffset < length - 4)
     unpackptr = newoffset;
-  else
-    return false;
-
-  return true;
+  //else throw
 }
 
 int Frame::unpackInt()

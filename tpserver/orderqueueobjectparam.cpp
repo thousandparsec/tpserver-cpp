@@ -55,11 +55,11 @@ bool OrderQueueObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid)
     return false;
   //queueid = f->unpackInt();
   //numorders = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 8);
+  f->advance(8);
   uint32_t listsize = f->unpackInt();
   if(!f->isEnoughRemaining(4 * listsize))
     return false;
-  f->setUnpackOffset(f->getUnpackOffset() + 4 * listsize);
+  f->advance(4 * listsize);
   return true;
 }
 

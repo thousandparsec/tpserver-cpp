@@ -53,7 +53,7 @@ bool RefQuantityListObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t play
   // reftype = f->unpackInt();
   // refid = f->unpackInt();
   // quantity = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 12 * reflistsize);
+  f->advance(12 * reflistsize);
   return true;
 }
 

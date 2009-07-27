@@ -115,9 +115,8 @@ class Frame {
     bool packIdStringMap(const IdStringMap& idmap);
 
     bool isEnoughRemaining(uint32_t size) const;
-    // uses these functions with care
-    uint32_t getUnpackOffset() const;
-    bool setUnpackOffset(uint32_t newoffset);
+    /// Advances the frame position by amount bytes
+    void advance(uint32_t amount);
 
     int unpackInt();
     std::string unpackStdString();

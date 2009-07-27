@@ -41,7 +41,7 @@ bool SizeObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
   if(!f->isEnoughRemaining(8))
     return false;
   //size = f->unpackInt64();
-  f->setUnpackOffset(f->getUnpackOffset() + 8);
+  f->advance(8);
   return true;
 }
 

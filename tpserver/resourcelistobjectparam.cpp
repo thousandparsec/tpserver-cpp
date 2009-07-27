@@ -55,7 +55,7 @@ bool ResourceListObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playeri
   // surface = f->unpackInt();
   // minable = f->unpackInt();
   // unminable = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 16 * reflistsize);
+  f->advance(16 * reflistsize);
   return true;
 }
 

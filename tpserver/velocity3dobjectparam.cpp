@@ -43,7 +43,7 @@ bool Velocity3dObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid)
     return false;
   //velocity.unpack(f);
   //relative = f->unpackInt();
-  f->setUnpackOffset(f->getUnpackOffset() + 28);
+  f->advance(28);
   return true;
 }
 
