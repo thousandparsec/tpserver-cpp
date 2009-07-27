@@ -41,21 +41,12 @@ class Frame {
     explicit Frame(ProtocolVersion v);
 
     /**
-     * Copy constructor
-     */
-    Frame(const Frame &rhs);
-
-    /**
      * Destructor
      *
      * Frees data if needed
      */
     ~Frame();
 
-    /**
-     * Assignment operator
-     */
-    Frame operator=(const Frame &rhs);
 
     /**
      * CREATE header??
@@ -145,6 +136,12 @@ class Frame {
     bool padstrings;
     /// Current unpack position
     uint32_t unpackptr;
+ 
+    /// Blocked copy constructor
+    Frame(const Frame &rhs) {};
+    /// Blocked assignemnt operator
+    Frame operator=(const Frame &rhs) {};
+
 };
 
 #endif

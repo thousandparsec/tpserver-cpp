@@ -58,51 +58,10 @@ Frame::Frame(ProtocolVersion v)
 {
 }
 
-Frame::Frame(const Frame &rhs)
-{
-  type = rhs.type;
-  typeversion = rhs.typeversion;
-  length = rhs.length;
-  version = rhs.version;
-  sequence = rhs.sequence;
-  padstrings = rhs.padstrings;
-
-  data = (char *) malloc(length);
-  if (data != NULL) {
-    memcpy(data, rhs.data, length);
-  } else {
-
-    type = ft_Invalid;
-    length = 0;
-  }
-  unpackptr = 0;
-}
-
 Frame::~Frame()
 {
   if (data != NULL)
     free(data);
-}
-
-Frame Frame::operator=(const Frame & rhs)
-{
-  type = rhs.type;
-  typeversion = rhs.typeversion;
-  length = rhs.length;
-  version = rhs.version;
-  sequence = rhs.sequence;
-  padstrings = rhs.padstrings;
-
-  data = (char *) malloc(length);
-  if (data != NULL) {
-    memcpy(data, rhs.data, length);
-  } else {
-
-    type = ft_Invalid;
-    length = 0;
-  }
-  unpackptr = 0;
-  return *this;
 }
 
 char *Frame::getPacket() const{

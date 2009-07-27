@@ -396,7 +396,6 @@ void TcpConnection::processVersionCheck() {
         version = (ProtocolVersion)rheaderbuff[2];
         if (version > fv0_4) {
           Frame *f = new Frame(fv0_4);
-          f->setSequence(0);
           f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
           sendFrame(f);
 
@@ -506,7 +505,6 @@ Frame* TcpConnection::createFrame(Frame* oldframe)
     newframe->setSequence(oldframe->getSequence());
   } else {
     newframe = new Frame(version);
-    newframe->setSequence(0);
   }
   newframe->enablePaddingStrings(paddingfilter);
   return newframe;
