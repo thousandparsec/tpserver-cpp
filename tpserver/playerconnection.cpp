@@ -88,10 +88,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
         // also email address and comment strings
         player->setEmail(frame->unpackStdString());
         player->setComment(frame->unpackStdString());
-        Frame *okframe = createFrame(frame);
-        okframe->setType(ft02_OK);
-        okframe->packString("Account created.");
-        sendFrame(okframe);
+        sendOK(frame,"Account created.");
         INFO("PlayerConnection : Account created ok for %s", username.c_str());
         playeragent = new PlayerAgent(this,player);
       }else{
@@ -136,10 +133,7 @@ void PlayerConnection::processLoginFrame(Frame* frame)
       }
     }
     if(player != NULL){
-      Frame *okframe = createFrame(frame);
-      okframe->setType(ft02_OK);
-      okframe->packString("Welcome");
-      sendFrame(okframe);
+      sendOK(frame, "Welcome");
       Logger::getLogger()->info("Login ok by %s", username.c_str());
       playeragent = new PlayerAgent(this,player);
       status = READY;
@@ -188,10 +182,7 @@ void PlayerConnection::processPingFrame(Frame* frame)
   //  less than 60 seconds ago.
   if(lastpingtime < static_cast<uint64_t>(time(NULL)) - 60){
     lastpingtime = time(NULL);
-    Frame *pong = createFrame(frame);
-    pong->setType(ft02_OK);
-    pong->packString("Keep alive ok, hope you're still there");
-    sendFrame(pong);
+    sendOK(frame, "Keep alive ok, hope you're still there");
     DEBUG("PlayerConnection : Did ping for client %d", sockfd);
   }else{
     WARNING("PlayerConnection : Client %d tried to ping within 60 seconds of the last ping", sockfd);
@@ -225,7 +216,6 @@ void PlayerConnection::processGetGameInfoFrame(Frame* frame){
 
 void PlayerConnection::processSetFilters(Frame* frame){
   DEBUG("PlayerConnection : Processing set filters");
-  Frame* rtnframe = createFrame(frame);
   IdSet filters_wanted = frame->unpackIdSet();
 
   IdSet filters_setup;
@@ -236,9 +226,7 @@ void PlayerConnection::processSetFilters(Frame* frame){
   if(filters_wanted.size() != filters_setup.size()){
     sendFail(frame,fec_PermUnavailable, "Not all filters specified are available");
   }else{
-    rtnframe->setType(ft02_OK);
-    rtnframe->packString("Filters ready, setting filters now");
-    sendFrame(rtnframe);
+    sendOK(frame, "Filters ready, setting filters now");
     if(filters_setup.count(fid_filter_stringpad) != 0){
       paddingfilter = true;
     }

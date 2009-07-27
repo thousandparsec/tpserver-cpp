@@ -46,7 +46,7 @@ class TcpConnection: public Connection {
 
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
     void sendSequence(Frame* oldframe, size_t sequence_size );
-    void send(Frame* oldframe, Packable* packable );
+    void send(Frame* oldframe, const Packable* packable );
     void sendOK(Frame* oldframe, const std::string& message );
   protected:
     TcpConnection(int fd, Type aType);

@@ -58,10 +58,7 @@ void AdminConnection::processLogin(){
         }catch(std::exception e){
         }
         if(authenticated){
-          Frame *okframe = createFrame(recvframe);
-          okframe->setType(ft02_OK);
-          okframe->packString("Welcome");
-          sendFrame(okframe);
+          sendOK( recvframe, "Welcome" );
           Logger::getLogger()->info("Admin login ok by %s", username.c_str());
           logsink = new AdminLogger();
           logsink->setConnection(this);
@@ -124,10 +121,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   }
 
   if(numdesc > 1){
-    Frame *seq = createFrame(frame);
-    seq->setType(ft02_Sequence);
-    seq->packInt(numdesc);
-    sendFrame(seq);
+    sendSequence(frame,numdesc);
   }
 
   if(numdesc == 0){

@@ -395,9 +395,7 @@ void TcpConnection::processVersionCheck() {
         //tp04 and later
         version = (ProtocolVersion)rheaderbuff[2];
         if (version > fv0_4) {
-          Frame *f = new Frame(fv0_4);
-          f->createFailFrame(fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
-          sendFrame(f);
+          sendFail( NULL,fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
@@ -446,10 +444,7 @@ void TcpConnection::processVersionCheck() {
 
           status = CONNECTED;
 
-          Frame *okframe = createFrame(recvframe);
-          okframe->setType(ft02_OK);
-          okframe->packString("Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
-          sendFrame(okframe);
+          sendOK(recvframe,"Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
 // TODO: features before connect unsupported!
 //          } else if (recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get) {
 //            WARNING("TcpConnection : Get Features request before Connect frame, continuing anyway");
@@ -497,7 +492,7 @@ void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
   sendFrame(frame);
 }
 
-void TcpConnection::send(Frame* oldframe, Packable* packable )
+void TcpConnection::send(Frame* oldframe, const Packable* packable )
 {
   Frame* frame = createFrame(oldframe);
   packable->pack( frame );

@@ -507,9 +507,6 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
   for(int i = 0; i < num_orders; i++){
     int ordpos = frame->unpackInt();
     if (orderqueue->removeOrder(ordpos, player->getID())) {
-      Frame *of = curConnection->createFrame(frame);
-      of->setType(ft02_OK);
-      of->packString("Order removed");
       //update ObjectView
       uint32_t objid = orderqueue->getObjectId();
       if(objid != 0){
@@ -517,7 +514,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
         obv->touchModTime();
         player->getPlayerView()->updateObjectView(objid);
       }
-      curConnection->sendFrame(of);
+      curConnection->sendOK(frame, "Order removed");
     } else {
       curConnection->sendFail(frame,fec_TempUnavailable, "Could not remove Order");
     }
@@ -618,12 +615,9 @@ void PlayerAgent::processGetBoards(Frame * frame){
   for(int i = 0; i < numboards; i++){
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
-      Frame *of = curConnection->createFrame(frame);
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
-      board->pack(of);
-      curConnection->sendFrame(of);
+      curConnection->send( frame, board.get() );
     }else{
-      //boards in the game object
       curConnection->sendFail(frame,fec_PermUnavailable, "No non-player boards yet");
     }
   }
@@ -750,11 +744,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
       }
     }
     currboard->addMessage(msg, pos);
-
-    Frame *of = curConnection->createFrame(frame);
-    of->setType(ft02_OK);
-    of->packString("Message posted");
-    curConnection->sendFrame(of);
+    curConnection->sendOK( frame, "Message posted" );
   }else{
     curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
   }
@@ -786,10 +776,7 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
       int msgnum = frame->unpackInt();
 
       if(currboard->removeMessage(msgnum)){
-        Frame *of = curConnection->createFrame(frame);
-        of->setType(ft02_OK);
-        of->packString("Message removed");
-        curConnection->sendFrame(of);
+        curConnection->sendOK(frame, "Message removed");
       }else{
         curConnection->sendFail(frame,fec_NonExistant, "Message not removed, does exist");
       }
@@ -811,9 +798,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
 
     const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
     if(res != NULL){
-      Frame *of = curConnection->createFrame(frame);
-      res->pack(of);
-      curConnection->sendFrame(of);
+      curConnection->send(frame, res);
     }else{
       curConnection->sendFail(frame,fec_NonExistant, "No Resource Descriptions available");
     }
@@ -887,16 +872,12 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   for(int i = 0; i < numplayers; i++){
     int pnum = frame->unpackInt();
     if(pnum == 0){
-      Frame *of = curConnection->createFrame(frame);
-      player->pack(of);
-      curConnection->sendFrame(of);
+      curConnection->send(frame,player);
     }else{
       if(pnum != -1){
         Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
         if(p != NULL){
-          Frame *of = curConnection->createFrame(frame);
-          p->pack(of);
-          curConnection->sendFrame(of);
+          curConnection->send(frame,p);
         }else{
           curConnection->sendFail(frame,fec_NonExistant, "Player doesn't exist");
         }
@@ -973,9 +954,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
     if(cat == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No Such Category");
     }else{
-      Frame *of = curConnection->createFrame(frame);
-      cat->pack(of);
-      curConnection->sendFrame(of);
+      curConnection->send(frame,cat);
     }
   }
 
@@ -1172,9 +1151,7 @@ void PlayerAgent::processGetProperty(Frame* frame){
     if(property == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No Such Property");
     }else{
-      Frame *of = curConnection->createFrame(frame);
-      property->pack(of);
-      curConnection->sendFrame(of);
+      curConnection->send(frame,property);
     }
   }
 }
@@ -1253,10 +1230,7 @@ void PlayerAgent::processTurnFinished(Frame* frame){
 
   Game::getGame()->getTurnTimer()->playerFinishedTurn(player->getID());
 
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft02_OK);
-  of->packString("Thanks for letting me know you have finished your turn.");
-  curConnection->sendFrame(of);
+  curConnection->sendOK(frame, "Thanks for letting me know you have finished your turn.");
 
 }
 
