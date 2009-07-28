@@ -25,7 +25,6 @@
 #include <cassert>
 
 #include <tpserver/frame.h>
-#include <tpserver/objectorderparameter.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -37,6 +36,7 @@
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/logging.h>
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
