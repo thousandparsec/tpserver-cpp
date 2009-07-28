@@ -527,7 +527,7 @@ void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence
   frame->setType(ft);
   frame->packInt(sequence);
   frame->packIdModList(modlist,count,start);
-  if (frame->getVersion() >= fv0_4) {
+  if (frame->getVersion() >= fv0_4 && count != 0) {
     frame->packInt64(fromtime);
   }
   sendFrame(frame);

@@ -294,23 +294,19 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
     IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
 
     if(o != NULL){
-      Frame *of = curConnection->createFrame(frame);
       IdSet contain = o->getContainedObjects();
       IdSet intersection;
       std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
         std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
 
-      of->setType(ft03_ObjectIds_List);
-      of->packInt(0);
-      of->packInt(0);
-      of->packInt(intersection.size());
+      IdModList modlist;
       for(IdSet::iterator itcurr = intersection.begin(); itcurr != intersection.end(); ++itcurr){
-        of->packInt(*itcurr);
-        of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
+        modlist[*itcurr] = Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime();
         Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
       }
+
+      curConnection->sendModList( frame, ft03_ObjectIds_List, 0, modlist, 0, 0, 0);
       Game::getGame()->getObjectManager()->doneWithObject(objectID);
-      curConnection->sendFrame(of);
     }else{
       curConnection->sendFail(frame,fec_NonExistant, "No such Object");
     }
