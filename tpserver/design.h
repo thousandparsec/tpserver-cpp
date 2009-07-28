@@ -25,11 +25,10 @@
 #include <stdint.h>
 
 #include <tpserver/propertyvalue.h>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
+#include <tpserver/protocolobject.h>
 #include <tpserver/common.h>
 
-class Design : public Modifiable, public Describable {
+class Design : public ProtocolObject {
   public:
     Design();
     virtual ~Design();

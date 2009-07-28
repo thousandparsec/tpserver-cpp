@@ -21,10 +21,10 @@
  */
 
 #include <tpserver/common.h>
-#include <tpserver/modifiable.h>
+#include <tpserver/protocolobject.h>
 #include <tpserver/describable.h>
 
-class Component : public Modifiable, public Describable {
+class Component : public ProtocolObject {
  public:
   Component();
   virtual ~Component();

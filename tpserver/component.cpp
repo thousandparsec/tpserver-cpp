@@ -26,7 +26,7 @@
 
 #include "component.h"
 
-Component::Component(): Describable(0), catids(), inuse(false), parentdesignid(0){
+Component::Component(): ProtocolObject( ft03_Component, 0, 0 ), inuse(false), parentdesignid(0){
 }
 
 Component::~Component(){
