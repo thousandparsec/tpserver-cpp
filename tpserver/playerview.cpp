@@ -260,14 +260,7 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
   }
   
   if(seqnum == UINT32_NEG_ONE){
-    modified.clear();
-    for(IdSet::iterator itcurr = visible.begin();
-        itcurr != visible.end(); ++itcurr){
-      uint64_t modtime = retrieve(*itcurr)->getModTime();
-      if(fromtime == UINT64_NEG_ONE || modtime > fromtime){
-        modified[*itcurr] = modtime;
-      }
-    }
+    generateModList( fromtime );
   }
   
   if(snum > modified.size()){
@@ -292,6 +285,20 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
     out->packInt64(fromtime);
   }
 }
+
+template< class EntityType >
+void PlayerView::EntityInfo< EntityType >::generateModList( uint64_t fromtime )
+{
+  modified.clear();
+  for(IdSet::iterator itcurr = visible.begin();
+      itcurr != visible.end(); ++itcurr){
+    uint64_t modtime = retrieve(*itcurr)->getModTime();
+    if(fromtime == UINT64_NEG_ONE || modtime > fromtime){
+      modified[*itcurr] = modtime;
+    }
+  }
+}
+
 
 template< class EntityType >
 void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
