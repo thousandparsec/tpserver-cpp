@@ -39,7 +39,7 @@
 #include "object.h"
 
 
-IGObject::IGObject(uint32_t newid) : Describable(newid), turn(0), alive(true), type(0), 
+IGObject::IGObject(uint32_t newid) : ProtocolObject(ft02_Object,newid), turn(0), alive(true), type(0), 
                    relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
 }
 
@@ -48,12 +48,6 @@ IGObject::~IGObject(){
   if(behaviour != NULL){
     delete behaviour;
   }
-}
-
-IGObject& IGObject::operator=(const IGObject & rhs){
-  //TODO
-  WARNING("Object Assignment operator");
-  return *this;
 }
 
 uint32_t IGObject::getID() const{

@@ -20,31 +20,22 @@
  *
  */
 
-#include <set>
-#include <map>
-#include <stdint.h>
-#include <string>
-
 #include <tpserver/common.h>
 #include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
-#include <tpserver/modifiable.h>
-#include <tpserver/describable.h>
+#include <tpserver/protocolobject.h>
 
-class Frame;
 class ObjectBehaviour;
 class ObjectParameter;
 
 
-class IGObject : public Modifiable, public Describable {
+class IGObject : public ProtocolObject {
 
   public:
     IGObject( uint32_t newid );
     
     ~IGObject();
-    
-    IGObject& operator=(const IGObject & rhs);
-
+ 
     // TODO: remove and replace with getId
     uint32_t getID() const;
     uint32_t getType() const;
