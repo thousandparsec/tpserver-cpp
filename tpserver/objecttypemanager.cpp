@@ -64,55 +64,16 @@ uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
   return nextType - 1;
 }
 
-void ObjectTypeManager::doGetObjectTypes(Frame* frame, Frame* of){
-  uint32_t lseqkey = frame->unpackInt();
-  if(lseqkey == UINT32_NEG_ONE){
-    //start new seqkey
-    lseqkey = seqkey;
-  }
-
-  uint32_t start = frame->unpackInt();
-  uint32_t num = frame->unpackInt();
-  uint64_t fromtime = UINT64_NEG_ONE;
-  if(frame->getVersion() >= fv0_4){
-    fromtime = frame->unpackInt64();
-  }
-
-  if(lseqkey != seqkey){
-    of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
-    return;
-  }
-
+IdModList ObjectTypeManager::getTypeModList(uint64_t fromtime) const {
   IdModList modlist;
-  for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin();
+  for(std::map<uint32_t, ObjectType*>::const_iterator itcurr = typeStore.begin();
       itcurr != typeStore.end(); ++itcurr){
     uint32_t otmodtime = itcurr->second->getModTime();
     if(fromtime == UINT64_NEG_ONE || otmodtime > fromtime){
       modlist[itcurr->first] = otmodtime;
     }
   }
-  
-  if(start > modlist.size()){
-    of->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
-  }
-  
-  if(num > modlist.size() - start){
-      num = modlist.size() - start;
-  }
-  
-  if(num > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
-    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-
-  of->setType(ft04_ObjectTypes_List);
-  of->packInt(lseqkey);
-  of->packIdModList(modlist,num,start);
-  if(of->getVersion() >= fv0_4){
-    of->packInt64(fromtime);
-  }
-  
+  return modlist;
 }
 
 void ObjectTypeManager::doGetObjectDesc(uint32_t type, Frame* of){

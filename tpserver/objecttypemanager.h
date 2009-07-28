@@ -20,9 +20,7 @@
  *
  */
 
-#include <map>
-#include <string>
-#include <stdint.h>
+#include <tpserver/common.h>
 
 class Object;
 class ObjectType;
@@ -39,14 +37,16 @@ class ObjectTypeManager{
   uint32_t getObjectTypeByName(const std::string& name) const;
 
   uint32_t addNewObjectType(ObjectType* od);
-  
-  void doGetObjectTypes(Frame* frame, Frame* of);
+
+  uint32_t getSeqKey() const { return seqkey; }
+  IdModList getTypeModList(uint64_t fromtime) const;
   void doGetObjectDesc(uint32_t type, Frame* of);
 
  private:
   std::map<uint32_t, ObjectType*> typeStore;
   std::map<std::string, uint32_t> stringmap;
   uint32_t nextType;
+  // TODO: is this really needed?
   uint32_t seqkey;
 
 };

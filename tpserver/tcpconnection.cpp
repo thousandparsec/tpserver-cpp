@@ -507,6 +507,32 @@ void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
   sendFrame(frame);
 }
 
+void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist, uint32_t count, uint32_t start, uint64_t fromtime ) 
+{
+  if(start > modlist.size()){
+    DEBUG("Starting number too high, snum = %d, size = %d", start, modlist.size());
+    sendFail(oldframe,fec_NonExistant, "Starting number too high");
+    return;
+  }
+  if(count > modlist.size() - start){
+    count = modlist.size() - start;
+  }
+
+  if(count > MAX_ID_LIST_SIZE + ((oldframe->getVersion() < fv0_4)? 1 : 0)){
+    DEBUG("Number of items to get too high, numtoget = %d", count);
+    sendFail(oldframe,fec_FrameError, "Too many items to get, frame too big");
+    return;
+  }
+  Frame *frame = createFrame(oldframe);
+  frame->setType(ft);
+  frame->packInt(sequence);
+  frame->packIdModList(modlist,count,start);
+  if (frame->getVersion() >= fv0_4) {
+    frame->packInt64(fromtime);
+  }
+  sendFrame(frame);
+}
+
 Frame* TcpConnection::createFrame(Frame* oldframe)
 {
   Frame* newframe;

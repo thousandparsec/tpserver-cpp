@@ -338,9 +338,26 @@ void PlayerAgent::processGetObjectTypes(Frame * frame){
   DEBUG("Doing get OrderTypes list");
   if ( !versionCheck( frame, fv0_4 ) ) return;
   if ( !lengthCheck( frame, 20 ) ) return;
-  Frame *of = curConnection->createFrame(frame);
-  Game::getGame()->getObjectTypeManager()->doGetObjectTypes(frame, of);
-  curConnection->sendFrame(of);
+  uint32_t lseqkey = frame->unpackInt();
+  uint32_t seqkey = Game::getGame()->getObjectTypeManager()->getSeqKey();
+
+  if(lseqkey == UINT32_NEG_ONE){
+    //start new seqkey
+    lseqkey = seqkey;
+  }
+
+  uint32_t start = frame->unpackInt();
+  uint32_t num = frame->unpackInt();
+  uint64_t fromtime = frame->unpackInt64();
+
+  if(lseqkey != seqkey){
+    curConnection->sendFail(frame,fec_TempUnavailable, "Invalid Sequence Key");
+    return;
+  }
+
+  IdModList modlist = Game::getGame()->getObjectTypeManager()->getTypeModList(fromtime);
+  
+  curConnection->sendModList( frame, ft04_ObjectTypes_List, lseqkey, modlist, num, start, fromtime);
 }
 
 void PlayerAgent::processGetOrder(Frame * frame){
@@ -840,27 +857,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
     }
   }
 
-  if(snum > modlist.size()){
-    DEBUG("Starting number too high, snum = %d, size = %d", snum, modlist.size());
-    curConnection->sendFail(frame,fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > modlist.size() - snum){
-    numtoget = modlist.size() - snum;
-  }
-
-  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
-    DEBUG("Number of items to get too high, numtoget = %d", numtoget);
-    curConnection->sendFail(frame,fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_ResType_List);
-  of->packInt(seqkey);
-  of->packIdModList(modlist,numtoget,snum);
-  if(of->getVersion() >= fv0_4) of->packInt64(fromtime);
-  curConnection->sendFrame(of);
+  curConnection->sendModList( frame, ft03_ResType_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetPlayer(Frame* frame){
@@ -919,27 +916,7 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
     }
   }
 
-  if(snum > modlist.size()){
-    DEBUG("Starting number too high, snum = %d, size = %d", snum, modlist.size());
-    curConnection->sendFail(frame,fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > modlist.size() - snum){
-    numtoget = modlist.size() - snum;
-  }
-
-  if(numtoget > MAX_ID_LIST_SIZE){
-    DEBUG("Number of items to get too high, numtoget = %d", numtoget);
-    curConnection->sendFail(frame,fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft04_PlayerIds_List);
-  of->packInt(seqkey);
-  of->packIdModList(modlist,numtoget,snum);
-  of->packInt64(fromtime);
-  curConnection->sendFrame(of);
+  curConnection->sendModList( frame, ft04_PlayerIds_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetCategory(Frame* frame){
@@ -991,32 +968,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
     }
   }
 
-  if(snum > modlist.size()){
-    DEBUG("Starting number too high, snum = %d, size = %d", snum, modlist.size());
-    curConnection->sendFail(frame,fec_NonExistant, "Starting number too high");
-    return;
-  }
-
-  if(numtoget > modlist.size() - snum){
-    numtoget = modlist.size() - snum;
-  }
-
-  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
-    DEBUG("Number of items to get too high, numtoget = %d", numtoget);
-    curConnection->sendFail(frame,fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_CategoryIds_List);
-  of->packInt(0); // seqkey
-  of->packIdModList(modlist,numtoget,snum);
-  
-  if(of->getVersion() >= fv0_4){
-    of->packInt64(fromtime);
-  }
-
-  curConnection->sendFrame(of);
+  curConnection->sendModList( frame, ft03_CategoryIds_List, 0, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetDesign(Frame* frame){
@@ -1190,31 +1142,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
     }
   }
 
-  if(snum > modlist.size()){
-    DEBUG("Starting number too high, snum = %d, size = %d", snum, modlist.size());
-    curConnection->sendFail(frame,fec_NonExistant, "Starting number too high");
-    return;
-  }
-  if(numtoget > modlist.size() - snum){
-    numtoget = modlist.size() - snum;
-  }
-
-  if(numtoget > MAX_ID_LIST_SIZE + ((frame->getVersion() < fv0_4)? 1 : 0)){
-    DEBUG("Number of items to get too high, numtoget = %d", numtoget);
-    curConnection->sendFail(frame,fec_FrameError, "Too many items to get, frame too big");
-    return;
-  }
-
-  Frame *of = curConnection->createFrame(frame);
-  of->setType(ft03_PropertyIds_List);
-  of->packInt(0);
-  of->packIdModList(modlist,numtoget,snum);
-
-  if(of->getVersion() >= fv0_4){
-    of->packInt64(fromtime);
-  }
-
-  curConnection->sendFrame(of);
+  curConnection->sendModList(frame,ft03_PropertyIds_List,0,modlist,numtoget,snum,fromtime);
 }
 
 void PlayerAgent::processTurnFinished(Frame* frame){

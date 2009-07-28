@@ -48,6 +48,8 @@ class TcpConnection: public Connection {
     void sendSequence(Frame* oldframe, size_t sequence_size );
     void send(Frame* oldframe, const Packable* packable );
     void sendOK(Frame* oldframe, const std::string& message );
+    void sendModList(Frame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
+        uint32_t count, uint32_t start, uint64_t fromtime );
   protected:
     TcpConnection(int fd, Type aType);
   
