@@ -128,6 +128,7 @@ public:
     bool saveProtocolView(uint32_t playerid, ProtocolView* view);
     ProtocolView* retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid);
 
+    bool saveProtocolObject(ProtocolObject* object);
 };
 
 #endif

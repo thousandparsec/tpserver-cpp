@@ -302,3 +302,16 @@ ProtocolView* Persistence::retrieveProtocolView(FrameType viewtype, uint32_t pla
     default : return NULL;
   }
 }
+
+bool Persistence::saveProtocolObject(ProtocolObject* object) 
+{
+  switch(object->getFrameType()) {
+    case ft03_Component : return saveComponent( dynamic_cast<Component*>(object) );
+    case ft03_Design    : return saveDesign( dynamic_cast<Design*>(object) );
+    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
+    case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
+    case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
+    default : return false;
+  }
+}
+
