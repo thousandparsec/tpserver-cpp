@@ -315,3 +315,41 @@ bool Persistence::saveProtocolObject(ProtocolObject* object)
   }
 }
 
+ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t id )
+{
+  switch(objtype) {
+    case ft03_Component : return retrieveComponent( id );
+    case ft03_Design    : return retrieveDesign( id );
+    case ft03_Property  : return retrieveProperty( id );
+    case ft03_Category  : return retrieveCategory( id );
+    case ft03_Player    : return retrievePlayer( id );
+    default : return NULL;
+  }
+}
+
+uint32_t Persistence::getMaxProtocolObjectId(FrameType objtype)
+{
+  switch(objtype) {
+    case ft03_Component : return getMaxComponentId( );
+    case ft03_Design    : return getMaxDesignId( );
+    case ft03_Property  : return getMaxPropertyId( );
+    case ft03_Category  : return getMaxCategoryId( );
+    case ft03_Player    : return getMaxPlayerId( );
+    default : return 0;
+  }
+}
+
+
+IdSet Persistence::getProtocolObjectIds(FrameType objtype)
+{
+  switch(objtype) {
+    case ft03_Component : return getComponentIds( );
+    case ft03_Design    : return getDesignIds( );
+    case ft03_Property  : return getPropertyIds( );
+    case ft03_Category  : return getCategoryIds( );
+    case ft03_Player    : return getPlayerIds( );
+    default : return IdSet();
+  }
+}
+
+
