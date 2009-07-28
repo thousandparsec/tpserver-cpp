@@ -120,46 +120,7 @@ void PlayerView::processGetObject(uint32_t objid, Frame* frame){
 }
 
 void PlayerView::processGetObjectIds(Frame* in, Frame* out){
-  DEBUG("doing Get Object Ids frame");
-  
-  if(in->getVersion() < fv0_3){
-    DEBUG("protocol version not high enough");
-    out->createFailFrame(fec_FrameError, "Get Object ids isn't supported in this protocol");
-    return;
-  }
-  
-  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
-    out->createFailFrame(fec_FrameError, "Invalid frame");
-    return;
-  }
-  
-  uint32_t seqnum = in->unpackInt();
-  uint32_t snum = in->unpackInt();
-  uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = UINT64_NEG_ONE;
-  if(in->getVersion() >= fv0_4){
-    fromtime = in->unpackInt64();
-  }
-  
-  if(seqnum != objects.sequence && seqnum != UINT32_NEG_ONE){
-    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
-    objects.modified.clear();
-    return;
-  }
-  
-  if(seqnum == UINT32_NEG_ONE){
-    objects.modified.clear();
-    for(IdSet::iterator itcurr = objects.visible.begin();
-        itcurr != objects.visible.end(); ++itcurr){
-      ObjectView* obj = objects.retrieve(*itcurr);
-      // TODO: find out the significance of isGone and make this generic!
-      if((fromtime == UINT64_NEG_ONE && !(obj->isGone())) || obj->getModTime() > fromtime){
-        objects.modified[*itcurr] = obj->getModTime();
-      }
-    }
-  }
-  
-  designs.packEntityList( out, ft03_DesignIds_List, snum, numtoget, fromtime );
+  objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
 
 void PlayerView::addVisibleDesign(DesignView* design){
@@ -200,45 +161,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
 }
 
 void PlayerView::processGetDesignIds(Frame* in, Frame* out){
-  DEBUG("doing Get Design Ids frame");
-  
-  if(in->getVersion() < fv0_3){
-    DEBUG("protocol version not high enough");
-    out->createFailFrame(fec_FrameError, "Get Design ids isn't supported in this protocol");
-    return;
-  }
-  
-  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
-    out->createFailFrame(fec_FrameError, "Invalid frame");
-    return;
-  }
-  
-  uint32_t seqnum = in->unpackInt();
-  uint32_t snum = in->unpackInt();
-  uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = UINT64_NEG_ONE;
-  if(in->getVersion() >= fv0_4){
-    fromtime = in->unpackInt64();
-  }
-  
-  if(seqnum != designs.sequence && seqnum != UINT32_NEG_ONE){
-    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
-    designs.modified.clear();
-    return;
-  }
-  
-  if(seqnum == UINT32_NEG_ONE){
-    designs.modified.clear();
-    for(IdSet::iterator itcurr = designs.visible.begin();
-        itcurr != designs.visible.end(); ++itcurr){
-      DesignView* designv = designs.retrieve(*itcurr);
-      if(fromtime == UINT64_NEG_ONE || designv->getModTime() > fromtime){
-        designs.modified[*itcurr] = designv->getModTime();
-      }
-    }
-  }
-  
-  designs.packEntityList( out, ft03_DesignIds_List, snum, numtoget, fromtime );
+  designs.processGetIds( in, out, ft03_DesignIds_List );
 }
 
 void PlayerView::addVisibleComponent(ComponentView* comp){
@@ -279,46 +202,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
 }
 
 void PlayerView::processGetComponentIds(Frame* in, Frame* out){
-  DEBUG("doing Get Component Ids frame");
-  
-  if(in->getVersion() < fv0_3){
-    DEBUG("protocol version not high enough");
-    out->createFailFrame(fec_FrameError, "Get Component ids isn't supported in this protocol");
-    return;
-  }
-  
-  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
-    out->createFailFrame(fec_FrameError, "Invalid frame");
-    return;
-  }
-  
-  uint32_t seqnum = in->unpackInt();
-  uint32_t snum = in->unpackInt();
-  uint32_t numtoget = in->unpackInt();
-  uint64_t fromtime = UINT64_NEG_ONE;
-  if(in->getVersion() >= fv0_4){
-    fromtime = in->unpackInt64();
-  }
-  
-  if(seqnum != components.sequence && seqnum != UINT32_NEG_ONE){
-    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
-    components.modified.clear();
-    return;
-  }
-  
-  if(seqnum == UINT32_NEG_ONE){
-    //clear current mod list in case it has stuff in it still
-    components.modified.clear();
-    for(IdSet::iterator itcurr = components.visible.begin();
-        itcurr != components.visible.end(); ++itcurr){
-      ComponentView* component = components.retrieve(*itcurr);
-      if(fromtime == UINT64_NEG_ONE || component->getModTime() > fromtime){
-        components.modified[*itcurr] = component->getModTime();
-      }
-    }
-  }
-
-  components.packEntityList( out, ft03_ComponentIds_List, snum, numtoget, fromtime );
+  components.processGetIds( in, out, ft03_ComponentIds_List );
 }
 
 void PlayerView::setVisibleObjects(const IdSet& obids){
@@ -346,8 +230,46 @@ void PlayerView::setUsableComponents(const IdSet& cids){
 }
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime )
+void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out, FrameType type )
 {
+  DEBUG("doing Get Ids frame");
+  
+  if(in->getVersion() < fv0_3){
+    DEBUG("protocol version not high enough");
+    out->createFailFrame(fec_FrameError, "Get ids isn't supported in this protocol");
+    return;
+  }
+  
+  if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
+    out->createFailFrame(fec_FrameError, "Invalid frame");
+    return;
+  }
+  
+  uint32_t seqnum = in->unpackInt();
+  uint32_t snum = in->unpackInt();
+  uint32_t numtoget = in->unpackInt();
+  uint64_t fromtime = UINT64_NEG_ONE;
+  if(in->getVersion() >= fv0_4){
+    fromtime = in->unpackInt64();
+  }
+  
+  if(seqnum != sequence && seqnum != UINT32_NEG_ONE){
+    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
+    modified.clear();
+    return;
+  }
+  
+  if(seqnum == UINT32_NEG_ONE){
+    modified.clear();
+    for(IdSet::iterator itcurr = visible.begin();
+        itcurr != visible.end(); ++itcurr){
+      uint64_t modtime = retrieve(*itcurr)->getModTime();
+      if(fromtime == UINT64_NEG_ONE || modtime > fromtime){
+        modified[*itcurr] = modtime;
+      }
+    }
+  }
+  
   if(snum > modified.size()){
     DEBUG("Starting number too high, snum = %d, size = %d", snum, visible.size());
     out->createFailFrame(fec_NonExistant, "Starting number too high");

@@ -92,7 +92,7 @@ private:
     uint32_t sequence;
     uint32_t pid;
     EntityInfo() : sequence( 0 ) {}
-    void packEntityList( Frame* out, FrameType type, uint32_t snum, uint32_t numtoget, uint64_t fromtime );
+    void processGetIds( Frame* in, Frame* out, FrameType type );
     void addVisible( EntityType* entity );
     void addVisible( const IdSet& obids );
     void addActable( uint32_t id );
