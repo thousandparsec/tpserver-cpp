@@ -43,11 +43,14 @@
 #include "nop.h"
 #include "move.h"
 #include "buildfleet.h"
+#include "buildweapon.h"
 #include "enhance.h"
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
 #include "sendpoints.h"
+#include "loadarm.h"
+#include "unloadarm.h"
 #include "tpserver/property.h"
 #include "tpserver/component.h"
 #include "tpserver/design.h"
@@ -141,12 +144,14 @@ void MTSec::initGame() {
     ordm->addOrderType(new Nop());
     ordm->addOrderType(new Move());
     ordm->addOrderType(new BuildFleet());
+    ordm->addOrderType(new BuildWeapon());
     ordm->addOrderType(new Colonise());
     ordm->addOrderType(new SplitFleet());
     ordm->addOrderType(new MergeFleet());
     ordm->addOrderType(new Enhance());
     ordm->addOrderType(new SendPoints());
-
+    ordm->addOrderType(new LoadArmament());
+    ordm->addOrderType(new UnloadArmament());
 }
 
 
@@ -744,6 +749,28 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
     return scout;
 }
 
+Design* MTSec::createAlphaMissileDesign( Player* owner)
+{
+    Logger::getLogger()->debug( "Enter MTSec::createAlphaMissileDesign");
+    DesignStore *ds = Game::getGame()->getDesignStore();
+
+    Game *game = Game::getGame();
+    Design* scout = new Design();
+    std::map<uint32_t, uint32_t> componentList;
+
+    scout->setCategoryId(2);
+    scout->setName( "Alpha Missile");
+    scout->setDescription("The Alpha Missile");
+    scout->setOwner( owner->getID());
+    componentList[ds->getComponentByName("Alpha Missile Hull")] = 1;
+    componentList[ds->getComponentByName("Cerium Explosives")] = 1;
+    scout->setComponents(componentList);
+    game->getDesignStore()->addDesign(scout);
+
+    Logger::getLogger()->debug( "Exit MTSec::createAlphaMissileDesign");
+    return scout;
+}
+
 IGObject* MTSec::createEmptyFleet( Player*     owner,
                                    IGObject*   star,
                                    std::string fleetName)
@@ -796,6 +823,11 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     IGObject*   fleet = createEmptyFleet( player, star, fleetName);
 
     Design* scout = createScoutDesign( player);
+    Design* tempMissile = createAlphaMissileDesign(player);
+
+PlayerView* playerview = player->getPlayerView();;
+
+playerview->addUsableDesign(tempMissile->getDesignId());
 
     // Start this fleet off with two battle scout ships
     ((Fleet*)(fleet->getObjectBehaviour()))->addShips( scout->getDesignId(), 2);

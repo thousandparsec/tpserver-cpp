@@ -62,6 +62,8 @@ class MTSec : public Ruleset{
   IGObject* makePlayerHomePlanet( Player* player, IGObject* star);
   IGObject* makeNewPlayerStarSystem( Player* player);
   void setNewPlayerTech( Player* player);
+Design* createAlphaMissileDesign( Player* owner);
+
 
  private:
   xmlImport *xmlImporter;

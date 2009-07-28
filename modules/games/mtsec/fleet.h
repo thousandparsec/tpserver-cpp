@@ -61,6 +61,13 @@ class Fleet : public OwnedObject {
         void setupObject();
 
 	int getContainerType();
+
+        void addResource(uint32_t restype, uint32_t amount);
+        void setResource(uint32_t restype, uint32_t amount);
+        bool removeResource(uint32_t restype, uint32_t amount);
+        std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+
+      protected:
 };
 
 #endif

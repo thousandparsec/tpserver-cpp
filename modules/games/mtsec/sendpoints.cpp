@@ -99,7 +99,7 @@ bool SendPoints::doOrder(IGObject *ob)
       Logger::getLogger()->debug("Found Planet(%s), Sending %d Points", destObj->getName().c_str(), i->second);
       ResourceManager* resman = game->getResourceManager();
       const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
-      if (source->removeResource(resType, numRes) == true) {
+      if (source->removeResource(resType, numRes)) {
         destPlanet->addFactoriesNextTurn(numRes);
         return true;
       }

@@ -197,7 +197,7 @@
 
 
 <comp>
-    <name>Cerium 3 Explosives</name>
+    <name>Cerium Explosives</name>
     <ComponentIDName>Weapons</ComponentIDName>
     <description>A huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
@@ -215,54 +215,6 @@
         <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
         <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
         <Size><![CDATA[(lambda (design) (+ 3))]]></Size>
-    </propertylist>
-</comp>
-
-
-
-<comp>
-    <name>Cerium 6 Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
-    <description>A huge but extremely explosive sub-nuclear particle</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
-    <propertylist>
-        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
-        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-        <AmmoSize><![CDATA[(lambda (design) 6)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 11)]]></AmmoExplosiveness>
-        <!--  Ammo cost is (cost/size) * size. 
-              This is for one 'unit' of explosive - if a missile can fit two units, 
-              the cost for the missile bay is twice the AmmoCost property -->
-        <AmmoCost><![CDATA[(lambda (design) 36)]]></AmmoCost>
-        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
-        <Size><![CDATA[(lambda (design) (+ 6))]]></Size>
-    </propertylist>
-</comp>
-
-
-
-<comp>
-    <name>Cerium 12 Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
-    <description>A huge but extremely explosive sub-nuclear particle</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
-    <propertylist>
-        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
-        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-        <AmmoSize><![CDATA[(lambda (design) 12)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 55)]]></AmmoExplosiveness>
-        <!--  Ammo cost is (cost/size) * size. 
-              This is for one 'unit' of explosive - if a missile can fit two units, 
-              the cost for the missile bay is twice the AmmoCost property -->
-        <AmmoCost><![CDATA[(lambda (design) 156)]]></AmmoCost>
-        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
-        <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
     </propertylist>
 </comp>
 
@@ -1213,4 +1165,214 @@
     </prop>
     
     
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>_num-components</name>
+        <displayName>Number of Components</displayName>
+        <description>The total number of components in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " components"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction>(lambda (design) (cons #t ""))</tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>Speed</name>
+        <displayName>Speed</displayName>
+        <description>The number of units the weapon can move each turn</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) " mega-units")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoCost</name>
+        <displayName>Explosive Unit Cost</displayName>
+        <description>The relative expensiveness of the explosive</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " credits")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoExplosiveness</name>
+        <displayName>Unit Explosive Punch</displayName>
+        <description>The explosiveness of a unit of the explosive used in the weapons</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoSize</name>
+        <displayName>Explosive Density</displayName>
+        <description>The relative size of a unit of the explosive used in the weapons</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="2"/>
+        <name>Firepower</name>
+        <displayName>Firepower</displayName>
+        <description>How much damage the weapons of the ship can do in a single round</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileCost</name>
+        <displayName>MissileCost</displayName>
+        <description>The relative cost of a missile</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileFirepower</name>
+        <displayName>Missile Firepower</displayName>
+        <description>How much damage a missile can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileSize</name>
+        <displayName>MissileSize</displayName>
+        <description>The relative size of a missile</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeCost</name>
+        <displayName>Torpedoe Cost</displayName>
+        <description>The relative cost of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeFirepower</name>
+        <displayName>Torpedoe Firepower</displayName>
+        <description>How much damage a torpedoe can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeSize</name>
+        <displayName>Torpedoe Size</displayName>
+        <description>The relative size of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>ProductCost</name>
+        <displayName>Product Cost</displayName>
+        <description>The number of turns to build this</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " turns")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-ammo</name>
+        <displayName>Number of missile and torpedoe warhead types</displayName>
+        <description>The number of missile and torpedoe warhead types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " explosive types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-baytypes</name>
+        <displayName>Number of missile or torpedoe types</displayName>
+        <description>The number of missile or torpedoe types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-hulls</name>
+        <displayName>Number of hulls</displayName>
+        <description>The number of hulls in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " hull"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>Size</name>
+        <displayName>Size of Weapon</displayName>
+        <description>The size of the weapon in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>MaxSize</name>
+        <displayName>Maximum Size of Weapon</displayName>
+        <description>The maximum size of the weapon in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
 </properties>

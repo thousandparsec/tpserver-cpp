@@ -38,6 +38,7 @@
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/logging.h>
+#include <tpserver/resourcelistobjectparam.h>
 
 #include "fleet.h"
 
@@ -48,7 +49,13 @@ FleetType::FleetType():OwnedObjectType(){
   group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
   group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
   addParameterGroupDesc(group);
-  
+
+  group = new ObjectParameterGroupDesc();
+  group->setName("Resources");
+  group->setDescription("The fleet's weapon resources");
+  group->addParameter(obpT_Resource_List, "Resource List", "The weapon list the fleet has available");
+  addParameterGroupDesc(group);
+
   nametype = "Fleet";
   typedesc = "Fleet of ships";
 }
@@ -73,6 +80,8 @@ void Fleet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("Move"));
   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
+  allowedlist.insert(om->getOrderTypeByName("Load Armament"));
+  allowedlist.insert(om->getOrderTypeByName("Unload Armament"));
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
 }
 
@@ -207,13 +216,52 @@ void Fleet::doOnceATurn(){
   }
 }
 
+std::map<uint32_t, std::pair<uint32_t, uint32_t> > Fleet::getResources() {
+    return dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->getResources();
+}
+
+void Fleet::addResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(5,1)))->getResources();
+    if(reslist.find(restype) != reslist.end()){
+      std::pair<uint32_t, uint32_t> respair = reslist[restype];
+      respair.first += amount;
+      reslist[restype] = respair;
+      ((ResourceListObjectParam*)(obj->getParameter(5,1)))->setResources(reslist);
+    } else {
+      setResource(restype,amount);
+    }
+}
+
+void Fleet::setResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(5,1)))->getResources();
+    std::pair<uint32_t, uint32_t> respair = reslist[restype];
+    respair.first = amount;
+    reslist[restype] = respair;
+    ((ResourceListObjectParam*)(obj->getParameter(5,1)))->setResources(reslist);
+    obj->touchModTime();
+}
+
+bool Fleet::removeResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(5,1)))->getResources();
+    if(reslist.find(restype) != reslist.end()){
+        if(reslist[restype].first >= amount){
+            std::pair<uint32_t, uint32_t> respair = reslist[restype];
+            respair.first -= amount;
+            reslist[restype] = respair;
+            ((ResourceListObjectParam*)(obj->getParameter(5,1)))->setResources(reslist);
+            obj->touchModTime();
+            return true;
+        }
+    }
+    return false;
+}
+
 int Fleet::getContainerType(){
   return 0;
 }
 
 void Fleet::setupObject(){
   OwnedObject::setupObject();
-    
   setSize(2);
   //something about the orderqueue?
 }

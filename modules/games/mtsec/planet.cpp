@@ -75,6 +75,7 @@ void Planet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("Enhance"));
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Send Points"));
+  allowedlist.insert(om->getOrderTypeByName("Build Weapon"));
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
   Game* game = Game::getGame();
   ResourceManager* resman = game->getResourceManager();
