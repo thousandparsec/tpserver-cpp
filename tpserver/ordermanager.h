@@ -20,11 +20,7 @@
  *
  */
 
-#include <map>
-#include <set>
-#include <list>
-#include <string>
-#include <stdint.h>
+#include <tpserver/common.h>
 
 class Order;
 class Frame;
