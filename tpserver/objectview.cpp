@@ -61,7 +61,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
     frame->setType(ft02_Object);
     frame->packInt(id);
     
-    PlayerView* playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
+    PlayerView::Ptr playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
     
     //type
     frame->packInt(object->getType());

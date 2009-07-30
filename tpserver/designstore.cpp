@@ -185,7 +185,7 @@ bool DesignStore::addDesign(Design* d){
   //check components all come from this category
   IdMap cl = d->getComponents();
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
-  PlayerView* playerview = player->getPlayerView();
+  PlayerView::Ptr playerview = player->getPlayerView();
   for(IdMap::iterator itcurr = cl.begin(); 
       itcurr != cl.end(); ++itcurr){
     if(!(playerview->isUsableComponent(itcurr->first)))
@@ -216,7 +216,7 @@ bool DesignStore::modifyDesign(Design* d){
   if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
-  PlayerView* playerview = player->getPlayerView();
+  PlayerView::Ptr playerview = player->getPlayerView();
   playerview->removeUsableDesign(d->getId());
 
   IdMap cl = current->getComponents();

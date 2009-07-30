@@ -21,6 +21,8 @@
  *
  */
 
+#include <stdint.h>
+
 enum ProtocolVersion{
   fv0_1 = 1,
   fv0_2 = 2,

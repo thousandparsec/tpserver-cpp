@@ -178,7 +178,7 @@ void TaeTurn::doTurn(){
     std::set<uint32_t> vis = objectmanager->getAllIds();
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
-        PlayerView* playerview = player->getPlayerView();
+        PlayerView::Ptr playerview = player->getPlayerView();
 
         for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
             ObjectView* obv = playerview->getObjectView(*itob);
@@ -645,7 +645,7 @@ void TaeTurn::doCombatTurn() {
     
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
         Player* player = playermanager->getPlayer(*itplayer);
-        PlayerView* playerview = player->getPlayerView();
+        PlayerView::Ptr playerview = player->getPlayerView();
 
         //Update visibility 
         for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {

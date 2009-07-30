@@ -246,7 +246,7 @@ void MinisecTurn::doTurn(){
   uint32_t numdeadplayers = 0;
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
     Player* player = playermanager->getPlayer(*itplayer);
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
       ObjectView* obv = playerview->getObjectView(*itob);

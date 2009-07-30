@@ -559,7 +559,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
     Logger::getLogger()->debug("TaE onPlayerAdded");
 
     Game *game = Game::getGame();
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
     //Set Player's score to 0

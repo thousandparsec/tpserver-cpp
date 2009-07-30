@@ -237,7 +237,7 @@ void MTSecTurn::doTurn(){
   std::set<uint32_t> players = playermanager->getAllIds();
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
-      PlayerView* pv = playermanager->getPlayer(*itplayer)->getPlayerView();
+      PlayerView::Ptr pv = playermanager->getPlayer(*itplayer)->getPlayerView();
       ObjectView* obv = pv->getObjectView(*itob);
       if(obv == NULL){
         obv = new ObjectView();

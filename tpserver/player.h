@@ -20,14 +20,10 @@
  *
  */
 
-#include <set>
-#include <map>
-#include <string>
-#include <stdint.h>
 #include <tpserver/protocolobject.h>
+#include <tpserver/playerview.h>
 
 class Message;
-class PlayerView;
 
 class Player : public ProtocolObject {
 public:
@@ -58,7 +54,7 @@ public:
   // TODO : make it take a shared ptr
   void postToBoard(Message* msg);
   
-  PlayerView* getPlayerView() const;
+  PlayerView::Ptr getPlayerView() const;
   
   void pack(Frame* frame) const;
 
@@ -69,7 +65,7 @@ private:
 
   uint32_t boardid;
   
-  PlayerView* playerview;
+  PlayerView::Ptr playerview;
   
   bool alive;
   IdMap score;

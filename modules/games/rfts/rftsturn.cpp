@@ -207,7 +207,7 @@ void setVisibleObjects(Player *player) {
    ObjectManager *om = Game::getGame()->getObjectManager();
    
    IGObject *universe = om->getObject(0);
-   PlayerView *pv = player->getPlayerView();
+   PlayerView::Ptr pv = player->getPlayerView();
    set<uint32_t> ownedObjects = pv->getOwnedObjects();
 
    // add universe and star systems

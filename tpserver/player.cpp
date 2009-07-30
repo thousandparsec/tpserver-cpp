@@ -34,11 +34,10 @@
 
 Player::Player() : ProtocolObject(ft03_Player,0,"",""), passwd(), email(), boardid(0), 
                 alive(true), score(){
-  playerview = new PlayerView();
+  playerview.reset( new PlayerView() );
 }
 
 Player::~Player(){
-  delete playerview;
 }
 
 void Player::setName(const std::string& newname){
@@ -123,7 +122,7 @@ void Player::setBoardId(uint32_t nbi){
   touchModTime();
 }
 
-PlayerView* Player::getPlayerView() const{
+PlayerView::Ptr Player::getPlayerView() const{
   return playerview;
 }
 

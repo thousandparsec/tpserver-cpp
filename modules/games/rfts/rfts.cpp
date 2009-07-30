@@ -537,7 +537,7 @@ void Rfts::onPlayerAdded(Player *player) {
    Game *game = Game::getGame();
    ObjectManager *om = Game::getGame()->getObjectManager();
 
-   PlayerView* playerview = player->getPlayerView();
+   PlayerView::Ptr playerview = player->getPlayerView();
 
    //Assuming that all designs should be visible.
    // Please fix if this is not the case

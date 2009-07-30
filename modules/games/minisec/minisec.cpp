@@ -705,7 +705,7 @@ void MiniSec::onPlayerAdded(Player* player){
 
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
 
-  PlayerView* playerview = player->getPlayerView();
+  PlayerView::Ptr playerview = player->getPlayerView();
 
   if(std::string(player->getName()) == "guest"){
     player->setIsAlive(false);

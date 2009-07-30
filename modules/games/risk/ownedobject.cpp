@@ -42,7 +42,7 @@ void exploreStarSys(IGObject* obj) {
    ObjectManager *om = game->getObjectManager();
 
    IGObject *starSys = om->getObject(obj->getParent());
-   PlayerView *pview = game->getPlayerManager()->getPlayer(objData->getOwner())->getPlayerView();
+   PlayerView::Ptr pview = game->getPlayerManager()->getPlayer(objData->getOwner())->getPlayerView();
 
    ObjectView* obv = pview->getObjectView(obj->getID());
    if(obv != NULL){

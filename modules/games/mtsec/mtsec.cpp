@@ -928,7 +928,7 @@ void MTSec::setNewPlayerTech( Player* player)
     Logger::getLogger()->debug( "Enter MTSec::setNewPlayerTech");
     Game *game = Game::getGame();
 
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
         ++itcurr){
@@ -960,7 +960,7 @@ void MTSec::onPlayerAdded(Player* player)
     makeNewPlayerFleet( player, star);
     Game::getGame()->getPlayerManager()->updatePlayer( player->getID());
     
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
         ++itcurr){
