@@ -28,6 +28,7 @@
 
 class ProtocolObject : public Packable, public Describable, public Modifiable {
 public:
+  typedef boost::shared_ptr< ProtocolObject > Ptr;
   ProtocolObject( FrameType new_frame_type, uint32_t new_id, const std::string& new_name = "", const std::string& new_desc = "" ) : Describable( new_id, new_name, new_desc ) 
   {
     frame_type = new_frame_type;

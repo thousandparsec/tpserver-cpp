@@ -24,6 +24,7 @@
 
 class ProtocolView : public ProtocolObject {
   public:
+    typedef boost::shared_ptr< ProtocolView > Ptr;
     ProtocolView( FrameType frame_type ) 
       : ProtocolObject( frame_type, 0, "", "" ), completely_visible( false ), name_visible( false ), desc_visible( false ) {}
     virtual ~ProtocolView() {}

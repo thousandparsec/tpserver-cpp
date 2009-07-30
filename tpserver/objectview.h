@@ -27,6 +27,7 @@
 
 class ObjectView : public ProtocolView {
   public:
+    typedef boost::shared_ptr< ObjectView > Ptr;
     ObjectView();
     ObjectView( uint32_t new_id, bool visibility );
     virtual ~ObjectView();

@@ -31,6 +31,7 @@ class Frame;
 
 class DesignView : public ProtocolView {
   public:
+    typedef boost::shared_ptr< DesignView > Ptr;
     DesignView();
     DesignView( uint32_t desid, bool visibility );
     virtual ~DesignView();

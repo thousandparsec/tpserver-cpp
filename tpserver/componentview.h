@@ -28,6 +28,7 @@ class Frame;
 
 class ComponentView : public ProtocolView {
  public:
+  typedef boost::shared_ptr< ComponentView > Ptr;
   ComponentView();
   ComponentView( uint32_t new_id, bool visibility );
   virtual ~ComponentView();

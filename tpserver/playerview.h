@@ -30,6 +30,7 @@ class ComponentView;
 
 class PlayerView {
 public:
+  typedef boost::shared_ptr< PlayerView > Ptr;
   PlayerView();
   ~PlayerView();
 
