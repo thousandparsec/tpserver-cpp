@@ -94,7 +94,7 @@ void RiskTurn::doTurn(){
       set<uint32_t> players = pm->getAllIds();
 
       string body;
-      Message *gameOver = new Message();
+      Message::Ptr gameOver( new Message() );
       gameOver->setSubject("Game over!");
       
       if( game->getTurnNumber() ==
@@ -147,8 +147,7 @@ void RiskTurn::calculateReinforcements() {
       Logger::getLogger()->debug("Reinforcements set for Player %d, current total is now: %d",i->first,risk->getPlayerReinforcements(i->first));
       
       //Produce owner reinforcements message
-      Message* message = new Message();
-      assert(message);
+      Message::Ptr message( new Message() );
       string subject = "You have received new reinforcements";
       format body("You have gained %1% for a new total of %2% units.");
       body % number; body % risk->getPlayerReinforcements(i->first);

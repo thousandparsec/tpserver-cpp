@@ -126,7 +126,7 @@ void RftsTurn::doTurn() {
    if(winner != NULL)
    {
       string body;
-      Message *gameOver = new Message();
+      Message::Ptr gameOver( new Message() );
       gameOver->setSubject("Game over!");
       
       if( game->getTurnNumber() ==
@@ -139,7 +139,7 @@ void RftsTurn::doTurn() {
       gameOver->setBody(PlayerInfo::appAllVictoryPoints(body));
 
       for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
-         pm->getPlayer(*i)->postToBoard(gameOver);
+         pm->getPlayer(*i)->postToBoard( Message::Ptr( new Message(*gameOver) ));
    }
    
    int turn = game->getTurnNumber() % 3;

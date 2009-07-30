@@ -20,9 +20,10 @@
  *
  */
 
+#include <tpserver/message.h>
+
 class IGObject;
 class Fleet;
-class Message;
 
 namespace MTSecRuleset {
 
@@ -40,7 +41,7 @@ class AVACombat{
 
 
  protected:
-  bool doCombatRound( Fleet*[], Message*[]);
+  bool doCombatRound( Fleet*, Message::Ptr, Fleet*, Message::Ptr);
   IGObject *c1, *c2;
 
 };

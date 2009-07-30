@@ -152,7 +152,7 @@ bool Move::doOrder(IGObject * ob){
     
     fleet->setPosition(dest);
     
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Move order complete");
     msg->setBody("The fleet '" +  ob->getName() + "' has reached it's destination.");
     msg->addReference(rst_Action_Order, rsorav_Completion);

@@ -203,7 +203,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    player->getPlayerView()->addOwnedObject( fleet->getID() );
    
    // post completion message
-   Message * msg = new Message();
+   Message::Ptr msg( new Message() );
    msg->setSubject("Build Fleet order complete");
    string body;
 

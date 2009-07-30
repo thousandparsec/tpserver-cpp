@@ -70,7 +70,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
 
    Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    
-   Message *msg = new Message();
+   Message::Ptr msg( new Message() );
    msg->setSubject("Merge fleet order complete");
    
    if(otherFleetData == NULL || otherFleetData->getOwner() != fleetData->getOwner())

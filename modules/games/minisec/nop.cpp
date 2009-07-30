@@ -58,7 +58,7 @@ void Nop::inputFrame(Frame * f, uint32_t playerid)
 bool Nop::doOrder(IGObject * ob){
   if(timeparam->getTime() <= 1){
     
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("NOp order complete");
     msg->setBody("The object has finished it's delay and is now continuing");
     msg->addReference(rst_Action_Order, rsorav_Completion);
@@ -68,7 +68,6 @@ bool Nop::doOrder(IGObject * ob){
       Game::getGame()->getPlayerManager()->getPlayer(ownedobject->getOwner())->postToBoard(msg);
     }else{
       Logger::getLogger()->debug("Nop order not on Owned Object");
-      delete msg;
     }
 
     return true;

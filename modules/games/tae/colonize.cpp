@@ -116,7 +116,7 @@ bool Colonize::doOrder(IGObject * obj) {
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
         //Not a star system
         Logger::getLogger()->debug("Trying to colonize to an object which is not a star system");
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Colonize order failed");
         msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to colonize an object which is not a star system!"));
         msg->addReference(rst_Object, obj->getID());
@@ -126,7 +126,7 @@ bool Colonize::doOrder(IGObject * obj) {
     if(!((StarSystem*)(newStarSys->getObjectBehaviour()))->canBeColonized(isMining)) {
         //Not colonizable
         Logger::getLogger()->debug("Player tried to colonize a system which cannot be colonized.");
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Colonize order failed");
         msg->setBody(string("You're fleet, \"" + obj->getName() + "\" tried to colonize a fleet which cannot be colonized!"));
         msg->addReference(rst_Object, obj->getID());
@@ -271,7 +271,7 @@ bool Colonize::doOrder(IGObject * obj) {
    
  
     // post completion message
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Colonize fleet order complete");
     msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has colonized ")
             + newStarSys->getName() + ".");

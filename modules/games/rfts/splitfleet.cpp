@@ -79,7 +79,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
 
    bool failed = false;
 
-   Message * msg = new Message();
+   Message::Ptr msg( new Message() );
    msg->setSubject("Split Fleet order complete");
    msg->addReference(rst_Object, obj->getID());
    

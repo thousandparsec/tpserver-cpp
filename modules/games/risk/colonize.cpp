@@ -330,7 +330,7 @@ void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids,
          body % "Rejected";
       }
       
-      Message* msg = new Message();
+      Message::Ptr msg( new Message() );
       msg->setSubject(subject);
       msg->setBody(body.str());
       player->postToBoard(msg);

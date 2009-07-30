@@ -211,7 +211,7 @@ bool Build::doOrder(IGObject *ob)
     Game::getGame()->getObjectManager()->addObject(fleet);
     Game::getGame()->getPlayerManager()->getPlayer(ownerid)->getPlayerView()->addOwnedObject(fleet->getID());
 
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Build Fleet order complete");
     msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" is complete.");
     msg->addReference(rst_Action_Order, rsorav_Completion);

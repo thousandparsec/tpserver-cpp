@@ -76,8 +76,8 @@ void Player::setScore(uint32_t key, uint32_t value){
   touchModTime();
 }
 
-void Player::postToBoard(Message* msg){
-  Game::getGame()->getBoardManager()->postToBoard(Message::Ptr(msg),boardid);
+void Player::postToBoard(Message::Ptr msg){
+  Game::getGame()->getBoardManager()->postToBoard(msg,boardid);
 }
 
 std::string Player::getPass() const{

@@ -376,7 +376,7 @@ void Risk::onPlayerAdded(Player* player){
    Logger::getLogger()->debug("Risk onPlayerAdded");
    Settings* settings = Settings::getSettings();
 
-   Message *welcome = new Message();
+   Message::Ptr welcome( new Message() );
    welcome->setSubject("Welcome to Risk! Here's a brief reminder of some rules");
    welcome->setBody("<b><u>Turn Order</b></u>:<br />\
                      Part 1: Colonization orders are processed<br />\
@@ -479,7 +479,7 @@ void Risk::randomlyPickPlanets(Player* player, uint32_t numPlanets) {
    }
    
    //Construct and send message regarding assigned planets
-   Message* gotPlanet = new Message();  
+   Message::Ptr gotPlanet( new Message() );
    if (body != "") {
       gotPlanet->setSubject("Your received a randomly assigned planet(s)");
       gotPlanet->setBody(body);

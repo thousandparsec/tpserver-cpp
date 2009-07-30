@@ -96,8 +96,10 @@ bool AVACombat::isAliveCombatant2(){
 // All that being said, I decreased the damage the two sides
 // do to each other by a random 0-39% because I wanted some
 // randomness involved.
-bool AVACombat::doCombatRound( Fleet*   fleets[],
-                               Message* msgs[])
+bool AVACombat::doCombatRound( Fleet*   fleet1,
+                               Message::Ptr msg1,
+                               Fleet*   fleet2,
+                               Message::Ptr msg2)
 {
     Logger::getLogger()->debug("doCombatRound Entering");
     Game* game = Game::getGame();
@@ -131,11 +133,11 @@ bool AVACombat::doCombatRound( Fleet*   fleets[],
     std::map<uint32_t, uint32_t> fleetusable[2];
     //     resourceid, designid
 
-    fleetweaponry[0] = fleets[0]->getResources();
-    fleetweaponry[1] = fleets[1]->getResources();
+    fleetweaponry[0] = fleet1->getResources();
+    fleetweaponry[1] = fleet2->getResources();
 
-    fleetships[0] = fleets[0]->getShips();
-    fleetships[1] = fleets[1]->getShips();
+    fleetships[0] = fleet1->getShips();
+    fleetships[1] = fleet2->getShips();
 
     uint32_t damage[2] = {0};
 
@@ -193,11 +195,11 @@ bool AVACombat::doCombatRound( Fleet*   fleets[],
         }
     }
 
-    fleets[0]->setDamage(damage[0]);
-    fleets[1]->setDamage(damage[1]);
+    fleet1->setDamage(damage[0]);
+    fleet2->setDamage(damage[1]);
 
-    resolveCombat(fleets[0]);
-    resolveCombat(fleets[1]);
+    resolveCombat(fleet1);
+    resolveCombat(fleet2);
 
     //Tube format: std::map<double, std::pair<std::string, uint32_t> >
     //                   tube size            name         number
@@ -206,21 +208,21 @@ bool AVACombat::doCombatRound( Fleet*   fleets[],
 
     std::string body[2];
 
-    if (fleets[0]->totalShips() == 0) {
+    if (fleet1->totalShips() == 0) {
         body[0] += "Your fleet was destroyed. ";
         body[1] += "You destroyed their fleet. ";
         c1 = NULL;
         tte = true;
     };
-    if (fleets[1]->totalShips() == 0) {
+    if (fleet2->totalShips() == 0) {
         body[0] += "Your fleet was destroyed.";
         body[1] += "You destroyed their fleet.";
         c2 = NULL;
         tte = true;
     }
     if ( tte) {
-        msgs[0]->setBody( body[0]);
-        msgs[1]->setBody( body[1]);
+        msg1->setBody( body[0]);
+        msg2->setBody( body[1]);
     }
 
     Logger::getLogger()->debug("doCombatRound Exiting");
@@ -316,19 +318,18 @@ void AVACombat::doCombat()
         return;
     }
 
-    Message *msgs[2];
-    msgs[0] = new Message();
-    msgs[1] = new Message();
-    msgs[0]->setSubject( "Combat");
-    msgs[1]->setSubject( "Combat");
-    msgs[0]->addReference( rst_Object, c1->getID());
-    msgs[0]->addReference( rst_Object, c2->getID());
-    msgs[0]->addReference( rst_Player, fleets[1]->getOwner());
-    msgs[1]->addReference( rst_Object, c2->getID());
-    msgs[1]->addReference( rst_Object, c1->getID());
-    msgs[1]->addReference( rst_Player, fleets[0]->getOwner());
+    Message::Ptr msg1( new Message() );
+    Message::Ptr msg2( new Message() );
+    msg1->setSubject( "Combat");
+    msg2->setSubject( "Combat");
+    msg1->addReference( rst_Object, c1->getID());
+    msg1->addReference( rst_Object, c2->getID());
+    msg1->addReference( rst_Player, f2->getOwner());
+    msg2->addReference( rst_Object, c2->getID());
+    msg2->addReference( rst_Object, c1->getID());
+    msg2->addReference( rst_Player, f1->getOwner());
 
-    while ( doCombatRound( fleets, msgs )) {
+    while ( doCombatRound( f1, msg1, f2, msg2)) {
         ;
     }
 

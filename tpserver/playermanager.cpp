@@ -97,7 +97,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
                 map[itid->first] = op;
             }
             if(op != NULL && op != rtn){
-                op->postToBoard(new Message(*msg));
+                op->postToBoard(Message::Ptr( new Message( *msg ) ));
                 //to update the difflist, etc
                 op->getPlayerView()->doOnceATurn();
                 Game::getGame()->getPersistence()->updatePlayer(op);

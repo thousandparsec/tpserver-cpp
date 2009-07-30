@@ -58,7 +58,7 @@ bool Colonise::doOrder(IGObject * ob){
     
     Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target was not valid.", ob->getID());
     Game::getGame()->getObjectManager()->doneWithObject(ob->getParent());
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Colonise order canceled");
     msg->setBody("Not at a planet, colonisation canceled");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
@@ -71,7 +71,7 @@ bool Colonise::doOrder(IGObject * ob){
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   Planet* planet = dynamic_cast<Planet*>(target->getObjectBehaviour());
   
-  Message * msg = new Message();
+  Message::Ptr msg( new Message() );
   msg->addReference(rst_Object, ob->getID());
   msg->addReference(rst_Object, target->getID());
 

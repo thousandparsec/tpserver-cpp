@@ -285,7 +285,7 @@ void MinisecTurn::doTurn(){
     
     if(!player->isAlive() || playerview->getNumberOwnedObjects() == 0){
       if(player->isAlive()){
-        Message* msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("You lost");
         msg->setBody("You do not own any objects, therefore you game has finished.");
         msg->addReference(rst_Action_Player, rspav_Eliminated);
@@ -307,7 +307,7 @@ void MinisecTurn::doTurn(){
         break;
     }
     if(player->getScore(0) != numdeadplayers - 1){
-      Message* msg = new Message();
+      Message::Ptr msg( new Message() );
       msg->setSubject("You won!");
       msg->setBody("You have eliminated all the competing players. Congratulations!");
       player->postToBoard(msg);

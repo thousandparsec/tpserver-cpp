@@ -75,7 +75,7 @@ bool SplitFleet::doOrder(IGObject * ob){
 
   Fleet* of = (Fleet*)(ob->getObjectBehaviour());
 
-  Message * msg = new Message();
+    Message::Ptr msg( new Message() );
   msg->setSubject("Split Fleet order complete");
   msg->addReference(rst_Object, ob->getID());
   

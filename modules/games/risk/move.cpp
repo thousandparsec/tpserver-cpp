@@ -133,8 +133,7 @@ bool Move::doOrder(IGObject* obj) {
    
    
    //Origin message setup
-   Message* originMessage = new Message(); //message for origin planet owner.
-   assert(originMessage);
+   Message::Ptr originMessage( new Message() );
 
    string originSubject = "Move order(s) via " + origin->getName() + " completed";
    string originBody = "";
@@ -290,7 +289,7 @@ bool Move::doOrder(IGObject* obj) {
    
    //Send message to target player(s)
    for(map<uint32_t,string>::iterator i = targetMessages.begin(); i != targetMessages.end(); ++i) {
-      Message* targetMessage = new Message();
+      Message::Ptr targetMessage( new Message() );
       assert(targetMessage);
       targetMessage->setSubject(targetSubject);
       targetMessage->setBody((*i).second);

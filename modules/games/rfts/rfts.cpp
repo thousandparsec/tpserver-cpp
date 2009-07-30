@@ -589,7 +589,7 @@ void Rfts::onPlayerAdded(Player *player) {
    // set visible objects
    setVisibleObjects(player);
 
-   Message *welcome = new Message();
+   Message::Ptr welcome( new Message() );
    welcome->setSubject("Welcome to TP RFTS! Here's a brief reminder of some rules");
    welcome->setBody("<b><u>3 Turn Cycle</b></u>:<br />\
                      1st turn: planetary production, fleet building, and fleet movement<br />\

@@ -72,7 +72,7 @@ bool Colonise::doOrder(IGObject *obj) {
    Player *attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    Player *defender = NULL;
    
-   Message *msg = new Message();
+   Message::Ptr msg( new Message() );
    
    if(planetData == NULL || planetObj->getParent() != obj->getParent())
    {
@@ -129,7 +129,7 @@ bool Colonise::doOrder(IGObject *obj) {
    
    attacker->postToBoard(msg);
    if(defender != NULL)
-      defender->postToBoard(msg);
+      defender->postToBoard( Message::Ptr( new Message(*msg)));
       
 
    return true;

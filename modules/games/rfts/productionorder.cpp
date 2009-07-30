@@ -172,7 +172,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
    PlayerInfo &pi = PlayerInfo::getPlayerInfo(planet->getOwner());
 
-   Message *msg = new Message();
+   Message::Ptr msg( new Message() );
    msg->setSubject("Production complete");
    msg->setBody( "Your production order has been completed at " + obj->getName() + "<br /><br />" +
                   resourcesAddedMsg.str() );
@@ -182,7 +182,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 
    if(pi.addShipTech(planet->getResource("Ship Technology").first))
    {
-      Message *upgradeMsg = new Message();
+      Message::Ptr upgradeMsg( new Message() );
       upgradeMsg->setSubject("Ship Technology");
       upgradeMsg->setBody(string("Your ship technology level has just increased to level : ") +
                            pi.getShipTechLevel() + string("<br />") +

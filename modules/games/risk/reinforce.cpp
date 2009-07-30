@@ -85,7 +85,7 @@ bool Reinforce::doOrder(IGObject *obj) {
    risk->setPlayerReinforcements(planet->getOwner(), availibleUnits - requestedUnits);
 
    //Construct Reinforcement message
-   Message* message = new Message();
+   Message::Ptr message( new Message() );
    message->setSubject("Reinforce order completed successfully.");
    format body("%1% received %2% additional units. %3% reinforcements remaining.");
    body % planet->getName(); body % requestedUnits; body % (availibleUnits - requestedUnits);

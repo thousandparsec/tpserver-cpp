@@ -22,6 +22,7 @@
 
 #include <tpserver/protocolobject.h>
 #include <tpserver/playerview.h>
+#include <tpserver/message.h>
 
 class Message;
 
@@ -49,10 +50,7 @@ public:
   IdMap getAllScores() const;
   uint32_t getBoardId() const;
 
-  // WARNING -- internally the pointer is converted to Shared_Ptr
-  // do not delete!
-  // TODO : make it take a shared ptr
-  void postToBoard(Message* msg);
+  void postToBoard(Message::Ptr msg);
   
   PlayerView::Ptr getPlayerView() const;
   

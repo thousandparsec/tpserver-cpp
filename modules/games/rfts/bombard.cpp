@@ -114,7 +114,7 @@ bool Bombard::doOrder(IGObject *fleet) {
    fleetData->takeDamage( (planetShipTech - '0') *
                          6 * planetData->getResource(string("PDB") + planetShipTech).first);
 
-   Message *msg = new Message();
+   Message::Ptr msg( new Message() );
    msg->setSubject("Bombard complete");
    string body = "Fleet \"" + fleet->getName() + "\" bombarded " + planetObj->getName();
    msg->setBody(PlayerInfo::appAllVictoryPoints(body));
@@ -123,7 +123,7 @@ bool Bombard::doOrder(IGObject *fleet) {
    msg->addReference(rst_Object, planetObj->getID());
 
    game->getPlayerManager()->getPlayer(fleetData->getOwner())->postToBoard(msg);
-   game->getPlayerManager()->getPlayer(planetData->getOwner())->postToBoard(msg);
+   game->getPlayerManager()->getPlayer(planetData->getOwner())->postToBoard(Message::Ptr( new Message(*msg)));
 
    return true;
 }

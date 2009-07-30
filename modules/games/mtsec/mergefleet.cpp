@@ -69,7 +69,7 @@ bool MergeFleet::doOrder(IGObject * ob){
   }
 
   if(targetid == 0){
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Merge Fleet order canceled");
     msg->setBody("No targe fleet at this location");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
@@ -79,7 +79,7 @@ bool MergeFleet::doOrder(IGObject * ob){
   
     IGObject* target = Game::getGame()->getObjectManager()->getObject(targetid);
 
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("Merge Fleet order complete");
     msg->setBody("The two fleets have been merged");
     msg->addReference(rst_Action_Order, rsorav_Completion);

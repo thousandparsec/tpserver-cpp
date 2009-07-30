@@ -165,7 +165,7 @@ void Planet::calcPopulation() {
    if(newPop < 0)
 	{
       newPop = 0;
-		Message *msg = new Message();
+    Message::Ptr msg( new Message() );
 		msg->setSubject("Planet population dead!");
 		msg->setBody( "The population on planet, " + obj->getName() + ", has completely died.<br/>\
 				Recolonisation and social environment buffing is recommended." );

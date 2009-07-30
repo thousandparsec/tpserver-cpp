@@ -132,7 +132,7 @@ bool Move::doOrder(IGObject * obj) {
       Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
       // post completion message
-      Message * msg = new Message();
+      Message::Ptr msg( new Message() );
       msg->setSubject("Move fleet order complete");
       msg->setBody(string("Your fleet \"" + obj->getName() + "\" has arrived and is in orbit around ")
           + newStarSys->getName() + ".");

@@ -239,7 +239,7 @@ void TaeTurn::doTurn(){
         }
 
         //Send end of turn message to each player
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Turn complete");
         stringstream out;
         out << "Your Current Score: \n";
@@ -252,7 +252,7 @@ void TaeTurn::doTurn(){
         player->postToBoard(msg);
 
         //Alert players to the turn order for next round
-        msg = new Message();
+        msg.reset( new Message() );
         msg->setSubject("Turn Order");
         string body = "The order for the next turn is: ";
         itcurr = players.begin();
@@ -419,7 +419,7 @@ void TaeTurn::initCombat() {
     }
 
     //Send message to players letting them know about combat
-    Message * msg = new Message();
+    Message::Ptr msg( new Message() );
     msg->setSubject("COMBAT!");
     stringstream out;
     out << "The next turn is an ";
@@ -440,7 +440,7 @@ void TaeTurn::initCombat() {
     std::set<uint32_t> players = playermanager->getAllIds();
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
         Player* player = playermanager->getPlayer(*itcurr);        
-        player->postToBoard(msg);
+        player->postToBoard(Message::Ptr( new Message(*msg)));
         for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
             player->getPlayerView()->addVisibleObject(*i);
         }
@@ -711,7 +711,7 @@ void TaeTurn::doCombatTurn() {
         }
 
         //Send end of turn message to each player
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Combat Complete!");
         stringstream out;
         Player* win = playermanager->getPlayer(winner);
@@ -720,7 +720,7 @@ void TaeTurn::doCombatTurn() {
         msg->setBody(out.str());
         player->postToBoard(msg);
 
-        msg = new Message();
+        msg.reset( new Message() );
         msg->setSubject("Turn complete");
         stringstream out2;
         out2 << "Your Current Score: \n";
@@ -1019,7 +1019,7 @@ void gameOver() {
         Player* p = pm->getPlayer(*itcurr);
 
         //Send message to each player
-        Message * msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("GAME OVER!");
         stringstream out;
         Player* win = pm->getPlayer(winner);
