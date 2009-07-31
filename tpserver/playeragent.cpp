@@ -468,8 +468,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
         //update ObjectView
         uint32_t objid = orderqueue->getObjectId();
         if(objid != 0){
-          ObjectView* obv = player->getPlayerView()->getObjectView(objid);
-          obv->touchModTime();
+          player->getPlayerView()->getObjectView(objid)->touchModTime();
           player->getPlayerView()->updateObjectView(objid);
         }
         curConnection->sendFrame(of);
@@ -523,8 +522,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
       //update ObjectView
       uint32_t objid = orderqueue->getObjectId();
       if(objid != 0){
-        ObjectView* obv = player->getPlayerView()->getObjectView(objid);
-        obv->touchModTime();
+        player->getPlayerView()->getObjectView(objid)->touchModTime();
         player->getPlayerView()->updateObjectView(objid);
       }
       curConnection->sendOK(frame, "Order removed");

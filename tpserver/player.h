@@ -24,8 +24,6 @@
 #include <tpserver/playerview.h>
 #include <tpserver/message.h>
 
-class Message;
-
 class Player : public ProtocolObject {
 public:
   Player();

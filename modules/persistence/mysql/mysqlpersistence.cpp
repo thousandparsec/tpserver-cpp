@@ -1298,7 +1298,7 @@ bool MysqlPersistence::savePlayer(Player* player){
     querybuilder << ((player->isAlive()) ? 1 : 0) << ", " << player->getModTime() << ");";
     singleQuery( querybuilder.str() );
 
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     insertMap( "playerscore", player->getID(), player->getAllScores() );
     insertSet( "playerdesignusable", player->getID(), playerview->getUsableDesigns() );   
     insertSet( "playercomponentusable", player->getID(), playerview->getUsableComponents() );   
@@ -1334,7 +1334,7 @@ bool MysqlPersistence::updatePlayer(Player* player){
     querybuilder << "DELETE FROM playerobjectowned WHERE playerid=" << player->getID() << ";";
     singleQuery( querybuilder.str() );
 
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     insertMap( "playerscore", player->getID(), player->getAllScores() );
     insertSet( "playerdesignusable", player->getID(), playerview->getUsableDesigns() );   
     insertSet( "playercomponentusable", player->getID(), playerview->getUsableComponents() );   
@@ -1371,7 +1371,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
         player->setScore( query->getInt(1), query->getInt(2) );
       }
     }
-    PlayerView* playerview = player->getPlayerView();
+    PlayerView::Ptr playerview = player->getPlayerView();
     querybuilder.str("");
     querybuilder << "SELECT designid FROM playerdesignview WHERE playerid = " << playerid << ";";
     playerview->setVisibleDesigns( idSetQuery( querybuilder.str() ) );
@@ -1738,7 +1738,7 @@ IdSet MysqlPersistence::getPropertyIds(){
   }
 }
 
-bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView* ov){
+bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView::Ptr ov){
   try {
     std::ostringstream querybuilder;
     uint32_t turnnum =  Game::getGame()->getTurnNumber();
@@ -1761,13 +1761,12 @@ bool MysqlPersistence::saveObjectView(uint32_t playerid, ObjectView* ov){
   }
 }
 
-ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
-  ObjectView* obj = NULL;
+ObjectView::Ptr MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
   try {
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM playerobjectview WHERE playerid = " << playerid << " AND objectid = " << objectid << " AND turnnum <= " << turn << " ORDER BY turnnum DESC LIMIT 1;";
     MysqlQuery query( conn, querybuilder.str() );
-    ObjectView* obj = new ObjectView();
+    ObjectView::Ptr obj( new ObjectView() );
     obj->setObjectId(objectid);
     obj->setCompletelyVisible(query->getInt(3) == 1);
     obj->setGone(query->getInt(4) == 1);
@@ -1778,12 +1777,11 @@ ObjectView* MysqlPersistence::retrieveObjectView(uint32_t playerid, uint32_t obj
     obj->setModTime(query->getU64(9));
     return obj;
   } catch( MysqlException& ) {
-    delete prop;
-    return NULL; 
+    return ObjectView::Ptr(); 
   }
 }
 
-bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
+bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView::Ptr dv){
   try {
     std::ostringstream querybuilder;
     querybuilder << "DELETE FROM playerdesignview WHERE playerid=" << playerid << " AND designid=" << dv->getDesignId() << ";";
@@ -1828,14 +1826,13 @@ bool MysqlPersistence::saveDesignView(uint32_t playerid, DesignView* dv){
   }
 }
 
-DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
-  DesignView* design = NULL;
+DesignView::Ptr MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
   try {
+    DesignView::Ptr design( new DesignView() );
     std::ostringstream querybuilder;
     {
       querybuilder << "SELECT * FROM playerdesignview WHERE playerid = " << playerid << " AND designid = " << designid << ";";
       MysqlQuery query( conn, querybuilder.str() );
-      DesignView* design = new DesignView();
       design->setDesignId(designid);
       design->setIsCompletelyVisible(query->getInt(2) == 1);
       design->setCanSeeName(query->getInt(3) == 1);
@@ -1866,12 +1863,11 @@ DesignView* MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t des
     design->setVisiblePropertyValues(pvlist);
     return design;
   } catch( MysqlException& ) {
-    delete design;
-    return NULL; 
+    return DesignView::Ptr(); 
   }
 }
 
-bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView* cv){
+bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView::Ptr cv){
   try {
     std::ostringstream querybuilder;
     querybuilder << "DELETE FROM playercomponentview WHERE playerid=" << playerid << " AND componentid=" << cv->getComponentId() << ";";
@@ -1902,14 +1898,14 @@ bool MysqlPersistence::saveComponentView(uint32_t playerid, ComponentView* cv){
   }
 }
 
-ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
-  ComponentView* comp = NULL;
+ComponentView::Ptr MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
   try {
+    ComponentView::Ptr comp;
     std::ostringstream querybuilder;
     {
       querybuilder << "SELECT * FROM playercomponentview WHERE playerid = " << playerid << " AND componentid = " << componentid << ";";
       MysqlQuery query( conn, querybuilder.str() );
-      comp = new ComponentView( componentid, query->getInt(2) == 1);
+      comp.reset( new ComponentView( componentid, query->getInt(2) == 1) );
       comp->setCanSeeName(query->getInt(3) == 1);
       comp->setVisibleName(query->get(4));
       comp->setCanSeeDescription(query->getInt(5) == 1);
@@ -1927,8 +1923,7 @@ ComponentView* MysqlPersistence::retrieveComponentView(uint32_t playerid, uint32
     comp->setVisiblePropertyFuncs(idSetQuery( querybuilder.str() ));
     return comp;
   } catch( MysqlException& ) {
-    delete comp;
-    return NULL; 
+    return ComponentView::Ptr(); 
   }
 }
 

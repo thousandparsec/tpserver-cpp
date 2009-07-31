@@ -115,14 +115,14 @@ public:
     virtual uint32_t getMaxPropertyId();
     virtual IdSet getPropertyIds();
     
-    virtual bool saveObjectView(uint32_t playerid, ObjectView* ov);
-    virtual ObjectView* retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
+    virtual bool saveObjectView(uint32_t playerid, boost::shared_ptr<ObjectView> ov);
+    virtual boost::shared_ptr<ObjectView> retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
     
-    virtual bool saveDesignView(uint32_t playerid, DesignView* dv);
-    virtual DesignView* retrieveDesignView(uint32_t playerid, uint32_t designid);
+    virtual bool saveDesignView(uint32_t playerid, boost::shared_ptr<DesignView> dv);
+    virtual boost::shared_ptr<DesignView> retrieveDesignView(uint32_t playerid, uint32_t designid);
     
-    virtual bool saveComponentView(uint32_t playerid, ComponentView* cv);
-    virtual ComponentView* retrieveComponentView(uint32_t playerid, uint32_t componentid);
+    virtual bool saveComponentView(uint32_t playerid, boost::shared_ptr<ComponentView> cv);
+    virtual boost::shared_ptr<ComponentView> retrieveComponentView(uint32_t playerid, uint32_t componentid);
 
     std::string addslashes(const std::string& in) const;
     uint32_t getTableVersion(const std::string& name);

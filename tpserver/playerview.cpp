@@ -24,12 +24,9 @@
 #include "logging.h"
 #include "frame.h"
 #include "game.h"
-#include "objectview.h"
 #include "designstore.h"
 #include "design.h"
-#include "designview.h"
 #include "component.h"
-#include "componentview.h"
 #include "persistence.h"
 
 #include "playerview.h"
@@ -54,7 +51,7 @@ void PlayerView::doOnceATurn(){
 }
 
 
-void PlayerView::addVisibleObject(ObjectView* obj){
+void PlayerView::addVisibleObject(ObjectView::Ptr obj){
   objects.addVisible( obj );
 }
 
@@ -63,30 +60,30 @@ void PlayerView::addVisibleObjects( const IdSet& obids ) {
 }
 
 
-ObjectView* PlayerView::getObjectView(uint32_t objid){
+ObjectView::Ptr PlayerView::getObjectView(uint32_t objid){
   if(objects.isVisible(objid)){
     return objects.retrieve(objid);
   }else{
-    return NULL;
+    return ObjectView::Ptr();
   }
 }
 
 void PlayerView::updateObjectView(uint32_t objid){
-  ObjectView* obj = objects.cache[objid];
+  ObjectView::Ptr obj = objects.cache[objid];
   Game::getGame()->getPersistence()->saveObjectView(pid, obj);
 }
 
 void PlayerView::removeVisibleObject(uint32_t objid){
-  ObjectView* obj = getObjectView(objid);
-  if(obj != NULL){
+  ObjectView::Ptr obj = getObjectView(objid);
+  if (obj) {
     objects.cache[objid]->setGone(true);
     updateObjectView(objid);
   }
 }
 
 bool PlayerView::isVisibleObject(uint32_t objid){
-  ObjectView* obj = getObjectView(objid);
-  if ( obj != NULL ) return !(obj->isGone());
+  ObjectView::Ptr obj = getObjectView(objid);
+  if ( obj ) return !(obj->isGone());
   return false;
 }
 
@@ -114,8 +111,7 @@ void PlayerView::processGetObject(uint32_t objid, Frame* frame){
   if(!objects.isVisible(objid)){
     frame->createFailFrame(fec_NonExistant, "No Such Object");
   }else{
-    ObjectView* object = getObjectView(objid);
-    object->packFrame(frame, pid);
+    getObjectView(objid)->packFrame(frame, pid);
   }
 }
 
@@ -123,7 +119,7 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
   objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
 
-void PlayerView::addVisibleDesign(DesignView* design){
+void PlayerView::addVisibleDesign(DesignView::Ptr design){
   designs.addVisible( design );
 }
 
@@ -155,8 +151,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
   if(!designs.isVisible(designid)){
     frame->createFailFrame(fec_NonExistant, "No Such Design");
   }else{
-    DesignView* design = designs.retrieve(designid);
-    design->pack(frame);
+    designs.retrieve(designid)->pack(frame);
   }
 }
 
@@ -164,7 +159,7 @@ void PlayerView::processGetDesignIds(Frame* in, Frame* out){
   designs.processGetIds( in, out, ft03_DesignIds_List );
 }
 
-void PlayerView::addVisibleComponent(ComponentView* comp){
+void PlayerView::addVisibleComponent(ComponentView::Ptr comp){
   components.addVisible( comp );
 }
 
@@ -196,8 +191,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
   if(components.visible.find(compid) == components.visible.end()){
     frame->createFailFrame(fec_NonExistant, "No Such Component");
   }else{
-    ComponentView* component = components.retrieve(compid);
-    component->pack(frame);
+    components.retrieve(compid)->pack(frame);
   }
 }
 
@@ -301,15 +295,12 @@ void PlayerView::EntityInfo< EntityType >::generateModList( uint64_t fromtime )
 
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
+void PlayerView::EntityInfo< EntityType >::addVisible( EntityPtr entity )
 {
   uint32_t id = entity->getId();
   entity->touchModTime();
   Game::getGame()->getPersistence()->saveProtocolView(pid, entity);
   visible.insert(id);
-  if (cache.find(id) != cache.end()){
-    delete cache[id];
-  }
   cache[id] = entity;
   sequence++;
 }
@@ -317,7 +308,7 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityType* entity )
 template< class EntityType >
 void PlayerView::EntityInfo< EntityType >::addVisible( const IdSet& obids ){
   for (IdSet::const_iterator it = obids.begin(); it != obids.end(); ++it ) {
-    addVisible( new EntityType( *it, true ) );
+    addVisible( EntityPtr( new EntityType( *it, true ) ) );
   }
 }
 
@@ -326,9 +317,9 @@ void PlayerView::EntityInfo< EntityType >::addActable( uint32_t id )
 {
   actable.insert(id);
   if(visible.find(id) == visible.end()){
-    addVisible( new EntityType( id, true ) );
+    addVisible( EntityPtr( new EntityType( id, true ) ) );
   }else{
-    EntityType* view = retrieve(id);
+    EntityPtr view = retrieve(id);
     view->setCompletelyVisible(true);
     Game::getGame()->getPersistence()->saveProtocolView(pid, view);
     sequence++;
@@ -357,11 +348,12 @@ bool PlayerView::EntityInfo< EntityType >::isVisible( uint32_t id ) const
 }
 
 template< class EntityType >
-EntityType* PlayerView::EntityInfo< EntityType >::retrieve( uint32_t id ) 
+boost::shared_ptr< EntityType > 
+PlayerView::EntityInfo< EntityType >::retrieve( uint32_t id ) 
 {
-  EntityType* entity = cache[id];
+  EntityPtr entity = cache[id];
   if(entity == NULL){
-    entity = dynamic_cast< EntityType* >(Game::getGame()->getPersistence()->retrieveProtocolView(EntityType::getFrameType(), pid, id));
+    entity = boost::dynamic_pointer_cast< EntityType >(Game::getGame()->getPersistence()->retrieveProtocolView(EntityType::getFrameType(), pid, id));
     if(entity != NULL){
       cache[id] = entity;
     }

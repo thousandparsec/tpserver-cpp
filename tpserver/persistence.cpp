@@ -259,47 +259,47 @@ IdSet Persistence::getPropertyIds(){
     return IdSet();
 }
 
-bool Persistence::saveObjectView(uint32_t playerid, ObjectView*){
+bool Persistence::saveObjectView(uint32_t playerid, ObjectView::Ptr){
   return false;
 }
 
-ObjectView* Persistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
-  return NULL;
+ObjectView::Ptr Persistence::retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn){
+  return ObjectView::Ptr();
 }
 
-bool Persistence::saveDesignView(uint32_t playerid, DesignView*){
+bool Persistence::saveDesignView(uint32_t playerid, DesignView::Ptr){
   return false;
 }
 
-DesignView* Persistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
-  return NULL;
+DesignView::Ptr Persistence::retrieveDesignView(uint32_t playerid, uint32_t designid){
+  return DesignView::Ptr();
 }
 
-bool Persistence::saveComponentView(uint32_t playerid, ComponentView*){
+bool Persistence::saveComponentView(uint32_t playerid, ComponentView::Ptr){
   return false;
 }
 
-ComponentView* Persistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
-  return NULL;
+ComponentView::Ptr Persistence::retrieveComponentView(uint32_t playerid, uint32_t componentid){
+  return ComponentView::Ptr();
 }
 
-bool Persistence::saveProtocolView(uint32_t playerid, ProtocolView* view)
+bool Persistence::saveProtocolView(uint32_t playerid, ProtocolView::Ptr view)
 {
   switch(view->getFrameType()) {
-    case ft03_Component : return saveComponentView( playerid, dynamic_cast<ComponentView*>(view)); 
-    case ft03_Design : return saveDesignView( playerid, dynamic_cast<DesignView*>(view)); 
-    case ft02_Object : return saveObjectView( playerid, dynamic_cast<ObjectView*>(view)); 
+    case ft03_Component : return saveComponentView( playerid, boost::dynamic_pointer_cast<ComponentView>(view)); 
+    case ft03_Design : return saveDesignView( playerid, boost::dynamic_pointer_cast<DesignView>(view)); 
+    case ft02_Object : return saveObjectView( playerid, boost::dynamic_pointer_cast<ObjectView>(view)); 
     default : return false;
   }
 }
 
-ProtocolView* Persistence::retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid)
+ProtocolView::Ptr Persistence::retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid)
 {
   switch(viewtype) {
     case ft03_Component : return retrieveComponentView( playerid, objectid );
     case ft03_Design : return retrieveDesignView( playerid, objectid );
     case ft02_Object : return retrieveObjectView( playerid, objectid );
-    default : return NULL;
+    default : return ProtocolView::Ptr();
   }
 }
 

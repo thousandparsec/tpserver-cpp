@@ -116,17 +116,17 @@ public:
     virtual uint32_t getMaxPropertyId();
     virtual IdSet getPropertyIds();
     
-    virtual bool saveObjectView(uint32_t playerid, ObjectView*);
-    virtual ObjectView* retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
+    virtual bool saveObjectView(uint32_t playerid, boost::shared_ptr<ObjectView>);
+    virtual boost::shared_ptr<ObjectView> retrieveObjectView(uint32_t playerid, uint32_t objectid, uint32_t turn = 0xffffffff);
     
-    virtual bool saveDesignView(uint32_t playerid, DesignView*);
-    virtual DesignView* retrieveDesignView(uint32_t playerid, uint32_t designid);
+    virtual bool saveDesignView(uint32_t playerid, boost::shared_ptr<DesignView>);
+    virtual boost::shared_ptr<DesignView> retrieveDesignView(uint32_t playerid, uint32_t designid);
     
-    virtual bool saveComponentView(uint32_t playerid, ComponentView*);
-    virtual ComponentView* retrieveComponentView(uint32_t playerid, uint32_t componentid);
+    virtual bool saveComponentView(uint32_t playerid, boost::shared_ptr<ComponentView>);
+    virtual boost::shared_ptr<ComponentView> retrieveComponentView(uint32_t playerid, uint32_t componentid);
 
-    bool saveProtocolView(uint32_t playerid, ProtocolView* view);
-    ProtocolView* retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid);
+    bool saveProtocolView(uint32_t playerid, ProtocolView::Ptr view);
+    ProtocolView::Ptr retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid);
 
     bool saveProtocolObject(ProtocolObject* object);
     ProtocolObject* retrieveProtocolObject(FrameType objtype, uint32_t id);

@@ -203,7 +203,7 @@ bool DesignStore::addDesign(Design* d){
   if(d->isValid()){
     playerview->addUsableDesign(d->getId());
   }else{
-    playerview->addVisibleDesign( new DesignView( d->getId(), true ) );
+    playerview->addVisibleDesign( DesignView::Ptr( new DesignView( d->getId(), true )) );
   }
 
   Game::getGame()->getPlayerManager()->updatePlayer(player->getID());

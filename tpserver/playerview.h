@@ -20,13 +20,10 @@
  *
  */
 
-#include <list>
-#include <stdint.h>
 #include <tpserver/common.h>
-
-class ObjectView;
-class DesignView;
-class ComponentView;
+#include <tpserver/objectview.h>
+#include <tpserver/designview.h>
+#include <tpserver/componentview.h>
 
 class PlayerView {
 public:
@@ -38,9 +35,9 @@ public:
   
   void doOnceATurn();
 
-  void addVisibleObject(ObjectView* obj);
+  void addVisibleObject( ObjectView::Ptr obj);
   void addVisibleObjects( const IdSet& obids );
-  ObjectView* getObjectView(uint32_t objid);
+  ObjectView::Ptr getObjectView(uint32_t objid);
   void updateObjectView(uint32_t objid);
   void removeVisibleObject(uint32_t objid);
   bool isVisibleObject(uint32_t objid);
@@ -52,7 +49,7 @@ public:
   void processGetObject(uint32_t objid, Frame* frame);
   void processGetObjectIds(Frame* in, Frame* out);
 
-  void addVisibleDesign(DesignView* design);
+  void addVisibleDesign( DesignView::Ptr design);
   void addVisibleDesigns( const IdSet& obids );
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
@@ -62,7 +59,7 @@ public:
   void processGetDesign(uint32_t designid, Frame* frame);
   void processGetDesignIds(Frame* in, Frame* out);
 
-  void addVisibleComponent(ComponentView* comp);
+  void addVisibleComponent(ComponentView::Ptr comp);
   void addVisibleComponents( const IdSet& obids );
   void addUsableComponent(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
@@ -86,22 +83,23 @@ private:
   // TODO: modify to be based on interfaces not templates
   template< class EntityType >
   struct EntityInfo {
+    typedef boost::shared_ptr< EntityType > EntityPtr;
     IdSet visible;
     IdSet actable;
-    std::map<uint32_t, EntityType*> cache;
+    std::map<uint32_t, EntityPtr > cache;
     IdModList modified;
     uint32_t sequence;
     uint32_t pid;
     EntityInfo() : sequence( 0 ) {}
     void processGetIds( Frame* in, Frame* out, FrameType type );
     void generateModList( uint64_t fromtime );
-    void addVisible( EntityType* entity );
+    void addVisible( EntityPtr entity );
     void addVisible( const IdSet& obids );
     void addActable( uint32_t id );
     void removeActable( uint32_t id );
     bool isActable( uint32_t id ) const;
     bool isVisible( uint32_t id ) const;
-    EntityType* retrieve( uint32_t id );
+    EntityPtr retrieve( uint32_t id );
   };
 
   EntityInfo< ObjectView > objects;
