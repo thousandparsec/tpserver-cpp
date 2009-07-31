@@ -13,8 +13,8 @@
 
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(AC_AUTOCONF_VERSION, [2.61],,
-[m4_warning([this file was generated for autoconf 2.61.
+m4_if(AC_AUTOCONF_VERSION, [2.63],,
+[m4_warning([this file was generated for autoconf 2.63.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically `autoreconf'.])])
@@ -369,18 +369,6 @@ AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],
      [test x"$AMDEP_TRUE" != x"" || _AM_OUTPUT_DEPENDENCY_COMMANDS],
      [AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"])
 ])
-
-# Copyright (C) 1996, 1997, 2000, 2001, 2003, 2005
-# Free Software Foundation, Inc.
-#
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
-# serial 8
-
-# AM_CONFIG_HEADER is obsolete.  It has been replaced by AC_CONFIG_HEADERS.
-AU_DEFUN([AM_CONFIG_HEADER], [AC_CONFIG_HEADERS($@)])
 
 # Do all the work for Automake.                             -*- Autoconf -*-
 
@@ -878,4 +866,10 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([acinclude.m4])
+m4_include([m4/argz.m4])
+m4_include([m4/libtool.m4])
+m4_include([m4/ltdl.m4])
+m4_include([m4/ltoptions.m4])
+m4_include([m4/ltsugar.m4])
+m4_include([m4/ltversion.m4])
+m4_include([m4/lt~obsolete.m4])
