@@ -55,6 +55,10 @@ void PlayerView::addVisibleObject(ObjectView::Ptr obj){
   objects.addVisible( obj );
 }
 
+void PlayerView::addVisibleObject( uint32_t id, bool completely_visible ){
+  objects.addVisible( ObjectView::Ptr( new ObjectView( id, completely_visible ) ) );
+}
+
 void PlayerView::addVisibleObjects( const IdSet& obids ) {
   objects.addVisible( obids );
 }
@@ -121,6 +125,10 @@ void PlayerView::processGetObjectIds(Frame* in, Frame* out){
 
 void PlayerView::addVisibleDesign(DesignView::Ptr design){
   designs.addVisible( design );
+}
+
+void PlayerView::addVisibleDesign( uint32_t id, bool completely_visible ){
+  designs.addVisible( DesignView::Ptr( new DesignView( id, completely_visible ) ) );
 }
 
 void PlayerView::addVisibleDesigns( const IdSet& obids ) {

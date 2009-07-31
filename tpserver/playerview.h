@@ -36,6 +36,7 @@ public:
   void doOnceATurn();
 
   void addVisibleObject( ObjectView::Ptr obj);
+  void addVisibleObject( uint32_t id, bool completely_visible );
   void addVisibleObjects( const IdSet& obids );
   ObjectView::Ptr getObjectView(uint32_t objid);
   void updateObjectView(uint32_t objid);
@@ -50,6 +51,7 @@ public:
   void processGetObjectIds(Frame* in, Frame* out);
 
   void addVisibleDesign( DesignView::Ptr design);
+  void addVisibleDesign( uint32_t id, bool completely_visible );
   void addVisibleDesigns( const IdSet& obids );
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);

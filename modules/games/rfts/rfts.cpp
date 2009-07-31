@@ -541,11 +541,7 @@ void Rfts::onPlayerAdded(Player *player) {
 
    //Assuming that all designs should be visible.
    // Please fix if this is not the case
-   std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
-   for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
-     DesignView* dv = new DesignView(*desid,true);
-     playerview->addVisibleDesign(dv);
-   }
+   playerview->addVisibleDesigns( Game::getGame()->getDesignStore()->getDesignIds() );
    
    std::set<uint32_t> mydesignids;
    
@@ -624,10 +620,7 @@ void Rfts::onPlayerAdded(Player *player) {
         continue;
       
       Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
-      for(std::set<uint32_t>::const_iterator desid = mydesignids.begin(); desid != mydesignids.end(); ++desid){
-        DesignView* dv = new DesignView(*desid,true);
-        oplayer->getPlayerView()->addVisibleDesign(dv);
-      }
+      player->getPlayerView()->addVisibleDesigns( mydesignids );
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
    

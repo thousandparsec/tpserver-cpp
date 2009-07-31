@@ -238,11 +238,9 @@ void MTSecTurn::doTurn(){
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
       PlayerView::Ptr pv = playermanager->getPlayer(*itplayer)->getPlayerView();
-      ObjectView* obv = pv->getObjectView(*itob);
-      if(obv == NULL){
-        obv = new ObjectView();
-        obv->setObjectId(*itob);
-        pv->addVisibleObject(obv);
+      ObjectView::Ptr obv = pv->getObjectView(*itob);
+      if(!obv){
+        pv->addVisibleObject( *itob, false  );
       }else{
         uint64_t obmt = objectmanager->getObject(*itob)->getModTime();
         objectmanager->doneWithObject(*itob);

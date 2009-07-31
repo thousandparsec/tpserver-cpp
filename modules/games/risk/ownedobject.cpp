@@ -44,8 +44,8 @@ void exploreStarSys(IGObject* obj) {
    IGObject *starSys = om->getObject(obj->getParent());
    PlayerView::Ptr pview = game->getPlayerManager()->getPlayer(objData->getOwner())->getPlayerView();
 
-   ObjectView* obv = pview->getObjectView(obj->getID());
-   if(obv != NULL){
+   ObjectView::Ptr obv = pview->getObjectView(obj->getID());
+   if(obv){
       if(!obv->isCompletelyVisible()){
          obv->setCompletelyVisible(true);
          pview->updateObjectView(obj->getID());
@@ -55,10 +55,7 @@ void exploreStarSys(IGObject* obj) {
          pview->updateObjectView(obj->getID());
       }
    }else{
-      obv = new ObjectView();
-      obv->setObjectId(obj->getID());
-      obv->setCompletelyVisible(true);
-      pview->addVisibleObject(obv);
+      pview->addVisibleObject( obj->getID(), true );
    }
 
    if(starSys->getID() == 0) return; // don't explore the universe
@@ -66,16 +63,13 @@ void exploreStarSys(IGObject* obj) {
    set<uint32_t> planets = starSys->getContainedObjects();
    for(set<uint32_t>::const_iterator i = planets.begin(); i != planets.end(); ++i){
       obv = pview->getObjectView(*i);
-      if(obv != NULL){
+      if(obv){
          if(!obv->isCompletelyVisible()){
             obv->setCompletelyVisible(true);
             pview->updateObjectView(*i);
          }
       }else{
-         obv = new ObjectView();
-         obv->setObjectId(*i);
-         obv->setCompletelyVisible(true);
-         pview->addVisibleObject(obv);
+         pview->addVisibleObject(*i, true);
       }
    }
 }

@@ -181,13 +181,10 @@ void TaeTurn::doTurn(){
         PlayerView::Ptr playerview = player->getPlayerView();
 
         for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
-            ObjectView* obv = playerview->getObjectView(*itob);
+          ObjectView::Ptr obv = playerview->getObjectView(*itob);
             if(obv == NULL){
                 if(objectmanager->getObject(*itob)->isAlive()){
-                    obv = new ObjectView();
-                    obv->setObjectId(*itob);
-                    obv->setCompletelyVisible(true);
-                    playerview->addVisibleObject(obv);
+                    playerview->addVisibleObject( *itob, true );
                 }
                 objectmanager->doneWithObject(*itob);
             }else{
@@ -207,7 +204,7 @@ void TaeTurn::doTurn(){
         set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
 
         for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
-            ObjectView* obv = playerview->getObjectView(*itob);
+          ObjectView::Ptr obv = playerview->getObjectView(*itob);
             if(!obv->isGone()){
                 obv->setGone(true);
                 playerview->updateObjectView(*itob);
@@ -232,10 +229,7 @@ void TaeTurn::doTurn(){
         for(int i = fleets; i < 6; i++) {
             IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
             game->getObjectManager()->addObject(fleet);
-            ObjectView* obv = new ObjectView();
-            obv->setObjectId(fleet->getID());
-            obv->setCompletelyVisible(true);
-            player->getPlayerView()->addVisibleObject(obv);
+            player->getPlayerView()->addVisibleObject(fleet->getID(), true);
         }
 
         //Send end of turn message to each player
@@ -379,7 +373,7 @@ void TaeTurn::initCombat() {
 
     //Set all fleets to combat mode. Flag the fleets whose owners are
     //directly involved in combat.
-    std::set<ObjectView*> views;
+    std::set<uint32_t> views;
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
@@ -396,10 +390,7 @@ void TaeTurn::initCombat() {
             }
 
             //Set visibility
-            ObjectView* obv = new ObjectView();
-            obv->setObjectId(ob->getID());
-            obv->setCompletelyVisible(true);
-            views.insert(obv);
+            views.insert(ob->getID());
         } 
         //Set initial external combat strength
         else if(ob->getType() == obtm->getObjectTypeByName("Planet") && !isInternal) {
@@ -441,9 +432,7 @@ void TaeTurn::initCombat() {
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
         Player* player = playermanager->getPlayer(*itcurr);        
         player->postToBoard(Message::Ptr( new Message(*msg)));
-        for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
-            player->getPlayerView()->addVisibleObject(*i);
-        }
+        player->getPlayerView()->addVisibleObjects( views );
     }
 }
 
@@ -614,7 +603,7 @@ void TaeTurn::doCombatTurn() {
 
     //Cleanup and Set visibility
     objects = objectmanager->getAllIds();
-    set<ObjectView*> views;
+    set<uint32_t> views;
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
         IGObject * ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Fleet") && !combat) {
@@ -623,10 +612,7 @@ void TaeTurn::doCombatTurn() {
             f->setCombatant(false);
         }
         //Set visibility
-        ObjectView* obv = new ObjectView();
-        obv->setObjectId(ob->getID());
-        obv->setCompletelyVisible(true);
-        views.insert(obv);
+        views.insert(ob->getID());
     }
 
     std::set<uint32_t> players = playermanager->getAllIds();
@@ -648,18 +634,13 @@ void TaeTurn::doCombatTurn() {
         PlayerView::Ptr playerview = player->getPlayerView();
 
         //Update visibility 
-        for(std::set<ObjectView*>::iterator i = views.begin(); i != views.end(); ++i) {
-            playerview->addVisibleObject(*i);
-        }
+        playerview->addVisibleObjects(views);
 
         for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
-            ObjectView* obv = playerview->getObjectView(*itob);
+          ObjectView::Ptr obv = playerview->getObjectView(*itob);
             if(obv == NULL){
                 if(objectmanager->getObject(*itob)->isAlive()){
-                    obv = new ObjectView();
-                    obv->setObjectId(*itob);
-                    obv->setCompletelyVisible(true);
-                    playerview->addVisibleObject(obv);
+                    playerview->addVisibleObject(*itob, true);
                 }
                 objectmanager->doneWithObject(*itob);
             }else{
@@ -679,7 +660,7 @@ void TaeTurn::doCombatTurn() {
         set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
 
         for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
-            ObjectView* obv = playerview->getObjectView(*itob);
+          ObjectView::Ptr obv = playerview->getObjectView(*itob);
             if(!obv->isGone()){
                 obv->setGone(true);
                 playerview->updateObjectView(*itob);
@@ -704,10 +685,7 @@ void TaeTurn::doCombatTurn() {
         for(int i = fleets; i < 6; i++) {
             IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
             game->getObjectManager()->addObject(fleet);
-            ObjectView* obv = new ObjectView();
-            obv->setObjectId(fleet->getID());
-            obv->setCompletelyVisible(true);
-            player->getPlayerView()->addVisibleObject(obv);
+            player->getPlayerView()->addVisibleObject(fleet->getID(), true);
         }
 
         //Send end of turn message to each player

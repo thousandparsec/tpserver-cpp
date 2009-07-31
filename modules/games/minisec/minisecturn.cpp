@@ -249,13 +249,10 @@ void MinisecTurn::doTurn(){
     PlayerView::Ptr playerview = player->getPlayerView();
     
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
-      ObjectView* obv = playerview->getObjectView(*itob);
-      if(obv == NULL){
+      ObjectView::Ptr obv = playerview->getObjectView(*itob);
+      if(!obv){
         if(objectmanager->getObject(*itob)->isAlive()){
-          obv = new ObjectView();
-          obv->setObjectId(*itob);
-          obv->setCompletelyVisible(true);
-          playerview->addVisibleObject(obv);
+          playerview->addVisibleObject( *itob, true );
         }
         objectmanager->doneWithObject(*itob);
       }else{
@@ -275,7 +272,7 @@ void MinisecTurn::doTurn(){
     set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
     
     for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
-        ObjectView* obv = playerview->getObjectView(*itob);
+      ObjectView::Ptr obv = playerview->getObjectView(*itob);
         if(!obv->isGone()){
             obv->setGone(true);
             playerview->updateObjectView(*itob);

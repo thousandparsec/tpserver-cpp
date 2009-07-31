@@ -572,9 +572,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
     //Set visibility of current designs
     std::set<uint32_t> allotherdesigns = Game::getGame()->getDesignStore()->getDesignIds();
     for(std::set<uint32_t>::const_iterator desid = allotherdesigns.begin(); desid != allotherdesigns.end(); ++desid){
-        DesignView* dv = new DesignView();
-        dv->setDesignId(*desid);
-        playerview->addVisibleDesign(dv);
+        playerview->addVisibleDesign( *desid, false );
     }
 
    for(uint32_t i = 1; i <= game->getDesignStore()->getMaxComponentId(); ++i){
@@ -641,13 +639,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
 
 
     //Set visibility of new designs and objects
-    std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
-    for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end(); ++itcurr){
-        ObjectView* obv = new ObjectView();
-        obv->setObjectId(*itcurr);
-        obv->setCompletelyVisible(true);
-        playerview->addVisibleObject(obv);
-    }
+    playerview->addVisibleObjects( game->getObjectManager()->getAllIds() );
 
     std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){

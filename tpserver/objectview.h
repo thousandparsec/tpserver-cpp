@@ -29,7 +29,7 @@ class ObjectView : public ProtocolView {
   public:
     typedef boost::shared_ptr< ObjectView > Ptr;
     ObjectView();
-    ObjectView( uint32_t new_id, bool visibility );
+    explicit ObjectView( uint32_t new_id, bool visibility = false );
     virtual ~ObjectView();
 
     void packFrame(Frame* frame, uint32_t playerid) const;

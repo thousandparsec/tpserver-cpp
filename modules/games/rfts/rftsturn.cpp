@@ -211,29 +211,22 @@ void setVisibleObjects(Player *player) {
    set<uint32_t> ownedObjects = pv->getOwnedObjects();
 
    // add universe and star systems
-   ObjectView* obv = pv->getObjectView(universe->getID());
-   if(obv == NULL){
-      obv = new ObjectView();
-      obv->setObjectId(universe->getID());
-      obv->setCompletelyVisible(true);
-      pv->addVisibleObject(obv);
+   ObjectView::Ptr obv = pv->getObjectView(universe->getID());
+   if(!obv){
+      pv->addVisibleObject( universe->getID(), true );
    }
    
    uint32_t fleettype = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
    set<uint32_t> containedObjects = universe->getContainedObjects();
    for(set<uint32_t>::const_iterator i = containedObjects.begin(); i != containedObjects.end(); ++i){
      IGObject* object = om->getObject(*i);
+     obv = pv->getObjectView(*i);
      if(object->getType() != fleettype){
-      obv = pv->getObjectView(*i);
-      if(obv == NULL){
-          obv = new ObjectView();
-          obv->setObjectId(*i);
-          obv->setCompletelyVisible(true);
-          pv->addVisibleObject(obv);
+      if(!obv){
+          pv->addVisibleObject(*i, true );
       }
      }else{
-       obv = pv->getObjectView(*i);
-       if(obv != NULL && !obv->isGone()){
+       if(obv && !obv->isGone()){
          obv->setGone(true);
          pv->updateObjectView(*i);
        }
@@ -255,7 +248,7 @@ void setVisibleObjects(Player *player) {
    {
       IGObject *obj = om->getObject(*i);
       obv = pv->getObjectView(*i);
-      if(obj == NULL){
+      if(!obj){
         if(!obv->isGone()){
           obv->setGone(true);
           pv->updateObjectView(*i);

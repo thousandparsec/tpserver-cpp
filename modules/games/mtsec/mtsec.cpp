@@ -932,10 +932,7 @@ void MTSec::setNewPlayerTech( Player* player)
     std::set<uint32_t> objids = game->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
         ++itcurr){
-      ObjectView* obv = new ObjectView();
-      obv->setObjectId(*itcurr);
-      obv->setCompletelyVisible(true);
-      playerview->addVisibleObject(obv);
+      playerview->addVisibleObject( *itcurr, true );
     }
 
    for(uint32_t itcurr = 1; itcurr <= game->getDesignStore()->getMaxComponentId(); ++itcurr){
@@ -964,10 +961,7 @@ void MTSec::onPlayerAdded(Player* player)
     std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
     for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
         ++itcurr){
-      ObjectView* obv = new ObjectView();
-      obv->setObjectId(*itcurr);
-      obv->setCompletelyVisible(true);
-      playerview->addVisibleObject(obv);
+      playerview->addVisibleObject( *itcurr, true );
     }
 
     Logger::getLogger()->debug( "Exit MTSec::onPlayerAdded");

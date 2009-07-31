@@ -115,33 +115,17 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
     theFleet->addShips(ship->getDesignId(), 1);
     game->getDesignStore()->designCountsUpdated(ship);
 
-    //Set visibility
-    ObjectView* obv = new ObjectView();
-    obv->setObjectId(fleet->getID());
-    obv->setCompletelyVisible(true);
-
-    DesignView* ownerView = new DesignView();
-    DesignView* othersView = new DesignView();
-    ownerView->setDesignId(ship->getDesignId());
-    othersView->setDesignId(ship->getDesignId());
-    ownerView->setCompletelyVisible(true);
-    if(fleetType == PASSENGER_FLEET) {
-        //Colonist ship types are not viewable by enemy players
-        othersView->setCompletelyVisible(false);
-    } else {
-        othersView->setCompletelyVisible(true);
-    }
-
     std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
         Player* player = game->getPlayerManager()->getPlayer(*playerit);
         if(*playerit == owner->getID()) {
-            player->getPlayerView()->addVisibleDesign(ownerView);
+            player->getPlayerView()->addVisibleDesign( ship->getDesignId(), true );
         } else {
-            player->getPlayerView()->addVisibleDesign(othersView);
+        //Colonist ship types are not viewable by enemy players
+            player->getPlayerView()->addVisibleDesign( ship->getDesignId(), fleetType != PASSENGER_FLEET );
         }
 
-        player->getPlayerView()->addVisibleObject(obv);
+        player->getPlayerView()->addVisibleObject( fleet->getID(), true );
 
         game->getPlayerManager()->updatePlayer(player->getID());
     }

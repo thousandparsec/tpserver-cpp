@@ -293,14 +293,7 @@ void setPlayerVisibleObjects() {
    
    for(set<uint32_t>::const_iterator i = players.begin(); i != players.end(); i++) {
      PlayerView::Ptr playerview = pm->getPlayer(*i)->getPlayerView();
-      std::set<uint32_t> objids = Game::getGame()->getObjectManager()->getAllIds();
-      for(std::set<uint32_t>::iterator itcurr = objids.begin(); itcurr != objids.end();
-         ++itcurr){
-      ObjectView* obv = new ObjectView();
-      obv->setObjectId(*itcurr);
-      obv->setCompletelyVisible(true);
-      playerview->addVisibleObject(obv);
-      }
+     playerview->addVisibleObjects( Game::getGame()->getObjectManager()->getAllIds() );
    }
 }
 
