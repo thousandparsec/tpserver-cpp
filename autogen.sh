@@ -45,6 +45,11 @@ echo removing config.cache...
 
 rm -f config.cache
 
+echo autoreconf in libltdl
+cd libltdl
+autoreconf
+cd ..
+
 echo
 
 echo ready to configure
