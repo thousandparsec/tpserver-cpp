@@ -2,7 +2,7 @@
 #define TPGUILE_H
 /*  TP Guile interpreter class
  *
- *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006, 2009  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ class TpGuile : public TpScheme{
   void defineDesignType( Design * d);
   void definePropertyAccessors();
   void setDesignPropertyValue( const PropertyValue & pv);
+  void setDesignPropertyValue(uint32_t propid, double value);
   void setDesignComponentCount( const uint32_t count);
   std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
       createPropertyRankingMap( std::map<uint32_t, uint32_t> & complist);

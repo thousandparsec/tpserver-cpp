@@ -1596,8 +1596,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
 
   Frame *of = curConnection->createFrame(frame);
   if(ds->addDesign(design)){
-    of->setType(ft02_OK);
-    of->packString("Design added");
+        player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
     of->createFailFrame(fec_FrameError, "Could not add design");
   }
@@ -1648,8 +1647,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 
   Frame *of = curConnection->createFrame(frame);
   if(ds->modifyDesign(design)){
-    of->setType(ft02_OK);
-    of->packString("Design modified");
+        player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
     of->createFailFrame(fec_FrameError, "Could not modify design");
   }
