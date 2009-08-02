@@ -34,7 +34,7 @@
 #include "logging.h"
 
 #include "objectparametergroupdesc.h"
-
+#include <boost/bind.hpp>
 
 ObjectParameterDesc::ObjectParameterDesc() : type(0), name(), description(){
 }
@@ -114,10 +114,8 @@ void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{
   f->packString(name);
   f->packString(desc);
   f->packInt(parameters.size());
-  for(std::list<ObjectParameterDesc>::const_iterator itcurr = parameters.begin();
-      itcurr != parameters.end(); ++itcurr){
-    (*itcurr).packObjectDescFrame(f);
-  }
+  std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterDesc::packObjectDescFrame, _1, f ) );
+  
 }
 
 ObjectParameterGroupPtr ObjectParameterGroupDesc::createObjectParameterGroup() const{

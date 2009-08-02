@@ -115,26 +115,18 @@ void Advertiser::updatePublishers(){
 void Advertiser::settingChanged(const std::string& skey, const std::string& value){
   if(skey == "metaserver_enable"){
     if(publishing){
+      PublisherSet::iterator meta = std::find_if( publishers.begin(), publishers.end(), boost::mem_fn( &Publisher::isMetaserver ) );
       if(value != "yes"){
-        for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-          if(boost::dynamic_pointer_cast<MetaserverPublisher>(*itcurr) != NULL){
-            publishers.erase(itcurr);
-            break;
-          }
+        if ( meta != publishers.end() )
+        {
+          publishers.erase(meta);
         }
       }else{
         if(metaserver_warning){
           metaserver_warning->invalidate();
           metaserver_warning.reset();
         }
-        bool found = false;
-        for(PublisherSet::iterator itcurr = publishers.begin(); itcurr != publishers.end(); ++itcurr){
-          if(boost::dynamic_pointer_cast<MetaserverPublisher>(*itcurr) != NULL){
-            found = true;
-            break;
-          }
-        }
-        if(!found){
+        if( meta == publishers.end() ){
           publishers.insert( Publisher::Ptr( new MetaserverPublisher() ));
         }
       }

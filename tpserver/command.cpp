@@ -21,6 +21,7 @@
 #include "frame.h"
 
 #include "command.h"
+#include <boost/bind.hpp>
 
 CommandParameter::CommandParameter(uint32_t cpt, const char* cpn, const char* cpd) : type(cpt)
 {
@@ -104,9 +105,7 @@ void Command::describeCommand(Frame * of) const
     of->packString(name);
     of->packString(help);
     of->packInt(parameters.size());
-    for(std::list<CommandParameter*>::const_iterator itcurr = parameters.begin(); itcurr !=parameters.end(); ++itcurr){
-        (*itcurr)->packCommandDescFrame(of);
-    }
+    std::for_each( parameters.begin(), parameters.end(), boost::bind( &CommandParameter::packCommandDescFrame, _1, of ) );
     of->packInt64(descmodtime);
 }
 

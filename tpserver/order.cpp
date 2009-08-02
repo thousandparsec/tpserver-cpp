@@ -29,6 +29,8 @@
 
 #include "order.h"
 
+#include <boost/bind.hpp>
+
 Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resources(), parameters()
 {
   descmodtime = time(NULL);
@@ -86,10 +88,7 @@ void Order::createFrame(Frame * f, int pos)
   f->packInt(type);
   f->packInt(turns);
   f->packIdMap(resources);
-  for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
-      ++itcurr){
-    (*itcurr)->pack(f);
-  }
+  std::for_each( parameters.begin(), parameters.end(), boost::bind( &OrderParameter::pack, _1, f ) );
 }
 
 void Order::inputFrame(Frame * f, uint32_t playerid)
@@ -121,10 +120,7 @@ void Order::describeOrder(Frame * f) const
   f->packString(name);
   f->packString(description);
   f->packInt(parameters.size());
-  for(ParameterList::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
-      ++itcurr){
-    (*itcurr)->packOrderDescFrame(f);
-  }
+  std::for_each( parameters.begin(), parameters.end(), boost::bind( &OrderParameter::packOrderDescFrame, _1, f ) );
   f->packInt64(descmodtime);
 }
 

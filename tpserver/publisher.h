@@ -34,9 +34,9 @@ public:
   typedef boost::shared_ptr< Publisher > Ptr;
 
   Publisher(){};
-
   virtual ~Publisher(){};
   
+  virtual bool isMetaserver() { return false; }
   virtual void update() = 0;
   
 };

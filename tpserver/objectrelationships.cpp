@@ -25,6 +25,7 @@
 #include "game.h"
 
 #include "objectrelationships.h"
+#include <boost/bind.hpp>
 
 ObjectRelationshipsData::ObjectRelationshipsData() : parentid(0), children() {
 }
@@ -59,21 +60,11 @@ void ObjectRelationshipsData::setChildren(const IdSet nc){
 }
 
 void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
-  IdSet temp = children;
-  IdSet::iterator itcurr, itend;
-  itcurr = temp.begin();
-  itend = temp.end();
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-  while(itcurr != itend){
-    if(!player->getPlayerView()->isVisibleObject(*itcurr)){
-      IdSet::iterator itemp = itcurr;
-      ++itcurr;
-      temp.erase(itemp);
-    }else{
-      ++itcurr;
-    }
-  }
-
+  PlayerView::Ptr pv = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
+  IdSet temp;
+  std::remove_copy_if( children.begin(), children.end(), 
+                       std::inserter( temp, temp.end() ), 
+                       !boost::bind( &PlayerView::isVisibleObject, pv, _1 ) );
   frame->packIdSet(temp);
 }
 

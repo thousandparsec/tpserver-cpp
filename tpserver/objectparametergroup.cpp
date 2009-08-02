@@ -24,12 +24,14 @@
 #include "objectparameter.h"
 
 #include "objectparametergroup.h"
+#include <boost/bind.hpp>
 
 ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(){
 }
 
 ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupData &rhs): parameters(){
   groupid = rhs.groupid;
+  // TODO: stl-ify
   for(ParameterList::const_iterator itcurr = rhs.parameters.begin();
       itcurr != rhs.parameters.end(); ++itcurr){
     parameters.push_back((*itcurr)->clone());
@@ -67,14 +69,12 @@ void ObjectParameterGroupData::addParameter(ObjectParameter* op){
 }
 
 void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
-  for(ParameterList::iterator itcurr = parameters.begin();
-      itcurr != parameters.end(); ++itcurr){
-    (*itcurr)->packObjectFrame(f, playerid);
-  }
+  std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameter::packObjectFrame, _1, f, playerid ) );
 }
 
 bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playerid){
   bool rtn = true;
+  // TODO: for_each_until
   for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     rtn = rtn & (*itcurr)->unpackModifyObjectFrame(f, playerid);
@@ -85,8 +85,5 @@ bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playe
 }
 
 void ObjectParameterGroupData::signalRemoval(){
-  for(ParameterList::const_iterator itcurr = parameters.begin();
-      itcurr != parameters.end(); ++itcurr){
-    (*itcurr)->signalRemoval();
-  }
+  std::for_each( parameters.begin(), parameters.end(), boost::mem_fn( &ObjectParameter::signalRemoval ) );
 }

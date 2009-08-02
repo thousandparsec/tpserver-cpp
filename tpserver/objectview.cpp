@@ -40,6 +40,7 @@
 
 
 #include "objectview.h"
+#include <boost/bind.hpp>
 
 ObjectView::ObjectView(): ProtocolView(ft02_Object), gone(false) { 
 }
@@ -107,21 +108,11 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
     }
     
     IdSet children = object->getContainedObjects();
-    IdSet::iterator itcurr, itend;
-    itcurr = children.begin();
-    itend = children.end();
-    
-    while(itcurr != itend){
-      if(!playerview->isVisibleObject(*itcurr)){
-        IdSet::iterator itemp = itcurr;
-        ++itcurr;
-        children.erase(itemp);
-      }else{
-        ++itcurr;
-      }
-    }
-    
-    frame->packIdSet(children);
+    IdSet result;
+    std::remove_copy_if( children.begin(), children.end(), 
+                         std::inserter( result, result.end() ), 
+                         !boost::bind( &PlayerView::isVisibleObject, playerview, _1 ) );
+    frame->packIdSet(result);
   
     if(frame->getVersion() <= fv0_3){
     
@@ -130,12 +121,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       if(oq != NULL){
         OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
         if(queue->isOwner(playerid)){
-          IdSet allowedtypes = queue->getAllowedOrderTypes();
-          frame->packInt(allowedtypes.size());
-          for(IdSet::iterator itcurr = allowedtypes.begin(); itcurr != allowedtypes.end();
-              ++itcurr){
-            frame->packInt(*itcurr);
-          }
+          frame->packIdSet( queue->getAllowedOrderTypes() );
           frame->packInt(queue->getNumberOrders());
         }else{
           frame->packInt(0);

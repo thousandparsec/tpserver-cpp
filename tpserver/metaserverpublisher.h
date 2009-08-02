@@ -38,6 +38,8 @@ public:
   virtual ~MetaserverPublisher();
   
   void update();
+
+  virtual bool isMetaserver() { return true; }
   
 
 private:
