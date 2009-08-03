@@ -21,5 +21,35 @@
  *
  */
 
+#include <functional>
+
+// Structure for selecting first element of a pair
+template <typename pair_type>
+struct select1st: public std::unary_function<pair_type, typename pair_type::first_type>
+{
+  const typename pair_type::first_type operator()(const pair_type& v) const
+  {
+    return v.first;
+  }
+};
+
+// Structure for selecting second element of a pair
+template <typename pair_type>
+struct select2nd: public std::unary_function<pair_type, typename pair_type::second_type>
+{
+  const typename pair_type::second_type operator()(const pair_type& v) const
+  {
+    return v.second;
+  }
+};
+
+// Mass delete algorithm
+// TODO: remove once the server is converted to all shared pointers
+template <typename container>
+void delete_all( container& cont )
+{
+  for ( typename container::iterator iter = cont.begin(); iter != cont.end(); ++iter )
+    delete *iter;
+}
 
 #endif // ALGORITHMS_H

@@ -30,6 +30,7 @@
 #include "order.h"
 
 #include <boost/bind.hpp>
+#include "algorithms.h"
 
 Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resources(), parameters()
 {
@@ -37,10 +38,7 @@ Order::Order(): orderqueueid(0), type(0), name(), description(), turns(0), resou
 }
 
 Order::~Order(){
-  for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
-      ++itcurr){
-    delete (*itcurr);
-  }
+  delete_all( parameters );
 }
 
 uint32_t Order::getType() const
