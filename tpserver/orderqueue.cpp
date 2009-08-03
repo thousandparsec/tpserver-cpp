@@ -26,6 +26,7 @@
 #include "game.h"
 #include "persistence.h"
 #include "objectmanager.h"
+#include "algorithms.h"
 
 #include "orderqueue.h"
 

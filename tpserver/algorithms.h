@@ -87,6 +87,12 @@ typename container_type::mapped_type find_default( const container_type& cont, t
     return value;
 }
 
-
+template < typename iterator, typename predicate, typename function >
+void for_each_if( iterator first, iterator last, predicate pred, function func )
+{
+  for ( ; first != last; ++first )
+    if ( pred( *first ) )
+        func( *first );
+}
 
 #endif // ALGORITHMS_H
