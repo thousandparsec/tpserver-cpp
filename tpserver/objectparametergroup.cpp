@@ -24,6 +24,7 @@
 #include "objectparameter.h"
 
 #include "objectparametergroup.h"
+#include "algorithms.h"
 #include <boost/bind.hpp>
 
 ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(){
@@ -39,6 +40,7 @@ ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupDat
 }
 
 ObjectParameterGroupData::~ObjectParameterGroupData(){
+  delete_all( parameters );
   for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     delete *itcurr;
@@ -74,7 +76,7 @@ void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
 
 bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playerid){
   bool rtn = true;
-  // TODO: for_each_until
+  // TODO: exceptions then for_each
   for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     rtn = rtn & (*itcurr)->unpackModifyObjectFrame(f, playerid);

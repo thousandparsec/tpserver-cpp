@@ -24,6 +24,8 @@
 #include "object.h"
 #include "objectparametergroupdesc.h"
 #include "objectbehaviour.h"
+#include "algorithms.h"
+#include <boost/bind.hpp>
 
 #include "objecttype.h"
 
@@ -36,10 +38,7 @@ ObjectType::ObjectType( const std::string& nname, const std::string& ndesc ) : n
 }
 
 ObjectType::~ObjectType(){
-  for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
-      ++itcurr){
-    delete (itcurr->second);
-  }
+  delete_map_all( paramgroups );
 }
 
 uint32_t ObjectType::getType() const{
@@ -61,10 +60,7 @@ void ObjectType::packObjectDescFrame(Frame* frame){
   frame->packString(typedesc);
   frame->packInt64(getModTime());
   frame->packInt(paramgroups.size());
-  for(std::map<uint32_t, ObjectParameterGroupDesc*>::iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
-      ++itcurr){
-    (itcurr->second)->packObjectDescFrame(frame);
-  }
+  for_each_value( paramgroups.begin(), paramgroups.end(), boost::bind( &ObjectParameterGroupDesc::packObjectDescFrame, _1, frame ) );
 }
 
 void ObjectType::setupObject(IGObject* obj) const{
@@ -86,9 +82,6 @@ void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
 }
 
 ObjectParameterGroupDesc* ObjectType::getParameterGroupDesc(uint32_t groupid) const{
-  if(paramgroups.find(groupid) != paramgroups.end()){
-    return paramgroups.find(groupid)->second;
-  }
-  return NULL;
+  return find_default( paramgroups, groupid, NULL );
 }
 

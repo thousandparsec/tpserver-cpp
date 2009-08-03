@@ -30,6 +30,7 @@
 #define VERSION "0.0.0"
 #endif
 
+#include "algorithms.h"
 #include "logging.h"
 #include "settings.h"
 
@@ -221,11 +222,7 @@ void Settings::set(std::string item, std::string value){
 }
 
 std::string Settings::get(std::string item) {
-  SettingsMap::iterator itcurr = store.find(item);
-  if( itcurr == store.end()) {
-    return std::string("");
-  }
-  return itcurr->second;
+  return find_default(store,item, std::string(""));
 }
 
 void Settings::setCallback(std::string item, SettingsCallback cb){

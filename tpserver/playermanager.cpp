@@ -34,6 +34,8 @@
 
 #include "playermanager.h"
 
+#include <boost/bind.hpp>
+
 PlayerManager::PlayerManager(){
     nextid = 1;
 }
@@ -163,9 +165,11 @@ Player* PlayerManager::findPlayer(const std::string &name){
 }
 
 void PlayerManager::updateAll(){
-    for(Map::iterator itcurr = map.begin(); itcurr != map.end(); ++itcurr){
-        Game::getGame()->getPersistence()->updatePlayer(itcurr->second);
-    }
+  std::for_each( map.begin(), map.end(), 
+      boost::bind( &Persistence::updatePlayer, Game::getGame()->getPersistence(), 
+        boost::bind( &Map::value_type::second, _1 )
+      )
+  );
 }
 
 void PlayerManager::updatePlayer(uint32_t id){

@@ -29,6 +29,7 @@
 #include "playerview.h"
 #include "playermanager.h"
 #include "persistence.h"
+#include "algorithms.h"
 
 #include "designstore.h"
 
@@ -40,18 +41,10 @@ DesignStore::DesignStore(){
 }
 
 DesignStore::~DesignStore(){
-  while(!designs.empty()){
-    delete designs.begin()->second;
-    designs.erase(designs.begin());
-  }
-  while(!components.empty()){
-    delete components.begin()->second;
-    components.erase(components.begin());
-  }
-  while(!properties.empty()){
-    delete properties.begin()->second;
-    properties.erase(properties.begin());
-  }
+  delete_map_all( designs );
+  delete_map_all( components );
+  delete_map_all( properties );
+  delete_map_all( categories );
 }
 
 void DesignStore::init(){
@@ -61,20 +54,11 @@ void DesignStore::init(){
   next_propertyid = persistence->getMaxPropertyId() + 1;
   next_categoryid = persistence->getMaxCategoryId() + 1;
   IdSet ids = persistence->getCategoryIds();
-  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
-    categories[*itcurr] = NULL;
-  }
-  ids = persistence->getDesignIds();
-  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
-    designs[*itcurr] = NULL;
-  }
-  ids = persistence->getComponentIds();
-  for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
-    components[*itcurr] = NULL;
-    Component* tmpcomp = persistence->retrieveComponent(*itcurr);
-    componentIndex[tmpcomp->getName()] = (*itcurr);
-    delete tmpcomp;
-  }
+ 
+  fill_by_set( designs,    persistence->getDesignIds(), NULL );
+  fill_by_set( categories, persistence->getCategoryIds(), NULL );
+  fill_by_set( components, persistence->getComponentIds(), NULL );
+  
   ids = persistence->getPropertyIds();
   for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
     properties[*itcurr] = persistence->retrieveProperty(*itcurr);
@@ -137,39 +121,19 @@ Property* DesignStore::getProperty(uint32_t id){
 
 
 IdSet DesignStore::getCategoryIds() const{
-  IdSet set;
-  for(std::map<uint32_t, Category*>::const_iterator itcurr = categories.begin();
-      itcurr != categories.end(); ++itcurr){
-    set.insert(itcurr->first);
-  }
-  return set;
+  return generate_key_set( categories );
 }
 
 IdSet DesignStore::getDesignIds() const{
-  IdSet set;
-  for(std::map<uint32_t, Design*>::const_iterator itcurr = designs.begin();
-      itcurr != designs.end(); ++itcurr){
-    set.insert(itcurr->first);
-  }
-  return set;
+  return generate_key_set( designs );
 }
 
 IdSet DesignStore::getComponentIds() const{
-  IdSet set;
-  for(std::map<uint32_t, Component*>::const_iterator itcurr = components.begin();
-      itcurr != components.end(); ++itcurr){
-    set.insert(itcurr->first);
-  }
-  return set;
+  return generate_key_set( components );
 }
 
 IdSet DesignStore::getPropertyIds() const{
-  IdSet set;
-  for(std::map<uint32_t, Property*>::const_iterator itcurr = properties.begin();
-      itcurr != properties.end(); ++itcurr){
-    set.insert(itcurr->first);
-  }
-  return set;
+  return generate_key_set( properties );
 }
 
 void DesignStore::addCategory(Category* c){

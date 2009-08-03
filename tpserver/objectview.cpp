@@ -40,6 +40,7 @@
 
 
 #include "objectview.h"
+#include "algorithms.h"
 #include <boost/bind.hpp>
 
 ObjectView::ObjectView(): ProtocolView(ft02_Object), gone(false) { 
@@ -141,10 +142,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       frame->packInt(0);
 
       std::map<uint32_t, ObjectParameterGroupPtr> parameters = object->getParameterGroups();
-      for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = parameters.begin(); itcurr != parameters.end();
-          ++itcurr){
-        (itcurr->second)->packObjectFrame(frame, playerid);
-      }
+      for_each_value( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterGroupData::packObjectFrame, _1, frame, playerid ) );
     }else{
       ObjectBehaviour* behaviour = object->getObjectBehaviour();
       if(behaviour != NULL){

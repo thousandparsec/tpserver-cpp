@@ -38,10 +38,7 @@ void BoardManager::init() {
   nextbid = persist->getMaxBoardId() + 1;
   nextmid = persist->getMaxMessageId() + 1;
   IdSet bidset(persist->getBoardIds());
-
-  for(IdSet::iterator itcurr = bidset.begin(); itcurr != bidset.end(); ++itcurr) {
-    boards[*itcurr] = Board::Ptr();
-  }
+  fill_by_set( boards, bidset, Board::Ptr() );
 }
 
 Board::Ptr BoardManager::createNewBoard(const std::string &name, const std::string &desc) {

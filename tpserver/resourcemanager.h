@@ -43,7 +43,8 @@ public:
     IdSet getAllIds();
 
 private:
-    std::map<uint32_t, ResourceDescription*> resdescs;
+    typedef std::map<uint32_t, ResourceDescription*> ResourceMap;
+    ResourceMap resdescs;
     uint32_t nextid;
 
 };

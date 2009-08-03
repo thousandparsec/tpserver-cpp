@@ -51,12 +51,8 @@ uint32_t ResourceManager::addResourceDescription(ResourceDescription* res){
 }
 
 const ResourceDescription* ResourceManager::getResourceDescription(uint32_t restype){
-    ResourceDescription* rtn = NULL;
-    std::map<uint32_t, ResourceDescription*>::iterator rl = resdescs.find(restype);
-    if(rl != resdescs.end()){
-        rtn = (*rl).second;
-    }
-    if(rtn == NULL){
+    ResourceDescription* rtn = find_default( resdescs, restype, NULL );
+    if ( rtn == NULL ) {
         rtn = Game::getGame()->getPersistence()->retrieveResource(restype);
         resdescs[restype] = rtn;
     }
@@ -64,15 +60,15 @@ const ResourceDescription* ResourceManager::getResourceDescription(uint32_t rest
 }
 
 const ResourceDescription* ResourceManager::getResourceDescription(const std::string& restype){
-    for(std::map<uint32_t, ResourceDescription*>::iterator rl = resdescs.begin();
-            rl != resdescs.end(); ++rl){
-        if(rl->second != NULL){
-            if(rl->second->getNameSingular() == restype){
-                return rl->second;
-            }
-        }
+  for(ResourceMap::iterator rl = resdescs.begin();
+      rl != resdescs.end(); ++rl){
+    if(rl->second != NULL){
+      if(rl->second->getNameSingular() == restype){
+        return rl->second;
+      }
     }
-    return NULL;
+  }
+  return NULL;
 }
 
 IdSet ResourceManager::getAllIds(){

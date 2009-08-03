@@ -27,6 +27,7 @@
 #include "sizeobjectparam.h"
 #include "position3dobjectparam.h"
 #include "objectbehaviour.h"
+#include "algorithms.h"
 
 #include "objectmanager.h"
 
@@ -39,9 +40,7 @@ ObjectManager::~ObjectManager(){
 
 void ObjectManager::init(){
   IdSet vis(Game::getGame()->getPersistence()->getObjectIds());
-  for(IdSet::const_iterator itcurr = vis.begin(); itcurr != vis.end(); ++itcurr){
-    objects[*itcurr] = NULL;
-  }
+  fill_by_set( objects, vis, NULL );
 
   nextid = Game::getGame()->getPersistence()->getMaxObjectId();
   if(nextid != 0)
@@ -69,12 +68,8 @@ void ObjectManager::discardNewObject(IGObject* obj){
 }
 
 IGObject *ObjectManager::getObject(uint32_t id){
-  IGObject *rtn = NULL;
-
-  std::map < uint32_t, IGObject * >::iterator obj = objects.find(id);
-  if (obj != objects.end()) {
-    rtn = (*obj).second;
-  }
+  IGObject *rtn = find_default( objects, id, NULL );
+  
   if(rtn == NULL){
     rtn = Game::getGame()->getPersistence()->retrieveObject(id);
     if(rtn != NULL){

@@ -38,6 +38,7 @@
 #include "net.h"
 #include "pluginmanager.h"
 #include "frame.h"
+#include "algorithms.h"
 
 #include "commandmanager.h"
 
@@ -577,7 +578,5 @@ CommandManager::CommandManager()
  */
 CommandManager::~CommandManager()
 {
-    for(std::map<uint32_t, Command*>::iterator itcurr = commandStore.begin(); itcurr != commandStore.end(); ++itcurr){
-        delete itcurr->second;
-    }
+  delete_map_all( commandStore );
 }

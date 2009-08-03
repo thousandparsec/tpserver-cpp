@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <cassert>
 #include <boost/bind.hpp>
+#include "algorithms.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -183,12 +184,7 @@ void Network::stop()
   if (active) {
     INFO("Stopping Network");
 
-    ConnMap::iterator itcurr = connections.begin();
-    while (itcurr != connections.end()) {
-      if ( itcurr->second->getType() == Connection::PLAYER || itcurr->second->getType() == Connection::LISTEN )
-        removeConnection(itcurr->first);
-      ++itcurr;
-    }
+    for_each_key( connections.begin(), connections.end(), boost::bind( &Network::removeConnection, this, _1 ) );
     advertiser->unpublish();
 
     active = false;
@@ -278,6 +274,7 @@ void Network::masterLoop()
     }
     fd_set write_set;
     FD_ZERO(&write_set);
+    // Unsure what the macro FD_SET stands for, so I can't do for_each
     for(ConnMap::iterator itcurr = writequeue.begin();
         itcurr != writequeue.end(); ++itcurr){
       FD_SET(itcurr->first, &write_set);
@@ -317,11 +314,7 @@ void Network::masterLoop()
     //advertiser->poll();
 
     if(netstat != active && active == false){
-      ConnMap::iterator itcurr = connections.begin();
-      while (itcurr != connections.end()) {
-        removeConnection( itcurr->first );
-        ++itcurr;
-      }
+      for_each_key( connections.begin(), connections.end(), boost::bind( &Network::removeConnection, this, _1 ) );
       DEBUG("Network really stopped");
     }
   }

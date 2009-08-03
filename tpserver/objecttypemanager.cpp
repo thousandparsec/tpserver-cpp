@@ -21,6 +21,7 @@
 #include "objecttype.h"
 #include "frame.h"
 #include "object.h"
+#include "algorithms.h"
 
 #include "objecttypemanager.h"
 
@@ -28,9 +29,7 @@ ObjectTypeManager::ObjectTypeManager() : typeStore(), stringmap(), nextType(0), 
 }
 
 ObjectTypeManager::~ObjectTypeManager(){
-   for(std::map<uint32_t, ObjectType*>::iterator itcurr = typeStore.begin(); itcurr != typeStore.end(); ++itcurr){
-    delete itcurr->second;
-  }
+  delete_map_all( typeStore );
 }
 
 void ObjectTypeManager::setupObject(IGObject* obj, uint32_t type){

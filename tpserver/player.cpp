@@ -28,6 +28,7 @@
 #include "message.h"
 #include "boardmanager.h"
 #include "playerview.h"
+#include "algorithms.h"
 
 #include "player.h"
 
@@ -105,12 +106,7 @@ bool Player::isAlive() const{
 }
 
 uint32_t Player::getScore(uint32_t key) const{
-  IdMap::const_iterator itval = score.find(key);
-  if(itval != score.end()){
-    return itval->second;
-  }else{
-    return 0;
-  }
+  return find_default( score, key, 0 );
 }
 
 IdMap Player::getAllScores() const{

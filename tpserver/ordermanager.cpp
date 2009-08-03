@@ -24,6 +24,7 @@
 #include "game.h"
 #include "persistence.h"
 #include "orderqueue.h"
+#include "algorithms.h"
 
 #include "ordermanager.h"
 
@@ -32,9 +33,7 @@ OrderManager::OrderManager() : prototype_next(0), orderqueue_next(1), seqkey(1) 
 
 OrderManager::~OrderManager(){
   // I should clear the prototype_store
-  for(std::map<uint32_t, Order*>::iterator itcurr = prototype_store.begin(); itcurr != prototype_store.end(); ++itcurr){
-    delete itcurr->second;
-  }
+  delete_map_all( prototype_store );
 }
 
 bool OrderManager::checkOrderType(uint32_t type){

@@ -35,6 +35,7 @@
 #include "ordermanager.h"
 #include "orderqueue.h"
 #include "objectbehaviour.h"
+#include <boost/bind.hpp>
 
 #include "object.h"
 
@@ -176,11 +177,9 @@ ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
       ++itcurr){
     ObjectParameterGroupData::ParameterList params = (itcurr->second)->getParameters();
 
-    for(ObjectParameterGroupData::ParameterList ::iterator opitcurr = params.begin(); opitcurr != params.end();
-        ++opitcurr){
-      if((*opitcurr)->getType() == ptype){
-        return (*opitcurr);
-      }
+    ObjectParameterGroupData::ParameterList::iterator opitcurr = std::find_if( params.begin(), params.end(), boost::bind( &ObjectParameter::getType, _1 ) == ptype );
+    if ( opitcurr != params.end() ) {
+      return (*opitcurr );
     }
   }
   return NULL;
