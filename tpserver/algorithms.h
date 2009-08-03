@@ -22,6 +22,7 @@
  */
 
 #include <functional>
+#include <set>
 
 // Structure for selecting first element of a pair
 template <typename pair_type>
@@ -45,11 +46,22 @@ struct select2nd: public std::unary_function<pair_type, typename pair_type::seco
 
 // Mass delete algorithm
 // TODO: remove once the server is converted to all shared pointers
-template <typename container>
-void delete_all( container& cont )
+template <typename container_type >
+void delete_all( container_type& cont )
 {
-  for ( typename container::iterator iter = cont.begin(); iter != cont.end(); ++iter )
+  for ( typename container_type::iterator iter = cont.begin(); iter != cont.end(); ++iter )
     delete *iter;
+}
+
+// Fills map-like container with values based on given set
+template < typename container_type >
+void fill_by_set( container_type& cont, 
+                  const std::set< typename container_type::key_type >& set, 
+                  typename container_type::mapped_type value )
+{
+  typedef std::set< typename container_type::key_type > key_set;
+  for ( typename key_set::const_iterator iter = set.begin(); iter != set.end(); ++iter)
+    cont[ *iter ] = value;
 }
 
 #endif // ALGORITHMS_H

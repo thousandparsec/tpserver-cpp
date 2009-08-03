@@ -25,6 +25,7 @@
 #include "persistence.h"
 
 #include "resourcemanager.h"
+#include "algorithms.h"
 
 ResourceManager::ResourceManager(){
     nextid = 1;
@@ -38,9 +39,7 @@ void ResourceManager::init(){
     Persistence* persist = Game::getGame()->getPersistence();
     nextid = persist->getMaxResourceId() + 1;
     IdSet ridset(persist->getResourceIds());
-    for(IdSet::iterator itcurr = ridset.begin(); itcurr != ridset.end(); ++itcurr){
-        resdescs[*itcurr] = NULL;
-    }
+    fill_by_set( resdescs, ridset, NULL );
 }
 
 uint32_t ResourceManager::addResourceDescription(ResourceDescription* res){
