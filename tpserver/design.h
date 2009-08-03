@@ -30,6 +30,7 @@
 
 class Design : public ProtocolObject {
   public:
+    typedef boost::shared_ptr<Design> Ptr;
     Design();
     virtual ~Design();
 

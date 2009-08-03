@@ -29,6 +29,7 @@ class Frame;
 
 class Property : public ProtocolObject {
   public:
+    typedef boost::shared_ptr<Property> Ptr;
     /**
      * Default constructor
      */

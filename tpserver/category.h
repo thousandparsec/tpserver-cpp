@@ -28,6 +28,7 @@ class Design;
 
 class Category : public ProtocolObject {
   public:
+    typedef boost::shared_ptr<Category> Ptr;
     /// Deprecated
     Category();
     Category( const std::string& nname, const std::string& ndesc );

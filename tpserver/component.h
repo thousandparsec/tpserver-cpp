@@ -25,35 +25,36 @@
 #include <tpserver/describable.h>
 
 class Component : public ProtocolObject {
- public:
-  Component();
-  virtual ~Component();
+  public:
+    typedef boost::shared_ptr<Component> Ptr;
+    Component();
+    virtual ~Component();
 
-  /// TODO: remove
-  uint32_t getComponentId() const;
-  IdSet getCategoryIds() const;
-  bool isInCategory(uint32_t id) const;
-  std::string getTpclRequirementsFunction() const;
-  IdStringMap getPropertyList() const;
+    /// TODO: remove
+    uint32_t getComponentId() const;
+    IdSet getCategoryIds() const;
+    bool isInCategory(uint32_t id) const;
+    std::string getTpclRequirementsFunction() const;
+    IdStringMap getPropertyList() const;
 
-  /// TODO: remove
-  void setComponentId(uint32_t id);
-  void setCategoryIds(const IdSet& ids);
-  void addCategoryId(uint32_t id);
-  void setTpclRequirementsFunction(const std::string& a);
-  void setPropertyList(const IdStringMap& pl);
-  
-  void setInUse(bool used=true);
-  bool isInUse() const;
-  void setParentDesignId(uint32_t designid);
-  uint32_t getParentDesignId() const;
-  
- protected:
-  IdSet catids;
-  std::string tpcl_requirements;
-  IdStringMap propertylist;
-  bool inuse;
-  uint32_t parentdesignid;
+    /// TODO: remove
+    void setComponentId(uint32_t id);
+    void setCategoryIds(const IdSet& ids);
+    void addCategoryId(uint32_t id);
+    void setTpclRequirementsFunction(const std::string& a);
+    void setPropertyList(const IdStringMap& pl);
+
+    void setInUse(bool used=true);
+    bool isInUse() const;
+    void setParentDesignId(uint32_t designid);
+    uint32_t getParentDesignId() const;
+
+  protected:
+    IdSet catids;
+    std::string tpcl_requirements;
+    IdStringMap propertylist;
+    bool inuse;
+    uint32_t parentdesignid;
 
 };
 
