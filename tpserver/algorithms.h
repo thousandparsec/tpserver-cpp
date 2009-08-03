@@ -105,6 +105,14 @@ void for_each_if( iterator first, iterator last, predicate pred, function func )
         func( *first );
 }
 
+// Runs function object on every map key in range 
+template < typename iterator, typename function >
+void for_each_key( iterator first, iterator last, function func )
+{
+  for ( ; first != last; ++first )
+    func( first->first );
+}
+
 // Runs function object on every map value in range 
 template < typename iterator, typename function >
 void for_each_value( iterator first, iterator last, function func )
