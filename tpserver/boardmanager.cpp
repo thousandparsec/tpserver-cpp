@@ -24,6 +24,7 @@
 #include "message.h"
 #include "logging.h"
 #include "frame.h"
+#include "algorithms.h"
 
 #include "boardmanager.h"
 
@@ -53,11 +54,7 @@ Board::Ptr BoardManager::createNewBoard(const std::string &name, const std::stri
 }
 
 Board::Ptr BoardManager::getBoard(uint32_t id) {
-  Board::Ptr board;
-  BoardMap::iterator pl = boards.find(id);
-  if (pl != boards.end()) {
-    board = (*pl).second;
-  }
+  Board::Ptr board = find_default( boards, id, Board::Ptr() );
   if (board.get() == NULL) {
     board = Game::getGame()->getPersistence()->retrieveBoard(id);
     boards[id] = board;

@@ -30,6 +30,7 @@
 #include "message.h"
 #include "designstore.h"
 #include "design.h"
+#include "algorithms.h"
 
 #include "playermanager.h"
 

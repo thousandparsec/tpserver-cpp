@@ -76,4 +76,17 @@ std::set< typename container_type::key_type > generate_key_set( const container_
   return set;
 }
 
+// Looks for an element in a map, if found, returns it, if not returns default value
+template < typename container_type >
+typename container_type::mapped_type find_default( const container_type& cont, typename container_type::key_type key, typename container_type::mapped_type value )
+{
+  typename container_type::const_iterator iter = cont.find( key );
+  if ( iter != cont.end() )
+    return iter->second;
+  else
+    return value;
+}
+
+
+
 #endif // ALGORITHMS_H
