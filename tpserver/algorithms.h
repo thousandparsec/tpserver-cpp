@@ -54,6 +54,15 @@ void delete_all( container_type& cont )
     delete *iter;
 }
 
+// Mass delete algorithm
+// TODO: remove once the server is converted to all shared pointers
+template <typename container_type >
+void delete_map_all( container_type& cont )
+{
+  for ( typename container_type::iterator iter = cont.begin(); iter != cont.end(); ++iter )
+    delete iter->second;
+}
+
 // Fills map-like container with values based on given set
 template < typename container_type >
 void fill_by_set( container_type& cont, 
