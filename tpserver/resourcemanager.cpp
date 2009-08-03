@@ -76,11 +76,6 @@ const ResourceDescription* ResourceManager::getResourceDescription(const std::st
 }
 
 IdSet ResourceManager::getAllIds(){
-    IdSet vis;
-    for(std::map<uint32_t, ResourceDescription*>::const_iterator itid = resdescs.begin();
-            itid != resdescs.end(); ++itid){
-        vis.insert(itid->first);
-    }
-    return vis;
+    return generate_key_set( resdescs );
 }
 

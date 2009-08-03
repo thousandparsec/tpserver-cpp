@@ -22,6 +22,7 @@
  */
 
 #include <functional>
+#include <algorithm>
 #include <set>
 
 // Structure for selecting first element of a pair
@@ -60,8 +61,19 @@ void fill_by_set( container_type& cont,
                   typename container_type::mapped_type value )
 {
   typedef std::set< typename container_type::key_type > key_set;
-  for ( typename key_set::const_iterator iter = set.begin(); iter != set.end(); ++iter)
+  for ( typename key_set::const_iterator iter = set.begin(); iter != set.end(); ++iter )
     cont[ *iter ] = value;
+}
+
+// Fills a set with keys from a container with values based on given set
+// Would be more effective if doing it in-place.
+template < typename container_type >
+std::set< typename container_type::key_type > generate_key_set( const container_type& cont )
+{
+  typedef std::set< typename container_type::key_type > key_set;
+  key_set set;
+  std::transform( cont.begin(), cont.end(), std::inserter< key_set >( set, set.begin() ), select1st< typename container_type::value_type >() );
+  return set;
 }
 
 #endif // ALGORITHMS_H
