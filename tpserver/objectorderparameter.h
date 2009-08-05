@@ -20,6 +20,11 @@
  *
  */
 
+#include <set>
+#include <stdint.h>
+
+#include <tpserver/protocol.h>
+
 #include <tpserver/orderparameter.h>
 
 class ObjectOrderParameter : public OrderParameter{
@@ -35,9 +40,14 @@ public:
 
   uint32_t getObjectId() const;
   void setObjectId(uint32_t id);
+  
+  std::set<objecttypeid_t> getAllowedObjectTypes() const;
+  void setAllowedObjectTypes(const std::set<objecttypeid_t>& nots);
+  void addAllowedObjectTypes(objecttypeid_t type);
 
 protected:
   uint32_t object;
+  std::set<objecttypeid_t> objecttypes;
 
 };
 
