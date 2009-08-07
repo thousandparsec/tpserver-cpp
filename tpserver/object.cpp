@@ -41,7 +41,7 @@
 
 
 IGObject::IGObject(uint32_t newid) : ProtocolObject(ft02_Object,newid), turn(0), alive(true), type(0), 
-                   relationships(new ObjectRelationshipsData()), parameters(), behaviour(NULL){
+                   relationships(new ObjectRelationships()), parameters(), behaviour(NULL){
 }
 
 IGObject::~IGObject(){

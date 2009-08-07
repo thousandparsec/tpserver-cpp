@@ -27,39 +27,39 @@
 #include "objectrelationships.h"
 #include <boost/bind.hpp>
 
-ObjectRelationshipsData::ObjectRelationshipsData() : parentid(0), children() {
+ObjectRelationships::ObjectRelationships() : parentid(0), children() {
 }
 
-ObjectRelationshipsData::~ObjectRelationshipsData(){
+ObjectRelationships::~ObjectRelationships(){
 }
 
-uint32_t ObjectRelationshipsData::getParent() const{
+uint32_t ObjectRelationships::getParent() const{
   return parentid;
 }
 
-IdSet ObjectRelationshipsData::getChildren() const{
+IdSet ObjectRelationships::getChildren() const{
   return children;
 }
 
-void ObjectRelationshipsData::setParent(uint32_t np){
+void ObjectRelationships::setParent(uint32_t np){
   setIsDirty( (np != parentid) );
   parentid = np;
 }
 
-void ObjectRelationshipsData::addChild(uint32_t nc){
+void ObjectRelationships::addChild(uint32_t nc){
   setIsDirty( children.insert(nc).second );
 }
 
-void ObjectRelationshipsData::removeChild(uint32_t oc){
+void ObjectRelationships::removeChild(uint32_t oc){
   setIsDirty( (children.erase(oc) != 0) );
 }
 
-void ObjectRelationshipsData::setChildren(const IdSet nc){
+void ObjectRelationships::setChildren(const IdSet nc){
   children = nc;
   setIsDirty( true );
 }
 
-void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
+void ObjectRelationships::packFrame(Frame* frame, uint32_t playerid){
   PlayerView::Ptr pv = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
   IdSet temp;
   std::remove_copy_if( children.begin(), children.end(), 
@@ -68,7 +68,7 @@ void ObjectRelationshipsData::packFrame(Frame* frame, uint32_t playerid){
   frame->packIdSet(temp);
 }
 
-void ObjectRelationshipsData::unpackModFrame(Frame* f){
+void ObjectRelationships::unpackModFrame(Frame* f){
   //discard all data
   f->unpackInt();
   f->unpackIdSet();

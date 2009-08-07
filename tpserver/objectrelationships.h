@@ -20,19 +20,18 @@
  *
  */
 
-#include <stdint.h>
-#include <set>
-#include <boost/shared_ptr.hpp>
+#include <tpserver/common.h>
 #include <tpserver/modifiable.h>
+#include <boost/shared_ptr.hpp>
 
 class Frame;
 
-class ObjectRelationshipsData : public Modifiable {
+class ObjectRelationships : public Modifiable {
   public:
-    typedef boost::shared_ptr<ObjectRelationshipsData> Ptr;
+    typedef boost::shared_ptr<ObjectRelationships> Ptr;
 
-    ObjectRelationshipsData();
-    ~ObjectRelationshipsData();
+    ObjectRelationships();
+    ~ObjectRelationships();
     
     uint32_t getParent() const;
     IdSet getChildren() const;

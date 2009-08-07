@@ -79,7 +79,7 @@ class IGObject : public ProtocolObject {
     bool alive;
     uint32_t type;
     
-    ObjectRelationshipsData::Ptr relationships;
+    ObjectRelationships::Ptr relationships;
     std::map<uint32_t, ObjectParameterGroupData::Ptr> parameters;
     ObjectBehaviour* behaviour;
 
