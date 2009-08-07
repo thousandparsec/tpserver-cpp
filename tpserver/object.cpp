@@ -141,11 +141,11 @@ ObjectParameter* IGObject::getParameter(uint32_t groupnum, uint32_t paramnum) co
   }
 }
 
-void IGObject::setParameterGroup(const ObjectParameterGroupData::Ptr &ng){
+void IGObject::setParameterGroup(const ObjectParameterGroup::Ptr &ng){
   parameters[ng->getGroupId()] = ng;
 }
 
-std::map<uint32_t, ObjectParameterGroupData::Ptr> IGObject::getParameterGroups() const{
+ObjectParameterGroup::Map IGObject::getParameterGroups() const{
   return parameters;
 }
 
@@ -173,11 +173,11 @@ void IGObject::setIsDirty(bool id){
 }
 
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
-  for(std::map<uint32_t, ObjectParameterGroupData::Ptr>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(ObjectParameterGroup::Map::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
-    ObjectParameterGroupData::ParameterList params = (itcurr->second)->getParameters();
+    ObjectParameterGroup::ParameterList params = (itcurr->second)->getParameters();
 
-    ObjectParameterGroupData::ParameterList::iterator opitcurr = std::find_if( params.begin(), params.end(), boost::bind( &ObjectParameter::getType, _1 ) == ptype );
+    ObjectParameterGroup::ParameterList::iterator opitcurr = std::find_if( params.begin(), params.end(), boost::bind( &ObjectParameter::getType, _1 ) == ptype );
     if ( opitcurr != params.end() ) {
       return (*opitcurr );
     }

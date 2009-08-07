@@ -21,25 +21,25 @@
  *
  */
 
-#include <stdint.h>
-#include <string>
-#include <vector>
+#include <tpserver/common.h>
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 class Frame;
 class ObjectParameter;
 
-class ObjectParameterGroupData {
+class ObjectParameterGroup {
   public:
-    typedef boost::shared_ptr<ObjectParameterGroupData> Ptr;
+    typedef boost::shared_ptr<ObjectParameterGroup> Ptr;
+    typedef std::map< uint32_t, Ptr > Map;
+		typedef std::vector<ObjectParameter*> ParameterList;
 
-    ObjectParameterGroupData();
-    ObjectParameterGroupData(const ObjectParameterGroupData& rhs);
-    ~ObjectParameterGroupData();
+    ObjectParameterGroup();
+    ObjectParameterGroup(const ObjectParameterGroup& rhs);
+    ~ObjectParameterGroup();
 
     uint32_t getGroupId() const;
 
-		typedef std::vector<ObjectParameter*> ParameterList;
     
     ParameterList getParameters() const;
     ObjectParameter* getParameter(uint32_t paramid) const;

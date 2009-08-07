@@ -27,10 +27,10 @@
 #include "algorithms.h"
 #include <boost/bind.hpp>
 
-ObjectParameterGroupData::ObjectParameterGroupData() : groupid(0), parameters(){
+ObjectParameterGroup::ObjectParameterGroup() : groupid(0), parameters(){
 }
 
-ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupData &rhs): parameters(){
+ObjectParameterGroup::ObjectParameterGroup(const ObjectParameterGroup &rhs): parameters(){
   groupid = rhs.groupid;
   // TODO: stl-ify
   for(ParameterList::const_iterator itcurr = rhs.parameters.begin();
@@ -39,7 +39,7 @@ ObjectParameterGroupData::ObjectParameterGroupData(const ObjectParameterGroupDat
   }
 }
 
-ObjectParameterGroupData::~ObjectParameterGroupData(){
+ObjectParameterGroup::~ObjectParameterGroup(){
   delete_all( parameters );
   for(ParameterList::iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
@@ -47,34 +47,34 @@ ObjectParameterGroupData::~ObjectParameterGroupData(){
   }
 }
 
-uint32_t ObjectParameterGroupData::getGroupId() const{
+uint32_t ObjectParameterGroup::getGroupId() const{
   return groupid;
 }
 
-ObjectParameterGroupData::ParameterList ObjectParameterGroupData::getParameters() const{
+ObjectParameterGroup::ParameterList ObjectParameterGroup::getParameters() const{
   return parameters;
 }
 
-ObjectParameter* ObjectParameterGroupData::getParameter(uint32_t paramid) const{
+ObjectParameter* ObjectParameterGroup::getParameter(uint32_t paramid) const{
   if(paramid < parameters.size() + 1 && paramid != 0){
     return parameters[--paramid];
   }
   return NULL;
 }
 
-void ObjectParameterGroupData::setGroupId(uint32_t ni){
+void ObjectParameterGroup::setGroupId(uint32_t ni){
   groupid = ni;
 }
 
-void ObjectParameterGroupData::addParameter(ObjectParameter* op){
+void ObjectParameterGroup::addParameter(ObjectParameter* op){
   parameters.push_back(op);
 }
 
-void ObjectParameterGroupData::packObjectFrame(Frame * f, uint32_t playerid){
+void ObjectParameterGroup::packObjectFrame(Frame * f, uint32_t playerid){
   std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameter::packObjectFrame, _1, f, playerid ) );
 }
 
-bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playerid){
+bool ObjectParameterGroup::unpackModifyObjectFrame(Frame * f, uint32_t playerid){
   bool rtn = true;
   // TODO: exceptions then for_each
   for(ParameterList::iterator itcurr = parameters.begin();
@@ -86,6 +86,6 @@ bool ObjectParameterGroupData::unpackModifyObjectFrame(Frame * f, uint32_t playe
   return rtn;
 }
 
-void ObjectParameterGroupData::signalRemoval(){
+void ObjectParameterGroup::signalRemoval(){
   std::for_each( parameters.begin(), parameters.end(), boost::mem_fn( &ObjectParameter::signalRemoval ) );
 }

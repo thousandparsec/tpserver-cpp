@@ -141,8 +141,8 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       frame->packInt(0);
       frame->packInt(0);
 
-      std::map<uint32_t, ObjectParameterGroupData::Ptr> parameters = object->getParameterGroups();
-      for_each_value( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterGroupData::packObjectFrame, _1, frame, playerid ) );
+      ObjectParameterGroup::Map parameters = object->getParameterGroups();
+      for_each_value( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterGroup::packObjectFrame, _1, frame, playerid ) );
     }else{
       ObjectBehaviour* behaviour = object->getObjectBehaviour();
       if(behaviour != NULL){

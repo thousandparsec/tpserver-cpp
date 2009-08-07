@@ -63,8 +63,8 @@ class IGObject : public ProtocolObject {
     ObjectParameter* getParameter(uint32_t groupnum, uint32_t paramnum) const;
     ObjectParameter* getParameterByType(uint32_t type) const;
     
-    void setParameterGroup(const ObjectParameterGroupData::Ptr &ng);
-    std::map<uint32_t, ObjectParameterGroupData::Ptr> getParameterGroups() const;
+    void setParameterGroup(const ObjectParameterGroup::Ptr &ng);
+    ObjectParameterGroup::Map getParameterGroups() const;
     
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
@@ -80,7 +80,7 @@ class IGObject : public ProtocolObject {
     uint32_t type;
     
     ObjectRelationships::Ptr relationships;
-    std::map<uint32_t, ObjectParameterGroupData::Ptr> parameters;
+    ObjectParameterGroup::Map parameters;
     ObjectBehaviour* behaviour;
 
 };
