@@ -59,7 +59,7 @@ void MinisecTurn::doTurn(){
   OrderManager* ordermanager = game->getOrderManager();
   ObjectManager* objectmanager = game->getObjectManager();
   RSPCombat* combatstrategy = new RSPCombat();
-  PlayerManager* playermanager = game->getPlayerManager();
+  PlayerManager::Ptr playermanager = game->getPlayerManager();
 
   //sort by order type
   std::set<uint32_t> movers;
@@ -245,7 +245,7 @@ void MinisecTurn::doTurn(){
   uint32_t numaliveplayers = 0;
   uint32_t numdeadplayers = 0;
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-    Player* player = playermanager->getPlayer(*itplayer);
+    Player::Ptr player = playermanager->getPlayer(*itplayer);
     PlayerView::Ptr playerview = player->getPlayerView();
     
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
@@ -297,7 +297,7 @@ void MinisecTurn::doTurn(){
   
   if(numaliveplayers == 1){
     //find alive player
-    Player* player;
+    Player::Ptr player;
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
       player = playermanager->getPlayer(*itplayer);
       if(player->isAlive())

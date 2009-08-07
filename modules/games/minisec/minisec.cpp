@@ -696,11 +696,11 @@ void MiniSec::startGame(){
   }
 }
 
-bool MiniSec::onAddPlayer(Player* player){
+bool MiniSec::onAddPlayer(Player::Ptr player){
   return true;
 }
 
-void MiniSec::onPlayerAdded(Player* player){
+void MiniSec::onPlayerAdded(Player::Ptr player){
   Game *game = Game::getGame();
 
   Logger::getLogger()->debug("MiniSec::onPlayerAdded");
@@ -907,7 +907,7 @@ void MiniSec::onPlayerAdded(Player* player){
       if(*playerit == player->getID())
         continue;
 
-      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      Player::Ptr oplayer = game->getPlayerManager()->getPlayer(*playerit);
       oplayer->getPlayerView()->addVisibleDesigns( mydesignids );
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }

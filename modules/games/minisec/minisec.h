@@ -48,8 +48,8 @@ public:
   void initGame();
   void createGame();
   void startGame();
-  bool onAddPlayer(Player* player);
-  void onPlayerAdded(Player* player);
+  bool onAddPlayer(boost::shared_ptr<Player> player);
+  void onPlayerAdded(boost::shared_ptr<Player> player);
   
   Names* getFleetMediaNames() const;
 
