@@ -60,7 +60,7 @@ void MTSecTurn::doTurn(){
   OrderManager* ordermanager = game->getOrderManager();
   ObjectManager* objectmanager = game->getObjectManager();
   AVACombat* combatstrategy = new AVACombat();
-  PlayerManager* playermanager = game->getPlayerManager();
+  PlayerManager::Ptr playermanager = game->getPlayerManager();
 
   //sort by order type
   std::set<uint32_t> movers;

@@ -22,6 +22,7 @@
 
 #include <tpserver/ruleset.h>
 #include <tpserver/designstore.h>
+#include <tpserver/player.h>
 
 namespace MTSecRuleset {
 
@@ -35,51 +36,13 @@ class MTSec : public Ruleset{
   void initGame();
   void createGame();
   void startGame();
-  bool onAddPlayer(Player* player);
-  void onPlayerAdded(Player* player);
+  bool onAddPlayer(Player::Ptr player);
+  void onPlayerAdded(Player::Ptr player);
 
  protected:
-<<<<<<< HEAD
-=======
-  // Property definition methods
-  void createSpeedProp();
-  void createAmmoCostProp();
-  void createAmmoExplosivenessProp();
-  void createAmmoSizeProp();
-  void createFirepowerProp();
-  void createMissileCostProp();
-  void createMissileFirepowerProp();
-  void createMissileSizeProp();
-  void createHitPointsProp();
-  void createHPProp();
-  void createBuildTimeProp();
-  void createArmorProp();
-  void createColoniseProp();
-  void createNumAmmoProp();
-  void createNumBayTypesProp();
-  void createNumHullsProp();
-
-
-  // Component definition methods
-  void createScoutHullComp();
-  void createBattleScoutHullComp();
-  void createCeriumAmmoComp();
-  void createCerium3AmmoComp();
-  void createCerium6AmmoComp();
-  void createCerium12AmmoComp();
-  void createUraniumAmmoComp();
-  void createAntiparticleAmmoComp();
-  void createAntimatterAmmoComp();
-  void createThoriumAmmoComp();
-  void createAlphaMissileBayComp();
-  void createBetaMissileBayComp();
-  void createGammaMissileBayComp();
-  void createDeltaMissileBayComp();
-
->>>>>>> MTSec updated with DesignStore shared_ptrs
   // Design definition methods
-  Design::Ptr createScoutDesign( Player* owner);
-  Design::Ptr createBattleScoutDesign( Player* owner);
+  Design::Ptr createScoutDesign( Player::Ptr owner);
+  Design::Ptr createBattleScoutDesign( Player::Ptr owner);
 
   // Object creation methods
   IGObject* createSiriusSystem( IGObject* mw_galaxy);
@@ -93,15 +56,14 @@ class MTSec : public Ruleset{
   
   void createResources();
 
-  IGObject* createEmptyFleet( Player*     owner,
+  IGObject* createEmptyFleet( Player::Ptr     owner,
                               IGObject*   star,
                               std::string fleetName);
-  void makeNewPlayerFleet( Player* player, IGObject* star);
-  IGObject* makePlayerHomePlanet( Player* player, IGObject* star);
-  IGObject* makeNewPlayerStarSystem( Player* player);
-  void setNewPlayerTech( Player* player);
-Design* createAlphaMissileDesign( Player* owner);
-
+  void makeNewPlayerFleet( Player::Ptr player, IGObject* star);
+  IGObject* makePlayerHomePlanet( Player::Ptr player, IGObject* star);
+  IGObject* makeNewPlayerStarSystem( Player::Ptr player);
+  void setNewPlayerTech( Player::Ptr player);
+  Design::Ptr createAlphaMissileDesign( Player::Ptr owner);
 
  private:
   xmlImport *xmlImporter;

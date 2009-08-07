@@ -110,7 +110,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
   
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
+  Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   
   uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");

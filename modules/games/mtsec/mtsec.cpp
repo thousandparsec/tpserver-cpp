@@ -674,13 +674,13 @@ void MTSec::startGame()
 
 
 
-bool MTSec::onAddPlayer(Player* player)
+bool MTSec::onAddPlayer(Player::Ptr player)
 {
   return true;
 }
 
 
-Design::Ptr MTSec::createScoutDesign( Player* owner)
+Design::Ptr MTSec::createScoutDesign( Player::Ptr owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createScoutDesign");
     Game *game = Game::getGame();
@@ -701,7 +701,7 @@ Design::Ptr MTSec::createScoutDesign( Player* owner)
 }
 
 
-Design::Ptr MTSec::createBattleScoutDesign( Player* owner)
+Design::Ptr MTSec::createBattleScoutDesign( Player::Ptr owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
     DesignStore *ds = Game::getGame()->getDesignStore();
@@ -746,7 +746,7 @@ Design* MTSec::createAlphaMissileDesign( Player* owner)
     return scout;
 }
 
-IGObject* MTSec::createEmptyFleet( Player*     owner,
+IGObject* MTSec::createEmptyFleet( Player::Ptr     owner,
                                    IGObject*   star,
                                    std::string fleetName)
 {
@@ -790,7 +790,7 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
 // them, although they could create another design that functions
 // similarly.
 //
-void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
+void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject* star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerFleet");
     Game *game = Game::getGame();
@@ -819,7 +819,7 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
 
 // Create a new player's home planet, orbiting around
 // the given star.
-IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
+IGObject* MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject* star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
     Game *    game = Game::getGame();
@@ -875,7 +875,7 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
 //
 // These 'home systems' always consist of exactly one planet.
 //
-IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
+IGObject* MTSec::makeNewPlayerStarSystem( Player::Ptr player)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
     Game *    game = Game::getGame();
@@ -906,7 +906,7 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
 // This routine sets a new player's initial tech level.
 // New players can make any hull, see all stars.  This
 // doesn't leave anything for them to research.
-void MTSec::setNewPlayerTech( Player* player)
+void MTSec::setNewPlayerTech( Player::Ptr player)
 {
     Logger::getLogger()->debug( "Enter MTSec::setNewPlayerTech");
     Game *game = Game::getGame();
@@ -930,7 +930,7 @@ void MTSec::setNewPlayerTech( Player* player)
 // New players start with their own star systems, and an
 // initial fleet consisting of two scout ships.
 //
-void MTSec::onPlayerAdded(Player* player)
+void MTSec::onPlayerAdded(Player::Ptr player)
 {
     Logger::getLogger()->debug( "Enter MTSec::onPlayerAdded");
 
