@@ -42,7 +42,6 @@ typedef enum {
 class Frame;
 
 class ObjectParameter {
-
       public:
 	ObjectParameter();
         virtual ~ObjectParameter();

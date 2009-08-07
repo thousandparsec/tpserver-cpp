@@ -40,8 +40,8 @@
 #include "object.h"
 
 
-IGObject::IGObject(uint32_t newid) : ProtocolObject(ft02_Object,newid), turn(0), alive(true), type(0), 
-                   relationships(new ObjectRelationships()), parameters(), behaviour(NULL){
+IGObject::IGObject(uint32_t newid) : ProtocolObject(ft02_Object,newid), turn(0), alive(true), type(0), parentid(0),
+                   behaviour(NULL){
 }
 
 IGObject::~IGObject(){
@@ -69,7 +69,7 @@ uint32_t IGObject::getTurn() const{
 }
 
 uint32_t IGObject::getParent() const{
-  return relationships->getParent();
+  return parentid;
 }
 
 void IGObject::setType(uint32_t newtype){
@@ -93,16 +93,16 @@ void IGObject::setIsAlive(bool ia){
 }
 
 void IGObject::addToParent(uint32_t pid){
-    relationships->setParent(pid);
+    setParent( pid );
     Game::getGame()->getObjectManager()->getObject(pid)->addContainedObject(id);
     Game::getGame()->getObjectManager()->doneWithObject(pid);
     touchModTime();
 }
 
 void IGObject::removeFromParent(){
-  Game::getGame()->getObjectManager()->getObject(relationships->getParent())->removeContainedObject(id);
-  Game::getGame()->getObjectManager()->doneWithObject(relationships->getParent());
-  relationships->setParent(0);
+  Game::getGame()->getObjectManager()->getObject(parentid)->removeContainedObject(id);
+  Game::getGame()->getObjectManager()->doneWithObject(parentid);
+  setParent(0);
   touchModTime();
 }
 
@@ -114,7 +114,7 @@ int IGObject::getContainerType(){
 }
 
 IdSet IGObject::getContainedObjects(){
-  return relationships->getChildren();
+  return children;
 }
 
 void IGObject::addContainedObject(uint32_t addObjectID){
@@ -123,14 +123,14 @@ void IGObject::addContainedObject(uint32_t addObjectID){
 
     //Game::getGame()->getObject(addObjectID)->parentid = id;
     touchModTime();
-    relationships->addChild(addObjectID);
+    setIsDirty( children.insert(addObjectID).second );
   }
 }
 
 void IGObject::removeContainedObject(uint32_t removeObjectID){
   // remove object
+  setIsDirty( (children.erase(removeObjectID) != 0) );
   touchModTime();
-  relationships->removeChild(removeObjectID);
 }
 
 ObjectParameter* IGObject::getParameter(uint32_t groupnum, uint32_t paramnum) const{
@@ -158,18 +158,9 @@ void IGObject::setObjectBehaviour(ObjectBehaviour* nob){
   behaviour->setObject(this);
 }
 
-bool IGObject::isDirty() const{
-  bool dirtyparams = false; //TODO fix
-  return isDirty() || relationships->isDirty() || dirtyparams;
-}
-
 void IGObject::setParent(uint32_t pid){
-  relationships->setParent(pid);
-}
-
-void IGObject::setIsDirty(bool id){
-  Modifiable::setIsDirty(id);
-  relationships->setIsDirty(id);
+  setIsDirty( pid != parentid );
+  parentid = pid;
 }
 
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{

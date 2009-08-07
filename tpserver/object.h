@@ -21,7 +21,6 @@
  */
 
 #include <tpserver/common.h>
-#include <tpserver/objectrelationships.h>
 #include <tpserver/objectparametergroup.h>
 #include <tpserver/protocolobject.h>
 
@@ -69,8 +68,6 @@ class IGObject : public ProtocolObject {
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
     
-    virtual void setIsDirty(bool id);
-    virtual bool isDirty() const;
     // Only Persistence classes should call these
     void setParent(uint32_t pid);
 
@@ -78,8 +75,9 @@ class IGObject : public ProtocolObject {
     uint32_t turn;
     bool alive;
     uint32_t type;
+    uint32_t parentid;
+    IdSet children;
     
-    ObjectRelationships::Ptr relationships;
     ObjectParameterGroup::Map parameters;
     ObjectBehaviour* behaviour;
 

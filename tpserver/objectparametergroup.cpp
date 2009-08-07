@@ -41,10 +41,6 @@ ObjectParameterGroup::ObjectParameterGroup(const ObjectParameterGroup &rhs): par
 
 ObjectParameterGroup::~ObjectParameterGroup(){
   delete_all( parameters );
-  for(ParameterList::iterator itcurr = parameters.begin();
-      itcurr != parameters.end(); ++itcurr){
-    delete *itcurr;
-  }
 }
 
 uint32_t ObjectParameterGroup::getGroupId() const{
