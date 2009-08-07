@@ -21,6 +21,7 @@
  */
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 class Player;
 
@@ -32,8 +33,8 @@ class Ruleset{
   virtual void initGame() = 0;
   virtual void createGame() = 0;
   virtual void startGame() = 0;
-  virtual bool onAddPlayer(Player* player) = 0;
-  virtual void onPlayerAdded(Player* player) = 0;
+  virtual bool onAddPlayer(boost::shared_ptr<Player> player) = 0;
+  virtual void onPlayerAdded(boost::shared_ptr<Player> player) = 0;
   
 };
 

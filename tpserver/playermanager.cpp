@@ -60,8 +60,7 @@ Player::Ptr PlayerManager::createNewPlayer(const std::string &name, const std::s
       //Player's name doesn't exist, create the new player.
       rtn.reset( new Player( nextid++, name, pass ) );
 
-      // TODO: HACK - update ruleset!
-      if(Game::getGame()->getRuleset()->onAddPlayer(rtn.get())){
+      if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
         // player can be added
         
         //setup board and add to player
@@ -80,8 +79,7 @@ Player::Ptr PlayerManager::createNewPlayer(const std::string &name, const std::s
         map[rtn->getID()] = (rtn);
         Game::getGame()->getPersistence()->savePlayer(rtn);
         
-      // TODO: HACK - update ruleset!
-        Game::getGame()->getRuleset()->onPlayerAdded(rtn.get());
+        Game::getGame()->getRuleset()->onPlayerAdded(rtn);
         
         //tell the other players about it
         msg.reset( new Message() );
