@@ -24,10 +24,9 @@
 #include <vector>
 
 #include <tpserver/ruleset.h>
+#include <tpserver/designstore.h>
 
 class IGObject;
-class Component;
-class Design;
 class Player;
 class ResourceDescription;
 
@@ -71,13 +70,13 @@ class Rfts : public ::Ruleset {
    IGObject* choosePlayerPlanet() const;
 };
 
-Component* createEngineComponent(char techLevel);
-Component* createBattleComponent(char techLevel);
-Component* createTransportComponent();
+Component::Ptr createEngineComponent(char techLevel);
+Component::Ptr createBattleComponent(char techLevel);
+Component::Ptr createTransportComponent();
 
-Design* createMarkDesign(Player *owner, char level);
-Design* createScoutDesign(Player *owner);
-Design* createTransportDesign(Player *ownder);
+Design::Ptr createMarkDesign(Player *owner, char level);
+Design::Ptr createScoutDesign(Player *owner);
+Design::Ptr createTransportDesign(Player *ownder);
 
 }
 

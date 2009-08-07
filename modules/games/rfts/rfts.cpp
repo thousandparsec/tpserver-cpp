@@ -28,12 +28,7 @@
 #include <tpserver/game.h>
 #include <tpserver/logging.h>
 
-#include <tpserver/property.h>
-#include <tpserver/component.h>
-#include <tpserver/design.h>
 #include <tpserver/designview.h>
-#include <tpserver/category.h>
-#include <tpserver/designstore.h>
 
 #include <tpserver/object.h>
 #include <tpserver/objecttypemanager.h>
@@ -163,7 +158,7 @@ void Rfts::createGame() {
    Game *game = game->getGame();
    
    // create general category
-   Category* cat = new Category();
+   Category::Ptr cat( new Category() );
    cat->setName("Ships");
    cat->setDescription("The ship design & component category");
    game->getDesignStore()->addCategory(cat);
@@ -179,8 +174,8 @@ void Rfts::createGame() {
 }
 
 void Rfts::createProperties() {
-   Property* prop = new Property();
-   DesignStore *ds = Game::getGame()->getDesignStore();
+  Property::Ptr prop( new Property() );
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    // speed   
 
@@ -196,7 +191,7 @@ void Rfts::createProperties() {
    ds->addProperty(prop);
    
    // attack
-   prop = new Property();
+   prop.reset( new Property() );
    prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Attack");
@@ -207,7 +202,7 @@ void Rfts::createProperties() {
    ds->addProperty(prop);
 
    // armour
-   prop = new Property();
+   prop.reset( new Property() );
    prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setRank(0);
    prop->setName("Armour");
@@ -218,7 +213,7 @@ void Rfts::createProperties() {
    ds->addProperty(prop);
 
    // colonise
-   prop = new Property();
+   prop.reset( new Property() );
    prop->addCategoryId(ds->getCategoryByName("Ships"));
    prop->setName("Colonise");
    prop->setDisplayName("Can Colonise");
@@ -230,7 +225,7 @@ void Rfts::createProperties() {
 }
 
 void Rfts::createComponents() {
-   DesignStore *ds = Game::getGame()->getDesignStore();  
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();  
    
    // movement
    ds->addComponent(createEngineComponent('1'));
@@ -560,7 +555,7 @@ void Rfts::onPlayerAdded(Player *player) {
                                         player->getName() + "'s fleet");
 
    // give 'em a scout to start
-   Design* scout = createScoutDesign(player);
+   Design::Ptr  scout = createScoutDesign(player);
    
    dynamic_cast<Fleet*>(fleet->getObjectBehaviour())->addShips( scout->getDesignId(), 1);
    scout->addUnderConstruction(2);
@@ -570,11 +565,11 @@ void Rfts::onPlayerAdded(Player *player) {
    playerview->addOwnedObject(fleet->getID());
 
    // start them out with access to mark1
-   Design* mark1 = createMarkDesign(player, '1');
+   Design::Ptr  mark1 = createMarkDesign(player, '1');
    mydesignids.insert(mark1->getDesignId());
 
    // and a transport (save the transport id for easy searching later)
-   Design *trans = createTransportDesign(player);
+   Design::Ptr trans = createTransportDesign(player);
    PlayerInfo::getPlayerInfo(player->getID()).setTransportId(trans->getDesignId());
    mydesignids.insert(trans->getDesignId());
 
@@ -686,12 +681,12 @@ IGObject* Rfts::choosePlayerPlanet() const {
 
 // helper functions
 
-Component* createEngineComponent(char techLevel) {
+Component::Ptr createEngineComponent(char techLevel) {
 
-   Component* engine = new Component();
+  Component::Ptr engine( new Component() );
    map<uint32_t, string> propList;
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    engine->addCategoryId(ds->getCategoryByName("Ships"));
    engine->setName( string("Engine") + techLevel);
@@ -707,11 +702,11 @@ Component* createEngineComponent(char techLevel) {
    return engine;
 }
 
-Component* createBattleComponent(char techLevel) {
-   Component *battle = new Component();
+Component::Ptr createBattleComponent(char techLevel) {
+  Component::Ptr battle( new Component() );
    map<uint32_t, string> propList;
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    battle->addCategoryId(ds->getCategoryByName("Ships"));
    battle->setName( string("Battle") + techLevel);
@@ -728,11 +723,11 @@ Component* createBattleComponent(char techLevel) {
 }
 
 
-Component* createTransportComponent() {
-   Component *trans = new Component();
+Component::Ptr createTransportComponent() {
+  Component::Ptr trans( new Component() );
    map<uint32_t, string> propList;
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    trans->addCategoryId(ds->getCategoryByName("Ships"));
    trans->setName( "Transport");
@@ -747,9 +742,9 @@ Component* createTransportComponent() {
    return trans;
 }
 
-Design* createMarkDesign(Player *owner, char level) {
-   Design *mark = new Design();
-   DesignStore *ds = Game::getGame()->getDesignStore();
+Design::Ptr  createMarkDesign(Player *owner, char level) {
+   Design::Ptr mark( new Design() );
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
    IdMap componentList;
 
    string name = string("Mark") + level;
@@ -768,11 +763,11 @@ Design* createMarkDesign(Player *owner, char level) {
 }
 
 
-Design* createScoutDesign(Player *owner) {
-   Design* scout = new Design();
+Design::Ptr  createScoutDesign(Player *owner) {
+   Design::Ptr  scout( new Design() );
    IdMap componentList;
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    scout->setCategoryId(ds->getCategoryByName("Ships"));
    scout->setName( "Scout");
@@ -786,11 +781,11 @@ Design* createScoutDesign(Player *owner) {
    return scout;
 }
 
-Design* createTransportDesign(Player *owner) {
-   Design* trans = new Design();
+Design::Ptr  createTransportDesign(Player *owner) {
+   Design::Ptr  trans( new Design() );
    IdMap componentList;
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
    trans->setCategoryId(ds->getCategoryByName("Ships"));
    trans->setName("Transport");

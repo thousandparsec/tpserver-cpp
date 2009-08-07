@@ -90,11 +90,11 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
                            planetData->getOwner())->getPlayerView()->getUsableDesigns();
 
    Game::getGame()->getObjectManager()->doneWithObject(selectedObj->getID());
-   DesignStore* ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
    
    for(set<uint32_t>::iterator i = designs.begin(); i != designs.end(); ++i)
    {
-      Design* design = ds->getDesign(*i);
+     Design::Ptr design = ds->getDesign(*i);
       if(design->getCategoryId() == ds->getCategoryByName("Ships"))
       {
          // limit creation amount by industry and RP
@@ -135,7 +135,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
 
    Game *game = Game::getGame();
    Player* player = game->getPlayerManager()->getPlayer(playerid);
-   DesignStore* ds = game->getDesignStore();
+   DesignStore::Ptr ds = game->getDesignStore();
 
    IGObject *selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
@@ -152,7 +152,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
 
       if(player->getPlayerView()->isUsableDesign(type) && numToBuild >= 0)
       {
-         Design* design = ds->getDesign(type);
+        Design::Ptr design = ds->getDesign(type);
          uint32_t shipCost = Rfts::getProductionInfo().getResourceCost(design->getName());
          
          fleetCostRP += shipCost * numToBuild;

@@ -145,7 +145,7 @@ map<uint32_t, pair<string, uint32_t> > SplitFleet::generateListOptions() {
    
    om->doneWithObject(fleet->getID());
 
-   DesignStore* ds = game->getDesignStore();
+   DesignStore::Ptr ds = game->getDesignStore();
 
    for(map<int, int>::const_iterator i = ships.begin(); i != ships.end(); ++i)
       options[i->first] = pair<string, uint32_t>(ds->getDesign(i->first)->getName(), i->second);

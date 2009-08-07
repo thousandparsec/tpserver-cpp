@@ -216,7 +216,7 @@ const bool Fleet::isDead() const {
 void Fleet::recalcStats() {
    map<pair<int32_t, uint32_t>, uint32_t> shipsref = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
 
-   DesignStore *ds = Game::getGame()->getDesignStore();
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
    speed = armour = attack = 0;
    
    hasTransports = false;
@@ -224,7 +224,7 @@ void Fleet::recalcStats() {
    for(map<pair<int32_t, uint32_t>, uint32_t>::const_iterator i = shipsref.begin();
          i != shipsref.end(); ++i)
    {
-      Design *d = ds->getDesign(i->first.second);
+     Design::Ptr d = ds->getDesign(i->first.second);
       
       if(speed == 0 || d->getPropertyValue(ds->getPropertyByName("Speed")) < speed)
          speed = d->getPropertyValue(ds->getPropertyByName("Speed"));
@@ -363,8 +363,8 @@ void Fleet::destroyShips(double intensity) {
    std::advance(i, rand->getInRange(static_cast<uint32_t>(0), ships.size()));
 
    int shipType = i->first;
-   DesignStore *ds = Game::getGame()->getDesignStore();
-   Design *d = ds->getDesign(shipType);
+   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
+   Design::Ptr d = ds->getDesign(shipType);
 
    
    double shipArmour = d->getPropertyValue(ds->getPropertyByName("Armour"));
