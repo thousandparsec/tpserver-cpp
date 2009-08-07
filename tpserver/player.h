@@ -31,8 +31,6 @@ class Player : public ProtocolObject {
     Player( uint32_t nid, const std::string& nname, const std::string& npass );
     virtual ~Player();
 
-    void setName(const std::string& newname);
-    void setPass(const std::string& newpass);
     void setEmail(const std::string& newemail);
     void setComment(const std::string& newcomm);
     void setIsAlive(bool na);

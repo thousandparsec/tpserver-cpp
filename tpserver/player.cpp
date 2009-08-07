@@ -43,16 +43,6 @@ Player::Player( uint32_t nid, const std::string& nname, const std::string& npass
 Player::~Player(){
 }
 
-void Player::setName(const std::string& newname){
-  Describable::setName( newname );
-  touchModTime();
-}
-
-void Player::setPass(const std::string& newpass){
-    passwd = newpass;
-    touchModTime();
-}
-
 void Player::setEmail(const std::string& newemail){
   email = newemail;
   touchModTime();
