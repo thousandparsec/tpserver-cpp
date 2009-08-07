@@ -171,8 +171,7 @@ bool Game::start(){
     uint32_t numdeadplayers = 0;
     for(IdSet::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
-      Player* player = playermanager->getPlayer(*itcurr);
-      if(!player->isAlive()){
+      if (!playermanager->getPlayer(*itcurr)->isAlive() )  {
         numdeadplayers++;
       }
     }
@@ -308,7 +307,7 @@ void Game::doEndOfTurn(){
     uint32_t numdeadplayers = 0;
     for(IdSet::iterator itcurr = players.begin();
         itcurr != players.end(); ++itcurr){
-      Player* player = playermanager->getPlayer(*itcurr);
+      Player::Ptr player = playermanager->getPlayer(*itcurr);
       player->getPlayerView()->doOnceATurn();
       if(!player->isAlive()){
         numdeadplayers++;

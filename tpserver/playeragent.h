@@ -21,19 +21,19 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/player.h>
 
 class PlayerConnection;
 class Frame;
-class Player;
 
 class PlayerAgent {
 public:
-  PlayerAgent( PlayerConnection* connection, Player* nplayer );
+  PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer );
   ~PlayerAgent();
 
   PlayerConnection *getConnection() const;
   
-  Player* getPlayer() const;
+  Player::Ptr getPlayer() const;
   
   void processIGFrame(Frame * frame);
 
@@ -110,7 +110,7 @@ private:
   PlayerAgent operator=(PlayerAgent & rhs);
 
   PlayerConnection *curConnection;
-  Player* player;
+  Player::Ptr player;
 
   // blocked default constructor
   PlayerAgent() {}

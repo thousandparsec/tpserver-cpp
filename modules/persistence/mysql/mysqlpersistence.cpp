@@ -1288,7 +1288,7 @@ IdSet MysqlPersistence::getResourceIds(){
   }
 }
 
-bool MysqlPersistence::savePlayer(Player* player){
+bool MysqlPersistence::savePlayer(Player::Ptr player){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO player VALUES (" << player->getID() << ", '" << addslashes(player->getName()) << "', '";
@@ -1308,7 +1308,7 @@ bool MysqlPersistence::savePlayer(Player* player){
   }
 }
 
-bool MysqlPersistence::updatePlayer(Player* player){
+bool MysqlPersistence::updatePlayer(Player::Ptr player){
   try {
     std::ostringstream querybuilder;
     querybuilder << "UPDATE player SET name='" << addslashes(player->getName()) << "', password='" << addslashes(player->getPass());
@@ -1344,15 +1344,15 @@ bool MysqlPersistence::updatePlayer(Player* player){
   }
 }
 
-Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
-  Player* player = NULL;
+Player::Ptr MysqlPersistence::retrievePlayer(uint32_t playerid){
+  Player::Ptr player;
   try {
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM player WHERE playerid = " << playerid << ";";
     {
       MysqlQuery query( conn, querybuilder.str() );
 
-      player = new Player( playerid, query->get(1), query->get(2));
+      player.reset( new Player( playerid, query->get(1), query->get(2)) );
       player->setEmail(query->get(3));
       player->setComment(query->get(4));
       player->setBoardId(query->getInt(5));
@@ -1394,7 +1394,6 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
 
     return player;
   } catch( MysqlException& ) { 
-    delete player;
     return NULL; 
   }
 }

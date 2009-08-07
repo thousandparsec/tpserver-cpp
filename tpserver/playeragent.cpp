@@ -54,8 +54,8 @@
 
 #include "playeragent.h"
 
-PlayerAgent::PlayerAgent( PlayerConnection* connection, Player* nplayer )
-  : curConnection ( connection ), player( nplayer ){
+PlayerAgent::PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer )
+  : curConnection ( connection ) {
 }
 
 PlayerAgent::~PlayerAgent(){
@@ -65,7 +65,7 @@ PlayerConnection *PlayerAgent::getConnection() const{
   return curConnection;
 }
 
-Player *PlayerAgent::getPlayer() const{
+Player::Ptr PlayerAgent::getPlayer() const{
   return player;
 }
 
@@ -866,7 +866,7 @@ void PlayerAgent::processGetPlayer(Frame* frame){
       curConnection->send(frame,player);
     }else{
       if(pnum != -1){
-        Player* p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
+        Player::Ptr p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
         if(p != NULL){
           curConnection->send(frame,p);
         }else{
@@ -904,7 +904,7 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
   IdModList modlist;
   for(IdSet::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
-    const Player * pl = pm->getPlayer(*itcurr);
+    const Player::Ptr pl = pm->getPlayer(*itcurr);
     if(fromtime == UINT64_NEG_ONE || pl->getModTime() > fromtime){
       modlist[*itcurr] = pl->getModTime();
     }

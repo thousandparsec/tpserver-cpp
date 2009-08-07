@@ -140,7 +140,7 @@ bool DesignStore::addDesign(Design::Ptr d){
 
   //check components all come from this category
   IdMap cl = d->getComponents();
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
+  Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView::Ptr playerview = player->getPlayerView();
   for(IdMap::iterator itcurr = cl.begin(); 
       itcurr != cl.end(); ++itcurr){
@@ -170,7 +170,7 @@ bool DesignStore::modifyDesign(Design::Ptr d){
   Design::Ptr current = designs[d->getId()];
   if(!current || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
-  Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
+  Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView::Ptr playerview = player->getPlayerView();
   playerview->removeUsableDesign(d->getId());
 

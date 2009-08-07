@@ -50,17 +50,18 @@ void PlayerManager::init(){
     clear(persist->getPlayerIds());
 }
 
-Player* PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
-    Player *rtn = findPlayer(name);
+Player::Ptr PlayerManager::createNewPlayer(const std::string &name, const std::string &pass){
+  Player::Ptr rtn = findPlayer(name);
 
-    if(rtn != NULL){
+    if(rtn){
         //Player's name exists already
-        rtn = NULL;
+        rtn.reset();
     }else{
       //Player's name doesn't exist, create the new player.
-      rtn = new Player( nextid++, name, pass );
+      rtn.reset( new Player( nextid++, name, pass ) );
 
-      if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
+      // TODO: HACK - update ruleset!
+      if(Game::getGame()->getRuleset()->onAddPlayer(rtn.get())){
         // player can be added
         
         //setup board and add to player
@@ -79,7 +80,8 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         map[rtn->getID()] = (rtn);
         Game::getGame()->getPersistence()->savePlayer(rtn);
         
-        Game::getGame()->getRuleset()->onPlayerAdded(rtn);
+      // TODO: HACK - update ruleset!
+        Game::getGame()->getRuleset()->onPlayerAdded(rtn.get());
         
         //tell the other players about it
         msg.reset( new Message() );
@@ -91,12 +93,12 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         
         for(Map::const_iterator itid = map.begin();
                 itid != map.end(); ++itid){
-            Player* op = itid->second;
-            if(op == NULL){
+          Player::Ptr op = itid->second;
+            if(!op){
                 op = Game::getGame()->getPersistence()->retrievePlayer(itid->first);
                 map[itid->first] = op;
             }
-            if(op != NULL && op != rtn){
+            if(op && op != rtn){
                 op->postToBoard(Message::Ptr( new Message( *msg ) ));
                 //to update the difflist, etc
                 op->getPlayerView()->doOnceATurn();
@@ -108,48 +110,47 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
 
       }else{
           // player can not be added
-          delete rtn;
-          rtn = NULL;
           nextid--;
+          rtn.reset();
       }
     
     }
     return rtn;
 }
 
-Player* PlayerManager::getPlayer(uint32_t id){
-    Player* rtn = NULL;
+Player::Ptr PlayerManager::getPlayer(uint32_t id){
+  Player::Ptr rtn;
     Map::iterator pl = map.find(id);
     if(pl != map.end()){
         rtn = (*pl).second;
     }else{
         //player does not exist
-        return NULL;
+        return Player::Ptr();
     }
-    if(rtn == NULL){
+    if(!rtn){
         rtn = Game::getGame()->getPersistence()->retrievePlayer(id);
-        if(rtn != NULL){
+        if(rtn){
           map[id] = rtn;
         }
     }
     return rtn;
 }
 
-Player* PlayerManager::findPlayer(const std::string &name){
+Player::Ptr PlayerManager::findPlayer(const std::string &name){
     Logger::getLogger()->debug("finding player");
 
     //look for current/known players
-    Player *rtn = NULL;
+    Player::Ptr rtn;
 
     Map::iterator itcurr;
 
     for (itcurr = map.begin(); itcurr != map.end(); ++itcurr) {
-        Player* p = (*itcurr).second;
-        if(p == NULL){
+      Player::Ptr p = (*itcurr).second;
+        if(!p){
             p = Game::getGame()->getPersistence()->retrievePlayer(itcurr->first);
             itcurr->second = p;
         }
-        if(p != NULL){
+        if(p){
             std::string itname = p->getName();
             if (name == itname) {
                 rtn = p;

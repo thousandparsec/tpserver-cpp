@@ -171,16 +171,16 @@ IdSet Persistence::getResourceIds(){
     return IdSet();
 }
 
-bool Persistence::savePlayer(Player* player){
+bool Persistence::savePlayer(Player::Ptr player){
     return false;
 }
 
-bool Persistence::updatePlayer(Player* player){
+bool Persistence::updatePlayer(Player::Ptr player){
     return false;
 }
 
-Player* Persistence::retrievePlayer(uint32_t playerid){
-    return NULL;
+Player::Ptr Persistence::retrievePlayer(uint32_t playerid){
+    return Player::Ptr();
 }
 
 uint32_t Persistence::getMaxPlayerId(){
@@ -310,7 +310,7 @@ bool Persistence::saveProtocolObject(ProtocolObject* object)
  //   case ft03_Design    : return saveDesign( dynamic_cast<Design*>(object) );
 //    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
 //    case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
-    case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
+//    case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
 //    case ft02_ResDesc    : return saveResource( dynamic_cast<Resource*>(object) );
     case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
     default : return false;
@@ -324,7 +324,7 @@ ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t 
 //    case ft03_Design    : return retrieveDesign( id );
 //    case ft03_Property  : return retrieveProperty( id );
 //    case ft03_Category  : return retrieveCategory( id );
-    case ft03_Player    : return retrievePlayer( id );
+//    case ft03_Player    : return retrievePlayer( id );
 //    case ft02_ResDesc  : return retrieveResource( id );
     case ft02_Object    : return retrieveObject( id );
     default : return NULL;

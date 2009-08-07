@@ -83,7 +83,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
     username = username.substr(0, username.find('@'));
     if (username.length() > 0 && password.length() > 0) {
       INFO("PlayerConnection : Creating new player");
-      Player* player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
+      Player::Ptr player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
       if(player != NULL){
         // also email address and comment strings
         player->setEmail(frame->unpackStdString());
@@ -112,13 +112,13 @@ void PlayerConnection::processLoginFrame(Frame* frame)
 
   // Get authentication data
   if ( getAuth( frame, username, password ) ) {
-    Player* player = Game::getGame()->getPlayerManager()->findPlayer(username);
+    Player::Ptr player = Game::getGame()->getPlayerManager()->findPlayer(username);
 
     // if player exists
-    if(player != NULL){
+    if (player) {
       if(player->getPass() != password){
         // password doesn't match, fail
-        player = NULL;
+        player.reset();
       }
     } else {
       //Player's name doesn't exist
@@ -126,13 +126,13 @@ void PlayerConnection::processLoginFrame(Frame* frame)
           Settings::getSettings()->get("add_players") == "yes") {
         INFO("PlayerConnection : Creating new player automatically");
         player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
-        if( player == NULL ) {
+        if( !player ) {
           sendFail(frame, fec_PermissionDenied, "Cannot create new player");
           return;
         }
       }
     }
-    if(player != NULL){
+    if (player) {
       sendOK(frame, "Welcome");
       Logger::getLogger()->info("Login ok by %s", username.c_str());
       playeragent = new PlayerAgent(this,player);

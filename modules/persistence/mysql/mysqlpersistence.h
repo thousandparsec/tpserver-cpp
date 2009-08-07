@@ -88,9 +88,9 @@ public:
     virtual uint32_t getMaxResourceId();
     virtual IdSet getResourceIds();
 
-    virtual bool savePlayer(Player* player);
-    virtual bool updatePlayer(Player* player);
-    virtual Player* retrievePlayer(uint32_t playerid);
+    virtual bool savePlayer(boost::shared_ptr<Player> player);
+    virtual bool updatePlayer(boost::shared_ptr<Player> player);
+    virtual boost::shared_ptr<Player> retrievePlayer(uint32_t playerid);
     virtual uint32_t getMaxPlayerId();
     virtual IdSet getPlayerIds();
 

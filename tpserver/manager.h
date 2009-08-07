@@ -21,11 +21,12 @@
  */
 
 #include <tpserver/common.h>
+#include <boost/shared_ptr.hpp>
 
 template< class ManagedObject >
 class Manager {
   public:
-    typedef std::map<uint32_t, ManagedObject*> Map;
+    typedef std::map<uint32_t, boost::shared_ptr<ManagedObject> > Map;
 
     IdSet getAllIds(){
       IdSet all;
@@ -43,7 +44,7 @@ class Manager {
   protected:
     void clear( const IdSet& idset ) {
       for(IdSet::iterator it = idset.begin(); it != idset.end(); ++it){
-        map[*it] = NULL;
+        map[*it] = boost::shared_ptr<ManagedObject>();
       }
     }
 
