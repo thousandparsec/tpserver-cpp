@@ -221,7 +221,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    ResourceManager* resman = game->getResourceManager();
+    ResourceManager::Ptr resman = game->getResourceManager();
     IGObject*      ac = game->getObjectManager()->createNewObject();
     IGObject*      acprime = game->getObjectManager()->createNewObject();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
@@ -274,7 +274,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    ResourceManager* resman = game->getResourceManager();
+    ResourceManager::Ptr resman = game->getResourceManager();
     IGObject*      sirius = game->getObjectManager()->createNewObject();
     IGObject*      s1 = game->getObjectManager()->createNewObject();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
@@ -367,7 +367,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
                                                              nplanets * -35000ll,
                                                              0ll));
 
-        ResourceManager* resman = game->getResourceManager();
+        ResourceManager::Ptr resman = game->getResourceManager();
         std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
         ress[resman->getResourceDescription("Home Planet")->getResourceType()] =  std::pair<uint32_t, uint32_t>(1, 0);
         ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
@@ -403,7 +403,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    ResourceManager* resman = game->getResourceManager();
+    ResourceManager::Ptr resman = game->getResourceManager();
     IGObject*      sol = game->getObjectManager()->createNewObject();
     IGObject*      earth = game->getObjectManager()->createNewObject();
     IGObject*      venus = game->getObjectManager()->createNewObject();
@@ -511,29 +511,14 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
 void MTSec::createResources(){
   Logger::getLogger()->debug( "Enter MTSec::createResources");
 
-  ResourceManager* resman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
   
-  ResourceDescription* res = new ResourceDescription();
-  res->setNameSingular("Ship part");
-  res->setNamePlural("Ship parts");
-  res->setUnitSingular("part");
-  res->setUnitPlural("parts");
-  res->setDescription("Ships parts that can be used to create ships");
-  res->setMass(0);
-  res->setVolume(0);
-  resman->addResourceDescription(res);
+  resman->addResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships");
+  resman->addResourceDescription( "Home Planet", "unit", "The home planet for a race.");
   
-  res = new ResourceDescription();
-  res->setNameSingular("Home Planet");
-  res->setNamePlural("Home Planets");
-  res->setUnitSingular("unit");
-  res->setUnitPlural("units");
-  res->setDescription("The home planet for a race.");
-  res->setMass(0);
-  res->setVolume(0);
-  resman->addResourceDescription(res);
-  
-  res = new ResourceDescription();
+  ResourceDescription::Ptr res;
+
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Uranium");
   res->setNamePlural("Uranium");
   res->setUnitSingular("kt");
@@ -543,7 +528,7 @@ void MTSec::createResources(){
   res->setVolume(4);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Thorium");
   res->setNamePlural("Thorium");
   res->setUnitSingular("kt");
@@ -553,7 +538,7 @@ void MTSec::createResources(){
   res->setVolume(4);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Cerium");
   res->setNamePlural("Cerium");
   res->setUnitSingular("kt");
@@ -563,7 +548,7 @@ void MTSec::createResources(){
   res->setVolume(3);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Enriched Uranium");
   res->setNamePlural("Enriched Uranium");
   res->setUnitSingular("kt");
@@ -573,7 +558,7 @@ void MTSec::createResources(){
   res->setVolume(2);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Massivium");
   res->setNamePlural("Massivium");
   res->setUnitSingular("kt");
@@ -583,7 +568,7 @@ void MTSec::createResources(){
   res->setVolume(12);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Antiparticle");
   res->setNamePlural("Antiparticle");
   res->setUnitSingular("kt");
@@ -593,7 +578,7 @@ void MTSec::createResources(){
   res->setVolume(1);
   resman->addResourceDescription(res);
   
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Antimatter");
   res->setNamePlural("Antimatter");
   res->setUnitSingular("kt");
@@ -855,7 +840,7 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     theplanet->setOwner(player->getID());
     theplanet->setPosition( dynamic_cast<EmptyObject*>(star->getObjectBehaviour())->getPosition() + offset);
 
-    ResourceManager* resman = game->getResourceManager();
+    ResourceManager::Ptr resman = game->getResourceManager();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
     ress[resman->getResourceDescription("Home Planet")->getResourceType()] =  std::pair<uint32_t, uint32_t>(1, 0);
     ress[resman->getResourceDescription("Uranium")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(10, 100));
