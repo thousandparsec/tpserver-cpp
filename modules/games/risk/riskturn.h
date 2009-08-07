@@ -24,6 +24,7 @@
 #include <set>
  
 #include <tpserver/turnprocess.h>
+#include <boost/shared_ptr.hpp>
 namespace RiskRuleset{
 
 class RiskTurn : public TurnProcess{
@@ -34,7 +35,7 @@ public:
    virtual void doTurn();
    // static void setPlayerVisibleObjects();
    
-   Player* getWinner();
+   boost::shared_ptr<Player> getWinner();
 private:
    void processOrdersOfGivenType(std::string type = "");
    void calculateReinforcements();

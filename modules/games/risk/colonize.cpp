@@ -303,7 +303,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
 void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids, 
       pair<IGObject*,uint32_t> winner) {
          
-   PlayerManager* pm = Game::getGame()->getPlayerManager();
+  PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
    Planet* target = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(target);
    
@@ -314,7 +314,7 @@ void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids,
    for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); i++ ) {
       Planet* ownerPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(ownerPlanet);
-      Player* player = pm->getPlayer(ownerPlanet->getOwner());
+      Player::Ptr player = pm->getPlayer(ownerPlanet->getOwner());
       assert(player);
       
       //Populate message's subject and body

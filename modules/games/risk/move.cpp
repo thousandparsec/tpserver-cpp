@@ -125,7 +125,7 @@ bool Move::doOrder(IGObject* obj) {
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
-   PlayerManager* pm = game->getPlayerManager();
+   PlayerManager::Ptr pm = game->getPlayerManager();
    Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(origin);
 

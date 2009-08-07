@@ -64,7 +64,7 @@ RiskTurn::~RiskTurn(){
 void RiskTurn::doTurn(){
    Game* game = Game::getGame();
    ObjectManager* objM = game->getObjectManager();
-   PlayerManager* pm = game->getPlayerManager();
+   PlayerManager::Ptr pm = game->getPlayerManager();
    set<uint32_t> objectsIds = objM->getAllIds();
 
    processOrdersOfGivenType("Colonize");
@@ -88,7 +88,7 @@ void RiskTurn::doTurn(){
 
    objM->clearRemovedObjects();
    
-   Player* winner = getWinner();
+   Player::Ptr winner = getWinner();
    if(winner != NULL)
    {
       set<uint32_t> players = pm->getAllIds();
@@ -117,7 +117,7 @@ void RiskTurn::calculateReinforcements() {
    
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
-   PlayerManager* pm = game->getPlayerManager();
+   PlayerManager::Ptr pm = game->getPlayerManager();
    Risk* risk = dynamic_cast<Risk*>(game->getRuleset());
 
    set<uint32_t> objectsIds = om->getAllIds();
@@ -287,7 +287,7 @@ void RiskTurn::processOrdersOfGivenType(string type) {
 
 void setPlayerVisibleObjects() {
    
-   PlayerManager *pm = Game::getGame()->getPlayerManager();
+  PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
    
    set<uint32_t> players = pm->getAllIds();
    
@@ -297,13 +297,13 @@ void setPlayerVisibleObjects() {
    }
 }
 
-Player* RiskTurn::getWinner() {
+Player::Ptr RiskTurn::getWinner() {
    Logger::getLogger()->debug("Looking for a winner");
    Game* game = Game::getGame();
-   PlayerManager* pm = game->getPlayerManager();
+   PlayerManager::Ptr pm = game->getPlayerManager();
    ObjectManager* objM = game->getObjectManager();
    
-   Player *winner = NULL;
+   Player::Ptr winner;
 
    //Get all objects from object manager
    set<uint32_t> objectsIds = objM->getAllIds();

@@ -310,7 +310,7 @@ void Risk::setDefaults() {
       settings->set("risk_map","risk-defaultmap.svg");
 }
 
-bool Risk::onAddPlayer(Player* player){
+bool Risk::onAddPlayer(Player::Ptr player){
       Logger::getLogger()->debug("Risk onAddPlayer"); 
       Game* game = Game::getGame();
 
@@ -372,7 +372,7 @@ bool Risk::isBoardClaimed() const{
    return result;
 }
 
-void Risk::onPlayerAdded(Player* player){
+void Risk::onPlayerAdded(Player::Ptr player){
    Logger::getLogger()->debug("Risk onPlayerAdded");
    Settings* settings = Settings::getSettings();
 
@@ -407,7 +407,7 @@ void Risk::onPlayerAdded(Player* player){
    }
 }
 
-void Risk::randomlyAssignPlanets(Player* player) {
+void Risk::randomlyAssignPlanets(Player::Ptr player) {
    Logger::getLogger()->debug("Starting fractional random planet assignment for player %d", player->getID());
 
    //get applicable settings
@@ -419,14 +419,14 @@ void Risk::randomlyAssignPlanets(Player* player) {
    randomlyPickPlanets(player,to_be_asgned);
 }
 
-void Risk::randomlyGiveOnePlanet(Player* player) {
+void Risk::randomlyGiveOnePlanet(Player::Ptr player) {
    Logger::getLogger()->debug("Starting single random planet assignment for player %d", player->getID());
 
    //Randomly give the player planet
    randomlyPickPlanets(player,1);
 }
 
-void Risk::randomlyPickPlanets(Player* player, uint32_t numPlanets) {
+void Risk::randomlyPickPlanets(Player::Ptr player, uint32_t numPlanets) {
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
    

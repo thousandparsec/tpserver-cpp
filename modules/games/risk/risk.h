@@ -25,6 +25,7 @@
 #include <graph.h>
 #include <vector>
 #include <tpserver/vector3d.h>
+#include <tpserver/player.h>
 
 class IGObject;
 class Random;
@@ -41,8 +42,8 @@ class Risk : public Ruleset {
       void initGame(); 
       void createGame(); 
       void startGame(); 
-      bool onAddPlayer(Player* player); 
-      void onPlayerAdded(Player* player);
+      bool onAddPlayer(Player::Ptr player); 
+      void onPlayerAdded(Player::Ptr player);
       
       Graph* getGraph();
       uint32_t getPlayerReinforcements(uint32_t owner);
@@ -65,9 +66,9 @@ class Risk : public Ruleset {
       
       void setDefaults();
       
-      void randomlyAssignPlanets(Player* player);
-      void randomlyGiveOnePlanet(Player* player);
-      void randomlyPickPlanets(Player* player, uint32_t numPlanets);
+      void randomlyAssignPlanets(Player::Ptr player);
+      void randomlyGiveOnePlanet(Player::Ptr player);
+      void randomlyPickPlanets(Player::Ptr player, uint32_t numPlanets);
       
       //The number of planets to be on the board
       uint32_t num_planets;
