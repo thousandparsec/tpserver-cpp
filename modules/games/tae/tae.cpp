@@ -36,14 +36,10 @@
 #include <tpserver/player.h>
 #include <tpserver/playerview.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/designview.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
-#include <tpserver/category.h>
-#include <tpserver/property.h>
-#include <tpserver/component.h>
 #include <tpserver/settings.h>
 
 //tae includes
@@ -261,11 +257,11 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
 }
 
 void taeRuleset::setupResources() {
-    ResourceManager* rman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr rman = Game::getGame()->getResourceManager();
     //Setup Inhabitable resource
     if(rman->getResourceDescription(1) == NULL){
         Logger::getLogger()->info("Setting up Resource: Uninhabitable");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Uninhabitable planet");
         res->setNamePlural("Uninhabitable planets");
         res->setUnitSingular("unit");
@@ -278,7 +274,7 @@ void taeRuleset::setupResources() {
     //Setup Destroyed resource
     if(rman->getResourceDescription(2) == NULL){
         Logger::getLogger()->info("Setting up Resource: Destroyed");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Destroyed Star System");
         res->setNamePlural("Destroyed Star Systems");
         res->setUnitSingular("unit");
@@ -291,7 +287,7 @@ void taeRuleset::setupResources() {
     //Setup Artifact resource
     if(rman->getResourceDescription(3) == NULL){
         Logger::getLogger()->info("Setting up Resource: Artifact");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Alien Artifact");
         res->setNamePlural("Alien Artifacts");
         res->setUnitSingular("unit");
@@ -304,7 +300,7 @@ void taeRuleset::setupResources() {
     //Setup Money resource
     if(rman->getResourceDescription(4) == NULL){
         Logger::getLogger()->info("Setting up Resource: Money");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Monetary Asset");
         res->setNamePlural("Monetary Assets");
         res->setUnitSingular("unit");
@@ -317,7 +313,7 @@ void taeRuleset::setupResources() {
     //Setup Technology resource
     if(rman->getResourceDescription(5) == NULL){
         Logger::getLogger()->info("Setting up Resource: Technology");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Technological Advancement");
         res->setNamePlural("Technological Advancements");
         res->setUnitSingular("unit");
@@ -330,7 +326,7 @@ void taeRuleset::setupResources() {
     //Setup People resource
     if(rman->getResourceDescription(6) == NULL){
         Logger::getLogger()->info("Setting up Resource: People");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Team of People");
         res->setNamePlural("Teams of People");
         res->setUnitSingular("unit");
@@ -343,7 +339,7 @@ void taeRuleset::setupResources() {
     //Setup Raw Material resource
     if(rman->getResourceDescription(7) == NULL){
         Logger::getLogger()->info("Setting up Resource: Raw Materials");
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res( new ResourceDescription() );
         res->setNameSingular("Raw Material");
         res->setNamePlural("Raw Materials");
         res->setUnitSingular("unit");
