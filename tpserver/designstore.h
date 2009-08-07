@@ -21,6 +21,7 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/component.h>
 
 class Category;
 class Design;
@@ -36,7 +37,7 @@ class DesignStore{
 
   Category*  getCategory(uint32_t id);
   Design*    getDesign(uint32_t id);
-  Component* getComponent(uint32_t id);
+  Component::Ptr getComponent(uint32_t id);
   Property*  getProperty(uint32_t id);
 
   IdSet getCategoryIds() const;
@@ -50,7 +51,7 @@ class DesignStore{
   void designCountsUpdated(Design* d);
 
   void addCategory(Category* c);
-  void addComponent(Component* c);
+  void addComponent(Component::Ptr c);
   void addProperty(Property* p);
   
   uint32_t getCategoryByName(const std::string& name);
@@ -69,7 +70,7 @@ class DesignStore{
   std::map<uint32_t, Design*> designs;
   std::map<uint32_t, Category*> categories;
   std::map<std::string,uint32_t>  categoryIndex;
-  std::map<uint32_t, Component*> components;
+  std::map<uint32_t, Component::Ptr> components;
   std::map<std::string, uint32_t> componentIndex;
   std::map<uint32_t, Property*> properties;
   std::map<std::string,uint32_t>  propertyIndex;

@@ -43,7 +43,7 @@ ComponentView::~ComponentView(){
 
 void ComponentView::pack(Frame* frame) const{
   
-  Component* comp = Game::getGame()->getDesignStore()->getComponent(id);
+  Component::Ptr comp = Game::getGame()->getDesignStore()->getComponent(id);
   
   frame->setType(ft03_Component);
   frame->packInt(id);

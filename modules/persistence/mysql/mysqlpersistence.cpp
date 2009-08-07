@@ -1596,7 +1596,7 @@ IdSet MysqlPersistence::getDesignIds(){
   }
 }
 
-bool MysqlPersistence::saveComponent(Component* comp){
+bool MysqlPersistence::saveComponent(Component::Ptr comp){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO component VALUES (" << comp->getComponentId();
@@ -1624,15 +1624,15 @@ bool MysqlPersistence::saveComponent(Component* comp){
   }
 }
 
-Component* MysqlPersistence::retrieveComponent(uint32_t compid){
-  Component* comp = NULL;
+Component::Ptr MysqlPersistence::retrieveComponent(uint32_t compid){
+  Component comp;
   try {
     std::ostringstream querybuilder;
     {
       querybuilder << "SELECT * FROM component WHERE componentid = " << compid << ";";
       MysqlQuery query( conn, querybuilder.str() );
 
-      comp = new Component();
+      comp.reset( new Component() );
       comp->setComponentId(compid);
       comp->setName(query->get(1));
       comp->setDescription(query->get(2));
@@ -1657,8 +1657,7 @@ Component* MysqlPersistence::retrieveComponent(uint32_t compid){
     }
     return comp;
   } catch( MysqlException& ) {
-    delete comp;
-    return NULL; 
+    return Component::Ptr; 
   }
 }
 

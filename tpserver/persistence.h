@@ -106,8 +106,8 @@ public:
     virtual uint32_t getMaxDesignId();
     virtual IdSet getDesignIds();
 
-    virtual bool saveComponent(Component* comp);
-    virtual Component* retrieveComponent(uint32_t compid);
+    virtual bool saveComponent(boost::shared_ptr<Component> comp);
+    virtual boost::shared_ptr<Component> retrieveComponent(uint32_t compid);
     virtual uint32_t getMaxComponentId();
     virtual IdSet getComponentIds();
 

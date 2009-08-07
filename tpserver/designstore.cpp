@@ -42,7 +42,6 @@ DesignStore::DesignStore(){
 
 DesignStore::~DesignStore(){
   delete_map_all( designs );
-  delete_map_all( components );
   delete_map_all( properties );
   delete_map_all( categories );
 }
@@ -57,7 +56,7 @@ void DesignStore::init(){
  
   fill_by_set( designs,    persistence->getDesignIds(), NULL );
   fill_by_set( categories, persistence->getCategoryIds(), NULL );
-  fill_by_set( components, persistence->getComponentIds(), NULL );
+  fill_by_set( components, persistence->getComponentIds(), Component::Ptr() );
   
   ids = persistence->getPropertyIds();
   for(IdSet::iterator itcurr = ids.begin(); itcurr != ids.end(); ++itcurr){
@@ -92,12 +91,12 @@ Design* DesignStore::getDesign(uint32_t id){
   return design;
 }
 
-Component* DesignStore::getComponent(uint32_t id){
-  std::map<uint32_t, Component*>::iterator pos = components.find(id);
-  Component* comp = NULL;
+Component::Ptr DesignStore::getComponent(uint32_t id){
+  std::map<uint32_t, Component::Ptr>::iterator pos = components.find(id);
+  Component::Ptr comp;
   if(pos != components.end()){
     comp = pos->second;
-    if(comp == NULL){
+    if (!comp) {
       comp = Game::getGame()->getPersistence()->retrieveComponent(id);
       pos->second = comp;
     }
@@ -154,11 +153,10 @@ bool DesignStore::addDesign(Design* d){
       itcurr != cl.end(); ++itcurr){
     if(!(playerview->isUsableComponent(itcurr->first)))
       return false;
-    std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);
+    std::map<uint32_t, Component::Ptr>::iterator itcomp = components.find(itcurr->first);
     if(itcomp == components.end())
       return false;
-    Component* comp = getComponent(itcurr->first);
-    comp->setInUse();
+    getComponent(itcurr->first)->setInUse();
   }
   d->eval();
   designs[d->getId()] = d;
@@ -185,13 +183,12 @@ bool DesignStore::modifyDesign(Design* d){
 
   IdMap cl = current->getComponents();
   for(IdMap::iterator itcurr = cl.begin(); itcurr != cl.end(); ++itcurr){
-    Component* comp = components[itcurr->first];
-    comp->setInUse(false);
+    components[itcurr->first]->setInUse(false);
   }
   for(IdMap::iterator itcurr = cl.begin(); itcurr != cl.end(); ++itcurr){
     if(!(playerview->isUsableComponent(itcurr->first)))
       return false;
-    std::map<uint32_t, Component*>::iterator itcomp = components.find(itcurr->first);
+    std::map<uint32_t, Component::Ptr>::iterator itcomp = components.find(itcurr->first);
     if(itcomp == components.end())
       return false;
     itcomp->second->setInUse();
@@ -220,7 +217,7 @@ void DesignStore::designCountsUpdated(Design* d){
   Game::getGame()->getPersistence()->updateDesign(d);
 }
 
-void DesignStore::addComponent(Component* c){
+void DesignStore::addComponent(Component::Ptr c){
   c->setComponentId(next_componentid++);
   components[c->getId()] = c;
   componentIndex[c->getName()] = c->getId();
