@@ -23,59 +23,56 @@
 #include <tpserver/common.h>
 #include <tpserver/component.h>
 #include <tpserver/property.h>
-
-class Category;
-class Design;
-class Component;
-class Property;
+#include <tpserver/category.h>
+#include <tpserver/design.h>
 
 class DesignStore{
- public:
-  DesignStore();
-  ~DesignStore();
+  public:
+    DesignStore();
+    ~DesignStore();
 
     void init();
 
-  Category*  getCategory(uint32_t id);
-  Design*    getDesign(uint32_t id);
-  Component::Ptr getComponent(uint32_t id);
-  Property::Ptr  getProperty(uint32_t id);
+    Category::Ptr  getCategory(uint32_t id);
+    Design*    getDesign(uint32_t id);
+    Component::Ptr getComponent(uint32_t id);
+    Property::Ptr  getProperty(uint32_t id);
 
-  IdSet getCategoryIds() const;
-  IdSet getDesignIds() const;
-  IdSet getComponentIds() const;
-  IdSet getPropertyIds() const;
- 
+    IdSet getCategoryIds() const;
+    IdSet getDesignIds() const;
+    IdSet getComponentIds() const;
+    IdSet getPropertyIds() const;
 
-  bool addDesign(Design* d);
-  bool modifyDesign(Design* d);
-  void designCountsUpdated(Design* d);
 
-  void addCategory(Category* c);
-  void addComponent(Component::Ptr c);
-  void addProperty(Property::Ptr p);
-  
-  uint32_t getCategoryByName(const std::string& name);
-  uint32_t getComponentByName(const std::string& name);
-  uint32_t getPropertyByName(const std::string& name);
+    bool addDesign(Design* d);
+    bool modifyDesign(Design* d);
+    void designCountsUpdated(Design* d);
 
-  uint32_t getMaxDesignId() const;
-  uint32_t getMaxComponentId() const;
-  uint32_t getMaxPropertyId() const;
-  
- protected:
-  uint32_t next_designid;
-  uint32_t next_componentid;
-  uint32_t next_propertyid;
-  uint32_t next_categoryid;
-  std::map<uint32_t, Design*> designs;
-  std::map<uint32_t, Category*> categories;
-  std::map<std::string,uint32_t>  categoryIndex;
-  std::map<uint32_t, Component::Ptr> components;
-  std::map<std::string, uint32_t> componentIndex;
-  std::map<uint32_t, Property::Ptr> properties;
-  std::map<std::string,uint32_t>  propertyIndex;
-  
+    void addCategory(Category::Ptr c);
+    void addComponent(Component::Ptr c);
+    void addProperty(Property::Ptr p);
+
+    uint32_t getCategoryByName(const std::string& name);
+    uint32_t getComponentByName(const std::string& name);
+    uint32_t getPropertyByName(const std::string& name);
+
+    uint32_t getMaxDesignId() const;
+    uint32_t getMaxComponentId() const;
+    uint32_t getMaxPropertyId() const;
+
+  protected:
+    uint32_t next_designid;
+    uint32_t next_componentid;
+    uint32_t next_propertyid;
+    uint32_t next_categoryid;
+    std::map<uint32_t, Design*> designs;
+    std::map<uint32_t, Category::Ptr> categories;
+    std::map<std::string,uint32_t>  categoryIndex;
+    std::map<uint32_t, Component::Ptr> components;
+    std::map<std::string, uint32_t> componentIndex;
+    std::map<uint32_t, Property::Ptr> properties;
+    std::map<std::string,uint32_t>  propertyIndex;
+
 };
 
 #endif

@@ -19,11 +19,7 @@
  */
 
 
-#include "category.h"
-#include "design.h"
 #include "designview.h"
-#include "component.h"
-#include "property.h"
 #include "game.h"
 #include "player.h"
 #include "playerview.h"
@@ -42,7 +38,6 @@ DesignStore::DesignStore(){
 
 DesignStore::~DesignStore(){
   delete_map_all( designs );
-  delete_map_all( categories );
 }
 
 void DesignStore::init(){
@@ -54,7 +49,7 @@ void DesignStore::init(){
   IdSet ids = persistence->getCategoryIds();
  
   fill_by_set( designs,    persistence->getDesignIds(), NULL );
-  fill_by_set( categories, persistence->getCategoryIds(), NULL );
+  fill_by_set( categories, persistence->getCategoryIds(), Category::Ptr() );
   fill_by_set( components, persistence->getComponentIds(), Component::Ptr() );
   
   ids = persistence->getPropertyIds();
@@ -64,12 +59,12 @@ void DesignStore::init(){
   }
 }
 
-Category* DesignStore::getCategory(uint32_t id){
-  std::map<uint32_t, Category*>::iterator pos = categories.find(id);
-  Category* cat = NULL;
+Category::Ptr DesignStore::getCategory(uint32_t id){
+  std::map<uint32_t, Category::Ptr>::iterator pos = categories.find(id);
+  Category::Ptr cat;
   if(pos != categories.end()){
     cat = pos->second;
-    if(cat == NULL){
+    if (!cat) {
       cat = Game::getGame()->getPersistence()->retrieveCategory(id);
       pos->second = cat;
     }
@@ -134,7 +129,7 @@ IdSet DesignStore::getPropertyIds() const{
   return generate_key_set( properties );
 }
 
-void DesignStore::addCategory(Category* c){
+void DesignStore::addCategory(Category::Ptr c){
   c->setCategoryId(next_categoryid++);
   categories[c->getId()] = c;
   categoryIndex[c->getName()] = c->getId();

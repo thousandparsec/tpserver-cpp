@@ -921,7 +921,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
 
   for(int i = 0; i < numcats; i++){
     int catnum = frame->unpackInt();
-    Category* cat = Game::getGame()->getDesignStore()->getCategory(catnum);
+    Category::Ptr cat = Game::getGame()->getDesignStore()->getCategory(catnum);
     if(cat == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No Such Category");
     }else{
@@ -956,7 +956,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   IdModList modlist;
   for(IdSet::iterator itcurr = cids.begin();
       itcurr != cids.end(); ++itcurr){
-    Category * cat = ds->getCategory(*itcurr);
+    Category::Ptr cat = ds->getCategory(*itcurr);
     if(fromtime == UINT64_NEG_ONE || cat->getModTime() > fromtime){
       modlist[*itcurr] = cat->getModTime();
     }

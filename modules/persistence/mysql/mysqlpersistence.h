@@ -94,8 +94,8 @@ public:
     virtual uint32_t getMaxPlayerId();
     virtual IdSet getPlayerIds();
 
-    virtual bool saveCategory(Category* cat);
-    virtual Category* retrieveCategory(uint32_t catid);
+    virtual bool saveCategory(boost::shared_ptr<Category> cat);
+    virtual boost::shared_ptr<Category> retrieveCategory(uint32_t catid);
     virtual uint32_t getMaxCategoryId();
     virtual IdSet getCategoryIds();
 

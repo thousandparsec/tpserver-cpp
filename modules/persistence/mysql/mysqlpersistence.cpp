@@ -1419,7 +1419,7 @@ IdSet MysqlPersistence::getPlayerIds(){
   }
 }
 
-bool MysqlPersistence::saveCategory(Category* cat){
+bool MysqlPersistence::saveCategory(Category::Ptr cat){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO category VALUES (" << cat->getCategoryId() << ", '" << cat->getName() << "', '";
@@ -1431,21 +1431,19 @@ bool MysqlPersistence::saveCategory(Category* cat){
   }
 }
 
-Category* MysqlPersistence::retrieveCategory(uint32_t catid){
-  Category* cat = NULL;
+Category::Ptr MysqlPersistence::retrieveCategory(uint32_t catid){
   try {
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM category WHERE categoryid = " << catid << ";";
     MysqlQuery query( conn, querybuilder.str() );
-    cat = new Category();
+    Category::Ptr cat( new Category() );
     cat->setCategoryId(catid);
     cat->setName(query->get(1));
     cat->setDescription(query->get(2));
     cat->setModTime(query->getU64(3));
     return cat;
   } catch( MysqlException& ) { 
-    delete cat;
-    return NULL;
+    return Category::Ptr();
   }
 }
 
