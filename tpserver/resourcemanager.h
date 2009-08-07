@@ -38,6 +38,7 @@ class ResourceManager
     void init();
 
     uint32_t addResourceDescription(ResourceDescription::Ptr res);
+    uint32_t addResourceDescription( const std::string& nname, const std::string& nunit, const std::string& ndesc);
 
     const ResourceDescription::Ptr getResourceDescription(uint32_t restype);
     const ResourceDescription::Ptr getResourceDescription(const std::string& restype);

@@ -47,6 +47,11 @@ uint32_t ResourceManager::addResourceDescription(ResourceDescription::Ptr res){
     return res->getResourceType();
 }
 
+uint32_t ResourceManager::addResourceDescription( const std::string& nname, const std::string& nunit, const std::string& ndesc) {
+    return addResourceDescription( ResourceDescription::Ptr( new ResourceDescription( nname, nunit, ndesc ) ) );
+}
+
+
 const ResourceDescription::Ptr ResourceManager::getResourceDescription(uint32_t restype){
   ResourceDescription::Ptr rtn = find_default( resdescs, restype, ResourceDescription::Ptr() );
     if ( !rtn ) {
