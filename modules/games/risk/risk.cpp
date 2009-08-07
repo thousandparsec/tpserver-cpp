@@ -163,9 +163,9 @@ void Risk::createGame(){
 }
 
 void Risk::createResources() {
-   ResourceManager* resMan = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resMan = Game::getGame()->getResourceManager();
 
-   ResourceDescription* res = new ResourceDescription();
+  ResourceDescription::Ptr res( new ResourceDescription() );
    res->setNameSingular("Army");
    res->setNamePlural("Armies");
    res->setUnitSingular("unit");
