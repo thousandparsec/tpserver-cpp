@@ -23,6 +23,7 @@
 #include <string>
 #include <stdint.h>
 #include <tpserver/protocolobject.h>
+#include <tpserver/design.h>
 
 class Design;
 
@@ -38,8 +39,8 @@ class Category : public ProtocolObject {
     uint32_t getCategoryId() const;
     void pack(Frame* frame) const;
 
-    virtual bool doAddDesign(Design* d);
-    virtual bool doModifyDesign(Design* d);
+    virtual bool doAddDesign(Design::Ptr d);
+    virtual bool doModifyDesign(Design::Ptr d);
 
     /// TODO: Remove, use setId instead
     void setCategoryId(uint32_t c);

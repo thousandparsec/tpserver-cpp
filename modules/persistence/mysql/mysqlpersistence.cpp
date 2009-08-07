@@ -1463,7 +1463,7 @@ IdSet MysqlPersistence::getCategoryIds(){
   }
 }
 
-bool MysqlPersistence::saveDesign(Design* design){
+bool MysqlPersistence::saveDesign(Design::Ptr design){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO design VALUES (" << design->getDesignId() << ", " << design->getCategoryId() << ", '";
@@ -1494,7 +1494,7 @@ bool MysqlPersistence::saveDesign(Design* design){
   }
 }
 
-bool MysqlPersistence::updateDesign(Design* design){
+bool MysqlPersistence::updateDesign(Design::Ptr design){
   try {
     std::ostringstream querybuilder;
     querybuilder << "UPDATE design SET categoryid=" << design->getCategoryId() << ", name='";
@@ -1534,15 +1534,15 @@ bool MysqlPersistence::updateDesign(Design* design){
   }
 }
 
-Design* MysqlPersistence::retrieveDesign(uint32_t designid){
-  Design* design = NULL;
+Design::Ptr MysqlPersistence::retrieveDesign(uint32_t designid){
+  Design::Ptr design;
   try {
     std::ostringstream querybuilder;
     {
       querybuilder << "SELECT * FROM design WHERE designid = " << designid << ";";
       MysqlQuery query( conn, querybuilder.str() );
 
-      design = new Design();
+      design.reset( new Design() );
       design->setDesignId(designid);
       design->setCategoryId(query->getInt(1));
       design->setName(query->get(2));
@@ -1573,8 +1573,7 @@ Design* MysqlPersistence::retrieveDesign(uint32_t designid){
 
     return design;
   } catch( MysqlException& ) {
-    delete design;
-    return NULL; 
+    return Design::Ptr(); 
   }
 }
 

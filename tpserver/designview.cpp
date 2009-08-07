@@ -45,7 +45,7 @@ DesignView::~DesignView(){
 
 void DesignView::pack(Frame* frame) const{
   
-  Design* design = Game::getGame()->getDesignStore()->getDesign(id);
+  Design::Ptr design = Game::getGame()->getDesignStore()->getDesign(id);
   
   frame->setType(ft03_Design);
   frame->packInt(id);

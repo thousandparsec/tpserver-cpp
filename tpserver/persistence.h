@@ -100,9 +100,9 @@ public:
     virtual uint32_t getMaxCategoryId();
     virtual IdSet getCategoryIds();
 
-    virtual bool saveDesign(Design* design);
-    virtual bool updateDesign(Design* design);
-    virtual Design* retrieveDesign(uint32_t designid);
+    virtual bool saveDesign(boost::shared_ptr<Design> design);
+    virtual bool updateDesign(boost::shared_ptr<Design> design);
+    virtual boost::shared_ptr<Design> retrieveDesign(uint32_t designid);
     virtual uint32_t getMaxDesignId();
     virtual IdSet getDesignIds();
 

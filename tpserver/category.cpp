@@ -47,11 +47,11 @@ void Category::pack(Frame* frame) const{
   frame->packString(desc);
 }
 
-bool Category::doAddDesign(Design* d){
+bool Category::doAddDesign(Design::Ptr d){
   return true;
 }
 
-bool Category::doModifyDesign(Design* d){
+bool Category::doModifyDesign(Design::Ptr d){
   return true;
 }
 

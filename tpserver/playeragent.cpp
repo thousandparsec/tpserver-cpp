@@ -984,7 +984,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
 
   if ( !lengthCheckMin( frame, 40 ) ) return;
 
-  Design* design = new Design();
+  Design::Ptr design( new Design() );
   frame->unpackInt(); //designid, don't take, overwrite
   frame->unpackInt64(); //timestamp, discard
   int numcats = frame->unpackInt(); //num of categories, had better be 1
@@ -1022,7 +1022,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 
   if ( !lengthCheckMin( frame, 40 ) ) return;
 
-  Design* design = new Design();
+  Design::Ptr design( new Design() );
   design->setDesignId(frame->unpackInt());
   frame->unpackInt64(); //timestamp, discard
   int numcats = frame->unpackInt(); //num of categories, had better be 1

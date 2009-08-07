@@ -37,7 +37,6 @@ DesignStore::DesignStore(){
 }
 
 DesignStore::~DesignStore(){
-  delete_map_all( designs );
 }
 
 void DesignStore::init(){
@@ -48,7 +47,7 @@ void DesignStore::init(){
   next_categoryid = persistence->getMaxCategoryId() + 1;
   IdSet ids = persistence->getCategoryIds();
  
-  fill_by_set( designs,    persistence->getDesignIds(), NULL );
+  fill_by_set( designs,    persistence->getDesignIds(), Design::Ptr() );
   fill_by_set( categories, persistence->getCategoryIds(), Category::Ptr() );
   fill_by_set( components, persistence->getComponentIds(), Component::Ptr() );
   
@@ -72,12 +71,12 @@ Category::Ptr DesignStore::getCategory(uint32_t id){
   return cat;
 }
 
-Design* DesignStore::getDesign(uint32_t id){
-  std::map<uint32_t, Design*>::iterator pos = designs.find(id);
-  Design* design = NULL;
+Design::Ptr DesignStore::getDesign(uint32_t id){
+  std::map<uint32_t, Design::Ptr>::iterator pos = designs.find(id);
+  Design::Ptr design;
   if(pos != designs.end()){
     design = pos->second;
-    if(design == NULL){
+    if(!design){
       design = Game::getGame()->getPersistence()->retrieveDesign(id);
       pos->second = design;
     }
@@ -136,7 +135,7 @@ void DesignStore::addCategory(Category::Ptr c){
   Game::getGame()->getPersistence()->saveCategory(c);
 }
 
-bool DesignStore::addDesign(Design* d){
+bool DesignStore::addDesign(Design::Ptr d){
   d->setDesignId(next_designid++);
 
   //check components all come from this category
@@ -167,9 +166,9 @@ bool DesignStore::addDesign(Design* d){
   return true;
 }
 
-bool DesignStore::modifyDesign(Design* d){
-  Design* current = designs[d->getId()];
-  if(current == NULL || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
+bool DesignStore::modifyDesign(Design::Ptr d){
+  Design::Ptr current = designs[d->getId()];
+  if(!current || current->getOwner() != d->getOwner() || current->getNumExist() != 0 || current->getInUse() != 0)
     return false;
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(d->getOwner());
   PlayerView::Ptr playerview = player->getPlayerView();
@@ -192,10 +191,8 @@ bool DesignStore::modifyDesign(Design* d){
   bool rtv;
   if(getCategory(d->getCategoryId())->doModifyDesign(d)){
     designs[d->getId()] = d;
-    delete current;
     rtv = true;
   }else{
-    delete d;
     d = current;
     rtv = false;
   }
@@ -207,7 +204,7 @@ bool DesignStore::modifyDesign(Design* d){
   return rtv;
 }
 
-void DesignStore::designCountsUpdated(Design* d){
+void DesignStore::designCountsUpdated(Design::Ptr d){
   Game::getGame()->getPersistence()->updateDesign(d);
 }
 
