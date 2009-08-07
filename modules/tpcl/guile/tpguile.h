@@ -26,7 +26,7 @@
 
 #include <tpserver/tpscheme.h>
 
-#include <tpserver/property.h>
+#include <tpserver/designstore.h>
 #include <tpserver/propertyvalue.h>
 
 class Design;
@@ -37,12 +37,12 @@ class TpGuile : public TpScheme{
   TpGuile();
 
         virtual ~TpGuile();
-  virtual void evalDesign(Design* d);
+  virtual void evalDesign(Design::Ptr d);
 
   // Comment the following line out for building guile_test
  private:
   void definePropertyDesignTypeSet();
-  void defineDesignType( Design * d);
+  void defineDesignType( Design::Ptr d);
   void definePropertyAccessors();
   void setDesignPropertyValue( const PropertyValue & pv);
   void setDesignPropertyValue(uint32_t propid, double value);
@@ -50,13 +50,13 @@ class TpGuile : public TpScheme{
   std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
       createPropertyRankingMap( IdMap & complist);
   double evalCompProperty( std::string lambdaStr);
-  PropertyValue getPropertyValue( Property * p,
+  PropertyValue getPropertyValue( Property::Ptr p,
                                   std::list<std::string> & compPropStrList);
-  std::map<uint32_t, PropertyValue> * calculateDesignPropertyValues( Design* d);
+  std::map<uint32_t, PropertyValue> * calculateDesignPropertyValues( Design::Ptr d);
   bool evalRequirementFtn( std::string function, std::string & why);
   bool canPropGoInDesign( uint32_t propertyID, std::string & why);
   bool canCompGoInDesign( uint32_t componentID, std::string & why);
-  void validateDesign( Design* d,
+  void validateDesign( Design::Ptr d,
                        std::map<uint32_t, PropertyValue> & propertyvalues);
 
 

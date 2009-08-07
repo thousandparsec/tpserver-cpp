@@ -89,9 +89,9 @@ void TpGuile::definePropertyDesignTypeSet()
 // for every property in the designstore.  One extra is allocated
 // at index 0 to store the number of components in the design.
 //
-void TpGuile::defineDesignType( Design * d)
+void TpGuile::defineDesignType( Design::Ptr d)
 {
-    DesignStore *      ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr      ds = Game::getGame()->getDesignStore();
     SCM                temp;
     int                counter;
     std::ostringstream formater;
@@ -129,7 +129,7 @@ void TpGuile::defineDesignType( Design * d)
 // current game's design store.
 void TpGuile::definePropertyAccessors()
 {
-    DesignStore *          ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr          ds = Game::getGame()->getDesignStore();
     SCM                    temp;
     std::set<uint32_t> propids = ds->getPropertyIds();
     std::ostringstream     formater;
@@ -139,7 +139,7 @@ void TpGuile::definePropertyAccessors()
 
     for ( std::set<uint32_t>::iterator propit = propids.begin();
           propit != propids.end(); ++propit) {        // for each property type...
-        Property* p = ds->getProperty( *propit);
+      Property::Ptr p = ds->getProperty( *propit);
 
         if ( p != NULL) {
             formater.str("");
@@ -181,18 +181,18 @@ void TpGuile::setDesignComponentCount( const uint32_t count)
 std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > *
 TpGuile::createPropertyRankingMap( IdMap & complist)
 {
-    DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > * propranking =
         new std::map<uint32_t, std::map<uint32_t, std::list<std::string> > >();
 
     for ( IdMap::iterator compit = complist.begin();
           compit != complist.end(); ++compit) {
-        Component *c = ds->getComponent( compit->first);
+      Component::Ptr c = ds->getComponent( compit->first);
         std::map<uint32_t, std::string> pilist = c->getPropertyList();
 
         for ( std::map<uint32_t, std::string>::iterator piit = pilist.begin();
               piit != pilist.end(); ++piit) {
-            Property* p = ds->getProperty( piit->first);
+          Property::Ptr p = ds->getProperty( piit->first);
             for ( uint32_t i = 0; i < compit->second; i++) {
                 (*propranking)[p->getRank()][p->getPropertyId()].push_back(piit->second);
             }
@@ -233,7 +233,7 @@ double TpGuile::evalCompProperty( std::string lambdaStr)
 // and a single value.
 // The resulting name, value, and property ID are returned in a PropertyValue
 // object as the return value of the function.
-PropertyValue TpGuile::getPropertyValue( Property * p,
+PropertyValue TpGuile::getPropertyValue( Property::Ptr p,
                                          std::list<std::string> & compPropStrList)
 {
     SCM           temp;
@@ -244,7 +244,7 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
     // Eval each lambda string in the list, and post the result
     // to the end of the s_total_list list.
     for ( std::list<std::string>::iterator lambdaIter = compPropStrList.begin();
-          lambdaIter != compPropStrList.end(); ++lambdaIter) {
+lambdaIter != compPropStrList.end(); ++lambdaIter) {
         SCM     s_element;
         SCM     s_element_list;
 
@@ -281,9 +281,9 @@ PropertyValue TpGuile::getPropertyValue( Property * p,
 // Calculate the property value for each component in the given design,
 // returning them in a mapping from property ID to property value structure.
 std::map<uint32_t, PropertyValue> *
-      TpGuile::calculateDesignPropertyValues( Design* d)
+      TpGuile::calculateDesignPropertyValues( Design::Ptr d)
 {
-  DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   // This includes not only the component IDs for the design,
   // but also how many of each component are needed for the design.
   IdMap complist = d->getComponents();
@@ -353,8 +353,8 @@ bool TpGuile::evalRequirementFtn( std::string function, std::string & why)
 
 bool TpGuile::canPropGoInDesign( uint32_t propertyID, std::string & why)
 {
-    DesignStore *  ds = Game::getGame()->getDesignStore();
-    Property*      propertyp = ds->getProperty( propertyID);
+  DesignStore::Ptr  ds = Game::getGame()->getDesignStore();
+  Property::Ptr      propertyp = ds->getProperty( propertyID);
 
     return evalRequirementFtn( propertyp->getTpclRequirementsFunction(), why);
 }
@@ -362,8 +362,8 @@ bool TpGuile::canPropGoInDesign( uint32_t propertyID, std::string & why)
 
 bool TpGuile::canCompGoInDesign( uint32_t componentID, std::string & why)
 {
-    DesignStore *  ds = Game::getGame()->getDesignStore();
-    Component*     componentp = ds->getComponent( componentID);
+  DesignStore::Ptr  ds = Game::getGame()->getDesignStore();
+  Component::Ptr     componentp = ds->getComponent( componentID);
 
     return evalRequirementFtn( componentp->getTpclRequirementsFunction(), why);
 }
@@ -377,7 +377,7 @@ bool TpGuile::canCompGoInDesign( uint32_t componentID, std::string & why)
 // component or property value's requirement function returns false, sets
 // the validity of d to false and outputs a message that the design is
 // invalid.
-void TpGuile::validateDesign( Design* d,
+void TpGuile::validateDesign( Design::Ptr d,
                               std::map<uint32_t, PropertyValue> & propertyvalues)
 {
     IdMap complist = d->getComponents();
@@ -425,7 +425,7 @@ void TpGuile::validateDesign( Design* d,
 // Also, mark whether the given Design is valid (using the setValid()
 // method of d).
 //
-void TpGuile::evalDesign( Design* d)
+void TpGuile::evalDesign( Design::Ptr d)
 {
     std::map<uint32_t, PropertyValue> * propertyvalues;
 

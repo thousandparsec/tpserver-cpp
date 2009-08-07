@@ -27,8 +27,9 @@
 #include <tpserver/propertyvalue.h>
 #include <tpserver/protocolobject.h>
 #include <tpserver/common.h>
+#include <boost/enable_shared_from_this.hpp>
 
-class Design : public ProtocolObject {
+class Design : public ProtocolObject, public boost::enable_shared_from_this<Design> {
   public:
     typedef boost::shared_ptr<Design> Ptr;
     Design();

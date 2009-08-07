@@ -20,13 +20,13 @@
  *
  */
 
-class Design;
+#include <tpserver/design.h>
 
 class TpScheme{
- public:
-        virtual ~TpScheme();
+  public:
+    virtual ~TpScheme();
 
-  virtual void evalDesign(Design* d) = 0;
+    virtual void evalDesign(Design::Ptr d) = 0;
 
 };
 

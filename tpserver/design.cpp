@@ -115,7 +115,7 @@ void Design::eval(){
 
   // start calc
   TpScheme* scheme_intr = Game::getGame()->getTpScheme();
-  scheme_intr->evalDesign(this);
+  scheme_intr->evalDesign(shared_from_this());
 }
 
 void Design::setPropertyValues(PropertyValue::Map pvl){
