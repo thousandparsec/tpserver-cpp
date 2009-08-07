@@ -110,8 +110,8 @@ public:
     virtual uint32_t getMaxComponentId();
     virtual IdSet getComponentIds();
 
-    virtual bool saveProperty(Property* prop);
-    virtual Property* retrieveProperty(uint32_t propid);
+    virtual bool saveProperty(boost::shared_ptr<Property> prop);
+    virtual boost::shared_ptr<Property> retrieveProperty(uint32_t propid);
     virtual uint32_t getMaxPropertyId();
     virtual IdSet getPropertyIds();
     

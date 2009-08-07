@@ -47,6 +47,7 @@ class TcpConnection: public Connection {
     void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
     void sendSequence(Frame* oldframe, size_t sequence_size );
     void send(Frame* oldframe, const Packable* packable );
+    void send(Frame* oldframe, const Packable::Ptr packable );
     void sendOK(Frame* oldframe, const std::string& message );
     void sendModList(Frame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
         uint32_t count, uint32_t start, uint64_t fromtime );

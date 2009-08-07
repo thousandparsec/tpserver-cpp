@@ -243,12 +243,12 @@ IdSet Persistence::getComponentIds(){
     return IdSet();
 }
 
-bool Persistence::saveProperty(Property* prop){
+bool Persistence::saveProperty(Property::Ptr prop){
     return false;
 }
 
-Property* Persistence::retrieveProperty(uint32_t propid){
-    return NULL;
+Property::Ptr Persistence::retrieveProperty(uint32_t propid){
+    return Property::Ptr();
 }
 
 uint32_t Persistence::getMaxPropertyId(){
@@ -308,7 +308,7 @@ bool Persistence::saveProtocolObject(ProtocolObject* object)
   switch(object->getFrameType()) {
  //   case ft03_Component : return saveComponent( dynamic_cast<Component*>(object) );
     case ft03_Design    : return saveDesign( dynamic_cast<Design*>(object) );
-    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
+//    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
     case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
     case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
     case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
@@ -321,7 +321,7 @@ ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t 
   switch(objtype) {
 //    case ft03_Component : return retrieveComponent( id );
     case ft03_Design    : return retrieveDesign( id );
-    case ft03_Property  : return retrieveProperty( id );
+//    case ft03_Property  : return retrieveProperty( id );
     case ft03_Category  : return retrieveCategory( id );
     case ft03_Player    : return retrievePlayer( id );
     case ft02_Object    : return retrieveObject( id );

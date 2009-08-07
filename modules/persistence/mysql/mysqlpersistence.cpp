@@ -1657,7 +1657,7 @@ Component::Ptr MysqlPersistence::retrieveComponent(uint32_t compid){
     }
     return comp;
   } catch( MysqlException& ) {
-    return Component::Ptr; 
+    return Component::Ptr(); 
   }
 }
 
@@ -1678,7 +1678,7 @@ IdSet MysqlPersistence::getComponentIds(){
   }
 }
 
-bool MysqlPersistence::saveProperty(Property* prop){
+bool MysqlPersistence::saveProperty(Property::Ptr prop){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO property VALUES (" << prop->getPropertyId() << ", ";
@@ -1689,18 +1689,18 @@ bool MysqlPersistence::saveProperty(Property* prop){
     insertSet( "propertycat", prop->getPropertyId(), prop->getCategoryIds() );
     return true;
   } catch( MysqlException& ) { 
-    return NULL; 
+    return false; 
   }
 }
 
-Property* MysqlPersistence::retrieveProperty(uint32_t propid){
-  Property* prop = NULL;
+Property::Ptr MysqlPersistence::retrieveProperty(uint32_t propid){
+  Property::Ptr prop;
   try {
     std::ostringstream querybuilder;
     {
       querybuilder << "SELECT * FROM property WHERE propertyid = " << propid << ";";
       MysqlQuery query( conn, querybuilder.str() );
-      prop = new Property();
+      prop.reset( new Property() );
       prop->setPropertyId(propid);
       prop->setRank(query->getInt(1));
       prop->setName(query->get(2));
@@ -1716,8 +1716,7 @@ Property* MysqlPersistence::retrieveProperty(uint32_t propid){
     prop->setCategoryIds(idSetQuery( querybuilder.str() ) );
     return prop;
   } catch( MysqlException& ) {
-    delete prop;
-    return NULL; 
+    return Property::Ptr(); 
   }
 }
 

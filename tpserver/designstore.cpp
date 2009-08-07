@@ -42,7 +42,6 @@ DesignStore::DesignStore(){
 
 DesignStore::~DesignStore(){
   delete_map_all( designs );
-  delete_map_all( properties );
   delete_map_all( categories );
 }
 
@@ -104,12 +103,12 @@ Component::Ptr DesignStore::getComponent(uint32_t id){
   return comp;
 }
 
-Property* DesignStore::getProperty(uint32_t id){
-  std::map<uint32_t, Property*>::iterator pos = properties.find(id);
-  Property* prop = NULL;
+Property::Ptr DesignStore::getProperty(uint32_t id){
+  std::map<uint32_t, Property::Ptr>::iterator pos = properties.find(id);
+  Property::Ptr prop;
   if(pos != properties.end()){
     prop = pos->second;
-    if(prop == NULL){
+    if(!prop){
       prop = Game::getGame()->getPersistence()->retrieveProperty(id);
       pos->second = prop;
       propertyIndex[prop->getName()] = prop->getPropertyId();
@@ -224,7 +223,7 @@ void DesignStore::addComponent(Component::Ptr c){
   Game::getGame()->getPersistence()->saveComponent(c);
 }
 
-void DesignStore::addProperty(Property* p){
+void DesignStore::addProperty(Property::Ptr p){
   p->setPropertyId(next_propertyid++);
   properties[p->getId()] = p;
   propertyIndex[p->getName()] = p->getId();

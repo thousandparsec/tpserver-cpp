@@ -1093,8 +1093,8 @@ void PlayerAgent::processGetProperty(Frame* frame){
 
   for(int i = 0; i < numprops; i++){
     int propnum = frame->unpackInt();
-    Property* property = ds->getProperty(propnum);
-    if(property == NULL){
+    Property::Ptr property = ds->getProperty(propnum);
+    if(!property){
       curConnection->sendFail(frame,fec_NonExistant, "No Such Property");
     }else{
       curConnection->send(frame,property);
@@ -1130,7 +1130,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
   IdModList modlist;
   for(IdSet::iterator itcurr = propids.begin();
       itcurr != propids.end(); ++itcurr){
-    Property * prop = ds->getProperty(*itcurr);
+    Property::Ptr prop = ds->getProperty(*itcurr);
     if(fromtime == UINT64_NEG_ONE || prop->getModTime() > fromtime){
       modlist[*itcurr] = prop->getModTime();
     }

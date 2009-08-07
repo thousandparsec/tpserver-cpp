@@ -499,6 +499,13 @@ void TcpConnection::send(Frame* oldframe, const Packable* packable )
   sendFrame(frame);
 }
 
+void TcpConnection::send(Frame* oldframe, const Packable::Ptr packable )
+{
+  Frame* frame = createFrame(oldframe);
+  packable->pack( frame );
+  sendFrame(frame);
+}
+
 void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
 {
   Frame* frame = createFrame(oldframe);
