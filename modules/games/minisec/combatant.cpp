@@ -59,7 +59,7 @@ uint32_t Combatant::firepower(bool draw){
         return draw ? 1 : 3;
     }
     
-    DesignStore* ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     
     uint32_t attnum;
     if(draw){
@@ -80,14 +80,14 @@ bool Combatant::isDead() const{
     if(shiptype == 0){
         return (damage > 6);
     }
-    DesignStore* ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     
     propertyid_t armourprop = ds->getPropertyByName("Armour");
     if(armourprop == 0){
         armourprop = ds->getPropertyByName("Amour");
     }
     
-    Design *design = ds->getDesign(shiptype);
+    Design::Ptr design = ds->getDesign(shiptype);
     return (damage > (uint32_t)design->getPropertyValue(armourprop));
 
 }

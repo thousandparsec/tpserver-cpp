@@ -324,13 +324,13 @@ void MiniSec::createGame(){
   Game* game = Game::getGame();
 
 
-  DesignStore *ds = game->getDesignStore();
-  Category * cat = new Category( "Ships", "The Ship design and component category" );
+  DesignStore::Ptr ds = game->getDesignStore();
+  Category::Ptr cat( new Category( "Ships", "The Ship design and component category" ) );
   ds->addCategory(cat);
   IdSet catids;
   catids.insert(cat->getId());
 
-  Property* prop = new Property();
+  Property::Ptr prop( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("Speed");
@@ -340,7 +340,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("BuildTime");
@@ -350,7 +350,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("Armour");
@@ -360,7 +360,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("WeaponWin");
@@ -370,7 +370,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("WeaponDraw");
@@ -380,7 +380,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("Colonise");
@@ -390,7 +390,7 @@ void MiniSec::createGame(){
   prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
   ds->addProperty(prop);
 
-  prop = new Property();
+  prop.reset( new Property() );
   prop->setCategoryIds(catids);
   prop->setRank(0);
   prop->setName("_num-components");
@@ -405,7 +405,7 @@ void MiniSec::createGame(){
 
   std::map<uint32_t, std::string> propertylist;
 
-  Component* comp = new Component();
+  Component::Ptr comp( new Component() );
   comp->setCategoryIds(catids);
   comp->setName("ScoutHull");
   comp->setDescription("The scout hull, fitted out with everything a scout needs");
@@ -423,7 +423,7 @@ void MiniSec::createGame(){
   comp->setPropertyList(propertylist);
   ds->addComponent(comp);
 
-  comp = new Component();
+  comp.reset( new Component() );
   comp->setCategoryIds(catids);
   comp->setName("FrigateHull");
   comp->setDescription("The frigate hull, fitted out with everything a frigate needs");
@@ -443,7 +443,7 @@ void MiniSec::createGame(){
   comp->setPropertyList(propertylist);
   ds->addComponent(comp);
 
-  comp = new Component();
+  comp.reset( new Component() );
   comp->setCategoryIds(catids);
   comp->setName("BattleshipHull");
   comp->setDescription("The battleship hull, fitted out with everything a battleship needs");
@@ -721,7 +721,7 @@ void MiniSec::onPlayerAdded(Player* player){
     playerview->addUsableComponent(2);
     playerview->addUsableComponent(3);
 
-    Design* scout = new Design();
+    Design::Ptr scout( new Design() );
     scout->setCategoryId(1);
     scout->setName("Scout");
     scout->setDescription("Scout ship");
@@ -732,7 +732,7 @@ void MiniSec::onPlayerAdded(Player* player){
     game->getDesignStore()->addDesign(scout);
     mydesignids.insert(scout->getDesignId());
 
-    Design* frigate = new Design();
+    Design::Ptr frigate( new Design() );
     frigate->setCategoryId(1);
     frigate->setName("Frigate");
     frigate->setDescription("Frigate ship");
@@ -744,7 +744,7 @@ void MiniSec::onPlayerAdded(Player* player){
     uint32_t frigateid = frigate->getDesignId();
     mydesignids.insert(frigate->getDesignId());
 
-    Design* design = new Design();
+    Design::Ptr design( new Design() );
     design->setCategoryId(1);
     design->setName("Battleship");
     design->setDescription("Battleship ship");

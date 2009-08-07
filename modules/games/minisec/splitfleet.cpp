@@ -61,7 +61,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOp
   IdMap sotf = of->getShips();
   Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   for(IdMap::const_iterator itcurr = sotf.begin();
       itcurr != sotf.end(); ++itcurr){

@@ -80,7 +80,7 @@ void Fleet::addShips(uint32_t type, uint32_t number){
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->getRefQuantityList();
   ships[std::pair<int32_t, uint32_t>(rst_Design, type)] += number;
   ((RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->setRefQuantityList(ships);
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   OrderManager* om = Game::getGame()->getOrderManager();
   if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
     std::set<uint32_t> allowed = ((OrderQueueObjectParam*)(obj->getParameter(ORDERGRPID,ORDERQPARAMID)))->getAllowedOrders();
@@ -98,7 +98,7 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
       ships.erase(std::pair<int32_t, uint32_t>(rst_Design, type));
     }
     ((RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->setRefQuantityList(ships);
-    DesignStore* ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     bool colonise = false;
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
         itcurr != ships.end(); ++itcurr){
@@ -151,7 +151,7 @@ uint32_t Fleet::totalShips() const{
 
 int64_t Fleet::maxSpeed(){
   double speed = 1e100;
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){

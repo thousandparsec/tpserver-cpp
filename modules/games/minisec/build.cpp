@@ -92,19 +92,19 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
   
   std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-  DesignStore* ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
-  std::set<Design*> usable;
+  std::set<Design::Ptr> usable;
   for(std::set<uint32_t>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
-      Design* design = ds->getDesign(*itcurr);
+    Design::Ptr design = ds->getDesign(*itcurr);
       if(design->getCategoryId() == 1){
           usable.insert(design);
       }
   }
 
-  for(std::set<Design*>::iterator itcurr = usable.begin();
+  for(std::set<Design::Ptr>::iterator itcurr = usable.begin();
       itcurr != usable.end(); ++itcurr){
-    Design * design = (*itcurr);
+    Design::Ptr design = (*itcurr);
     options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
   
@@ -116,7 +116,7 @@ void Build::inputFrame(Frame *f, uint32_t playerid)
   Order::inputFrame(f, playerid);
   
   Player* player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   
   uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
   
@@ -130,7 +130,7 @@ void Build::inputFrame(Frame *f, uint32_t playerid)
     
     if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
       
-      Design* design = ds->getDesign(type);
+      Design::Ptr design = ds->getDesign(type);
       usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
         design->addUnderConstruction(number);
         ds->designCountsUpdated(design);
@@ -203,7 +203,7 @@ bool Build::doOrder(IGObject *ob)
     IdMap fleettype = fleetlist->getList();
     for(IdMap::iterator itcurr = fleettype.begin(); itcurr != fleettype.end(); ++itcurr){
       thefleet->addShips(itcurr->first, itcurr->second);
-        Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
+      Design::Ptr design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
         design->addComplete(itcurr->second);
         Game::getGame()->getDesignStore()->designCountsUpdated(design);
     }
