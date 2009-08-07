@@ -18,9 +18,6 @@
  *
  */
 
-#include <stdint.h>
-
-#include "resourcedescription.h"
 #include "game.h"
 #include "persistence.h"
 
@@ -39,10 +36,10 @@ void ResourceManager::init(){
     Persistence* persist = Game::getGame()->getPersistence();
     nextid = persist->getMaxResourceId() + 1;
     IdSet ridset(persist->getResourceIds());
-    fill_by_set( resdescs, ridset, NULL );
+    fill_by_set( resdescs, ridset, ResourceDescription::Ptr() );
 }
 
-uint32_t ResourceManager::addResourceDescription(ResourceDescription* res){
+uint32_t ResourceManager::addResourceDescription(ResourceDescription::Ptr res){
     res->setResourceType(nextid++);
     res->touchModTime();
     resdescs[res->getResourceType()] = res;
@@ -50,25 +47,25 @@ uint32_t ResourceManager::addResourceDescription(ResourceDescription* res){
     return res->getResourceType();
 }
 
-const ResourceDescription* ResourceManager::getResourceDescription(uint32_t restype){
-    ResourceDescription* rtn = find_default( resdescs, restype, NULL );
-    if ( rtn == NULL ) {
+const ResourceDescription::Ptr ResourceManager::getResourceDescription(uint32_t restype){
+  ResourceDescription::Ptr rtn = find_default( resdescs, restype, ResourceDescription::Ptr() );
+    if ( !rtn ) {
         rtn = Game::getGame()->getPersistence()->retrieveResource(restype);
         resdescs[restype] = rtn;
     }
     return rtn;
 }
 
-const ResourceDescription* ResourceManager::getResourceDescription(const std::string& restype){
+const ResourceDescription::Ptr ResourceManager::getResourceDescription(const std::string& restype){
   for(ResourceMap::iterator rl = resdescs.begin();
       rl != resdescs.end(); ++rl){
-    if(rl->second != NULL){
+    if(rl->second){
       if(rl->second->getNameSingular() == restype){
         return rl->second;
       }
     }
   }
-  return NULL;
+  return ResourceDescription::Ptr();
 }
 
 IdSet ResourceManager::getAllIds(){

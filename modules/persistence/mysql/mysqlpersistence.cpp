@@ -1235,7 +1235,7 @@ uint32_t MysqlPersistence::getMaxMessageId(){
   }
 }
 
-bool MysqlPersistence::saveResource(ResourceDescription* res){
+bool MysqlPersistence::saveResource(ResourceDescription::Ptr res){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO resourcedesc VALUES (" << res->getResourceType() << ", '" << addslashes(res->getNameSingular()) << "', '";
@@ -1249,14 +1249,14 @@ bool MysqlPersistence::saveResource(ResourceDescription* res){
   }
 }
 
-ResourceDescription* MysqlPersistence::retrieveResource(uint32_t restype){
-  ResourceDescription *res = NULL;
+ResourceDescription::Ptr MysqlPersistence::retrieveResource(uint32_t restype){
+  ResourceDescription::Ptr res;
   try {
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM resourcedesc WHERE resourcetype = " << restype << ";";
     MysqlQuery query( conn, querybuilder.str() );
 
-    res = new ResourceDescription();
+    res.reset( new ResourceDescription() );
     res->setResourceType(restype);
     res->setNameSingular(query->get(1));
     res->setNamePlural(query->get(2));
@@ -1268,8 +1268,7 @@ ResourceDescription* MysqlPersistence::retrieveResource(uint32_t restype){
     res->setModTime(query->getU64(8));
     return res;
   } catch( MysqlException& ) { 
-    delete res;
-    return NULL; 
+    return ResourceDescription::Ptr(); 
   }
 }
 

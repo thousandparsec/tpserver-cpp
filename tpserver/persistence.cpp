@@ -155,12 +155,12 @@ uint32_t Persistence::getMaxMessageId(){
     return 0;
 }
 
-bool Persistence::saveResource(ResourceDescription* res){
+bool Persistence::saveResource(ResourceDescription::Ptr res){
     return false;
 }
 
-ResourceDescription* Persistence::retrieveResource(uint32_t restype){
-    return NULL;
+ResourceDescription::Ptr Persistence::retrieveResource(uint32_t restype){
+    return ResourceDescription::Ptr();
 }
 
 uint32_t Persistence::getMaxResourceId(){
@@ -311,6 +311,7 @@ bool Persistence::saveProtocolObject(ProtocolObject* object)
 //    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
 //    case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
     case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
+//    case ft02_ResDesc    : return saveResource( dynamic_cast<Resource*>(object) );
     case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
     default : return false;
   }
@@ -324,6 +325,7 @@ ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t 
 //    case ft03_Property  : return retrieveProperty( id );
 //    case ft03_Category  : return retrieveCategory( id );
     case ft03_Player    : return retrievePlayer( id );
+//    case ft02_ResDesc  : return retrieveResource( id );
     case ft02_Object    : return retrieveObject( id );
     default : return NULL;
   }
@@ -337,6 +339,7 @@ uint32_t Persistence::getMaxProtocolObjectId(FrameType objtype)
     case ft03_Property  : return getMaxPropertyId( );
     case ft03_Category  : return getMaxCategoryId( );
     case ft03_Player    : return getMaxPlayerId( );
+    case ft02_ResDesc   : return getMaxResourceId( );
     case ft02_Object    : return getMaxObjectId( );
     default : return 0;
   }
@@ -351,6 +354,7 @@ IdSet Persistence::getProtocolObjectIds(FrameType objtype)
     case ft03_Property  : return getPropertyIds( );
     case ft03_Category  : return getCategoryIds( );
     case ft03_Player    : return getPlayerIds( );
+    case ft02_ResDesc   : return getResourceIds( );
     case ft02_Object    : return getObjectIds( );
     default : return IdSet();
   }

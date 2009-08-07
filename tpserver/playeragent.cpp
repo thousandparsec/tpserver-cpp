@@ -807,7 +807,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
   for(int i = 0; i < numress; i++){
     int rnum = frame->unpackInt();
 
-    const ResourceDescription * res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
+    const ResourceDescription::Ptr res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
     if(res != NULL){
       curConnection->send(frame, res);
     }else{
@@ -845,7 +845,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   IdModList modlist;
   for(IdSet::iterator itcurr = idset.begin();
       itcurr != idset.end(); ++itcurr){
-    const ResourceDescription * res = rm->getResourceDescription(*itcurr);
+    const ResourceDescription::Ptr res = rm->getResourceDescription(*itcurr);
     if(fromtime == UINT64_NEG_ONE || res->getModTime() > fromtime){
       modlist[*itcurr] = res->getModTime();
     }

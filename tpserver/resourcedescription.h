@@ -20,7 +20,6 @@
 #ifndef RESOURCEDESCRIPTION_H
 #define RESOURCEDESCRIPTION_H
 
-#include <string>
 #include <tpserver/protocolobject.h>
 
 class Frame;
@@ -28,6 +27,8 @@ class Frame;
 class ResourceDescription : public ProtocolObject
 {
 public:
+    typedef boost::shared_ptr<ResourceDescription> Ptr;
+
     ResourceDescription();
     ResourceDescription( const std::string& nname, const std::string& nunit, const std::string& ndesc);
     virtual ~ResourceDescription();

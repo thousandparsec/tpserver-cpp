@@ -83,8 +83,8 @@ public:
     virtual std::list<uint32_t> retrieveMessageList(uint32_t bid);
     virtual uint32_t getMaxMessageId();
 
-    virtual bool saveResource(ResourceDescription* res);
-    virtual ResourceDescription* retrieveResource(uint32_t restype);
+    virtual bool saveResource(boost::shared_ptr<ResourceDescription> res);
+    virtual boost::shared_ptr<ResourceDescription> retrieveResource(uint32_t restype);
     virtual uint32_t getMaxResourceId();
     virtual IdSet getResourceIds();
 

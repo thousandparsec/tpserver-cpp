@@ -21,6 +21,7 @@
 #define RESOURCEMANAGER_H
 
 #include <tpserver/common.h>
+#include <tpserver/resourcedescription.h>
 
 class ResourceDescription;
 
@@ -35,15 +36,15 @@ public:
 
     void init();
     
-    uint32_t addResourceDescription(ResourceDescription* res);
+    uint32_t addResourceDescription(ResourceDescription::Ptr res);
     
-    const ResourceDescription* getResourceDescription(uint32_t restype);
-    const ResourceDescription* getResourceDescription(const std::string& restype);
+    const ResourceDescription::Ptr getResourceDescription(uint32_t restype);
+    const ResourceDescription::Ptr getResourceDescription(const std::string& restype);
     
     IdSet getAllIds();
 
 private:
-    typedef std::map<uint32_t, ResourceDescription*> ResourceMap;
+    typedef std::map<uint32_t, ResourceDescription::Ptr> ResourceMap;
     ResourceMap resdescs;
     uint32_t nextid;
 
