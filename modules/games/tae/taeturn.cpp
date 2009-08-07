@@ -282,7 +282,7 @@ void TaeTurn::initCombat() {
     ObjectManager* objectmanager = game->getObjectManager();
     PlayerManager* playermanager = game->getPlayerManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
-    DesignStore* ds = game->getDesignStore();
+    DesignStore::Ptr ds = game->getDesignStore();
 
     //Pop the combat queue and set the combatants
     pair<bool, map<uint32_t, uint32_t> > temp;
@@ -752,7 +752,7 @@ void TaeTurn::awardArtifacts() {
     
     if(!artifacts.empty()) {
         uint32_t type;
-        DesignStore* ds = game->getDesignStore();
+        DesignStore::Ptr ds = game->getDesignStore();
         PlayerManager* pm = game->getPlayerManager();
         std::set<uint32_t> designs = ds->getDesignIds();
         //get leader ID

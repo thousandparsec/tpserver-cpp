@@ -52,10 +52,10 @@ class FleetBuilder{
     
     private:
         //Private functions used to create the different fleets
-        Design* createPassengerShip(Player* owner, int type);
-        Design* createRandomPassengerShip(Player* owner);
-        Design* createVIPTransport(Player* owner, int type);
-        Design* createBomber(Player* owner);
+        Design::Ptr  createPassengerShip(Player* owner, int type);
+        Design::Ptr  createRandomPassengerShip(Player* owner);
+        Design::Ptr  createVIPTransport(Player* owner, int type);
+        Design::Ptr  createBomber(Player* owner);
 
         //Used to keep track of how many colonist ships are left for each type
         int shipsLeft[4];

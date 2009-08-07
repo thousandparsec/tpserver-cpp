@@ -91,7 +91,7 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
     fleet->addToParent(parent->getID());
 
     //Add ship
-    Design* ship;
+    Design::Ptr ship;
     if(fleetType == PASSENGER_FLEET) {
         if(shipType == RANDOM_SHIP) {
             ship = createRandomPassengerShip(owner);
@@ -149,11 +149,11 @@ bool FleetBuilder::shipsEmpty() {
  */
 
 //Create a passenger ship of the specified type for the owner
-Design* FleetBuilder::createPassengerShip(Player* owner, int type) {
-    Design* ship = new Design();
+Design::Ptr  FleetBuilder::createPassengerShip(Player* owner, int type) {
+    Design::Ptr  ship( new Design() );
     IdMap componentList;
 
-    DesignStore * ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr  ds = Game::getGame()->getDesignStore();
 
     ship->setCategoryId(ds->getCategoryByName("Ships"));
     ship->setDescription("A passenger transport ship");
@@ -179,7 +179,7 @@ Design* FleetBuilder::createPassengerShip(Player* owner, int type) {
 }
 
 //Create a random passenger ship
-Design* FleetBuilder::createRandomPassengerShip(Player* owner) {
+Design::Ptr  FleetBuilder::createRandomPassengerShip(Player* owner) {
     int type;
 
     //Check to see if there are any ships left
@@ -199,11 +199,11 @@ Design* FleetBuilder::createRandomPassengerShip(Player* owner) {
 }
 
 //Create a leader's ship
-Design* FleetBuilder::createVIPTransport(Player* owner, int type) {
-    Design* ship = new Design();
+Design::Ptr  FleetBuilder::createVIPTransport(Player* owner, int type) {
+    Design::Ptr  ship( new Design() );
     IdMap componentList;
 
-    DesignStore * ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr  ds = Game::getGame()->getDesignStore();
 
     ship->setCategoryId(ds->getCategoryByName("Ships"));
     ship->setDescription("A passenger transport ship for VIPs");
@@ -229,11 +229,11 @@ Design* FleetBuilder::createVIPTransport(Player* owner, int type) {
 }
 
 //Create a bomber
-Design* FleetBuilder::createBomber(Player* owner) {
-    Design* ship = new Design();
+Design::Ptr  FleetBuilder::createBomber(Player* owner) {
+    Design::Ptr  ship( new Design() );
     IdMap componentList;
 
-    DesignStore * ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     ship->setCategoryId(ds->getCategoryByName("Ships"));
     ship->setName("Bomber");

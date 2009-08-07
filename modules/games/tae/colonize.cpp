@@ -151,7 +151,7 @@ bool Colonize::doOrder(IGObject * obj) {
 
     //Add resource to planet
     Planet* planet = (Planet*)(obm->getObject(pid)->getObjectBehaviour());
-    Design* ship = Game::getGame()->getDesignStore()->getDesign(fleetData->getShips().begin()->first);
+    Design::Ptr ship = Game::getGame()->getDesignStore()->getDesign(fleetData->getShips().begin()->first);
     uint32_t scoreType = 0;
     string leaderName;
     if(ship->getName().compare("MerchantShip") == 0) {

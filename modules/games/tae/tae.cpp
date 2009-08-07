@@ -130,7 +130,7 @@ void taeRuleset::createGame() {
     ObjectTypeManager* obtm = game->getObjectTypeManager();
 
     //Create ship design category
-    Category* cat = new Category();
+    Category::Ptr cat( new Category() );
     cat->setName("Ships");
     cat->setDescription("Ship components");
     game->getDesignStore()->addCategory(cat);
@@ -358,11 +358,10 @@ void taeRuleset::setupResources() {
 // Create properties for use with components.  This function is based off the
 // function of the same name implemented in RFTS.
 void taeRuleset::createProperties() {
-    Property* prop = new Property();
-    DesignStore* ds = Game::getGame()->getDesignStore();
+  Property::Ptr prop( new Property() );
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     // Passengers
-    prop = new Property();
     prop->addCategoryId(ds->getCategoryByName("Ships"));
     prop->setRank(0);
     prop->setName("Passengers");
@@ -392,7 +391,7 @@ void taeRuleset::createProperties() {
     prop->setTpclRequirementsFunction("(lambda (design) (cons #t \"\"))");
     ds->addProperty(prop);
 
-    prop = new Property();
+    prop.reset( new Property() );
     prop->addCategoryId(ds->getCategoryByName("Ships"));
     prop->setRank(0);
     prop->setName("Bombs");
@@ -405,9 +404,9 @@ void taeRuleset::createProperties() {
 }
 
 void taeRuleset::createComponents() {
-    DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
-    Component* comp = new Component();
+  Component::Ptr comp( new Component() );
     map<uint32_t, string> propList;
 
     //Merchants
@@ -424,7 +423,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Scientists
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("ScientistCargo");
     comp->setDescription("A cargo hold outfitted to carry scientists");
@@ -439,7 +438,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Settlers
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("SettlerCargo");
     comp->setDescription("A cargo hold outfitted to carry settlers");
@@ -454,7 +453,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Mining Robots
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("MiningCargo");
     comp->setDescription("A cargo hold outfitted to carry mining robots");
@@ -469,7 +468,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Merchant Leader
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("MerchantLeaderCargo");
     comp->setDescription("A cargo hold outfitted to carry powerful business leaders");
@@ -484,7 +483,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Lead Scientist
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("ScientistLeaderCargo");
     comp->setDescription("A cargo hold outfitted to carry a lead scientist");
@@ -499,7 +498,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Government Official
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("SettlerLeaderCargo");
     comp->setDescription("A cargo hold outfitted to a government leader");
@@ -514,7 +513,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Mining Foreman
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("MiningLeaderCargo");
     comp->setDescription("A cargo hold outfitted to a highly specialized mining robot leader");
@@ -529,7 +528,7 @@ void taeRuleset::createComponents() {
     ds->addComponent(comp);
 
     //Weapons Arsenal
-    comp = new Component();
+    comp.reset( new Component() );
     comp->addCategoryId(ds->getCategoryByName("Ships"));
     comp->setName("Weapon");
     comp->setDescription("The weapons arsenal for the ship");
