@@ -950,7 +950,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   }
 
 
-  DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   IdSet cids = ds->getCategoryIds();
 
   IdModList modlist;
@@ -1008,7 +1008,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
   design->setComponents( frame->unpackMap());
   //discard rest of frame
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   if(ds->addDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
@@ -1046,7 +1046,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
   design->setComponents(frame->unpackMap());
   //discard rest of frame
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   if(ds->modifyDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
@@ -1085,7 +1085,7 @@ void PlayerAgent::processGetComponentIds(Frame* frame){
 void PlayerAgent::processGetProperty(Frame* frame){
   DEBUG("doing Get Property frame");
 
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   int numprops = queryCheck( frame );
   if ( numprops == 0 ) return;
@@ -1125,7 +1125,7 @@ void PlayerAgent::processGetPropertyIds(Frame* frame){
     fromtime = frame->unpackInt64();
   }
 
-  DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   IdModList modlist;
   for(IdSet::iterator itcurr = propids.begin();

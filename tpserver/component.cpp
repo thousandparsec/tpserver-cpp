@@ -76,7 +76,7 @@ void Component::setPropertyList(const IdStringMap& pl){
 void Component::setInUse(bool used){
   inuse = used;
   if(parentdesignid != 0){
-    DesignStore* ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     Design::Ptr design = ds->getDesign(parentdesignid);
     if(used){
       design->addUnderConstruction(1);

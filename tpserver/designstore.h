@@ -28,6 +28,8 @@
 
 class DesignStore{
   public:
+    typedef boost::shared_ptr<DesignStore> Ptr;
+
     DesignStore();
     ~DesignStore();
 

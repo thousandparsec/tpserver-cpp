@@ -229,7 +229,7 @@ TurnProcess* Game::getTurnProcess() const{
   return turnprocess;
 }
 
-DesignStore* Game::getDesignStore() const{
+DesignStore::Ptr Game::getDesignStore() const{
   return designstore;
 }
 
@@ -477,7 +477,7 @@ Game::Game() : ctime(0), turnNum(0),turnname(""), key(), turntimer(NULL){
   boardmanager = new BoardManager();
   resourcemanager = new ResourceManager();
   playermanager = new PlayerManager();
-  designstore = new DesignStore();
+  designstore.reset( new DesignStore() );
   turnprocess = NULL;
   ruleset = NULL;
   persistence = new Persistence();
@@ -507,7 +507,6 @@ Game::~Game()
     delete turnprocess;
   if(ruleset != NULL)
     delete ruleset;
-  delete designstore;
     if(persistence != NULL)
         delete persistence;
   delete random;

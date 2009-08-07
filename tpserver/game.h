@@ -20,12 +20,8 @@
  *
  */
 
-#include <list>
-#include <map>
-#include <set>
-#include <stdint.h>
-#include <string>
-#include <exception>
+#include <tpserver/common.h>
+#include <boost/shared_ptr.hpp>
 
 class Player;
 class IGObject;
@@ -69,7 +65,7 @@ class Game {
     void setTurnProcess(TurnProcess* tp);
     TurnProcess* getTurnProcess() const;
 
-    DesignStore* getDesignStore() const;
+    boost::shared_ptr<DesignStore> getDesignStore() const;
 
     Persistence* getPersistence() const;
     bool setPersistence(Persistence* p);
@@ -131,7 +127,7 @@ class Game {
     ResourceManager* resourcemanager;
     PlayerManager* playermanager;
     TurnProcess * turnprocess;
-    DesignStore* designstore;
+    boost::shared_ptr<DesignStore> designstore;
     Persistence* persistence;
     TpScheme* tpscheme;
     Random* random;
