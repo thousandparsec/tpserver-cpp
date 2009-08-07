@@ -71,7 +71,7 @@ public:
     
 
     virtual bool saveBoard(boost::shared_ptr<Board> board);
-    virtual bool updateBoard(const Board* board);
+    virtual bool updateBoard(boost::shared_ptr<Board> board);
     virtual boost::shared_ptr<Board> retrieveBoard(uint32_t boardid);
     virtual uint32_t getMaxBoardId();
     virtual IdSet getBoardIds();

@@ -115,7 +115,7 @@ bool Persistence::saveBoard(boost::shared_ptr<Board> board){
     return false;
 }
 
-bool Persistence::updateBoard(const Board* board){
+bool Persistence::updateBoard(boost::shared_ptr<Board> board){
     return false;
 }
 

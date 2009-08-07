@@ -24,11 +24,12 @@
 #include <tpserver/common.h>
 #include <tpserver/message.h>
 #include <tpserver/protocolobject.h>
+#include <boost/enable_shared_from_this.hpp>
 
 /**
  * Board for posting messages
  */
-class Board : public ProtocolObject {
+class Board : public ProtocolObject, public boost::enable_shared_from_this<Board> {
 
   public:
     /// typedef for shared pointer

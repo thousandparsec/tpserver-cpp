@@ -50,7 +50,7 @@ void Board::addMessage(Message::Ptr msg, int pos) {
   }
   message_count = message_ids.size();
   Game::getGame()->getPersistence()->saveMessageList(id, message_ids);
-  Game::getGame()->getPersistence()->updateBoard(this);
+  Game::getGame()->getPersistence()->updateBoard(shared_from_this());
   touchModTime();
 }
 
@@ -68,7 +68,7 @@ bool Board::removeMessage(uint32_t pos){
   bool result = true;
   result = result && Game::getGame()->getBoardManager()->removeMessage(msgid);
   result = result && Game::getGame()->getPersistence()->saveMessageList(id, message_ids);
-  Game::getGame()->getPersistence()->updateBoard(this);
+  Game::getGame()->getPersistence()->updateBoard(shared_from_this());
 
   if (result) {
     touchModTime();

@@ -1084,7 +1084,7 @@ bool MysqlPersistence::removeTimeParameter(uint32_t queueid, uint32_t ordid, uin
   return true;
 }
 
-bool MysqlPersistence::saveBoard(boost::shared_ptr<Board> board){
+bool MysqlPersistence::saveBoard(Board::Ptr board){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO board VALUES (" << board->getId() << ", '" << addslashes(board->getName()) << "', '";
@@ -1097,7 +1097,7 @@ bool MysqlPersistence::saveBoard(boost::shared_ptr<Board> board){
   }
 }
 
-bool MysqlPersistence::updateBoard(const Board* board){
+bool MysqlPersistence::updateBoard(Board::Ptr board){
   try {
     std::ostringstream querybuilder;
     querybuilder << "UPDATE board SET name='" << addslashes(board->getName()) << "', description='" << addslashes(board->getDescription());
@@ -1110,7 +1110,7 @@ bool MysqlPersistence::updateBoard(const Board* board){
   }
 }
 
-boost::shared_ptr<Board> MysqlPersistence::retrieveBoard(uint32_t boardid){
+Board::Ptr MysqlPersistence::retrieveBoard(uint32_t boardid){
   try {
     std::ostringstream querybuilder;
     querybuilder << "SELECT * FROM board WHERE boardid = " << boardid << ";";
