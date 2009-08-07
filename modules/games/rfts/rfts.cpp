@@ -374,19 +374,13 @@ IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const V
 }
 
 void Rfts::createResources() {
-   ResourceManager* resMan = Game::getGame()->getResourceManager();
-   
-   ResourceDescription* res = new ResourceDescription();
-   res->setNameSingular("Resource Point");
-   res->setNamePlural("Resource Points");
-   res->setUnitSingular("point");
-   res->setUnitPlural("points");
-   res->setDescription("Resource points");
-   res->setMass(0);
-   res->setVolume(0);
-   resMan->addResourceDescription(res);
+   ResourceManager::Ptr resMan = Game::getGame()->getResourceManager();
 
-   res = new ResourceDescription();
+   resMan->addResourceDescription( "Resource Point", "point", "Resource points");
+
+   ResourceDescription::Ptr res;
+
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Industry");
    res->setNamePlural("Industry");
    res->setUnitSingular("units");
@@ -396,7 +390,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Population");
    res->setNamePlural("Population");
    res->setUnitSingular("unit");
@@ -406,7 +400,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Social Environment");
    res->setNamePlural("Social Environment");
    res->setUnitSingular("point");
@@ -416,7 +410,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Planetary Environment");
    res->setNamePlural("Planetary Environment");
    res->setUnitSingular("point");
@@ -426,7 +420,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Population Maintenance");
    res->setNamePlural("Population Maintenance");
    res->setUnitSingular("point");
@@ -437,7 +431,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Colonist");
    res->setNamePlural("Colonists");
    res->setUnitSingular("unit");
@@ -447,7 +441,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   res = new ResourceDescription();
+   res.reset( new ResourceDescription() );
    res->setNameSingular("Ship Technology");
    res->setNamePlural("Ship Technology");
    res->setUnitSingular("point");
@@ -457,7 +451,7 @@ void Rfts::createResources() {
    res->setVolume(0);
    resMan->addResourceDescription(res);
 
-   pair<ResourceDescription*,ResourceDescription*> pdbRes;
+   pair<ResourceDescription::Ptr,ResourceDescription::Ptr> pdbRes;
    
    pdbRes = createPdbResource('1');
    resMan->addResourceDescription(pdbRes.first);
@@ -472,22 +466,15 @@ void Rfts::createResources() {
    resMan->addResourceDescription(pdbRes.second);
 }
 
-pair<ResourceDescription*,ResourceDescription*> Rfts::createPdbResource(char level) const {
+pair<ResourceDescription::Ptr,ResourceDescription::Ptr> Rfts::createPdbResource(char level) const {
 
    string name = string("PDB") + level;
    
-   ResourceDescription* pdb = new ResourceDescription();
-   pdb->setNameSingular(name);
-   pdb->setNamePlural(name + "s");
-   pdb->setUnitSingular("unit");
-   pdb->setUnitPlural("units");
-   pdb->setDescription("Planetary Defense Bases: defend against attacking fleets!");
-   pdb->setMass(0);
-   pdb->setVolume(0);
+   ResourceDescription::Ptr pdb( new ResourceDescription( name, "unit", "Planetary Defense Bases: defend against attacking fleets!") );
 
    name += " Maintenance";
 
-   ResourceDescription* maint = new ResourceDescription();
+   ResourceDescription::Ptr maint( new ResourceDescription() );
    maint->setNameSingular(name);
    maint->setNamePlural(name);
    maint->setUnitSingular("unit");
@@ -497,7 +484,7 @@ pair<ResourceDescription*,ResourceDescription*> Rfts::createPdbResource(char lev
    maint->setMass(0);
    maint->setVolume(0);
 
-   return pair<ResourceDescription*,ResourceDescription*>(pdb, maint);
+   return pair<ResourceDescription::Ptr,ResourceDescription::Ptr>(pdb, maint);
 }
 
 void Rfts::startGame() {

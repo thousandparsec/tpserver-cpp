@@ -138,7 +138,7 @@ bool ProductionOrder::doOrder(IGObject *obj) {
 		return false;
 
    Game *game = Game::getGame();
-   ResourceManager *resMan = game->getResourceManager();
+   ResourceManager::Ptr resMan = game->getResourceManager();
    Planet *planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
    assert(planet);
 

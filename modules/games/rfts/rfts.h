@@ -25,6 +25,7 @@
 
 #include <tpserver/ruleset.h>
 #include <tpserver/designstore.h>
+#include <tpserver/resourcedescription.h>
 
 class IGObject;
 class Player;
@@ -59,7 +60,7 @@ class Rfts : public ::Ruleset {
    void createProperties();
    void createComponents();
    void createResources();
-   std::pair<ResourceDescription*,ResourceDescription*> createPdbResource(char level) const;
+   std::pair<ResourceDescription::Ptr,ResourceDescription::Ptr> createPdbResource(char level) const;
 
    void createUniverse();
    IGObject* createStarSystem(IGObject& universe, const std::string& name,
