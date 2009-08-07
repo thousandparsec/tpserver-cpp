@@ -20,7 +20,8 @@
  *
  */
 
-#include "tpserver/ruleset.h"
+#include <tpserver/ruleset.h>
+#include <tpserver/designstore.h>
 
 namespace MTSecRuleset {
 
@@ -38,10 +39,47 @@ class MTSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
  protected:
-  // Design definition methods
-  Design* createScoutDesign( Player* owner);
-  Design* createBattleScoutDesign( Player* owner);
+<<<<<<< HEAD
+=======
+  // Property definition methods
+  void createSpeedProp();
+  void createAmmoCostProp();
+  void createAmmoExplosivenessProp();
+  void createAmmoSizeProp();
+  void createFirepowerProp();
+  void createMissileCostProp();
+  void createMissileFirepowerProp();
+  void createMissileSizeProp();
+  void createHitPointsProp();
+  void createHPProp();
+  void createBuildTimeProp();
+  void createArmorProp();
+  void createColoniseProp();
+  void createNumAmmoProp();
+  void createNumBayTypesProp();
+  void createNumHullsProp();
 
+
+  // Component definition methods
+  void createScoutHullComp();
+  void createBattleScoutHullComp();
+  void createCeriumAmmoComp();
+  void createCerium3AmmoComp();
+  void createCerium6AmmoComp();
+  void createCerium12AmmoComp();
+  void createUraniumAmmoComp();
+  void createAntiparticleAmmoComp();
+  void createAntimatterAmmoComp();
+  void createThoriumAmmoComp();
+  void createAlphaMissileBayComp();
+  void createBetaMissileBayComp();
+  void createGammaMissileBayComp();
+  void createDeltaMissileBayComp();
+
+>>>>>>> MTSec updated with DesignStore shared_ptrs
+  // Design definition methods
+  Design::Ptr createScoutDesign( Player* owner);
+  Design::Ptr createBattleScoutDesign( Player* owner);
 
   // Object creation methods
   IGObject* createSiriusSystem( IGObject* mw_galaxy);

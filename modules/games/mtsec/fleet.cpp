@@ -90,8 +90,8 @@ void Fleet::setDefaultOrderTypes(){
 void Fleet::addShips(uint32_t type, uint32_t number){
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   ships[std::pair<int32_t, uint32_t>(rst_Design, type)] += number;
-  dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->setRefQuantityList(ships);
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   OrderManager* om = Game::getGame()->getOrderManager();
   if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
     std::set<uint32_t> allowed = dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->getAllowedOrders();
@@ -108,8 +108,8 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
     if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] == 0){
       ships.erase(std::pair<int32_t, uint32_t>(rst_Design, type));
     }
-    dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->setRefQuantityList(ships);
-    DesignStore* ds = Game::getGame()->getDesignStore();
+    ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     bool colonise = false;
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
         itcurr != ships.end(); ++itcurr){

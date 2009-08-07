@@ -38,7 +38,6 @@
 #include "tpserver/player.h"
 #include <tpserver/playerview.h>
 #include "avacombat.h"
-#include "tpserver/designstore.h"
 #include "tpserver/ordermanager.h"
 #include "nop.h"
 #include "move.h"
@@ -623,9 +622,9 @@ void MTSec::createGame()
 {
     Logger::getLogger()->debug( "Enter MTSec::createGame");
     Game*        game = Game::getGame();
-    DesignStore* ds = game->getDesignStore();
+    DesignStore::Ptr ds = game->getDesignStore();
     uint32_t counter;
-    Category*    cat = new Category();
+    Category::Ptr cat( new Category() );
     cat->setName("Ships");
     cat->setDescription("The Ship design and component category");
     ds->addCategory(cat);
@@ -696,12 +695,11 @@ bool MTSec::onAddPlayer(Player* player)
 }
 
 
-Design* MTSec::createScoutDesign( Player* owner)
+Design::Ptr MTSec::createScoutDesign( Player* owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createScoutDesign");
     Game *game = Game::getGame();
-    DesignStore *ds = Game::getGame()->getDesignStore();
-    Design* scout = new Design();
+    Design::Ptr scout( new Design() );
     IdMap componentList;
 
     scout->setCategoryId(1);
@@ -718,13 +716,13 @@ Design* MTSec::createScoutDesign( Player* owner)
 }
 
 
-Design* MTSec::createBattleScoutDesign( Player* owner)
+Design::Ptr MTSec::createBattleScoutDesign( Player* owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
     DesignStore *ds = Game::getGame()->getDesignStore();
 
     Game *game = Game::getGame();
-    Design* scout = new Design();
+    Design::Ptr scout( new Design() );
     IdMap componentList;
 
     scout->setCategoryId(1);
@@ -814,8 +812,8 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     std::string fleetName = player->getName().substr( 0,11) + "'s Fleet #1";
     IGObject*   fleet = createEmptyFleet( player, star, fleetName);
 
-    Design* scout = createScoutDesign( player);
-    Design* tempMissile = createAlphaMissileDesign(player);
+    Design::Ptr scout = createScoutDesign( player);
+    Design::ptr tempMissile = createAlphaMissileDesign(player);
 
     PlayerView* playerview = player->getPlayerView();;
 

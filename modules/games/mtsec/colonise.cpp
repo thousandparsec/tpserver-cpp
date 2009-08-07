@@ -86,7 +86,7 @@ bool Colonise::doOrder(IGObject * ob){
       msg->addReference(rst_Action_Order, rsorav_Canceled);
     }else{
 
-      DesignStore* ds = Game::getGame()->getDesignStore();
+      DesignStore::Ptr ds = Game::getGame()->getDesignStore();
       int shiptype = 0;
       int shiphp = 2000000;
       std::map<uint32_t, uint32_t> ships = fleet->getShips();
@@ -94,7 +94,7 @@ bool Colonise::doOrder(IGObject * ob){
       uint32_t armorPropID = ds->getPropertyByName( "Armour");
       for(std::map<uint32_t, uint32_t>::iterator itcurr = ships.begin();
 	  itcurr != ships.end(); ++itcurr){
-	Design *design = ds->getDesign(itcurr->first);
+        Design::Ptr design = ds->getDesign(itcurr->first);
 	if(design->getPropertyValue(colonisePropID) != 0.0 && shiphp > (int)design->getPropertyValue(armorPropID)){
 	  shiptype = itcurr->first;
 	  shiphp = (int)design->getPropertyValue(armorPropID);
