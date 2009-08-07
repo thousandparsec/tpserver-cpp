@@ -1352,10 +1352,7 @@ Player* MysqlPersistence::retrievePlayer(uint32_t playerid){
     {
       MysqlQuery query( conn, querybuilder.str() );
 
-      player = new Player();
-      player->setId(playerid);
-      player->setName(query->get(1));
-      player->setPass(query->get(2));
+      player = new Player( playerid, query->get(1), query->get(2));
       player->setEmail(query->get(3));
       player->setComment(query->get(4));
       player->setBoardId(query->getInt(5));
