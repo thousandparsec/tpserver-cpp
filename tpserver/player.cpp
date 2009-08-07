@@ -33,9 +33,11 @@
 #include "player.h"
 
 
-Player::Player() : ProtocolObject(ft03_Player,0,"",""), passwd(), email(), boardid(0), 
-                alive(true), score(){
+Player::Player( uint32_t nid, const std::string& nname, const std::string& npass )
+  : ProtocolObject(ft03_Player,nid,nname,""), passwd(npass), email(), boardid(0), alive(true) 
+{
   playerview.reset( new PlayerView() );
+  playerview->setPlayerId(nid);
 }
 
 Player::~Player(){
@@ -58,12 +60,6 @@ void Player::setEmail(const std::string& newemail){
 
 void Player::setComment(const std::string& newcomm){
   Describable::setDescription( newcomm );
-  touchModTime();
-}
-
-void Player::setId(uint32_t newid){
-  Describable::setId( newid );
-  playerview->setPlayerId(newid);
   touchModTime();
 }
 

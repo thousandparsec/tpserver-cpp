@@ -58,10 +58,7 @@ Player* PlayerManager::createNewPlayer(const std::string &name, const std::strin
         rtn = NULL;
     }else{
       //Player's name doesn't exist, create the new player.
-      rtn = new Player();
-      rtn->setId(nextid++);
-      rtn->setName(name.c_str());
-      rtn->setPass(pass.c_str());
+      rtn = new Player( nextid++, name, pass );
 
       if(Game::getGame()->getRuleset()->onAddPlayer(rtn)){
         // player can be added

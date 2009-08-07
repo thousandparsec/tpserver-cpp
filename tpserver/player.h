@@ -25,50 +25,51 @@
 #include <tpserver/message.h>
 
 class Player : public ProtocolObject {
-public:
-  Player();
-  virtual ~Player();
+  public:
+    typedef boost::shared_ptr<Player> Ptr;
 
-  void setName(const std::string& newname);
-  void setPass(const std::string& newpass);
-  void setEmail(const std::string& newemail);
-  void setComment(const std::string& newcomm);
-  void setId(uint32_t newid);
-  void setIsAlive(bool na);
-  void setScore(uint32_t key, uint32_t value);
-  void setBoardId(uint32_t nbi);
-  
-  std::string getPass() const;
-  std::string getEmail() const;
-  std::string getComment() const;
-  // TODO: remove
-  uint32_t getID() const;
-  bool isAlive() const;
-  uint32_t getScore(uint32_t key) const;
-  IdMap getAllScores() const;
-  uint32_t getBoardId() const;
+    Player( uint32_t nid, const std::string& nname, const std::string& npass );
+    virtual ~Player();
 
-  void postToBoard(Message::Ptr msg);
-  
-  PlayerView::Ptr getPlayerView() const;
-  
-  void pack(Frame* frame) const;
+    void setName(const std::string& newname);
+    void setPass(const std::string& newpass);
+    void setEmail(const std::string& newemail);
+    void setComment(const std::string& newcomm);
+    void setIsAlive(bool na);
+    void setScore(uint32_t key, uint32_t value);
+    void setBoardId(uint32_t nbi);
 
-private:
+    std::string getPass() const;
+    std::string getEmail() const;
+    std::string getComment() const;
+    // TODO: remove
+    uint32_t getID() const;
+    bool isAlive() const;
+    uint32_t getScore(uint32_t key) const;
+    IdMap getAllScores() const;
+    uint32_t getBoardId() const;
 
-  std::string passwd;
-  std::string email;
+    void postToBoard(Message::Ptr msg);
 
-  uint32_t boardid;
-  
-  PlayerView::Ptr playerview;
-  
-  bool alive;
-  IdMap score;
-  
-  Player(Player & rhs);
+    PlayerView::Ptr getPlayerView() const;
 
-  Player operator=(Player & rhs);
+    void pack(Frame* frame) const;
+
+  private:
+
+    std::string passwd;
+    std::string email;
+
+    uint32_t boardid;
+
+    PlayerView::Ptr playerview;
+
+    bool alive;
+    IdMap score;
+
+    Player(Player & rhs);
+
+    Player operator=(Player & rhs);
 
 };
 
