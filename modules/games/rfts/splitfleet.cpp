@@ -71,7 +71,7 @@ bool SplitFleet::doOrder(IGObject *obj) {
    ObjectManager *om = game->getObjectManager();
 
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
-   Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player::Ptr player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    IGObject *starSys = om->getObject(obj->getParent());
    
    IGObject * newFleet = createFleet(player, starSys, "New fleet", shipList->getList());

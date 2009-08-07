@@ -134,7 +134,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
    Order::inputFrame(f, playerid);
 
    Game *game = Game::getGame();
-   Player* player = game->getPlayerManager()->getPlayer(playerid);
+   Player::Ptr player = game->getPlayerManager()->getPlayer(playerid);
    DesignStore::Ptr ds = game->getDesignStore();
 
    IGObject *selectedObj = game->getObjectManager()->getObject(
@@ -187,7 +187,7 @@ bool BuildFleet::doOrder(IGObject *ob)
    Game *game = Game::getGame();
 
    Planet* planet = dynamic_cast<Planet*>(ob->getObjectBehaviour());
-   Player *player = game->getPlayerManager()->getPlayer(planet->getOwner());
+   Player::Ptr player = game->getPlayerManager()->getPlayer(planet->getOwner());
 
 
    pair<IGObject*, bool> fleetResult =

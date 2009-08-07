@@ -33,10 +33,11 @@ class RftsTurn : public TurnProcess {
 
    void setPlayerVisibleObjects();
 
-   Player* getWinner();
+   Player::Ptr getWinner();
 };
 
-void setVisibleObjects(Player *player);
+// DUH, now this is an example of non-object code -_-
+void setVisibleObjects(Player::Ptr player);
 
 }
 

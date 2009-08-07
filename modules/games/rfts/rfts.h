@@ -47,8 +47,8 @@ class Rfts : public ::Ruleset {
    virtual void createGame();
    virtual void startGame();
 
-   virtual bool onAddPlayer(Player *player);
-   virtual void onPlayerAdded(Player *player);
+   virtual bool onAddPlayer(Player::Ptr player);
+   virtual void onPlayerAdded(Player::Ptr player);
 
    static const ProductionInfo& getProductionInfo();
 
@@ -75,9 +75,9 @@ Component::Ptr createEngineComponent(char techLevel);
 Component::Ptr createBattleComponent(char techLevel);
 Component::Ptr createTransportComponent();
 
-Design::Ptr createMarkDesign(Player *owner, char level);
-Design::Ptr createScoutDesign(Player *owner);
-Design::Ptr createTransportDesign(Player *ownder);
+Design::Ptr createMarkDesign(Player::Ptr owner, char level);
+Design::Ptr createScoutDesign(Player::Ptr owner);
+Design::Ptr createTransportDesign(Player::Ptr ownder);
 
 }
 

@@ -390,7 +390,7 @@ void Fleet::setupObject(){
 }
 
 
-IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string& name) {
+IGObject* createEmptyFleet(Player::Ptr player, IGObject* starSys, const std::string& name) {
    Game *game = Game::getGame();
    IGObject *fleet = game->getObjectManager()->createNewObject();
       
@@ -424,7 +424,7 @@ IGObject* createEmptyFleet(Player* player, IGObject* starSys, const std::string&
    return fleet;
 }
 
-IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
+IGObject* createFleet(Player::Ptr player, IGObject* starSys, const string& name,
                       const IdMap& ships) {
    IGObject* fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
@@ -435,7 +435,7 @@ IGObject* createFleet(Player *player, IGObject* starSys, const string& name,
    return fleet;
 }
 
-pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+pair<IGObject*, bool> createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
                       const IdMap& ships, Planet *planetData) {
                       
    IGObject* fleet = createEmptyFleet(player, starSys, name);

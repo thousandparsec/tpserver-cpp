@@ -61,7 +61,7 @@ void RftsTurn::doTurn() {
    Game* game = Game::getGame();
    OrderManager* ordermanager = game->getOrderManager();
    ObjectManager* objectmanager = game->getObjectManager();
-   PlayerManager *pm = game->getPlayerManager();
+   PlayerManager::Ptr pm = game->getPlayerManager();
 
    set<uint32_t> objectsIds = objectmanager->getAllIds();
 
@@ -122,7 +122,7 @@ void RftsTurn::doTurn() {
    for(set<uint32_t>::iterator i = players.begin(); i != players.end(); ++i)
       PlayerInfo::getPlayerInfo(*i).clearPdbUpgrade();
 
-   Player* winner = getWinner();
+   Player::Ptr winner = getWinner();
    if(winner != NULL)
    {
       string body;
@@ -153,26 +153,26 @@ void RftsTurn::doTurn() {
 }
 
 void RftsTurn::setPlayerVisibleObjects() {
-   PlayerManager *pm = Game::getGame()->getPlayerManager();
+  PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
    
    set<uint32_t> gameObjects = Game::getGame()->getObjectManager()->getAllIds();
    set<uint32_t> players = pm->getAllIds();
    
    for(set<uint32_t>::const_iterator i = players.begin(); i != players.end(); i++)
    {
-      Player *player = pm->getPlayer(*i);
+     Player::Ptr player = pm->getPlayer(*i);
       setVisibleObjects(player);
    }
 }
 
-Player* RftsTurn::getWinner() {
+Player::Ptr RftsTurn::getWinner() {
 
    Game *game = Game::getGame();
    
    unsigned gameLength = strtol(Settings::getSettings()->get("game_length").c_str(), NULL, 10);
 
    uint32_t highestScore = 0, nextHighest = 0;
-   Player *winner = NULL;
+   Player::Ptr winner;
    
    
    // check for overwhelming victory (only if we're reasonablly started)
@@ -194,7 +194,7 @@ Player* RftsTurn::getWinner() {
       // or                game is NOT over
       if( highestScore < (nextHighest * 2.5) ||
           game->getTurnNumber() != gameLength )
-         winner = NULL;
+         winner.reset();
    }
 
    return winner;
@@ -203,7 +203,7 @@ Player* RftsTurn::getWinner() {
 
 // helpers
 
-void setVisibleObjects(Player *player) {
+void setVisibleObjects(Player::Ptr player) {
    ObjectManager *om = Game::getGame()->getObjectManager();
    
    IGObject *universe = om->getObject(0);

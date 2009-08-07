@@ -507,13 +507,13 @@ void Rfts::startGame() {
    Game::getGame()->setTurnName("Production, Construction, Movement");
 }
 
-bool Rfts::onAddPlayer(Player *player) {
+bool Rfts::onAddPlayer(Player::Ptr player) {
    DEBUG_FN_PRINT();
    unsigned players = Game::getGame()->getPlayerManager()->getNumPlayers();
    unsigned maxPlayers = strtol(Settings::getSettings()->get("max_players").c_str(), NULL, 10);
    return players < maxPlayers;
 }
-void Rfts::onPlayerAdded(Player *player) {
+void Rfts::onPlayerAdded(Player::Ptr player) {
    DEBUG_FN_PRINT();
 
    Game *game = Game::getGame();
@@ -601,7 +601,7 @@ void Rfts::onPlayerAdded(Player *player) {
       if(*playerit == player->getID())
         continue;
       
-      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      Player::Ptr oplayer = game->getPlayerManager()->getPlayer(*playerit);
       player->getPlayerView()->addVisibleDesigns( mydesignids );
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
@@ -729,7 +729,7 @@ Component::Ptr createTransportComponent() {
    return trans;
 }
 
-Design::Ptr  createMarkDesign(Player *owner, char level) {
+Design::Ptr  createMarkDesign(Player::Ptr owner, char level) {
    Design::Ptr mark( new Design() );
    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
    IdMap componentList;
@@ -750,7 +750,7 @@ Design::Ptr  createMarkDesign(Player *owner, char level) {
 }
 
 
-Design::Ptr  createScoutDesign(Player *owner) {
+Design::Ptr  createScoutDesign(Player::Ptr owner) {
    Design::Ptr  scout( new Design() );
    IdMap componentList;
 
@@ -768,7 +768,7 @@ Design::Ptr  createScoutDesign(Player *owner) {
    return scout;
 }
 
-Design::Ptr  createTransportDesign(Player *owner) {
+Design::Ptr  createTransportDesign(Player::Ptr owner) {
    Design::Ptr  trans( new Design() );
    IdMap componentList;
 

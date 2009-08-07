@@ -102,7 +102,7 @@ bool PlayerInfo::addShipTech(uint32_t points) {
    bool justUpgraded = false;
 
    Game* game = Game::getGame();
-   Player *player = game->getPlayerManager()->getPlayer(playerId);
+   Player::Ptr player = game->getPlayerManager()->getPlayer(playerId);
 
    if(shipTech >= TECH_2 && shipTech - points < TECH_2)
    {

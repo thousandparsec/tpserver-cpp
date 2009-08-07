@@ -27,8 +27,7 @@
 
 #include "staticobject.h"
 #include "ownedobject.h"
-
-class Player;
+#include <tpserver/player.h>
 
 namespace RFTS_ {
 
@@ -92,10 +91,10 @@ class Fleet : public StaticObject, public OwnedObject
 };
 
 //helper functions
-IGObject* createEmptyFleet(Player * player, IGObject* starSys, const std::string& name);
-IGObject* createFleet(Player *player, IGObject* starSys, const std::string& name,
+IGObject* createEmptyFleet(Player::Ptr player, IGObject* starSys, const std::string& name);
+IGObject* createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
                       const IdMap& ships);
-std::pair<IGObject*, bool> createFleet(Player *player, IGObject* starSys, const std::string& name,
+std::pair<IGObject*, bool> createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
                       const IdMap& ships, Planet *planetData);
 
 }

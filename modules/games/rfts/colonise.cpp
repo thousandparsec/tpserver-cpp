@@ -69,8 +69,8 @@ bool Colonise::doOrder(IGObject *obj) {
    IGObject *planetObj = om->getObject(planet->getObjectId());
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
 
-   Player *attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
-   Player *defender = NULL;
+   Player::Ptr attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player::Ptr defender;
    
    Message::Ptr msg( new Message() );
    

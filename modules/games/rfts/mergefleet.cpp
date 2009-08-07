@@ -68,7 +68,7 @@ bool MergeFleet::doOrder(IGObject *obj) {
    IGObject *otherFleetObj = om->getObject(otherFleet->getObjectId());
    Fleet *otherFleetData = dynamic_cast<Fleet*>(otherFleetObj->getObjectBehaviour());
 
-   Player *player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
+   Player::Ptr player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
    
    Message::Ptr msg( new Message() );
    msg->setSubject("Merge fleet order complete");

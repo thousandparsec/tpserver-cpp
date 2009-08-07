@@ -129,7 +129,7 @@ bool Move::doOrder(IGObject * obj) {
       exploreStarSys(obj);
       om->doneWithObject(newStarSys->getID());
 
-      Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
+      Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
       // post completion message
       Message::Ptr msg( new Message() );
