@@ -141,11 +141,11 @@ ObjectParameter* IGObject::getParameter(uint32_t groupnum, uint32_t paramnum) co
   }
 }
 
-void IGObject::setParameterGroup(const ObjectParameterGroupPtr &ng){
+void IGObject::setParameterGroup(const ObjectParameterGroupData::Ptr &ng){
   parameters[ng->getGroupId()] = ng;
 }
 
-std::map<uint32_t, ObjectParameterGroupPtr> IGObject::getParameterGroups() const{
+std::map<uint32_t, ObjectParameterGroupData::Ptr> IGObject::getParameterGroups() const{
   return parameters;
 }
 
@@ -173,7 +173,7 @@ void IGObject::setIsDirty(bool id){
 }
 
 ObjectParameter* IGObject::getParameterByType(uint32_t ptype) const{
-  for(std::map<uint32_t, ObjectParameterGroupPtr>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
+  for(std::map<uint32_t, ObjectParameterGroupData::Ptr>::const_iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     ObjectParameterGroupData::ParameterList params = (itcurr->second)->getParameters();
 

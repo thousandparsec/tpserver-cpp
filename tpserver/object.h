@@ -26,8 +26,6 @@
 #include <tpserver/protocolobject.h>
 
 class ObjectBehaviour;
-class ObjectParameter;
-
 
 class IGObject : public ProtocolObject {
 
@@ -65,8 +63,8 @@ class IGObject : public ProtocolObject {
     ObjectParameter* getParameter(uint32_t groupnum, uint32_t paramnum) const;
     ObjectParameter* getParameterByType(uint32_t type) const;
     
-    void setParameterGroup(const ObjectParameterGroupPtr &ng);
-    std::map<uint32_t, ObjectParameterGroupPtr> getParameterGroups() const;
+    void setParameterGroup(const ObjectParameterGroupData::Ptr &ng);
+    std::map<uint32_t, ObjectParameterGroupData::Ptr> getParameterGroups() const;
     
     ObjectBehaviour* getObjectBehaviour() const;
     void setObjectBehaviour(ObjectBehaviour* nob);
@@ -81,8 +79,8 @@ class IGObject : public ProtocolObject {
     bool alive;
     uint32_t type;
     
-    ObjectRelationshipsPtr relationships;
-    std::map<uint32_t, ObjectParameterGroupPtr> parameters;
+    ObjectRelationshipsData::Ptr relationships;
+    std::map<uint32_t, ObjectParameterGroupData::Ptr> parameters;
     ObjectBehaviour* behaviour;
 
 };

@@ -68,7 +68,7 @@ class ObjectParameterGroupDesc : public Describable {
     void addParameter(uint32_t type, const std::string& name, const std::string& desc);
 
     void packObjectDescFrame(Frame* f) const;
-    ObjectParameterGroupPtr createObjectParameterGroup() const;
+    ObjectParameterGroupData::Ptr createObjectParameterGroup() const;
 
 
   protected:

@@ -27,12 +27,10 @@
 
 class Frame;
 
-class ObjectRelationshipsData;
-
-typedef boost::shared_ptr<ObjectRelationshipsData> ObjectRelationshipsPtr;
-
 class ObjectRelationshipsData : public Modifiable {
   public:
+    typedef boost::shared_ptr<ObjectRelationshipsData> Ptr;
+
     ObjectRelationshipsData();
     ~ObjectRelationshipsData();
     

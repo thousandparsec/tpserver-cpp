@@ -28,13 +28,11 @@
 
 class Frame;
 class ObjectParameter;
-class ObjectParameterGroupData;
-
-typedef boost::shared_ptr<ObjectParameterGroupData> ObjectParameterGroupPtr;
 
 class ObjectParameterGroupData {
-
   public:
+    typedef boost::shared_ptr<ObjectParameterGroupData> Ptr;
+
     ObjectParameterGroupData();
     ObjectParameterGroupData(const ObjectParameterGroupData& rhs);
     ~ObjectParameterGroupData();
