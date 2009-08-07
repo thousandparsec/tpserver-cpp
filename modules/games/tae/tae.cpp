@@ -545,12 +545,12 @@ void taeRuleset::startGame() {
     Logger::getLogger()->info("TaE started");
 }
 
-bool taeRuleset::onAddPlayer(Player* player) {
+bool taeRuleset::onAddPlayer(Player::Ptr player) {
     Logger::getLogger()->debug("TaE onAddPlayer");
     return true;
 }
 
-void taeRuleset::onPlayerAdded(Player* player) {
+void taeRuleset::onPlayerAdded(Player::Ptr player) {
     Logger::getLogger()->debug("TaE onPlayerAdded");
 
     Game *game = Game::getGame();
@@ -639,7 +639,7 @@ void taeRuleset::onPlayerAdded(Player* player) {
     std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
 
-      Player* oplayer = game->getPlayerManager()->getPlayer(*playerit);
+      Player::Ptr oplayer = game->getPlayerManager()->getPlayer(*playerit);
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
 

@@ -83,7 +83,7 @@ void TaeTurn::doTurn(){
     OrderManager* ordermanager = game->getOrderManager();
     ObjectManager* objectmanager = game->getObjectManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
-    PlayerManager* playermanager = game->getPlayerManager();
+    PlayerManager::Ptr playermanager = game->getPlayerManager();
 
     //build map for storing orders
     std::map<uint32_t, std::list<IGObject*> > playerOrders;
@@ -177,7 +177,7 @@ void TaeTurn::doTurn(){
     // find the objects that are visible to each player
     std::set<uint32_t> vis = objectmanager->getAllIds();
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-        Player* player = playermanager->getPlayer(*itplayer);
+        Player::Ptr player = playermanager->getPlayer(*itplayer);
         PlayerView::Ptr playerview = player->getPlayerView();
 
         for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
@@ -280,7 +280,7 @@ void TaeTurn::initCombat() {
 
     Game* game = Game::getGame();
     ObjectManager* objectmanager = game->getObjectManager();
-    PlayerManager* playermanager = game->getPlayerManager();
+    PlayerManager::Ptr playermanager = game->getPlayerManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     DesignStore::Ptr ds = game->getDesignStore();
 
@@ -430,7 +430,7 @@ void TaeTurn::initCombat() {
     
     std::set<uint32_t> players = playermanager->getAllIds();
     for(itcurr = players.begin(); itcurr != players.end(); ++itcurr) {
-        Player* player = playermanager->getPlayer(*itcurr);        
+        Player::Ptr player = playermanager->getPlayer(*itcurr);        
         player->postToBoard(Message::Ptr( new Message(*msg)));
         player->getPlayerView()->addVisibleObjects( views );
     }
@@ -443,7 +443,7 @@ void TaeTurn::doCombatTurn() {
     OrderManager* ordermanager = game->getOrderManager();
     ObjectManager* objectmanager = game->getObjectManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
-    PlayerManager* playermanager = game->getPlayerManager();
+    PlayerManager::Ptr playermanager = game->getPlayerManager();
 
     containerids.clear();
 
@@ -500,7 +500,7 @@ void TaeTurn::doCombatTurn() {
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             if(f->getOwner() != winner) {
                 sendHome(i->first);
-                Player* p = playermanager->getPlayer(winner);
+                Player::Ptr p = playermanager->getPlayer(winner);
                 p->setScore(2, p->getScore(2) + 1);
                 losingRegion = i->second;
                 winningRegion = losingRegion;
@@ -547,7 +547,7 @@ void TaeTurn::doCombatTurn() {
         }
 
         //add 1 to the winner for removing the leader
-        Player* player = playermanager->getPlayer(winner);
+        Player::Ptr player = playermanager->getPlayer(winner);
         player->setScore(resourceType - 3, player->getScore(resourceType-3) + 1);
 
         //remove all losing colonies
@@ -630,7 +630,7 @@ void TaeTurn::doCombatTurn() {
     }
     
     for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
-        Player* player = playermanager->getPlayer(*itplayer);
+        Player::Ptr player = playermanager->getPlayer(*itplayer);
         PlayerView::Ptr playerview = player->getPlayerView();
 
         //Update visibility 
@@ -692,7 +692,7 @@ void TaeTurn::doCombatTurn() {
         Message::Ptr msg( new Message() );
         msg->setSubject("Combat Complete!");
         stringstream out;
-        Player* win = playermanager->getPlayer(winner);
+        Player::Ptr win = playermanager->getPlayer(winner);
         out << win->getName() << " has won the battle with a strength of ";
         out << strength[winner] << "!";
         msg->setBody(out.str());
@@ -753,7 +753,7 @@ void TaeTurn::awardArtifacts() {
     if(!artifacts.empty()) {
         uint32_t type;
         DesignStore::Ptr ds = game->getDesignStore();
-        PlayerManager* pm = game->getPlayerManager();
+        PlayerManager::Ptr pm = game->getPlayerManager();
         std::set<uint32_t> designs = ds->getDesignIds();
         //get leader ID
         for(itcurr = designs.begin(); itcurr != designs.end(); ++itcurr) {
@@ -778,7 +778,7 @@ void TaeTurn::awardArtifacts() {
                             StarSystem* sys = (StarSystem*)(objectmanager->getObject(obj->getParent())->getObjectBehaviour());
                             if(sys->getRegion() == parentData->getRegion()) {
                                 //+1 to leader's owner's artifact score
-                                Player* owner = pm->getPlayer(f->getOwner());
+                                Player::Ptr owner = pm->getPlayer(f->getOwner());
                                 owner->setScore(5, owner->getScore(5) + 1);
                                 p->removeResource(3, 1);
                                 artifacts.erase(*i);
@@ -811,7 +811,7 @@ void TaeTurn::sendHome(uint32_t fleet) {
     Game* game = Game::getGame();
     ObjectManager* obm = game->getObjectManager();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
-    PlayerManager* pm = game->getPlayerManager();
+    PlayerManager::Ptr pm = game->getPlayerManager();
 
     IGObject* fleetobj = obm->getObject(fleet);
     //Check to make sure it is really a fleet
@@ -821,7 +821,7 @@ void TaeTurn::sendHome(uint32_t fleet) {
     
     //Get all the required objects
     Fleet* f = (Fleet*) fleetobj->getObjectBehaviour();
-    Player* p = pm->getPlayer(f->getOwner());
+    Player::Ptr p = pm->getPlayer(f->getOwner());
     IGObject* sys = obm->getObject(fleetobj->getParent());
     StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
 
@@ -951,7 +951,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
 //End the game
 void gameOver() {
     Game* game = Game::getGame();
-    PlayerManager* pm = game->getPlayerManager();
+    PlayerManager::Ptr pm = game->getPlayerManager();
 
     map<uint32_t, uint32_t> finalScore;
     set<uint32_t>::iterator itcurr;
@@ -959,7 +959,7 @@ void gameOver() {
     
     //Find each player's final score
     for(itcurr = players.begin(); itcurr != players.end(); itcurr++) {
-        Player* p = pm->getPlayer(*itcurr);
+        Player::Ptr p = pm->getPlayer(*itcurr);
         uint32_t artifacts = p->getScore(5);
         //change artifact points to improve the types with the lowest
         //points
@@ -994,13 +994,13 @@ void gameOver() {
     }
 
     for(itcurr = players.begin(); itcurr != players.end(); itcurr++) {
-        Player* p = pm->getPlayer(*itcurr);
+        Player::Ptr p = pm->getPlayer(*itcurr);
 
         //Send message to each player
         Message::Ptr msg( new Message() );
         msg->setSubject("GAME OVER!");
         stringstream out;
-        Player* win = pm->getPlayer(winner);
+        Player::Ptr win = pm->getPlayer(winner);
         out << win->getName() << " has won the game with a score of ";
         out << finalScore[winner] << "!  ";
         out << "Your final score after distributing your alien artifacts was: ";

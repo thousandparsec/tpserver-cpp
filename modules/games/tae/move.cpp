@@ -96,7 +96,7 @@ bool Move::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
+    Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     IGObject* newStarSys = obm->getObject(starSys->getObjectId());
 

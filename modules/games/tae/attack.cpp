@@ -115,7 +115,7 @@ bool Attack::doOrder(IGObject * obj) {
 
 
     // post completion message
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
+    Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
     Message::Ptr msg( new Message() );
     msg->setSubject("Attack fleet order complete");
     msg->setBody(string("You're fleet, \"" + obj->getName() + "\" has destroyed ")

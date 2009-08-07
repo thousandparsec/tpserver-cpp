@@ -108,7 +108,7 @@ bool Colonize::doOrder(IGObject * obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
-    Player* player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
+    Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
     IGObject *newStarSys = obm->getObject(starSys->getObjectId());
 
@@ -193,7 +193,7 @@ bool Colonize::doOrder(IGObject * obj) {
         }
         if(leaderID >= 0) {
             Fleet* leader = (Fleet*) ((obm->getObject((uint32_t) leaderID))->getObjectBehaviour());
-            Player* owner = Game::getGame()->getPlayerManager()->getPlayer(leader->getOwner());
+            Player::Ptr owner = Game::getGame()->getPlayerManager()->getPlayer(leader->getOwner());
             owner->setScore(scoreType, owner->getScore(scoreType) + 1);
         }    
 

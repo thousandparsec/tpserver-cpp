@@ -36,8 +36,8 @@ class taeRuleset : public Ruleset {
         void initGame();
         void createGame();
         void startGame();
-        bool onAddPlayer(Player* player);
-        void onPlayerAdded(Player* player);
+        bool onAddPlayer(Player::Ptr player);
+        void onPlayerAdded(Player::Ptr player);
 
     private:
         FleetBuilder* fleetBuilder;

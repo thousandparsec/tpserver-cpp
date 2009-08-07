@@ -64,7 +64,7 @@ FleetBuilder::~FleetBuilder() {
 
 //Creates a fleet of type fleetType with ships of shipType for the owner at the location of the parent
 //with the name of name
-IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, IGObject* parent, std::string name) {
+IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player::Ptr owner, IGObject* parent, std::string name) {
     Game *game = Game::getGame();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     IGObject *fleet = game->getObjectManager()->createNewObject();
@@ -117,7 +117,7 @@ IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player* owner, 
 
     std::set<uint32_t> playerids = game->getPlayerManager()->getAllIds();
     for(std::set<uint32_t>::iterator playerit = playerids.begin(); playerit != playerids.end(); ++playerit){
-        Player* player = game->getPlayerManager()->getPlayer(*playerit);
+        Player::Ptr player = game->getPlayerManager()->getPlayer(*playerit);
         if(*playerit == owner->getID()) {
             player->getPlayerView()->addVisibleDesign( ship->getDesignId(), true );
         } else {
@@ -149,7 +149,7 @@ bool FleetBuilder::shipsEmpty() {
  */
 
 //Create a passenger ship of the specified type for the owner
-Design::Ptr  FleetBuilder::createPassengerShip(Player* owner, int type) {
+Design::Ptr  FleetBuilder::createPassengerShip(Player::Ptr owner, int type) {
     Design::Ptr  ship( new Design() );
     IdMap componentList;
 
@@ -179,7 +179,7 @@ Design::Ptr  FleetBuilder::createPassengerShip(Player* owner, int type) {
 }
 
 //Create a random passenger ship
-Design::Ptr  FleetBuilder::createRandomPassengerShip(Player* owner) {
+Design::Ptr  FleetBuilder::createRandomPassengerShip(Player::Ptr owner) {
     int type;
 
     //Check to see if there are any ships left
@@ -199,7 +199,7 @@ Design::Ptr  FleetBuilder::createRandomPassengerShip(Player* owner) {
 }
 
 //Create a leader's ship
-Design::Ptr  FleetBuilder::createVIPTransport(Player* owner, int type) {
+Design::Ptr  FleetBuilder::createVIPTransport(Player::Ptr owner, int type) {
     Design::Ptr  ship( new Design() );
     IdMap componentList;
 
@@ -229,7 +229,7 @@ Design::Ptr  FleetBuilder::createVIPTransport(Player* owner, int type) {
 }
 
 //Create a bomber
-Design::Ptr  FleetBuilder::createBomber(Player* owner) {
+Design::Ptr  FleetBuilder::createBomber(Player::Ptr owner) {
     Design::Ptr  ship( new Design() );
     IdMap componentList;
 
