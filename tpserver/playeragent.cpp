@@ -898,7 +898,7 @@ void PlayerAgent::processGetPlayerIds(Frame* frame){
 
   fromtime = frame->unpackInt64();
 
-  PlayerManager* pm = Game::getGame()->getPlayerManager();
+  PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
   IdSet idset = pm->getAllIds();
 
   IdModList modlist;

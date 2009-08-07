@@ -25,6 +25,7 @@
 
 class PlayerManager : public Manager<Player>{
 public:
+    typedef boost::shared_ptr<PlayerManager> Ptr;
     PlayerManager();
     ~PlayerManager();
 

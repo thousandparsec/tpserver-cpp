@@ -59,7 +59,7 @@ class Game {
     OrderManager* getOrderManager() const;
     ObjectTypeManager* getObjectTypeManager() const;
     BoardManager* getBoardManager() const;
-    PlayerManager* getPlayerManager() const;
+    boost::shared_ptr<PlayerManager> getPlayerManager() const;
     
     void setTurnProcess(TurnProcess* tp);
     TurnProcess* getTurnProcess() const;
@@ -125,7 +125,7 @@ class Game {
     ObjectTypeManager * objecttypemanager;
     BoardManager* boardmanager;
     boost::shared_ptr<ResourceManager> resourcemanager;
-    PlayerManager* playermanager;
+    boost::shared_ptr<PlayerManager> playermanager;
     TurnProcess * turnprocess;
     boost::shared_ptr<DesignStore> designstore;
     Persistence* persistence;
