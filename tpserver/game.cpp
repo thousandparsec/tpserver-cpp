@@ -211,7 +211,7 @@ BoardManager* Game::getBoardManager() const{
     return boardmanager;
 }
 
-ResourceManager* Game::getResourceManager() const{
+ResourceManager::Ptr Game::getResourceManager() const{
     return resourcemanager;
 }
 
@@ -475,7 +475,7 @@ Game::Game() : ctime(0), turnNum(0),turnname(""), key(), turntimer(NULL){
   ordermanager = new OrderManager();
   objecttypemanager = new ObjectTypeManager();
   boardmanager = new BoardManager();
-  resourcemanager = new ResourceManager();
+  resourcemanager.reset( new ResourceManager() );
   playermanager = new PlayerManager();
   designstore.reset( new DesignStore() );
   turnprocess = NULL;
@@ -501,7 +501,6 @@ Game::~Game()
   delete ordermanager;
   delete objecttypemanager;
     delete boardmanager;
-    delete resourcemanager;
     delete playermanager;
   if(turnprocess != NULL)
     delete turnprocess;

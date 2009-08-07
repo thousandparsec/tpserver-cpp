@@ -30,20 +30,21 @@ class ResourceDescription;
 */
 class ResourceManager
 {
-public:
+  public:
+    typedef boost::shared_ptr<ResourceManager> Ptr;
     ResourceManager();
     ~ResourceManager();
 
     void init();
-    
+
     uint32_t addResourceDescription(ResourceDescription::Ptr res);
-    
+
     const ResourceDescription::Ptr getResourceDescription(uint32_t restype);
     const ResourceDescription::Ptr getResourceDescription(const std::string& restype);
-    
+
     IdSet getAllIds();
 
-private:
+  private:
     typedef std::map<uint32_t, ResourceDescription::Ptr> ResourceMap;
     ResourceMap resdescs;
     uint32_t nextid;

@@ -839,7 +839,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
     fromtime = frame->unpackInt64();
   }
 
-  ResourceManager* rm = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr rm = Game::getGame()->getResourceManager();
   IdSet idset = rm->getAllIds();
 
   IdModList modlist;
