@@ -21,7 +21,6 @@
 #include <time.h>
 
 #include "frame.h"
-#include "objectparametergroupdesc.h"
 #include "objectbehaviour.h"
 #include "algorithms.h"
 #include <boost/bind.hpp>
@@ -35,7 +34,6 @@ ObjectType::ObjectType( const std::string& nname, const std::string& ndesc ) :
 }
 
 ObjectType::~ObjectType(){
-  delete_map_all( paramgroups );
 }
 
 uint32_t ObjectType::getType() const{
@@ -51,11 +49,11 @@ void ObjectType::pack(Frame* frame) const
   ProtocolObject::pack( frame );
   frame->packInt64(getModTime());
   frame->packInt(paramgroups.size());
-  for_each_value( paramgroups.begin(), paramgroups.end(), boost::bind( &ObjectParameterGroupDesc::packObjectDescFrame, _1, frame ) );
+  for_each_value( paramgroups.begin(), paramgroups.end(), boost::bind( &ObjectParameterGroupDesc::pack, _1, frame ) );
 }
 
 void ObjectType::setupObject(IGObject::Ptr obj) const{
-  for(std::map<uint32_t, ObjectParameterGroupDesc*>::const_iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
+  for(std::map<uint32_t, ObjectParameterGroupDesc::Ptr>::const_iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
     obj->setParameterGroup((itcurr->second)->createObjectParameterGroup());
   }
@@ -66,14 +64,16 @@ void ObjectType::setupObject(IGObject::Ptr obj) const{
   ob->setupObject();
 }
 
-void ObjectType::addParameterGroupDesc(ObjectParameterGroupDesc* group){
-  group->setGroupId(nextparamgroupid);
-  paramgroups[nextparamgroupid] = group;
+ObjectParameterGroupDesc::Ptr ObjectType::createParameterGroupDesc( const std::string& gname, const std::string& gdesc )
+{
+  ObjectParameterGroupDesc::Ptr result( new ObjectParameterGroupDesc( nextparamgroupid, gname, gdesc ) );
+  paramgroups[nextparamgroupid] = result;
   nextparamgroupid++;
   touchModTime();
+  return result;
 }
 
-ObjectParameterGroupDesc* ObjectType::getParameterGroupDesc(uint32_t groupid) const{
-  return find_default( paramgroups, groupid, NULL );
+ObjectParameterGroupDesc::Ptr ObjectType::getParameterGroupDesc(uint32_t groupid) const{
+  return find_default( paramgroups, groupid, ObjectParameterGroupDesc::Ptr() );
 }
 

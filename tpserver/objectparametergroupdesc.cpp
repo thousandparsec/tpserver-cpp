@@ -32,99 +32,47 @@
 #include "integerobjectparam.h"
 #include "mediaobjectparam.h"
 #include "logging.h"
+#include "objectparametergroup.h"
 
 #include "objectparametergroupdesc.h"
 #include <boost/bind.hpp>
 
-ObjectParameterDesc::ObjectParameterDesc() : type(0), name(), description(){
+ObjectParameterGroupDesc::ObjectParameterGroupDesc( uint32_t nid, const std::string& pname, const std::string& pdesc ) 
+  : Describable(nid, pname, pdesc) {
 }
 
-ObjectParameterDesc::ObjectParameterDesc(const ObjectParameterDesc& rhs){
-  type = rhs.type;
-  name = rhs.name;
-  description = rhs.description;
-}
-
-ObjectParameterDesc::~ObjectParameterDesc(){
-}
-
-ObjectParameterDesc& ObjectParameterDesc::operator=(const ObjectParameterDesc& rhs){
-  type = rhs.type;
-  name = rhs.name;
-  description = rhs.description;
-  return *this;
-}
-
-void ObjectParameterDesc::setType(uint32_t nt){
-  type = nt;
-}
-
-void ObjectParameterDesc::setName(const std::string& nn){
-  name = nn;
-}
-
-void ObjectParameterDesc::setDescription(const std::string& nd){
-  description = nd;
-}
-
-uint32_t ObjectParameterDesc::getType() const{
-  return type;
-}
-
-void ObjectParameterDesc::packObjectDescFrame(Frame* f)const {
-  f->packString(name);
-  f->packInt(type);
-  f->packString(description);
-  //HACK: probably should be made configurable
-  // Maybe have subclasses of ObjectParamDesc, or add field of ObjectParamDesc.
-  if(type == obpT_Order_Queue){
-      f->packInt(100);
-  }
-}
-
-ObjectParameterGroupDesc::ObjectParameterGroupDesc() : Describable(0), parameters(){
-}
-
-ObjectParameterGroupDesc::~ObjectParameterGroupDesc(){
-}
-
-uint32_t ObjectParameterGroupDesc::getGroupId() const{
-  return getId();
-}
-
-void ObjectParameterGroupDesc::setGroupId(uint32_t ni){
-  setId( ni );
-}
-
-void ObjectParameterGroupDesc::addParameter(const ObjectParameterDesc &op){
+void ObjectParameterGroupDesc::addParameter(uint32_t ptype, const std::string& pname, const std::string& pdesc){
+  ParameterDesc op( ptype, pname, pdesc );
   parameters.push_back(op);
 }
 
-void ObjectParameterGroupDesc::addParameter(uint32_t type, const std::string& name, const std::string& desc){
-  ObjectParameterDesc op;
-  op.setType(type);
-  op.setName(name);
-  op.setDescription(desc);
-  addParameter(op);
-}
-
-void ObjectParameterGroupDesc::packObjectDescFrame(Frame * f) const{
+void ObjectParameterGroupDesc::pack(Frame * f) const{
 
   f->packInt(id);
   f->packString(name);
   f->packString(desc);
   f->packInt(parameters.size());
-  std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterDesc::packObjectDescFrame, _1, f ) );
-  
+  for ( Parameters::const_iterator it = parameters.begin(); it != parameters.end(); ++it )
+  {
+    uint32_t pid = it->get<0>();
+    f->packString(it->get<1>());
+    f->packInt(pid);
+    f->packString(it->get<2>());
+    //HACK: probably should be made configurable
+    // Maybe have subclasses of ObjectParamDesc, or add field of ObjectParamDesc.
+    if(pid == obpT_Order_Queue){
+      f->packInt(100);
+    }
+  }
 }
 
 ObjectParameterGroup::Ptr ObjectParameterGroupDesc::createObjectParameterGroup() const{
   ObjectParameterGroup::Ptr pg(new ObjectParameterGroup());
   pg->setGroupId(id);
-  for(std::list<ObjectParameterDesc>::const_iterator itcurr = parameters.begin();
+  for(Parameters::const_iterator itcurr = parameters.begin();
       itcurr != parameters.end(); ++itcurr){
     ObjectParameter* param = NULL;
-    switch((*itcurr).getType()){
+    switch(itcurr->get<0>()){
       case obpT_Position_3D:
         param = new Position3dObjectParam();
         break;
@@ -154,7 +102,7 @@ ObjectParameterGroup::Ptr ObjectParameterGroupDesc::createObjectParameterGroup()
         break;
         
       default:
-        Logger::getLogger()->warning("Unknown ObjectParameter type %d in creating ParameterGroup", (*itcurr).getType());
+        Logger::getLogger()->warning("Unknown ObjectParameter type %d in creating ParameterGroup", itcurr->get<0>());
         throw new std::exception();
         break;
     }

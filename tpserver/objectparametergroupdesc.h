@@ -21,58 +21,28 @@
  *
  */
 
-#include <stdint.h>
-#include <string>
-#include <list>
-#include <tpserver/objectparametergroup.h>
 #include <tpserver/describable.h>
+#include <tpserver/packable.h>
+#include <boost/tuple/tuple.hpp>
 
 class Frame;
-class ObjectParameter;
+class ObjectParameterGroup;
 
-class ObjectParameterDesc{
+class ObjectParameterGroupDesc : public Describable, public Packable {
   public:
-    ObjectParameterDesc();
-    ObjectParameterDesc(const ObjectParameterDesc& rhs);
-    ~ObjectParameterDesc();
-    
-    ObjectParameterDesc& operator=(const ObjectParameterDesc& rhs);
-    
-    void setType(uint32_t nt);
-    void setName(const std::string& nn);
-    void setDescription(const std::string& nd);
-    
-    uint32_t getType() const;
-    
-    void packObjectDescFrame(Frame* f) const;
-    
-  private:
-    uint32_t type;
-    std::string name;
-    std::string description;
-  
-};
+    typedef boost::shared_ptr<ObjectParameterGroupDesc> Ptr;
 
-class ObjectParameterGroupDesc : public Describable {
-  public:
-    ObjectParameterGroupDesc();
-    ~ObjectParameterGroupDesc();
+    ObjectParameterGroupDesc( uint32_t nid, const std::string& pname, const std::string& pdesc );
 
-    //TODO: remove
-    uint32_t getGroupId() const;
+    void addParameter(uint32_t ptype, const std::string& pname, const std::string& pdesc);
 
-    // TODO: remove
-    void setGroupId(uint32_t ni);
-
-    void addParameter(const ObjectParameterDesc& op);
-    void addParameter(uint32_t type, const std::string& name, const std::string& desc);
-
-    void packObjectDescFrame(Frame* f) const;
-    ObjectParameterGroup::Ptr createObjectParameterGroup() const;
-
+    void pack(Frame* f) const;
+    boost::shared_ptr<ObjectParameterGroup> createObjectParameterGroup() const;
 
   protected:
-    std::list<ObjectParameterDesc> parameters;
+    typedef boost::tuple< uint32_t, std::string, std::string > ParameterDesc;
+    typedef std::list<ParameterDesc> Parameters;
+    Parameters parameters;
 
 };
 

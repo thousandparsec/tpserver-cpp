@@ -23,9 +23,9 @@
 #include <tpserver/modifiable.h>
 #include <tpserver/object.h>
 #include <tpserver/protocolobject.h>
+#include <tpserver/objectparametergroupdesc.h>
 
 class Frame;
-class ObjectParameterGroupDesc;
 class ObjectBehaviour;
 
 class ObjectType : public ProtocolObject {
@@ -41,13 +41,13 @@ class ObjectType : public ProtocolObject {
     void setupObject(IGObject::Ptr obj) const;
 
   protected:
-    void addParameterGroupDesc(ObjectParameterGroupDesc* group);
-    ObjectParameterGroupDesc* getParameterGroupDesc(uint32_t groupid) const;
+    ObjectParameterGroupDesc::Ptr createParameterGroupDesc( const std::string& gname, const std::string& gdesc );
+    ObjectParameterGroupDesc::Ptr getParameterGroupDesc(uint32_t groupid) const;
     virtual ObjectBehaviour* createObjectBehaviour() const = 0;
 
   private:
     uint32_t nextparamgroupid;
-    std::map<uint32_t, ObjectParameterGroupDesc*> paramgroups;
+    std::map<uint32_t, ObjectParameterGroupDesc::Ptr> paramgroups;
 };
 
 #endif
