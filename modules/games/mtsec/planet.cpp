@@ -37,9 +37,7 @@
 namespace MTSecRuleset {
 
 PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object"){
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Resources");
-  group->setDescription("The planet's resources");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Resources", "The planet's resources");
   group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
   addParameterGroupDesc(group);
 
@@ -50,8 +48,6 @@ PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object"){
   group->addParameter(obpT_Integer, "One Time", "The factories to be enhanced one time only");
   addParameterGroupDesc(group);
 
-  nametype = "Planet";
-  typedesc = "A planet object";
 }
 
 PlanetType::~PlanetType(){
