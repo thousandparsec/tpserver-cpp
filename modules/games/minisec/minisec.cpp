@@ -529,6 +529,7 @@ void MiniSec::createGame(){
   sirius->addToParent(mw_galaxy->getID());
   obman->addObject(sirius);
 
+  uint32_t queueid;
 
   // now for some planets
   IGObject::Ptr earth = game->getObjectManager()->createNewObject();
@@ -537,12 +538,9 @@ void MiniSec::createGame(){
   theearth->setSize(2);
   earth->setName("Earth/Terra");
   theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
-  OrderQueue *planetoq = new OrderQueue();
-  planetoq->setObjectId(earth->getID());
-  planetoq->addOwner(0);
-  game->getOrderManager()->addOrderQueue(planetoq);
+  queueid = game->getOrderManager()->addOrderQueue(earth->getID(), 0);
   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(planetoq->getQueueId());
+  oqop->setQueueId(queueid);
   theearth->setDefaultOrderTypes();
   theearth->setIcon("common/object-icons/planet");
   theearth->setMedia("common-2d/foreign/freeorion/planet-small/animation/terran1");
@@ -555,12 +553,9 @@ void MiniSec::createGame(){
   thevenus->setSize(2);
   venus->setName("Venus");
   thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
-  planetoq = new OrderQueue();
-  planetoq->setObjectId(venus->getID());
-  planetoq->addOwner(0);
-  game->getOrderManager()->addOrderQueue(planetoq);
+  queueid = game->getOrderManager()->addOrderQueue(venus->getID(), 0);
   oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(planetoq->getQueueId());
+  oqop->setQueueId(queueid);
   thevenus->setDefaultOrderTypes();
   thevenus->setIcon("common/object-icons/planet");
   thevenus->setMedia("common-2d/foreign/freeorion/planet-small/animation/desert1");
@@ -573,12 +568,9 @@ void MiniSec::createGame(){
   themars->setSize(2);
   mars->setName("Mars");
   themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
-  planetoq = new OrderQueue();
-  planetoq->setObjectId(mars->getID());
-  planetoq->addOwner(0);
-  game->getOrderManager()->addOrderQueue(planetoq);
+  queueid = game->getOrderManager()->addOrderQueue(mars->getID(), 0);
   oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(planetoq->getQueueId());
+  oqop->setQueueId(queueid);
   themars->setDefaultOrderTypes();
   themars->setIcon("common/object-icons/planet");
   themars->setMedia("common-2d/foreign/freeorion/planet-small/animation/inferno1");
@@ -591,12 +583,9 @@ void MiniSec::createGame(){
   theacprime->setSize(2);
   acprime->setName("Alpha Centauri Prime");
   theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
-  planetoq = new OrderQueue();
-  planetoq->setObjectId(acprime->getID());
-  planetoq->addOwner(0);
-  game->getOrderManager()->addOrderQueue(planetoq);
+  queueid = game->getOrderManager()->addOrderQueue(acprime->getID(), 0);
   oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(planetoq->getQueueId());
+  oqop->setQueueId(queueid);
   theacprime->setDefaultOrderTypes();
   theacprime->setIcon("common/object-icons/planet");
   theacprime->setMedia("common-2d/foreign/freeorion/planet-small/animation/toxic1");
@@ -609,12 +598,9 @@ void MiniSec::createGame(){
   thes1->setSize(2);
   s1->setName("Sirius 1");
   thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
-  planetoq = new OrderQueue();
-  planetoq->setObjectId(s1->getID());
-  planetoq->addOwner(0);
-  game->getOrderManager()->addOrderQueue(planetoq);
+  queueid = game->getOrderManager()->addOrderQueue(s1->getID(), 0);
   oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(planetoq->getQueueId());
+  oqop->setQueueId(queueid);
   thes1->setDefaultOrderTypes();
   thes1->setIcon("common/object-icons/planet");
   thes1->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
@@ -796,6 +782,8 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
 
     Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
 
+    uint32_t queueid;
+
     theplanet->setSize(2);
 
     theplanet->setOwner(player->getID());
@@ -805,12 +793,9 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     theplanet->setIcon("common/object-icons/planet");
     theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setObjectId(planet->getID());
-    planetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(planetoq);
+    queueid = game->getOrderManager()->addOrderQueue(planet->getID(), player->getID());
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId(queueid);
     theplanet->setDefaultOrderTypes();
 
     planet->addToParent(star->getID());
@@ -828,12 +813,9 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
+    queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId(queueid);
     thefleet->setDefaultOrderTypes();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
@@ -855,12 +837,9 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 
-    fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
+    queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId(queueid);
     thefleet->setDefaultOrderTypes();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
@@ -882,12 +861,9 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 
-    fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
+    queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
     oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId(queueid);
     thefleet->setDefaultOrderTypes();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + fleetmedia->getName());
@@ -990,12 +966,9 @@ IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_
         theplanet->setPosition( thestar->getPosition() + Vector3d( i * 40000ll,
                                                              i * -35000ll,
                                                              0ll));
-        OrderQueue *planetoq = new OrderQueue();
-        planetoq->setObjectId(planet->getID());
-        planetoq->addOwner(0);
-        game->getOrderManager()->addOrderQueue(planetoq);
+        uint32_t queueid = game->getOrderManager()->addOrderQueue(planet->getID(), 0);
         OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-        oqop->setQueueId(planetoq->getQueueId());
+        oqop->setQueueId(queueid);
         theplanet->setDefaultOrderTypes();
         theplanet->setIcon("common/object-icons/planet");
         theplanet->setMedia("common-2d/planet-small/animation/" + planetmedia->getName());

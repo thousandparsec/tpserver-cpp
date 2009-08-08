@@ -98,32 +98,32 @@ bool Colonise::doOrder(IGObject::Ptr ob){
 	  shiphp = (int)design->getPropertyValue(armorPropID);
 	}
       }
-      
+
       Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): shiptype %d", 
-        ob->getID(), shiptype);
+          ob->getID(), shiptype);
       if(shiptype != 0){
         uint32_t oldowner = planet->getOwner();
-	planet->setOwner(fleet->getOwner());
+        planet->setOwner(fleet->getOwner());
         Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->addOwnedObject(target->getID());
         uint32_t queueid = static_cast<OrderQueueObjectParam*>(target->getParameterByType(obpT_Order_Queue))->getQueueId();
-        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
         queue->removeOwner(oldowner);
         queue->addOwner(fleet->getOwner());
-	
-	fleet->removeShips(shiptype, 1);
-	
-	msg->setSubject("Colonised planet");
-	msg->setBody("You have colonised a planet!");
-	msg->addReference(rst_Action_Order, rsorav_Completion);
-        
+
+        fleet->removeShips(shiptype, 1);
+
+        msg->setSubject("Colonised planet");
+        msg->setBody("You have colonised a planet!");
+        msg->addReference(rst_Action_Order, rsorav_Completion);
+
       }else{
-	msg->setSubject("Colonisation failed");
-	msg->setBody("Your fleet did not have a frigate to colonise the planet");
-	msg->addReference(rst_Action_Order, rsorav_Invalid);
+        msg->setSubject("Colonisation failed");
+        msg->setBody("Your fleet did not have a frigate to colonise the planet");
+        msg->addReference(rst_Action_Order, rsorav_Invalid);
       }
-      
+
       if(fleet->totalShips() == 0){
-	Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
+        Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
         Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(ob->getID());
       }
       

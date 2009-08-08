@@ -189,12 +189,9 @@ bool Build::doOrder(IGObject::Ptr ob)
     thefleet->setPosition(planet->getPosition());
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
     
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(ownerid);
-    Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
+    uint32_t queueid = Game::getGame()->getOrderManager()->addOrderQueue(fleet->getID(), ownerid);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId(queueid);
     thefleet->setDefaultOrderTypes();
     thefleet->setIcon("common/object-icons/ship");
     thefleet->setMedia("common-2d/foreign/vegastrike/ship-small/" + ((MiniSec*)(game->getRuleset()))->getFleetMediaNames()->getName());
