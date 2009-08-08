@@ -77,7 +77,7 @@ void Move::inputFrame(Frame *f, uint32_t playerid) {
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr starSysObj = obm->getObject(starSys->getObjectId());
     StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
     // Check to see if it is a legal system for this fleet 
@@ -92,13 +92,13 @@ void Move::inputFrame(Frame *f, uint32_t playerid) {
     }    
 }
 
-bool Move::doOrder(IGObject * obj) {
+bool Move::doOrder(IGObject::Ptr obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
     Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
-    IGObject* newStarSys = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr newStarSys = obm->getObject(starSys->getObjectId());
 
     //Perform last minute checks to make sure this is a valid system
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
@@ -170,7 +170,7 @@ bool Move::doOrder(IGObject * obj) {
     }
 
     //Remove old parent from region
-    IGObject* parent = obm->getObject(obj->getParent());
+    IGObject::Ptr parent = obm->getObject(obj->getParent());
     if(parent->getType() == obtm->getObjectTypeByName("Star System")) {
         StarSystem* parentData = (StarSystem*) (parent->getObjectBehaviour());
         parentData->setRegion(0);
@@ -205,7 +205,7 @@ bool Move::isBorderingScienceColony(StarSystem* system) {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
                 Planet* p = (Planet*)(tempObj->getObjectBehaviour());
                 if(p->getResource(5) > 1) {
@@ -218,7 +218,7 @@ bool Move::isBorderingScienceColony(StarSystem* system) {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
                 Planet* p = (Planet*)(tempObj->getObjectBehaviour());
                 if(p->getResource(5) > 1) {

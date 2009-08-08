@@ -144,7 +144,7 @@ void taeRuleset::createGame() {
     uint32_t obT_Galaxy = obtm->getObjectTypeByName("Galaxy");
 
     //Create the universe
-    IGObject* universe = obm->createNewObject();
+    IGObject::Ptr universe = obm->createNewObject();
     obtm->setupObject(universe, obT_Universe);
     Universe* theUniverse = (Universe*)(universe->getObjectBehaviour());
     theUniverse->setSize(1000000000000ll);
@@ -153,7 +153,7 @@ void taeRuleset::createGame() {
     obm->addObject(universe);
 
     //Create the galaxy
-    IGObject* gal = obm->createNewObject();
+    IGObject::Ptr gal = obm->createNewObject();
     obtm->setupObject(gal, obT_Galaxy);
     EmptyObject* galob = (EmptyObject*)(gal->getObjectBehaviour());
     galob->setSize(100000000000ll);
@@ -210,7 +210,7 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
         for(uint32_t i = 0; i < line.length(); i++) {
 
             //Create a star system
-            IGObject* sys1 = obm->createNewObject();
+            IGObject::Ptr sys1 = obm->createNewObject();
             obtm->setupObject(sys1, obtm->getObjectTypeByName("Star System"));
             StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
             sys1ob->setSize(60000ll);
@@ -223,7 +223,7 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
             obm->addObject(sys1);
 
             //Create a planet
-            IGObject *p = obm->createNewObject();
+            IGObject::Ptr p = obm->createNewObject();
             obtm->setupObject(p, obtm->getObjectTypeByName("Planet"));
             Planet * pob = (Planet*)(p->getObjectBehaviour());
             pob->setSize(2);
@@ -577,7 +577,7 @@ void taeRuleset::onPlayerAdded(Player::Ptr player) {
    std::set<uint32_t> mydesignids;
 
     //Add system and planet to hold player's fleets
-    IGObject* sys1 = game->getObjectManager()->createNewObject();
+    IGObject::Ptr sys1 = game->getObjectManager()->createNewObject();
     obtm->setupObject(sys1, obtm->getObjectTypeByName("Star System"));
     StarSystem* sys1ob = (StarSystem*)(sys1->getObjectBehaviour());
     sys1ob->setSize(60000ll);
@@ -588,7 +588,7 @@ void taeRuleset::onPlayerAdded(Player::Ptr player) {
     sys1->addToParent(1);
     game->getObjectManager()->addObject(sys1);
 
-    IGObject *p = game->getObjectManager()->createNewObject();
+    IGObject::Ptr p = game->getObjectManager()->createNewObject();
     obtm->setupObject(p, obtm->getObjectTypeByName("Planet"));
     Planet * pob = (Planet*)(p->getObjectBehaviour());
     pob->setSize(2);
@@ -605,7 +605,7 @@ void taeRuleset::onPlayerAdded(Player::Ptr player) {
     game->getObjectManager()->addObject(p);
 
     //Setup starting fleets
-    IGObject* fleet;
+    IGObject::Ptr fleet;
     
     //Colonist fleets
     for(int i = 0; i < 6; i++) {

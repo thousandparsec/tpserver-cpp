@@ -86,13 +86,13 @@ void TaeTurn::doTurn(){
     PlayerManager::Ptr playermanager = game->getPlayerManager();
 
     //build map for storing orders
-    std::map<uint32_t, std::list<IGObject*> > playerOrders;
+    std::map<uint32_t, std::list<IGObject::Ptr > > playerOrders;
 
     containerids.clear();
     //separate orders by player
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == planettype || ob->getType() == fleettype){
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
             if(oqop != NULL){
@@ -101,7 +101,7 @@ void TaeTurn::doTurn(){
                     Order * currOrder = orderqueue->getFirstOrder();
                     if(currOrder != NULL){
                         uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();
-                        std::list<IGObject*>::iterator i = playerOrders[owner].end();
+                        std::list<IGObject::Ptr >::iterator i = playerOrders[owner].end();
                         playerOrders[owner].insert(i, ob);
                     }
                 }
@@ -121,7 +121,7 @@ void TaeTurn::doTurn(){
             itcurr = players.begin();
         }
         if(playerOrders[*itcurr].size() > 0) {
-            for(std::list<IGObject*>::iterator i = playerOrders[*itcurr].begin(); i != playerOrders[*itcurr].end(); i++) {
+            for(std::list<IGObject::Ptr >::iterator i = playerOrders[*itcurr].begin(); i != playerOrders[*itcurr].end(); i++) {
                 OrderQueue* orderqueue = ordermanager->getOrderQueue(((OrderQueueObjectParam*)((*i)->getParameterByType(obpT_Order_Queue)))->getQueueId());
                 Order* currOrder = orderqueue->getFirstOrder();
                 if(currOrder!= NULL) {
@@ -145,7 +145,7 @@ void TaeTurn::doTurn(){
     objects = objectmanager->getAllIds();
     int numArtifacts = 0;
     for(itcurr = objects.begin(); itcurr != objects.end(); itcurr++) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
             Planet* p = (Planet*) ob->getObjectBehaviour();
             if(p->getResource(3) > 0) {
@@ -167,7 +167,7 @@ void TaeTurn::doTurn(){
 
     // to once a turn
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->isAlive()){
             ob->getObjectBehaviour()->doOnceATurn();
         }
@@ -188,7 +188,7 @@ void TaeTurn::doTurn(){
                 }
                 objectmanager->doneWithObject(*itob);
             }else{
-                IGObject* ro = objectmanager->getObject(*itob);
+                IGObject::Ptr ro = objectmanager->getObject(*itob);
                 uint64_t obmt = ro->getModTime();
                 objectmanager->doneWithObject(*itob);
                 if(obmt > obv->getModTime()){
@@ -213,9 +213,9 @@ void TaeTurn::doTurn(){
 
         //Replace colonist fleets
         int fleets = 0;
-        IGObject* homePlanet;
+        IGObject::Ptr homePlanet;
         for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end(); ++itob){    
-            IGObject * ob = objectmanager->getObject(*itob);
+            IGObject::Ptr ob = objectmanager->getObject(*itob);
             if(ob->getName().compare("Colonist Fleet") == 0) {
                 uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();                if(owner == *itplayer) {
                     fleets++;
@@ -227,7 +227,7 @@ void TaeTurn::doTurn(){
         }
 
         for(int i = fleets; i < 6; i++) {
-            IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
+            IGObject::Ptr fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
             game->getObjectManager()->addObject(fleet);
             player->getPlayerView()->addVisibleObject(fleet->getID(), true);
         }
@@ -292,7 +292,7 @@ void TaeTurn::initCombat() {
     combatants = temp.second;
     strength.clear();
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-        IGObject* ob = Game::getGame()->getObjectManager()->getObject(i->first);
+        IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(i->first);
         Fleet* f = (Fleet*) ob->getObjectBehaviour();
         strength[f->getOwner()] = 0;
     }
@@ -301,7 +301,7 @@ void TaeTurn::initCombat() {
     set<uint32_t> regions;
     string shipType;
     for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-        IGObject* ob = objectmanager->getObject(i->first);
+        IGObject::Ptr ob = objectmanager->getObject(i->first);
         Fleet* leader = (Fleet*) (ob)->getObjectBehaviour();
         //look for the shiptype which this combat is associated with
         if(shipType.empty()) {
@@ -326,7 +326,7 @@ void TaeTurn::initCombat() {
 
         //Set initial internal combat strength
         if(isInternal) {
-            IGObject *starSys = objectmanager->getObject(ob->getParent());
+            IGObject::Ptr starSys = objectmanager->getObject(ob->getParent());
             StarSystem* starSysData = (StarSystem*)(starSys->getObjectBehaviour());
             Vector3d pos = starSysData->getPosition();
             //Search for bordering science colonies
@@ -334,7 +334,7 @@ void TaeTurn::initCombat() {
             for(int i = -1; i < 2; i+=2) {
                 set<uint32_t> ids = objectmanager->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
                 for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-                    IGObject *tempObj = objectmanager->getObject(*j);
+                    IGObject::Ptr tempObj = objectmanager->getObject(*j);
                     if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
                         Planet* p = (Planet*)(tempObj->getObjectBehaviour());
                         if(p->getResource(5) > 0) {
@@ -347,7 +347,7 @@ void TaeTurn::initCombat() {
             for(int i = -1; i < 2; i+=2) {
                 set<uint32_t> ids = objectmanager->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
                 for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-                    IGObject *tempObj = objectmanager->getObject(*j);
+                    IGObject::Ptr tempObj = objectmanager->getObject(*j);
                     if(tempObj->getType() == obtm->getObjectTypeByName("Planet")) {
                         Planet* p = (Planet*)(tempObj->getObjectBehaviour());
                         if(p->getResource(5) > 0) {
@@ -376,7 +376,7 @@ void TaeTurn::initCombat() {
     std::set<uint32_t> views;
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             f->toggleCombat();
@@ -450,7 +450,7 @@ void TaeTurn::doCombatTurn() {
     // Do orders
     std::set<uint32_t> objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == planettype || ob->getType() == fleettype){
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
             if(oqop != NULL){
@@ -496,7 +496,7 @@ void TaeTurn::doCombatTurn() {
     if(isInternal) {
         //Internal combat removes losing leader and awards one point to the winner
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-            IGObject* ob = objectmanager->getObject(i->first);
+            IGObject::Ptr ob = objectmanager->getObject(i->first);
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             if(f->getOwner() != winner) {
                 sendHome(i->first);
@@ -508,7 +508,7 @@ void TaeTurn::doCombatTurn() {
         }
         objects = objectmanager->getAllIds();
         for(itcurr = objects.begin(); itcurr!= objects.end(); ++itcurr) {
-            IGObject* ob = objectmanager->getObject(*itcurr);
+            IGObject::Ptr ob = objectmanager->getObject(*itcurr);
             if(ob->getType() == obtm->getObjectTypeByName("Star System")) {
                 StarSystem* sysData = (StarSystem*) ob->getObjectBehaviour();
                 if(sysData->getRegion() == losingRegion) {
@@ -523,7 +523,7 @@ void TaeTurn::doCombatTurn() {
         string shipType;
         //set shiptype, losing/winning regions, and send home the losing leader
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end(); ++i) {
-            IGObject* ob = objectmanager->getObject(i->first);
+            IGObject::Ptr ob = objectmanager->getObject(i->first);
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             if(f->getOwner() != winner) {
                 losingRegion = i->second;
@@ -553,9 +553,9 @@ void TaeTurn::doCombatTurn() {
         //remove all losing colonies
         objects = objectmanager->getAllIds();
         for(itcurr = objects.begin(); itcurr!= objects.end(); ++itcurr) {
-            IGObject* ob = objectmanager->getObject(*itcurr);
+            IGObject::Ptr ob = objectmanager->getObject(*itcurr);
             if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
-                IGObject* sys = objectmanager->getObject(ob->getParent());
+                IGObject::Ptr sys = objectmanager->getObject(ob->getParent());
                 StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
                 if(sysData->getRegion() == losingRegion) {
                     Planet* p = (Planet*) ob->getObjectBehaviour();
@@ -589,8 +589,8 @@ void TaeTurn::doCombatTurn() {
         combat = true;
         uint32_t region = 0;
         for(map<uint32_t, uint32_t>::iterator i = combatants.begin(); i != combatants.end() && combat; i++) {
-            IGObject* ob = objectmanager->getObject(i->first);
-            IGObject* sys = objectmanager->getObject(ob->getParent());
+            IGObject::Ptr ob = objectmanager->getObject(i->first);
+            IGObject::Ptr sys = objectmanager->getObject(ob->getParent());
             StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
             i->second = sysData->getRegion();
             if(region == 0) {
@@ -605,7 +605,7 @@ void TaeTurn::doCombatTurn() {
     objects = objectmanager->getAllIds();
     set<uint32_t> views;
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Fleet") && !combat) {
             Fleet* f = (Fleet*) ob->getObjectBehaviour();
             f->toggleCombat();
@@ -622,7 +622,7 @@ void TaeTurn::doCombatTurn() {
     objectmanager->clearRemovedObjects();
     objects = objectmanager->getAllIds();
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->isAlive()){
             ob->getObjectBehaviour()->doOnceATurn();
         }
@@ -644,7 +644,7 @@ void TaeTurn::doCombatTurn() {
                 }
                 objectmanager->doneWithObject(*itob);
             }else{
-                IGObject* ro = objectmanager->getObject(*itob);
+                IGObject::Ptr ro = objectmanager->getObject(*itob);
                 uint64_t obmt = ro->getModTime();
                 objectmanager->doneWithObject(*itob);
                 if(obmt > obv->getModTime()){
@@ -669,9 +669,9 @@ void TaeTurn::doCombatTurn() {
 
         //Replace colonist fleets
         int fleets = 0;
-        IGObject* homePlanet;
+        IGObject::Ptr homePlanet;
         for(std::set<uint32_t>::iterator itob = objects.begin(); itob != objects.end(); ++itob){    
-            IGObject * ob = objectmanager->getObject(*itob);
+            IGObject::Ptr ob = objectmanager->getObject(*itob);
             if(ob->getName().compare("Colonist Fleet") == 0) {
                 uint32_t owner = ((OwnedObject*)(ob->getObjectBehaviour()))->getOwner();                if(owner == *itplayer) {
                     fleets++;
@@ -683,7 +683,7 @@ void TaeTurn::doCombatTurn() {
         }
 
         for(int i = fleets; i < 6; i++) {
-            IGObject* fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
+            IGObject::Ptr fleet = fleetBuilder->createFleet(FleetBuilder::PASSENGER_FLEET, FleetBuilder::RANDOM_SHIP, player, homePlanet, "Colonist Fleet");
             game->getObjectManager()->addObject(fleet);
             player->getPlayerView()->addVisibleObject(fleet->getID(), true);
         }
@@ -734,7 +734,7 @@ void TaeTurn::awardArtifacts() {
 
     //Find any regions with 2 or more alien artifacts
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = objectmanager->getObject(*itcurr);
+        IGObject::Ptr ob = objectmanager->getObject(*itcurr);
         if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
             Planet* p = (Planet*) ob->getObjectBehaviour();
             if(p->getResource(3) > 0) {
@@ -763,17 +763,17 @@ void TaeTurn::awardArtifacts() {
         }
         //Search the objects for a merchant leader
         for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = objectmanager->getObject(*itcurr);
+            IGObject::Ptr ob = objectmanager->getObject(*itcurr);
             if(ob->getType() == obtm->getObjectTypeByName("Fleet")) {
                 Fleet* f = (Fleet*) (ob->getObjectBehaviour());
                 if(f->getShips().count(type) > 0) {
-                    IGObject* parent = objectmanager->getObject(ob->getParent());
+                    IGObject::Ptr parent = objectmanager->getObject(ob->getParent());
                     if(parent->getType() == obtm->getObjectTypeByName("Star System")) {
                         StarSystem* parentData = (StarSystem*) (parent->getObjectBehaviour());
                         //See if this leader is in a region with
                         //2 or more alien artifacts
                         for(std::set<uint32_t>::iterator i = artifacts.begin(); i != artifacts.end(); ++i) {
-                            IGObject* obj = objectmanager->getObject(*i);
+                            IGObject::Ptr obj = objectmanager->getObject(*i);
                             Planet* p = (Planet*) obj->getObjectBehaviour();
                             StarSystem* sys = (StarSystem*)(objectmanager->getObject(obj->getParent())->getObjectBehaviour());
                             if(sys->getRegion() == parentData->getRegion()) {
@@ -813,7 +813,7 @@ void TaeTurn::sendHome(uint32_t fleet) {
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     PlayerManager::Ptr pm = game->getPlayerManager();
 
-    IGObject* fleetobj = obm->getObject(fleet);
+    IGObject::Ptr fleetobj = obm->getObject(fleet);
     //Check to make sure it is really a fleet
     if(fleetobj->getType() != obtm->getObjectTypeByName("Fleet")) {
         return;
@@ -822,7 +822,7 @@ void TaeTurn::sendHome(uint32_t fleet) {
     //Get all the required objects
     Fleet* f = (Fleet*) fleetobj->getObjectBehaviour();
     Player::Ptr p = pm->getPlayer(f->getOwner());
-    IGObject* sys = obm->getObject(fleetobj->getParent());
+    IGObject::Ptr sys = obm->getObject(fleetobj->getParent());
     StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
 
     //Remove fleet from system
@@ -833,7 +833,7 @@ void TaeTurn::sendHome(uint32_t fleet) {
     std::set<uint32_t> objects = obm->getAllIds();
     std::set<uint32_t>::iterator itcurr;
     for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = obm->getObject(*itcurr);
+        IGObject::Ptr ob = obm->getObject(*itcurr);
         if(ob->getName().compare(string(p->getName() + "'s Home Planet")) == 0) {
             Planet* p = (Planet*) ob->getObjectBehaviour();
             f->setPosition(p->getPosition());
@@ -852,7 +852,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     ObjectTypeManager* obtm = game->getObjectTypeManager();
     set<uint32_t>::iterator itcurr;
 
-    IGObject* sys = obm->getObject(system);
+    IGObject::Ptr sys = obm->getObject(system);
     StarSystem* sysData = (StarSystem*) sys->getObjectBehaviour();
 
     //Check to make sure the system doesnt already have a region
@@ -863,7 +863,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     //Check to make sure it is colonized or occupied
     set<uint32_t> children = sys->getContainedObjects();
     for(itcurr = children.begin(); itcurr != children.end(); itcurr++) {
-        IGObject* ob = obm->getObject(*itcurr);
+        IGObject::Ptr ob = obm->getObject(*itcurr);
         bool resource = true;
         bool occupied = false;
         if(ob->getType() == obtm->getObjectTypeByName("Planet")) {
@@ -897,7 +897,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
                 uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
                 if(r == 0) {
@@ -912,7 +912,7 @@ void TaeTurn::rebuildRegion(uint32_t system) {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
                 uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
                 if(r == 0) {

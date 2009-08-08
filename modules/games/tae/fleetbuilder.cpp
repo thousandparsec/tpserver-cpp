@@ -64,10 +64,10 @@ FleetBuilder::~FleetBuilder() {
 
 //Creates a fleet of type fleetType with ships of shipType for the owner at the location of the parent
 //with the name of name
-IGObject* FleetBuilder::createFleet(int fleetType, int shipType, Player::Ptr owner, IGObject* parent, std::string name) {
+IGObject::Ptr FleetBuilder::createFleet(int fleetType, int shipType, Player::Ptr owner, IGObject::Ptr parent, std::string name) {
     Game *game = Game::getGame();
     ObjectTypeManager* obtm = game->getObjectTypeManager();
-    IGObject *fleet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
 
     //Create Fleet
     obtm->setupObject(fleet, obtm->getObjectTypeByName("Fleet"));

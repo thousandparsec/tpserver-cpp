@@ -75,14 +75,14 @@ void Attack::createFrame(Frame *f, int pos) {
 // remove any colony or leader, and finally add the "destroyed" resource to
 // prevent further colonization or occupation.
 // TODO: check to make sure everything is removed correctly
-bool Attack::doOrder(IGObject * obj) {
+bool Attack::doOrder(IGObject::Ptr obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
 
     //Check to see if the system is valid
     //Find the star system's planet
-    IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr newStarSys = obm->getObject(starSys->getObjectId());
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
         //not a star system
         Logger::getLogger()->debug("Trying to attack an object which is not a star system");

@@ -38,7 +38,7 @@ class Move : public FleetOrder
    virtual void createFrame(Frame * f, int pos);
    virtual void inputFrame(Frame * f, uint32_t playerid);
    
-   virtual bool doOrder(IGObject * obj);
+   virtual bool doOrder(IGObject::Ptr obj);
    
    //Used to make sure the inputed system is bordering a science colony
    static bool isBorderingScienceColony(StarSystem* system);

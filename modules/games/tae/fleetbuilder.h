@@ -46,7 +46,7 @@ class FleetBuilder{
 
         //Creates a fleet of type fleetType with ships of shipType for the owner at the location of the parent
         //with the name of name
-        IGObject* createFleet(int fleetType, int shipType, Player::Ptr owner, IGObject* parent, std::string name);
+        IGObject::Ptr createFleet(int fleetType, int shipType, Player::Ptr owner, IGObject::Ptr parent, std::string name);
         //This function returns true if no more colonist fleets can be created
         bool shipsEmpty();
     

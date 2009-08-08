@@ -73,7 +73,7 @@ void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr starSysObj = obm->getObject(starSys->getObjectId());
 
     // if they chose a planet, set to the owning star sys
     if(starSysObj->getType() == obtm->getObjectTypeByName("Planet"))
@@ -93,7 +93,7 @@ void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
         set<uint32_t> objects = obm->getAllIds();
         //Check all the objects
         for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-            IGObject * ob = obm->getObject(*itcurr);
+            IGObject::Ptr ob = obm->getObject(*itcurr);
             //Find the Fleets
             if(ob->getType() == obtm->getObjectTypeByName("Fleet")){
                 OwnedObject* owned = (OwnedObject*) ob->getObjectBehaviour();
@@ -137,7 +137,7 @@ void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
 set<uint32_t> FleetOrder::getBorderingRegions() {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
-    IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr newStarSys = obm->getObject(starSys->getObjectId());
     StarSystem* starSysData = (StarSystem*)(newStarSys->getObjectBehaviour());
     set<uint32_t> regions;
     Vector3d pos = starSysData->getPosition();
@@ -146,7 +146,7 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(80000*i,0,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
                 uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
                 if(r != 0 && regions.count(r) == 0) {
@@ -159,7 +159,7 @@ set<uint32_t> FleetOrder::getBorderingRegions() {
     for(int i = -1; i < 2; i+=2) {
         set<uint32_t> ids = obm->getObjectsByPos(pos+Vector3d(0,80000*i,0), 1);
         for(set<uint32_t>::iterator j=ids.begin(); j != ids.end(); j++) {
-            IGObject *tempObj = obm->getObject(*j);
+            IGObject::Ptr tempObj = obm->getObject(*j);
             if(tempObj->getType() == obtm->getObjectTypeByName("Star System")) {
                 uint32_t r = ((StarSystem*)(tempObj->getObjectBehaviour()))->getRegion();
                 if(r != 0 && regions.count(r) == 0) {
@@ -179,7 +179,7 @@ int FleetOrder::getLeaderInRegion(uint32_t region, string leaderType) {
     //Check all the objects for the leader
     set<uint32_t> objects = obm->getAllIds();
     for(set<uint32_t>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-        IGObject * ob = obm->getObject(*itcurr);
+        IGObject::Ptr ob = obm->getObject(*itcurr);
         //Find the Fleets
         if(ob->getType() == obtm->getObjectTypeByName("Fleet")){
             Logger::getLogger()->debug("Found a fleet");
@@ -187,7 +187,7 @@ int FleetOrder::getLeaderInRegion(uint32_t region, string leaderType) {
             //Check the ship
             uint32_t ship = f->getShips().begin()->first;
             if(Game::getGame()->getDesignStore()->getDesign(ship)->getName().compare(leaderType) == 0) {
-                IGObject* parent = obm->getObject(ob->getParent());
+                IGObject::Ptr parent = obm->getObject(ob->getParent());
                 Logger::getLogger()->debug(parent->getName().c_str());
                 //Make sure the fleet is orbiting a star system
                 if(parent->getType() == obtm->getObjectTypeByName("Star System")) {

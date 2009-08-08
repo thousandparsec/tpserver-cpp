@@ -62,7 +62,7 @@ void Reinforce::inputFrame(Frame *f, uint32_t playerid) {
     return;
 }
 
-bool Reinforce::doOrder(IGObject * obj) {
+bool Reinforce::doOrder(IGObject::Ptr obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
 

@@ -92,7 +92,7 @@ void Colonize::inputFrame(Frame *f, uint32_t playerid) {
     ObjectManager *obm = game->getObjectManager();
     ObjectTypeManager *obtm = game->getObjectTypeManager();
 
-    IGObject *starSysObj = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr starSysObj = obm->getObject(starSys->getObjectId());
     StarSystem* starSysData = (StarSystem*) starSysObj->getObjectBehaviour();
 
     // Check to see if it is a legal system to colonize
@@ -104,13 +104,13 @@ void Colonize::inputFrame(Frame *f, uint32_t playerid) {
 
 //The colonize order checks to make sure the system is valid, then adds a resource to the planet, checks for
 //external combat, and awards one point to the player with the leader in the region of the new colony.
-bool Colonize::doOrder(IGObject * obj) {
+bool Colonize::doOrder(IGObject::Ptr obj) {
     ObjectManager* obm = Game::getGame()->getObjectManager();
     ObjectTypeManager* obtm = Game::getGame()->getObjectTypeManager();
     Fleet* fleetData = (Fleet*)(obj->getObjectBehaviour());
     Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(fleetData->getOwner());
 
-    IGObject *newStarSys = obm->getObject(starSys->getObjectId());
+    IGObject::Ptr newStarSys = obm->getObject(starSys->getObjectId());
 
     //Perform last minute checks to make sure the system can be colonized
     if(newStarSys->getType() != obtm->getObjectTypeByName("Star System")) {
@@ -255,7 +255,7 @@ bool Colonize::doOrder(IGObject * obj) {
             uint32_t region = *(regions.begin());
             set<uint32_t> objects = obm->getAllIds();
             for(set<uint32_t>::iterator i = objects.begin(); i != objects.end(); i++) {
-                IGObject* ob = obm->getObject(*i);
+                IGObject::Ptr ob = obm->getObject(*i);
                 if(ob->getType() == obtm->getObjectTypeByName("Star System")) {
                     StarSystem* sys = (StarSystem*) ob->getObjectBehaviour();
                     uint32_t r = sys->getRegion();
