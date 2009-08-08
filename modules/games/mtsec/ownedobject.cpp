@@ -36,7 +36,9 @@
 
 namespace MTSecRuleset {
 
-OwnedObjectType::OwnedObjectType():SpaceObjectType(){
+OwnedObjectType::OwnedObjectType( const std::string& nname, const std::string& ndesc )
+  : SpaceObjectType(nname,ndesc)
+{
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ownership");
   group->setDescription("The ownership of this object");

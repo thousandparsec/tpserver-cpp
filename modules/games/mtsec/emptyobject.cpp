@@ -24,18 +24,10 @@
 namespace MTSecRuleset {
 
 
-EmptyObjectType::EmptyObjectType() : SpaceObjectType(){
+EmptyObjectType::EmptyObjectType( const std::string& nname, const std::string& ndesc ) : SpaceObjectType(nname,ndesc){
 }
 
 EmptyObjectType::~EmptyObjectType(){
-}
-
-void EmptyObjectType::setTypeName(const std::string& n){
-  nametype = n;
-}
-
-void EmptyObjectType::setTypeDescription(const std::string& d){
-  typedesc = d;
 }
 
 ObjectBehaviour* EmptyObjectType::createObjectBehaviour() const{

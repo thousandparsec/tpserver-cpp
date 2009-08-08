@@ -33,7 +33,7 @@ namespace MTSecRuleset {
 
 class SpaceObjectType : public ObjectType{
   public:
-    SpaceObjectType();
+    SpaceObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~SpaceObjectType();
 };
 

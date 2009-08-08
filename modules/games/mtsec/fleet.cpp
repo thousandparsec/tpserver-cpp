@@ -44,7 +44,7 @@
 
 namespace MTSecRuleset {
 
-FleetType::FleetType():OwnedObjectType(){
+FleetType::FleetType():OwnedObjectType( "Fleet", "Fleet of ships"){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ships");
   group->setDescription("The information about ships in this fleet");

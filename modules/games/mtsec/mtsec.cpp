@@ -124,14 +124,8 @@ void MTSec::initGame() {
 
     ObjectTypeManager* obdm = game->getObjectTypeManager();
     obdm->addNewObjectType( new UniverseType());
-    EmptyObjectType * eo = new EmptyObjectType();
-    eo->setTypeName("Galaxy");
-    eo->setTypeDescription("The Galaxy Object type");
-    obdm->addNewObjectType(eo);
-    eo = new EmptyObjectType();
-    eo->setTypeName("Star System");
-    eo->setTypeDescription("The Star System Object type");
-    obdm->addNewObjectType(eo);
+    obdm->addNewObjectType( new EmptyObjectType( "Galaxy", "The Galaxy Object type") );
+    obdm->addNewObjectType( new EmptyObjectType( "Star System","The Star System Object type") );
     uint32_t pt = obdm->addNewObjectType( new PlanetType());
     uint32_t ft = obdm->addNewObjectType( new FleetType());
     

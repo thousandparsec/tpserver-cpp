@@ -31,7 +31,7 @@ namespace MTSecRuleset {
 
 class OwnedObjectType : public SpaceObjectType{
   public:
-    OwnedObjectType();
+    OwnedObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~OwnedObjectType();
 };
 

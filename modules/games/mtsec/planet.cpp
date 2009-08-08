@@ -36,8 +36,7 @@
 
 namespace MTSecRuleset {
 
-PlanetType::PlanetType():OwnedObjectType()
-{
+PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object"){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Resources");
   group->setDescription("The planet's resources");
