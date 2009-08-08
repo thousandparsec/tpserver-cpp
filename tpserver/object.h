@@ -27,8 +27,8 @@
 class ObjectBehaviour;
 
 class IGObject : public ProtocolObject {
-
   public:
+    typedef boost::shared_ptr<IGObject> Ptr;
     IGObject( uint32_t newid );
     
     ~IGObject();

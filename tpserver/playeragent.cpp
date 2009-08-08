@@ -291,9 +291,9 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
   if(visibleObjects.find(objectID) != visibleObjects.end()){
 
-    IGObject *o = Game::getGame()->getObjectManager()->getObject(objectID);
+    IGObject::Ptr o = Game::getGame()->getObjectManager()->getObject(objectID);
 
-    if(o != NULL){
+    if(o){
       IdSet contain = o->getContainedObjects();
       IdSet intersection;
       std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
@@ -362,7 +362,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
   uint32_t orderqueueid = frame->unpackInt();
 
   if(frame->getVersion() <= fv0_3){
-    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No such Object");
       return;
@@ -422,7 +422,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
     uint32_t orderqueueid = frame->unpackInt();
 
     if(frame->getVersion() <= fv0_3){
-      IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+      IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
       if(ob == NULL){
         curConnection->sendFail(frame,fec_NonExistant, "No such Object");
         return;
@@ -489,7 +489,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
   int orderqueueid = frame->unpackInt();
 
   if(frame->getVersion() <= fv0_3){
-    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No such Object");
       return;
@@ -573,7 +573,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   int orderqueueid = frame->unpackInt();
 
   if(frame->getVersion() <= fv0_3){
-    IGObject* ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
+    IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
       curConnection->sendFail(frame,fec_NonExistant, "No such Object");
       return;

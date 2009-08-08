@@ -463,7 +463,7 @@ bool MysqlPersistence::retrieveGameInfo(){
   return true;
 }
 
-bool MysqlPersistence::saveObject(IGObject* ob){
+bool MysqlPersistence::saveObject(IGObject::Ptr ob){
   try {
     std::ostringstream querybuilder;
     uint32_t turn = Game::getGame()->getTurnNumber();
@@ -483,12 +483,12 @@ bool MysqlPersistence::saveObject(IGObject* ob){
     //store type-specific information
     if(ob->isAlive()){
       try{
-        std::map<uint32_t, ObjectParameterGroupPtr> groups = ob->getParameterGroups();
-        for(std::map<uint32_t, ObjectParameterGroupPtr>::iterator itcurr = groups.begin();
+        ObjectParameterGroup::Map groups = ob->getParameterGroups();
+        for(ObjectParameterGroup::Map::iterator itcurr = groups.begin();
             itcurr != groups.end(); ++itcurr){
-          ObjectParameterGroupData::ParameterList params = itcurr->second->getParameters();
+          ObjectParameterGroup::ParameterList params = itcurr->second->getParameters();
           uint32_t ppos = 0;
-          for(ObjectParameterGroupData::ParameterList::iterator paramcurr = params.begin();
+          for(ObjectParameterGroup::ParameterList::iterator paramcurr = params.begin();
               paramcurr != params.end(); ++paramcurr){
             ObjectParameter* parameter = *(paramcurr);
             switch(parameter->getType()){
@@ -541,7 +541,7 @@ bool MysqlPersistence::saveObject(IGObject* ob){
   return true;
 }
 
-IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
+IGObject::Ptr MysqlPersistence::retrieveObject(uint32_t obid){
   try {
     std::ostringstream querybuilder;
     uint32_t turn = Game::getGame()->getTurnNumber();
@@ -556,7 +556,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     querybuilder << "SELECT object.objectid FROM object JOIN (SELECT objectid, MAX(turnnum) AS maxturnnum FROM object WHERE turnnum <= " << turn << " GROUP BY objectid) AS maxx ON (object.objectid=maxx.objectid AND object.turnnum = maxx.maxturnnum) WHERE parentid = " << obid << " ;";
     MysqlQuery cquery( querybuilder );
 
-    IGObject* object = new IGObject(obid);
+    IGObject::Ptr object( new IGObject(obid) );
 
     Game::getGame()->getObjectTypeManager()->setupObject(object, query->getInt(3));
     object->setIsAlive(query->getInt(2) == 1);
@@ -627,8 +627,7 @@ IGObject* MysqlPersistence::retrieveObject(uint32_t obid){
     object->setIsDirty(false);
 
   } catch ( MysqlException& e ) { 
-    ob->setIsDirty(true);
-    return NULL; 
+    return IGObject::Ptr(); 
   }
   return object;
 }

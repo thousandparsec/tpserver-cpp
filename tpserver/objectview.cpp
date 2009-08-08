@@ -55,7 +55,7 @@ ObjectView::~ObjectView(){
 }
 
 void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
-  IGObject* object = Game::getGame()->getObjectManager()->getObject(id);
+  IGObject::Ptr object = Game::getGame()->getObjectManager()->getObject(id);
   
   if(gone || (completely_visible && (object == NULL || !object->isAlive()))){
     frame->createFailFrame(fec_NonExistant, "No such object");

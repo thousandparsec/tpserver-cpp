@@ -54,12 +54,12 @@ bool Persistence::retrieveGameInfo(){
   return false;
 }
 
-bool Persistence::saveObject(IGObject* ob){
+bool Persistence::saveObject(IGObject::Ptr ob){
     return false;
 }
 
-IGObject* Persistence::retrieveObject(uint32_t obid){
-    return NULL;
+IGObject::Ptr Persistence::retrieveObject(uint32_t obid){
+    return IGObject::Ptr();
 }
 
 uint32_t Persistence::getMaxObjectId(){
@@ -312,7 +312,7 @@ bool Persistence::saveProtocolObject(ProtocolObject* object)
 //    case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
 //    case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
 //    case ft02_ResDesc    : return saveResource( dynamic_cast<Resource*>(object) );
-    case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
+//    case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
     default : return false;
   }
 }
@@ -326,7 +326,7 @@ ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t 
 //    case ft03_Category  : return retrieveCategory( id );
 //    case ft03_Player    : return retrievePlayer( id );
 //    case ft02_ResDesc  : return retrieveResource( id );
-    case ft02_Object    : return retrieveObject( id );
+//    case ft02_Object    : return retrieveObject( id );
     default : return NULL;
   }
 }

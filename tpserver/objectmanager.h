@@ -21,9 +21,8 @@
  */
 
 #include <tpserver/common.h>
-
-class IGObject;
-class Vector3d;
+#include <tpserver/object.h>
+#include <tpserver/vector3d.h>
 
 class ObjectManager{
  public:
@@ -32,11 +31,11 @@ class ObjectManager{
 
     void init();
 
-    IGObject* createNewObject();
-    void addObject(IGObject* obj);
-    void discardNewObject(IGObject* obj);
+    IGObject::Ptr createNewObject();
+    void addObject(IGObject::Ptr obj);
+    void discardNewObject(IGObject::Ptr obj);
 
-    IGObject *getObject(uint32_t id);
+    IGObject::Ptr getObject(uint32_t id);
     void doneWithObject(uint32_t id);
 
     void scheduleRemoveObject(uint32_t id);
@@ -49,7 +48,7 @@ class ObjectManager{
     uint32_t getNumObjects() const;
 
  private:
-    std::map<uint32_t, IGObject *> objects;
+    std::map<uint32_t, IGObject::Ptr > objects;
     IdSet scheduleRemove;
     uint32_t nextid;
 };

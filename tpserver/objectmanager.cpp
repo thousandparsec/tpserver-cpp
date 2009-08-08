@@ -40,23 +40,23 @@ ObjectManager::~ObjectManager(){
 
 void ObjectManager::init(){
   IdSet vis(Game::getGame()->getPersistence()->getObjectIds());
-  fill_by_set( objects, vis, NULL );
+  fill_by_set( objects, vis, IGObject::Ptr() );
 
   nextid = Game::getGame()->getPersistence()->getMaxObjectId();
   if(nextid != 0)
     nextid++;
 }
 
-IGObject* ObjectManager::createNewObject(){
-  return new IGObject(nextid++);
+IGObject::Ptr ObjectManager::createNewObject(){
+  return IGObject::Ptr( new IGObject(nextid++) );
 }
 
-void ObjectManager::addObject(IGObject* obj){
+void ObjectManager::addObject(IGObject::Ptr obj){
   objects[obj->getID()] = obj;
   Game::getGame()->getPersistence()->saveObject(obj);
 }
 
-void ObjectManager::discardNewObject(IGObject* obj){
+void ObjectManager::discardNewObject(IGObject::Ptr obj){
   if(obj->getID() == nextid - 1){
     nextid = obj->getID();
   }
@@ -64,15 +64,14 @@ void ObjectManager::discardNewObject(IGObject* obj){
   if(behaviour != NULL){
     behaviour->signalRemoval();
   }
-  delete obj;
 }
 
-IGObject *ObjectManager::getObject(uint32_t id){
-  IGObject *rtn = find_default( objects, id, NULL );
+IGObject::Ptr ObjectManager::getObject(uint32_t id){
+  IGObject::Ptr rtn = find_default( objects, id, IGObject::Ptr() );
   
-  if(rtn == NULL){
+  if(!rtn){
     rtn = Game::getGame()->getPersistence()->retrieveObject(id);
-    if(rtn != NULL){
+    if(rtn){
       objects[id] = rtn;
     }
   }
@@ -88,7 +87,7 @@ void ObjectManager::doneWithObject(uint32_t id){
 
 void ObjectManager::scheduleRemoveObject(uint32_t id){
   scheduleRemove.insert(id);
-  IGObject* ob = objects[id];
+  IGObject::Ptr ob = objects[id];
   ob->setIsAlive(false);
   Game::getGame()->getPersistence()->saveObject(ob);
 }
@@ -97,7 +96,6 @@ void ObjectManager::clearRemovedObjects(){
   for(IdSet::iterator itrm = scheduleRemove.begin(); itrm != scheduleRemove.end(); ++itrm){
     objects[*itrm]->removeFromParent();
     objects[*itrm]->getObjectBehaviour()->signalRemoval();
-    delete objects[*itrm];
     objects.erase(*itrm);
   }
   scheduleRemove.clear();
@@ -106,15 +104,15 @@ void ObjectManager::clearRemovedObjects(){
 IdSet ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t r){
   IdSet oblist;
 
-  for(std::map<uint32_t, IGObject *>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-    IGObject* ob = itcurr->second;
-    if(ob == NULL){
+  for(std::map<uint32_t, IGObject::Ptr>::iterator itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
+    IGObject::Ptr ob = itcurr->second;
+    if(!ob){
       ob = Game::getGame()->getPersistence()->retrieveObject(itcurr->first);
-      if(ob != NULL){
+      if(ob){
         itcurr->second = ob;
       }
     }
-    if(ob != NULL){
+    if(ob){
       SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(ob->getParameterByType(obpT_Size));
       Position3dObjectParam * obpos = dynamic_cast<Position3dObjectParam*>(ob->getParameterByType(obpT_Position_3D));
       if(size != NULL && obpos != NULL){
@@ -132,9 +130,9 @@ IdSet ObjectManager::getObjectsByPos(const Vector3d & pos, uint64_t r){
 
 IdSet ObjectManager::getAllIds(){
   IdSet vis;
-  for(std::map<uint32_t, IGObject*>::const_iterator itid = objects.begin();
+  for(std::map<uint32_t, IGObject::Ptr>::const_iterator itid = objects.begin();
       itid != objects.end(); ++itid){
-    IGObject* obj = itid->second;
+    IGObject::Ptr obj = itid->second;
     if(obj == NULL){
       obj = Game::getGame()->getPersistence()->retrieveObject(itid->first);
       if(obj != NULL){
