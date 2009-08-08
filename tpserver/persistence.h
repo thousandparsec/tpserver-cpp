@@ -128,8 +128,8 @@ public:
     bool saveProtocolView(uint32_t playerid, ProtocolView::Ptr view);
     ProtocolView::Ptr retrieveProtocolView(FrameType viewtype, uint32_t playerid, uint32_t objectid);
 
-    bool saveProtocolObject(ProtocolObject* object);
-    ProtocolObject* retrieveProtocolObject(FrameType objtype, uint32_t id);
+    bool saveProtocolObject(ProtocolObject::Ptr object);
+    ProtocolObject::Ptr retrieveProtocolObject(FrameType objtype, uint32_t id);
     uint32_t getMaxProtocolObjectId( FrameType objtype );
     IdSet getProtocolObjectIds( FrameType objtype );
 };

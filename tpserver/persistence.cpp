@@ -303,31 +303,31 @@ ProtocolView::Ptr Persistence::retrieveProtocolView(FrameType viewtype, uint32_t
   }
 }
 
-bool Persistence::saveProtocolObject(ProtocolObject* object) 
+bool Persistence::saveProtocolObject(ProtocolObject::Ptr object) 
 {
   switch(object->getFrameType()) {
- //   case ft03_Component : return saveComponent( dynamic_cast<Component*>(object) );
- //   case ft03_Design    : return saveDesign( dynamic_cast<Design*>(object) );
-//    case ft03_Property  : return saveProperty( dynamic_cast<Property*>(object) );
-//    case ft03_Category  : return saveCategory( dynamic_cast<Category*>(object) );
-//    case ft03_Player    : return savePlayer( dynamic_cast<Player*>(object) );
-//    case ft02_ResDesc    : return saveResource( dynamic_cast<Resource*>(object) );
-//    case ft02_Object    : return saveObject( dynamic_cast<IGObject*>(object) );
+    case ft03_Component : return saveComponent( boost::dynamic_pointer_cast<Component>(object) );
+    case ft03_Design    : return saveDesign( boost::dynamic_pointer_cast<Design>(object) );
+    case ft03_Property  : return saveProperty( boost::dynamic_pointer_cast<Property>(object) );
+    case ft03_Category  : return saveCategory( boost::dynamic_pointer_cast<Category>(object) );
+    case ft03_Player    : return savePlayer( boost::dynamic_pointer_cast<Player>(object) );
+    case ft02_ResDesc   : return saveResource( boost::dynamic_pointer_cast<ResourceDescription>(object) );
+    case ft02_Object    : return saveObject( boost::dynamic_pointer_cast<IGObject>(object) );
     default : return false;
   }
 }
 
-ProtocolObject* Persistence::retrieveProtocolObject(FrameType objtype, uint32_t id )
+ProtocolObject::Ptr Persistence::retrieveProtocolObject(FrameType objtype, uint32_t id )
 {
   switch(objtype) {
-//    case ft03_Component : return retrieveComponent( id );
-//    case ft03_Design    : return retrieveDesign( id );
-//    case ft03_Property  : return retrieveProperty( id );
-//    case ft03_Category  : return retrieveCategory( id );
-//    case ft03_Player    : return retrievePlayer( id );
-//    case ft02_ResDesc  : return retrieveResource( id );
-//    case ft02_Object    : return retrieveObject( id );
-    default : return NULL;
+    case ft03_Component : return retrieveComponent( id );
+    case ft03_Design    : return retrieveDesign( id );
+    case ft03_Property  : return retrieveProperty( id );
+    case ft03_Category  : return retrieveCategory( id );
+    case ft03_Player    : return retrievePlayer( id );
+    case ft02_ResDesc  : return retrieveResource( id );
+    case ft02_Object    : return retrieveObject( id );
+    default : return ProtocolObject::Ptr();
   }
 }
 
