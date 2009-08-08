@@ -21,8 +21,8 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/object.h>
 
-class Object;
 class ObjectType;
 class Frame;
 
@@ -31,7 +31,7 @@ class ObjectTypeManager{
   ObjectTypeManager();
   ~ObjectTypeManager();
 
-  void setupObject(IGObject* obj, uint32_t type);
+  void setupObject(IGObject::Ptr obj, uint32_t type);
   bool checkValid(uint32_t type);
   
   uint32_t getObjectTypeByName(const std::string& name) const;

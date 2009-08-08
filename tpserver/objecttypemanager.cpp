@@ -32,7 +32,7 @@ ObjectTypeManager::~ObjectTypeManager(){
   delete_map_all( typeStore );
 }
 
-void ObjectTypeManager::setupObject(IGObject* obj, uint32_t type){
+void ObjectTypeManager::setupObject(IGObject::Ptr obj, uint32_t type){
   if(checkValid(type)){
     ObjectType* prototype = typeStore[type];
     obj->setType(type);

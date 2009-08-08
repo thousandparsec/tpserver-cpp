@@ -20,13 +20,10 @@
  *
  */
 
-#include <stdint.h>
-#include <map>
-#include <string>
 #include <tpserver/modifiable.h>
+#include <tpserver/object.h>
 
 class Frame;
-class IGObject;
 class ObjectParameterGroupDesc;
 class ObjectBehaviour;
 
@@ -43,7 +40,7 @@ class ObjectType : public Modifiable {
 
     void setType(uint32_t nt);
     void packObjectDescFrame(Frame* frame);
-    void setupObject(IGObject* obj) const;
+    void setupObject(IGObject::Ptr obj) const;
 
   protected:
     void addParameterGroupDesc(ObjectParameterGroupDesc* group);

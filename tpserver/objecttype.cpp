@@ -21,7 +21,6 @@
 #include <time.h>
 
 #include "frame.h"
-#include "object.h"
 #include "objectparametergroupdesc.h"
 #include "objectbehaviour.h"
 #include "algorithms.h"
@@ -63,13 +62,14 @@ void ObjectType::packObjectDescFrame(Frame* frame){
   for_each_value( paramgroups.begin(), paramgroups.end(), boost::bind( &ObjectParameterGroupDesc::packObjectDescFrame, _1, frame ) );
 }
 
-void ObjectType::setupObject(IGObject* obj) const{
+void ObjectType::setupObject(IGObject::Ptr obj) const{
   for(std::map<uint32_t, ObjectParameterGroupDesc*>::const_iterator itcurr = paramgroups.begin(); itcurr != paramgroups.end();
       ++itcurr){
     obj->setParameterGroup((itcurr->second)->createObjectParameterGroup());
   }
   ObjectBehaviour* ob = createObjectBehaviour();
-  ob->setObject(obj);
+  // TODO: behaviour should have weak_ptr!
+  ob->setObject(obj.get());
   obj->setObjectBehaviour(ob);
   ob->setupObject();
 }
