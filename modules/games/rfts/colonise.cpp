@@ -59,14 +59,14 @@ Order* Colonise::clone() const {
    return c;
 }
 
-bool Colonise::doOrder(IGObject *obj) {
+bool Colonise::doOrder(IGObject::Ptr obj) {
    
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
-   IGObject *planetObj = om->getObject(planet->getObjectId());
+   IGObject::Ptr planetObj = om->getObject(planet->getObjectId());
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
 
    Player::Ptr attacker = game->getPlayerManager()->getPlayer(fleetData->getOwner());

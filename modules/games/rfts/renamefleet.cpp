@@ -46,7 +46,7 @@ Order* RenameFleet::clone() const {
    return rf;
 }
 
-bool RenameFleet::doOrder(IGObject *obj) {
+bool RenameFleet::doOrder(IGObject::Ptr obj) {
 
    obj->setName(newName->getString());
    

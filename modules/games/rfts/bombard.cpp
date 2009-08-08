@@ -66,7 +66,7 @@ void Bombard::inputFrame(Frame * f, uint32_t playerid) {
 
    ObjectManager *om = Game::getGame()->getObjectManager();
 
-   IGObject *planetObj = om->getObject(planet->getObjectId());
+   IGObject::Ptr planetObj = om->getObject(planet->getObjectId());
    Planet *planetData = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
 
    if(!planetData)
@@ -75,14 +75,14 @@ void Bombard::inputFrame(Frame * f, uint32_t playerid) {
       planet->setObjectId(0);
 }
 
-bool Bombard::doOrder(IGObject *fleet) {
+bool Bombard::doOrder(IGObject::Ptr fleet) {
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    ObjectTypeManager *odm = game->getObjectTypeManager();
    Random *rand = game->getRandom();
 
-   IGObject *planetObj = om->getObject(planet->getObjectId());
+   IGObject::Ptr planetObj = om->getObject(planet->getObjectId());
 
    if(planetObj->getType() != odm->getObjectTypeByName("Planet"))
    {

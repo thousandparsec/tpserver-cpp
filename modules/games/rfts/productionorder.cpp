@@ -67,7 +67,7 @@ map<uint32_t, pair<string, uint32_t> >ProductionOrder::generateListOptions() {
 
    Game* game = Game::getGame();
    
-   IGObject *selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
             game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet *planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
 
@@ -132,7 +132,7 @@ void ProductionOrder::inputFrame(Frame *f, uint32_t playerid) {
   Order::inputFrame(f, playerid);
 }
 
-bool ProductionOrder::doOrder(IGObject *obj) {
+bool ProductionOrder::doOrder(IGObject::Ptr obj) {
 
 	if(--turns != 0)
 		return false;

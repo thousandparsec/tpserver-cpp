@@ -39,7 +39,7 @@ class Move : public Order
    virtual void createFrame(Frame * f, int pos);
    virtual void inputFrame(Frame * f, uint32_t playerid);
    
-   virtual bool doOrder(IGObject * obj);
+   virtual bool doOrder(IGObject::Ptr obj);
 
  private:
    ObjectOrderParameter* starSys;

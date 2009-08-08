@@ -71,7 +71,7 @@ void RftsTurn::doTurn() {
    for(set<uint32_t>::iterator i = objectsIds.begin();
          i != objectsIds.end(); ++i)
    {
-      IGObject * currObj = objectmanager->getObject(*i);
+      IGObject::Ptr currObj = objectmanager->getObject(*i);
 
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
       OrderQueue* oq;
@@ -108,7 +108,7 @@ void RftsTurn::doTurn() {
    for(std::set<uint32_t>::iterator i = objectsIds.begin(); 
        i != objectsIds.end(); ++i)
    {
-      IGObject * obj = objectmanager->getObject(*i);
+      IGObject::Ptr obj = objectmanager->getObject(*i);
       obj->getObjectBehaviour()->doOnceATurn();
       objectmanager->doneWithObject(obj->getID());
    }
@@ -206,7 +206,7 @@ Player::Ptr RftsTurn::getWinner() {
 void setVisibleObjects(Player::Ptr player) {
    ObjectManager *om = Game::getGame()->getObjectManager();
    
-   IGObject *universe = om->getObject(0);
+   IGObject::Ptr universe = om->getObject(0);
    PlayerView::Ptr pv = player->getPlayerView();
    set<uint32_t> ownedObjects = pv->getOwnedObjects();
 
@@ -219,7 +219,7 @@ void setVisibleObjects(Player::Ptr player) {
    uint32_t fleettype = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
    set<uint32_t> containedObjects = universe->getContainedObjects();
    for(set<uint32_t>::const_iterator i = containedObjects.begin(); i != containedObjects.end(); ++i){
-     IGObject* object = om->getObject(*i);
+     IGObject::Ptr object = om->getObject(*i);
      obv = pv->getObjectView(*i);
      if(object->getType() != fleettype){
       if(!obv){
@@ -236,7 +236,7 @@ void setVisibleObjects(Player::Ptr player) {
 
    for(set<uint32_t>::const_iterator i = ownedObjects.begin(); i != ownedObjects.end(); ++i)
    {
-      IGObject *obj = om->getObject(*i);
+      IGObject::Ptr obj = om->getObject(*i);
       if(obj->getType() != fleettype || obj->getParent() != 0){
         exploreStarSys(obj);
       }
@@ -246,7 +246,7 @@ void setVisibleObjects(Player::Ptr player) {
    set<uint32_t> visobjects = pv->getVisibleObjects();
    for(set<uint32_t>::const_iterator i = visobjects.begin(); i != visobjects.end(); ++i)
    {
-      IGObject *obj = om->getObject(*i);
+      IGObject::Ptr obj = om->getObject(*i);
       obv = pv->getObjectView(*i);
       if(!obj){
         if(!obv->isGone()){

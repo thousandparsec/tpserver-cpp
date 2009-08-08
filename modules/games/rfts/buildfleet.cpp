@@ -80,7 +80,7 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
 
    Game* game = Game::getGame();
 
-   IGObject *selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
 
@@ -137,7 +137,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
    Player::Ptr player = game->getPlayerManager()->getPlayer(playerid);
    DesignStore::Ptr ds = game->getDesignStore();
 
-   IGObject *selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planetData = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    
@@ -176,7 +176,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
    shipList->setList(localShipList); // save the list back in case of changes
 }
 
-bool BuildFleet::doOrder(IGObject *ob)
+bool BuildFleet::doOrder(IGObject::Ptr ob)
 {
 	if(--turns != 0)
 		return false;
@@ -190,11 +190,11 @@ bool BuildFleet::doOrder(IGObject *ob)
    Player::Ptr player = game->getPlayerManager()->getPlayer(planet->getOwner());
 
 
-   pair<IGObject*, bool> fleetResult =
+   pair<IGObject::Ptr , bool> fleetResult =
       createFleet(player, game->getObjectManager()->getObject(ob->getParent()),
                   fleetName->getString(), shipList->getList(), planet);
 
-   IGObject *fleet = fleetResult.first;
+   IGObject::Ptr fleet = fleetResult.first;
    bool complete = fleetResult.second;
    
    //add fleet to universe

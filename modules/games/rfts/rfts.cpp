@@ -250,7 +250,7 @@ void Rfts::createUniverse() {
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
    uint32_t uniType = otypeman->getObjectTypeByName("Universe");
-   IGObject *universe = objman->createNewObject();
+   IGObject::Ptr universe = objman->createNewObject();
 
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
@@ -315,13 +315,13 @@ void Rfts::createUniverse() {
    
 }
 
-IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
+IGObject::Ptr Rfts::createStarSystem(IGObject& universe, const string& name,
                   double unitX, double unitY)
 {
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
    
-   IGObject *starSys = game->getObjectManager()->createNewObject();
+   IGObject::Ptr starSys = game->getObjectManager()->createNewObject();
 
    otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
    starSys->setName(name);
@@ -345,12 +345,12 @@ IGObject* Rfts::createStarSystem(IGObject& universe, const string& name,
    return starSys;
 }
 
-IGObject* Rfts::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
+IGObject::Ptr Rfts::createPlanet(IGObject& parentStarSys, const string& name,const Vector3d& location) {
 
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
 
-   IGObject *planet = game->getObjectManager()->createNewObject();
+   IGObject::Ptr planet = game->getObjectManager()->createNewObject();
 
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
@@ -532,13 +532,13 @@ void Rfts::onPlayerAdded(Player::Ptr player) {
    }
 
    // test : set the 2nd object - a planet - to be owned by the player
-   IGObject *homePlanet = choosePlayerPlanet();
+   IGObject::Ptr homePlanet = choosePlayerPlanet();
    Planet* pData = dynamic_cast<Planet*>(homePlanet->getObjectBehaviour());
    pData->setOwner(player->getID());
 
    Logger::getLogger()->debug("Making player's fleet");
    
-   IGObject* fleet = createEmptyFleet( player, om->getObject(homePlanet->getParent()),
+   IGObject::Ptr fleet = createEmptyFleet( player, om->getObject(homePlanet->getParent()),
                                         player->getName() + "'s fleet");
 
    // give 'em a scout to start
@@ -609,17 +609,17 @@ void Rfts::onPlayerAdded(Player::Ptr player) {
 }
 
 // make sure to start the player in a non-occupied area
-IGObject* Rfts::choosePlayerPlanet() const {
+IGObject::Ptr Rfts::choosePlayerPlanet() const {
    DEBUG_FN_PRINT();
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    Random *rand = game->getRandom();
 
-   IGObject *universe = om->getObject(0);
+   IGObject::Ptr universe = om->getObject(0);
    set<uint32_t> starSystems = universe->getContainedObjects();
 
-   IGObject *homePlanet = NULL;
+   IGObject::Ptr homePlanet;
    unsigned searchedSystems = 0;
 
    while(homePlanet == NULL && searchedSystems < starSystems.size() * 4./3)
@@ -627,7 +627,7 @@ IGObject* Rfts::choosePlayerPlanet() const {
       // pick rand Star System to search
       set<uint32_t>::iterator starSysI = starSystems.begin();
       advance(starSysI, rand->getInRange(static_cast<uint32_t>(1), starSystems.size()-1));
-      IGObject *starSys = om->getObject(*starSysI);
+      IGObject::Ptr starSys = om->getObject(*starSysI);
 
       searchedSystems++;
       

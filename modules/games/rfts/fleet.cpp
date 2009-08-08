@@ -263,8 +263,8 @@ void Fleet::doOnceATurn() {
       return;
 
    //check for opposing fleets
-   list<IGObject*> opposingFleets;
-   bool hasOpposingPlanet = setOpposingFleets(obj, opposingFleets);
+   list<IGObject::Ptr > opposingFleets;
+   bool hasOpposingPlanet = setOpposingFleets( opposingFleets);
 
    if(!opposingFleets.empty())
    {
@@ -281,7 +281,7 @@ int Fleet::getContainerType() {
    return ContainerTypes_::Fleet;
 }
 
-bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
+bool Fleet::setOpposingFleets( list<IGObject::Ptr >& fleets) {
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
@@ -293,7 +293,7 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
    
    for(set<uint32_t>::iterator i = possibleFleets.begin(); i != possibleFleets.end(); ++i)
    {
-      IGObject *objI = om->getObject(*i);
+      IGObject::Ptr objI = om->getObject(*i);
       if(objI->getType() == fleetType)
       {
          Fleet* fleetDataI = dynamic_cast<Fleet*>(objI->getObjectBehaviour());
@@ -313,7 +313,7 @@ bool Fleet::setOpposingFleets(IGObject* obj, list<IGObject*>& fleets) {
    return hasOpposingPlanet;
 }
 
-bool Fleet::doCombat(list<IGObject*>& fleets) {
+bool Fleet::doCombat(list<IGObject::Ptr >& fleets) {
    obj->touchModTime();
 
    // while !fleets.empty && !dead
@@ -322,11 +322,11 @@ bool Fleet::doCombat(list<IGObject*>& fleets) {
       // remove dead fleets
 
    ObjectManager *om = Game::getGame()->getObjectManager();
-   list< list<IGObject*>::iterator > killed;
+   list< list<IGObject::Ptr >::iterator > killed;
 
    while(!fleets.empty() && !isDead() && attack != 0)
    {
-      for(list<IGObject*>::iterator i = fleets.begin(); i != fleets.end(); ++i)
+      for(list<IGObject::Ptr >::iterator i = fleets.begin(); i != fleets.end(); ++i)
       {
          Fleet *fleet = dynamic_cast<Fleet*>((*i)->getObjectBehaviour());
          attackFleet(fleet);
@@ -339,7 +339,7 @@ bool Fleet::doCombat(list<IGObject*>& fleets) {
          }
       }
 
-      for(list< list<IGObject*>::iterator >::iterator i = killed.begin(); i != killed.end(); ++i)
+      for(list< list<IGObject::Ptr >::iterator >::iterator i = killed.begin(); i != killed.end(); ++i)
          fleets.erase(*i);
 
       killed.clear();
@@ -390,9 +390,9 @@ void Fleet::setupObject(){
 }
 
 
-IGObject* createEmptyFleet(Player::Ptr player, IGObject* starSys, const std::string& name) {
+IGObject::Ptr createEmptyFleet(Player::Ptr player, IGObject::Ptr starSys, const std::string& name) {
    Game *game = Game::getGame();
-   IGObject *fleet = game->getObjectManager()->createNewObject();
+   IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
       
    game->getObjectTypeManager()->setupObject(fleet, game->getObjectTypeManager()->getObjectTypeByName("Fleet"));
    if(name[0] == '\0' || name[0] == ' ')
@@ -424,9 +424,9 @@ IGObject* createEmptyFleet(Player::Ptr player, IGObject* starSys, const std::str
    return fleet;
 }
 
-IGObject* createFleet(Player::Ptr player, IGObject* starSys, const string& name,
+IGObject::Ptr createFleet(Player::Ptr player, IGObject::Ptr starSys, const string& name,
                       const IdMap& ships) {
-   IGObject* fleet = createEmptyFleet(player, starSys, name);
+   IGObject::Ptr fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
    
    for(IdMap::const_iterator i = ships.begin(); i != ships.end(); ++i)
@@ -435,10 +435,10 @@ IGObject* createFleet(Player::Ptr player, IGObject* starSys, const string& name,
    return fleet;
 }
 
-pair<IGObject*, bool> createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
+pair<IGObject::Ptr , bool> createFleet(Player::Ptr player, IGObject::Ptr starSys, const std::string& name,
                       const IdMap& ships, Planet *planetData) {
                       
-   IGObject* fleet = createEmptyFleet(player, starSys, name);
+   IGObject::Ptr fleet = createEmptyFleet(player, starSys, name);
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
 
    bool complete = true;
@@ -480,7 +480,7 @@ pair<IGObject*, bool> createFleet(Player::Ptr player, IGObject* starSys, const s
 
    }
 
-   return pair<IGObject*, bool>(fleet, complete);
+   return pair<IGObject::Ptr , bool>(fleet, complete);
 }
 
 

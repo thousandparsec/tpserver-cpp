@@ -78,12 +78,12 @@ void Move::inputFrame(Frame *f, uint32_t playerid) {
    ObjectTypeManager *odm = game->getObjectTypeManager();
    
 
-   IGObject *fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+   IGObject::Ptr fleet = om->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
    assert(fleetData != NULL);
 
-   IGObject *starSysObj = om->getObject(starSys->getObjectId());
+   IGObject::Ptr starSysObj = om->getObject(starSys->getObjectId());
 
    // if they chose a planet, set to the owning star sys
    if(starSysObj->getType() == odm->getObjectTypeByName("Planet"))
@@ -105,7 +105,7 @@ void Move::inputFrame(Frame *f, uint32_t playerid) {
    om->doneWithObject(fleet->getID());
 }
 
-bool Move::doOrder(IGObject * obj) {
+bool Move::doOrder(IGObject::Ptr obj) {
    turns--;
 
    if(obj->getParent() != 0)
@@ -121,7 +121,7 @@ bool Move::doOrder(IGObject * obj) {
       Fleet* fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
 
-      IGObject *newStarSys = om->getObject(starSys->getObjectId());
+      IGObject::Ptr newStarSys = om->getObject(starSys->getObjectId());
       obj->removeFromParent();
       obj->addToParent(starSys->getObjectId());
       fleetData->setUnitPos(dynamic_cast<StaticObject*>(newStarSys->getObjectBehaviour())->getUnitPos());

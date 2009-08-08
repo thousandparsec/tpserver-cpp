@@ -35,7 +35,7 @@ class Colonise : public ::Order {
 
    virtual Order* clone() const;
 
-   virtual bool doOrder(IGObject* obj);
+   virtual bool doOrder(IGObject::Ptr obj);
 
  private:
    ObjectOrderParameter *planet;

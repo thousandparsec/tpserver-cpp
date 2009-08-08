@@ -41,7 +41,7 @@ class BuildFleet : public Order {
 
    virtual void inputFrame(Frame * f, uint32_t playerid);
 
-   virtual bool doOrder(IGObject * obj);
+   virtual bool doOrder(IGObject::Ptr obj);
 
  private:
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();

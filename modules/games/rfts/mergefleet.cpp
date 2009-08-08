@@ -59,13 +59,13 @@ Order* MergeFleet::clone() const {
    return mf;
 }
 
-bool MergeFleet::doOrder(IGObject *obj) {
+bool MergeFleet::doOrder(IGObject::Ptr obj) {
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
    
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
 
-   IGObject *otherFleetObj = om->getObject(otherFleet->getObjectId());
+   IGObject::Ptr otherFleetObj = om->getObject(otherFleet->getObjectId());
    Fleet *otherFleetData = dynamic_cast<Fleet*>(otherFleetObj->getObjectBehaviour());
 
    Player::Ptr player = game->getPlayerManager()->getPlayer(fleetData->getOwner());

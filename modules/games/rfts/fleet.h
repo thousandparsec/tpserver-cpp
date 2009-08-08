@@ -83,18 +83,18 @@ class Fleet : public StaticObject, public OwnedObject
    double speed, attack, armour;
    bool hasTransports;
 
-   bool setOpposingFleets(IGObject* thisObj, std::list<IGObject*>& fleets);
-   bool doCombat(std::list<IGObject*>& fleets);
+   bool setOpposingFleets( std::list<IGObject::Ptr >& fleets);
+   bool doCombat(std::list<IGObject::Ptr >& fleets);
    void attackFleet(Fleet* opponent);
    void destroyShips(double intensity);
 
 };
 
 //helper functions
-IGObject* createEmptyFleet(Player::Ptr player, IGObject* starSys, const std::string& name);
-IGObject* createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
+IGObject::Ptr createEmptyFleet(Player::Ptr player, IGObject::Ptr starSys, const std::string& name);
+IGObject::Ptr createFleet(Player::Ptr player, IGObject::Ptr starSys, const std::string& name,
                       const IdMap& ships);
-std::pair<IGObject*, bool> createFleet(Player::Ptr player, IGObject* starSys, const std::string& name,
+std::pair<IGObject::Ptr , bool> createFleet(Player::Ptr player, IGObject::Ptr starSys, const std::string& name,
                       const IdMap& ships, Planet *planetData);
 
 }

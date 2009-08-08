@@ -65,16 +65,16 @@ Order* SplitFleet::clone() const {
    return sf;
 }
 
-bool SplitFleet::doOrder(IGObject *obj) {
+bool SplitFleet::doOrder(IGObject::Ptr obj) {
 
    Game * game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
 
    Fleet *fleetData = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
    Player::Ptr player = game->getPlayerManager()->getPlayer(fleetData->getOwner());
-   IGObject *starSys = om->getObject(obj->getParent());
+   IGObject::Ptr starSys = om->getObject(obj->getParent());
    
-   IGObject * newFleet = createFleet(player, starSys, "New fleet", shipList->getList());
+   IGObject::Ptr newFleet = createFleet(player, starSys, "New fleet", shipList->getList());
    Fleet *newFleetData = dynamic_cast<Fleet*>(newFleet->getObjectBehaviour());
 
    bool failed = false;
@@ -138,7 +138,7 @@ map<uint32_t, pair<string, uint32_t> > SplitFleet::generateListOptions() {
    ObjectManager* om = game->getObjectManager();
    OrderManager *orm = game->getOrderManager();
 
-   IGObject* fleet = om->getObject(orm->getOrderQueue(orderqueueid)->getObjectId());
+   IGObject::Ptr fleet = om->getObject(orm->getOrderQueue(orderqueueid)->getObjectId());
    Fleet* fleetData = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
 
    map<int, int> ships = fleetData->getShips();

@@ -24,12 +24,11 @@
 #include <vector>
 
 #include <tpserver/ruleset.h>
+#include <tpserver/object.h>
 #include <tpserver/designstore.h>
 #include <tpserver/resourcedescription.h>
 
-class IGObject;
 class Player;
-class ResourceDescription;
 
 namespace RFTS_ {
 
@@ -63,12 +62,12 @@ class Rfts : public ::Ruleset {
    std::pair<ResourceDescription::Ptr,ResourceDescription::Ptr> createPdbResource(char level) const;
 
    void createUniverse();
-   IGObject* createStarSystem(IGObject& universe, const std::string& name,
+   IGObject::Ptr createStarSystem(IGObject& universe, const std::string& name,
                            double unitX, double unitY);
-   IGObject* createPlanet(IGObject& parentStarSys, const std::string& name,
+   IGObject::Ptr createPlanet(IGObject& parentStarSys, const std::string& name,
                             const Vector3d& location);
 
-   IGObject* choosePlayerPlanet() const;
+   IGObject::Ptr choosePlayerPlanet() const;
 };
 
 Component::Ptr createEngineComponent(char techLevel);

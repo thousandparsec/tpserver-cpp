@@ -36,7 +36,7 @@ class SplitFleet : public ::Order {
    
    virtual Order* clone() const;
    
-   bool doOrder(IGObject * obj);
+   bool doOrder(IGObject::Ptr obj);
   
  private:
    ListParameter* shipList;
