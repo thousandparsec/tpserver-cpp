@@ -89,12 +89,9 @@ bool SplitFleet::doOrder(IGObject::Ptr ob){
   nf->setOwner(of->getOwner());
   nf->setPosition(of->getPosition());
   
-  OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setObjectId(nfleet->getID());
-    fleetoq->addOwner(nf->getOwner());
-    Game::getGame()->getOrderManager()->addOrderQueue(fleetoq);
+    uint32_t queueid = Game::getGame()->getOrderManager()->addOrderQueue(nfleet->getID(), nf->getOwner());
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(nfleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId(queueid);
     nf->setDefaultOrderTypes();
   
   IdMap ships = shiplist->getList();

@@ -76,7 +76,7 @@ void MTSecTurn::doTurn(){
       possiblecombatants.insert(ob->getID());
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop != NULL){
-        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+        OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
         if(orderqueue != NULL){
           Order * currOrder = orderqueue->getFirstOrder();
           if(currOrder != NULL){
@@ -100,7 +100,7 @@ void MTSecTurn::doTurn(){
     IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
-    OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+    OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
     Order * currOrder = orderqueue->getFirstOrder();
     if(currOrder->doOrder(ob)){
       orderqueue->removeFirstOrder();
@@ -171,7 +171,7 @@ void MTSecTurn::doTurn(){
             uint32_t oldowner = dynamic_cast<Planet*>(ob->getObjectBehaviour())->getOwner();
             dynamic_cast<Planet*>(ob->getObjectBehaviour())->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue))->getQueueId();
-            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
             queue->removeOwner(oldowner);
             queue->removeAllOrders();
           }else{
@@ -184,7 +184,7 @@ void MTSecTurn::doTurn(){
             uint32_t oldowner = dynamic_cast<Planet*>(itbobj->getObjectBehaviour())->getOwner();
             dynamic_cast<Planet*>(itbobj->getObjectBehaviour())->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getParameterByType(obpT_Order_Queue))->getQueueId();
-            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
             queue->removeOwner(oldowner);
             queue->removeAllOrders();
           }else{
@@ -206,7 +206,7 @@ void MTSecTurn::doTurn(){
     if(ob->getType() == planettype || ob->getType() == fleettype){
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop != NULL){
-        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+        OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
         if(orderqueue != NULL){
           Order * currOrder = orderqueue->getFirstOrder();
           if(currOrder != NULL){

@@ -254,12 +254,8 @@ IGObject::Ptr MTSec::createAlphaCentauriSystem( IGObject::Ptr mw_galaxy)
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     theacprime->setResources(ress);
     
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setQueueId(acprime->getID());
-    planetoq->addOwner(0);
-    game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId(game->getOrderManager()->addOrderQueue(acprime->getID(), 0));
     theacprime->setDefaultOrderTypes();
     
     acprime->addToParent(ac->getID());
@@ -306,12 +302,8 @@ IGObject::Ptr MTSec::createSiriusSystem( IGObject::Ptr mw_galaxy)
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     thes1->setResources(ress);
     
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setQueueId(s1->getID());
-    planetoq->addOwner(0);
-    game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(s1->getID(),0) );
     thes1->setDefaultOrderTypes();
     
     s1->addToParent(sirius->getID());
@@ -380,12 +372,8 @@ IGObject::Ptr MTSec::createStarSystem( IGObject::Ptr mw_galaxy)
         ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
         theplanet->setResources(ress);
         
-        OrderQueue *planetoq = new OrderQueue();
-        planetoq->setQueueId(planet->getID());
-        planetoq->addOwner(0);
-        game->getOrderManager()->addOrderQueue(planetoq);
         OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-        oqop->setQueueId(planetoq->getQueueId());
+        oqop->setQueueId( game->getOrderManager()->addOrderQueue(planet->getID(),0) );
         theplanet->setDefaultOrderTypes();
 
         planet->addToParent( star->getID());
@@ -437,12 +425,8 @@ IGObject::Ptr MTSec::createSolSystem( IGObject::Ptr mw_galaxy)
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     dynamic_cast<Planet*>(earth->getObjectBehaviour())->setResources(ress);
     
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setObjectId(earth->getID());
-    planetoq->addOwner(0);
-    game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(earth->getID(),0) );
     theearth->setDefaultOrderTypes();
     
     earth->addToParent(sol->getID());
@@ -465,12 +449,8 @@ IGObject::Ptr MTSec::createSolSystem( IGObject::Ptr mw_galaxy)
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     thevenus->setResources(ress);
     
-    planetoq = new OrderQueue();
-    planetoq->setQueueId(venus->getID());
-    planetoq->addOwner(0);
-    game->getOrderManager()->addOrderQueue(planetoq);
     oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(venus->getID(),0) );
     thevenus->setDefaultOrderTypes();
     
     venus->addToParent(sol->getID());
@@ -493,12 +473,8 @@ IGObject::Ptr MTSec::createSolSystem( IGObject::Ptr mw_galaxy)
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
     themars->setResources(ress);
     
-    planetoq = new OrderQueue();
-    planetoq->setQueueId(mars->getID());
-    planetoq->addOwner(0);
-    game->getOrderManager()->addOrderQueue(planetoq);
     oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(mars->getID(),0) );
     themars->setDefaultOrderTypes();
     
     mars->addToParent(sol->getID());
@@ -769,12 +745,8 @@ IGObject::Ptr MTSec::createEmptyFleet( Player::Ptr     owner,
     thefleet->setPosition( dynamic_cast<EmptyObject*>(star->getObjectBehaviour())->getPosition() + offset);
     thefleet->setVelocity( Vector3d(0LL, 0ll, 0ll));
     
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setObjectId(fleet->getID());
-    fleetoq->addOwner(owner->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(fleet->getID(),owner->getID()) );
     thefleet->setDefaultOrderTypes();
 
     fleet->addToParent( star->getID());
@@ -853,14 +825,8 @@ IGObject::Ptr MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject::Ptr sta
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(20, 50), 0);
     theplanet->setResources(ress);
     
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setObjectId(planet->getID());
-    planetoq->setQueueId(planet->getID());
-    planetoq->addOwner(player->getID());
-
-    game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(planet->getID(),0) );
     theplanet->setDefaultOrderTypes();
 
     planet->addToParent( star->getID());

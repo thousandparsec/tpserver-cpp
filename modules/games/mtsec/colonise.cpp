@@ -108,7 +108,7 @@ bool Colonise::doOrder(IGObject::Ptr ob){
 	planet->setOwner(fleet->getOwner());
         Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->addOwnedObject(target->getID());
         uint32_t queueid = static_cast<OrderQueueObjectParam*>(target->getParameterByType(obpT_Order_Queue))->getQueueId();
-        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
         queue->removeOwner(oldowner);
         queue->addOwner(fleet->getOwner());
 	
