@@ -51,9 +51,9 @@ Colonise::Colonise() : Order(){
 Colonise::~Colonise(){
 }
 
-bool Colonise::doOrder(IGObject * ob){
+bool Colonise::doOrder(IGObject::Ptr ob){
   //if not close, move
-  IGObject* target = Game::getGame()->getObjectManager()->getObject(ob->getParent());
+  IGObject::Ptr target = Game::getGame()->getObjectManager()->getObject(ob->getParent());
   if(target == NULL || target->getType() != Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Planet")){
     
     Logger::getLogger()->debug("Object(%d)->Colonise->doOrder(): Target was not valid.", ob->getID());

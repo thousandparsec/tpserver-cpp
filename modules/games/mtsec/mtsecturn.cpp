@@ -71,7 +71,7 @@ void MTSecTurn::doTurn(){
   
   std::set<uint32_t> objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     if(ob->getType() == planettype || ob->getType() == fleettype){
       possiblecombatants.insert(ob->getID());
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
@@ -97,7 +97,7 @@ void MTSecTurn::doTurn(){
   
   // do move
   for(itcurr = movers.begin(); itcurr != movers.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
@@ -114,7 +114,7 @@ void MTSecTurn::doTurn(){
   // do combat
   
   for(itcurr = possiblecombatants.begin(); itcurr != possiblecombatants.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     uint32_t playerid1;
     Vector3d pos1;
     uint32_t size1;
@@ -137,7 +137,7 @@ void MTSecTurn::doTurn(){
     
     
     for(std::set<uint32_t>::iterator itb = itcurr; itb != possiblecombatants.end(); ++itb){
-      IGObject* itbobj = objectmanager->getObject(*itb);
+      IGObject::Ptr itbobj = objectmanager->getObject(*itb);
       uint32_t playerid2;
       Vector3d pos2;
       uint32_t size2;
@@ -202,7 +202,7 @@ void MTSecTurn::doTurn(){
   // do other orders (nop, buildfleet, colonise)
   
   for(itcurr = otherorders.begin(); itcurr != otherorders.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     if(ob->getType() == planettype || ob->getType() == fleettype){
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop != NULL){
@@ -227,7 +227,7 @@ void MTSecTurn::doTurn(){
   // to once a turn (right at the end)
   objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     ob->getObjectBehaviour()->doOnceATurn();
     objectmanager->doneWithObject(ob->getID());
   }

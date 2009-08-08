@@ -30,7 +30,7 @@ class SplitFleet : public Order{
   SplitFleet();
   virtual ~SplitFleet();
   
-  bool doOrder(IGObject * ob);
+  bool doOrder(IGObject::Ptr ob);
 
   Order* clone() const;
   

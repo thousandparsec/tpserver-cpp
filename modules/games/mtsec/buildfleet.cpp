@@ -76,6 +76,29 @@ void BuildFleet::createFrame(Frame *f, int pos)
 {
   Logger::getLogger()->debug("Enter: BuildFleet::createFrame()");
   // set it to the high end of the production cost... this is a best case scenario where it gets all the factories
+  IGObject::Ptr planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  
+  // number of turns
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectBehaviour())->getResources();
+  Game::getGame()->getObjectManager()->doneWithObject(planet->getID());
+  uint32_t res_current;
+  if(presources.find(1) != presources.end()){
+    res_current = presources.find(1)->second.first;
+  }else{
+    res_current = 0;
+  }
+  uint32_t usedshipres = resources[1];
+  if(pos != 0 || usedshipres == 0){
+      turns = usedshipres;
+  }else{
+    if(usedshipres <= res_current){
+      turns = 1;
+    }else{
+      turns = usedshipres - res_current;
+    }
+  }
+  
+  
   Order::createFrame(f, pos);
   Logger::getLogger()->debug("Exit: BuildFleet::createFrame()");
 
@@ -143,7 +166,7 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid)
   }
 }
 
-bool BuildFleet::doOrder(IGObject *ob)
+bool BuildFleet::doOrder(IGObject::Ptr ob)
 {
   Logger::getLogger()->debug("Entering BuildFleet::doOrder");
 
@@ -186,8 +209,9 @@ bool BuildFleet::doOrder(IGObject *ob)
     //this is probably unnecessary
     resources[1] = 0;
     Game* game = Game::getGame();
-
-    IGObject *fleet = game->getObjectManager()->createNewObject();
+    
+    
+    IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
     game->getObjectTypeManager()->setupObject(fleet, game->getObjectTypeManager()->getObjectTypeByName("Fleet"));
 
     //add fleet to container

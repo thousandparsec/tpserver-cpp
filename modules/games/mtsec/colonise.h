@@ -31,7 +31,7 @@ class Colonise : public Order {
   Colonise();
   virtual ~Colonise();
   
-  bool doOrder(IGObject * ob);
+  bool doOrder(IGObject::Ptr ob);
 
   Order* clone() const;
 

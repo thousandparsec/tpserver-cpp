@@ -61,7 +61,7 @@ void Move::setDest(const Vector3d & ndest)
   coords->setPosition(ndest);
 }
 
-int Move::getETA(IGObject *ob) const{
+int Move::getETA(IGObject::Ptr ob) const{
   Logger::getLogger()->debug("Enter Move::getETA");
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = coords->getPosition().getDistance(fleet->getPosition());
@@ -76,7 +76,8 @@ int Move::getETA(IGObject *ob) const{
 void Move::createFrame(Frame * f, int pos)
 {
   Logger::getLogger()->debug("Enter Move::createFrame");
-  IGObject* obj = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Game* game = Game::getGame();
+  IGObject::Ptr obj = game->getObjectManager()->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   if(obj != NULL){
     turns = getETA(obj);
     Game::getGame()->getObjectManager()->doneWithObject(obj->getID());
@@ -88,7 +89,7 @@ void Move::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);	
 }
 
-bool Move::doOrder(IGObject * ob){
+bool Move::doOrder(IGObject::Ptr ob){
   Vector3d dest = coords->getPosition();
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = dest.getDistance(fleet->getPosition());
@@ -113,7 +114,7 @@ bool Move::doOrder(IGObject * ob){
       //removeFromParent();
       std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
-        IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
+        IGObject::Ptr testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
         Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getParameterByType(obpT_Position_3D));
         SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getParameterByType(obpT_Size));
@@ -179,7 +180,7 @@ bool Move::doOrder(IGObject * ob){
       //removeFromParent();
       std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
-        IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
+        IGObject::Ptr testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
         Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(testedobject->getParameterByType(obpT_Position_3D));
         SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(testedobject->getParameterByType(obpT_Size));

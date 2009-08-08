@@ -217,13 +217,13 @@ void MTSec::createTechTree()
 
 
 // Create the Alpha Centauri star system
-IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
+IGObject::Ptr MTSec::createAlphaCentauriSystem( IGObject::Ptr mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
     ResourceManager::Ptr resman = game->getResourceManager();
-    IGObject*      ac = game->getObjectManager()->createNewObject();
-    IGObject*      acprime = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      ac = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      acprime = game->getObjectManager()->createNewObject();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
 
     uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
@@ -270,13 +270,13 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
 
 
 // Create the Sirius star system
-IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
+IGObject::Ptr MTSec::createSiriusSystem( IGObject::Ptr mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
     ResourceManager::Ptr resman = game->getResourceManager();
-    IGObject*      sirius = game->getObjectManager()->createNewObject();
-    IGObject*      s1 = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      sirius = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      s1 = game->getObjectManager()->createNewObject();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
     uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
@@ -329,12 +329,12 @@ static uint32_t myRandom( uint32_t  max)
 
 
 // Create a random star system
-IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
+IGObject::Ptr MTSec::createStarSystem( IGObject::Ptr mw_galaxy)
 {
     Logger::getLogger()->debug( "Entering MTSec::createStarSystem");
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
-    IGObject*      star = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      star = game->getObjectManager()->createNewObject();
     uint32_t   nplanets = 0;
     std::ostringstream     formatter;
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
@@ -355,7 +355,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
 
     // Create a variable number of planets for each star system
     while ( nplanets < 5 && myRandom(10) < 6) {
-        IGObject*  planet = game->getObjectManager()->createNewObject();
+        IGObject::Ptr  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
         formatter << star->getName() << " " << nplanets;
 
@@ -399,15 +399,15 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
 
 
 // Create the Sol star system
-IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
+IGObject::Ptr MTSec::createSolSystem( IGObject::Ptr mw_galaxy)
 {
     Game*          game = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
     ResourceManager::Ptr resman = game->getResourceManager();
-    IGObject*      sol = game->getObjectManager()->createNewObject();
-    IGObject*      earth = game->getObjectManager()->createNewObject();
-    IGObject*      venus = game->getObjectManager()->createNewObject();
-    IGObject*      mars = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      sol = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      earth = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      venus = game->getObjectManager()->createNewObject();
+    IGObject::Ptr      mars = game->getObjectManager()->createNewObject();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
     
@@ -630,7 +630,7 @@ void MTSec::createGame()
     uint32_t obT_Universe = otypeman->getObjectTypeByName("Universe");
     uint32_t obT_Galaxy = otypeman->getObjectTypeByName("Galaxy");
     
-    IGObject* universe = obman->createNewObject();
+    IGObject::Ptr universe = obman->createNewObject();
     otypeman->setupObject(universe, obT_Universe);
     Universe* theuniverse = dynamic_cast<Universe*>(universe->getObjectBehaviour());
     theuniverse->setSize(1000000000ll);
@@ -639,7 +639,7 @@ void MTSec::createGame()
     obman->addObject(universe);
 
     //add contained objects
-    IGObject *mw_galaxy = obman->createNewObject();
+    IGObject::Ptr mw_galaxy = obman->createNewObject();
     otypeman->setupObject(mw_galaxy, obT_Galaxy);
     EmptyObject* themw = dynamic_cast<EmptyObject*>(mw_galaxy->getObjectBehaviour());
     themw->setSize(100000000ll);
@@ -746,13 +746,13 @@ Design* MTSec::createAlphaMissileDesign( Player* owner)
     return scout;
 }
 
-IGObject* MTSec::createEmptyFleet( Player::Ptr     owner,
-                                   IGObject*   star,
+IGObject::Ptr MTSec::createEmptyFleet( Player::Ptr     owner,
+                                   IGObject::Ptr   star,
                                    std::string fleetName)
 {
     Game *game = Game::getGame();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
-    IGObject *fleet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
         
     otypeman->setupObject(fleet, otypeman->getObjectTypeByName("Fleet"));
     
@@ -790,12 +790,12 @@ IGObject* MTSec::createEmptyFleet( Player::Ptr     owner,
 // them, although they could create another design that functions
 // similarly.
 //
-void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject* star)
+void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject::Ptr star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerFleet");
     Game *game = Game::getGame();
     std::string fleetName = player->getName().substr( 0,11) + "'s Fleet #1";
-    IGObject*   fleet = createEmptyFleet( player, star, fleetName);
+    IGObject::Ptr   fleet = createEmptyFleet( player, star, fleetName);
 
     Design::Ptr scout = createScoutDesign( player);
     Design::ptr tempMissile = createAlphaMissileDesign(player);
@@ -819,12 +819,12 @@ void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject* star)
 
 // Create a new player's home planet, orbiting around
 // the given star.
-IGObject* MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject* star)
+IGObject::Ptr MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject::Ptr star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makePlayerHomePlanet");
     Game *    game = Game::getGame();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
-    IGObject* planet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr planet = game->getObjectManager()->createNewObject();
     
     std::string planetName = player->getName() + "'s Planet";
 
@@ -875,12 +875,12 @@ IGObject* MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject* star)
 //
 // These 'home systems' always consist of exactly one planet.
 //
-IGObject* MTSec::makeNewPlayerStarSystem( Player::Ptr player)
+IGObject::Ptr MTSec::makeNewPlayerStarSystem( Player::Ptr player)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerStarSystem");
     Game *    game = Game::getGame();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
-    IGObject* star = game->getObjectManager()->createNewObject();
+    IGObject::Ptr star = game->getObjectManager()->createNewObject();
     
     std::string starName = player->getName() + " Star System";
 
@@ -934,7 +934,7 @@ void MTSec::onPlayerAdded(Player::Ptr player)
 {
     Logger::getLogger()->debug( "Enter MTSec::onPlayerAdded");
 
-    IGObject* star = makeNewPlayerStarSystem( player);
+    IGObject::Ptr star = makeNewPlayerStarSystem( player);
 
     setNewPlayerTech( player);
     makeNewPlayerFleet( player, star);

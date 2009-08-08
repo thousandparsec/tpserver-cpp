@@ -45,10 +45,10 @@ class MTSec : public Ruleset{
   Design::Ptr createBattleScoutDesign( Player::Ptr owner);
 
   // Object creation methods
-  IGObject* createSiriusSystem( IGObject* mw_galaxy);
-  IGObject* createStarSystem( IGObject* mw_galaxy);
-  IGObject* createSolSystem( IGObject *mw_galaxy);
-  IGObject* createAlphaCentauriSystem( IGObject* mw_galaxy);
+  IGObject::Ptr createSiriusSystem( IGObject::Ptr mw_galaxy);
+  IGObject::Ptr createStarSystem( IGObject::Ptr mw_galaxy);
+  IGObject::Ptr createSolSystem( IGObject::Ptr mw_galaxy);
+  IGObject::Ptr createAlphaCentauriSystem( IGObject::Ptr mw_galaxy);
 
   void createProperties();
   void createComponents();
@@ -56,12 +56,12 @@ class MTSec : public Ruleset{
   
   void createResources();
 
-  IGObject* createEmptyFleet( Player::Ptr     owner,
-                              IGObject*   star,
+  IGObject::Ptr createEmptyFleet( Player::Ptr     owner,
+                              IGObject::Ptr   star,
                               std::string fleetName);
-  void makeNewPlayerFleet( Player::Ptr player, IGObject* star);
-  IGObject* makePlayerHomePlanet( Player::Ptr player, IGObject* star);
-  IGObject* makeNewPlayerStarSystem( Player::Ptr player);
+  void makeNewPlayerFleet( Player::Ptr player, IGObject::Ptr star);
+  IGObject::Ptr makePlayerHomePlanet( Player::Ptr player, IGObject::Ptr star);
+  IGObject::Ptr makeNewPlayerStarSystem( Player::Ptr player);
   void setNewPlayerTech( Player::Ptr player);
   Design::Ptr createAlphaMissileDesign( Player::Ptr owner);
 

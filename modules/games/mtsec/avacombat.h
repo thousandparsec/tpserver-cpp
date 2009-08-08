@@ -33,7 +33,7 @@ class AVACombat{
   AVACombat();
   ~AVACombat();
 
-  void setCombatants(IGObject * a, IGObject * b);
+  void setCombatants(IGObject::Ptr a, IGObject::Ptr b);
   bool isAliveCombatant1();
   bool isAliveCombatant2();
   void doCombat();
@@ -42,7 +42,7 @@ class AVACombat{
 
  protected:
   bool doCombatRound( Fleet*, Message::Ptr, Fleet*, Message::Ptr);
-  IGObject *c1, *c2;
+  IGObject::Ptr c1, c2;
 
 };
 

@@ -44,14 +44,12 @@
 namespace MTSecRuleset {
 
 AVACombat::AVACombat(){
-  c1 = NULL;
-  c2 = NULL;
 }
 
 AVACombat::~AVACombat(){
 }
 
-void AVACombat::setCombatants(IGObject *a, IGObject *b){
+void AVACombat::setCombatants(IGObject::Ptr a, IGObject::Ptr b){
   c1 = a;
   c2 = b;
 }

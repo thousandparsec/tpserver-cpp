@@ -42,8 +42,8 @@ MergeFleet::MergeFleet() : Order(){
 MergeFleet::~MergeFleet(){
 }
 
-bool MergeFleet::doOrder(IGObject * ob){
-  IGObject* parent = Game::getGame()->getObjectManager()->getObject(ob->getParent());
+bool MergeFleet::doOrder(IGObject::Ptr ob){
+  IGObject::Ptr parent = Game::getGame()->getObjectManager()->getObject(ob->getParent());
   
   Fleet *myfleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   //find fleet to merge with
@@ -54,7 +54,7 @@ bool MergeFleet::doOrder(IGObject * ob){
   for(std::set<uint32_t>::iterator itcurr = oblist.begin(); itcurr != oblist.end(); ++itcurr){
     if(*itcurr == ob->getID())
       continue;
-    IGObject* ptarget = Game::getGame()->getObjectManager()->getObject(*itcurr);
+    IGObject::Ptr ptarget = Game::getGame()->getObjectManager()->getObject(*itcurr);
     if(ptarget->getType() == ob->getType()){
       Fleet* pfleet = dynamic_cast<Fleet*>(ptarget->getObjectBehaviour());
       if(pfleet->getOwner() == myfleet->getOwner()){
@@ -77,7 +77,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     Game::getGame()->getPlayerManager()->getPlayer(dynamic_cast<Fleet*>(ob->getObjectBehaviour())->getOwner())->postToBoard(msg);
   }else{
   
-    IGObject* target = Game::getGame()->getObjectManager()->getObject(targetid);
+    IGObject::Ptr target = Game::getGame()->getObjectManager()->getObject(targetid);
 
     Message::Ptr msg( new Message() );
     msg->setSubject("Merge Fleet order complete");
