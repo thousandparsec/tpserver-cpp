@@ -35,19 +35,12 @@
 #include "ownedobject.h"
 
 OwnedObjectType::OwnedObjectType( const std::string& nname, const std::string& ndesc ):SpaceObjectType(nname, ndesc){
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Ownership");
-  group->setDescription("The ownership of this object");
+  ObjectParameterGroupDesc::Ptr group;
+  group = createParameterGroupDesc( "Ownership", "The ownership of this object");
   group->addParameter(obpT_Reference, "Owner", "The owner of this object");
-  addParameterGroupDesc(group);
 
-  group = new ObjectParameterGroupDesc();
-  group->setName("Orders");
-  group->setDescription("The order queues of the fleet");
+  group = createParameterGroupDesc( "Orders", "The order queues of the fleet");
   group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this fleet");
-  addParameterGroupDesc(group);
-  
-
 }
 
 OwnedObjectType::~OwnedObjectType(){

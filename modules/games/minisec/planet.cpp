@@ -31,11 +31,8 @@
 #include "planet.h"
 
 PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object"){
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Resources");
-  group->setDescription("The planets resources");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc("Resources","The planets resources");
   group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
-  addParameterGroupDesc(group);
 }
 
 PlanetType::~PlanetType(){

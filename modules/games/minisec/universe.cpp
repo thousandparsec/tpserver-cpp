@@ -20,17 +20,13 @@
 
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
-#include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/integerobjectparam.h>
 
 #include "universe.h"
 
 UniverseType::UniverseType() : SpaceObjectType("Universe","The Universe"){
-  ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
-  group->setName("Informational");
-  group->setDescription("Information about the universe");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Informational", "Information about the universe");
   group->addParameter(obpT_Integer, "Year", "The Age of the universe");
-  addParameterGroupDesc(group);
 }
 
 UniverseType::~UniverseType(){

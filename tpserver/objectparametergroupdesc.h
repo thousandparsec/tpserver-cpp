@@ -1,5 +1,5 @@
 #ifndef OBJECTPARAMETERGROUPDESC_H
-#define OBJCETPARAMETERGROUPDESC_H
+#define OBJECTPARAMETERGROUPDESC_H
 /*  ObjectParameterGroupDesc class
  * Collects Object Parameters together into a group.
  *
