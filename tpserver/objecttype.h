@@ -22,24 +22,22 @@
 
 #include <tpserver/modifiable.h>
 #include <tpserver/object.h>
+#include <tpserver/protocolobject.h>
 
 class Frame;
 class ObjectParameterGroupDesc;
 class ObjectBehaviour;
 
-class ObjectType : public Modifiable {
-
+class ObjectType : public ProtocolObject {
   public:
-    /// DEPRECATED
-    ObjectType();
+    typedef boost::shared_ptr<ObjectType> Ptr;
     ObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~ObjectType();
 
     uint32_t getType() const;
-    std::string getTypeName() const;
 
     void setType(uint32_t nt);
-    void packObjectDescFrame(Frame* frame);
+    void pack(Frame* frame) const;
     void setupObject(IGObject::Ptr obj) const;
 
   protected:
@@ -47,11 +45,7 @@ class ObjectType : public Modifiable {
     ObjectParameterGroupDesc* getParameterGroupDesc(uint32_t groupid) const;
     virtual ObjectBehaviour* createObjectBehaviour() const = 0;
 
-    std::string nametype;
-    std::string typedesc;
-
   private:
-    uint32_t type;
     uint32_t nextparamgroupid;
     std::map<uint32_t, ObjectParameterGroupDesc*> paramgroups;
 };

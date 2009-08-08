@@ -28,11 +28,9 @@
 
 #include "objecttype.h"
 
-ObjectType::ObjectType() : nametype(), typedesc(), type(0), nextparamgroupid(1){
-  touchModTime();
-}
-
-ObjectType::ObjectType( const std::string& nname, const std::string& ndesc ) : nametype(nname), typedesc(ndesc), type(0), nextparamgroupid(1){
+ObjectType::ObjectType( const std::string& nname, const std::string& ndesc ) : 
+  ProtocolObject( ft04_ObjectDesc, 0, nname, ndesc ), nextparamgroupid(1)
+{
   touchModTime();
 }
 
@@ -41,22 +39,16 @@ ObjectType::~ObjectType(){
 }
 
 uint32_t ObjectType::getType() const{
-  return type;
-}
-
-std::string ObjectType::getTypeName() const{
-  return nametype;
+  return id;
 }
 
 void ObjectType::setType(uint32_t nt){
-  type = nt;
+  id = nt;
 }
 
-void ObjectType::packObjectDescFrame(Frame* frame){
-  frame->setType(ft04_ObjectDesc);
-  frame->packInt(type);
-  frame->packString(nametype);
-  frame->packString(typedesc);
+void ObjectType::pack(Frame* frame) const
+{
+  ProtocolObject::pack( frame );
   frame->packInt64(getModTime());
   frame->packInt(paramgroups.size());
   for_each_value( paramgroups.begin(), paramgroups.end(), boost::bind( &ObjectParameterGroupDesc::packObjectDescFrame, _1, frame ) );

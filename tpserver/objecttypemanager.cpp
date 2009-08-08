@@ -57,7 +57,7 @@ uint32_t ObjectTypeManager::getObjectTypeByName(const std::string& name) const{
 uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
   od->setType(nextType);
   typeStore[nextType] = od;
-  stringmap[od->getTypeName()] = nextType;
+  stringmap[od->getName()] = nextType;
   nextType++;
   seqkey++;
   return nextType - 1;
@@ -77,7 +77,7 @@ IdModList ObjectTypeManager::getTypeModList(uint64_t fromtime) const {
 
 void ObjectTypeManager::doGetObjectDesc(uint32_t type, Frame* of){
   if(typeStore.find(type) != typeStore.end()){
-    typeStore[type]->packObjectDescFrame(of);
+    typeStore[type]->pack(of);
   }else{
     of->createFailFrame(fec_NonExistant, "Object type does not exist");
   }
