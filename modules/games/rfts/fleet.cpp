@@ -64,27 +64,19 @@ using std::list;
 
 FleetType::FleetType() : StaticObjectType( "Fleet", "A fleet of ships" )
 {
-   ObjectParameterGroupDesc *group = getParameterGroupDesc(1);
+  // My this is ugly...
+  ObjectParameterGroupDesc::Ptr group = getParameterGroupDesc(1);
    group->addParameter(obpT_Velocity, "Velocity", "The velocity of the fleet");
 
-   group = new ObjectParameterGroupDesc();
-   group->setName("Ownership");
-   group->setDescription("The ownership of this object");
+   group = createParameterGroupDesc( "Ownership", "The ownership of this object");
    group->addParameter(obpT_Reference, "Owner", "The owner of this object");
-   addParameterGroupDesc(group);
 
-   group = new ObjectParameterGroupDesc();
-   group->setName("Orders");
-   group->setDescription("The order queue for this object");
+   group = createParameterGroupDesc( "Orders", "The order queue for this object");
    group->addParameter(obpT_Order_Queue, "Order queue", "The order queue for this object");
-   addParameterGroupDesc(group);
    
-   group = new ObjectParameterGroupDesc();
-   group->setName("Ships");
-   group->setDescription("The fleet's ship's information");
+   group = createParameterGroupDesc( "Ships", "The fleet's ship's information");
    group->addParameter(obpT_Reference_Quantity_List, "Ship list", "The list of ships in this fleet");
    group->addParameter(obpT_Integer, "Damage", "The damage taken by the ships");
-   addParameterGroupDesc(group);
 }
 
 FleetType::~FleetType(){

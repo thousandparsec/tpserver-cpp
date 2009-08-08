@@ -61,23 +61,16 @@ using std::set;
 
 PlanetType::PlanetType() : StaticObjectType( "Planet", "A planet object" )
 {  
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Ownership");
-  group->setDescription("The ownership of this object");
+  ObjectParameterGroupDesc::Ptr group;
+
+  group = createParameterGroupDesc( "Ownership", "The ownership of this object");
   group->addParameter(obpT_Reference, "Owner", "The owner of this object");
-  addParameterGroupDesc(group);
   
-  group = new ObjectParameterGroupDesc();
-  group->setName("Resources");
-  group->setDescription("The planets stats");
+  group = createParameterGroupDesc( "Resources", "The planets stats");
   group->addParameter(obpT_Resource_List, "Resource List", "The for this planet");
-  addParameterGroupDesc(group);
   
-  group = new ObjectParameterGroupDesc();
-  group->setName("Orders");
-  group->setDescription("The order queues of the planet");
+  group = createParameterGroupDesc( "Orders", "The order queues of the planet");
   group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this planet");
-  addParameterGroupDesc(group);
 }
 
 ObjectBehaviour* PlanetType::createObjectBehaviour() const{
