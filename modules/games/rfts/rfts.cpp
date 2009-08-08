@@ -358,13 +358,9 @@ IGObject::Ptr Rfts::createPlanet(IGObject& parentStarSys, const string& name,con
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
    
-   OrderQueue *planetOrders = new OrderQueue();
-   planetOrders->setObjectId(planet->getID());
-   planetOrders->addOwner(0);
-   game->getOrderManager()->addOrderQueue(planetOrders);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>
                                        (planet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(planetOrders->getQueueId());
+   oqop->setQueueId( game->getOrderManager()->addOrderQueue(planet->getID(),0) );
    planetData->setOrderTypes();
   
    planet->addToParent(parentStarSys.getID());

@@ -74,7 +74,7 @@ void RftsTurn::doTurn() {
       IGObject::Ptr currObj = objectmanager->getObject(*i);
 
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
-      OrderQueue* oq;
+      OrderQueue::Ptr oq;
       if(oqop != NULL && 
          (oq = ordermanager->getOrderQueue(oqop->getQueueId())) != NULL)
       {

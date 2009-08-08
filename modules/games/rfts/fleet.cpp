@@ -408,13 +408,9 @@ IGObject::Ptr createEmptyFleet(Player::Ptr player, IGObject::Ptr starSys, const 
    fleetData->setUnitPos( dynamic_cast<StaticObject*>(starSys->getObjectBehaviour())->getUnitPos());
    fleetData->setVelocity( Vector3d(0LL, 0ll, 0ll));
    
-   OrderQueue *fleetoq = new OrderQueue();
-   fleetoq->setObjectId(fleet->getID());
-   fleetoq->addOwner(player->getID());
-   game->getOrderManager()->addOrderQueue(fleetoq);
    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(
                                  fleet->getParameterByType(obpT_Order_Queue));
-   oqop->setQueueId(fleetoq->getQueueId());
+   oqop->setQueueId( game->getOrderManager()->addOrderQueue(fleet->getID(),player->getID()) );
    fleetData->setOrderTypes();
 
    fleet->addToParent(starSys->getID());
