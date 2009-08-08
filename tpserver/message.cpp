@@ -23,12 +23,9 @@
 
 #include "message.h"
 
-Message::Message() {
+Message::Message() : ProtocolObject( ft02_Message, 0 )
+{
   turn_number = Game::getGame()->getTurnNumber();
-}
-
-Message::Message(const Message& rhs) 
-  : subject(rhs.subject), body(rhs.body), turn_number(rhs.turn_number), references(rhs.references) {
 }
 
 int Message::getTurn() {
@@ -40,19 +37,19 @@ void Message::setTurn(uint32_t nt) {
 }
 
 void Message::setSubject(const std::string & nsub) {
-  subject = nsub;
+  setName( nsub );
 }
 
 std::string Message::getSubject() {
-  return subject;
+  return getName();
 }
 
 void Message::setBody(const std::string & nbody) {
-  body = nbody;
+  setDescription( nbody );
 }
 
 std::string Message::getBody() {
-  return body;
+  return getDescription();
 }
 
 void Message::addReference(RefSysType type, uint32_t value) {
@@ -70,8 +67,8 @@ void Message::pack(Frame * frame) const {
   } else {
     frame->packInt(0);
   }
-  frame->packString(subject);
-  frame->packString(body);
+  frame->packString(name);
+  frame->packString(desc);
   if (frame->getVersion() > fv0_2) {
     frame->packInt(turn_number);
     frame->packInt(references.size());

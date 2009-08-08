@@ -131,7 +131,7 @@ IdSet Persistence::getBoardIds(){
     return IdSet();
 }
 
-bool Persistence::saveMessage(uint32_t msgid, Message::Ptr msg){
+bool Persistence::saveMessage( Message::Ptr msg){
     return false;
 }
 
@@ -314,6 +314,7 @@ bool Persistence::saveProtocolObject(ProtocolObject::Ptr object)
     case ft02_ResDesc   : return saveResource( boost::dynamic_pointer_cast<ResourceDescription>(object) );
     case ft02_Object    : return saveObject( boost::dynamic_pointer_cast<IGObject>(object) );
     case ft02_Board     : return saveBoard( boost::dynamic_pointer_cast<Board>(object) );
+    case ft02_Message   : return saveMessage( boost::dynamic_pointer_cast<Message>(object) );
     default : return false;
   }
 }
@@ -329,6 +330,7 @@ ProtocolObject::Ptr Persistence::retrieveProtocolObject(FrameType objtype, uint3
     case ft02_ResDesc   : return retrieveResource( id );
     case ft02_Object    : return retrieveObject( id );
     case ft02_Board     : return retrieveBoard( id );
+    case ft02_Message   : return retrieveMessage( id );
     default : return ProtocolObject::Ptr();
   }
 }
@@ -344,6 +346,7 @@ uint32_t Persistence::getMaxProtocolObjectId(FrameType objtype)
     case ft02_ResDesc   : return getMaxResourceId( );
     case ft02_Object    : return getMaxObjectId( );
     case ft02_Board     : return getMaxBoardId( );
+    case ft02_Message   : return getMaxMessageId( );
     default : return 0;
   }
 }
@@ -360,6 +363,7 @@ IdSet Persistence::getProtocolObjectIds(FrameType objtype)
     case ft02_ResDesc   : return getResourceIds( );
     case ft02_Object    : return getObjectIds( );
     case ft02_Board     : return getBoardIds( );
+ // case ft02_Message   : return getMessageIds( );
     default : return IdSet();
   }
 }

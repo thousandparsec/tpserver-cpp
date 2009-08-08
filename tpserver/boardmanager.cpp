@@ -65,8 +65,9 @@ void BoardManager::postToBoard(Message::Ptr msg, uint32_t boardid) {
 
 uint32_t BoardManager::addMessage(Message::Ptr msg) {
   uint32_t msgid = nextmid++;
+  msg->setId( msgid );
   messagecache[msgid] = msg;
-  if (!(Game::getGame()->getPersistence()->saveMessage(msgid, msg))) {
+  if (!(Game::getGame()->getPersistence()->saveMessage(msg))) {
     messagecache[msgid].reset();
     // signal that the message is invalid
     return UINT32_NEG_ONE;

@@ -20,9 +20,8 @@
  *
  */
 
-#include <tpserver/common.h>
 #include <tpserver/refsys.h>
-#include <tpserver/packable.h>
+#include <tpserver/protocolobject.h>
 
 class Frame;
 
@@ -31,7 +30,7 @@ class Frame;
  *
  * A message consists of a subject, body, turn number and references.
  */
-class Message : public Packable {
+class Message : public ProtocolObject {
   public:
     /// Type definition for a single reference
     typedef std::pair<RefSysType, uint32_t> Ref;
@@ -49,11 +48,6 @@ class Message : public Packable {
      * Sets the turn number to current game turn.
      */
     Message();
-
-    /**
-     * Copy constructor
-     */
-    Message(const Message& rhs);
 
     /// Returns the stored turn value
     int getTurn();
@@ -91,12 +85,8 @@ class Message : public Packable {
      */
     void pack(Frame * frame) const;
 
+    void setId( uint32_t new_id ) { id = new_id; }
   private:
-    /// Message subject
-    std::string subject;
-
-    /// Message body
-    std::string body;
 
     /// Turn number when the message was posted
     int turn_number;
