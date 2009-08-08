@@ -231,12 +231,8 @@ void taeRuleset::createBoard(string path, uint32_t galaxy) {
             sprintf(planetName, "Planet %d, %d", i, row);
             p->setName(planetName);
             pob->setPosition(sys1ob->getPosition());
-            OrderQueue *planetoq = new OrderQueue();
-            planetoq->setObjectId(p->getID());
-            planetoq->addOwner(0);
-            game->getOrderManager()->addOrderQueue(planetoq);
             OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
-            oqop->setQueueId(planetoq->getQueueId());
+            oqop->setQueueId( game->getOrderManager()->addOrderQueue( p->getID(), 0) );
             pob->setDefaultOrderTypes();
             p->addToParent(sys1->getID());
             obm->addObject(p);
@@ -594,12 +590,8 @@ void taeRuleset::onPlayerAdded(Player::Ptr player) {
     pob->setSize(2);
     p->setName(player->getName() + "'s Home Planet");
     pob->setPosition(sys1ob->getPosition());
-    OrderQueue *planetoq = new OrderQueue();
-    planetoq->setObjectId(p->getID());
-    planetoq->addOwner(player->getID());
-    game->getOrderManager()->addOrderQueue(planetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(p->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(planetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(p->getID(), player->getID()) );
     pob->setDefaultOrderTypes();
     p->addToParent(sys1->getID());
     game->getObjectManager()->addObject(p);

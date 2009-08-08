@@ -80,12 +80,8 @@ IGObject::Ptr FleetBuilder::createFleet(int fleetType, int shipType, Player::Ptr
     theFleet->setPosition(((SpaceObject*)(parent->getObjectBehaviour()))->getPosition());
     theFleet->setVelocity(Vector3d(0ll,0ll,0ll));
 
-    OrderQueue *fleetoq = new OrderQueue();
-    fleetoq->setQueueId(fleet->getID());
-    fleetoq->addOwner(owner->getID());
-    game->getOrderManager()->addOrderQueue(fleetoq);
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(fleetoq->getQueueId());
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(fleet->getID(), owner->getID()) );
     theFleet->setDefaultOrderTypes();
 
     fleet->addToParent(parent->getID());

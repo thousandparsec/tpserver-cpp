@@ -96,7 +96,7 @@ void TaeTurn::doTurn(){
         if(ob->getType() == planettype || ob->getType() == fleettype){
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
             if(oqop != NULL){
-                OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+              OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
                 if(orderqueue != NULL){
                     Order * currOrder = orderqueue->getFirstOrder();
                     if(currOrder != NULL){
@@ -122,7 +122,7 @@ void TaeTurn::doTurn(){
         }
         if(playerOrders[*itcurr].size() > 0) {
             for(std::list<IGObject::Ptr >::iterator i = playerOrders[*itcurr].begin(); i != playerOrders[*itcurr].end(); i++) {
-                OrderQueue* orderqueue = ordermanager->getOrderQueue(((OrderQueueObjectParam*)((*i)->getParameterByType(obpT_Order_Queue)))->getQueueId());
+              OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(((OrderQueueObjectParam*)((*i)->getParameterByType(obpT_Order_Queue)))->getQueueId());
                 Order* currOrder = orderqueue->getFirstOrder();
                 if(currOrder!= NULL) {
                     if(currOrder->doOrder(*i)) {
@@ -454,7 +454,7 @@ void TaeTurn::doCombatTurn() {
         if(ob->getType() == planettype || ob->getType() == fleettype){
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
             if(oqop != NULL){
-                OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+              OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
                 if(orderqueue != NULL){
                     Order * currOrder = orderqueue->getFirstOrder();
                     if(currOrder != NULL){

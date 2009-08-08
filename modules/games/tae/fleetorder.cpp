@@ -102,7 +102,7 @@ void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
                     //Check to see if they have been given an order
                     OrderQueueObjectParam* oqop = (OrderQueueObjectParam*)(ob->getParameterByType(obpT_Order_Queue));
                     if(oqop != NULL){
-                        OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+                      OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
                         if(orderqueue != NULL){
                             Order * currOrder = orderqueue->getFirstOrder();
                             if(currOrder != NULL){
