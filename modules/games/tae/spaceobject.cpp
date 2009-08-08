@@ -29,13 +29,10 @@
 #include "spaceobject.h"
 
 SpaceObjectType::SpaceObjectType( const std::string& nname, const std::string& ndesc ):ObjectType(nname,ndesc){
-  ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-  group->setName("Positional");
-  group->setDescription("Positional information");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Positional", "Positional information");
   group->addParameter(obpT_Position_3D, "Position", "The position of the object");
   group->addParameter(obpT_Velocity, "Velocity", "The velocity of the object");
   group->addParameter(obpT_Size, "Size", "The size of the object");
-  addParameterGroupDesc(group);
   
 }
 

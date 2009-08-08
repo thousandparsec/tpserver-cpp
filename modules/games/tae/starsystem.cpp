@@ -37,13 +37,10 @@ using std::set;
 
 StarSystemType::StarSystemType() : SpaceObjectType("Star System","A Star System Object") {
 
-    ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-    group->setName("Status");
-    group->setDescription("Information on the current status of the star system");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Status", "Information on the current status of the star system");
     group->addParameter(obpT_Integer, "Inhabitable", "Is the system inhabitable"); 
     group->addParameter(obpT_Integer, "Destroyed", "Is the star destroyed");
     group->addParameter(obpT_Integer, "Region", "The region this star system belongs to");
-    addParameterGroupDesc(group);
 }
 
 StarSystemType::~StarSystemType() {

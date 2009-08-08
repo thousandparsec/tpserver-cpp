@@ -31,18 +31,15 @@
 
 UniverseType::UniverseType() : ObjectType( "Universe", "The Universe") 
 {
-    ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-    group->setName("Positional");
-    group->setDescription("Positional information");
-    group->addParameter(obpT_Position_3D, "Position", "The position of the object");
-    group->addParameter(obpT_Velocity, "Velocity", "The velocity of the object");
-    group->addParameter(obpT_Size, "Size", "The size of the object");
-    addParameterGroupDesc(group);
-    ObjectParameterGroupDesc *infogroup = new ObjectParameterGroupDesc();
-    infogroup->setName("Informational");
-    infogroup->setDescription("Information about the universe");
-    infogroup->addParameter(obpT_Integer, "Year", "The Age of the universe");
-    addParameterGroupDesc(infogroup);
+  ObjectParameterGroupDesc::Ptr group;
+
+  group = createParameterGroupDesc("Positional","Positional information");
+  group->addParameter(obpT_Position_3D, "Position", "The position of the object");
+  group->addParameter(obpT_Velocity, "Velocity", "The velocity of the object");
+  group->addParameter(obpT_Size, "Size", "The size of the object");
+
+  group = createParameterGroupDesc( "Informational", "Information about the universe");
+  group->addParameter(obpT_Integer, "Year", "The Age of the universe");
 }
 
 UniverseType::~UniverseType(){
