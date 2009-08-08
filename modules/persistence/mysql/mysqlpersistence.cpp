@@ -1138,8 +1138,9 @@ IdSet MysqlPersistence::getBoardIds(){
   }
 }
 
-bool MysqlPersistence::saveMessage(uint32_t msgid, boost::shared_ptr< Message > msg){
+bool MysqlPersistence::saveMessage( boost::shared_ptr< Message > msg){
   try {
+    uint32_t msgid = msg->getId();
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO message VALUES (" << msgid << ", '" << addslashes(msg->getSubject()) << "', '";
     querybuilder << addslashes(msg->getBody()) << "', " << msg->getTurn() << ");";
