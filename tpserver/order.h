@@ -20,16 +20,11 @@
  *
  */
 
-#include <stdint.h>
-#include <list>
-#include <map>
-#include <string>
-
 #include <tpserver/common.h>
+#include <tpserver/object.h>
 #include <tpserver/frameexception.h>
 
 class Frame;
-class IGObject;
 class OrderParameter;
 
 class Order {
@@ -53,7 +48,7 @@ class Order {
     // throws FrameException
     virtual void inputFrame(Frame * f, uint32_t playerid);
 
-    virtual bool doOrder(IGObject * ob) = 0;
+    virtual bool doOrder(IGObject::Ptr ob) = 0;
 
     void describeOrder(Frame * f) const;
     virtual Order *clone() const = 0;
