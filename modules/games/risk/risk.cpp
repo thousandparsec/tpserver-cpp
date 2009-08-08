@@ -121,19 +121,12 @@ void Risk::initGame(){
 
 void Risk::setObjectTypes() const{
    ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
-   StaticObjectType* eo;    
 
    obdm->addNewObjectType(new UniverseType());
-
    obdm->addNewObjectType(new ConstellationType());
-
-   eo = new StaticObjectType();
-   eo->setTypeName("Star System");
-   eo->setTypeDescription("A territory capable of being controlled and having any number of armies.");
-   obdm->addNewObjectType(eo);
-
+   obdm->addNewObjectType(new StaticObjectType("Star System","A territory capable of being controlled and having any number of armies.") );
    obdm->addNewObjectType(new PlanetType());
-   obdm->addNewObjectType(new StaticObjectType());
+   obdm->addNewObjectType(new StaticObjectType("",""));
    obdm->addNewObjectType(new WormholeType());
 }
 

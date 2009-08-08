@@ -60,9 +60,7 @@ using std::map;
 using std::set;
 using std::list;
 
-PlanetType::PlanetType() : StaticObjectType(){
-   nametype = "Planet";
-   typedesc = "A planet object";
+PlanetType::PlanetType() : StaticObjectType( "Planet", "A planet object" ) {
 
    ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
    group->setName("Ownership");

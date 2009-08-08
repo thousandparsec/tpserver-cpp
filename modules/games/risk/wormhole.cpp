@@ -31,15 +31,13 @@
 
 namespace RiskRuleset {
 
-WormholeType::WormholeType() : StaticObjectType() {
+WormholeType::WormholeType() : StaticObjectType( "Wormhole", "Holes in the fabric of space allowing instant travel" ) {
    ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
    group->setName("Informational");
    group->setDescription("Information about the wormhole");
    group->addParameter(obpT_Position_3D, "Exit", "Where the wormhole exits.");
    addParameterGroupDesc(group);
 
-   nametype = "Wormhole";
-   typedesc = "Holes in the fabric of space allowing instant travel";
 }
 
 ObjectBehaviour* WormholeType::createObjectBehaviour() const{

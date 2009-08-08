@@ -32,15 +32,13 @@
 
 namespace RiskRuleset {
 
-ConstellationType::ConstellationType() : StaticObjectType() {
+ConstellationType::ConstellationType() : StaticObjectType("Constellation", "A Constellation" ) {
    ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
    group->setName("Informational");
    group->setDescription("Information about the constellation");
    group->addParameter(obpT_Integer, "Bonus", "Reinforcement bonus for owning entire onstellation");
    addParameterGroupDesc(group);                   //(2,1)
 
-   nametype = "Constellation";
-   typedesc = "A Constellation";
 }
 
 ObjectBehaviour* ConstellationType::createObjectBehaviour() const{
