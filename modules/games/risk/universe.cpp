@@ -32,12 +32,8 @@
 namespace RiskRuleset {
 
 UniverseType::UniverseType() : StaticObjectType( "Universe", "The Universe" ) {
-   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
-   group->setName("Informational");
-   group->setDescription("Information about the universe");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Informational","Information about the universe");
    group->addParameter(obpT_Integer, "Turn", "The current turn number");
-   addParameterGroupDesc(group);
-
 }
 
 ObjectBehaviour* UniverseType::createObjectBehaviour() const{

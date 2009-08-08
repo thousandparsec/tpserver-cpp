@@ -34,12 +34,9 @@ namespace RiskRuleset {
 using std::pair;
 
 StaticObjectType::StaticObjectType( const std::string& nname, const std::string& ndesc ) : ObjectType(nname,ndesc){
-   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-   group->setName("Positional");
-   group->setDescription("Describes the position");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Positional", "Describes the position");
    group->addParameter(obpT_Position_3D, "Position", "The position of the object");
    group->addParameter(obpT_Size, "Size", "The diameter of the object");
-   addParameterGroupDesc(group);
 
 }
 

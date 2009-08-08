@@ -62,23 +62,16 @@ using std::list;
 
 PlanetType::PlanetType() : StaticObjectType( "Planet", "A planet object" ) {
 
-   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
-   group->setName("Ownership");
-   group->setDescription("The ownership of this object");
-   group->addParameter(obpT_Reference, "Owner", "The owner of this object");
-   addParameterGroupDesc(group);               //(2,1)
+  ObjectParameterGroupDesc::Ptr group;
 
-   group = new ObjectParameterGroupDesc();
-   group->setName("Resources");
-   group->setDescription("The planets stats");
-   group->addParameter(obpT_Resource_List, "Resource List", "The for this planet");
-   addParameterGroupDesc(group);               //(3,1)
+  group = createParameterGroupDesc( "Ownership", "The ownership of this object");
+  group->addParameter(obpT_Reference, "Owner", "The owner of this object");
 
-   group = new ObjectParameterGroupDesc();
-   group->setName("Orders");
-   group->setDescription("The order queues of the planet");
-   group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this planet");
-   addParameterGroupDesc(group);               //(4,1)
+  group = createParameterGroupDesc( "Resources", "The planets stats");
+  group->addParameter(obpT_Resource_List, "Resource List", "The for this planet");
+
+  group = createParameterGroupDesc( "Orders","The order queues of the planet");
+  group->addParameter(obpT_Order_Queue, "Order Queue", "The queue of orders for this planet");
 }
 
 ObjectBehaviour* PlanetType::createObjectBehaviour() const{
