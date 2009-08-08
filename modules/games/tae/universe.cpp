@@ -29,7 +29,8 @@
 #include <tpserver/integerobjectparam.h>
 
 
-UniverseType::UniverseType() : ObjectType(){
+UniverseType::UniverseType() : ObjectType( "Universe", "The Universe") 
+{
     ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
     group->setName("Positional");
     group->setDescription("Positional information");
@@ -42,8 +43,6 @@ UniverseType::UniverseType() : ObjectType(){
     infogroup->setDescription("Information about the universe");
     infogroup->addParameter(obpT_Integer, "Year", "The Age of the universe");
     addParameterGroupDesc(infogroup);
-    nametype = "Universe";
-    typedesc = "The Universe";
 }
 
 UniverseType::~UniverseType(){

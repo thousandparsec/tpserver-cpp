@@ -26,7 +26,7 @@
 
 class EmptyObjectType : public SpaceObjectType{
   public:
-    EmptyObjectType();
+    EmptyObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~EmptyObjectType();
 
     void setTypeName(const std::string& n);

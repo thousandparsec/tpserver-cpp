@@ -93,10 +93,7 @@ void taeRuleset::initGame() {
     obtm->addNewObjectType(new UniverseType());
 
     //Add Galaxy object type
-    EmptyObjectType * eo = new EmptyObjectType();
-    eo->setTypeName("Galaxy");
-    eo->setTypeDescription("The Galaxy Object type");
-    obtm->addNewObjectType(eo);
+    obtm->addNewObjectType( new EmptyObjectType( "Galaxy", "The Galaxy Object type") );
 
     //Add Solar system object type
     obtm->addNewObjectType(new StarSystemType());

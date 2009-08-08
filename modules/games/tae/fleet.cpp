@@ -44,7 +44,7 @@
 
 using std::string;
 
-FleetType::FleetType():OwnedObjectType(){
+FleetType::FleetType():OwnedObjectType( "Fleet", "Fleet of ships" ) {
     Logger::getLogger()->debug("Enter: Fleet Constructor");
     //Set parameters of the fleet
     ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
@@ -53,9 +53,6 @@ FleetType::FleetType():OwnedObjectType(){
     group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
     group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
     addParameterGroupDesc(group);
-
-     nametype = "Fleet";
-    typedesc = "Fleet of ships";
 
     Logger::getLogger()->debug("Exit: Fleet Constructor");
 }

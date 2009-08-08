@@ -35,9 +35,7 @@
 
 using std::set;
 
-StarSystemType::StarSystemType() : SpaceObjectType(){
-    setTypeName("Star System");
-    setTypeDescription("A Star System Object");
+StarSystemType::StarSystemType() : SpaceObjectType("Star System","A Star System Object") {
 
     ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
     group->setName("Status");
@@ -49,14 +47,6 @@ StarSystemType::StarSystemType() : SpaceObjectType(){
 }
 
 StarSystemType::~StarSystemType() {
-}
-
-void StarSystemType::setTypeName(const std::string& n){
-  nametype = n;
-}
-
-void StarSystemType::setTypeDescription(const std::string& d){
-  typedesc = d;
 }
 
 ObjectBehaviour* StarSystemType::createObjectBehaviour() const{
