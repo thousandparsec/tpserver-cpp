@@ -34,14 +34,14 @@ namespace RiskRuleset {
 
 using std::set;
 
-void exploreStarSys(IGObject* obj) {
+void exploreStarSys(IGObject::Ptr obj) {
 // set the planets in this star sys to visible for my owner
    OwnedObject *objData = dynamic_cast<OwnedObject*>(obj->getObjectBehaviour());
 
    Game *game = Game::getGame();
    ObjectManager *om = game->getObjectManager();
 
-   IGObject *starSys = om->getObject(obj->getParent());
+   IGObject::Ptr starSys = om->getObject(obj->getParent());
    PlayerView::Ptr pview = game->getPlayerManager()->getPlayer(objData->getOwner())->getPlayerView();
 
    ObjectView::Ptr obv = pview->getObjectView(obj->getID());

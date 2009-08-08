@@ -81,7 +81,7 @@ void RiskTurn::doTurn(){
 
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
-      IGObject * obj = objM->getObject(*i);
+      IGObject::Ptr obj = objM->getObject(*i);
       obj->getObjectBehaviour()->doOnceATurn();
       objM->doneWithObject(obj->getID());
    }
@@ -162,7 +162,7 @@ void RiskTurn::calculateReinforcements() {
 void RiskTurn::calculateBonusReinforcements() {
    ObjectManager* obm = Game::getGame()->getObjectManager();
    Risk* risk = dynamic_cast<Risk*>(Game::getGame()->getRuleset());
-   IGObject* universe = obm->getObject(0);
+   IGObject::Ptr universe = obm->getObject(0);
    set<uint32_t> constellation = universe->getContainedObjects();
    
    Logger::getLogger()->debug("Looking through each constellation to calculate bonus");
@@ -170,7 +170,7 @@ void RiskTurn::calculateBonusReinforcements() {
    for (set<uint32_t>::iterator i = constellation.begin(); i != constellation.end(); i++)
    {
       //Get current constellation
-      IGObject* crnt = obm->getObject(*i);
+      IGObject::Ptr crnt = obm->getObject(*i);
 
       Logger::getLogger()->debug("\"%s\"",crnt->getName().c_str());
       //if constellation name isn't Wormholes then we process that constellation
@@ -189,7 +189,7 @@ void RiskTurn::calculateBonusReinforcements() {
    }
 }
 
-std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation) {
+std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject::Ptr constellation) {
    std::pair<uint32_t,uint32_t> result;
    
    ObjectManager* obm = Game::getGame()->getObjectManager();
@@ -204,7 +204,7 @@ std::pair<uint32_t,uint32_t> RiskTurn::getPlayerAndUnits(IGObject* constellation
    std::set<uint32_t> systems = constellation->getContainedObjects();
    //for each system
    for (set<uint32_t>::iterator i = systems.begin(); i != systems.end(); i++) {
-      IGObject* obj = obm->getObject(*i);
+      IGObject::Ptr obj = obm->getObject(*i);
       //todo: make object equal to CHILD of current obj
       std::set<uint32_t> child = obj->getContainedObjects();
       obj = obm->getObject(*child.begin());
@@ -246,7 +246,7 @@ void RiskTurn::processOrdersOfGivenType(string type) {
    //Iterate over every object
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
-      IGObject * currObj = objM->getObject(*i);
+      IGObject::Ptr currObj = objM->getObject(*i);
       
       //Get order queue from object
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
@@ -313,7 +313,7 @@ Player::Ptr RiskTurn::getWinner() {
    //Iterate over every object
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {  
-      IGObject * currObj = objM->getObject(*i);
+      IGObject::Ptr currObj = objM->getObject(*i);
       OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
 
       if ( ownedObj != NULL) { //if the object IS owned

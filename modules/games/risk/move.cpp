@@ -74,7 +74,7 @@ map<uint32_t, pair<string, uint32_t> > Move::generateListOptions() {
    //Get the current object in question. This is done so we have access
    //to the object in which the list is being generated for, letting us
    //populate the list in a context specific matter 
-   IGObject* selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    //In the Risk ruleset the Move order is only used on Planets, and here
    //I capture a pointer to the Planet my IGObject is.
@@ -120,7 +120,7 @@ Order* Move::clone() const {
    return o;
 }
 
-bool Move::doOrder(IGObject* obj) {
+bool Move::doOrder(IGObject::Ptr obj) {
    --turns;
    
    Game* game = Game::getGame();
@@ -299,7 +299,7 @@ bool Move::doOrder(IGObject* obj) {
    return true;   //moves are always completed, no matter what happens
 }
 
-bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
+bool Move::isTargetAttackingOrigin(IGObject::Ptr trueOrigin, IGObject::Ptr target) {
    Logger::getLogger()->debug("\tChecking if a target planet is attacking");
    
    bool result = false;
@@ -337,7 +337,7 @@ bool Move::isTargetAttackingOrigin(IGObject* trueOrigin, IGObject* target) {
             for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
                uint32_t planetID = i->first;
                
-               IGObject* targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
+               IGObject::Ptr targetsTarget = Game::getGame()->getObjectManager()->getObject(planetID);
                //when target is attacking "true" origin and the target also has more than 1 unit (no cheating :P)
                if ( targetsTarget == trueOrigin && origin->getResource("Army").first > 1) {
                   Logger::getLogger()->debug("\tFound valid suborder to attack originating planet");

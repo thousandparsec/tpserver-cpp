@@ -29,10 +29,10 @@ class Graph {
 public:
    Graph();
    ~Graph();
-   bool addPlanet(IGObject* planet);
+   bool addPlanet(IGObject::Ptr planet);
    bool addEdge(const uint32_t& id1, const uint32_t& id2);
-   bool addEdge(IGObject* planet1, IGObject* planet2);
-   std::set<uint32_t> getAdjacent(IGObject* planet);
+   bool addEdge(IGObject::Ptr planet1, IGObject::Ptr planet2);
+   std::set<uint32_t> getAdjacent(IGObject::Ptr planet);
    std::set<uint32_t> getAdjacent(uint32_t id);
 private:
    struct Node {

@@ -66,7 +66,7 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
    Game* game = Game::getGame();
    ObjectManager* om = game->getObjectManager();
 
-   IGObject* selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    assert(planet);
@@ -86,7 +86,7 @@ map<uint32_t, pair<string, uint32_t> > Colonize::generateListOptions() {
    For my pair I set the title as the adjacent planet to move to, and set the
    max to availible units. */
    for(set<uint32_t>::iterator i = allObjs.begin(); i != allObjs.end(); i++) {
-      IGObject* currObj = om->getObject((*i));
+      IGObject::Ptr currObj = om->getObject((*i));
       Planet* owned = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
       if ( owned != NULL && owned->getOwner() == 0) {   
          options[owned->getID()] = pair<string,uint32_t>(
@@ -104,7 +104,7 @@ Order* Colonize::clone() const {
 }
 
 
-bool Colonize::doOrder(IGObject *obj) {
+bool Colonize::doOrder(IGObject::Ptr obj) {
    bool result = true;
    --turns;
 
@@ -116,11 +116,11 @@ bool Colonize::doOrder(IGObject *obj) {
    IdMap list = targetPlanet->getList();
    
    //Collect all of the players bids and restrain them to 1 less than the current units
-   map<IGObject*,uint32_t> bids;
+   map<IGObject::Ptr ,uint32_t> bids;
    for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
       uint32_t planetID = i->first;
       uint32_t numUnits = i->second;
-      IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);     
+      IGObject::Ptr target = Game::getGame()->getObjectManager()->getObject(planetID);     
       
       //Restrain the number of units moved off of origin
       uint32_t maxUnits = origin->getResource("Army").first;
@@ -136,7 +136,7 @@ bool Colonize::doOrder(IGObject *obj) {
    }
    
    //for each seperate planet bid on run the bid routine
-   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
+   for(map<IGObject::Ptr ,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
       Logger::getLogger()->debug("\tStarting to iterate over all players bids");
       
       Planet* biddedPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
@@ -149,7 +149,7 @@ bool Colonize::doOrder(IGObject *obj) {
          Logger::getLogger()->debug("\tGetting the top player and bid for planet %s",biddedPlanet->getName().c_str());
         
         //Get pair <owner's planet,bid> of top bidder
-         pair<IGObject*,uint32_t> topBidder = getTopPlayerAndBid(i->first);
+         pair<IGObject::Ptr ,uint32_t> topBidder = getTopPlayerAndBid(i->first);
 
          //Check if players bid is bigger than top bidder elsewhere - only did this because I wasn't sure
          //BUG: this code would force the reset of bid restriction
@@ -180,9 +180,8 @@ bool Colonize::doOrder(IGObject *obj) {
 }
 
 //This function gets the top bid for the given object
-pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
-   pair<IGObject*,uint32_t> result;
-   result.first = NULL;
+pair<IGObject::Ptr ,uint32_t> Colonize::getTopPlayerAndBid(IGObject::Ptr obj) {
+   pair<IGObject::Ptr ,uint32_t> result;
    result.second = 0;
    
    Planet* origin = dynamic_cast<Planet*>(obj->getObjectBehaviour());
@@ -195,7 +194,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    ObjectManager* objM = game->getObjectManager();
    
    //Construct the map to be used, the identifier is the planet, the value is the bid
-   map<IGObject*,uint32_t> bids;
+   map<IGObject::Ptr ,uint32_t> bids;
       
    //Get all objects from object manager
    set<uint32_t> objectsIds = objM->getAllIds();
@@ -204,7 +203,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {
       //Get current object
-      IGObject * currObj = objM->getObject(*i);
+      IGObject::Ptr currObj = objM->getObject(*i);
       
       //Print out current planet
       Planet* bidder = dynamic_cast<Planet*>(currObj->getObjectBehaviour());
@@ -247,7 +246,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
                   debug % planetID; debug % numUnits; 
                   Logger::getLogger()->debug(debug.str().c_str());
                   
-                  IGObject* target = Game::getGame()->getObjectManager()->getObject(planetID);
+                  IGObject::Ptr target = Game::getGame()->getObjectManager()->getObject(planetID);
                   if ( target == obj ) {
                      bids[currObj] += numUnits;                     
                   }
@@ -265,7 +264,7 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    
 
    //Iterate over all bids and restrict them to the maximum armies availible on that planet
-   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
+   for(map<IGObject::Ptr ,uint32_t>::iterator i = bids.begin(); i != bids.end(); ++i) {
       Logger::getLogger()->debug("Iterating over all bids to pick the highest legal bid.");
       //FIXME: Somewhere in this "for" the server crashes when a single bid is created for 1 unit when planet only has 1 unit left
 
@@ -300,8 +299,8 @@ pair<IGObject*,uint32_t> Colonize::getTopPlayerAndBid(IGObject* obj) {
    return result;
 }
 
-void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids, 
-      pair<IGObject*,uint32_t> winner) {
+void Colonize::sendPlayerMessages(IGObject::Ptr obj, map<IGObject::Ptr ,uint32_t> bids, 
+      pair<IGObject::Ptr ,uint32_t> winner) {
          
   PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
    Planet* target = dynamic_cast<Planet*>(obj->getObjectBehaviour());
@@ -311,7 +310,7 @@ void Colonize::sendPlayerMessages(IGObject* obj, map<IGObject*,uint32_t> bids,
    string loserSubject = "Colonize Bid for " + target->getName() + " Rejected";
    string winnerSubject = "Colonize Bid for " + target->getName() + " Accepted";
    
-   for(map<IGObject*,uint32_t>::iterator i = bids.begin(); i != bids.end(); i++ ) {
+   for(map<IGObject::Ptr ,uint32_t>::iterator i = bids.begin(); i != bids.end(); i++ ) {
       Planet* ownerPlanet = dynamic_cast<Planet*>(i->first->getObjectBehaviour());
       assert(ownerPlanet);
       Player::Ptr player = pm->getPlayer(ownerPlanet->getOwner());

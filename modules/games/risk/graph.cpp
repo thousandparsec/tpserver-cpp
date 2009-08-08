@@ -34,7 +34,7 @@ Graph::~Graph() {
    
 }
 
-bool Graph::addPlanet(IGObject* planet) { 
+bool Graph::addPlanet(IGObject::Ptr planet) { 
    bool result = false;
    
    Node node;
@@ -62,11 +62,11 @@ bool Graph::addEdge(const uint32_t& id1, const uint32_t& id2) {
    return result;
 }
 
-bool Graph::addEdge(IGObject* planet1, IGObject* planet2) { 
+bool Graph::addEdge(IGObject::Ptr planet1, IGObject::Ptr planet2) { 
    return addEdge(planet1->getID(),planet2->getID());
 }
 
-std::set<uint32_t> Graph::getAdjacent(IGObject* planet) { 
+std::set<uint32_t> Graph::getAdjacent(IGObject::Ptr planet) { 
    return getAdjacent(planet->getID());
 }
 

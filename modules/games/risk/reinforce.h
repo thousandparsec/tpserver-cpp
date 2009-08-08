@@ -37,7 +37,7 @@ public:
 
    virtual Order* clone() const;
 
-   virtual bool doOrder(IGObject* obj);
+   virtual bool doOrder(IGObject::Ptr obj);
 
 private:
    //ASK: how to ask for just a number

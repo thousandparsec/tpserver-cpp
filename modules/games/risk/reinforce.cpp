@@ -61,7 +61,7 @@ Order* Reinforce::clone() const {
    return c;
 }
 
-bool Reinforce::doOrder(IGObject *obj) {
+bool Reinforce::doOrder(IGObject::Ptr obj) {
    Logger::getLogger()->debug("Starting a Reinforce::doOrder");
    bool result = true;
    

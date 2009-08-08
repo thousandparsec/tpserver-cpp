@@ -21,9 +21,9 @@
  */
  
 #include <tpserver/order.h>
+#include <tpserver/object.h>
 
 class ListParameter;
-class IGObject;
 
 namespace RiskRuleset {
 
@@ -33,13 +33,13 @@ public:
    virtual ~Colonize();
 
    virtual Order* clone() const;
-   virtual bool doOrder(IGObject* obj);
+   virtual bool doOrder(IGObject::Ptr obj);
    ListParameter* getTargetList();
 private:
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
-   std::pair<IGObject*,uint32_t> getTopPlayerAndBid(IGObject* obj);
-   void sendPlayerMessages(IGObject* obj, std::map<IGObject*,uint32_t> bids, 
-      std::pair<IGObject*,uint32_t> winner);
+   std::pair<IGObject::Ptr ,uint32_t> getTopPlayerAndBid(IGObject::Ptr obj);
+   void sendPlayerMessages(IGObject::Ptr obj, std::map<IGObject::Ptr ,uint32_t> bids, 
+      std::pair<IGObject::Ptr ,uint32_t> winner);
    ListParameter* targetPlanet;
 };
 

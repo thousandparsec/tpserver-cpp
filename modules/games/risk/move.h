@@ -33,11 +33,11 @@ public:
    virtual ~Move();
 
    virtual Order* clone() const;
-   virtual bool doOrder(IGObject* obj);
+   virtual bool doOrder(IGObject::Ptr obj);
    ListParameter* getTargetList();
 private:
    std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
-   bool isTargetAttackingOrigin(IGObject* obj, IGObject* target);
+   bool isTargetAttackingOrigin(IGObject::Ptr obj, IGObject::Ptr target);
    std::pair<uint32_t,uint32_t> attackRoll(uint32_t oddsAttacker, uint32_t oddsDefender);
    
    ListParameter* targetPlanet;

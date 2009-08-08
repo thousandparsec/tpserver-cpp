@@ -33,7 +33,7 @@ public:
    virtual void setOwner(uint32_t no) = 0;
 };
 
-void exploreStarSys(IGObject* obj);
+void exploreStarSys(IGObject::Ptr obj);
 
 
 }

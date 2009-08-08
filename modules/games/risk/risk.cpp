@@ -187,7 +187,7 @@ void Risk::createUniverse() {
    ObjectTypeManager *otypeman = Game::getGame()->getObjectTypeManager();
 
    uint32_t uniType = otypeman->getObjectTypeByName("Universe");
-   IGObject *universe = objman->createNewObject();
+   IGObject::Ptr universe = objman->createNewObject();
 
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
@@ -215,9 +215,9 @@ void Risk::createUniverse() {
 
 void Risk::createTestSystems(IGObject& universe) {
 
-   IGObject *con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
-   IGObject *con_orion      = createConstellation(universe, "Orion",          3); //Africa
-   IGObject *wormholes      = createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
+   IGObject::Ptr con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
+   IGObject::Ptr con_orion      = createConstellation(universe, "Orion",          3); //Africa
+   IGObject::Ptr wormholes      = createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
 
    // Cygnus Systems (South America, Bonus 2)
    createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
@@ -353,7 +353,7 @@ bool Risk::isBoardClaimed() const{
    for(set<uint32_t>::iterator i = objectsIds.begin(); i != objectsIds.end(); ++i)
    {  
       //Get an object
-      IGObject * currObj = objM->getObject(*i);
+      IGObject::Ptr currObj = objM->getObject(*i);
       OwnedObject *ownedObj = dynamic_cast<OwnedObject*>(currObj->getObjectBehaviour());
 
       if ( ownedObj != NULL) {         //if the object IS an owned objectowned
@@ -442,7 +442,7 @@ void Risk::randomlyPickPlanets(Player::Ptr player, uint32_t numPlanets) {
    
    //This for loop populates set unownedObjs with only objects with no owner.
    for (std::set<uint32_t>::iterator i = allIds.begin(); i != allIds.end(); ++i) {     //Iterate over all ids
-      IGObject * obj = om->getObject(*i);
+      IGObject::Ptr obj = om->getObject(*i);
       Planet* ownedObj = dynamic_cast<Planet*>(obj->getObjectBehaviour());
       
       if (ownedObj != NULL && ownedObj->getOwner() == 0 ) {
