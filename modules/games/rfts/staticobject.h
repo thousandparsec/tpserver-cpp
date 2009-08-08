@@ -36,12 +36,8 @@ namespace RFTS_ {
 
 class StaticObjectType : public ObjectType{
   public:
-    StaticObjectType();
+    StaticObjectType( const std::string& nname, const std::string& ndesc );
     virtual ~StaticObjectType(){};
-    
-    void setTypeName(const std::string& nname);
-    void setTypeDescription(const std::string& ndesc);
-    
   protected:
     virtual ObjectBehaviour* createObjectBehaviour() const;
 };

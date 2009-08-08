@@ -33,7 +33,7 @@ namespace RFTS_ {
 
 using std::pair;
 
-StaticObjectType::StaticObjectType() : ObjectType(){
+StaticObjectType::StaticObjectType( const std::string& nname, const std::string& ndesc ) : ObjectType(nname,ndesc){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Positional");
   group->setDescription("Describes the position");
@@ -41,14 +41,6 @@ StaticObjectType::StaticObjectType() : ObjectType(){
   group->addParameter(obpT_Size, "Size", "The diameter of the object");
   addParameterGroupDesc(group);
   
-}
-
-void StaticObjectType::setTypeName(const std::string& nname){
-  nametype = nname;
-}
-
-void StaticObjectType::setTypeDescription(const std::string& ndesc){
-  typedesc = ndesc;
 }
 
 ObjectBehaviour* StaticObjectType::createObjectBehaviour() const{

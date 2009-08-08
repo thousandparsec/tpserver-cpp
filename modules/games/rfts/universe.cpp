@@ -31,15 +31,13 @@
 
 namespace RFTS_ {
 
-UniverseType::UniverseType() : StaticObjectType() {
+UniverseType::UniverseType() : StaticObjectType("Universe", "The Universe")
+{
   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
   group->setName("Informational");
   group->setDescription("Information about the universe");
   group->addParameter(obpT_Integer, "Turn", "The current turn number");
   addParameterGroupDesc(group);
-  
-  nametype = "Universe";
-  typedesc = "The Universe";
 }
 
 ObjectBehaviour* UniverseType::createObjectBehaviour() const{

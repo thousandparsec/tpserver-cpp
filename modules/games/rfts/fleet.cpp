@@ -62,10 +62,8 @@ using std::pair;
 using std::string;
 using std::list;
 
-FleetType::FleetType() : StaticObjectType() {
-   nametype = "Fleet";
-   typedesc = "A fleet of ships";
-
+FleetType::FleetType() : StaticObjectType( "Fleet", "A fleet of ships" )
+{
    ObjectParameterGroupDesc *group = getParameterGroupDesc(1);
    group->addParameter(obpT_Velocity, "Velocity", "The velocity of the fleet");
 

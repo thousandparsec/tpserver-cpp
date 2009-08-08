@@ -119,23 +119,14 @@ void Rfts::setObjectTypes() const {
    DEBUG_FN_PRINT();
 
    ObjectTypeManager* obdm = Game::getGame()->getObjectTypeManager();
-   StaticObjectType *eo;
 
    obdm->addNewObjectType(new UniverseType());
 
    // galaxy added for tp03
-   eo = new StaticObjectType();
-   eo->setTypeName("Galaxy");
-   eo->setTypeDescription("Galaxy");
-   obdm->addNewObjectType(eo);
-
-   eo = new StaticObjectType();
-   eo->setTypeName("Star System"); 
-   eo->setTypeDescription("A system of stars!");
-   obdm->addNewObjectType(eo);
-
-   obdm->addNewObjectType(new PlanetType);
-   obdm->addNewObjectType(new FleetType);
+   obdm->addNewObjectType( new StaticObjectType( "Galaxy", "Galaxy") );
+   obdm->addNewObjectType( new StaticObjectType( "Star System", "A system of stars!") );
+   obdm->addNewObjectType(new PlanetType());
+   obdm->addNewObjectType(new FleetType());
 }
 
 void Rfts::setOrderTypes() const {
