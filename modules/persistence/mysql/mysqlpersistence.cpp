@@ -649,7 +649,7 @@ IsSet MysqlPersistence::getObjectIds(){
   } catch ( MysqlException& ) return IdSet();
 }
 
-bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
+bool MysqlPersistence::saveOrderQueue(const OrderQueue::Ptr oq){
   try {
     std::ostringstream querybuilder;
     querybuilder << "INSERT INTO orderqueue VALUES (" << oq->getQueueId() << ", " << oq->getObjectId() << ", ";
@@ -663,7 +663,7 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue* oq){
   } catch ( MysqlException& ) return false;
 }
 
-bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
+bool MysqlPersistence::updateOrderQueue(const OrderQueue::Ptr oq){
   try {
     std::ostringstream querybuilder;
     querybuilder << "UPDATE orderqueue set objectid=" << oq->getObjectId() << ", active=" << (oq->isActive() ? 1 : 0);
@@ -690,9 +690,9 @@ bool MysqlPersistence::updateOrderQueue(const OrderQueue* oq){
   } catch ( MysqlException& ) return false;
 }
 
-OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
+OrderQueue::Ptr MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
   try {
-    OrderQueue* oq = new OrderQueue();
+    OrderQueue::Ptr oq( new OrderQueue() );
     std::ostringstream querybuilder;
 
     {
@@ -724,8 +724,7 @@ OrderQueue* MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
 
     return oq;
   } catch ( MysqlException& ) {
-    delete oq;
-    return NULL;
+    return OrderQueue::Ptr();
   }
 }
 

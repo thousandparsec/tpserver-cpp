@@ -120,7 +120,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
 
 }
 
-bool OrderManager::addOrderQueue(OrderQueue* oq){
+bool OrderManager::addOrderQueue(OrderQueue::Ptr oq){
   oq->setQueueId(orderqueue_next++);
   orderqueue_store[oq->getQueueId()] = oq;
   Game::getGame()->getPersistence()->saveOrderQueue(oq);
@@ -128,18 +128,17 @@ bool OrderManager::addOrderQueue(OrderQueue* oq){
 }
 
 void OrderManager::updateOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueue_store[oqid];
+  OrderQueue::Ptr oq = orderqueue_store[oqid];
   Game::getGame()->getPersistence()->updateOrderQueue(oq);
 }
 
 bool OrderManager::removeOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueue_store[oqid];
+  OrderQueue::Ptr oq = orderqueue_store[oqid];
   if(oq == NULL){
     oq = Game::getGame()->getPersistence()->retrieveOrderQueue(oqid);
   }
   if(oq != NULL){
     Game::getGame()->getPersistence()->removeOrderQueue(oqid);
-    delete oq;
     orderqueue_store.erase(oqid);
     return true;
   }else{
@@ -147,8 +146,8 @@ bool OrderManager::removeOrderQueue(uint32_t oqid){
   }
 }
 
-OrderQueue* OrderManager::getOrderQueue(uint32_t oqid){
-  OrderQueue *oq = orderqueue_store[oqid];
+OrderQueue::Ptr OrderManager::getOrderQueue(uint32_t oqid){
+  OrderQueue::Ptr oq = orderqueue_store[oqid];
   if(oq == NULL){
     oq = Game::getGame()->getPersistence()->retrieveOrderQueue(oqid);
     orderqueue_store[oqid] = oq;
@@ -159,3 +158,4 @@ OrderQueue* OrderManager::getOrderQueue(uint32_t oqid){
 void OrderManager::init(){
   orderqueue_next = Game::getGame()->getPersistence()->getMaxOrderQueueId() + 1;
 }
+

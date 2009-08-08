@@ -375,7 +375,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
     orderqueueid = oqop->getQueueId();
   }
 
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
     return;
@@ -435,7 +435,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
       orderqueueid = oqop->getQueueId();
     }
 
-    OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+    OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
     if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
       curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
       return;
@@ -502,7 +502,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
     orderqueueid = oqop->getQueueId();
   }
 
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     curConnection->sendFail(frame,fec_NonExistant, "No such OrderQueue");
     return;
@@ -586,7 +586,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
     orderqueueid = oqop->getQueueId();
   }
 
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
+  OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
     curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
     return;

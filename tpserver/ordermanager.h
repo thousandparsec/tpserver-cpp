@@ -21,13 +21,15 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/orderqueue.h>
 
 class Order;
 class Frame;
-class OrderQueue;
 
 class OrderManager{
   public:
+    typedef boost::shared_ptr<OrderQueue> Ptr;
+
     OrderManager();
     ~OrderManager();
 
@@ -39,16 +41,16 @@ class OrderManager{
 
     Order* createOrder(uint32_t ot);
 
-    bool addOrderQueue(OrderQueue* oq);
+    bool addOrderQueue(OrderQueue::Ptr oq);
+    OrderQueue::Ptr getOrderQueue(uint32_t oqid);
     void updateOrderQueue(uint32_t oqid);
     bool removeOrderQueue(uint32_t oqid);
-    OrderQueue* getOrderQueue(uint32_t oqid);
 
     void init();
 
   private:
     typedef std::map<uint32_t, Order*> PrototypeStore;
-    typedef std::map<uint32_t, OrderQueue*> OrderQueueStore;
+    typedef std::map<uint32_t, OrderQueue::Ptr> OrderQueueStore;
 
     PrototypeStore  prototype_store;
     OrderQueueStore orderqueue_store;

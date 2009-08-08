@@ -57,9 +57,9 @@ public:
     virtual uint32_t getMaxObjectId();
     virtual IdSet getObjectIds();
 
-    virtual bool saveOrderQueue(const OrderQueue* oq);
-    virtual bool updateOrderQueue(const OrderQueue* oq);
-    virtual OrderQueue* retrieveOrderQueue(uint32_t oqid);
+    virtual bool saveOrderQueue(const boost::shared_ptr<OrderQueue> oq);
+    virtual bool updateOrderQueue(const boost::shared_ptr<OrderQueue> oq);
+    virtual boost::shared_ptr<OrderQueue> retrieveOrderQueue(uint32_t oqid);
     virtual bool removeOrderQueue(uint32_t oqid);
     virtual IdSet getOrderQueueIds();
     virtual uint32_t getMaxOrderQueueId();

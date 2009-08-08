@@ -70,16 +70,16 @@ IdSet Persistence::getObjectIds(){
     return IdSet();
 }
 
-bool Persistence::saveOrderQueue(const OrderQueue* oq){
+bool Persistence::saveOrderQueue(const OrderQueue::Ptr oq){
   return false;
 }
 
-bool Persistence::updateOrderQueue(const OrderQueue* oq){
+bool Persistence::updateOrderQueue(const OrderQueue::Ptr oq){
   return false;
 }
 
-OrderQueue* Persistence::retrieveOrderQueue(uint32_t oqid){
-  return NULL;
+OrderQueue::Ptr Persistence::retrieveOrderQueue(uint32_t oqid){
+  return OrderQueue::Ptr();
 }
 
 bool Persistence::removeOrderQueue(uint32_t oqid){

@@ -35,7 +35,7 @@ OrderQueueObjectParam::~OrderQueueObjectParam(){
 
 
 void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+  OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   if(orderqueue->isOwner(playerid)){
     f->packInt(queueid);
     f->packInt(orderqueue->getNumberOrders());
@@ -80,17 +80,15 @@ uint32_t OrderQueueObjectParam::getQueueId() const{
 }
 
 uint32_t OrderQueueObjectParam::getNumOrders() const{
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-  return orderqueue->getNumberOrders();
+  return Game::getGame()->getOrderManager()->getOrderQueue(queueid)->getNumberOrders();
 }
 
 IdSet OrderQueueObjectParam::getAllowedOrders() const{
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
-  return orderqueue->getAllowedOrderTypes();
+  return Game::getGame()->getOrderManager()->getOrderQueue(queueid)->getAllowedOrderTypes();
 }
 
 void OrderQueueObjectParam::setAllowedOrders(IdSet ao){
-  OrderQueue* orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+  OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   orderqueue->setAllowedOrderTypes(ao);
   Game::getGame()->getOrderManager()->updateOrderQueue(queueid);
 }

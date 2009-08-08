@@ -22,67 +22,70 @@
 
 #include <tpserver/common.h>
 #include <tpserver/modifiable.h>
-
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 class Order;
 
-class OrderQueue : public Modifiable {
- public:
-  OrderQueue();
-  ~OrderQueue();
+class OrderQueue : public Modifiable, public boost::enable_shared_from_this<OrderQueue> {
+  public:
+    typedef boost::shared_ptr<OrderQueue> Ptr;
 
-  void setQueueId(uint32_t id);
-  uint32_t getQueueId() const;
-  
-  void addOwner(uint32_t playerid);
-  void removeOwner(uint32_t playerid);
-  bool isOwner(uint32_t playerid) const;
-  IdSet getOwner() const;
-  
-  void setObjectId(uint32_t oid);
-  uint32_t getObjectId() const;
-  
-  bool checkOrderType(uint32_t type, uint32_t playerid) const;
-  
-  IdSet getAllowedOrderTypes() const;
-  void addAllowedOrderType(uint32_t type);
-  void removeAllowedOrderType(uint32_t type);
-  void setAllowedOrderTypes(const IdSet& ao);
+    OrderQueue();
+    ~OrderQueue();
 
-  uint32_t getNumberOrders() const;
-  
-  bool addOrder(Order* ord, uint32_t pos, uint32_t playerid);
-  bool removeOrder(uint32_t pos, uint32_t playerid);
-  Order* getOrder(uint32_t pos, uint32_t playerid);
-  Order * getFirstOrder();
-  void removeFirstOrder();
-  void updateFirstOrder();
-  
-  void setActive(bool a);
-  void setRepeating(bool r);
-  bool isActive() const;
-  bool isRepeating() const;
-  
-  void touchModTime();
+    void setQueueId(uint32_t id);
+    uint32_t getQueueId() const;
 
-  void removeAllOrders();
+    void addOwner(uint32_t playerid);
+    void removeOwner(uint32_t playerid);
+    bool isOwner(uint32_t playerid) const;
+    IdSet getOwner() const;
 
-  //persistence only
-  void setNextOrderId(uint32_t next);
-  void setOwners(IdSet no);
-  void setOrderSlots(IdList nos);
-  IdList getOrderSlots() const;
+    void setObjectId(uint32_t oid);
+    uint32_t getObjectId() const;
 
- private:
-  uint32_t queueid;
-  uint32_t objectid;
-  IdList orderlist;
-  std::map<uint32_t, Order*> ordercache;
-  IdSet allowedtypes;
-  IdSet owner;
-  uint32_t nextOrderId;
-  bool active;
-  bool repeating;
+    bool checkOrderType(uint32_t type, uint32_t playerid) const;
+
+    IdSet getAllowedOrderTypes() const;
+    void addAllowedOrderType(uint32_t type);
+    void removeAllowedOrderType(uint32_t type);
+    void setAllowedOrderTypes(const IdSet& ao);
+
+    uint32_t getNumberOrders() const;
+
+    bool addOrder(Order* ord, uint32_t pos, uint32_t playerid);
+    bool removeOrder(uint32_t pos, uint32_t playerid);
+    Order* getOrder(uint32_t pos, uint32_t playerid);
+    Order * getFirstOrder();
+    void removeFirstOrder();
+    void updateFirstOrder();
+
+    void setActive(bool a);
+    void setRepeating(bool r);
+    bool isActive() const;
+    bool isRepeating() const;
+
+    void touchModTime();
+
+    void removeAllOrders();
+
+    //persistence only
+    void setNextOrderId(uint32_t next);
+    void setOwners(IdSet no);
+    void setOrderSlots(IdList nos);
+    IdList getOrderSlots() const;
+
+  private:
+    uint32_t queueid;
+    uint32_t objectid;
+    IdList orderlist;
+    std::map<uint32_t, Order*> ordercache;
+    IdSet allowedtypes;
+    IdSet owner;
+    uint32_t nextOrderId;
+    bool active;
+    bool repeating;
 
 };
 

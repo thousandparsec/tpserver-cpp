@@ -123,7 +123,7 @@ bool OrderQueue::addOrder(Order* ord, uint32_t pos, uint32_t playerid){
     }
     Game::getGame()->getPersistence()->saveOrder(queueid, orderid, ord);
     touchModTime();
-    Game::getGame()->getPersistence()->updateOrderQueue(this);
+    Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
 
     return true;
   }
@@ -153,7 +153,7 @@ bool OrderQueue::removeOrder(uint32_t pos, uint32_t playerid){
       ordercache.erase(orderid);
       Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
       touchModTime();
-      Game::getGame()->getPersistence()->updateOrderQueue(this);
+      Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
       return true;
     }
     return false;
@@ -198,7 +198,7 @@ void OrderQueue::removeFirstOrder(){
   orderlist.pop_front();
   Game::getGame()->getPersistence()->removeOrder(queueid, orderid);
   touchModTime();
-  Game::getGame()->getPersistence()->updateOrderQueue(this);
+  Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
 }
 
 void OrderQueue::updateFirstOrder(){
@@ -206,7 +206,7 @@ void OrderQueue::updateFirstOrder(){
   Order* ord = ordercache[orderid];
   Game::getGame()->getPersistence()->updateOrder(queueid, orderid, ord);
   touchModTime();
-  Game::getGame()->getPersistence()->updateOrderQueue(this);
+  Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
 }
 
 void OrderQueue::setActive(bool a){
@@ -254,7 +254,7 @@ void OrderQueue::removeAllOrders(){
   //clear orderlist/slots
   orderlist.clear();
   touchModTime();
-  Game::getGame()->getPersistence()->updateOrderQueue(this);
+  Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
 }
 
 void OrderQueue::setNextOrderId(uint32_t next){

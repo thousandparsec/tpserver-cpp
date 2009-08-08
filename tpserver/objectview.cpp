@@ -120,7 +120,7 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
       
       OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(object->getParameterByType(obpT_Order_Queue));
       if(oq != NULL){
-        OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
+        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
         if(queue->isOwner(playerid)){
           frame->packIdSet( queue->getAllowedOrderTypes() );
           frame->packInt(queue->getNumberOrders());
