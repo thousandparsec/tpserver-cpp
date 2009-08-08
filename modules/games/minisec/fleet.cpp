@@ -187,7 +187,7 @@ void Fleet::packExtraData(Frame * frame){
 
 void Fleet::doOnceATurn(){
   Game* game = Game::getGame();
-  IGObject * pob = game->getObjectManager()->getObject(obj->getParent());
+  IGObject::Ptr pob = game->getObjectManager()->getObject(obj->getParent());
   uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
   if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectBehaviour()))->getOwner() == getOwner()){
     IntegerObjectParam* damage = ((IntegerObjectParam*)(obj->getParameter(SHIPSGRPID,DAMAGEPARAMID)));

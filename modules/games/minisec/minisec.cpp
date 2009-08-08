@@ -471,7 +471,7 @@ void MiniSec::createGame(){
   uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
   uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
-  IGObject* universe = game->getObjectManager()->createNewObject();
+  IGObject::Ptr universe = game->getObjectManager()->createNewObject();
   otypeman->setupObject(universe, obT_Universe);
   Universe* theuniverse = (Universe*)(universe->getObjectBehaviour());
   theuniverse->setSize(1000000000000ll);
@@ -482,7 +482,7 @@ void MiniSec::createGame(){
   obman->addObject(universe);
 
   //add contained objects
-  IGObject *mw_galaxy = game->getObjectManager()->createNewObject();
+  IGObject::Ptr mw_galaxy = game->getObjectManager()->createNewObject();
   otypeman->setupObject(mw_galaxy, obT_Galaxy);
   EmptyObject* eo = (EmptyObject*)(mw_galaxy->getObjectBehaviour());
   eo->setSize(100000000000ll);
@@ -494,7 +494,7 @@ void MiniSec::createGame(){
   obman->addObject(mw_galaxy);
 
   // star system 1
-  IGObject *sol = game->getObjectManager()->createNewObject();
+  IGObject::Ptr sol = game->getObjectManager()->createNewObject();
   otypeman->setupObject(sol, obT_Star_System);
   EmptyObject* thesol = (EmptyObject*)(sol->getObjectBehaviour());
   thesol->setSize(60000ll);
@@ -506,7 +506,7 @@ void MiniSec::createGame(){
   obman->addObject(sol);
 
   // star system 2
-  IGObject *ac = game->getObjectManager()->createNewObject();
+  IGObject::Ptr ac = game->getObjectManager()->createNewObject();
   otypeman->setupObject(ac, obT_Star_System);
   EmptyObject* theac = (EmptyObject*)(ac->getObjectBehaviour());
   theac->setSize(90000ll);
@@ -518,7 +518,7 @@ void MiniSec::createGame(){
   obman->addObject(ac);
 
   // star system 3
-  IGObject *sirius = game->getObjectManager()->createNewObject();
+  IGObject::Ptr sirius = game->getObjectManager()->createNewObject();
   otypeman->setupObject(sirius, obT_Star_System);
   EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectBehaviour());
   thesirius->setSize(60000ll);
@@ -531,7 +531,7 @@ void MiniSec::createGame(){
 
 
   // now for some planets
-  IGObject *earth = game->getObjectManager()->createNewObject();
+  IGObject::Ptr earth = game->getObjectManager()->createNewObject();
   otypeman->setupObject(earth, obT_Planet);
   Planet * theearth = (Planet*)(earth->getObjectBehaviour());
   theearth->setSize(2);
@@ -549,7 +549,7 @@ void MiniSec::createGame(){
   earth->addToParent(sol->getID());
   obman->addObject(earth);
 
-  IGObject *venus = game->getObjectManager()->createNewObject();
+  IGObject::Ptr venus = game->getObjectManager()->createNewObject();
   otypeman->setupObject(venus, obT_Planet);
   Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
   thevenus->setSize(2);
@@ -567,7 +567,7 @@ void MiniSec::createGame(){
   venus->addToParent(sol->getID());
   obman->addObject(venus);
 
-  IGObject *mars = game->getObjectManager()->createNewObject();
+  IGObject::Ptr mars = game->getObjectManager()->createNewObject();
   otypeman->setupObject(mars, obT_Planet);
   Planet* themars = (Planet*)(mars->getObjectBehaviour());
   themars->setSize(2);
@@ -585,7 +585,7 @@ void MiniSec::createGame(){
   mars->addToParent(sol->getID());
   obman->addObject(mars);
 
-  IGObject *acprime = game->getObjectManager()->createNewObject();
+  IGObject::Ptr acprime = game->getObjectManager()->createNewObject();
   otypeman->setupObject(acprime, obT_Planet);
   Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
   theacprime->setSize(2);
@@ -603,7 +603,7 @@ void MiniSec::createGame(){
   acprime->addToParent(ac->getID());
   obman->addObject(acprime);
 
-  IGObject *s1 = game->getObjectManager()->createNewObject();
+  IGObject::Ptr s1 = game->getObjectManager()->createNewObject();
   otypeman->setupObject(s1, obT_Planet);
   Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
   thes1->setSize(2);
@@ -776,7 +776,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
 
     std::string name = player->getName();
-    IGObject *star = game->getObjectManager()->createNewObject();
+    IGObject::Ptr star = game->getObjectManager()->createNewObject();
     otypeman->setupObject(star, obT_Star_System);
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
     thestar->setSize(80000ll);
@@ -789,7 +789,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     star->addToParent(1);
     game->getObjectManager()->addObject(star);
 
-    IGObject *planet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr planet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(planet, obT_Planet);
 
     planet->setName(name + " Planet");
@@ -817,7 +817,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     game->getObjectManager()->addObject(planet);
     playerview->addOwnedObject(planet->getID());
 
-    IGObject *fleet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(fleet, obT_Fleet);
     Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
@@ -923,13 +923,13 @@ Names* MiniSec::getFleetMediaNames() const{
 
 
 // Create a random star system
-IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* names)
+IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_planets, Names* names)
 {
     Logger::getLogger()->debug( "Entering MiniSec::createStarSystem");
     Game*          game  = Game::getGame();
     ObjectManager* obman = game->getObjectManager();
     ObjectTypeManager* otypeman = game->getObjectTypeManager();
-    IGObject*      star  = obman->createNewObject();
+    IGObject::Ptr      star  = obman->createNewObject();
     uint32_t   nplanets = 0;
     std::ostringstream     formatter;
    
@@ -972,7 +972,7 @@ IGObject* MiniSec::createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets,
     obman->addObject( star);
 
     for(uint32_t i = 1; i <= nplanets; i++){
-        IGObject*  planet = game->getObjectManager()->createNewObject();
+        IGObject::Ptr  planet = game->getObjectManager()->createNewObject();
         formatter.str("");
 
 				if (startswith(star->getName(), std::string("System"))) {

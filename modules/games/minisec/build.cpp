@@ -60,7 +60,7 @@ Build::~Build(){
 
 void Build::createFrame(Frame *f, int pos)
 {
-  IGObject * planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  IGObject::Ptr planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   
   // number of turns
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > presources = static_cast<Planet*>(planet->getObjectBehaviour())->getResources();
@@ -150,7 +150,7 @@ void Build::inputFrame(Frame *f, uint32_t playerid)
   }
 }
 
-bool Build::doOrder(IGObject *ob)
+bool Build::doOrder(IGObject::Ptr ob)
 {
   
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
@@ -174,7 +174,7 @@ bool Build::doOrder(IGObject *ob)
     Game* game = Game::getGame();
     
     
-    IGObject *fleet = game->getObjectManager()->createNewObject();
+    IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
     game->getObjectTypeManager()->setupObject(fleet, game->getObjectTypeManager()->getObjectTypeByName("Fleet"));
     
     //add fleet to container

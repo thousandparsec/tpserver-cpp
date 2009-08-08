@@ -55,7 +55,7 @@ void Nop::inputFrame(Frame * f, uint32_t playerid)
   turns = timeparam->getTime();
 }
 
-bool Nop::doOrder(IGObject * ob){
+bool Nop::doOrder(IGObject::Ptr ob){
   if(timeparam->getTime() <= 1){
     
     Message::Ptr msg( new Message() );

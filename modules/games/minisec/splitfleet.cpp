@@ -71,7 +71,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOp
   return options;
 }
 
-bool SplitFleet::doOrder(IGObject * ob){
+bool SplitFleet::doOrder(IGObject::Ptr ob){
 
   Fleet* of = (Fleet*)(ob->getObjectBehaviour());
 
@@ -79,7 +79,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   msg->setSubject("Split Fleet order complete");
   msg->addReference(rst_Object, ob->getID());
   
-  IGObject * nfleet = Game::getGame()->getObjectManager()->createNewObject();
+  IGObject::Ptr nfleet = Game::getGame()->getObjectManager()->createNewObject();
   ObjectTypeManager* obtypeman = Game::getGame()->getObjectTypeManager();
   uint32_t fleettype = obtypeman->getObjectTypeByName("Fleet");
   obtypeman->setupObject(nfleet, fleettype);

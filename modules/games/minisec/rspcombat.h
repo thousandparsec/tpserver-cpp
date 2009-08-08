@@ -20,14 +20,10 @@
  *
  */
 
-#include <map>
-#include <set>
-#include <vector>
-#include <stdint.h>
+#include <tpserver/common.h>
+#include <tpserver/object.h>
 
 #include <tpserver/battlexml/battlelogger.h>
-
-class IGObject;
 class Combatant;
 
 
@@ -48,7 +44,7 @@ class RSPCombat{
    
   uint32_t obT_Fleet;
   uint32_t obT_Planet;
-  std::map<uint32_t, IGObject*> objectcache;
+  std::map<uint32_t, IGObject::Ptr> objectcache;
   std::map<uint32_t, std::string> msgstrings;
   BattleXML::BattleLogger::Ptr battlelogger;
 };

@@ -32,12 +32,12 @@ class Move : public Order{
     Vector3d getDest() const;
     void setDest(const Vector3d & ndest);
 
-    int getETA(IGObject* ob) const;
+    int getETA(IGObject::Ptr ob) const;
 
     void createFrame(Frame * f, int pos);
     void inputFrame(Frame * f, uint32_t playerid);
 
-    bool doOrder(IGObject * ob);
+    bool doOrder(IGObject::Ptr ob);
 
     Order* clone() const;
 

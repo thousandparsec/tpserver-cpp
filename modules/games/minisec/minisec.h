@@ -54,7 +54,7 @@ public:
   Names* getFleetMediaNames() const;
 
 private:
-  IGObject* createStarSystem( IGObject* mw_galaxy, uint32_t& max_planets, Names* systemnames);
+  IGObject::Ptr createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_planets, Names* systemnames);
 
   Random* random;
   Names* systemmedia;

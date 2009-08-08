@@ -30,7 +30,7 @@ class MergeFleet : public Order{
   MergeFleet();
   virtual ~MergeFleet();
 
-  bool doOrder(IGObject * ob);
+  bool doOrder(IGObject::Ptr ob);
 
   Order* clone() const;
 

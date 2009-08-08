@@ -31,7 +31,7 @@ class Build : public Order{
     void createFrame(Frame *f, int pos);
     void inputFrame(Frame *f, uint32_t playerid);
 
-    bool doOrder(IGObject *ob);
+    bool doOrder(IGObject::Ptr ob);
 
     Order* clone() const;
 

@@ -60,7 +60,7 @@ RSPCombat::~RSPCombat(){
 }
 
 
-void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
+void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     Game* game = Game::getGame();
     PlayerManager* playermanager = game->getPlayerManager();
     ObjectManager* objectmanager = game->getObjectManager();
@@ -68,27 +68,27 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
     
     const char * const rsp[] = {"rock", "scissors", "paper"};
     
-    std::set<uint32_t> listallobids;
-    std::set<uint32_t> listallplayerids;
+    IdSet listallobids;
+    IdSet listallplayerids;
     
     std::map<uint32_t, std::vector<Combatant*> > fleetcache;
     
     battlelogger.reset(new BattleXML::BattleLogger());
     
-    for(std::map<uint32_t, std::set<uint32_t> >::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
+    for(std::map<uint32_t, IdSet>::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
         std::vector<Combatant*> pcombatant;
         Player* player = playermanager->getPlayer(itmap->first);
         battlelogger->startSide(player->getName());
-        std::set<uint32_t> theset = itmap->second;
-        for(std::set<uint32_t>::iterator itset = theset.begin(); itset != theset.end(); ++itset){
+        IdSet theset = itmap->second;
+        for(IdSet::iterator itset = theset.begin(); itset != theset.end(); ++itset){
             listallobids.insert(*itset);
             IGObject* obj = objectmanager->getObject (*itset);
             objectcache[*itset] = obj;
             if(obj->getType() == obT_Fleet){
                 Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
-                std::map<uint32_t, uint32_t> shiplist = f2->getShips();
+                IdMap shiplist = f2->getShips();
                 uint32_t damage = f2->getDamage();
-                for(std::map<uint32_t, uint32_t>::reverse_iterator itship = shiplist.rbegin(); itship != shiplist.rend(); ++itship){
+                for(IdMap::reverse_iterator itship = shiplist.rbegin(); itship != shiplist.rend(); ++itship){
                     for(uint32_t i = 0; i < itship->second; i++){
                         Combatant* f1 = new Combatant();
                         f1->setOwner(itmap->first);
@@ -311,7 +311,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
         Game::getGame()->getPlayerManager()->getPlayer(msgit->first)->postToBoard(msg);
     }
     
-    for(std::map<uint32_t, IGObject*>::iterator itob = objectcache.begin(); 
+    for(std::map<uint32_t, IGObject::Ptr>::iterator itob = objectcache.begin(); 
         itob != objectcache.end(); ++itob){
         Game::getGame()->getObjectManager()->doneWithObject(itob->first);
     }
@@ -432,7 +432,7 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
 
     for(std::map<objectid_t, bool>::iterator itplanet = colonydead.begin(); itplanet != colonydead.end(); ++itplanet){
         if(itplanet->second){
-            IGObject* obj = objectcache[itplanet->first];
+            IGObject::Ptr obj = objectcache[itplanet->first];
             Planet* planet = dynamic_cast<Planet*>(obj->getObjectBehaviour());
             if(planet == NULL){
                 warningLog("Planet was not a planet");

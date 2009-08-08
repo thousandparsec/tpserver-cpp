@@ -70,7 +70,7 @@ void MinisecTurn::doTurn(){
   
   std::set<uint32_t> objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     if(ob->getType() == planettype || ob->getType() == fleettype){
       possiblecombatants.insert(ob->getID());
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
@@ -96,7 +96,7 @@ void MinisecTurn::doTurn(){
   
   // do move
   for(itcurr = movers.begin(); itcurr != movers.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     OrderQueue* orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
@@ -115,7 +115,7 @@ void MinisecTurn::doTurn(){
   std::list<std::map<uint32_t, std::set<uint32_t> > > combats;
   
   for(itcurr = possiblecombatants.begin(); itcurr != possiblecombatants.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     uint32_t playerid1;
     Vector3d pos1;
     uint32_t size1;
@@ -145,7 +145,7 @@ void MinisecTurn::doTurn(){
           itmap != themap.end(); ++itmap){
         std::set<uint32_t> theset = itmap->second;
         for(std::set<uint32_t>::iterator itset = theset.begin(); itset != theset.end(); ++itset){
-          IGObject* itbobj = objectmanager->getObject(*itset);
+          IGObject::Ptr itbobj = objectmanager->getObject(*itset);
           uint32_t playerid2;
           Vector3d pos2;
           uint32_t size2;
@@ -205,7 +205,7 @@ void MinisecTurn::doTurn(){
   // do other orders (nop, buildfleet, colonise)
   
   for(itcurr = otherorders.begin(); itcurr != otherorders.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     if(ob != NULL){
       if(ob->getType() == planettype || ob->getType() == fleettype){
         OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
@@ -232,7 +232,7 @@ void MinisecTurn::doTurn(){
   // to once a turn (right at the end)
   objects = objectmanager->getAllIds();
   for(itcurr = objects.begin(); itcurr != objects.end(); ++itcurr) {
-    IGObject * ob = objectmanager->getObject(*itcurr);
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
     if(ob->isAlive()){
       ob->getObjectBehaviour()->doOnceATurn();
     }
@@ -256,7 +256,7 @@ void MinisecTurn::doTurn(){
         }
         objectmanager->doneWithObject(*itob);
       }else{
-        IGObject* ro = objectmanager->getObject(*itob);
+        IGObject::Ptr ro = objectmanager->getObject(*itob);
         uint64_t obmt = ro->getModTime();
         objectmanager->doneWithObject(*itob);
         if(obmt > obv->getModTime()){
