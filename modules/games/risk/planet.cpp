@@ -167,7 +167,7 @@ void Planet::setOwner(uint32_t no){
    
    //get queue, then remove old owner
    uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
-    OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+   OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
     queue->removeOwner(oldowner);
     
    //set new owner to own queue

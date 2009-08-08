@@ -244,7 +244,7 @@ bool Move::doOrder(IGObject::Ptr obj) {
             
             //Get order queue from target
             OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(om->getObject(i->first)->getParameterByType(obpT_Order_Queue));
-            OrderQueue* oq;
+            OrderQueue::Ptr oq;
             OrderManager* ordM = Game::getGame()->getOrderManager();
             //And then clear the queue
             if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL) {
@@ -305,7 +305,7 @@ bool Move::isTargetAttackingOrigin(IGObject::Ptr trueOrigin, IGObject::Ptr targe
    bool result = false;
    //Get order queue from object
    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(target->getParameterByType(obpT_Order_Queue));
-   OrderQueue* oq;
+   OrderQueue::Ptr oq;
    OrderManager* ordM = Game::getGame()->getOrderManager();
    
    //Validate targets Order Queue

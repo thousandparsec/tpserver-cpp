@@ -250,7 +250,7 @@ void RiskTurn::processOrdersOfGivenType(string type) {
       
       //Get order queue from object
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(currObj->getParameterByType(obpT_Order_Queue));
-      OrderQueue* oq;
+      OrderQueue::Ptr oq;
 
       if(oqop != NULL && (oq = ordM->getOrderQueue(oqop->getQueueId())) != NULL)
       {
