@@ -41,7 +41,7 @@ class OrderManager{
 
     Order* createOrder(uint32_t ot);
 
-    bool addOrderQueue(OrderQueue::Ptr oq);
+    uint32_t addOrderQueue( uint32_t objectid, uint32_t ownerid );
     OrderQueue::Ptr getOrderQueue(uint32_t oqid);
     void updateOrderQueue(uint32_t oqid);
     bool removeOrderQueue(uint32_t oqid);

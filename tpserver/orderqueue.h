@@ -31,10 +31,9 @@ class OrderQueue : public Modifiable, public boost::enable_shared_from_this<Orde
   public:
     typedef boost::shared_ptr<OrderQueue> Ptr;
 
-    OrderQueue();
+    OrderQueue( uint32_t nid, uint32_t nobjectid, uint32_t nownerid );
     ~OrderQueue();
 
-    void setQueueId(uint32_t id);
     uint32_t getQueueId() const;
 
     void addOwner(uint32_t playerid);
@@ -42,7 +41,6 @@ class OrderQueue : public Modifiable, public boost::enable_shared_from_this<Orde
     bool isOwner(uint32_t playerid) const;
     IdSet getOwner() const;
 
-    void setObjectId(uint32_t oid);
     uint32_t getObjectId() const;
 
     bool checkOrderType(uint32_t type, uint32_t playerid) const;

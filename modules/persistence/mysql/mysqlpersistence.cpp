@@ -692,15 +692,13 @@ bool MysqlPersistence::updateOrderQueue(const OrderQueue::Ptr oq){
 
 OrderQueue::Ptr MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
   try {
-    OrderQueue::Ptr oq( new OrderQueue() );
     std::ostringstream querybuilder;
 
     {
       querybuilder << "SELECT * FROM orderqueue WHERE queueid=" << oqid << ";";
 
       MysqlQuery query( querybuilder.str() );
-      oq->setQueueId(oqid);
-      oq->setObjectId(query->getInt(1));
+      OrderQueue::Ptr oq( new OrderQueue(oqid, query->getInt(1), 0) );
       oq->setActive(query->getInt(2) == 1);
       oq->setRepeating(query->getInt(3) == 1);
       oq->setModTime(query->getU64(4));
@@ -709,7 +707,7 @@ OrderQueue::Ptr MysqlPersistence::retrieveOrderQueue(uint32_t oqid){
     querybuilder.str("");
     querybuilder << "SELECT orderid FROM orderslot WHERE queueid=" << oqid <<" ORDER BY slot;";a
 
-      IdList oolist = idListQuery( querybuilder.str() );
+    IdList oolist = idListQuery( querybuilder.str() );
     uint32_t max = std::max_element( oolist.begin(), oolist.end() );
     oq->setOrderSlots(oolist);
     oq->setNextOrderId(max+1);

@@ -120,11 +120,13 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
 
 }
 
-bool OrderManager::addOrderQueue(OrderQueue::Ptr oq){
-  oq->setQueueId(orderqueue_next++);
-  orderqueue_store[oq->getQueueId()] = oq;
+uint32_t OrderManager::addOrderQueue( uint32_t objectid, uint32_t ownerid )
+{
+  uint32_t order_queue_id = orderqueue_next++;
+  OrderQueue::Ptr oq( new OrderQueue( order_queue_id, objectid, ownerid ) );
+  orderqueue_store[order_queue_id] = oq;
   Game::getGame()->getPersistence()->saveOrderQueue(oq);
-  return true;
+  return order_queue_id;
 }
 
 void OrderManager::updateOrderQueue(uint32_t oqid){

@@ -30,16 +30,12 @@
 
 #include "orderqueue.h"
 
-OrderQueue::OrderQueue() : queueid(0), objectid(0), active(true), repeating(false) {
+OrderQueue::OrderQueue( uint32_t nid, uint32_t nobjectid, uint32_t nownerid ) : queueid(nid), objectid(nobjectid), active(true), repeating(false) {
+  addOwner( nownerid );
   nextOrderId = 1;
 }
 
 OrderQueue::~OrderQueue(){
-}
-
-void OrderQueue::setQueueId(uint32_t id){
-  queueid = id;
-  touchModTime();
 }
 
 uint32_t OrderQueue::getQueueId() const{
@@ -67,10 +63,6 @@ IdSet OrderQueue::getOwner() const{
 
 void OrderQueue::setOwners(IdSet no){
   owner = no;
-}
-
-void OrderQueue::setObjectId(uint32_t oid){
-  objectid = oid;
 }
 
 uint32_t OrderQueue::getObjectId() const{
