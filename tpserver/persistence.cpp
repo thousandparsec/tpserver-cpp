@@ -313,6 +313,7 @@ bool Persistence::saveProtocolObject(ProtocolObject::Ptr object)
     case ft03_Player    : return savePlayer( boost::dynamic_pointer_cast<Player>(object) );
     case ft02_ResDesc   : return saveResource( boost::dynamic_pointer_cast<ResourceDescription>(object) );
     case ft02_Object    : return saveObject( boost::dynamic_pointer_cast<IGObject>(object) );
+    case ft02_Board     : return saveBoard( boost::dynamic_pointer_cast<Board>(object) );
     default : return false;
   }
 }
@@ -325,8 +326,9 @@ ProtocolObject::Ptr Persistence::retrieveProtocolObject(FrameType objtype, uint3
     case ft03_Property  : return retrieveProperty( id );
     case ft03_Category  : return retrieveCategory( id );
     case ft03_Player    : return retrievePlayer( id );
-    case ft02_ResDesc  : return retrieveResource( id );
+    case ft02_ResDesc   : return retrieveResource( id );
     case ft02_Object    : return retrieveObject( id );
+    case ft02_Board     : return retrieveBoard( id );
     default : return ProtocolObject::Ptr();
   }
 }
@@ -341,6 +343,7 @@ uint32_t Persistence::getMaxProtocolObjectId(FrameType objtype)
     case ft03_Player    : return getMaxPlayerId( );
     case ft02_ResDesc   : return getMaxResourceId( );
     case ft02_Object    : return getMaxObjectId( );
+    case ft02_Board     : return getMaxBoardId( );
     default : return 0;
   }
 }
@@ -356,6 +359,7 @@ IdSet Persistence::getProtocolObjectIds(FrameType objtype)
     case ft03_Player    : return getPlayerIds( );
     case ft02_ResDesc   : return getResourceIds( );
     case ft02_Object    : return getObjectIds( );
+    case ft02_Board     : return getBoardIds( );
     default : return IdSet();
   }
 }
