@@ -31,6 +31,7 @@
 #include "net.h"
 #include "commandmanager.h"
 #include "frame.h"
+#include "frameexception.h"
 
 #include "adminconnection.h"
 
@@ -46,33 +47,39 @@ AdminConnection::~AdminConnection(){
 void AdminConnection::processLogin(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
-    if(recvframe->getType() == ft02_Login){
-      std::string username, password;
-      
-      if ( getAuth( recvframe, username, password ) ) {
+    try {
+      if(recvframe->getType() == ft02_Login){
+        std::string username, password;
 
-        bool authenticated = false;
-        try{
-          if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
-            authenticated = true;
-        }catch(std::exception e){
+        if ( getAuth( recvframe, username, password ) ) {
+
+          bool authenticated = false;
+          try{
+            if(username == Settings::getSettings()->get("admin_user") && password == Settings::getSettings()->get("admin_pass"))
+              authenticated = true;
+          }catch(std::exception e){
+          }
+          if(authenticated){
+            sendOK( recvframe, "Welcome" );
+            Logger::getLogger()->info("Admin login ok by %s", username.c_str());
+            logsink = new AdminLogger();
+            logsink->setConnection(this);
+            logextid = Logger::getLogger()->addLog(logsink);
+            status = READY;
+          } else {
+            INFO("Bad username or password");
+            sendFail(recvframe,fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
+          }
         }
-        if(authenticated){
-          sendOK( recvframe, "Welcome" );
-          Logger::getLogger()->info("Admin login ok by %s", username.c_str());
-          logsink = new AdminLogger();
-          logsink->setConnection(this);
-          logextid = Logger::getLogger()->addLog(logsink);
-          status = READY;
-        } else {
-          INFO("Bad username or password");
-          sendFail(recvframe,fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
-        }
+
+      }else{
+        WARNING("In connected state but did not receive login");
+        sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login");
       }
-
-    }else{
-      WARNING("In connected state but did not receive login");
-      sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login");
+    } catch ( FrameException& exception ) {
+      // This might be overkill later, but now let's log it
+      DEBUG( "AdminConnection caught FrameException : %s", exception.what() );
+      sendFail( recvframe, exception.getErrorCode(), exception.getErrorMessage() );
     }
   }
   delete recvframe;
