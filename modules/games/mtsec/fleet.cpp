@@ -53,7 +53,7 @@ FleetType::FleetType():OwnedObjectType(){
   group = new ObjectParameterGroupDesc();
   group->setName("Resources");
   group->setDescription("The fleet's weapon resources");
-  group->addParameter(obpT_Resource_List, "Resource List", "The weapon list the fleet has available");
+  group->addParameter(obpT_Resource_List, "Weapon Resource List", "The weapon list the fleet has available");
   addParameterGroupDesc(group);
 
   nametype = "Fleet";

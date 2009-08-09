@@ -92,6 +92,7 @@ void Move::createFrame(Frame * f, int pos)
 
 Result Move::inputFrame(Frame * f, uint32_t playerid)
 {
+  Logger::getLogger()->debug("Enter Move::inputFrame");
   return Order::inputFrame(f, playerid);
 }
 

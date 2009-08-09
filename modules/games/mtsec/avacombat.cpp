@@ -28,8 +28,17 @@
 #include "tpserver/player.h"
 #include "tpserver/playermanager.h"
 #include "tpserver/prng.h"
+#include "tpserver/designstore.h"
+#include "tpserver/design.h"
+#include "tpserver/logging.h"
+#include "tpserver/property.h"
+#include "tpserver/resourcemanager.h"
+#include "tpserver/resourcedescription.h"
+
 
 #include "avacombat.h"
+
+#include <iostream>
 
 AVACombat::AVACombat(){
   c1 = NULL;
@@ -89,11 +98,115 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                                Fleet*   fleet2,
                                Message* msg2)
 {
+    Logger::getLogger()->debug("doCombatRound Entering");
+    Game* game = Game::getGame();
+    DesignStore* ds = game->getDesignStore();
+    ResourceManager* resman = game->getResourceManager();
     Random* rand = Game::getGame()->getRandom();
-    int r1 = rand->getInRange(0U, 40U) + 60;
-    int r2 = rand->getInRange(0U, 40U) + 60;
+    int r1 = rand->getInRange(0U, 40U);
+    int r2 = rand->getInRange(0U, 40U);
     uint32_t damage1 = ( 2 * r1) / 100;
     uint32_t damage2 = ( 2 * r2) / 100;
+
+    typedef std::map<uint32_t, std::pair<uint32_t, uint32_t> > weaponList;
+//                   ID/TYPE             AMOUNT
+    typedef std::map<uint32_t, uint32_t> shipList;
+
+    std::set<uint32_t> tubes;
+    tubes.insert(ds->getPropertyByName("AlphaMissileTube"));
+    tubes.insert(ds->getPropertyByName("BetaMissileTube"));
+    tubes.insert(ds->getPropertyByName("GammaMissileTube"));
+    tubes.insert(ds->getPropertyByName("DeltaMissileTube"));
+    tubes.insert(ds->getPropertyByName("EpsilonMissileTube"));
+    tubes.insert(ds->getPropertyByName("OmegaTorpedoeTube"));
+    tubes.insert(ds->getPropertyByName("UpsilonTorpedoeTube"));
+    tubes.insert(ds->getPropertyByName("TauTorpedoeTube"));
+    tubes.insert(ds->getPropertyByName("SigmaTorpedoeTube"));
+    tubes.insert(ds->getPropertyByName("RhoTorpedoeTube"));
+    tubes.insert(ds->getPropertyByName("XiTorpedoeTube"));
+
+
+    std::map<uint32_t, uint32_t> tubeList;
+
+    weaponList fleet1weaponry, fleet2weaponry;
+    shipList fleet1ships, fleet2ships;
+    std::map<double, uint32_t> fleet1tubes, fleet2tubes;
+    std::map<uint32_t, uint32_t>fleet1usable;
+    std::map<uint32_t, uint32_t>fleet2usable;
+
+    fleet1weaponry = fleet1->getResources();
+    fleet2weaponry = fleet2->getResources();
+
+    fleet1ships = fleet1->getShips();
+    fleet2ships = fleet2->getShips();
+
+    //get usable weapons fleet 1
+    for (shipList::iterator itcurr = fleet1ships.begin(); itcurr != fleet1ships.end(); ++itcurr) {
+        for (std::set<uint32_t>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
+            if (ds->getDesign(itcurr->first)->getPropertyValue(*tubeit) > 0.0) {
+                Logger::getLogger()->debug("Found usable Tube, inserting into Fleet 1");
+                fleet1tubes[ds->getDesign(itcurr->first)->getPropertyValue(*tubeit)] += 1;
+            }
+        }
+
+        for (weaponList::iterator weapit = fleet1weaponry.begin(); weapit != fleet1weaponry.end(); ++weapit) {
+            Design* weapDesign;
+            std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
+            std::set<uint32_t>dIDs = ds->getDesignIds();
+            for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
+                if (weapName == ds->getDesign(*dit)->getName()) {
+                    weapDesign = ds->getDesign(*dit);
+                    Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
+                }
+            }
+
+
+            for (std::map<double, uint32_t>::iterator tubeit = fleet1tubes.begin(); tubeit != fleet1tubes.end(); ++tubeit) {
+                uint32_t propID = ds->getPropertyByName("MissileSize");
+                //reading the property value is causing a crash.  propID is set to the correct value
+                if (fleet1tubes.find(weapDesign->getPropertyValue(propID)) != fleet1tubes.end()) {
+                    if (fleet1->removeResource(weapit->first, 1)) {
+                        fleet1usable[weapit->first] += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    //get usable weapons fleet 2
+    for (shipList::iterator itcurr = fleet2ships.begin(); itcurr != fleet2ships.end(); ++itcurr) {
+        for (std::set<uint32_t>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
+            if (ds->getDesign(itcurr->first)->getPropertyValue(*tubeit) > 0.0) {
+                Logger::getLogger()->debug("Found usable Tube, inserting into Fleet 2");
+                fleet2tubes[ds->getDesign(itcurr->first)->getPropertyValue(*tubeit)] += 1;
+            }
+        }
+
+        for (weaponList::iterator weapit = fleet2weaponry.begin(); weapit != fleet2weaponry.end(); ++weapit) {
+            Design* weapDesign;
+            std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
+            std::set<uint32_t>dIDs = ds->getDesignIds();
+            for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
+                if (weapName == ds->getDesign(*dit)->getName()) {
+                    weapDesign = ds->getDesign(*dit);
+                    Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
+                }
+            }
+            for (std::map<double, uint32_t>::iterator tubeit = fleet2tubes.begin(); tubeit != fleet2tubes.end(); ++tubeit) {
+                if (fleet2tubes.find(weapDesign->getPropertyValue(ds->getPropertyByName("MissileSize"))) != fleet2tubes.end()) {
+                    if (fleet2->removeResource(weapit->first, 1)) {
+                        fleet2usable[weapit->first] += 1;
+                    }
+                }
+            }
+        }
+    }
+
+for (std::map<uint32_t, uint32_t>::iterator it = fleet1usable.begin(); it != fleet1usable.end(); ++it){
+std::cout << "USABLE MISSILE NUMBER: " <<it->first << "\n\n\n";
+}
+
+
 
     bool tte = false;
 
@@ -116,7 +229,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
         msg2->setBody( body2);
     }
 
-    return tte;
+    Logger::getLogger()->debug("doCombatRound Exiting");
+    return false;
 }
 
 

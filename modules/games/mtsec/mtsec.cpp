@@ -658,7 +658,7 @@ void MTSec::createGame()
     IGObject* universe = obman->createNewObject();
     otypeman->setupObject(universe, obT_Universe);
     Universe* theuniverse = (Universe*)(universe->getObjectBehaviour());
-    theuniverse->setSize(100000000000ll);
+    theuniverse->setSize(1000000000ll);
     universe->setName("The Universe");
     theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
     obman->addObject(universe);
@@ -667,7 +667,7 @@ void MTSec::createGame()
     IGObject *mw_galaxy = obman->createNewObject();
     otypeman->setupObject(mw_galaxy, obT_Galaxy);
     EmptyObject* themw = (EmptyObject*)(mw_galaxy->getObjectBehaviour());
-    themw->setSize(10000000000ll);
+    themw->setSize(100000000ll);
     mw_galaxy->setName("Milky Way Galaxy");
     themw->setPosition(Vector3d(0ll, -6000ll, 0ll));
     mw_galaxy->addToParent(universe->getID());
@@ -718,6 +718,9 @@ Design* MTSec::createScoutDesign( Player* owner)
     scout->setDescription("Scout ship");
     scout->setOwner( owner->getID());
     componentList[ds->getComponentByName("Scout Hull")] = 1;
+    componentList[ds->getComponentByName("Battle Scout Hull")] = 1;
+    componentList[ds->getComponentByName("Alpha Missile Tube")] = 1;
+    componentList[ds->getComponentByName("Cerium Explosives")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
     Logger::getLogger()->debug( "Exit MTSec::createScoutDesign");
@@ -741,7 +744,7 @@ Design* MTSec::createBattleScoutDesign( Player* owner)
     scout->setOwner( owner->getID());
     componentList[ds->getComponentByName("Battle Scout Hull")] = 1;
     componentList[ds->getComponentByName("Alpha Missile Tube")] = 1;
-    componentList[ds->getComponentByName("Cerium 3 Explosives")] = 1;
+    componentList[ds->getComponentByName("Cerium Explosives")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
 
