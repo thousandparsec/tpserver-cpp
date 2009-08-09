@@ -207,7 +207,6 @@ void PlayerAgent::processGetObjectById (Frame * frame){
   DEBUG ( "doing get object by id frame" );
 
   int len = queryCheck( frame );
-  if ( len == 0 ) return;
 
   // Object frames
   for ( int i=0 ; i < len; ++i ){
@@ -222,7 +221,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 {
   DEBUG("doing get object by pos frame");
 
-  if (!lengthCheckMin( frame, 36 ) ) return;
+  lengthCheckMin( frame, 36 );
 
   Frame *of;
   Vector3d pos;
@@ -259,7 +258,7 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
 void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
   DEBUG("doing get object ids by pos frame");
   Frame *of = curConnection->createFrame(frame);
-  if (!lengthCheckMin( frame, 36 ) ) return;
+  lengthCheckMin( frame, 36 );
   Vector3d pos;
   uint64_t r;
 
@@ -286,7 +285,7 @@ void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
 
 void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   DEBUG("doing get object ids by container frame");
-  if (!lengthCheck( frame, 4 ) ) return;
+  lengthCheck( frame, 4 );
   uint32_t objectID = frame->unpackInt();
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
   if(visibleObjects.find(objectID) != visibleObjects.end()){
@@ -317,9 +316,8 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
 
 void PlayerAgent::processGetObjectDesc(Frame * frame){
   DEBUG("Doing get OrderDesc");
-  if ( !versionCheck( frame, fv0_4 ) ) return;
+  versionCheck( frame, fv0_4 );
   int len = queryCheck( frame );
-  if ( len == 0 ) return;
 
   // Object frames
   for ( int i=0 ; i < len; ++i ){
@@ -332,8 +330,8 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
 
 void PlayerAgent::processGetObjectTypes(Frame * frame){
   DEBUG("Doing get OrderTypes list");
-  if ( !versionCheck( frame, fv0_4 ) ) return;
-  if ( !lengthCheck( frame, 20 ) ) return;
+  versionCheck( frame, fv0_4 );
+  lengthCheck( frame, 20 );
   uint32_t lseqkey = frame->unpackInt();
   uint32_t seqkey = Game::getGame()->getObjectTypeManager()->getSeqKey();
 
@@ -358,7 +356,7 @@ void PlayerAgent::processGetObjectTypes(Frame * frame){
 
 void PlayerAgent::processGetOrder(Frame * frame){
   DEBUG("Doing get order frame");
-  if ( !lengthCheckMin( frame, 12 ) ) return;
+  lengthCheckMin( frame, 12 );
   uint32_t orderqueueid = frame->unpackInt();
 
   if(frame->getVersion() <= fv0_3){
@@ -383,7 +381,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
 
   int num_orders = frame->unpackInt();
 
-  if ( !lengthCheck( frame, 8 + 4 * num_orders ) ) return;
+  lengthCheck( frame, 8 + 4 * num_orders );
 
   if(num_orders > 1) {
     DEBUG("Got multiple orders, returning a sequence");
@@ -484,7 +482,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
 void PlayerAgent::processRemoveOrder(Frame * frame){
   DEBUG("doing remove order frame");
 
-  if ( !lengthCheckMin( frame, 12 ) ) return;
+  lengthCheckMin( frame, 12 );
 
   int orderqueueid = frame->unpackInt();
 
@@ -510,7 +508,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
 
   int num_orders = frame->unpackInt();
 
-  if ( !lengthCheckMin( frame, 8 + 4 * num_orders  ) ) return;
+  lengthCheckMin( frame, 8 + 4 * num_orders  );
 
   if(num_orders > 1){
     curConnection->sendSequence(frame,num_orders);
@@ -538,7 +536,6 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
   DEBUG("doing describe order frame");
 
   int numdesc = queryCheck( frame );
-  if ( numdesc == 0 ) return;
 
   for(int i = 0; i < numdesc; i++){
     Frame *of = curConnection->createFrame(frame);
@@ -551,7 +548,7 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
 void PlayerAgent::processGetOrderTypes(Frame * frame){
   DEBUG("doing get order types frame");
 
-  if ( !versionCheck(frame,fv0_3) ) return;
+  versionCheck(frame,fv0_3);
 
   if(frame->getDataLength() != 12 && frame->getVersion() == fv0_3) {
     curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Order Types (TP03), Frame too short (<12 bytes)");
@@ -567,8 +564,8 @@ void PlayerAgent::processGetOrderTypes(Frame * frame){
 void PlayerAgent::processProbeOrder(Frame * frame){
   DEBUG("doing probe order frame");
 
-  if ( !versionCheck(frame,fv0_3) ) return;
-  if ( !lengthCheckMin( frame, 8) ) return;
+  versionCheck(frame,fv0_3);
+  lengthCheckMin( frame, 8);
 
   int orderqueueid = frame->unpackInt();
 
@@ -621,7 +618,6 @@ void PlayerAgent::processGetBoards(Frame * frame){
   DEBUG("doing Get Boards frame");
 
   int numboards = queryCheck( frame );
-  if ( numboards == 0 ) return;
 
   for(int i = 0; i < numboards; i++){
     uint32_t boardnum = frame->unpackInt();
@@ -637,7 +633,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
 void PlayerAgent::processGetBoardIds(Frame* frame){
   DEBUG("Doing get board ids frame");
 
-  if ( !versionCheck(frame,fv0_3) ) return;
+  versionCheck(frame,fv0_3);
 
   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Board Ids, Frame too short");
@@ -679,12 +675,12 @@ void PlayerAgent::processGetBoardIds(Frame* frame){
 void PlayerAgent::processGetMessages(Frame * frame){
   DEBUG("doing Get Messages frame");
 
-  if ( !lengthCheckMin( frame, 8 ) ) return;
+  lengthCheckMin( frame, 8 );
 
   int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
-  if ( !lengthCheckMin( frame, 8 + 4 * nummsg ) ) return;
+  lengthCheckMin( frame, 8 + 4 * nummsg );
 
   if(nummsg > 1){
     curConnection->sendSequence(frame,nummsg);
@@ -723,7 +719,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
   DEBUG("doing Post Messages frame");
 
 
-  if ( !lengthCheckMin( frame, 28 ) ) return;
+  lengthCheckMin( frame, 28 );
 
   int lboardid = frame->unpackInt();
   int pos = frame->unpackInt();
@@ -764,12 +760,12 @@ void PlayerAgent::processPostMessage(Frame * frame){
 void PlayerAgent::processRemoveMessages(Frame * frame){
   DEBUG("doing Remove Messages frame");
 
-  if ( !lengthCheckMin( frame, 8 ) ) return;
+  lengthCheckMin( frame, 8 );
 
   int lboardid = frame->unpackInt();
   int nummsg = frame->unpackInt();
 
-  if ( !lengthCheckMin( frame, 8 + 4 * nummsg ) ) return;
+  lengthCheckMin( frame, 8 + 4 * nummsg );
 
   if(nummsg > 1){
     curConnection->sendSequence(frame, nummsg);
@@ -802,7 +798,6 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
   DEBUG("doing Get Resource Description frame");
 
   int numress = queryCheck( frame );
-  if ( numress == 0 ) return;
 
   for(int i = 0; i < numress; i++){
     int rnum = frame->unpackInt();
@@ -819,7 +814,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
 void PlayerAgent::processGetResourceTypes(Frame* frame){
   DEBUG("doing Get Resource Types frame");
 
-  if ( !versionCheck(frame,fv0_3) ) return;
+  versionCheck(frame,fv0_3);
 
   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Resource Types, Frame too short");
@@ -858,7 +853,6 @@ void PlayerAgent::processGetPlayer(Frame* frame){
   DEBUG("doing Get Player frame");
 
   int numplayers = queryCheck( frame );
-  if ( numplayers == 0 ) return;
 
   for(int i = 0; i < numplayers; i++){
     int pnum = frame->unpackInt();
@@ -882,9 +876,8 @@ void PlayerAgent::processGetPlayer(Frame* frame){
 void PlayerAgent::processGetPlayerIds(Frame* frame){
   DEBUG("doing Get Resource Types frame");
 
-  if ( !versionCheck(frame,fv0_4) ) return;
-
-  if ( !lengthCheck( frame, 20 ) ) return;
+  versionCheck(frame,fv0_4);
+  lengthCheck( frame, 20 );
 
   uint32_t seqkey = frame->unpackInt();
   if(seqkey == UINT32_NEG_ONE){
@@ -917,7 +910,6 @@ void PlayerAgent::processGetCategory(Frame* frame){
   DEBUG("doing Get Category frame");
 
   int numcats = queryCheck( frame );
-  if ( numcats == 0 ) return;
 
   for(int i = 0; i < numcats; i++){
     int catnum = frame->unpackInt();
@@ -934,7 +926,7 @@ void PlayerAgent::processGetCategory(Frame* frame){
 void PlayerAgent::processGetCategoryIds(Frame* frame){
   DEBUG("doing Get Category Ids frame");
 
-  if ( !versionCheck(frame,fv0_3) ) return;
+  versionCheck(frame,fv0_3);
 
   if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
     curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Categories Ids, Frame too short");
@@ -969,7 +961,6 @@ void PlayerAgent::processGetDesign(Frame* frame){
   DEBUG("doing Get Design frame");
 
   int numdesigns = queryCheck( frame );
-  if ( numdesigns == 0 ) return;
 
   for(int i = 0; i < numdesigns; i++){
     Frame *of = curConnection->createFrame(frame);
@@ -982,7 +973,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
 void PlayerAgent::processAddDesign(Frame* frame){
   DEBUG("doing Add Design frame");
 
-  if ( !lengthCheckMin( frame, 40 ) ) return;
+  lengthCheckMin( frame, 40 );
 
   Design::Ptr design( new Design() );
   frame->unpackInt(); //designid, don't take, overwrite
@@ -1020,7 +1011,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
 void PlayerAgent::processModifyDesign(Frame* frame){
   DEBUG("doing Modify Design frame");
 
-  if ( !lengthCheckMin( frame, 40 ) ) return;
+  lengthCheckMin( frame, 40 );
 
   Design::Ptr design( new Design() );
   design->setDesignId(frame->unpackInt());
@@ -1065,7 +1056,6 @@ void PlayerAgent::processGetComponent(Frame* frame){
   DEBUG("doing Get Component frame");
 
   int numcomps = queryCheck( frame );
-  if ( numcomps == 0 ) return;
 
   for(int i = 0; i < numcomps; i++){
     Frame *of = curConnection->createFrame(frame);
@@ -1088,8 +1078,6 @@ void PlayerAgent::processGetProperty(Frame* frame){
   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   int numprops = queryCheck( frame );
-  if ( numprops == 0 ) return;
-  curConnection->sendSequence(frame,numprops);
 
   for(int i = 0; i < numprops; i++){
     int propnum = frame->unpackInt();
@@ -1156,47 +1144,42 @@ void PlayerAgent::processTurnFinished(Frame* frame){
 
 }
 
-bool PlayerAgent::versionCheck( Frame* frame, ProtocolVersion min_version )
+void PlayerAgent::versionCheck( Frame* frame, ProtocolVersion min_version )
 {
   if(frame->getVersion() < min_version ){
     DEBUG("Frame protocol version not high enough");
-    curConnection->sendFail(frame,fec_FrameError, "This feature isn't supported on this protocol version");
-    return false;
+    throw FrameException( fec_FrameError, "This feature isn't supported on this protocol version");
   }
-  return true;
 }
 
-bool PlayerAgent::lengthCheck( Frame* frame, uint32_t length )
+void PlayerAgent::lengthCheck( Frame* frame, uint32_t length )
 {
   if ( frame->getDataLength() != (int)length ) {
     DEBUG("Frame of invalid size");
-    curConnection->sendFail(frame,fec_FrameError, "Frame is of invalid size");
-    return false;
+    throw FrameException( fec_FrameError, "Frame is of invalid size");
   }
-  return true;
 }
 
-bool PlayerAgent::lengthCheckMin( Frame* frame, uint32_t length )
+void PlayerAgent::lengthCheckMin( Frame* frame, uint32_t length )
 {
   if ( frame->getDataLength() < (int)length ) {
     DEBUG("Frame is too short");
-    curConnection->sendFail(frame,fec_FrameError, "Frame is too short");
-    return false;
+    throw FrameException( fec_FrameError, "Frame is too short");
   }
-  return true;
 }
 
 int PlayerAgent::queryCheck( Frame* frame )
 {
-  if ( !lengthCheckMin( frame, 4 ) ) return 0;
-  int result = frame->unpackInt();
-  if ( !lengthCheckMin( frame, 4 + 4 * result ) ) return 0;
+  lengthCheckMin( frame, 4 );
 
+  int result = frame->unpackInt();
   if ( result <= 0 ) {
     DEBUG( "Asked for no data, silly client... " );
-    curConnection->sendFail(frame,fec_NonExistant, "You didn't ask for any data, try again");
-    return 0;
+    throw FrameException( fec_NonExistant, "You didn't ask for any data, try again");
   }
+
+  lengthCheckMin( frame, 4 + 4 * result );
+
   curConnection->sendSequence( frame, result );
 
   return result;
