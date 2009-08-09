@@ -136,11 +136,11 @@ void Build::inputFrame(Frame *f, uint32_t playerid)
         ds->designCountsUpdated(design);
 
     }else{
-      throw FrameException("The requested design was not valid.");
+      throw FrameException( fec_FrameError, "The requested design was not valid.");
     }
   }
   if(usedshipres == 0 && !fleettype.empty()){
-    throw FrameException("To build was empty...");
+    throw FrameException( fec_FrameError, "To build was empty...");
   }
   
   resources[1] = usedshipres;

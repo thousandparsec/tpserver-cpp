@@ -21,14 +21,49 @@
  */
 
 #include <exception>
+#include <string>
+#include <tpserver/protocol.h>
 
+/**
+ * Frame exception class
+ *
+ * Except for storing the error string that is later to be sent as a reply
+ * it also stores the error code.
+ */
 class FrameException : public std::exception {
   public:
-    explicit FrameException( const std::string& arg ) : reason(arg) {}
-    virtual const char* what() const throw() { return reason.c_str(); }
-    virtual ~FrameException() throw() {}
+    /**
+     * Creation of exception
+     *
+     * @param code Frame error code as per protocol.h
+     * @param arg Optional error string
+     */
+    explicit FrameException( FrameErrorCode code, const std::string& arg = "" );
+
+    /**
+     * Standard what() method, returns formated error message with
+     * descriptive error_code definition.
+     */
+    virtual const char* what() const throw();
+    /**
+     * Returns error code
+     */
+    FrameErrorCode getErrorCode() const;
+    /**
+     * Returns error message only
+     */
+    const std::string& getErrorMessage() const;
+    /**
+     * Standard destructor, does nothing.
+     */
+    virtual ~FrameException() throw();
+
   private:
-    std::string reason;
+    /// Stored error code
+    FrameErrorCode  error_code;
+
+    /// Stored error message
+    std::string     error_message;
 };
 
 #endif

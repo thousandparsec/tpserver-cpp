@@ -93,12 +93,12 @@ void Order::inputFrame(Frame * f, uint32_t playerid)
 {
   //ready passed object, position, and type.
   if(!f->isEnoughRemaining(8))
-    throw FrameException("Not 8 bytes remaining to read");
+    throw FrameException( fec_FrameError, "Not 8 bytes remaining to read");
 
   f->unpackInt(); // turns, read only
   int ressize = f->unpackInt(); // size of resource list (should be zero)
   if(!f->isEnoughRemaining(8 * ressize))
-    throw FrameException("Not enough bytes remaining");
+    throw FrameException( fec_FrameError, "Not enough bytes remaining");
   for(int i = 0; i < ressize; i++){
     f->unpackInt(); //The resource id
     f->unpackInt(); //The amount of the resource
@@ -106,7 +106,7 @@ void Order::inputFrame(Frame * f, uint32_t playerid)
   for(ParameterList::iterator itcurr = parameters.begin(); itcurr != parameters.end();
       ++itcurr){
     if (!(*itcurr)->unpack(f)) 
-      throw FrameException("Unable to unpack Frame");
+      throw FrameException( fec_FrameError, "Unable to unpack Frame");
   }
 }
 

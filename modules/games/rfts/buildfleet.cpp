@@ -167,11 +167,11 @@ void BuildFleet::inputFrame(Frame *f, uint32_t playerid) {
       }
       else
       {
-         throw FrameException("The requested design was not valid.");
+         throw FrameException( fec_FrameError, "The requested design was not valid.");
       }
    }
    if(fleetCostRP == 0 && !localShipList.empty())
-      throw FrameException("To build was empty...");
+      throw FrameException( fec_FrameError, "To build was empty...");
 
    shipList->setList(localShipList); // save the list back in case of changes
 }

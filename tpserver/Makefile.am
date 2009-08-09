@@ -21,7 +21,7 @@ endif
 
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.cpp tcpconnection.cpp \
 		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
-		order.cpp systemexception.cpp  \
+		order.cpp systemexception.cpp frameexception.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
 		playerconnection.cpp tcpsocket.cpp property.cpp \
 		propertyvalue.cpp component.cpp design.cpp designstore.cpp tpscheme.cpp category.cpp \

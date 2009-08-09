@@ -453,7 +453,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
       try {
         ord->inputFrame(frame, player->getID());
       } catch ( FrameException& fe ) {
-        curConnection->sendFail(frame, fec_FrameError, std::string("Could not add order : ") + std::string(fe.what()));
+        curConnection->sendFail(frame, fec_FrameError, "Could not add order : " + fe.getErrorMessage());
         return;
       }
 
@@ -607,7 +607,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
       curConnection->sendFrame(of);
     } catch ( FrameException& fe ) {
       delete of;
-      curConnection->sendFail(frame,fec_FrameError, std::string("Order could not be unpacked correctly : ") + std::string( fe.what() ));
+      curConnection->sendFail(frame,fec_FrameError, "Order could not be unpacked correctly : " + fe.getErrorMessage() );
       DEBUG("Probe Order, could not unpack order");
     }
   }else{
