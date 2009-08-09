@@ -148,26 +148,30 @@ void PlayerConnection::processNormalFrame()
 {
   Frame *frame = createFrame();
   if (readFrame(frame)) {
-
-    if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
-      processGetFeaturesFrame(frame);
-    }else if(version >= fv0_3 && frame->getType() == ft03_Ping){
-      processPingFrame(frame);
-    }else if(frame->getType() == ft02_Time_Remaining_Get){
-      processTimeRemainingFrame(frame);
-    }else if(version >= fv0_4 && frame->getType() == ft04_GameInfo_Get){
-      processGetGameInfoFrame(frame);
-    }else if(version >= fv0_4 && frame->getType() == ft04_Filters_Set){
-      processSetFilters(frame);
-    }else{
-      if(Game::getGame()->isStarted()){
-        // should pass frame to player to do something with
-        DEBUG("PlayerConnection : inGameFrame");
-        playeragent->processIGFrame(frame);
+    try {
+      if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
+        processGetFeaturesFrame(frame);
+      }else if(version >= fv0_3 && frame->getType() == ft03_Ping){
+        processPingFrame(frame);
+      }else if(frame->getType() == ft02_Time_Remaining_Get){
+        processTimeRemainingFrame(frame);
+      }else if(version >= fv0_4 && frame->getType() == ft04_GameInfo_Get){
+        processGetGameInfoFrame(frame);
+      }else if(version >= fv0_4 && frame->getType() == ft04_Filters_Set){
+        processSetFilters(frame);
       }else{
-        sendFail(frame,fec_TempUnavailable, "Game has not yet started, please wait");
+        if(Game::getGame()->isStarted()){
+          // should pass frame to player to do something with
+          DEBUG("PlayerConnection : inGameFrame");
+          playeragent->processIGFrame(frame);
+        }else{
+          throw FrameException( fec_TempUnavailable, "Game has not yet started, please wait..." );
+        }
       }
-    }
+    } catch ( FrameException& exception ) {
+      // This might be overkill later, but now let's log it
+      DEBUG( "FrameException caught : %s", exception.what() );
+      sendFail( frame, exception.getErrorCode(), exception.getErrorMessage() );
   } else {
     DEBUG("PlayerConnection : noFrame :(");
     // client closed
