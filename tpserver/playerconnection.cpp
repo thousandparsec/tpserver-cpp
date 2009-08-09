@@ -55,21 +55,27 @@ PlayerConnection::~PlayerConnection(){
 void PlayerConnection::processLogin(){
   Frame *recvframe = createFrame();
   if (readFrame(recvframe)) {
-    if(recvframe->getType() == ft02_Login){
-      processLoginFrame(recvframe);
-    }else if(version >= fv0_3 && recvframe->getType() == ft03_Features_Get){
-      processGetFeaturesFrame(recvframe);
-    }else if(recvframe->getType() == ft02_Time_Remaining_Get){
-      processTimeRemainingFrame(recvframe);
-    }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
-      processAccountFrame(recvframe);
-    }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
-      processGetGameInfoFrame(recvframe);
-    }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
-      processSetFilters(recvframe);
-    }else{
-      WARNING("PlayerConnection : In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
-      sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
+    try {
+      if(recvframe->getType() == ft02_Login){
+        processLoginFrame(recvframe);
+      }else if(version >= fv0_3 && recvframe->getType() == ft03_Features_Get){
+        processGetFeaturesFrame(recvframe);
+      }else if(recvframe->getType() == ft02_Time_Remaining_Get){
+        processTimeRemainingFrame(recvframe);
+      }else if(version >= fv0_3 && recvframe->getType() == ft03_Account){
+        processAccountFrame(recvframe);
+      }else if(version >= fv0_4 && recvframe->getType() == ft04_GameInfo_Get){
+        processGetGameInfoFrame(recvframe);
+      }else if(version >= fv0_4 && recvframe->getType() == ft04_Filters_Set){
+        processSetFilters(recvframe);
+      }else{
+        WARNING("PlayerConnection : In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
+        sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
+      }
+    } catch ( FrameException& exception ) {
+      // This might be overkill later, but now let's log it
+      DEBUG( "PlayerConnection caught FrameException : %s", exception.what() );
+      sendFail( recvframe, exception.getErrorCode(), exception.getErrorMessage() );
     }
   }
   delete recvframe;
