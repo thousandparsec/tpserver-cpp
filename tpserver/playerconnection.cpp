@@ -35,6 +35,7 @@
 #include "settings.h"
 #include "playeragent.h"
 #include "turntimer.h"
+#include "frameexception.h"
 
 #include "playerconnection.h"
 
@@ -172,6 +173,7 @@ void PlayerConnection::processNormalFrame()
       // This might be overkill later, but now let's log it
       DEBUG( "FrameException caught : %s", exception.what() );
       sendFail( frame, exception.getErrorCode(), exception.getErrorMessage() );
+    }
   } else {
     DEBUG("PlayerConnection : noFrame :(");
     // client closed
