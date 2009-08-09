@@ -20,6 +20,8 @@
  *
  */
 
+#include <tpserver/common.h>
+
 class Frame;
 class IGObject;
 
