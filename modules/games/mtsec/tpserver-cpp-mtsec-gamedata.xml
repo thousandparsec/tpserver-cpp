@@ -329,7 +329,8 @@
         <Size><![CDATA[(lambda (design) (+ 3))]]></Size>
         <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
         <AmmoCost><![CDATA[(lambda (design) 6)]]></AmmoCost>
-        <AlphaMissileTube><![CDATA[(lambda (design) 1)]]></AlphaMissileTube>
+        <AlphaMissileTube><![CDATA[(lambda (design) 3)]]></AlphaMissileTube>
+        <num-AlphaMissileTube><![CDATA[(lambda (design) 1)]]></num-AlphaMissileTube>
     </propertylist>
 </comp>
 
@@ -379,7 +380,8 @@
         <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
         <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
-        <BetaMissileTube><![CDATA[(lambda (design) 1)]]></BetaMissileTube>
+        <BetaMissileTube><![CDATA[(lambda (design) 6)]]></BetaMissileTube>
+        <num-BetaMissileTube><![CDATA[(lambda (design) 1)]]></num-BetaMissileTube>
     </propertylist>
 </comp>
 
@@ -432,7 +434,8 @@
         <Size><![CDATA[(lambda (design) (+ 8))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 12)]]></AmmoCost>
-        <GammaMissileTube><![CDATA[(lambda (design) 1)]]></GammaMissileTube>
+        <GammaMissileTube><![CDATA[(lambda (design) 8)]]></GammaMissileTube>
+        <num-GammaMissileTube><![CDATA[(lambda (design) 1)]]></num-GammaMissileTube>
     </propertylist>
 </comp>
 
@@ -484,7 +487,8 @@
         <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 12)]]></AmmoCost>
-        <DeltaMissileTube><![CDATA[(lambda (design) 1)]]></DeltaMissileTube>
+        <DeltaMissileTube><![CDATA[(lambda (design) 12)]]></DeltaMissileTube>
+        <num-DeltaMissileTube><![CDATA[(lambda (design) 1)]]></num-DeltaMissileTube>
     </propertylist>
 </comp>
 
@@ -538,8 +542,9 @@
             <Size><![CDATA[(lambda (design) (+ 24))]]></Size>
             <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
             <AmmoCost><![CDATA[(lambda (design) 24)]]></AmmoCost>
-            <EpsilonMissileTube><![CDATA[(lambda (design) 1)]]></EpsilonMissileTube>
-        </propertylist>
+            <EpsilonMissileTube><![CDATA[(lambda (design) 24)]]></EpsilonMissileTube>
+            <num-EpsilonMissileTube><![CDATA[(lambda (design) 1)]]></num-EpsilonMissileTube>
+    </propertylist>
 </comp>
 
 
@@ -591,7 +596,8 @@
         <Size><![CDATA[(lambda (design) (+ 40))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 40)]]></AmmoCost>
-        <OmegaTorpedoeTube><![CDATA[(lambda (design) 1)]]></OmegaTorpedoeTube>
+        <OmegaTorpedoeTube><![CDATA[(lambda (design) 40)]]></OmegaTorpedoeTube>
+        <num-OmegaTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-OmegaTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -643,7 +649,8 @@
         <Size><![CDATA[(lambda (design) (+ 60))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 60)]]></AmmoCost>
-        <UpsilonTorpedoeTube><![CDATA[(lambda (design) 1)]]></UpsilonTorpedoeTube>
+        <UpsilonTorpedoeTube><![CDATA[(lambda (design) 60)]]></UpsilonTorpedoeTube>
+        <num-UpsilonTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-UpsilonTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -695,7 +702,8 @@
         <Size><![CDATA[(lambda (design) (+ 80))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 80)]]></AmmoCost>
-        <TauTorpedoeTube><![CDATA[(lambda (design) 1)]]></TauTorpedoeTube>
+        <TauTorpedoeTube><![CDATA[(lambda (design) 80)]]></TauTorpedoeTube>
+        <num-TauTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-TauTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -748,7 +756,8 @@
         <Size><![CDATA[(lambda (design) (+ 110))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 110)]]></AmmoCost>
-        <SigmaTorpedoeTube><![CDATA[(lambda (design) 1)]]></SigmaTorpedoeTube>
+        <SigmaTorpedoeTube><![CDATA[(lambda (design) 110)]]></SigmaTorpedoeTube>
+        <num-SigmaTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-SigmaTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -801,7 +810,8 @@
         <Size><![CDATA[(lambda (design) (+ 150))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 150)]]></AmmoCost>
-        <RhoTorpedoeTube><![CDATA[(lambda (design) 1)]]></RhoTorpedoeTube>
+        <RhoTorpedoeTube><![CDATA[(lambda (design) 150)]]></RhoTorpedoeTube>
+        <num-RhoTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-RhoTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -854,7 +864,8 @@
         <Size><![CDATA[(lambda (design) (+ 200))]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
         <AmmoCost><![CDATA[(lambda (design) 200)]]></AmmoCost>
-        <XiTorpedoeTube><![CDATA[(lambda (design) 1)]]></XiTorpedoeTube>
+        <XiTorpedoeTube><![CDATA[(lambda (design) 200)]]></XiTorpedoeTube>
+        <num-XiTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-XiTorpedoeTube>
     </propertylist>
 </comp>
 
@@ -1379,7 +1390,7 @@
         <name>AlphaMissileTube</name>
         <displayName>The Alpha Missile Tube</displayName>
         <description>The Alpha Missile Tube holds Alpha Missiles</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1389,7 +1400,7 @@
         <name>BetaMissileTube</name>
         <displayName>The Beta Missile Tube</displayName>
         <description>The Beta Missile Tube holds Beta Missiles</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1399,7 +1410,7 @@
         <name>GammaMissileTube</name>
         <displayName>The Gamma Missile Tube</displayName>
         <description>The Gamma Missile Tube holds Gamma Missiles</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1409,7 +1420,7 @@
         <name>DeltaMissileTube</name>
         <displayName>The Delta Missile Tube</displayName>
         <description>The Delta Missile Tube holds Delta Missiles</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1419,7 +1430,7 @@
         <name>EpsilonMissileTube</name>
         <displayName>The Epsilon Missile Tube</displayName>
         <description>The Epsilon Missile Tube holds Epsilon Missiles</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1429,7 +1440,7 @@
         <name>OmegaTorpedoeTube</name>
         <displayName>The Omega Torpedoe Tube</displayName>
         <description>The Omega Torpedoe Tube holds Omega Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1439,7 +1450,7 @@
         <name>UpsilonTorpedoeTube</name>
         <displayName>The Upsilon Torpedoe Tube</displayName>
         <description>The Upsilon Torpedoe Tube holds Upsilon Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1450,17 +1461,7 @@
         <name>TauTorpedoeTube</name>
         <displayName>The Tau Torpedoe Tube</displayName>
         <description>The Tau Torpedoe Tube holds Tau Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
-        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
-    </prop>
-    
-    <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
-        <rank value="0"/>
-        <name>TauTorpedoeTube</name>
-        <displayName>The Tau Torpedoe Tube</displayName>
-        <description>The Tau Torpedoe Tube holds Tau Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1470,7 +1471,7 @@
         <name>SigmaTorpedoeTube</name>
         <displayName>The Sigma Torpedoe Tube</displayName>
         <description>The Sigma Torpedoe Tube holds Sigma Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1480,7 +1481,7 @@
         <name>RhoTorpedoeTube</name>
         <displayName>The Rho Torpedoe Tube</displayName>
         <description>The Rho Torpedoe Tube holds Rho Torpedoes</description>
-        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>
     
@@ -1490,6 +1491,117 @@
         <name>XiTorpedoeTube</name>
         <displayName>The Xi Torpedoe Tube</displayName>
         <description>The Xi Torpedoe Tube holds Xi Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-AlphaMissileTube</name>
+        <displayName>The Number of Alpha Missile Tubes</displayName>
+        <description>The number of Alpha Missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-BetaMissileTube</name>
+        <displayName>The Number of Beta Missile Tubes</displayName>
+        <description>The number of beta missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-GammaMissileTube</name>
+        <displayName>The Number of Gamma Missile Tubes</displayName>
+        <description>The number of gamma missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-DeltaMissileTube</name>
+        <displayName>The Number of Delta Missile Tubes</displayName>
+        <description>The number of delta missiles we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-EpsilonMissileTube</name>
+        <displayName>The Number of Epsilon Missile Tube</displayName>
+        <description>The number of epsilon missiles we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-OmegaTorpedoeTube</name>
+        <displayName>The Number of Omega Torpedoe Tube</displayName>
+        <description>The number of omega torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-UpsilonTorpedoeTube</name>
+        <displayName>The Number of Upsilon Torpedoe Tube</displayName>
+        <description>The number of upsilon torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-TauTorpedoeTube</name>
+        <displayName>The Number of Tau Torpedoe Tube</displayName>
+        <description>The number of tau torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-SigmaTorpedoeTube</name>
+        <displayName>The Number of Sigma Torpedoe Tube</displayName>
+        <description>The number of sigma torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-RhoTorpedoeTube</name>
+        <displayName>The Number of Rho Torpedoe Tube</displayName>
+        <description>The number of rho torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-XiTorpedoeTube</name>
+        <displayName>The Number of Xi Torpedoe Tube</displayName>
+        <description>The number of xi torpedoes we can fire</description>
         <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
         <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
     </prop>

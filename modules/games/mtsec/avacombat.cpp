@@ -112,25 +112,26 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 //                   ID/TYPE             AMOUNT
     typedef std::map<uint32_t, uint32_t> shipList;
 
-    std::set<uint32_t> tubes;
-    tubes.insert(ds->getPropertyByName("AlphaMissileTube"));
-    tubes.insert(ds->getPropertyByName("BetaMissileTube"));
-    tubes.insert(ds->getPropertyByName("GammaMissileTube"));
-    tubes.insert(ds->getPropertyByName("DeltaMissileTube"));
-    tubes.insert(ds->getPropertyByName("EpsilonMissileTube"));
-    tubes.insert(ds->getPropertyByName("OmegaTorpedoeTube"));
-    tubes.insert(ds->getPropertyByName("UpsilonTorpedoeTube"));
-    tubes.insert(ds->getPropertyByName("TauTorpedoeTube"));
-    tubes.insert(ds->getPropertyByName("SigmaTorpedoeTube"));
-    tubes.insert(ds->getPropertyByName("RhoTorpedoeTube"));
-    tubes.insert(ds->getPropertyByName("XiTorpedoeTube"));
+    std::map<uint32_t, std::string> tubes;
+    tubes[ds->getPropertyByName("AlphaMissileTube")] = "AlphaMissileTube";
+    tubes[ds->getPropertyByName("BetaMissileTube")] = "BetaMissileTube";
+    tubes[ds->getPropertyByName("GammaMissileTube")] = "GammaMissileTube";
+    tubes[ds->getPropertyByName("DeltaMissileTube")] = "DeltaMissileTube";
+    tubes[ds->getPropertyByName("EpsilonMissileTube")] = "EpsilonMissileTube";
+    tubes[ds->getPropertyByName("OmegaTorpedoeTube")] = "OmegaTorpedoeTube";
+    tubes[ds->getPropertyByName("UpsilonTorpedoeTube")] = "UpsilonTorpedoeTube";
+    tubes[ds->getPropertyByName("TauTorpedoeTube")] = "TauTorpedoeTube";
+    tubes[ds->getPropertyByName("SigmaTorpedoeTube")] = "SigmaTorpedoeTube";
+    tubes[ds->getPropertyByName("RhoTorpedoeTube")] = "RhoTorpedoeTube";
+    tubes[ds->getPropertyByName("XiTorpedoeTube")] = "XiTorpedoeTube";
 
 
     std::map<uint32_t, uint32_t> tubeList;
+    std::set<Design*> designList;
 
     weaponList fleet1weaponry, fleet2weaponry;
     shipList fleet1ships, fleet2ships;
-    std::map<double, uint32_t> fleet1tubes, fleet2tubes;
+    std::map<double, std::pair<std::string, uint32_t> > fleet1tubes, fleet2tubes;
     std::map<uint32_t, uint32_t>fleet1usable;
     std::map<uint32_t, uint32_t>fleet2usable;
 
@@ -142,10 +143,23 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     //get usable weapons fleet 1
     for (shipList::iterator itcurr = fleet1ships.begin(); itcurr != fleet1ships.end(); ++itcurr) {
-        for (std::set<uint32_t>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
-            if (ds->getDesign(itcurr->first)->getPropertyValue(*tubeit) > 0.0) {
-                Logger::getLogger()->debug("Found usable Tube, inserting into Fleet 1");
-                fleet1tubes[ds->getDesign(itcurr->first)->getPropertyValue(*tubeit)] += 1;
+        for (std::map<uint32_t, std::string>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
+            if (ds->getDesign(itcurr->first)->getPropertyValue(tubeit->first) > 0.0) {
+                Logger::getLogger()->debug("Found usable Tube %s, inserting into Fleet 1", tubeit->second.c_str());
+                //size of weapon
+                uint32_t weapSizePropID = ds->getPropertyByName(tubeit->second);
+                uint32_t weapNumPropID = ds->getPropertyByName("num-" + tubeit->second);
+                double weapSizePropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID);
+                uint32_t weapNumPropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapNumPropID);
+                if (fleet1tubes.find(weapSizePropValue) != fleet1tubes.end()) {
+                    std::pair<std::string, uint32_t>fleetpair = fleet1tubes[weapSizePropValue];
+                    fleetpair.second += weapNumPropValue;
+                    fleet1tubes[weapSizePropValue] = fleetpair;
+                    Logger::getLogger()->debug("Adding %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
+                } else {
+                    fleet1tubes[weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
+                    Logger::getLogger()->debug("Inserting %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
+                }
             }
         }
 
@@ -161,11 +175,13 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
             }
 
 
-            for (std::map<double, uint32_t>::iterator tubeit = fleet1tubes.begin(); tubeit != fleet1tubes.end(); ++tubeit) {
-                uint32_t propID = ds->getPropertyByName("MissileSize");
-                //reading the property value is causing a crash.  propID is set to the correct value
+            for (std::map<double, std::pair<std::string, uint32_t> >::iterator tubeit = fleet1tubes.begin(); tubeit != fleet1tubes.end(); ++tubeit) {
+                uint32_t propID = ds->getPropertyByName(tubeit->second.first);
+                Logger::getLogger()->debug("Checking fleet1tubes list for propID %d", ds->getProperty(propID));
                 if (fleet1tubes.find(weapDesign->getPropertyValue(propID)) != fleet1tubes.end()) {
+                    Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
                     if (fleet1->removeResource(weapit->first, 1)) {
+                        Logger::getLogger()->debug("Success");
                         fleet1usable[weapit->first] += 1;
                     }
                 }
@@ -175,10 +191,23 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     //get usable weapons fleet 2
     for (shipList::iterator itcurr = fleet2ships.begin(); itcurr != fleet2ships.end(); ++itcurr) {
-        for (std::set<uint32_t>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
-            if (ds->getDesign(itcurr->first)->getPropertyValue(*tubeit) > 0.0) {
-                Logger::getLogger()->debug("Found usable Tube, inserting into Fleet 2");
-                fleet2tubes[ds->getDesign(itcurr->first)->getPropertyValue(*tubeit)] += 1;
+        for (std::map<uint32_t, std::string>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
+            if (ds->getDesign(itcurr->first)->getPropertyValue(tubeit->first) > 0.0) {
+                Logger::getLogger()->debug("Found usable Tube %s, inserting into Fleet 2", tubeit->second.c_str());
+                //size of weapon
+                uint32_t weapSizePropID = ds->getPropertyByName(tubeit->second);
+                uint32_t weapNumPropID = ds->getPropertyByName("num-" + tubeit->second);
+                double weapSizePropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID);
+                uint32_t weapNumPropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapNumPropID);
+                if (fleet2tubes.find(weapSizePropValue) != fleet2tubes.end()) {
+                    std::pair<std::string, uint32_t>fleetpair = fleet2tubes[weapSizePropValue];
+                    fleetpair.second += weapNumPropValue;
+                    fleet2tubes[weapSizePropValue] = fleetpair;
+                    Logger::getLogger()->debug("Adding %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
+                } else {
+                    fleet2tubes[weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
+                    Logger::getLogger()->debug("Inserting %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
+                }
             }
         }
 
@@ -192,9 +221,15 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                     Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
                 }
             }
-            for (std::map<double, uint32_t>::iterator tubeit = fleet2tubes.begin(); tubeit != fleet2tubes.end(); ++tubeit) {
-                if (fleet2tubes.find(weapDesign->getPropertyValue(ds->getPropertyByName("MissileSize"))) != fleet2tubes.end()) {
+
+
+            for (std::map<double, std::pair<std::string, uint32_t> >::iterator tubeit = fleet2tubes.begin(); tubeit != fleet2tubes.end(); ++tubeit) {
+                uint32_t propID = ds->getPropertyByName(tubeit->second.first);
+                Logger::getLogger()->debug("Checking fleet2tubes list for propID %d", ds->getProperty(propID));
+                if (fleet2tubes.find(weapDesign->getPropertyValue(propID)) != fleet2tubes.end()) {
+                    Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
                     if (fleet2->removeResource(weapit->first, 1)) {
+                        Logger::getLogger()->debug("Success");
                         fleet2usable[weapit->first] += 1;
                     }
                 }
@@ -202,10 +237,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
         }
     }
 
-for (std::map<uint32_t, uint32_t>::iterator it = fleet1usable.begin(); it != fleet1usable.end(); ++it){
-std::cout << "USABLE MISSILE NUMBER: " <<it->first << "\n\n\n";
-}
-
+    //Tube format: std::map<double, std::pair<std::string, uint32_t> >
+    //                      size              name         number
 
 
     bool tte = false;
