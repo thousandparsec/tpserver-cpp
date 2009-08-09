@@ -39,6 +39,7 @@
 
 #include "systemexception.h"
 #include "tcpconnection.h"
+#include "frameexception.h"
 
 TcpConnection::TcpConnection(int fd, Type aType) 
   : Connection(fd,aType), 
@@ -75,26 +76,31 @@ void TcpConnection::close()
 
 void TcpConnection::process(){
   DEBUG("TcpConnection : About to Process");
-  switch (status) {
-    case PRECONNECTED:
-      //check if user is really a TP protocol verNN client
-      DEBUG("TcpConnection : Stage 1 - pre-connect");
-      processVersionCheck();
-      break;
-    case CONNECTED:
-      //authorise the user
-      DEBUG("TcpConnection : Stage 2 - connected");
-      processLogin();
-      break;
-    case READY:
-      //process as normal
-      DEBUG("TcpConnection : Stage 3 - logged in");
-      processNormalFrame();
-      break;
-    case DISCONNECTED:
-      //do nothing
-      WARNING("TcpConnection : Tried to process connections that is closed or invalid");
-      break;
+  try {
+    switch (status) {
+      case PRECONNECTED:
+        //check if user is really a TP protocol verNN client
+        DEBUG("TcpConnection : Stage 1 - pre-connect");
+        processVersionCheck();
+        break;
+      case CONNECTED:
+        //authorise the user
+        DEBUG("TcpConnection : Stage 2 - connected");
+        processLogin();
+        break;
+      case READY:
+        //process as normal
+        DEBUG("TcpConnection : Stage 3 - logged in");
+        processNormalFrame();
+        break;
+      case DISCONNECTED:
+        //do nothing
+        WARNING("TcpConnection : Tried to process connections that is closed or invalid");
+        break;
+    }
+  } catch ( FrameException& exception ) {
+    // Control should never get here -- this is just so FrameExceptions don't blow up the server
+    ERROR("TcpConnection : unhandled frame exception caught : %s", exception.what() );
   }
   DEBUG("TcpConnection : Finished Processing");
 }
