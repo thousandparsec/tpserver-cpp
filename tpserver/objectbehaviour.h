@@ -25,6 +25,7 @@ class IGObject;
 
 class ObjectBehaviour{
   public:
+    typedef boost::shared_ptr<ObjectBehaviour> Ptr;
     ObjectBehaviour();
     virtual ~ObjectBehaviour();
     
