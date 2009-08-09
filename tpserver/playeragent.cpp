@@ -190,8 +190,7 @@ void PlayerAgent::processIGFrame(Frame * frame){
       break;
     default:
       WARNING("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
-      // Send a failed frame
-      curConnection->sendFail(frame,fec_ProtocolError, "Did not understand that frame type.");
+      throw FrameException( fec_ProtocolError, "Did not understand that frame type.");
       break;
   }
 }
@@ -200,7 +199,7 @@ void PlayerAgent::processIGFrame(Frame * frame){
 
 void PlayerAgent::processPermDisabled(Frame * frame){
   DEBUG("doing a frame that is disabled");
-  curConnection->sendFail(frame,fec_PermUnavailable, "Server does not support this frame type");
+  throw FrameException( fec_PermUnavailable, "Server does not support this frame type");
 }
 
 void PlayerAgent::processGetObjectById (Frame * frame){
@@ -288,30 +287,27 @@ void PlayerAgent::processGetObjectIdsByContainer(Frame * frame){
   lengthCheck( frame, 4 );
   uint32_t objectID = frame->unpackInt();
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
-  if(visibleObjects.find(objectID) != visibleObjects.end()){
-
-    IGObject::Ptr o = Game::getGame()->getObjectManager()->getObject(objectID);
-
-    if(o){
-      IdSet contain = o->getContainedObjects();
-      IdSet intersection;
-      std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
-        std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
-
-      IdModList modlist;
-      for(IdSet::iterator itcurr = intersection.begin(); itcurr != intersection.end(); ++itcurr){
-        modlist[*itcurr] = Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime();
-        Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
-      }
-
-      curConnection->sendModList( frame, ft03_ObjectIds_List, 0, modlist, 0, 0, 0);
-      Game::getGame()->getObjectManager()->doneWithObject(objectID);
-    }else{
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object");
-    }
-  }else{
-    curConnection->sendFail(frame,fec_NonExistant, "No such Object");
+  if (visibleObjects.find(objectID) == visibleObjects.end()) {
+    throw FrameException( fec_NonExistant, "No such Object" );
   }
+  IGObject::Ptr o = Game::getGame()->getObjectManager()->getObject(objectID);
+
+  if (!o) {
+    throw FrameException( fec_NonExistant, "No such Object" );
+  }
+  IdSet contain = o->getContainedObjects();
+  IdSet intersection;
+  std::set_intersection( contain.begin(), contain.end(), visibleObjects.begin(), visibleObjects.end(),
+      std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
+
+  IdModList modlist;
+  for(IdSet::iterator itcurr = intersection.begin(); itcurr != intersection.end(); ++itcurr){
+    modlist[*itcurr] = Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime();
+    Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
+  }
+
+  curConnection->sendModList( frame, ft03_ObjectIds_List, 0, modlist, 0, 0, 0);
+  Game::getGame()->getObjectManager()->doneWithObject(objectID);
 }
 
 void PlayerAgent::processGetObjectDesc(Frame * frame){
@@ -345,8 +341,7 @@ void PlayerAgent::processGetObjectTypes(Frame * frame){
   uint64_t fromtime = frame->unpackInt64();
 
   if(lseqkey != seqkey){
-    curConnection->sendFail(frame,fec_TempUnavailable, "Invalid Sequence Key");
-    return;
+    throw FrameException( fec_TempUnavailable, "Invalid Sequence Key");
   }
 
   IdModList modlist = Game::getGame()->getObjectTypeManager()->getTypeModList(fromtime);
@@ -362,21 +357,18 @@ void PlayerAgent::processGetOrder(Frame * frame){
   if(frame->getVersion() <= fv0_3){
     IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object");
     }
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object OrderQueue");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object OrderQueue");
     }
     orderqueueid = oqop->getQueueId();
   }
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
-    return;
+    throw FrameException( fec_NonExistant, "No such OrderQueue");
   }
 
   int num_orders = frame->unpackInt();
@@ -391,21 +383,20 @@ void PlayerAgent::processGetOrder(Frame * frame){
   }
 
   if(num_orders == 0){
-    curConnection->sendFail(frame,fec_FrameError,"No orders to get");
-    return;
+    throw FrameException( fec_FrameError,"No orders to get");
   }
 
   for(int i = 0; i < num_orders; i++){
 
     int ordpos = frame->unpackInt();
     Order *ord = orderqueue->getOrder(ordpos, player->getID());
-    if (ord != NULL) {
-      Frame *of = curConnection->createFrame(frame);
-      ord->createFrame(of, ordpos);
-      curConnection->sendFrame(of);
-    } else {
-      curConnection->sendFail(frame,fec_TempUnavailable, "Could not get Order");
+    if (ord == NULL) {
+      throw FrameException( fec_TempUnavailable, "Could not get Order");
     }
+
+    Frame *of = curConnection->createFrame(frame);
+    ord->createFrame(of, ordpos);
+    curConnection->sendFrame(of);
   }
 
 }
@@ -422,21 +413,18 @@ void PlayerAgent::processAddOrder(Frame * frame){
     if(frame->getVersion() <= fv0_3){
       IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
       if(ob == NULL){
-        curConnection->sendFail(frame,fec_NonExistant, "No such Object");
-        return;
+        throw FrameException( fec_NonExistant, "No such Object" );
       }
       OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
       if(oqop == NULL){
-        curConnection->sendFail(frame,fec_NonExistant, "No such Object OrderQueue");
-        return;
+        throw FrameException( fec_NonExistant, "No such Object OrderQueue" );
       }
       orderqueueid = oqop->getQueueId();
     }
 
     OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
     if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object Order Queue" );
     }
 
     // Order Slot
@@ -445,15 +433,11 @@ void PlayerAgent::processAddOrder(Frame * frame){
     // See if we have a valid order
     Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
     if (ord == NULL) {
-      curConnection->sendFail(frame,fec_NonExistant, "No such order type");
-    } else {
+      throw FrameException( fec_NonExistant, "No such Object Order Queue" );
+    }
+    
       ord->setOrderQueueId(orderqueueid);
-      try {
-        ord->inputFrame(frame, player->getID());
-      } catch ( FrameException& fe ) {
-        curConnection->sendFail(frame, fec_FrameError, "Could not add order : " + fe.getErrorMessage());
-        return;
-      }
+      ord->inputFrame(frame, player->getID());
 
       if(orderqueue->addOrder(ord, pos, player->getID())) {
         Frame *of = curConnection->createFrame(frame);
@@ -471,11 +455,11 @@ void PlayerAgent::processAddOrder(Frame * frame){
         }
         curConnection->sendFrame(of);
       } else {
-        curConnection->sendFail(frame,fec_TempUnavailable, "Not allowed to add that order type.");
+        throw FrameException( fec_TempUnavailable, "Not allowed to add that order type." );
       }
-    }
+    
   } else {
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Add Order, too short");
+    throw FrameException( fec_FrameError, "Invalid frame, Add Order, too short");
   }
 }
 
@@ -489,21 +473,18 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
   if(frame->getVersion() <= fv0_3){
     IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object" );
     }
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object OrderQueue");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object OrderQueue" );
     }
     orderqueueid = oqop->getQueueId();
   }
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    curConnection->sendFail(frame,fec_NonExistant, "No such OrderQueue");
-    return;
+    throw FrameException( fec_NonExistant, "No such OrderQueue" );
   }
 
   int num_orders = frame->unpackInt();
@@ -525,7 +506,7 @@ void PlayerAgent::processRemoveOrder(Frame * frame){
       }
       curConnection->sendOK(frame, "Order removed");
     } else {
-      curConnection->sendFail(frame,fec_TempUnavailable, "Could not remove Order");
+      throw FrameException( fec_TempUnavailable, "Could not remove Order");
     }
   }
 }
@@ -549,16 +530,11 @@ void PlayerAgent::processGetOrderTypes(Frame * frame){
   DEBUG("doing get order types frame");
 
   versionCheck(frame,fv0_3);
+  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
-  if(frame->getDataLength() != 12 && frame->getVersion() == fv0_3) {
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Order Types (TP03), Frame too short (<12 bytes)");
-  } else if (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4) {
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Order Types (TP04), Frame too short (<20 bytes)");
-  } else {
-    Frame *of = curConnection->createFrame(frame);
-    Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
-    curConnection->sendFrame(of);
-  }
+  Frame *of = curConnection->createFrame(frame);
+  Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
+  curConnection->sendFrame(of);
 }
 
 void PlayerAgent::processProbeOrder(Frame * frame){
@@ -572,21 +548,18 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   if(frame->getVersion() <= fv0_3){
     IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object" );
     }
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No such Object OrderQueue");
-      return;
+      throw FrameException( fec_NonExistant, "No such Object OrderQueue" );
     }
     orderqueueid = oqop->getQueueId();
   }
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    curConnection->sendFail(frame,fec_NonExistant, "No such Order Queue");
-    return;
+    throw FrameException( fec_NonExistant, "No such OrderQueue" );
   }
 
   int pos = frame->unpackInt();
@@ -594,8 +567,10 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   // See if we have a valid order
   Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
   if (ord == NULL) {
-    curConnection->sendFail(frame,fec_NonExistant, "No such order type");
-  }else if(orderqueue->checkOrderType(ord->getType(), player->getID())){
+    throw FrameException( fec_NonExistant, "No such Order type" );
+  }
+  
+  if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     ord->setOrderQueueId(orderqueueid);
     Frame *of = curConnection->createFrame(frame);
     try {
@@ -603,15 +578,16 @@ void PlayerAgent::processProbeOrder(Frame * frame){
       ord->createFrame(of, pos);
       curConnection->sendFrame(of);
     } catch ( FrameException& fe ) {
-      delete of;
-      curConnection->sendFail(frame,fec_FrameError, "Order could not be unpacked correctly : " + fe.getErrorMessage() );
       DEBUG("Probe Order, could not unpack order");
+      delete of;
+      delete ord;
+      throw;
     }
   }else{
+    delete ord;
     DEBUG("The order to be probed is not allowed on this object");
-    curConnection->sendFail(frame,fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
+    throw FrameException( fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
   }
-  delete ord;
 }
 
 void PlayerAgent::processGetBoards(Frame * frame){
@@ -625,7 +601,7 @@ void PlayerAgent::processGetBoards(Frame * frame){
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
       curConnection->send( frame, board.get() );
     }else{
-      curConnection->sendFail(frame,fec_PermUnavailable, "No non-player boards yet");
+      throw FrameException( fec_PermUnavailable, "No non-player boards yet");
     }
   }
 }
@@ -634,11 +610,7 @@ void PlayerAgent::processGetBoardIds(Frame* frame){
   DEBUG("Doing get board ids frame");
 
   versionCheck(frame,fv0_3);
-
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Board Ids, Frame too short");
-    return;
-  }
+  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
   uint32_t seqkey = frame->unpackInt();
   if(seqkey == UINT32_NEG_ONE){
@@ -687,8 +659,7 @@ void PlayerAgent::processGetMessages(Frame * frame){
   }
 
   if(nummsg == 0){
-    curConnection->sendFail(frame, fec_FrameError, "No messages to get");
-    return;
+    throw FrameException( fec_FrameError, "No messages to get");
   }
 
   Board::Ptr currboard;
@@ -710,7 +681,7 @@ void PlayerAgent::processGetMessages(Frame * frame){
     }
 
   }else{
-    curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
+    throw FrameException( fec_NonExistant, "Board does not exist");
   }
 
 }
@@ -753,7 +724,7 @@ void PlayerAgent::processPostMessage(Frame * frame){
     currboard->addMessage(msg, pos);
     curConnection->sendOK( frame, "Message posted" );
   }else{
-    curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
+    throw FrameException( fec_NonExistant, "Board does not exist");
   }
 }
 
@@ -785,11 +756,11 @@ void PlayerAgent::processRemoveMessages(Frame * frame){
       if(currboard->removeMessage(msgnum)){
         curConnection->sendOK(frame, "Message removed");
       }else{
-        curConnection->sendFail(frame,fec_NonExistant, "Message not removed, does exist");
+        throw FrameException( fec_NonExistant, "Message not removed, does exist");
       }
     }
   }else{
-    curConnection->sendFail(frame,fec_NonExistant, "Board does not exist");
+    throw FrameException( fec_NonExistant, "Board does not exist");
   }
 
 }
@@ -806,7 +777,7 @@ void PlayerAgent::processGetResourceDescription(Frame * frame){
     if(res != NULL){
       curConnection->send(frame, res);
     }else{
-      curConnection->sendFail(frame,fec_NonExistant, "No Resource Descriptions available");
+      throw FrameException( fec_NonExistant, "No Resource Descriptions available");
     }
   }
 }
@@ -815,11 +786,7 @@ void PlayerAgent::processGetResourceTypes(Frame* frame){
   DEBUG("doing Get Resource Types frame");
 
   versionCheck(frame,fv0_3);
-
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Resource Types, Frame too short");
-    return;
-  }
+  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
   uint32_t seqkey = frame->unpackInt();
   if(seqkey == UINT32_NEG_ONE){
@@ -864,10 +831,10 @@ void PlayerAgent::processGetPlayer(Frame* frame){
         if(p != NULL){
           curConnection->send(frame,p);
         }else{
-          curConnection->sendFail(frame,fec_NonExistant, "Player doesn't exist");
+          throw FrameException( fec_NonExistant, "Player doesn't exist");
         }
       }else{
-        curConnection->sendFail(frame,fec_NonExistant, "Player -1 doesn't exist, invalid player id");
+        throw FrameException( fec_NonExistant, "Player -1 doesn't exist, invalid player id");
       }
     }
   }
@@ -915,10 +882,9 @@ void PlayerAgent::processGetCategory(Frame* frame){
     int catnum = frame->unpackInt();
     Category::Ptr cat = Game::getGame()->getDesignStore()->getCategory(catnum);
     if(cat == NULL){
-      curConnection->sendFail(frame,fec_NonExistant, "No Such Category");
-    }else{
-      curConnection->send(frame,cat);
+      throw FrameException( fec_NonExistant, "No Such Category");
     }
+    curConnection->send(frame,cat);
   }
 
 }
@@ -927,11 +893,7 @@ void PlayerAgent::processGetCategoryIds(Frame* frame){
   DEBUG("doing Get Category Ids frame");
 
   versionCheck(frame,fv0_3);
-
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Categories Ids, Frame too short");
-    return;
-  }
+  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
   frame->unpackInt(); //seqnum
   uint32_t snum = frame->unpackInt();
@@ -1004,7 +966,7 @@ void PlayerAgent::processAddDesign(Frame* frame){
   if(ds->addDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
-    curConnection->sendFail(frame,fec_FrameError, "Could not add design");
+    throw FrameException( fec_FrameError, "Could not add design");
   }
 }
 
@@ -1042,7 +1004,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
   if(ds->modifyDesign(design)){
         player->getPlayerView()->processGetDesign(design->getDesignId(), of);
   }else{
-    curConnection->sendFail(frame,fec_FrameError, "Could not modify design");
+    throw FrameException( fec_FrameError, "Could not modify design");
   }
 }
 
@@ -1083,7 +1045,7 @@ void PlayerAgent::processGetProperty(Frame* frame){
     int propnum = frame->unpackInt();
     Property::Ptr property = ds->getProperty(propnum);
     if(!property){
-      curConnection->sendFail(frame,fec_NonExistant, "No Such Property");
+      throw FrameException( fec_NonExistant, "No Such Property");
     }else{
       curConnection->send(frame,property);
     }
@@ -1093,16 +1055,8 @@ void PlayerAgent::processGetProperty(Frame* frame){
 void PlayerAgent::processGetPropertyIds(Frame* frame){
   DEBUG("doing Get Property Ids frame");
 
-  if(frame->getVersion() < fv0_3){
-    DEBUG("protocol version not high enough");
-    curConnection->sendFail(frame,fec_FrameError, "Get Design ids isn't supported in this protocol");
-    return;
-  }
-
-  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) || (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
-    curConnection->sendFail(frame,fec_FrameError, "Invalid frame, Get Property Ids, Frame too short");
-    return;
-  }
+  versionCheck( frame, fv0_3 );
+  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
   IdSet propids = Game::getGame()->getDesignStore()->getPropertyIds();
   frame->unpackInt(); //seqnum
