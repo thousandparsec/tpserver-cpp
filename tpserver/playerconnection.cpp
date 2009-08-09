@@ -70,7 +70,7 @@ void PlayerConnection::processLogin(){
         processSetFilters(recvframe);
       }else{
         WARNING("PlayerConnection : In connected state but did not receive login, get features or get get time remaining, received frame type %d", recvframe->getType());
-        sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
+        throw FrameException( fec_FrameError, "Wrong type of frame in this state, wanted login, account or get features");
       }
     } catch ( FrameException& exception ) {
       // This might be overkill later, but now let's log it
@@ -100,7 +100,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
         playeragent = new PlayerAgent(this,player);
       }else{
         INFO("PlayerConnection : Bad username or password in account creation");
-        sendFail(frame,fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
+        throw FrameException( fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
       }
     }else{
       DEBUG("PlayerConnection : username or password == NULL in account frame");
@@ -109,7 +109,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
     }
   }else{
     INFO("PlayerConnection : Account creation disabled, not creating account");
-    sendFail(frame,fec_PermissionDenied, "Account creation Disabled, talk to game admin");
+    throw FrameException( fec_PermissionDenied, "Account creation Disabled, talk to game admin");
   }
 }
 
@@ -134,8 +134,7 @@ void PlayerConnection::processLoginFrame(Frame* frame)
         INFO("PlayerConnection : Creating new player automatically");
         player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
         if( !player ) {
-          sendFail(frame, fec_PermissionDenied, "Cannot create new player");
-          return;
+          throw FrameException( fec_PermissionDenied, "Cannot create new player");
         }
       }
     }
@@ -146,7 +145,7 @@ void PlayerConnection::processLoginFrame(Frame* frame)
       status = READY;
     } else {
       INFO("PlayerConnection : Bad username or password");
-      sendFail(frame,fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
+      throw FrameException( fec_FrameError, "Login Error - bad username or password");	// TODO - should be a const or enum, Login error
     }
   }
 }
@@ -236,7 +235,7 @@ void PlayerConnection::processSetFilters(Frame* frame){
   }
 
   if(filters_wanted.size() != filters_setup.size()){
-    sendFail(frame,fec_PermUnavailable, "Not all filters specified are available");
+    throw FrameException( fec_PermUnavailable, "Not all filters specified are available");
   }else{
     sendOK(frame, "Filters ready, setting filters now");
     if(filters_setup.count(fid_filter_stringpad) != 0){
