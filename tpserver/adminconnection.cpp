@@ -101,7 +101,7 @@ void AdminConnection::processNormalFrame()
           break;
         default:
           WARNING("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
-          sendFail(frame,fec_ProtocolError, "Did not understand that frame type.");
+          throw FrameException( fec_ProtocolError, "Did not understand that frame type.");
           break;
       }
     } catch ( FrameException& exception ) {
@@ -121,14 +121,13 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   Logger::getLogger()->debug("doing describe command frame");
 
   if(frame->getDataLength() < 4){
-    sendFail(frame,fec_FrameError, "Invalid frame");
-    return;
+    throw FrameException(fec_FrameError);
   }
 
   int numdesc = frame->unpackInt();
 
   if(frame->getDataLength() < 4 + 4 * numdesc){
-    sendFail(frame, fec_FrameError, "Invalid frame");
+    throw FrameException(fec_FrameError);
   }
 
   if(numdesc > 1){
@@ -137,7 +136,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
 
   if(numdesc == 0){
     DEBUG("asked for no commands to describe");
-    sendFail(frame,fec_NonExistant, "You didn't ask for any command descriptions, try again");
+    throw FrameException( fec_NonExistant, "You didn't ask for any command descriptions, try again");
   }
 
   for(int i = 0; i < numdesc; i++){
