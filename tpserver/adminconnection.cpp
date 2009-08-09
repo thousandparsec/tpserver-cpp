@@ -67,14 +67,12 @@ void AdminConnection::processLogin(){
             logextid = Logger::getLogger()->addLog(logsink);
             status = READY;
           } else {
-            INFO("Bad username or password");
-            sendFail(recvframe,fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
+            throw FrameException( fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
           }
         }
 
       }else{
-        WARNING("In connected state but did not receive login");
-        sendFail(recvframe,fec_FrameError, "Wrong type of frame in this state, wanted login");
+        throw FrameException( fec_FrameError, "Wrong type of frame in this state, wanted login");
       }
     } catch ( FrameException& exception ) {
       // This might be overkill later, but now let's log it
@@ -90,20 +88,26 @@ void AdminConnection::processNormalFrame()
 {
   Frame *frame = createFrame();
   if (readFrame(frame)) {
-    switch (frame->getType()) {
-      case ftad_CommandDesc_Get:
-        processDescribeCommand(frame);
-        break;
-      case ftad_CommandTypes_Get:
-        processGetCommandTypes(frame);
-        break;
-      case ftad_Command:
-        processCommand(frame);
-        break;
-      default:
-        WARNING("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
-        sendFail(frame,fec_ProtocolError, "Did not understand that frame type.");
-        break;
+    try {
+      switch (frame->getType()) {
+        case ftad_CommandDesc_Get:
+          processDescribeCommand(frame);
+          break;
+        case ftad_CommandTypes_Get:
+          processGetCommandTypes(frame);
+          break;
+        case ftad_Command:
+          processCommand(frame);
+          break;
+        default:
+          WARNING("AdminConnection: Discarded frame, not processed, was type %d", frame->getType());
+          sendFail(frame,fec_ProtocolError, "Did not understand that frame type.");
+          break;
+      }
+    } catch ( FrameException& exception ) {
+      // This might be overkill later, but now let's log it
+      DEBUG( "AdminConnection caught FrameException : %s", exception.what() );
+      sendFail( frame, exception.getErrorCode(), exception.getErrorMessage() );
     }
   } else {
     DEBUG("noFrame :(");
