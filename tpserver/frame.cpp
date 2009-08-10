@@ -216,9 +216,7 @@ void Frame::enablePaddingStrings(bool on){
 
 
 bool Frame::packString(const std::string &str){
-  if(!packInt(str.length())){
-    throw new std::exception();
-  }
+  packInt(str.length());
   data.append( str );
     
   if ( padstrings ) {

@@ -103,8 +103,7 @@ ObjectParameterGroup::Ptr ObjectParameterGroupDesc::createObjectParameterGroup()
         
       default:
         Logger::getLogger()->warning("Unknown ObjectParameter type %d in creating ParameterGroup", itcurr->get<0>());
-        throw new std::exception();
-        break;
+        return ObjectParameterGroup::Ptr();
     }
     pg->addParameter(param);
   }
