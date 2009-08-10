@@ -19,6 +19,7 @@
  */
 
 #include "frame.h"
+#include "frameexception.h"
 #include "message.h"
 #include "game.h"
 #include "boardmanager.h"
@@ -97,12 +98,12 @@ void Board::packMessage(Frame * frame, uint32_t msgnum) {
       frame->packInt(msgnum);
       message->pack(frame);
     } else {
-      frame->createFailFrame(fec_TempUnavailable, "Could not get Message at this time");
       WARNING("Board has messages but persistence didn't get it");
       WARNING("POSSIBLE DATABASE INCONSISTANCE");
+      throw FrameException(fec_TempUnavailable, "Could not get Message at this time");
     }
   } else {
-    frame->createFailFrame(fec_NonExistant, "No such Message on board");
+    throw FrameException(fec_NonExistant, "No such Message on board");
   }
 }
 

@@ -25,9 +25,8 @@
 #include "frame.h"
 #include "game.h"
 #include "designstore.h"
-#include "design.h"
-#include "component.h"
 #include "persistence.h"
+#include "frameexception.h"
 
 #include "playerview.h"
 
@@ -113,7 +112,7 @@ IdSet PlayerView::getOwnedObjects() const{
 
 void PlayerView::processGetObject(uint32_t objid, Frame* frame){
   if(!objects.isVisible(objid)){
-    frame->createFailFrame(fec_NonExistant, "No Such Object");
+    throw FrameException(fec_NonExistant, "No Such Object");
   }else{
     getObjectView(objid)->packFrame(frame, pid);
   }
@@ -157,7 +156,7 @@ IdSet PlayerView::getVisibleDesigns() const{
 
 void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
   if(!designs.isVisible(designid)){
-    frame->createFailFrame(fec_NonExistant, "No Such Design");
+    throw FrameException(fec_NonExistant, "No Such Design");
   }else{
     designs.retrieve(designid)->pack(frame);
   }
@@ -197,7 +196,7 @@ IdSet PlayerView::getUsableComponents() const{
 
 void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
   if(components.visible.find(compid) == components.visible.end()){
-    frame->createFailFrame(fec_NonExistant, "No Such Component");
+    throw FrameException(fec_NonExistant, "No Such Component");
   }else{
     components.retrieve(compid)->pack(frame);
   }
@@ -238,13 +237,11 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
   
   if(in->getVersion() < fv0_3){
     DEBUG("protocol version not high enough");
-    out->createFailFrame(fec_FrameError, "Get ids isn't supported in this protocol");
-    return;
+    throw FrameException(fec_FrameError, "Get ids isn't supported in this protocol");
   }
   
   if((in->getDataLength() != 12 && in->getVersion() <= fv0_3) || (in->getDataLength() != 20 && in->getVersion() >= fv0_4)){
-    out->createFailFrame(fec_FrameError, "Invalid frame");
-    return;
+    throw FrameException(fec_FrameError, "Invalid frame");
   }
   
   uint32_t seqnum = in->unpackInt();
@@ -256,9 +253,8 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
   }
   
   if(seqnum != sequence && seqnum != UINT32_NEG_ONE){
-    out->createFailFrame(fec_FrameError, "Invalid Sequence number");
     modified.clear();
-    return;
+    throw FrameException(fec_FrameError, "Invalid Sequence number");
   }
   
   if(seqnum == UINT32_NEG_ONE){
@@ -267,8 +263,7 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
   
   if(snum > modified.size()){
     DEBUG("Starting number too high, snum = %d, size = %d", snum, visible.size());
-    out->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
+    throw FrameException(fec_NonExistant, "Starting number too high");
   }
   if(numtoget > modified.size() - snum){
     numtoget = modified.size() - snum;
@@ -276,7 +271,7 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( Frame* in, Frame* out,
     
   if(numtoget > MAX_ID_LIST_SIZE + ((out->getVersion() < fv0_4)? 1 : 0)){
     DEBUG("Number of items to get too high, numtoget = %d", numtoget);
-    out->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
+    throw FrameException(fec_FrameError, "Too many items to get, frame too big");
     return;
   }
     
