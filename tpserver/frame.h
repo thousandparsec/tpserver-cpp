@@ -54,8 +54,8 @@ class Frame {
     // TODO: This is something to be refactored!
     int setHeader(char *newhead);
 
-    // TODO: as above!
-    char *getPacket() const;
+    // TODO: once data is internall held as a string make it return a const std::string&
+    std::string getPacket() const;
 
     /**
      * Return the length of the header section

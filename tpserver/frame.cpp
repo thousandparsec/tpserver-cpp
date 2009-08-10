@@ -64,51 +64,32 @@ Frame::~Frame()
     free(data);
 }
 
-char *Frame::getPacket() const{
-  char *packet;
-  char *temp;
-
-  // Allocate the correct amount of memory
-  packet = new char[getLength()];
-  temp = packet;
-
-  if (packet != NULL) {
-    // Header
-    memcpy(temp, "TP", 2);
-    temp += 2;
-
-    if(version <= 3){
-      // Put in the version number
-      for (int i = 100; i > 1; i = i / 10) {
-        int digit = (version - (version / i * i)) / (i/10);
-        char v = '0' + digit;
-
-        memcpy(temp, &v, 1);
-        temp += 1;
-      }
-    }else{
-      //versions 4 and above
-      *temp = (char)(0xff & version);
-      temp++;
-      *temp = (char)(0xff & typeversion);
-      temp++;
+std::string Frame::getPacket() const {
+  std::string packet;
+  packet.reserve( getLength() );
+  packet += "TP";
+  if( version <= 3 ){
+    // Put in the version number
+    for (int i = 100; i > 1; i = i / 10) {
+      int digit = (version - (version / i * i)) / (i/10);
+      packet += char( '0' + digit );
     }
-
-    int nseq = htonl(sequence);
-    memcpy(temp, &nseq, 4);
-    temp += 4;
-
-    int ntype = htonl(type);
-    memcpy(temp, &ntype, 4);
-    temp += 4;
-
-    int nlen = htonl(length);
-    memcpy(temp, &nlen, 4);
-    temp += 4;
-
-    // Body
-    memcpy(temp, data, length);
+  }else{
+    //versions 4 and above
+    packet += (char)(0xff & version);
+    packet += (char)(0xff & typeversion);
   }
+  int nseq = htonl(sequence);
+  packet.append( (const char*)&nseq, 4 );
+
+  int ntype = htonl(type);
+  packet.append( (const char*)&ntype, 4 );
+
+  int nlen = htonl(length);
+  packet.append( (const char*)&nlen, 4 );
+
+  // Body
+  packet.append( data, length );
 
   return packet;
 }

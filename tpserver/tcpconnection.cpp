@@ -108,7 +108,7 @@ void TcpConnection::process(){
 void TcpConnection::processWrite() {
   while (!sendqueue.empty()) {
     if (send_buffer.empty()) {
-      send_buffer.assign( sendqueue.front()->getPacket(), sendqueue.front()->getLength() );
+      send_buffer = sendqueue.front()->getPacket();
       send_buffer_pos = 0;
     }
     if (!send_buffer.empty()) {
