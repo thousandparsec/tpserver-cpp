@@ -52,7 +52,7 @@ class Frame {
      * CREATE header??
      */
     // TODO: This is something to be refactored!
-    int setHeader(char *newhead);
+    int setHeader(const std::string& new_header);
 
     // TODO: once data is internall held as a string make it return a const std::string&
     std::string getPacket() const;

@@ -130,9 +130,9 @@ int Frame::getDataLength() const
   return length;
 }
 
-int Frame::setHeader(char *newhead)
+int Frame::setHeader(const std::string& new_header)
 {
-  char* temp = newhead;
+  const char* temp = new_header.data();
 
   unpackptr = 0;
   int len;

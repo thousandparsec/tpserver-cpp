@@ -241,7 +241,7 @@ bool TcpConnection::readFrame(Frame * recvframe)
   uint32_t datalen;
 
   if  ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL) {
-    int32_t signeddatalen = recvframe->setHeader(rheaderbuff);
+    int32_t signeddatalen = recvframe->setHeader(std::string(rheaderbuff,16));
     //check that the length field is probably valid
     // length could be negative from wire or from having no synchronisation symbol
     if (signeddatalen >= 0 && signeddatalen < 1048576) {
