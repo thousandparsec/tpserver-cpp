@@ -38,6 +38,7 @@
 #include "net.h"
 #include "pluginmanager.h"
 #include "frame.h"
+#include "frameexception.h"
 #include "algorithms.h"
 
 #include "commandmanager.h"
@@ -458,7 +459,7 @@ void CommandManager::describeCommand(uint32_t cmdtype, Frame * of)
         //call the command's describe function
         commandStore[cmdtype]->describeCommand(of);
     }else{
-        of->createFailFrame(fec_NonExistant, "Command type does not exist");
+        throw FrameException(fec_NonExistant, "Command type does not exist");
     }
 }
 
@@ -492,8 +493,7 @@ void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     }
   
     if(lseqkey != seqkey){
-        of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
-        return;
+        throw FrameException(fec_TempUnavailable, "Invalid Sequence Key");
     }
 
     IdModList modlist;
@@ -505,8 +505,7 @@ void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     }
 
     if(start > modlist.size()){
-        of->createFailFrame(fec_NonExistant, "Starting number too high");
-        return;
+        throw FrameException(fec_NonExistant, "Starting number too high");
     }
   
     if(num > modlist.size() - start){
@@ -514,8 +513,7 @@ void CommandManager::doGetCommandTypes(Frame* frame, Frame * of){
     }
   
     if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
-        of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-        return;
+        throw FrameException(fec_FrameError, "Too many items to get, frame too big");
     }
 
     of->setType(ftad_CommandTypes_List);
@@ -539,7 +537,7 @@ void CommandManager::executeCommand(Frame * frame, Frame * of)
         //call the command's action function
         commandStore[cmdtype]->action(frame, of);
     }else{
-        of->createFailFrame(fec_NonExistant, "Command type does not exist");
+        throw FrameException(fec_NonExistant, "Command type does not exist");
     }
 }
 
