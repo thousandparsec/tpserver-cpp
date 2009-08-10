@@ -53,15 +53,13 @@ Frame::Frame()
 
 Frame::Frame(ProtocolVersion v)
   : version(v), type(ft_Invalid), typeversion(0),
-    sequence(0), length(0), data(NULL), padstrings(false),
+    sequence(0), padstrings(false),
     unpackptr(0)
 {
 }
 
 Frame::~Frame()
 {
-  if (data != NULL)
-    free(data);
 }
 
 std::string Frame::getPacket() const {
@@ -85,11 +83,11 @@ std::string Frame::getPacket() const {
   int ntype = htonl(type);
   packet.append( (const char*)&ntype, 4 );
 
-  int nlen = htonl(length);
+  int nlen = htonl(data.length());
   packet.append( (const char*)&nlen, 4 );
 
   // Body
-  packet.append( data, length );
+  packet.append( data );
 
   return packet;
 }
@@ -127,7 +125,7 @@ int Frame::getHeaderLength() const
 
 int Frame::getDataLength() const
 {
-  return length;
+  return data.length();
 }
 
 int Frame::setHeader(const std::string& new_header)
@@ -191,14 +189,8 @@ bool Frame::setData( const std::string& new_data )
 {
   unpackptr = 0;
   if ( !new_data.empty() ) {
-    char *temp = (char *) realloc(data, new_data.length() );
-    if (temp != NULL) {
-      data = temp;
-      length = new_data.length();
-      memcpy(data, new_data.data(), new_data.length() );
-    } else {
-      return false;
-    }
+    // Actually the internal string reference count system prevents a copy here :)
+    data = new_data;
   } else {
     return false;
   }
@@ -224,33 +216,16 @@ void Frame::enablePaddingStrings(bool on){
 
 
 bool Frame::packString(const std::string &str){
-  int slen = str.length();
-  if(!(packInt(slen))){
+  if(!packInt(str.length())){
     throw new std::exception();
   }
-  char *temp = (char *) realloc(data, length + slen + 3);
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-
-    // Actual string
-    memcpy(temp, str.c_str(), slen);
-    temp += slen;
-
-    length += slen;
-
-    if(padstrings){
-      int pad = length % 4;
-      if(pad != 0){
-        for(int i = 0; i < 4-pad; i++){
-          *temp = '\0';
-          temp++;
-        }
-      }
-    }
-  }else{
-    throw new std::exception();
+  data.append( str );
+    
+  if ( padstrings ) {
+    size_t pad = data.length() % 4;
+    if ( pad != 0 ) data.append( 4-pad, '\0' );
   }
+
   return true;
 }
 
@@ -258,58 +233,21 @@ bool Frame::packString(const std::string &str){
 bool Frame::packInt(int val)
 {
   int netval = htonl(val);
-  char *temp = (char *) realloc(data, length + 4);
-
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-
-    memcpy(temp, &netval, 4);
-    length += 4;
-
-  } else {
-    return false;
-  }
+  data.append( (const char*) &netval, 4 );
   return true;
 }
 
 bool Frame::packInt64(int64_t val)
 {
   int64_t netval = htonq(val);
-  char *temp = (char *) realloc(data, length + 8);
-
-  if (temp != NULL) {
-    data = temp;
-    temp += length;
-
-    memcpy(temp, &netval, 8);
-    length += 8;
-
-  } else {
-    return false;
-  }
+  data.append( (const char*) &netval, 8 );
   return true;
 }
 
 bool Frame::packInt8(char val){
-  char *temp = (char *) realloc(data, length + 4);
-
-  if (temp != NULL) {
-    data = temp;
-
-    data[length] = val;
-
-    length += 1;
-    if(padstrings){
-      *temp = '\0';
-      temp++;
-      *temp = '\0';
-      temp++;
-      *temp = '\0';
-      temp++;
-    }
-  } else {
-    return false;
+  data += val;
+  if ( padstrings ) {
+    data.append( 3, '\0' );
   }
   return true;
 }
@@ -359,14 +297,14 @@ bool Frame::packIdStringMap(const IdStringMap& idmap)
 }
 
 bool Frame::isEnoughRemaining(uint32_t size) const{
-  Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, length - unpackptr);
-  return (length - unpackptr) >= size;
+  Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, data.length() - unpackptr);
+  return (data.length() - unpackptr) >= size;
 }
 
 void Frame::advance( uint32_t amount )
 {
   uint32_t newoffset = unpackptr + amount;
-  if (newoffset < length - 4)
+  if (newoffset < data.length() - 4)
     unpackptr = newoffset;
   //else throw
 }
@@ -374,7 +312,7 @@ void Frame::advance( uint32_t amount )
 int Frame::unpackInt()
 {
   int nval;
-  memcpy(&nval, data + unpackptr, 4);
+  memcpy(&nval, data.c_str() + unpackptr, 4);
   unpackptr += 4;
   return ntohl(nval);
 }
@@ -382,36 +320,35 @@ int Frame::unpackInt()
 
 std::string Frame::unpackStdString(){
   uint32_t len = unpackInt();
-  if(unpackptr + len > length){
+  if(unpackptr + len > data.length()){
     throw new std::exception();
   }
-  char cstr[len+1];
-
-  memcpy(cstr, data + unpackptr, len);
-  cstr[len] = '\0';
+  const char* pos = data.c_str() + unpackptr;
   unpackptr += len;
+
   if(padstrings){
     int pad = unpackptr % 4;
     if(pad != 0){
-      if(unpackptr + (4 - pad) > length){
+      if(unpackptr + (4 - pad) > data.length()){
         throw new std::exception();
       }
       unpackptr += 4-pad;
     }
   }
-  return std::string(cstr, 0, len);
+
+  return std::string(pos, len);
 }
 
 int64_t Frame::unpackInt64()
 {
   int64_t nval;
-  memcpy(&nval, data + unpackptr, 8);
+  memcpy(&nval, data.c_str() + unpackptr, 8);
   unpackptr += 8;
   return ntohq(nval);
 }
 
 char Frame::unpackInt8(){
-  char rval = data[unpackptr];
+  char rval = data.c_str()[unpackptr];
   unpackptr += 1;
   if(padstrings)
     unpackptr += 3;

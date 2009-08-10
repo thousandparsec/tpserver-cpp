@@ -125,10 +125,8 @@ class Frame {
     uint32_t typeversion;
     /// Which packet sequence does this refer to?
     uint32_t sequence;
-    /// Frame length
-    uint32_t length;
     /// Actual data of the frame
-    char *data;
+    std::string data;
     /// Whether to pad strings with \0 values
     bool padstrings;
     /// Current unpack position
