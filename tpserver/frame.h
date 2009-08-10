@@ -75,7 +75,7 @@ class Frame {
     int getLength() const;
 
     // Data
-    bool setData(char *newdata, int dlen);
+    bool setData( const std::string& new_data );
 
     // Type
     FrameType getType() const;

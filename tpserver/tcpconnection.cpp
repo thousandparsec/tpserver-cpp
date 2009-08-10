@@ -293,7 +293,7 @@ bool TcpConnection::readFrame(Frame * recvframe)
     }
 
     if(rbuffused == datalen){
-      recvframe->setData(rdatabuff, datalen);
+      recvframe->setData(std::string(rdatabuff, datalen));
       delete[] rheaderbuff;
       delete[] rdatabuff;
       rheaderbuff = NULL;

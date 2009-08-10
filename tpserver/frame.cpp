@@ -187,15 +187,15 @@ bool Frame::setType(FrameType nt)
   return true;
 }
 
-bool Frame::setData(char *newdata, int dlen)
+bool Frame::setData( const std::string& new_data )
 {
   unpackptr = 0;
-  if (dlen > 0) {
-    char *temp = (char *) realloc(data, dlen);
+  if ( !new_data.empty() ) {
+    char *temp = (char *) realloc(data, new_data.length() );
     if (temp != NULL) {
       data = temp;
-      length = dlen;
-      memcpy(data, newdata, length);
+      length = new_data.length();
+      memcpy(data, new_data.data(), new_data.length() );
     } else {
       return false;
     }
