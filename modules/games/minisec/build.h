@@ -29,7 +29,7 @@ class Build : public Order{
     virtual ~Build();
 
     void createFrame(Frame *f, int pos);
-    void inputFrame(Frame *f, uint32_t playerid);
+    void inputFrame(InputFrame *f, uint32_t playerid);
 
     bool doOrder(IGObject::Ptr ob);
 

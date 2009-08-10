@@ -84,7 +84,7 @@ void Move::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);	
 }
 
-void Move::inputFrame(Frame * f, uint32_t playerid)
+void Move::inputFrame(InputFrame * f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
 }

@@ -25,6 +25,7 @@
 
 class Order;
 class Frame;
+class InputFrame;
 
 class OrderManager{
   public:

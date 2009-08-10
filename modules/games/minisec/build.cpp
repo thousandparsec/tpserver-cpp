@@ -111,7 +111,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > Build::generateListOptions
   return options;
 }
 
-void Build::inputFrame(Frame *f, uint32_t playerid)
+void Build::inputFrame(InputFrame *f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
   
