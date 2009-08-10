@@ -41,12 +41,12 @@ class PlayerConnection: public TcpConnection {
     virtual void processNormalFrame();
     virtual void processLogin();
 
-    void processGetGameInfoFrame(Frame* frame);
-    void processSetFilters(Frame* frame);
-    void processTimeRemainingFrame(Frame* frame);
-    void processLoginFrame(Frame* frame);
-    void processAccountFrame(Frame* frame);
-    void processPingFrame(Frame* frame);
+    void processGetGameInfoFrame(InputFrame* frame);
+    void processSetFilters(InputFrame* frame);
+    void processTimeRemainingFrame(InputFrame* frame);
+    void processLoginFrame(InputFrame* frame);
+    void processAccountFrame(InputFrame* frame);
+    void processPingFrame(InputFrame* frame);
     
     PlayerAgent *playeragent;
     uint64_t lastpingtime;

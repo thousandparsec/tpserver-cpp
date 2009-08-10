@@ -201,7 +201,7 @@ int32_t TcpConnection::verCheckLastChance(){
   return -1;
 }
 
-bool TcpConnection::readFrame(Frame * recvframe)
+bool TcpConnection::readFrame(InputFrame * recvframe)
 {
   if (sendandclose) return false;
 
@@ -335,7 +335,7 @@ void TcpConnection::processVersionCheck() {
     return;
   }
 
-  Frame *recvframe = new InputFrame();
+  InputFrame *recvframe = new InputFrame();
   uint32_t hlen = recvframe->getHeaderLength();
 
   if (rheaderbuff == NULL) {
@@ -579,7 +579,7 @@ void TcpConnection::clearQueue() {
   }
 }
 
-bool TcpConnection::getAuth( Frame* frame, std::string& username, std::string& password ) {
+bool TcpConnection::getAuth( InputFrame* frame, std::string& username, std::string& password ) {
   try{
     if(!frame->isEnoughRemaining(15)) throw FrameException( fec_FrameError );
     username = frame->unpackString();

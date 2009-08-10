@@ -65,12 +65,12 @@ class TcpConnection: public Connection {
     virtual int32_t verCheckPreChecks();
     virtual int32_t verCheckLastChance();
     
-    virtual bool readFrame( Frame* recvframe );
+    virtual bool readFrame( InputFrame* recvframe );
 
     bool queueEmpty() const;
     void clearQueue();
 
-    bool getAuth( Frame* frame, std::string& username, std::string& password );
+    bool getAuth( InputFrame* frame, std::string& username, std::string& password );
     // used by playerhttpconnection
     std::string getHeader() const;
 

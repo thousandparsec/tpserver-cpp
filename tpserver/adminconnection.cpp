@@ -45,7 +45,8 @@ AdminConnection::~AdminConnection(){
 
 
 void AdminConnection::processLogin(){
-  Frame *recvframe = createFrame();
+  InputFrame *recvframe = new InputFrame(version);
+  recvframe->enablePaddingStrings(paddingfilter);
   if (readFrame(recvframe)) {
     try {
       if(recvframe->getType() == ft02_Login){
@@ -86,7 +87,8 @@ void AdminConnection::processLogin(){
 
 void AdminConnection::processNormalFrame()
 {
-  Frame *frame = createFrame();
+  InputFrame *frame = new InputFrame(version);
+  frame->enablePaddingStrings(paddingfilter);
   if (readFrame(frame)) {
     try {
       switch (frame->getType()) {

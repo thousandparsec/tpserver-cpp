@@ -53,7 +53,8 @@ PlayerConnection::~PlayerConnection(){
 
 
 void PlayerConnection::processLogin(){
-  Frame *recvframe = createFrame();
+  InputFrame *recvframe = new InputFrame(version);
+  recvframe->enablePaddingStrings(paddingfilter);
   if (readFrame(recvframe)) {
     try {
       if(recvframe->getType() == ft02_Login){
@@ -82,7 +83,7 @@ void PlayerConnection::processLogin(){
 
 }
 
-void PlayerConnection::processAccountFrame(Frame* frame)
+void PlayerConnection::processAccountFrame(InputFrame* frame)
 {
   if(Settings::getSettings()->get("add_players") == "yes"){
     std::string username = frame->unpackString();
@@ -112,7 +113,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
   }
 }
 
-void PlayerConnection::processLoginFrame(Frame* frame)
+void PlayerConnection::processLoginFrame(InputFrame* frame)
 {
   std::string username, password;
 
@@ -151,7 +152,8 @@ void PlayerConnection::processLoginFrame(Frame* frame)
 
 void PlayerConnection::processNormalFrame()
 {
-  Frame *frame = createFrame();
+  InputFrame *frame = new InputFrame(version);
+  frame->enablePaddingStrings(paddingfilter);
   if (readFrame(frame)) {
     try {
       if(version >= fv0_3 && frame->getType() == ft03_Features_Get){
@@ -185,7 +187,7 @@ void PlayerConnection::processNormalFrame()
   delete frame;
 }
 
-void PlayerConnection::processPingFrame(Frame* frame)
+void PlayerConnection::processPingFrame(InputFrame* frame)
 {
   DEBUG("PlayerConnection : Processing Ping frame");
   // check for the time of the last frame, ignore this if
@@ -217,14 +219,14 @@ void PlayerConnection::processGetFeaturesFrame(Frame* frame){
   sendFrame(features);
 }
 
-void PlayerConnection::processGetGameInfoFrame(Frame* frame){
+void PlayerConnection::processGetGameInfoFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing get GameInfo frame");
   OutputFrame *game = createFrame(frame);
   Game::getGame()->packGameInfoFrame(game);
   sendFrame(game);
 }
 
-void PlayerConnection::processSetFilters(Frame* frame){
+void PlayerConnection::processSetFilters(InputFrame* frame){
   DEBUG("PlayerConnection : Processing set filters");
   IdSet filters_wanted = frame->unpackIdSet();
 
@@ -243,7 +245,7 @@ void PlayerConnection::processSetFilters(Frame* frame){
   }
 }
 
-void PlayerConnection::processTimeRemainingFrame(Frame* frame){
+void PlayerConnection::processTimeRemainingFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing Get Time frame");
   OutputFrame *time = createFrame(frame);
   time->setType(ft02_Time_Remaining);
