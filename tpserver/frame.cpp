@@ -102,10 +102,9 @@ int Frame::getSequence() const
   return sequence;
 }
 
-bool Frame::setSequence(int s) 
+void Frame::setSequence(int s) 
 {
   sequence = s;
-  return true;
 }
 
 ProtocolVersion Frame::getVersion() const
@@ -185,25 +184,19 @@ bool Frame::setType(FrameType nt)
   return true;
 }
 
-bool Frame::setData( const std::string& new_data )
+void Frame::setData( const std::string& new_data )
 {
   unpackptr = 0;
-  if ( !new_data.empty() ) {
-    // Actually the internal string reference count system prevents a copy here :)
-    data = new_data;
-  } else {
-    return false;
-  }
-  return true;
+  // Actually the internal string reference count system prevents a copy here :)
+  data = new_data;
 }
 
 uint32_t Frame::getTypeVersion() const{
   return typeversion;
 }
 
-bool Frame::setTypeVersion(uint32_t tv){
+void Frame::setTypeVersion(uint32_t tv){
   typeversion = tv;
-  return true;
 }
 
 bool Frame::isPaddingStrings() const{
@@ -215,7 +208,7 @@ void Frame::enablePaddingStrings(bool on){
 }
 
 
-bool Frame::packString(const std::string &str){
+void Frame::packString(const std::string &str){
   packInt(str.length());
   data.append( str );
     
@@ -223,35 +216,30 @@ bool Frame::packString(const std::string &str){
     size_t pad = data.length() % 4;
     if ( pad != 0 ) data.append( 4-pad, '\0' );
   }
-
-  return true;
 }
 
 
-bool Frame::packInt(int val)
+void Frame::packInt(int val)
 {
   int netval = htonl(val);
   data.append( (const char*) &netval, 4 );
-  return true;
 }
 
-bool Frame::packInt64(int64_t val)
+void Frame::packInt64(int64_t val)
 {
   int64_t netval = htonq(val);
   data.append( (const char*) &netval, 8 );
-  return true;
 }
 
-bool Frame::packInt8(char val){
+void Frame::packInt8(char val){
   data += val;
   if ( padstrings ) {
     data.append( 3, '\0' );
   }
-  return true;
 }
 
 
-bool Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t from_position ){
+void Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t from_position ){
   if (count == 0) count = modlist.size();
   packInt(modlist.size() - count - from_position);
   packInt(count);
@@ -262,36 +250,32 @@ bool Frame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t fro
     packInt(itcurr->first);
     packInt64(itcurr->second);
   }
-  return true;
 }
 
-bool Frame::packIdSet(const IdSet& idset)
+void Frame::packIdSet(const IdSet& idset)
 {
   packInt(idset.size());
   for(IdSet::const_iterator idit = idset.begin(); idit != idset.end(); ++idit){
     packInt(*idit);
   }
-  return true;
 }
 
-bool Frame::packIdMap(const IdMap& idmap)
+void Frame::packIdMap(const IdMap& idmap)
 {
   packInt(idmap.size());
   for(IdMap::const_iterator idit = idmap.begin(); idit != idmap.end(); ++idit){
     packInt(idit->first);
     packInt(idit->second);
   }
-  return true;
 }
 
-bool Frame::packIdStringMap(const IdStringMap& idmap)
+void Frame::packIdStringMap(const IdStringMap& idmap)
 {
   packInt(idmap.size());
   for(IdStringMap::const_iterator idit = idmap.begin(); idit != idmap.end(); ++idit){
     packInt(idit->first);
     packString(idit->second);
   }
-  return true;
 }
 
 bool Frame::isEnoughRemaining(uint32_t size) const{

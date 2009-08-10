@@ -76,7 +76,7 @@ class Frame {
     int getLength() const;
 
     // Data
-    bool setData( const std::string& new_data );
+    void setData( const std::string& new_data );
 
     // Type
     FrameType getType() const;
@@ -84,11 +84,11 @@ class Frame {
 
     // frame type version
     uint32_t getTypeVersion() const;
-    bool setTypeVersion(uint32_t tv);
+    void setTypeVersion(uint32_t tv);
 
     // Sequence
     int getSequence() const;
-    bool setSequence(int s);
+    void setSequence(int s);
 
     // Version
     ProtocolVersion getVersion() const;
@@ -97,14 +97,14 @@ class Frame {
     bool isPaddingStrings() const;
     void enablePaddingStrings(bool on);
 
-    bool packString(const std::string &str);
-    bool packInt(int val);
-    bool packInt64(int64_t val);
-    bool packInt8(char val);
-    bool packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
-    bool packIdSet(const IdSet& idset);
-    bool packIdMap(const IdMap& idmap);
-    bool packIdStringMap(const IdStringMap& idmap);
+    void packString(const std::string &str);
+    void packInt(int val);
+    void packInt64(int64_t val);
+    void packInt8(char val);
+    void packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
+    void packIdSet(const IdSet& idset);
+    void packIdMap(const IdMap& idmap);
+    void packIdStringMap(const IdStringMap& idmap);
 
     bool isEnoughRemaining(uint32_t size) const;
     /// Advances the frame position by amount bytes
