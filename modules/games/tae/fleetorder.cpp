@@ -63,7 +63,7 @@ void FleetOrder::createFrame(Frame *f, int pos) {
 }
 
 //Used to check to see if the input is valid
-void FleetOrder::inputFrame(Frame *f, uint32_t playerid) {
+void FleetOrder::inputFrame(InputFrame *f, uint32_t playerid) {
     Order::inputFrame(f, playerid);
 
     turns = 0;
