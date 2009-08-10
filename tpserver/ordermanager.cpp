@@ -20,6 +20,7 @@
 
 #include "order.h"
 #include "frame.h"
+#include "frameexception.h"
 #include "object.h"
 #include "game.h"
 #include "persistence.h"
@@ -44,7 +45,7 @@ void OrderManager::describeOrder(uint32_t ordertype, Frame * f){
   if(prototype_store.find(ordertype) != prototype_store.end()){
     prototype_store[ordertype]->describeOrder(f);
   }else{
-    f->createFailFrame(fec_NonExistant, "Order type does not exist");
+    throw FrameException(fec_NonExistant, "Order type does not exist");
   }
 }
 
@@ -84,8 +85,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   }
 
   if(lseqkey != seqkey){
-    of->createFailFrame(fec_TempUnavailable, "Invalid Sequence Key");
-    return;
+    throw FrameException(fec_TempUnavailable, "Invalid Sequence Key");
   }
 
   IdModList modlist;
@@ -98,8 +98,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   }
 
   if(start > modlist.size()){
-    of->createFailFrame(fec_NonExistant, "Starting number too high");
-    return;
+    throw FrameException(fec_NonExistant, "Starting number too high");
   }
 
   if(num > modlist.size() - start){
@@ -107,8 +106,7 @@ void OrderManager::doGetOrderTypes(Frame* frame, Frame * of){
   }
 
   if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
-    of->createFailFrame(fec_FrameError, "Too many items to get, frame too big");
-    return;
+    throw FrameException(fec_FrameError, "Too many items to get, frame too big");
   }
 
   of->setType(ft03_OrderTypes_List);
