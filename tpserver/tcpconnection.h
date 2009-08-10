@@ -34,10 +34,10 @@ class TcpConnection: public Connection {
     virtual void close();
     
     // DEPRECATED
-    Frame* createFrame(Frame* oldframe = NULL);
+    OutputFrame* createFrame(Frame* oldframe = NULL);
 
     // DEPRECATED
-    virtual void sendFrame( Frame* frame );
+    virtual void sendFrame( OutputFrame* frame );
 
     void process();
     void processWrite();

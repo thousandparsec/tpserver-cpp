@@ -49,7 +49,7 @@ void AdminLogger::doLogging(int level, const char* msg) const {
     //TODO: assert(connection);
 
     if (connection->getStatus() == Connection::READY) {
-        Frame* logmessage = connection->createFrame(NULL);
+        OutputFrame* logmessage = connection->createFrame(NULL);
         logmessage->setType(ftad_LogMessage);
         logmessage->packInt64(timestamp);
         logmessage->packInt(level);

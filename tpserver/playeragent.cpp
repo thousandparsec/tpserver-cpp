@@ -210,7 +210,7 @@ void PlayerAgent::processGetObjectById (Frame * frame){
   // Object frames
   for ( int i=0 ; i < len; ++i ){
     uint32_t objectID = frame->unpackInt();
-    Frame* of = curConnection->createFrame ( frame );
+    OutputFrame* of = curConnection->createFrame ( frame );
     player->getPlayerView()->processGetObject(objectID, of);
     curConnection->sendFrame ( of );
   }
@@ -222,7 +222,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
   lengthCheckMin( frame, 36 );
 
-  Frame *of;
+  OutputFrame *of;
   Vector3d pos;
   uint64_t r;
   pos.unpack(frame);
@@ -248,7 +248,7 @@ void PlayerAgent::processGetObjectByPos(Frame * frame)
 
 void PlayerAgent::processGetObjectIds(Frame * frame){
   DEBUG("Doing get object ids frame");
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetObjectIds(frame, of);
   curConnection->sendFrame(of);
 }
@@ -256,7 +256,7 @@ void PlayerAgent::processGetObjectIds(Frame * frame){
 
 void PlayerAgent::processGetObjectIdsByPos(Frame* frame){
   DEBUG("doing get object ids by pos frame");
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   lengthCheckMin( frame, 36 );
   Vector3d pos;
   uint64_t r;
@@ -318,7 +318,7 @@ void PlayerAgent::processGetObjectDesc(Frame * frame){
   // Object frames
   for ( int i=0 ; i < len; ++i ){
     uint32_t objecttype = frame->unpackInt();
-    Frame* of = curConnection->createFrame(frame);
+    OutputFrame* of = curConnection->createFrame(frame);
     Game::getGame()->getObjectTypeManager()->doGetObjectDesc(objecttype, of);
     curConnection->sendFrame ( of );
   }
@@ -394,7 +394,7 @@ void PlayerAgent::processGetOrder(Frame * frame){
       throw FrameException( fec_TempUnavailable, "Could not get Order");
     }
 
-    Frame *of = curConnection->createFrame(frame);
+    OutputFrame *of = curConnection->createFrame(frame);
     ord->createFrame(of, ordpos);
     curConnection->sendFrame(of);
   }
@@ -440,7 +440,7 @@ void PlayerAgent::processAddOrder(Frame * frame){
       ord->inputFrame(frame, player->getID());
 
       if(orderqueue->addOrder(ord, pos, player->getID())) {
-        Frame *of = curConnection->createFrame(frame);
+        OutputFrame *of = curConnection->createFrame(frame);
         if(of->getVersion() >= fv0_4){
           ord->createFrame(of, pos);
         }else{
@@ -519,7 +519,7 @@ void PlayerAgent::processDescribeOrder(Frame * frame)
   int numdesc = queryCheck( frame );
 
   for(int i = 0; i < numdesc; i++){
-    Frame *of = curConnection->createFrame(frame);
+    OutputFrame *of = curConnection->createFrame(frame);
     int ordertype = frame->unpackInt();
     Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
     curConnection->sendFrame(of);
@@ -532,7 +532,7 @@ void PlayerAgent::processGetOrderTypes(Frame * frame){
   versionCheck(frame,fv0_3);
   lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
   curConnection->sendFrame(of);
 }
@@ -572,7 +572,7 @@ void PlayerAgent::processProbeOrder(Frame * frame){
   
   if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     ord->setOrderQueueId(orderqueueid);
-    Frame *of = curConnection->createFrame(frame);
+    OutputFrame *of = curConnection->createFrame(frame);
     try {
       ord->inputFrame(frame, player->getID());
       ord->createFrame(of, pos);
@@ -624,7 +624,7 @@ void PlayerAgent::processGetBoardIds(Frame* frame){
     fromtime = frame->unpackInt64();
   }
 
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   of->setType(ft03_BoardIds_List);
   of->packInt(seqkey);
 
@@ -671,7 +671,7 @@ void PlayerAgent::processGetMessages(Frame * frame){
 
   if(currboard.get() != NULL){
     for(int i = 0; i < nummsg; i++){
-      Frame *of = curConnection->createFrame(frame);
+      OutputFrame *of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
 
       currboard->packMessage(of, msgnum);
@@ -925,7 +925,7 @@ void PlayerAgent::processGetDesign(Frame* frame){
   int numdesigns = queryCheck( frame );
 
   for(int i = 0; i < numdesigns; i++){
-    Frame *of = curConnection->createFrame(frame);
+    OutputFrame *of = curConnection->createFrame(frame);
     int designnum = frame->unpackInt();
     player->getPlayerView()->processGetDesign(designnum, of);
     curConnection->sendFrame(of);
@@ -1009,7 +1009,7 @@ void PlayerAgent::processModifyDesign(Frame* frame){
 }
 
 void PlayerAgent::processGetDesignIds(Frame* frame){
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetDesignIds(frame, of);
   curConnection->sendFrame(of);
 }
@@ -1020,7 +1020,7 @@ void PlayerAgent::processGetComponent(Frame* frame){
   int numcomps = queryCheck( frame );
 
   for(int i = 0; i < numcomps; i++){
-    Frame *of = curConnection->createFrame(frame);
+    OutputFrame *of = curConnection->createFrame(frame);
     int compnum = frame->unpackInt();
     player->getPlayerView()->processGetComponent(compnum, of);
     curConnection->sendFrame(of);
@@ -1028,7 +1028,7 @@ void PlayerAgent::processGetComponent(Frame* frame){
 }
 
 void PlayerAgent::processGetComponentIds(Frame* frame){
-  Frame *of = curConnection->createFrame(frame);
+  OutputFrame *of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetComponentIds(frame, of);
 
   curConnection->sendFrame(of);

@@ -140,7 +140,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   }
 
   for(int i = 0; i < numdesc; i++){
-    Frame *of = createFrame(frame);
+    OutputFrame *of = createFrame(frame);
     int cmdtype = frame->unpackInt();
     CommandManager::getCommandManager()->describeCommand(cmdtype, of);
     sendFrame(of);
@@ -150,7 +150,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
 void AdminConnection::processGetCommandTypes(Frame * frame){
   DEBUG("doing get command types frame");
 
-  Frame *of = createFrame(frame);
+  OutputFrame *of = createFrame(frame);
   CommandManager::getCommandManager()->doGetCommandTypes(frame, of);
   sendFrame(of);
 }
@@ -158,7 +158,7 @@ void AdminConnection::processGetCommandTypes(Frame * frame){
 void AdminConnection::processCommand(Frame * frame){
   DEBUG("doing command frame");
 
-  Frame *of = createFrame(frame);
+  OutputFrame *of = createFrame(frame);
   CommandManager::getCommandManager()->executeCommand(frame, of);
   sendFrame(of);
 }

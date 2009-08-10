@@ -141,7 +141,7 @@ void TcpConnection::processWrite() {
   }
 }
 
-void TcpConnection::sendFrame( Frame* frame )
+void TcpConnection::sendFrame( OutputFrame* frame )
 {
   if (version != frame->getVersion()) {
     WARNING("TcpConnection : Version mis-match, packet %d, connection %d", frame->getVersion(), version);
@@ -489,7 +489,7 @@ void TcpConnection::processVersionCheck() {
 
 
 void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error ) {
-  Frame* frame = createFrame( oldframe );
+  OutputFrame* frame = createFrame( oldframe );
   frame->setType( ft02_Fail );
   frame->packInt( code );
   frame->packString( error );
@@ -501,7 +501,7 @@ void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::st
 
 void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
 {
-  Frame* frame = createFrame(oldframe);
+  OutputFrame* frame = createFrame(oldframe);
   frame->setType( ft02_Sequence );
   frame->packInt( sequence_size );
   sendFrame(frame);
@@ -509,21 +509,21 @@ void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
 
 void TcpConnection::send(Frame* oldframe, const Packable* packable )
 {
-  Frame* frame = createFrame(oldframe);
+  OutputFrame* frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
 void TcpConnection::send(Frame* oldframe, const Packable::Ptr packable )
 {
-  Frame* frame = createFrame(oldframe);
+  OutputFrame* frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
 void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
 {
-  Frame* frame = createFrame(oldframe);
+  OutputFrame* frame = createFrame(oldframe);
   frame->setType( ft02_OK );
   frame->packString( message );
   sendFrame(frame);
@@ -545,7 +545,7 @@ void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence
     sendFail(oldframe,fec_FrameError, "Too many items to get, frame too big");
     return;
   }
-  Frame *frame = createFrame(oldframe);
+  OutputFrame *frame = createFrame(oldframe);
   frame->setType(ft);
   frame->packInt(sequence);
   frame->packIdModList(modlist,count,start);
@@ -555,9 +555,9 @@ void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence
   sendFrame(frame);
 }
 
-Frame* TcpConnection::createFrame(Frame* oldframe)
+OutputFrame* TcpConnection::createFrame(Frame* oldframe)
 {
-  Frame* newframe;
+  OutputFrame* newframe;
   if(oldframe != NULL) {
     newframe = new OutputFrame(oldframe->getVersion());
     newframe->setSequence(oldframe->getSequence());
