@@ -189,31 +189,40 @@ class SettingsGetCommand : public Command{
 class ReconfigureCommand : public Command{
   public:
     ReconfigureCommand() : Command(){
-        name = "reconfigure";
-        help = "Re-reads the configuration file.";
+      name = "reconfigure";
+      help = "Re-reads the configuration file.";
     }
     void action(Frame * frame, Frame * of){
-        bool ns, gs, rcf;
-        if(Network::getNetwork()->isStarted())
-            Network::getNetwork()->stop();
-        if(Game::getGame()->isLoaded())
-            Game::getGame()->saveAndClose();
-        rcf = Settings::getSettings()->readConfFile();
-        if(ns = (Settings::getSettings()->get("network_start") == "yes"))
-            Network::getNetwork()->start();
-        if(Settings::getSettings()->get("game_load") == "yes")
-            Game::getGame()->load();
-        if(gs = (Settings::getSettings()->get("game_start") == "yes"))
-            Game::getGame()->start();
-        if(rcf && (!ns || Network::getNetwork()->isStarted()) && (!gs || Game::getGame()->isStarted())){
-            of->packInt(0);
-            of->packString("Successfully re-read configuration file.");
-            Logger::getLogger()->info("Reconfigured by administrator.");
-        }else{
-            of->packInt(1);
-            of->packString("Could not re-read configuration file.");
-            Logger::getLogger()->error("Failed reconfiguration attempt by administrator.");
-       }
+
+      if(Network::getNetwork()->isStarted()) {
+        Network::getNetwork()->stop();
+      }
+      if(Game::getGame()->isLoaded()) {
+        Game::getGame()->saveAndClose();
+      }
+
+      bool read_conf  = Settings::getSettings()->readConfFile();
+      bool net_start  = Settings::getSettings()->get("network_start") == "yes";
+      bool game_start = Settings::getSettings()->get("game_start") == "yes";
+      
+      if(Settings::getSettings()->get("game_load") == "yes")
+        Game::getGame()->load();
+      
+      if( net_start )
+        Network::getNetwork()->start();
+      
+      if( game_start )
+        Game::getGame()->start();
+      
+      if( read_conf && (!net_start || Network::getNetwork()->isStarted()) && (!game_start || Game::getGame()->isStarted())){
+        of->packInt(0);
+        of->packString("Successfully re-read configuration file.");
+        Logger::getLogger()->info("Reconfigured by administrator.");
+      }else{
+        of->packInt(1);
+        of->packString("Could not re-read configuration file.");
+        Logger::getLogger()->error("Failed reconfiguration attempt by administrator.");
+      }
     }
 };
 
