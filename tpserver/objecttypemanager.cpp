@@ -20,6 +20,7 @@
 
 #include "objecttype.h"
 #include "frame.h"
+#include "frameexception.h"
 #include "object.h"
 #include "algorithms.h"
 
@@ -79,6 +80,6 @@ void ObjectTypeManager::doGetObjectDesc(uint32_t type, Frame* of){
   if(typeStore.find(type) != typeStore.end()){
     typeStore[type]->pack(of);
   }else{
-    of->createFailFrame(fec_NonExistant, "Object type does not exist");
+    throw FrameException( fec_NonExistant, "Object type does not exist");
   }
 }

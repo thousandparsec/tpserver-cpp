@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "frame.h"
+#include "frameexception.h"
 #include "game.h"
 #include "objectmanager.h"
 #include "object.h"
@@ -29,7 +30,6 @@
 #include "player.h"
 #include "playerview.h"
 #include "objectparametergroup.h"
-#include "component.h"
 #include "designstore.h"
 #include "ordermanager.h"
 #include "position3dobjectparam.h"
@@ -58,98 +58,97 @@ void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
   IGObject::Ptr object = Game::getGame()->getObjectManager()->getObject(id);
   
   if(gone || (completely_visible && (object == NULL || !object->isAlive()))){
-    frame->createFailFrame(fec_NonExistant, "No such object");
+    throw FrameException(fec_NonExistant, "No such object");
+  }
+
+  frame->setType(ft02_Object);
+  frame->packInt(id);
+
+  PlayerView::Ptr playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
+
+  //type
+  frame->packInt(object->getType());
+  if(completely_visible || name_visible){
+    frame->packString(object->getName());
   }else{
-    frame->setType(ft02_Object);
-    frame->packInt(id);
-    
-    PlayerView::Ptr playerview = Game::getGame()->getPlayerManager()->getPlayer(playerid)->getPlayerView();
-    
-    //type
-    frame->packInt(object->getType());
-    if(completely_visible || name_visible){
-      frame->packString(object->getName());
+  }
+  if(frame->getVersion() >= fv0_4){
+    if(completely_visible || desc_visible){
+      frame->packString(object->getDescription());
     }else{
+      frame->packString(desc);
     }
-    if(frame->getVersion() >= fv0_4){
-      if(completely_visible || desc_visible){
-        frame->packString(object->getDescription());
-      }else{
-        frame->packString(desc);
-      }
-    }
-    
-    if(frame->getVersion() >= fv0_4){
-      // should be moved to ObjectRelationshipsData::packFrame once TP03 support is removed
-      frame->packInt(object->getParent());
+  }
+
+  if(frame->getVersion() >= fv0_4){
+    // should be moved to ObjectRelationshipsData::packFrame once TP03 support is removed
+    frame->packInt(object->getParent());
+  }else{
+    //pre tp04
+
+    SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(object->getParameterByType(obpT_Size));
+    if(size != NULL){
+      frame->packInt64(size->getSize());
     }else{
-      //pre tp04
-    
-      SizeObjectParam * size = dynamic_cast<SizeObjectParam*>(object->getParameterByType(obpT_Size));
-      if(size != NULL){
-        frame->packInt64(size->getSize());
-      }else{
-        frame->packInt64(0);
-      }
-    
-      Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(object->getParameterByType(obpT_Position_3D));
-      if(pos != NULL){
-        pos->getPosition().pack(frame);
-      }else{
-        Vector3d(0,0,0).pack(frame);
-      }
-    
-      Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(object->getParameterByType(obpT_Velocity));
-      if(vel != NULL){
-        vel->getVelocity().pack(frame);
-      }else{
-        Vector3d(0,0,0).pack(frame);
-      }
-    
+      frame->packInt64(0);
     }
-    
-    IdSet children = object->getContainedObjects();
-    IdSet result;
-    std::remove_copy_if( children.begin(), children.end(), 
-                         std::inserter( result, result.end() ), 
-                         !boost::bind( &PlayerView::isVisibleObject, playerview, _1 ) );
-    frame->packIdSet(result);
-  
-    if(frame->getVersion() <= fv0_3){
-    
-      
-      OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(object->getParameterByType(obpT_Order_Queue));
-      if(oq != NULL){
-        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
-        if(queue->isOwner(playerid)){
-          frame->packIdSet( queue->getAllowedOrderTypes() );
-          frame->packInt(queue->getNumberOrders());
-        }else{
-          frame->packInt(0);
-          frame->packInt(0);
-        }
+
+    Position3dObjectParam * pos = dynamic_cast<Position3dObjectParam*>(object->getParameterByType(obpT_Position_3D));
+    if(pos != NULL){
+      pos->getPosition().pack(frame);
+    }else{
+      Vector3d(0,0,0).pack(frame);
+    }
+
+    Velocity3dObjectParam * vel = dynamic_cast<Velocity3dObjectParam*>(object->getParameterByType(obpT_Velocity));
+    if(vel != NULL){
+      vel->getVelocity().pack(frame);
+    }else{
+      Vector3d(0,0,0).pack(frame);
+    }
+
+  }
+
+  IdSet children = object->getContainedObjects();
+  IdSet result;
+  std::remove_copy_if( children.begin(), children.end(), 
+      std::inserter( result, result.end() ), 
+      !boost::bind( &PlayerView::isVisibleObject, playerview, _1 ) );
+  frame->packIdSet(result);
+
+  if(frame->getVersion() <= fv0_3){
+
+
+    OrderQueueObjectParam* oq = dynamic_cast<OrderQueueObjectParam*>(object->getParameterByType(obpT_Order_Queue));
+    if(oq != NULL){
+      OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(oq->getQueueId());
+      if(queue->isOwner(playerid)){
+        frame->packIdSet( queue->getAllowedOrderTypes() );
+        frame->packInt(queue->getNumberOrders());
       }else{
         frame->packInt(0);
         frame->packInt(0);
       }
-        
-    }
-    frame->packInt64(getModTime());
-    frame->packInt(0);
-    frame->packInt(0);
-    if(frame->getVersion() >= fv0_4){
-      frame->packInt(0);
-      frame->packInt(0);
-
-      ObjectParameterGroup::Map parameters = object->getParameterGroups();
-      for_each_value( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterGroup::packObjectFrame, _1, frame, playerid ) );
     }else{
-      ObjectBehaviour* behaviour = object->getObjectBehaviour();
-      if(behaviour != NULL){
-        behaviour->packExtraData(frame);
-      }
+      frame->packInt(0);
+      frame->packInt(0);
     }
 
+  }
+  frame->packInt64(getModTime());
+  frame->packInt(0);
+  frame->packInt(0);
+  if(frame->getVersion() >= fv0_4){
+    frame->packInt(0);
+    frame->packInt(0);
+
+    ObjectParameterGroup::Map parameters = object->getParameterGroups();
+    for_each_value( parameters.begin(), parameters.end(), boost::bind( &ObjectParameterGroup::packObjectFrame, _1, frame, playerid ) );
+  }else{
+    ObjectBehaviour* behaviour = object->getObjectBehaviour();
+    if(behaviour != NULL){
+      behaviour->packExtraData(frame);
+    }
   }
 }
 
