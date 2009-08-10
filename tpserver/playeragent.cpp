@@ -1086,10 +1086,7 @@ void PlayerAgent::processTurnFinished(Frame* frame){
 
   if(frame->getVersion() < fv0_4){
     DEBUG("Turn Finished Frame: protocol version not high enough, but continuing anyway");
-    //     Frame *of = curConnection->createFrame(frame);
-    //     of->createFailFrame(fec_FrameError, "Finished Turn frame isn't supported in this protocol");
-    //     curConnection->sendFrame(of);
-    //     return;
+    //     throw FrameException(fec_FrameError, "Finished Turn frame isn't supported in this protocol");
   }
 
   Game::getGame()->getTurnTimer()->playerFinishedTurn(player->getID());

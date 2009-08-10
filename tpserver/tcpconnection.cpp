@@ -484,8 +484,12 @@ void TcpConnection::processVersionCheck() {
 
 
 void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error ) {
-  Frame* frame = createFrame(oldframe);
-  frame->createFailFrame(code, error);
+  Frame* frame = createFrame( oldframe );
+  frame->setType( ft02_Fail );
+  frame->packInt( code );
+  frame->packString( error );
+  if ( frame->getVersion() >= fv0_4 )
+    frame->packInt(0); // no references
   sendFrame(frame);
 }
 

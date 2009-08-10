@@ -116,9 +116,6 @@ class Frame {
     IdMap unpackMap();
     IdSet unpackIdSet();
 
-    void createFailFrame(FrameErrorCode code, const std::string& reason);
-    void createFailFrame(FrameErrorCode code, const std::string &reason, const std::list<std::pair<reftype_t, refvalue_t> > &refs);
-
   private:
     /// Version of protocol that this frame is encoded with
     ProtocolVersion version;
