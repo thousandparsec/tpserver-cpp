@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 class Frame;
+class InputFrame;
 
 /**
  * 3D Vector implementation based on 64-bit integers

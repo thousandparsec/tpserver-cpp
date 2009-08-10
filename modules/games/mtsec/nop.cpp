@@ -50,7 +50,7 @@ void Nop::createFrame(Frame * f, int pos)
   Order::createFrame(f, pos);
 }
 
-void Nop::inputFrame(Frame * f, uint32_t playerid)
+void Nop::inputFrame(InputFrame * f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
   turns = timeparam->getTime();
