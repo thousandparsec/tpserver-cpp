@@ -46,11 +46,6 @@
 #endif
 
 // Default to creating version 3 frames
-Frame::Frame()
-{
-  Frame::Frame(fv0_3);
-}
-
 Frame::Frame(ProtocolVersion v)
   : version(v), type(ft_Invalid), typeversion(0),
     sequence(0), padstrings(false),
@@ -355,4 +350,15 @@ IdSet Frame::unpackIdSet(){
   }
   return set;
 }
+
+InputFrame::InputFrame(ProtocolVersion v)
+  : Frame(v)
+{
+}
+
+OutputFrame::OutputFrame(ProtocolVersion v)
+  : Frame(v)
+{
+}
+
 

@@ -189,7 +189,7 @@ void TcpConnection::sendString(const std::string& str){
   send_buffer = str;
   send_buffer_pos = 0;
 
-  sendFrame(new Frame(fv0_3));
+  sendFrame(new OutputFrame(fv0_3));
 }
 
 
@@ -335,7 +335,7 @@ void TcpConnection::processVersionCheck() {
     return;
   }
 
-  Frame *recvframe = new Frame(fv0_3);
+  Frame *recvframe = new InputFrame();
   uint32_t hlen = recvframe->getHeaderLength();
 
   if (rheaderbuff == NULL) {
@@ -441,7 +441,7 @@ void TcpConnection::processVersionCheck() {
       INFO("TcpConnection : Client has version %d of protocol", version);
       if(version != recvframe->getVersion()){
         delete recvframe;
-        recvframe = new Frame(version);
+        recvframe = new InputFrame(version);
       }
       if (readFrame(recvframe)) {
         try {
@@ -559,10 +559,10 @@ Frame* TcpConnection::createFrame(Frame* oldframe)
 {
   Frame* newframe;
   if(oldframe != NULL) {
-    newframe = new Frame(oldframe->getVersion());
+    newframe = new OutputFrame(oldframe->getVersion());
     newframe->setSequence(oldframe->getSequence());
   } else {
-    newframe = new Frame(version);
+    newframe = new OutputFrame(version);
   }
   newframe->enablePaddingStrings(paddingfilter);
   return newframe;

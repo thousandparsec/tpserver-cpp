@@ -30,18 +30,6 @@
 class Frame {
   public:
     /**
-     * Standard constructor
-     *
-     * Creates version 3 frames
-     */
-    Frame();
-
-    /**
-     * Constructor setting a given version
-     */
-    explicit Frame(ProtocolVersion v);
-
-    /**
      * Destructor
      *
      * Frees data if needed
@@ -117,7 +105,7 @@ class Frame {
     IdMap unpackMap();
     IdSet unpackIdSet();
 
-  private:
+  protected:
     /// Version of protocol that this frame is encoded with
     ProtocolVersion version;
     /// Frame type
@@ -133,11 +121,37 @@ class Frame {
     /// Current unpack position
     uint32_t unpackptr;
  
+    /**
+     * Standard constructor
+     */
+    explicit Frame(ProtocolVersion v);
+
+  private:
+    /// Blocked default constructor
+    Frame() {}
     /// Blocked copy constructor
     Frame(const Frame &rhs) {};
     /// Blocked assignemnt operator
     Frame operator=(const Frame &rhs) { return Frame(); };
 
+};
+
+class InputFrame : public Frame {
+  public:
+    /**
+     * Standard constructor
+     *
+     * Creates version 3 frames
+     */
+    explicit InputFrame(ProtocolVersion v = fv0_3);
+};
+
+class OutputFrame : public Frame {
+  public:
+    /**
+     * Constructor setting a given version
+     */
+    explicit OutputFrame(ProtocolVersion v = fv0_3);
 };
 
 #endif
