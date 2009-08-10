@@ -85,16 +85,16 @@ void PlayerConnection::processLogin(){
 void PlayerConnection::processAccountFrame(Frame* frame)
 {
   if(Settings::getSettings()->get("add_players") == "yes"){
-    std::string username = frame->unpackStdString();
-    std::string password = frame->unpackStdString();
+    std::string username = frame->unpackString();
+    std::string password = frame->unpackString();
     username = username.substr(0, username.find('@'));
     if (username.length() > 0 && password.length() > 0) {
       INFO("PlayerConnection : Creating new player");
       Player::Ptr player = Game::getGame()->getPlayerManager()->createNewPlayer(username, password);
       if(player != NULL){
         // also email address and comment strings
-        player->setEmail(frame->unpackStdString());
-        player->setComment(frame->unpackStdString());
+        player->setEmail(frame->unpackString());
+        player->setComment(frame->unpackString());
         sendOK(frame,"Account created.");
         INFO("PlayerConnection : Account created ok for %s", username.c_str());
         playeragent = new PlayerAgent(this,player);
@@ -104,8 +104,7 @@ void PlayerConnection::processAccountFrame(Frame* frame)
       }
     }else{
       DEBUG("PlayerConnection : username or password == NULL in account frame");
-      sendFail(frame,fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
-      close();
+      throw FrameException( fec_FrameError, "Account Error - no username or password");	// TODO - should be a const or enum, Login error
     }
   }else{
     INFO("PlayerConnection : Account creation disabled, not creating account");

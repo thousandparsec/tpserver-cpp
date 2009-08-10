@@ -318,10 +318,10 @@ int Frame::unpackInt()
 }
 
 
-std::string Frame::unpackStdString(){
+std::string Frame::unpackString(){
   uint32_t len = unpackInt();
   if(unpackptr + len > data.length()){
-    throw new std::exception();
+    throw FrameException( fec_FrameError, "Not enough data to unpack string!" );
   }
   const char* pos = data.c_str() + unpackptr;
   unpackptr += len;
@@ -330,7 +330,7 @@ std::string Frame::unpackStdString(){
     int pad = unpackptr % 4;
     if(pad != 0){
       if(unpackptr + (4 - pad) > data.length()){
-        throw new std::exception();
+        throw FrameException( fec_FrameError, "Not enough data to unpack string padding!" );
       }
       unpackptr += 4-pad;
     }

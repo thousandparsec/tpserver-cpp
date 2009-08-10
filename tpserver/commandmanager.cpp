@@ -160,8 +160,8 @@ class SettingsSetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string setting = frame->unpackStdString();
-        std::string value = frame->unpackStdString();
+        std::string setting = frame->unpackString();
+        std::string value = frame->unpackString();
         Settings::getSettings()->set(setting, value);
         msg << "Setting value of \"" << setting << "\" to \"" << value << "\".";
         of->packInt(0);
@@ -179,7 +179,7 @@ class SettingsGetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string setting = frame->unpackStdString();
+        std::string setting = frame->unpackString();
         msg << "Setting \"" << setting << "\" is set to \"" << Settings::getSettings()->get(setting) << "\".";
         of->packInt(0);
         of->packString(msg.str());
@@ -235,7 +235,7 @@ class PluginLoadCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string plugin = frame->unpackStdString();
+        std::string plugin = frame->unpackString();
         if(PluginManager::getPluginManager()->load(plugin)){
             msg << "Plugin \"" << plugin << "\" was loaded.";
             of->packInt(0);
@@ -270,7 +270,7 @@ class RulesetSetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string ruleset = frame->unpackStdString();
+        std::string ruleset = frame->unpackString();
         if(PluginManager::getPluginManager()->loadRuleset(ruleset)){
             msg << "Ruleset \"" << ruleset << "\" was loaded.";
             of->packInt(0);
@@ -306,7 +306,7 @@ class TpschemeSetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string tpscheme = frame->unpackStdString();
+        std::string tpscheme = frame->unpackString();
         if(PluginManager::getPluginManager()->loadTpScheme(tpscheme)){
             msg << "TpScheme implementation \"" << tpscheme << "\" was loaded.";
             of->packInt(0);
@@ -327,7 +327,7 @@ class PersistenceSetCommand : public Command{
     }
     void action(Frame * frame, Frame * of){
         std::ostringstream msg;
-        std::string persist = frame->unpackStdString();
+        std::string persist = frame->unpackString();
         if(PluginManager::getPluginManager()->loadPersistence(persist)){
             msg << "Persistence method \"" << persist << "\" was loaded.";
             of->packInt(0);

@@ -710,8 +710,8 @@ void PlayerAgent::processPostMessage(Frame * frame){
       // only filled under TP02
       frame->unpackInt();
     }
-    msg->setSubject(frame->unpackStdString());
-    msg->setBody(frame->unpackStdString());
+    msg->setSubject(frame->unpackString());
+    msg->setBody(frame->unpackString());
     if(frame->getVersion() >= fv0_3){
       frame->unpackInt(); // turn created - overwritten by current turn number
       uint32_t numrefs = frame->unpackInt();
@@ -950,8 +950,8 @@ void PlayerAgent::processAddDesign(Frame* frame){
   for(int i = 0; i < numcats; i++){
     frame->unpackInt();
   }
-  design->setName(frame->unpackStdString());
-  design->setDescription(frame->unpackStdString());
+  design->setName(frame->unpackString());
+  design->setDescription(frame->unpackString());
   frame->unpackInt(); //number in use, (client) read only
   design->setOwner(player->getID());
   uint32_t tpid = frame->unpackInt();
@@ -988,8 +988,8 @@ void PlayerAgent::processModifyDesign(Frame* frame){
   for(int i = 0; i < numcats; i++){
     frame->unpackInt();
   }
-  design->setName(frame->unpackStdString());
-  design->setDescription(frame->unpackStdString());
+  design->setName(frame->unpackString());
+  design->setDescription(frame->unpackString());
   frame->unpackInt(); //number in use, (client) read only
   design->setOwner(player->getID());
   uint32_t tpid = frame->unpackInt();

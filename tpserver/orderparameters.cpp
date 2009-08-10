@@ -47,7 +47,7 @@ bool ListParameter::unpack(Frame *f){
     return false;
   for(int i = 0; i < selsize; i++){
     f->unpackInt();
-    std::string name = f->unpackStdString();
+    std::string name = f->unpackString();
     if(!f->isEnoughRemaining(8 + (selsize - i - 1) * 12))
       return false;
     f->unpackInt(); 
@@ -70,7 +70,7 @@ bool StringParameter::unpack(Frame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt();
-  string = f->unpackStdString();
+  string = f->unpackString();
   return true;
 }
 

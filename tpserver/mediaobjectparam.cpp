@@ -41,7 +41,7 @@ bool MediaObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
   if(!f->isEnoughRemaining(4))
     return false;
   //size = f->unpackInt64();
-  f->unpackStdString();
+  f->unpackString();
   return true;
 }
 

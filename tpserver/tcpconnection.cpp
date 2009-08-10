@@ -444,20 +444,25 @@ void TcpConnection::processVersionCheck() {
         recvframe = new Frame(version);
       }
       if (readFrame(recvframe)) {
-        if (recvframe->getType() == ft02_Connect) {
-          std::string clientsoft = recvframe->unpackStdString();
-          INFO("TcpConnection : Client on connection %d is [%s]", sockfd, clientsoft.c_str());
+        try {
+          if (recvframe->getType() == ft02_Connect) {
+            std::string clientsoft = recvframe->unpackString();
 
-          status = CONNECTED;
+            INFO("TcpConnection : Client on connection %d is [%s]", sockfd, clientsoft.c_str());
 
-          sendOK(recvframe,"Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
-// TODO: features before connect unsupported!
-//          } else if (recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get) {
-//            WARNING("TcpConnection : Get Features request before Connect frame, continuing anyway");
-//            processGetFeaturesFrame(recvframe);
-        } else {
-          WARNING("TcpConnection : First frame wasn't Connect or GetFeatures, was %d", recvframe->getType());
-          sendFail(recvframe,fec_ProtocolError, "First frame wasn't Connect (or GetFeatures in tp03), please try again");
+            status = CONNECTED;
+
+            sendOK(recvframe,"Protocol check ok, continue! Welcome to tpserver-cpp " VERSION);
+            // TODO: features before connect unsupported!
+            //          } else if (recvframe->getVersion() >= 3 && recvframe->getType() == ft03_Features_Get) {
+            //            WARNING("TcpConnection : Get Features request before Connect frame, continuing anyway");
+            //            processGetFeaturesFrame(recvframe);
+          } else {
+            throw FrameException( fec_ProtocolError, "First frame wasn't Connect (or GetFeatures in tp03), please try again" );
+          }
+        } catch ( FrameException& exception ) {
+          WARNING( "TcpConnection first FrameException : %s", exception.what() );
+          sendFail( recvframe, exception.getErrorCode(), exception.getErrorMessage() );
         }
       } else {
         DEBUG("TcpConnection : verCheck, did not get whole frame");
@@ -576,13 +581,10 @@ void TcpConnection::clearQueue() {
 
 bool TcpConnection::getAuth( Frame* frame, std::string& username, std::string& password ) {
   try{
-    if(!frame->isEnoughRemaining(10))
-      throw std::exception();
-    username = frame->unpackStdString();
-    if(!frame->isEnoughRemaining(5))
-      throw std::exception();
-    password = frame->unpackStdString();
-  }catch(std::exception e){
+    if(!frame->isEnoughRemaining(15)) throw FrameException( fec_FrameError );
+    username = frame->unpackString();
+    password = frame->unpackString();
+  }catch( FrameException& e ){
     DEBUG("TcpConnection : Login - not enough data");
     sendFail(frame, fec_FrameError, "Login Error - missing username or password");
     return false;

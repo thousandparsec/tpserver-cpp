@@ -22,6 +22,7 @@
 
 
 #include <tpserver/common.h>
+#include <tpserver/frameexception.h>
 
 /**
  * Frame class for representing TP protocol frames
@@ -110,7 +111,7 @@ class Frame {
     void advance(uint32_t amount);
 
     int unpackInt();
-    std::string unpackStdString();
+    std::string unpackString();
     int64_t unpackInt64();
     char unpackInt8();
     IdMap unpackMap();
