@@ -71,16 +71,15 @@ class TcpConnection: public Connection {
     void clearQueue();
 
     bool getAuth( Frame* frame, std::string& username, std::string& password );
+    // used by playerhttpconnection
+    std::string getHeader() const;
 
-    // used by httpconnection
-    // TODO: check!
-    // TODO: change to std::string
-    char* rheaderbuff;
   private:
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
 
     // TODO: change to std::string
+    char* rheaderbuff;
     char* rdatabuff;
     uint32_t rbuffused;
   

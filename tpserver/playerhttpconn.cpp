@@ -57,7 +57,11 @@ PlayerHttpConnection::~PlayerHttpConnection()
 int32_t PlayerHttpConnection::verCheckLastChance()
 {
   int32_t rtn = -1;
-  if(memcmp(rheaderbuff, "POST", 4) == 0 || memcmp(rheaderbuff, "GET ", 4) == 0){
+  std::string header = getHeader();
+  bool is_post = header.compare(0,4,"POST") == 0;
+  bool is_get  = header.compare(0,4,"GET ") == 0;
+
+  if(is_post || is_get){
     bool found = httpbuff.find("\r\n\r\n") != httpbuff.npos;
     if(!found){
       char* buff = new char[1024];
@@ -79,26 +83,27 @@ int32_t PlayerHttpConnection::verCheckLastChance()
         rtn = 0;
       }
       delete[] buff;
+      return rtn;
     }
     
     if(found){
       //Have the end of the headers
-      int offset = rheaderbuff[0] == 'P' ? 1 : 0;
+      int offset = is_post ? 1 : 0;
       std::string url = httpbuff.substr(offset, httpbuff.find(' ', offset));
       Logger::getLogger()->debug("Http url: %s", url.c_str());
       std::string response = "HTTP/1.0 200 OK\r\n";
       response += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
       response += "Pragma: no-cache\r\n\r\n";
-      if(rheaderbuff[0] == 'G' || url == "/"){
+      if(is_get || url == "/"){
         response += "<html><head><title>tpserver-cpp</title></head><body><p>Nothing to see here, move along</p></body></html>\n";
         sendString(response);
         close();
-        rtn = 1;
+        return 1;
       }else{
         sendString(response);
-        rtn = 1;
         httpbuff.clear();
       }
+      return 1;
     }
   }
   return rtn;

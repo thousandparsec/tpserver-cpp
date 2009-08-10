@@ -595,3 +595,7 @@ bool TcpConnection::getAuth( Frame* frame, std::string& username, std::string& p
   }
   return true;
 }
+
+std::string TcpConnection::getHeader() const {
+  return std::string( rheaderbuff, 16 );
+}
