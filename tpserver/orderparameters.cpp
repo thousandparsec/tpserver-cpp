@@ -39,7 +39,7 @@ void ListParameter::pack(Frame * f) const {
   f->packIdMap(list);
 }
 
-bool ListParameter::unpack(Frame *f){
+bool ListParameter::unpack( InputFrame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   int selsize = f->unpackInt(); // selectable list (should be zero)
@@ -66,7 +66,7 @@ void StringParameter::pack(Frame * f) const {
   f->packString(string);
 }
 
-bool StringParameter::unpack(Frame *f){
+bool StringParameter::unpack( InputFrame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt();
@@ -83,7 +83,7 @@ void TimeParameter::pack(Frame * f) const {
   f->packInt(1000);
 }
 
-bool TimeParameter::unpack(Frame *f){
+bool TimeParameter::unpack( InputFrame *f){
   if(!f->isEnoughRemaining(8))
     return false;
   turns = f->unpackInt();
@@ -99,7 +99,7 @@ void SpaceCoordParam::pack(Frame * f) const {
   position.pack(f);
 }
 
-bool SpaceCoordParam::unpack(Frame *f){
+bool SpaceCoordParam::unpack( InputFrame *f){
   if(!f->isEnoughRemaining(24))
     return false;
   position.unpack(f);
@@ -114,7 +114,7 @@ void ObjectOrderParameter::pack(Frame * f) const {
   f->packInt(object);
 }
 
-bool ObjectOrderParameter::unpack(Frame *f){
+bool ObjectOrderParameter::unpack( InputFrame *f){
   if(f->isEnoughRemaining(4)){
     object = f->unpackInt();
     return true;

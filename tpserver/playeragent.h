@@ -35,66 +35,66 @@ public:
   
   Player::Ptr getPlayer() const;
   
-  void processIGFrame(Frame * frame);
+  void processIGFrame( InputFrame* frame );
 
 private:
 
-  void processPermDisabled(Frame * frame);
+  void processPermDisabled( InputFrame* frame );
 
-  void processGetObjectById(Frame * frame);
-  void processGetObjectByPos(Frame * frame);
-  void processGetObjectIds(Frame * frame);
-  void processGetObjectIdsByPos(Frame * frame);
-  void processGetObjectIdsByContainer(Frame * frame);
+  void processGetObjectById( InputFrame* frame );
+  void processGetObjectByPos( InputFrame* frame );
+  void processGetObjectIds( InputFrame* frame );
+  void processGetObjectIdsByPos( InputFrame* frame );
+  void processGetObjectIdsByContainer( InputFrame* frame );
   
-  void processGetObjectDesc(Frame * frame);
-  void processGetObjectTypes(Frame * frame);
+  void processGetObjectDesc( InputFrame* frame );
+  void processGetObjectTypes( InputFrame* frame );
   
-  void processGetOrder(Frame * frame);
-  void processAddOrder(Frame * frame);
-  void processRemoveOrder(Frame * frame);
-  void processDescribeOrder(Frame * frame);
-  void processGetOrderTypes(Frame * frame);
-  void processProbeOrder(Frame * frame);
-  void processGetBoards(Frame * frame);
-  void processGetBoardIds(Frame * frame);
-  void processGetMessages(Frame * frame);
-  void processPostMessage(Frame * frame);
-  void processRemoveMessages(Frame * frame);
+  void processGetOrder( InputFrame* frame );
+  void processAddOrder( InputFrame* frame );
+  void processRemoveOrder( InputFrame* frame );
+  void processDescribeOrder( InputFrame* frame );
+  void processGetOrderTypes( InputFrame* frame );
+  void processProbeOrder( InputFrame* frame );
+  void processGetBoards( InputFrame* frame );
+  void processGetBoardIds( InputFrame* frame );
+  void processGetMessages( InputFrame* frame );
+  void processPostMessage( InputFrame* frame );
+  void processRemoveMessages( InputFrame* frame );
 
-  void processGetResourceDescription(Frame * frame);
-  void processGetResourceTypes(Frame* frame);
+  void processGetResourceDescription( InputFrame* frame );
+  void processGetResourceTypes( InputFrame* frame );
 
-  void processGetPlayer(Frame* frame);
-  void processGetPlayerIds(Frame* frame);
+  void processGetPlayer( InputFrame* frame );
+  void processGetPlayerIds( InputFrame* frame );
 
-  void processGetCategory(Frame* frame);
-  void processGetCategoryIds(Frame* frame);
-  void processGetDesign(Frame* frame);
-  void processAddDesign(Frame* frame);
-  void processModifyDesign(Frame* frame);
-  void processGetDesignIds(Frame* frame);
-  void processGetComponent(Frame* frame);
-  void processGetComponentIds(Frame* frame);
-  void processGetProperty(Frame* frame);
-  void processGetPropertyIds(Frame* frame);
+  void processGetCategory( InputFrame* frame );
+  void processGetCategoryIds( InputFrame* frame );
+  void processGetDesign( InputFrame* frame );
+  void processAddDesign( InputFrame* frame );
+  void processModifyDesign( InputFrame* frame );
+  void processGetDesignIds( InputFrame* frame );
+  void processGetComponent( InputFrame* frame );
+  void processGetComponentIds( InputFrame* frame );
+  void processGetProperty( InputFrame* frame );
+  void processGetPropertyIds( InputFrame* frame );
   
-  void processTurnFinished(Frame* frame);
+  void processTurnFinished( InputFrame* frame );
 
   /**
    * Checks if version is at least the one passed, if not then throws FrameException
    */
-  void versionCheck( Frame* frame, ProtocolVersion min_version );
+  void versionCheck( InputFrame* frame, ProtocolVersion min_version );
   /**
    * Checks if the length of the frame is equal to the given value, if not then 
    * throws FrameException.
    */
-  void lengthCheck( Frame* frame, uint32_t length );
+  void lengthCheck( InputFrame* frame, uint32_t length );
   /**
    * Checks if the length of the frame is at least the size of the given value, if 
    * not, throws FrameException.
    */
-  void lengthCheckMin( Frame* frame, uint32_t length );
+  void lengthCheckMin( InputFrame* frame, uint32_t length );
 
   /**
    * Checks for initial length 4 of frame data, then unpacks the number of components.
@@ -103,7 +103,7 @@ private:
    *
    * At the end if successful, sends the sequence via connection.
    */
-  int queryCheck( Frame* frame );
+  int queryCheck( InputFrame* frame );
 
   PlayerAgent(PlayerAgent & rhs);
   PlayerAgent operator=(PlayerAgent & rhs);

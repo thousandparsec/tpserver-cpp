@@ -46,7 +46,7 @@ class Order {
 
     virtual void createFrame(Frame * f, int pos);
     // throws FrameException
-    virtual void inputFrame(Frame * f, uint32_t playerid);
+    virtual void inputFrame(InputFrame * f, uint32_t playerid);
 
     virtual bool doOrder(IGObject::Ptr ob) = 0;
 

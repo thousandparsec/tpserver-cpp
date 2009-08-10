@@ -37,7 +37,7 @@ void Position3dObjectParam::packObjectFrame(Frame * f, uint32_t objID){
 }
 
 
-bool Position3dObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
+bool Position3dObjectParam::unpackModifyObjectFrame(InputFrame *f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(28))
     return false;

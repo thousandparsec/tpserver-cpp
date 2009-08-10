@@ -49,7 +49,7 @@ void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
   }
 }
 
-bool OrderQueueObjectParam::unpackModifyObjectFrame(Frame *f, uint32_t playerid){
+bool OrderQueueObjectParam::unpackModifyObjectFrame(InputFrame *f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(12))
     return false;

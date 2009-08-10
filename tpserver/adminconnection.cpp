@@ -118,7 +118,7 @@ void AdminConnection::processNormalFrame()
   delete frame;
 }
 
-void AdminConnection::processDescribeCommand(Frame * frame)
+void AdminConnection::processDescribeCommand(InputFrame * frame)
 {
   Logger::getLogger()->debug("doing describe command frame");
 
@@ -149,7 +149,7 @@ void AdminConnection::processDescribeCommand(Frame * frame)
   }
 }
 
-void AdminConnection::processGetCommandTypes(Frame * frame){
+void AdminConnection::processGetCommandTypes(InputFrame * frame){
   DEBUG("doing get command types frame");
 
   OutputFrame *of = createFrame(frame);
@@ -157,7 +157,7 @@ void AdminConnection::processGetCommandTypes(Frame * frame){
   sendFrame(of);
 }
 
-void AdminConnection::processCommand(Frame * frame){
+void AdminConnection::processCommand(InputFrame * frame){
   DEBUG("doing command frame");
 
   OutputFrame *of = createFrame(frame);

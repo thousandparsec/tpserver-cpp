@@ -89,7 +89,7 @@ void Order::createFrame(Frame * f, int pos)
   std::for_each( parameters.begin(), parameters.end(), boost::bind( &OrderParameter::pack, _1, f ) );
 }
 
-void Order::inputFrame(Frame * f, uint32_t playerid)
+void Order::inputFrame(InputFrame * f, uint32_t playerid)
 {
   //ready passed object, position, and type.
   if(!f->isEnoughRemaining(8))

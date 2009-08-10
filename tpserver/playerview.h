@@ -48,7 +48,7 @@ public:
   uint32_t getNumberOwnedObjects() const;
   IdSet getOwnedObjects() const;
   void processGetObject(uint32_t objid, Frame* frame);
-  void processGetObjectIds(Frame* in, Frame* out);
+  void processGetObjectIds(InputFrame* in, Frame* out);
 
   void addVisibleDesign( DesignView::Ptr design);
   void addVisibleDesign( uint32_t id, bool completely_visible );
@@ -59,7 +59,7 @@ public:
   IdSet getUsableDesigns() const;
   IdSet getVisibleDesigns() const;
   void processGetDesign(uint32_t designid, Frame* frame);
-  void processGetDesignIds(Frame* in, Frame* out);
+  void processGetDesignIds(InputFrame* in, Frame* out);
 
   void addVisibleComponent(ComponentView::Ptr comp);
   void addVisibleComponents( const IdSet& obids );
@@ -69,7 +69,7 @@ public:
   IdSet getVisibleComponents() const;
   IdSet getUsableComponents() const;
   void processGetComponent(uint32_t compid, Frame* frame);
-  void processGetComponentIds(Frame* in, Frame* out);
+  void processGetComponentIds(InputFrame* in, Frame* out);
   
   //for persistence only!
   void setVisibleObjects(const IdSet& obids);
@@ -93,7 +93,7 @@ private:
     uint32_t sequence;
     uint32_t pid;
     EntityInfo() : sequence( 0 ) {}
-    void processGetIds( Frame* in, Frame* out, FrameType type );
+    void processGetIds( InputFrame* in, Frame* out, FrameType type );
     void generateModList( uint64_t fromtime );
     void addVisible( EntityPtr entity );
     void addVisible( const IdSet& obids );

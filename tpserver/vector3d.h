@@ -145,7 +145,7 @@ class Vector3d {
     /**
      * Unpack the vector from the passed frame.
      */
-    void unpack(Frame * frame);
+    void unpack(InputFrame * frame);
 
   private:
     /// X-component value

@@ -37,12 +37,6 @@ class Frame {
     ~Frame();
 
 
-    /**
-     * CREATE header??
-     */
-    // TODO: This is something to be refactored!
-    int setHeader(const std::string& new_header);
-
     // TODO: once data is internall held as a string make it return a const std::string&
     std::string getPacket() const;
 
@@ -62,9 +56,6 @@ class Frame {
      * Equals to length of data section + length of header section
      */
     int getLength() const;
-
-    // Data
-    void setData( const std::string& new_data );
 
     // Type
     FrameType getType() const;
@@ -94,17 +85,6 @@ class Frame {
     void packIdMap(const IdMap& idmap);
     void packIdStringMap(const IdStringMap& idmap);
 
-    bool isEnoughRemaining(uint32_t size) const;
-    /// Advances the frame position by amount bytes
-    void advance(uint32_t amount);
-
-    int unpackInt();
-    std::string unpackString();
-    int64_t unpackInt64();
-    char unpackInt8();
-    IdMap unpackMap();
-    IdSet unpackIdSet();
-
   protected:
     /// Version of protocol that this frame is encoded with
     ProtocolVersion version;
@@ -118,8 +98,6 @@ class Frame {
     std::string data;
     /// Whether to pad strings with \0 values
     bool padstrings;
-    /// Current unpack position
-    uint32_t unpackptr;
  
     /**
      * Standard constructor
@@ -144,6 +122,31 @@ class InputFrame : public Frame {
      * Creates version 3 frames
      */
     explicit InputFrame(ProtocolVersion v = fv0_3);
+    
+    // Data
+    void setData( const std::string& new_data );
+   
+    /**
+     * CREATE header??
+     */
+    // TODO: This is something to be refactored!
+    int setHeader(const std::string& new_header);
+    
+    bool isEnoughRemaining(uint32_t size) const;
+    /// Advances the frame position by amount bytes
+    void advance(uint32_t amount);
+
+    int unpackInt();
+    std::string unpackString();
+    int64_t unpackInt64();
+    char unpackInt8();
+    IdMap unpackMap();
+    IdSet unpackIdSet();
+
+
+  private:
+    /// Current unpack position
+    uint32_t unpackptr;
 };
 
 class OutputFrame : public Frame {

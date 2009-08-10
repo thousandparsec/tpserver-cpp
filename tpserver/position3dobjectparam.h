@@ -32,7 +32,7 @@ public:
   virtual ~Position3dObjectParam();
 
   virtual void packObjectFrame(Frame * f, uint32_t objID);
-  virtual bool unpackModifyObjectFrame(Frame * f, uint32_t playerid);
+  virtual bool unpackModifyObjectFrame(InputFrame * f, uint32_t playerid);
 
   virtual ObjectParameter *clone() const;
 

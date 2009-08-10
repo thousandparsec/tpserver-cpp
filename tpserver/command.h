@@ -32,6 +32,7 @@ typedef enum {
 } CommandParamType;
 
 class Frame;
+class InputFrame;
 
 class CommandParameter {
   public:
@@ -67,7 +68,7 @@ class Command {
 
     void describeCommand(Frame * of) const;
 
-    virtual void action(Frame * frame, Frame * of) = 0;
+    virtual void action(InputFrame * frame, Frame * of) = 0;
 
   protected:
     void addCommandParameter(CommandParameter* cp);

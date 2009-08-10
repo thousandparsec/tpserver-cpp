@@ -37,7 +37,7 @@ class OrderManager{
     void describeOrder(uint32_t ordertype, Frame * f);
     void addOrderType(Order* prototype);
     uint32_t getOrderTypeByName(const std::string &name);
-    void doGetOrderTypes(Frame * frame, Frame * result);
+    void doGetOrderTypes(InputFrame * frame, Frame * result);
 
     Order* createOrder(uint32_t ot);
 

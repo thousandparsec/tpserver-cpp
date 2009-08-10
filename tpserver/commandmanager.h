@@ -26,6 +26,7 @@
 
 class Command;
 class Frame;
+class InputFrame;
 
 class CommandManager{
   public:
@@ -34,8 +35,8 @@ class CommandManager{
     bool checkCommandType(uint32_t type);
     void describeCommand(uint32_t cmdtype, Frame * of);
     void addCommandType(Command* cmd);
-    void doGetCommandTypes(Frame * frame, Frame * of);
-    void executeCommand(Frame * frame, Frame * of);
+    void doGetCommandTypes(InputFrame * frame, Frame * of);
+    void executeCommand(InputFrame * frame, Frame * of);
 
   private:
     CommandManager();

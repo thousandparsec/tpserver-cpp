@@ -48,8 +48,7 @@
 // Default to creating version 3 frames
 Frame::Frame(ProtocolVersion v)
   : version(v), type(ft_Invalid), typeversion(0),
-    sequence(0), padstrings(false),
-    unpackptr(0)
+    sequence(0), padstrings(false)
 {
 }
 
@@ -122,53 +121,6 @@ int Frame::getDataLength() const
   return data.length();
 }
 
-int Frame::setHeader(const std::string& new_header)
-{
-  const char* temp = new_header.data();
-
-  unpackptr = 0;
-  int len;
-
-  if (memcmp(temp, "TP", 2) == 0) {
-    temp += 2;
-
-    if(version <= 3){
-      char ver[] = {'\0','\0','\0'};
-      memcpy(ver, temp, 2);
-      int nversion = atoi(ver);
-      version = (ProtocolVersion)nversion;
-      temp += 2;
-    }else{
-      // version 4 and above
-      version = (ProtocolVersion)(*temp);
-      temp++;
-      typeversion = (uint32_t)(*temp);
-      temp++;
-    }
-
-
-    // pick up sequence number for versions greater than 02
-    int nseq;
-    memcpy(&nseq, temp, 4);
-    sequence = ntohl(nseq);
-    temp += 4;
-
-
-    int ntype;
-    memcpy(&ntype, temp, 4);
-    type = (FrameType) ntohl(ntype);
-    temp += 4;
-
-    int nlen;
-    memcpy(&nlen, temp, 4);
-    len = ntohl(nlen);
-    temp += 4;
-  } else {
-    len = -1;
-  }
-
-  return len;
-}
 
 bool Frame::setType(FrameType nt)
 {
@@ -177,13 +129,6 @@ bool Frame::setType(FrameType nt)
 
   type = nt;
   return true;
-}
-
-void Frame::setData( const std::string& new_data )
-{
-  unpackptr = 0;
-  // Actually the internal string reference count system prevents a copy here :)
-  data = new_data;
 }
 
 uint32_t Frame::getTypeVersion() const{
@@ -273,12 +218,73 @@ void Frame::packIdStringMap(const IdStringMap& idmap)
   }
 }
 
-bool Frame::isEnoughRemaining(uint32_t size) const{
+
+InputFrame::InputFrame(ProtocolVersion v)
+  : Frame(v), unpackptr(0)
+{
+}
+
+int InputFrame::setHeader(const std::string& new_header)
+{
+  const char* temp = new_header.data();
+
+  unpackptr = 0;
+  int len;
+
+  if (memcmp(temp, "TP", 2) == 0) {
+    temp += 2;
+
+    if(version <= 3){
+      char ver[] = {'\0','\0','\0'};
+      memcpy(ver, temp, 2);
+      int nversion = atoi(ver);
+      version = (ProtocolVersion)nversion;
+      temp += 2;
+    }else{
+      // version 4 and above
+      version = (ProtocolVersion)(*temp);
+      temp++;
+      typeversion = (uint32_t)(*temp);
+      temp++;
+    }
+
+
+    // pick up sequence number for versions greater than 02
+    int nseq;
+    memcpy(&nseq, temp, 4);
+    sequence = ntohl(nseq);
+    temp += 4;
+
+
+    int ntype;
+    memcpy(&ntype, temp, 4);
+    type = (FrameType) ntohl(ntype);
+    temp += 4;
+
+    int nlen;
+    memcpy(&nlen, temp, 4);
+    len = ntohl(nlen);
+    temp += 4;
+  } else {
+    len = -1;
+  }
+
+  return len;
+}
+
+void InputFrame::setData( const std::string& new_data )
+{
+  unpackptr = 0;
+  // Actually the internal string reference count system prevents a copy here :)
+  data = new_data;
+}
+
+bool InputFrame::isEnoughRemaining(uint32_t size) const{
   Logger::getLogger()->debug("isEnoughRemaining, checking for %d, have %d", size, data.length() - unpackptr);
   return (data.length() - unpackptr) >= size;
 }
 
-void Frame::advance( uint32_t amount )
+void InputFrame::advance( uint32_t amount )
 {
   uint32_t newoffset = unpackptr + amount;
   if (newoffset < data.length() - 4)
@@ -286,7 +292,7 @@ void Frame::advance( uint32_t amount )
   //else throw
 }
 
-int Frame::unpackInt()
+int InputFrame::unpackInt()
 {
   int nval;
   memcpy(&nval, data.c_str() + unpackptr, 4);
@@ -295,7 +301,7 @@ int Frame::unpackInt()
 }
 
 
-std::string Frame::unpackString(){
+std::string InputFrame::unpackString(){
   uint32_t len = unpackInt();
   if(unpackptr + len > data.length()){
     throw FrameException( fec_FrameError, "Not enough data to unpack string!" );
@@ -316,7 +322,7 @@ std::string Frame::unpackString(){
   return std::string(pos, len);
 }
 
-int64_t Frame::unpackInt64()
+int64_t InputFrame::unpackInt64()
 {
   int64_t nval;
   memcpy(&nval, data.c_str() + unpackptr, 8);
@@ -324,7 +330,7 @@ int64_t Frame::unpackInt64()
   return ntohq(nval);
 }
 
-char Frame::unpackInt8(){
+char InputFrame::unpackInt8(){
   char rval = data.c_str()[unpackptr];
   unpackptr += 1;
   if(padstrings)
@@ -332,7 +338,7 @@ char Frame::unpackInt8(){
   return rval;
 }
 
-IdMap Frame::unpackMap(){
+IdMap InputFrame::unpackMap(){
   IdMap map;
   uint32_t msize = unpackInt();
   for(uint32_t i = 0; i < msize; ++i){
@@ -342,7 +348,7 @@ IdMap Frame::unpackMap(){
   return map;
 }
 
-IdSet Frame::unpackIdSet(){
+IdSet InputFrame::unpackIdSet(){
   IdSet set;
   uint32_t msize = unpackInt();
   for(uint32_t i = 0; i < msize; ++i){
@@ -351,10 +357,6 @@ IdSet Frame::unpackIdSet(){
   return set;
 }
 
-InputFrame::InputFrame(ProtocolVersion v)
-  : Frame(v)
-{
-}
 
 OutputFrame::OutputFrame(ProtocolVersion v)
   : Frame(v)
