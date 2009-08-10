@@ -61,7 +61,7 @@ Order* Bombard::clone() const {
    return b;
 }
 
-void Bombard::inputFrame(Frame * f, uint32_t playerid) {
+void Bombard::inputFrame(InputFrame * f, uint32_t playerid) {
    Order::inputFrame(f, playerid);
 
    ObjectManager *om = Game::getGame()->getObjectManager();

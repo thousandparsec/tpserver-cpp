@@ -128,7 +128,7 @@ void ProductionOrder::createFrame(Frame *f, int pos) {
   Order::createFrame(f, pos);
 }
 
-void ProductionOrder::inputFrame(Frame *f, uint32_t playerid) {
+void ProductionOrder::inputFrame(InputFrame *f, uint32_t playerid) {
   Order::inputFrame(f, playerid);
 }
 
