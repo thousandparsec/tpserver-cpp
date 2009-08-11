@@ -21,8 +21,8 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/outputframe.h>
 
-class Frame;
 class IGObject;
 
 class ObjectBehaviour{

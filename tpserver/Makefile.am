@@ -20,7 +20,7 @@ AVAHIHEADERS =
 endif
 
 tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.cpp tcpconnection.cpp \
-		frame.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
+		frame.cpp inputframe.cpp outputframe.cpp game.cpp logging.cpp net.cpp settings.cpp player.cpp object.cpp \
 		order.cpp systemexception.cpp frameexception.cpp \
 		vector3d.cpp board.cpp message.cpp ordermanager.cpp objecttypemanager.cpp \
 		playerconnection.cpp tcpsocket.cpp property.cpp \
@@ -47,7 +47,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.c
 headersdir = $(includedir)/tpserver
 headers_HEADERS = modifiable.h common.h algorithms.h connection.h tcpconnection.h packable.h protocolobject.h protocolview.h \
 	identifiable.h nameable.h describable.h manager.h \
-	frame.h game.h logging.h net.h settings.h \
+	frame.h inputframe.h outputframe.h game.h logging.h net.h settings.h \
 	player.h object.h \
 	order.h systemexception.h frameexception.h \
 	vector3d.h board.h message.h ordermanager.h \

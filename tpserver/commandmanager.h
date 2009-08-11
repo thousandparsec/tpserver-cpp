@@ -20,7 +20,8 @@
  *
  */
 
-#include <tpserver/frame.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 
 class Command;
 

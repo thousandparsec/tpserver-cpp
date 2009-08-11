@@ -22,7 +22,8 @@
  */
 
 #include <tpserver/common.h>
-#include <tpserver/frame.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 #include <vector>
 
 class ObjectParameter;

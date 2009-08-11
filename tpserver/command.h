@@ -20,7 +20,8 @@
  *
  */
 
-#include <tpserver/frame.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 
 typedef enum {
     cpT_Invalid = -1,
@@ -29,8 +30,6 @@ typedef enum {
     cpT_Max
 } CommandParamType;
 
-class Frame;
-class InputFrame;
 
 class CommandParameter {
   public:

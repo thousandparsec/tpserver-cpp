@@ -21,11 +21,11 @@
  *
  */
 
-#include <queue>
-#include <stdint.h>
 #include <tpserver/connection.h>
-#include <tpserver/frame.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 #include <tpserver/packable.h>
+#include <queue>
 
 class TcpConnection: public Connection {
   public:

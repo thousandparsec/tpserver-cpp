@@ -22,6 +22,7 @@
 
 #include <tpserver/describable.h>
 #include <tpserver/packable.h>
+#include <tpserver/inputframe.h>
 
 // Used only by persistence
 typedef enum {

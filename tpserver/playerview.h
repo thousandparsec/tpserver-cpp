@@ -21,6 +21,7 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/inputframe.h>
 #include <tpserver/objectview.h>
 #include <tpserver/designview.h>
 #include <tpserver/componentview.h>

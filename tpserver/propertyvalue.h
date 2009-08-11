@@ -21,9 +21,7 @@
  */
 
 #include <tpserver/common.h>
-#include <tpserver/frame.h>
-
-class Frame;
+#include <tpserver/outputframe.h>
 
 class PropertyValue{
   public:

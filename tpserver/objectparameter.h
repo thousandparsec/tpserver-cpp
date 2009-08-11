@@ -20,7 +20,9 @@
  *
  */
 
-#include <stdint.h>
+#include <tpserver/common.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 
 typedef enum {
 	obpT_Invalid = -1,
@@ -38,8 +40,6 @@ typedef enum {
 
 	obpT_Max
 } ObjectParamType;
-
-class Frame;
 
 class ObjectParameter {
       public:

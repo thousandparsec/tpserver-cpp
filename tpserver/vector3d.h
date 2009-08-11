@@ -20,10 +20,10 @@
  *
  */
 
-#include <stdint.h>
+#include <tpserver/common.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 
-class Frame;
-class InputFrame;
 
 /**
  * 3D Vector implementation based on 64-bit integers
