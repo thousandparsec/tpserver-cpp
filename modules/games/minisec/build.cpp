@@ -20,7 +20,6 @@
 
 #include <math.h>
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/game.h>
@@ -58,7 +57,7 @@ Build::Build() : Order()
 Build::~Build(){
 }
 
-void Build::createFrame(Frame *f, int pos)
+void Build::createFrame(OutputFrame *f, int pos)
 {
   IGObject::Ptr planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   

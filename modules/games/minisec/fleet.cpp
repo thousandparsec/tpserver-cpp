@@ -20,7 +20,6 @@
 
 #include <math.h>
 
-#include <tpserver/frame.h>
 #include <tpserver/order.h>
 #include <tpserver/game.h>
 #include "planet.h"
@@ -166,7 +165,7 @@ void Fleet::setDamage(uint32_t nd){
     obj->touchModTime();
 }
 
-void Fleet::packExtraData(Frame * frame){
+void Fleet::packExtraData(OutputFrame * frame){
   OwnedObject::packExtraData(frame);
 
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(SHIPSGRPID,SHIPSPARAMID)))->getRefQuantityList();

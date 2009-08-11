@@ -19,7 +19,6 @@
  */
 
 #include <tpserver/order.h>
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/game.h>
 #include <tpserver/player.h>
@@ -43,7 +42,7 @@ Nop::Nop() : Order()
 Nop::~Nop(){
 }
 
-void Nop::createFrame(Frame * f, int pos)
+void Nop::createFrame(OutputFrame * f, int pos)
 {
   turns = timeparam->getTime();
   Order::createFrame(f, pos);

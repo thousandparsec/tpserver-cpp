@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/integerobjectparam.h>
 
@@ -46,7 +45,7 @@ Universe::~Universe(){
 }
 
 
-void Universe::packExtraData(Frame * frame){
+void Universe::packExtraData(OutputFrame * frame){
   frame->packInt(((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->getValue());
 }
 

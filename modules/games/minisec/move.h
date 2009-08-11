@@ -34,7 +34,7 @@ class Move : public Order{
 
     int getETA(IGObject::Ptr ob) const;
 
-    void createFrame(Frame * f, int pos);
+    void createFrame(OutputFrame * f, int pos);
     void inputFrame(InputFrame * f, uint32_t playerid);
 
     bool doOrder(IGObject::Ptr ob);

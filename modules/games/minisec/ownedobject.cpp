@@ -20,7 +20,6 @@
 
 #include <math.h>
 
-#include <tpserver/frame.h>
 #include <tpserver/order.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -68,7 +67,7 @@ void OwnedObject::setOwner(uint32_t no){
 
 
 
-void OwnedObject::packExtraData(Frame * frame){
+void OwnedObject::packExtraData(OutputFrame * frame){
   SpaceObject::packExtraData(frame);
   
   ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)));
