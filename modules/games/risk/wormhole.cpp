@@ -19,7 +19,6 @@
  *
  */
 
-#include <tpserver/frame.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/sizeobjectparam.h>
@@ -56,7 +55,7 @@ int Wormhole::getContainerType() {
    return ContainerTypes_::StaticObject;
 }
 
-void Wormhole::packExtraData(Frame *frame) {
+void Wormhole::packExtraData(OutputFrame *frame) {
    Vector3d end = getExit();
    frame->packInt64(end.getX());
    frame->packInt64(end.getY());

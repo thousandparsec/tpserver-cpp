@@ -23,7 +23,6 @@
 #include <cmath>
 #include <map>
 
-#include <tpserver/frame.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 #include <tpserver/refsys.h>
@@ -130,7 +129,7 @@ int Planet::getContainerType() {
    return ContainerTypes_::Planet;
 }
 
-void Planet::packExtraData(Frame * frame){
+void Planet::packExtraData(OutputFrame * frame){
    ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
    frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
 

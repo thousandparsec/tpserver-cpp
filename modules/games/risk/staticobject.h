@@ -57,7 +57,7 @@ public:
    uint64_t getSize() const;
    void setSize(uint64_t ns);
 
-   virtual void packExtraData(Frame * frame);
+   virtual void packExtraData(OutputFrame * frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 

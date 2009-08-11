@@ -43,7 +43,7 @@ public:
    Universe();
    virtual ~Universe() {}
 
-   virtual void packExtraData(Frame* frame);
+   virtual void packExtraData(OutputFrame* frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 

@@ -43,7 +43,7 @@ public:
    Wormhole();
    virtual ~Wormhole() {}
 
-   virtual void packExtraData(Frame* frame);
+   virtual void packExtraData(OutputFrame* frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 
