@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "mediaobjectparam.h"
 
 MediaObjectParam::MediaObjectParam() : ObjectParameter(), murl(){

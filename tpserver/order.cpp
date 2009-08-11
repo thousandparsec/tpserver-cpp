@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "frame.h"
 #include "orderparameter.h"
 #include "game.h"
 #include "ordermanager.h"

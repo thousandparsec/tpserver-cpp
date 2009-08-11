@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "position3dobjectparam.h"
 
 Position3dObjectParam::Position3dObjectParam() : ObjectParameter(), position(), relative(0){

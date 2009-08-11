@@ -18,9 +18,6 @@
  *
  */
 
-#include <stdlib.h>
-
-#include "frame.h"
 #include "objectparameter.h"
 
 #include "objectparametergroup.h"

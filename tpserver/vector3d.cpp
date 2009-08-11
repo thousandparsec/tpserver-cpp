@@ -21,8 +21,6 @@
 #include <math.h>
 #include <cassert>
 
-#include "frame.h"
-
 #include "vector3d.h"
 
 Vector3d::Vector3d(){

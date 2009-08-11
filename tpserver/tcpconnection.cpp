@@ -35,11 +35,9 @@
 
 #include "logging.h"
 #include "net.h"
-#include "frame.h"
 
 #include "systemexception.h"
 #include "tcpconnection.h"
-#include "frameexception.h"
 
 TcpConnection::TcpConnection(int fd, Type aType) 
   : Connection(fd,aType), 

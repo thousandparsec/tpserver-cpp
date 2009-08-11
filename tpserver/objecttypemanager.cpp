@@ -19,8 +19,6 @@
  */
 
 #include "objecttype.h"
-#include "frame.h"
-#include "frameexception.h"
 #include "object.h"
 #include "algorithms.h"
 

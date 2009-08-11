@@ -19,7 +19,6 @@
  */
 
 #include <stdlib.h>
-#include "frame.h"
 #include "orderparameters.h"
 
 ListParameter::ListParameter(const std::string& aname, const std::string& adesc, Callback acallback) : OrderParameter(aname,adesc),  callback(acallback){

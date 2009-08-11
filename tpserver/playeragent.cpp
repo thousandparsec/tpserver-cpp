@@ -24,7 +24,6 @@
 // #include "string.h"
 
 #include "playerconnection.h"
-#include "frame.h"
 #include "logging.h"
 #include "game.h"
 #include "object.h"

@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "sizeobjectparam.h"
 
 SizeObjectParam::SizeObjectParam() : ObjectParameter(), size(0){

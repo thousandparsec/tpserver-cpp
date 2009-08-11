@@ -20,8 +20,7 @@
  *
  */
 
-#include <stdint.h>
-
+#include <tpserver/outputframe.h>
 #include <tpserver/asyncframe.h>
 
 class AsyncTimeRemaining: public AsyncFrame{

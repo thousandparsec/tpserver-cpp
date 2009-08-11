@@ -20,8 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
-#include "frameexception.h"
 #include "game.h"
 #include "objectmanager.h"
 #include "object.h"

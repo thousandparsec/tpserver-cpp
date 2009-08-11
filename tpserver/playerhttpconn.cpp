@@ -35,7 +35,6 @@
 
 #include "logging.h"
 #include "net.h"
-#include "frame.h"
 #include "game.h"
 #include "player.h"
 

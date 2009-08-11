@@ -20,7 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
 #include "game.h"
 #include "component.h"
 #include "designstore.h"

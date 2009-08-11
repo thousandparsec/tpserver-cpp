@@ -22,11 +22,9 @@
 #include <time.h>
 
 #include "logging.h"
-#include "frame.h"
 #include "game.h"
 #include "designstore.h"
 #include "persistence.h"
-#include "frameexception.h"
 
 #include "playerview.h"
 

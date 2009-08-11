@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "velocity3dobjectparam.h"
 
 Velocity3dObjectParam::Velocity3dObjectParam() : ObjectParameter(), velocity(), relative(0){

@@ -21,7 +21,6 @@
 #include <string.h>
 #include <cassert>
 
-#include "frame.h"
 #include "logging.h"
 #include "game.h"
 #include "objectmanager.h"

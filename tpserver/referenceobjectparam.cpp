@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "referenceobjectparam.h"
 
 ReferenceObjectParam::ReferenceObjectParam() : ObjectParameter(), reftype(0), refid(0){

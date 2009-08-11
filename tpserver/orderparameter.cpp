@@ -18,11 +18,6 @@
  *
  */
 
-#include <stdlib.h>
-#include <time.h>
-
-#include "frame.h"
-
 #include "orderparameter.h"
 
 OrderParameter::OrderParameter(const std::string& aname, const std::string& adesc ) : Describable(0,aname,adesc){

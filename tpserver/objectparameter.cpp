@@ -18,10 +18,6 @@
  *
  */
 
-#include <stdlib.h>
-
-#include "frame.h"
-
 #include "objectparameter.h"
 
 ObjectParameter::ObjectParameter() : type(0){

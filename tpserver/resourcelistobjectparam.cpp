@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "resourcelistobjectparam.h"
 
 ResourceListObjectParam::ResourceListObjectParam() : ObjectParameter(), resources(){

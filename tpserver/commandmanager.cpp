@@ -37,8 +37,6 @@
 #include "turntimer.h"
 #include "net.h"
 #include "pluginmanager.h"
-#include "frame.h"
-#include "frameexception.h"
 #include "algorithms.h"
 
 #include "commandmanager.h"

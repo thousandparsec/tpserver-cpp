@@ -18,7 +18,6 @@
  *
  */
 
-#include "frame.h"
 #include "object.h"
 
 #include "objectbehaviour.h"

@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "resourcedescription.h"
 
 ResourceDescription::ResourceDescription()

@@ -18,10 +18,6 @@
  *
  */
 
-#include <stdlib.h>
-#include <exception>
-
-#include "frame.h"
 #include "position3dobjectparam.h"
 #include "velocity3dobjectparam.h"
 #include "sizeobjectparam.h"

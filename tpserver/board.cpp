@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-#include "frameexception.h"
 #include "message.h"
 #include "game.h"
 #include "boardmanager.h"

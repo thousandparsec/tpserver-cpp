@@ -25,7 +25,6 @@
 #endif
 
 #include "adminconnection.h"
-#include "frame.h"
 
 #include "adminlogger.h"
 

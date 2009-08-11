@@ -42,7 +42,6 @@
 #include "tcpsocket.h"
 #include "admintcpsocket.h"
 #include "game.h"
-#include "frame.h"
 #include "httpsocket.h"
 #include "advertiser.h"
 #include "timercallback.h"

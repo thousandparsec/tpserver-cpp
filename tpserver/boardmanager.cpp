@@ -23,7 +23,6 @@
 #include "persistence.h"
 #include "message.h"
 #include "logging.h"
-#include "frame.h"
 #include "algorithms.h"
 
 #include "boardmanager.h"

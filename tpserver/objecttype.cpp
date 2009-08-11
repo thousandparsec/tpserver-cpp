@@ -20,7 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
 #include "objectbehaviour.h"
 #include "algorithms.h"
 #include <boost/bind.hpp>

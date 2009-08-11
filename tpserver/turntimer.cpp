@@ -23,7 +23,6 @@
 #include "net.h"
 #include "playermanager.h"
 #include "player.h"
-#include "frame.h"
 #include "settings.h"
 #include "asynctimeremaining.h"
 

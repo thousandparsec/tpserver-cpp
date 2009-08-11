@@ -30,8 +30,6 @@
 #include "adminlogger.h"
 #include "net.h"
 #include "commandmanager.h"
-#include "frame.h"
-#include "frameexception.h"
 
 #include "adminconnection.h"
 

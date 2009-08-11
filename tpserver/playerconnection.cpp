@@ -28,14 +28,12 @@
 
 #include "logging.h"
 #include "net.h"
-#include "frame.h"
 #include "game.h"
 #include "player.h"
 #include "playermanager.h"
 #include "settings.h"
 #include "playeragent.h"
 #include "turntimer.h"
-#include "frameexception.h"
 
 #include "playerconnection.h"
 

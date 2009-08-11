@@ -20,8 +20,6 @@
 
 #include <time.h>
 
-#include "frame.h"
-
 #include "property.h"
 
 Property::Property() : ProtocolObject(ft03_Property,0,"",""), rank(0) {

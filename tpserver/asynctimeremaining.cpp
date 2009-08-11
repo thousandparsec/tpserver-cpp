@@ -18,7 +18,6 @@
  *
  */
 
-#include "outputframe.h"
 #include "game.h"
 
 #include "asynctimeremaining.h"

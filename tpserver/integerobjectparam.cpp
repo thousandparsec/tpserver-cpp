@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "integerobjectparam.h"
 
 IntegerObjectParam::IntegerObjectParam() : ObjectParameter(), value(0){

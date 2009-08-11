@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "refquantitylistobjectparam.h"
 
 RefQuantityListObjectParam::RefQuantityListObjectParam() : ObjectParameter(), refquant(){

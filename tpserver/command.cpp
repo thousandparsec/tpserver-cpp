@@ -18,8 +18,6 @@
  *
  */
 
-#include "frame.h"
-
 #include "command.h"
 #include <boost/bind.hpp>
 

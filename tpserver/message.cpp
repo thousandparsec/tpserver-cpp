@@ -18,7 +18,6 @@
  *
  */
 
-#include "frame.h"
 #include "game.h"
 
 #include "message.h"
