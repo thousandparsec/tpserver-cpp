@@ -199,7 +199,7 @@ void PlayerConnection::processPingFrame(InputFrame* frame)
   }
 }
 
-void PlayerConnection::processGetFeaturesFrame(Frame* frame){
+void PlayerConnection::processGetFeaturesFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing Get Features frame");
   OutputFrame *features = createFrame(frame);
   features->setType(ft03_Features);

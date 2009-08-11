@@ -35,7 +35,7 @@ class PlayerConnection: public TcpConnection {
     PlayerConnection(int fd);
 
   protected:
-    void processGetFeaturesFrame(Frame* frame);
+    void processGetFeaturesFrame(InputFrame* frame);
 
   private:
     virtual void processNormalFrame();

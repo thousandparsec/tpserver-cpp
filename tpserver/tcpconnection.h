@@ -34,7 +34,7 @@ class TcpConnection: public Connection {
     virtual void close();
     
     // DEPRECATED
-    OutputFrame* createFrame(Frame* oldframe = NULL);
+    OutputFrame* createFrame(InputFrame* oldframe = NULL);
 
     // DEPRECATED
     virtual void sendFrame( OutputFrame* frame );
@@ -44,12 +44,12 @@ class TcpConnection: public Connection {
 
     ProtocolVersion getProtocolVersion();
 
-    void sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error );
-    void sendSequence(Frame* oldframe, size_t sequence_size );
-    void send(Frame* oldframe, const Packable* packable );
-    void send(Frame* oldframe, const Packable::Ptr packable );
-    void sendOK(Frame* oldframe, const std::string& message );
-    void sendModList(Frame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
+    void sendFail(InputFrame* oldframe, FrameErrorCode code, const std::string& error );
+    void sendSequence(InputFrame* oldframe, size_t sequence_size );
+    void send(InputFrame* oldframe, const Packable* packable );
+    void send(InputFrame* oldframe, const Packable::Ptr packable );
+    void sendOK(InputFrame* oldframe, const std::string& message );
+    void sendModList(InputFrame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
         uint32_t count, uint32_t start, uint64_t fromtime );
   protected:
     TcpConnection(int fd, Type aType);

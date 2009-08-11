@@ -488,7 +488,7 @@ void TcpConnection::processVersionCheck() {
 }
 
 
-void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::string& error ) {
+void TcpConnection::sendFail(InputFrame* oldframe, FrameErrorCode code, const std::string& error ) {
   OutputFrame* frame = createFrame( oldframe );
   frame->setType( ft02_Fail );
   frame->packInt( code );
@@ -499,7 +499,7 @@ void TcpConnection::sendFail(Frame* oldframe, FrameErrorCode code, const std::st
 }
 
 
-void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
+void TcpConnection::sendSequence(InputFrame* oldframe, size_t sequence_size )
 {
   OutputFrame* frame = createFrame(oldframe);
   frame->setType( ft02_Sequence );
@@ -507,21 +507,21 @@ void TcpConnection::sendSequence(Frame* oldframe, size_t sequence_size )
   sendFrame(frame);
 }
 
-void TcpConnection::send(Frame* oldframe, const Packable* packable )
+void TcpConnection::send(InputFrame* oldframe, const Packable* packable )
 {
   OutputFrame* frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
-void TcpConnection::send(Frame* oldframe, const Packable::Ptr packable )
+void TcpConnection::send(InputFrame* oldframe, const Packable::Ptr packable )
 {
   OutputFrame* frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
-void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
+void TcpConnection::sendOK(InputFrame* oldframe, const std::string& message )
 {
   OutputFrame* frame = createFrame(oldframe);
   frame->setType( ft02_OK );
@@ -529,7 +529,7 @@ void TcpConnection::sendOK(Frame* oldframe, const std::string& message )
   sendFrame(frame);
 }
 
-void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist, uint32_t count, uint32_t start, uint64_t fromtime ) 
+void TcpConnection::sendModList(InputFrame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist, uint32_t count, uint32_t start, uint64_t fromtime ) 
 {
   if(start > modlist.size()){
     DEBUG("Starting number too high, snum = %d, size = %d", start, modlist.size());
@@ -555,7 +555,7 @@ void TcpConnection::sendModList(Frame* oldframe, FrameType ft, uint32_t sequence
   sendFrame(frame);
 }
 
-OutputFrame* TcpConnection::createFrame(Frame* oldframe)
+OutputFrame* TcpConnection::createFrame(InputFrame* oldframe)
 {
   OutputFrame* newframe;
   if(oldframe != NULL) {
