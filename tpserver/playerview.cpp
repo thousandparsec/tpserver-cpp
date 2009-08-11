@@ -110,7 +110,7 @@ IdSet PlayerView::getOwnedObjects() const{
   return objects.actable;
 }
 
-void PlayerView::processGetObject(uint32_t objid, Frame* frame){
+void PlayerView::processGetObject(uint32_t objid, OutputFrame* frame){
   if(!objects.isVisible(objid)){
     throw FrameException(fec_NonExistant, "No Such Object");
   }else{
@@ -118,7 +118,7 @@ void PlayerView::processGetObject(uint32_t objid, Frame* frame){
   }
 }
 
-void PlayerView::processGetObjectIds(InputFrame* in, Frame* out){
+void PlayerView::processGetObjectIds(InputFrame* in, OutputFrame* out){
   objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
 
@@ -154,7 +154,7 @@ IdSet PlayerView::getVisibleDesigns() const{
   return designs.visible;
 }
 
-void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
+void PlayerView::processGetDesign(uint32_t designid, OutputFrame* frame){
   if(!designs.isVisible(designid)){
     throw FrameException(fec_NonExistant, "No Such Design");
   }else{
@@ -162,7 +162,7 @@ void PlayerView::processGetDesign(uint32_t designid, Frame* frame){
   }
 }
 
-void PlayerView::processGetDesignIds(InputFrame* in, Frame* out){
+void PlayerView::processGetDesignIds(InputFrame* in, OutputFrame* out){
   designs.processGetIds( in, out, ft03_DesignIds_List );
 }
 
@@ -194,7 +194,7 @@ IdSet PlayerView::getUsableComponents() const{
   return components.actable;
 }
 
-void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
+void PlayerView::processGetComponent(uint32_t compid, OutputFrame* frame){
   if(components.visible.find(compid) == components.visible.end()){
     throw FrameException(fec_NonExistant, "No Such Component");
   }else{
@@ -202,7 +202,7 @@ void PlayerView::processGetComponent(uint32_t compid, Frame* frame){
   }
 }
 
-void PlayerView::processGetComponentIds(InputFrame* in, Frame* out){
+void PlayerView::processGetComponentIds(InputFrame* in, OutputFrame* out){
   components.processGetIds( in, out, ft03_ComponentIds_List );
 }
 
@@ -231,7 +231,7 @@ void PlayerView::setUsableComponents(const IdSet& cids){
 }
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame* in, Frame* out, FrameType type )
+void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame* in, OutputFrame* out, FrameType type )
 {
   DEBUG("doing Get Ids frame");
   

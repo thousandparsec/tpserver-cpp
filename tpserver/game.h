@@ -39,7 +39,7 @@ class Persistence;
 class TpScheme;
 class TimerCallback;
 class Random;
-class Frame;
+class OutputFrame;
 class TurnTimer;
 
 class Game {
@@ -92,7 +92,7 @@ class Game {
 
     void saveAndClose();
 
-    void packGameInfoFrame(Frame* frame);
+    void packGameInfoFrame(OutputFrame* frame);
     
     //For persistence only
     void setTurnNumber(uint32_t t);

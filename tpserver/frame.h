@@ -37,9 +37,6 @@ class Frame {
     ~Frame();
 
 
-    // TODO: once data is internall held as a string make it return a const std::string&
-    std::string getPacket() const;
-
     /**
      * Return the length of the header section
      */
@@ -59,31 +56,18 @@ class Frame {
 
     // Type
     FrameType getType() const;
-    bool setType(FrameType nt);
 
     // frame type version
     uint32_t getTypeVersion() const;
-    void setTypeVersion(uint32_t tv);
 
     // Sequence
     int getSequence() const;
-    void setSequence(int s);
 
     // Version
     ProtocolVersion getVersion() const;
 
     //string padding
     bool isPaddingStrings() const;
-    void enablePaddingStrings(bool on);
-
-    void packString(const std::string &str);
-    void packInt(int val);
-    void packInt64(int64_t val);
-    void packInt8(char val);
-    void packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
-    void packIdSet(const IdSet& idset);
-    void packIdMap(const IdMap& idmap);
-    void packIdStringMap(const IdStringMap& idmap);
 
   protected:
     /// Version of protocol that this frame is encoded with
@@ -121,7 +105,7 @@ class InputFrame : public Frame {
      *
      * Creates version 3 frames
      */
-    explicit InputFrame(ProtocolVersion v = fv0_3);
+    explicit InputFrame(ProtocolVersion v = fv0_3, bool padding = false);
     
     // Data
     void setData( const std::string& new_data );
@@ -154,7 +138,24 @@ class OutputFrame : public Frame {
     /**
      * Constructor setting a given version
      */
-    explicit OutputFrame(ProtocolVersion v = fv0_3);
+    explicit OutputFrame(ProtocolVersion v = fv0_3, bool padding = false);
+    
+    std::string getPacket() const;
+    
+    bool setType(FrameType nt);
+    void setTypeVersion(uint32_t tv);
+    void setSequence(int s);
+    void setPadding(bool new_padding);
+
+    void packString(const std::string &str);
+    void packInt(int val);
+    void packInt64(int64_t val);
+    void packInt8(char val);
+    void packIdModList(const IdModList& modlist, uint32_t count = 0, uint32_t from_position = 0 );
+    void packIdSet(const IdSet& idset);
+    void packIdMap(const IdMap& idmap);
+    void packIdStringMap(const IdStringMap& idmap);
+
 };
 
 #endif

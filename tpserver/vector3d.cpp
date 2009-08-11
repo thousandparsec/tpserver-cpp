@@ -123,7 +123,7 @@ double Vector3d::getDistanceSq(const Vector3d & origin) const{
   return diff.getLengthSq();
 }
 
-void Vector3d::pack(Frame * frame) const{
+void Vector3d::pack(OutputFrame * frame) const{
   frame->packInt64(x);
   frame->packInt64(y);
   frame->packInt64(z);

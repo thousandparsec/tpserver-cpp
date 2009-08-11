@@ -46,7 +46,7 @@ void ObjectParameterGroupDesc::addParameter(uint32_t ptype, const std::string& p
   parameters.push_back(op);
 }
 
-void ObjectParameterGroupDesc::pack(Frame * f) const{
+void ObjectParameterGroupDesc::pack(OutputFrame * f) const{
 
   f->packInt(id);
   f->packString(name);

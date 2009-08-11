@@ -22,11 +22,9 @@
  */
 
 #include <tpserver/common.h>
-#include <boost/shared_ptr.hpp>
+#include <tpserver/frame.h>
 #include <vector>
 
-class Frame;
-class InputFrame;
 class ObjectParameter;
 
 class ObjectParameterGroup {
@@ -49,7 +47,7 @@ class ObjectParameterGroup {
     
     void addParameter(ObjectParameter* op);
     
-    void packObjectFrame(Frame * f, uint32_t playerid);
+    void packObjectFrame(OutputFrame * f, uint32_t playerid);
     bool unpackModifyObjectFrame(InputFrame * f, uint32_t playerid);
     
     void signalRemoval();

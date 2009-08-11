@@ -86,7 +86,7 @@ class TcpConnection: public Connection {
     std::string send_buffer;
     size_t send_buffer_pos;
 
-    std::queue<Frame*> sendqueue;
+    std::queue<OutputFrame*> sendqueue;
   
     bool sendandclose;
 

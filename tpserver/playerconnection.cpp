@@ -53,8 +53,7 @@ PlayerConnection::~PlayerConnection(){
 
 
 void PlayerConnection::processLogin(){
-  InputFrame *recvframe = new InputFrame(version);
-  recvframe->enablePaddingStrings(paddingfilter);
+  InputFrame *recvframe = new InputFrame(version,paddingfilter);
   if (readFrame(recvframe)) {
     try {
       if(recvframe->getType() == ft02_Login){
@@ -152,8 +151,7 @@ void PlayerConnection::processLoginFrame(InputFrame* frame)
 
 void PlayerConnection::processNormalFrame()
 {
-  InputFrame *frame = new InputFrame(version);
-  frame->enablePaddingStrings(paddingfilter);
+  InputFrame *frame = new InputFrame(version,paddingfilter);
   if (readFrame(frame)) {
     try {
       if(version >= fv0_3 && frame->getType() == ft03_Features_Get){

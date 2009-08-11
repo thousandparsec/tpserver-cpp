@@ -344,7 +344,7 @@ void Game::saveAndClose()
 	Logger::getLogger()->info("Game saved & closed");
 }
 
-void Game::packGameInfoFrame(Frame* frame){
+void Game::packGameInfoFrame(OutputFrame* frame){
   frame->setType(ft04_GameInfo);
   Settings* settings = Settings::getSettings();
   if(settings->get("game_shortname").empty()){

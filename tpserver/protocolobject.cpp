@@ -24,7 +24,7 @@
 
 FrameType ProtocolObject::frame_type = ft02_Invalid;
 
-void ProtocolObject::pack( Frame* frame ) const
+void ProtocolObject::pack( OutputFrame* frame ) const
 {
   frame->setType(frame_type);
   frame->packInt(id);

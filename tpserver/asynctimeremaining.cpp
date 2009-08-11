@@ -29,7 +29,7 @@ AsyncTimeRemaining::AsyncTimeRemaining(uint32_t rt, uint32_t r): AsyncFrame(), r
 AsyncTimeRemaining::~AsyncTimeRemaining(){
 }
 
-bool AsyncTimeRemaining::createFrame(Frame* f){
+bool AsyncTimeRemaining::createFrame(OutputFrame* f) {
   f->setType(ft02_Time_Remaining);
   f->packInt(rtime);
   if(f->getVersion() >= fv0_4){

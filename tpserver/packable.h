@@ -26,7 +26,7 @@
 class Packable {
   public:
     typedef boost::shared_ptr<Packable> Ptr;
-    virtual void pack( Frame* frame ) const = 0;
+    virtual void pack( OutputFrame* frame ) const = 0;
 };
 
 #endif // PACKABLE_H

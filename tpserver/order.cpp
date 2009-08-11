@@ -74,7 +74,7 @@ Order::ParameterList Order::getParameters() const{
   return parameters;
 }
 
-void Order::createFrame(Frame * f, int pos)
+void Order::createFrame(OutputFrame * f, int pos)
 {
   f->setType(ft02_Order);
   if(f->getVersion() <= fv0_3){
@@ -111,7 +111,7 @@ void Order::inputFrame(InputFrame * f, uint32_t playerid)
 }
 
 
-void Order::describeOrder(Frame * f) const
+void Order::describeOrder(OutputFrame * f) const
 {
   f->setType(ft02_OrderDesc);
   f->packInt(type);

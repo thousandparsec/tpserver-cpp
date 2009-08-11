@@ -34,7 +34,7 @@ OrderQueueObjectParam::~OrderQueueObjectParam(){
 }
 
 
-void OrderQueueObjectParam::packObjectFrame(Frame * f, uint32_t playerid){
+void OrderQueueObjectParam::packObjectFrame(OutputFrame * f, uint32_t playerid){
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   if(orderqueue->isOwner(playerid)){
     f->packInt(queueid);

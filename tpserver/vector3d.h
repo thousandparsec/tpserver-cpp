@@ -141,7 +141,7 @@ class Vector3d {
     /**
      * Pack the vector into the passed frame.
      */
-    void pack(Frame * frame) const;
+    void pack(OutputFrame * frame) const;
 
     /**
      * Unpack the vector from the passed frame.

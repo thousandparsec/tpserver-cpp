@@ -33,7 +33,7 @@ class ObjectBehaviour{
     
     void setObject(IGObject* nobj);
     
-    virtual void packExtraData(Frame * frame);
+    virtual void packExtraData(OutputFrame * frame);
     virtual void doOnceATurn() = 0;
     virtual int getContainerType() = 0;
     

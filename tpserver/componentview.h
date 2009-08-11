@@ -33,7 +33,7 @@ class ComponentView : public ProtocolView {
   ComponentView( uint32_t new_id, bool visibility );
   virtual ~ComponentView();
 
-  void pack(Frame* frame) const;
+  void pack(OutputFrame* frame) const;
 
   uint32_t getComponentId() const;
   

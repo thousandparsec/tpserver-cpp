@@ -31,7 +31,7 @@ Position3dObjectParam::~Position3dObjectParam(){
 }
 
 
-void Position3dObjectParam::packObjectFrame(Frame * f, uint32_t objID){
+void Position3dObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
   position.pack(f);
   f->packInt(relative);
 }

@@ -31,7 +31,7 @@ IntegerObjectParam::~IntegerObjectParam(){
 }
 
 
-void IntegerObjectParam::packObjectFrame(Frame * f, uint32_t objID){
+void IntegerObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
   f->packInt(value);
 }
 

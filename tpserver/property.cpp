@@ -27,7 +27,7 @@
 Property::Property() : ProtocolObject(ft03_Property,0,"",""), rank(0) {
 }
 
-void Property::pack(Frame* frame) const {
+void Property::pack(OutputFrame* frame) const {
   frame->setType(ft03_Property);
   frame->packInt(id);
   frame->packInt64(getModTime());

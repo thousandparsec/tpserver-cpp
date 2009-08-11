@@ -54,7 +54,7 @@ ObjectView::~ObjectView(){
 
 }
 
-void ObjectView::packFrame(Frame* frame, uint32_t playerid) const{
+void ObjectView::packFrame(OutputFrame* frame, uint32_t playerid) const{
   IGObject::Ptr object = Game::getGame()->getObjectManager()->getObject(id);
   
   if(gone || (completely_visible && (object == NULL || !object->isAlive()))){

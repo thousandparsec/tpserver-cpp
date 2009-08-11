@@ -64,12 +64,12 @@ class Board : public ProtocolObject, public boost::enable_shared_from_this<Board
     /**
      * Packs board information into a frame.
      */
-    void pack(Frame * frame) const;
+    void pack(OutputFrame * frame) const;
 
     /**
      * Packs the requested message into the frame
      */
-    void packMessage(Frame * frame, uint32_t msgnum);
+    void packMessage(OutputFrame * frame, uint32_t msgnum);
 
     /**
      * Get count of messages on board

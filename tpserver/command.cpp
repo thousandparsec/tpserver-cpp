@@ -48,7 +48,7 @@ std::string CommandParameter::getDescription() const
     return description;
 }
 
-void CommandParameter::packCommandDescFrame(Frame * of) const
+void CommandParameter::packCommandDescFrame(OutputFrame * of) const
 {
     of->packString(name);
     of->packInt(type);
@@ -98,7 +98,7 @@ uint64_t Command::getDescriptionModTime() const
     return descmodtime;
 }
 
-void Command::describeCommand(Frame * of) const
+void Command::describeCommand(OutputFrame * of) const
 {
     of->setType(ftad_CommandDesc);
     of->packInt(type);

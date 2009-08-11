@@ -20,23 +20,19 @@
  *
  */
 
-#include <map>
-#include <string>
-#include <stdint.h>
+#include <tpserver/frame.h>
 
 class Command;
-class Frame;
-class InputFrame;
 
 class CommandManager{
   public:
     static CommandManager *getCommandManager();
 
     bool checkCommandType(uint32_t type);
-    void describeCommand(uint32_t cmdtype, Frame * of);
+    void describeCommand(uint32_t cmdtype, OutputFrame * of);
     void addCommandType(Command* cmd);
-    void doGetCommandTypes(InputFrame * frame, Frame * of);
-    void executeCommand(InputFrame * frame, Frame * of);
+    void doGetCommandTypes(InputFrame * frame, OutputFrame * of);
+    void executeCommand(InputFrame * frame, OutputFrame * of);
 
   private:
     CommandManager();

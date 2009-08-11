@@ -31,7 +31,7 @@ RefQuantityListObjectParam::~RefQuantityListObjectParam(){
 }
 
 
-void RefQuantityListObjectParam::packObjectFrame(Frame * f, uint32_t objID){
+void RefQuantityListObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
   f->packInt(refquant.size());
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = refquant.begin();
       itcurr != refquant.end(); ++itcurr){

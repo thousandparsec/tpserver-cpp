@@ -37,7 +37,7 @@ class Category : public ProtocolObject {
 
     /// TODO: Remove, use getId instead
     uint32_t getCategoryId() const;
-    void pack(Frame* frame) const;
+    void pack(OutputFrame* frame) const;
 
     virtual bool doAddDesign(Design::Ptr d);
     virtual bool doModifyDesign(Design::Ptr d);

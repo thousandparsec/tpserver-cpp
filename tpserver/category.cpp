@@ -38,7 +38,7 @@ uint32_t Category::getCategoryId() const{
   return getId();
 }
 
-void Category::pack(Frame* frame) const{
+void Category::pack(OutputFrame* frame) const{
   frame->setType(ft03_Category);
   frame->packInt(id);
   // TODO: is this really correct???

@@ -31,7 +31,7 @@ SizeObjectParam::~SizeObjectParam(){
 }
 
 
-void SizeObjectParam::packObjectFrame(Frame * f, uint32_t objID){
+void SizeObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
   f->packInt64(size);
 }
 

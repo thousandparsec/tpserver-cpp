@@ -77,13 +77,13 @@ bool Board::removeMessage(uint32_t pos){
   return true;
 }
 
-void Board::pack(Frame * frame) const {
+void Board::pack(OutputFrame * frame) const {
   ProtocolObject::pack( frame );
   frame->packInt(message_count);
   frame->packInt64(getModTime());
 }
 
-void Board::packMessage(Frame * frame, uint32_t msgnum) {
+void Board::packMessage(OutputFrame * frame, uint32_t msgnum) {
   if (msgnum < message_count) {
     Message::Ptr message;
     retrieveMessageList();

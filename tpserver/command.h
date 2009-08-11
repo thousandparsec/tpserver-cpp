@@ -20,9 +20,7 @@
  *
  */
 
-#include <list>
-#include <string>
-#include <stdint.h>
+#include <tpserver/frame.h>
 
 typedef enum {
     cpT_Invalid = -1,
@@ -43,7 +41,7 @@ class CommandParameter {
     std::string getName() const;
     std::string getDescription() const;
 
-    void packCommandDescFrame(Frame * of) const;
+    void packCommandDescFrame(OutputFrame * of) const;
 
   protected:
     uint32_t type;
@@ -66,9 +64,9 @@ class Command {
     std::list<CommandParameter*> getParameters() const;
     uint64_t getDescriptionModTime() const;
 
-    void describeCommand(Frame * of) const;
+    void describeCommand(OutputFrame * of) const;
 
-    virtual void action(InputFrame * frame, Frame * of) = 0;
+    virtual void action(InputFrame * frame, OutputFrame * of) = 0;
 
   protected:
     void addCommandParameter(CommandParameter* cp);

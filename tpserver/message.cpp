@@ -60,7 +60,7 @@ Message::References Message::getReferences() const {
   return references;
 }
 
-void Message::pack(Frame * frame) const {
+void Message::pack(OutputFrame * frame) const {
   if (frame->getVersion() == fv0_2) {
     frame->packInt(1);
     frame->packInt(0);

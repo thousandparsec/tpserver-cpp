@@ -108,7 +108,7 @@ PlayerView::Ptr Player::getPlayerView() const{
   return playerview;
 }
 
-void Player::pack(Frame* frame) const {
+void Player::pack(OutputFrame* frame) const {
   frame->setType(ft03_Player);
   frame->packInt(id);
   frame->packString(name);

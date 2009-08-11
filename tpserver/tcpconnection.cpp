@@ -559,12 +559,11 @@ OutputFrame* TcpConnection::createFrame(Frame* oldframe)
 {
   OutputFrame* newframe;
   if(oldframe != NULL) {
-    newframe = new OutputFrame(oldframe->getVersion());
+    newframe = new OutputFrame(oldframe->getVersion(),paddingfilter);
     newframe->setSequence(oldframe->getSequence());
   } else {
-    newframe = new OutputFrame(version);
+    newframe = new OutputFrame(version,paddingfilter);
   }
-  newframe->enablePaddingStrings(paddingfilter);
   return newframe;
 }
 

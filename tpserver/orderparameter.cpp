@@ -37,7 +37,7 @@ uint32_t OrderParameter::getType() const
   return id;
 }
 
-void OrderParameter::packOrderDescFrame(Frame * f) const{
+void OrderParameter::packOrderDescFrame(OutputFrame * f) const{
 
   f->packString(name);
   f->packInt(id);

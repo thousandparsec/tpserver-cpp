@@ -20,8 +20,8 @@
  *
  */
 
-#include <string>
-#include <map>
+#include <tpserver/common.h>
+#include <tpserver/frame.h>
 
 class Frame;
 
@@ -39,7 +39,7 @@ class PropertyValue{
     bool operator==(const PropertyValue& rhs) const;
     bool operator<(const PropertyValue& rhs) const;
 
-    void packFrame(Frame* frame) const;
+    void packFrame(OutputFrame* frame) const;
 
     uint32_t getPropertyId() const;
     double getValue() const;

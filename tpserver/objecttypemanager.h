@@ -40,7 +40,7 @@ class ObjectTypeManager{
 
   uint32_t getSeqKey() const { return seqkey; }
   IdModList getTypeModList(uint64_t fromtime) const;
-  void doGetObjectDesc(uint32_t type, Frame* of);
+  void doGetObjectDesc(uint32_t type, OutputFrame* of);
 
  private:
   std::map<uint32_t, ObjectType*> typeStore;

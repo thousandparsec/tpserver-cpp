@@ -44,13 +44,13 @@ class Order {
     ParameterList getParameters() const;
     uint64_t getDescriptionModTime() const;
 
-    virtual void createFrame(Frame * f, int pos);
+    virtual void createFrame(OutputFrame * f, int pos);
     // throws FrameException
     virtual void inputFrame(InputFrame * f, uint32_t playerid);
 
     virtual bool doOrder(IGObject::Ptr ob) = 0;
 
-    void describeOrder(Frame * f) const;
+    void describeOrder(OutputFrame * f) const;
     virtual Order *clone() const = 0;
 
     //For OrderQueue only

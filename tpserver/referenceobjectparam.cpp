@@ -31,7 +31,7 @@ ReferenceObjectParam::~ReferenceObjectParam(){
 }
 
 
-void ReferenceObjectParam::packObjectFrame(Frame * f, uint32_t objID){
+void ReferenceObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
   f->packInt(reftype);
   f->packInt(refid);
 }

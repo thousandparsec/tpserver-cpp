@@ -44,7 +44,7 @@ void ObjectType::setType(uint32_t nt){
   id = nt;
 }
 
-void ObjectType::pack(Frame* frame) const
+void ObjectType::pack(OutputFrame* frame) const
 {
   ProtocolObject::pack( frame );
   frame->packInt64(getModTime());

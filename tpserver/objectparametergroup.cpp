@@ -66,7 +66,7 @@ void ObjectParameterGroup::addParameter(ObjectParameter* op){
   parameters.push_back(op);
 }
 
-void ObjectParameterGroup::packObjectFrame(Frame * f, uint32_t playerid){
+void ObjectParameterGroup::packObjectFrame(OutputFrame * f, uint32_t playerid){
   std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameter::packObjectFrame, _1, f, playerid ) );
 }
 
