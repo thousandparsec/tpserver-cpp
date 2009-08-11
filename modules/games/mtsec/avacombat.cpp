@@ -98,6 +98,9 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                                Fleet*   fleet2,
                                Message* msg2)
 {
+    Fleet* fleets[2];
+    fleets[0] = fleet1;
+    fleets[1] = fleet2;
     Logger::getLogger()->debug("doCombatRound Entering");
     Game* game = Game::getGame();
     DesignStore* ds = game->getDesignStore();
@@ -124,112 +127,66 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     std::map<uint32_t, uint32_t> tubeList;
     std::set<Design*> designList;
 
-    weaponList fleet1weaponry, fleet2weaponry;
-    shipList fleet1ships, fleet2ships;
-    std::map<double, std::pair<std::string, uint32_t> > fleet1tubes, fleet2tubes;
-    std::map<uint32_t, uint32_t> fleet1usable, fleet2usable;
+    weaponList fleetweaponry[2];
+    shipList fleetships[2];
+    std::map<uint32_t, std::pair<std::string, uint32_t> > fleettubes[2];
+    std::map<uint32_t, uint32_t> fleetusable[2];
     //     resourceid, designid
 
-    fleet1weaponry = fleet1->getResources();
-    fleet2weaponry = fleet2->getResources();
+    fleetweaponry[0] = fleet1->getResources();
+    fleetweaponry[1] = fleet2->getResources();
 
-    fleet1ships = fleet1->getShips();
-    fleet2ships = fleet2->getShips();
+    fleetships[0] = fleet1->getShips();
+    fleetships[1] = fleet2->getShips();
 
     uint32_t damage1 = 0, damage2 = 0;
 
-    //get usable weapons fleet 1
-    for (shipList::iterator itcurr = fleet1ships.begin(); itcurr != fleet1ships.end(); ++itcurr) {
-        for (std::map<uint32_t, std::string>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
-            if (ds->getDesign(itcurr->first)->getPropertyValue(tubeit->first) > 0.0) {
-                Logger::getLogger()->debug("Found usable Tube %s, inserting into Fleet 1", tubeit->second.c_str());
-                //size of weapon
-                uint32_t weapSizePropID = ds->getPropertyByName(tubeit->second);
-                uint32_t weapNumPropID = ds->getPropertyByName("num-" + tubeit->second);
-                double weapSizePropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID);
-                uint32_t weapNumPropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapNumPropID);
-                if (fleet1tubes.find(weapSizePropValue) != fleet1tubes.end()) {
-                    std::pair<std::string, uint32_t>fleetpair = fleet1tubes[weapSizePropValue];
-                    fleetpair.second += weapNumPropValue;
-                    fleet1tubes[weapSizePropValue] = fleetpair;
-                    Logger::getLogger()->debug("Adding %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
-                } else {
-                    fleet1tubes[weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
-                    Logger::getLogger()->debug("Inserting %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
-                }
-            }
-        }
-
-        for (weaponList::iterator weapit = fleet1weaponry.begin(); weapit != fleet1weaponry.end(); ++weapit) {
-            Design* weapDesign;
-            std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
-            std::set<uint32_t>dIDs = ds->getDesignIds();
-            for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
-                if (weapName == ds->getDesign(*dit)->getName()) {
-                    weapDesign = ds->getDesign(*dit);
-                    Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
-
-                    for (std::map<double, std::pair<std::string, uint32_t> >::iterator tubeit = fleet1tubes.begin(); tubeit != fleet1tubes.end(); ++tubeit) {
-                        uint32_t propID = ds->getPropertyByName(tubeit->second.first);
-                        Logger::getLogger()->debug("Checking fleet1tubes list for propID %d", ds->getProperty(propID));
-                        if (fleet1tubes.find(weapDesign->getPropertyValue(propID)) != fleet1tubes.end()) {
-                            Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
-                            fleet1usable[weapit->first] = weapDesign->getDesignId();
-                            if (fleet1->removeResource(weapit->first, 1)) {
-                                uint32_t explPropID = ds->getPropertyByName("AmmoExplosiveness");
-                                //damage to be delivered to second fleet
-                                damage2 += weapDesign->getPropertyValue(explPropID);
-                                Logger::getLogger()->debug("Adding Damage (%d) Total (%d)", weapDesign->getPropertyValue(explPropID), damage2);
-                            }
-                        }
+    for (int i=0; i < 2; i++) {
+        for (shipList::iterator itcurr = fleetships[i].begin(); itcurr != fleetships[i].end(); ++itcurr) {
+            for (std::map<uint32_t, std::string>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
+                if (ds->getDesign(itcurr->first)->getPropertyValue(tubeit->first) > 0.0) {
+                    Logger::getLogger()->debug("Found usable Tube %s, inserting into Fleet %d", tubeit->second.c_str(), i);
+                    //size of weapon
+                    uint32_t weapSizePropID = ds->getPropertyByName(tubeit->second);
+                    uint32_t weapNumPropID = ds->getPropertyByName("num-" + tubeit->second);
+                    uint32_t weapSizePropValue = static_cast<uint32_t>(ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
+                    uint32_t weapNumPropValue = static_cast<uint32_t>(ds->getDesign(itcurr->first)->getPropertyValue(weapNumPropID));
+                    if (fleettubes[i].find(weapSizePropValue) != fleettubes[i].end()) {
+                        std::pair<std::string, uint32_t>fleetpair = fleettubes[i][weapSizePropValue];
+                        fleetpair.second += weapNumPropValue;
+                        fleettubes[i][weapSizePropValue] = fleetpair;
+                        Logger::getLogger()->debug("Adding %d into Tube List", weapSizePropValue);
+                    } else {
+                        fleettubes[i][weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
+                        std::cout << "Inserting " <<weapSizePropValue<< " into Tube List\n\n";
                     }
                 }
             }
-        }
-    }
-
-    //get usable weapons fleet 2
-    for (shipList::iterator itcurr = fleet2ships.begin(); itcurr != fleet2ships.end(); ++itcurr) {
-        for (std::map<uint32_t, std::string>::iterator tubeit = tubes.begin(); tubeit != tubes.end(); ++tubeit) {
-            if (ds->getDesign(itcurr->first)->getPropertyValue(tubeit->first) > 0.0) {
-                Logger::getLogger()->debug("Found usable Tube %s, inserting into Fleet 2", tubeit->second.c_str());
-                //size of weapon
-                uint32_t weapSizePropID = ds->getPropertyByName(tubeit->second);
-                uint32_t weapNumPropID = ds->getPropertyByName("num-" + tubeit->second);
-                double weapSizePropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID);
-                uint32_t weapNumPropValue = ds->getDesign(itcurr->first)->getPropertyValue(weapNumPropID);
-                if (fleet2tubes.find(weapSizePropValue) != fleet2tubes.end()) {
-                    std::pair<std::string, uint32_t>fleetpair = fleet2tubes[weapSizePropValue];
-                    fleetpair.second += weapNumPropValue;
-                    fleet2tubes[weapSizePropValue] = fleetpair;
-                    Logger::getLogger()->debug("Adding %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
-                } else {
-                    fleet2tubes[weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
-                    Logger::getLogger()->debug("Inserting %d into Tube List", ds->getDesign(itcurr->first)->getPropertyValue(weapSizePropID));
-                }
-            }
-        }
-
-        for (weaponList::iterator weapit = fleet2weaponry.begin(); weapit != fleet2weaponry.end(); ++weapit) {
-            Design* weapDesign;
-            std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
-            std::set<uint32_t>dIDs = ds->getDesignIds();
-            for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
-                if (weapName == ds->getDesign(*dit)->getName()) {
-                    weapDesign = ds->getDesign(*dit);
-                    Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
-
-                    for (std::map<double, std::pair<std::string, uint32_t> >::iterator tubeit = fleet2tubes.begin(); tubeit != fleet2tubes.end(); ++tubeit) {
-                        uint32_t propID = ds->getPropertyByName(tubeit->second.first);
-                        Logger::getLogger()->debug("Checking fleet2tubes list for propID %d", ds->getProperty(propID));
-                        if (fleet2tubes.find(weapDesign->getPropertyValue(propID)) != fleet2tubes.end()) {
-                            Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
-                            fleet2usable[weapit->first] = weapDesign->getDesignId();
-                            if (fleet2->removeResource(weapit->first, 1)) {
-                                uint32_t explPropID = ds->getPropertyByName("AmmoExplosiveness");
-                                //damage to be delivered to first fleet
-                                damage1 += weapDesign->getPropertyValue(explPropID);
-                                Logger::getLogger()->debug("Adding Damage (%d) Total (%d)", weapDesign->getPropertyValue(explPropID), damage2);
+    
+            for (weaponList::iterator weapit = fleetweaponry[i].begin(); weapit != fleetweaponry[i].end(); ++weapit) {
+                Design* weapDesign;
+                std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
+                std::set<uint32_t>dIDs = ds->getDesignIds();
+                for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
+                    if (weapName == ds->getDesign(*dit)->getName()) {
+                        weapDesign = ds->getDesign(*dit);
+                        Logger::getLogger()->debug("Found design %s", weapDesign->getName().c_str());
+    
+                        for (std::map<uint32_t, std::pair<std::string, uint32_t> >::iterator tubeit = fleettubes[i].begin(); tubeit != fleettubes[i].end(); ++tubeit) {
+                            //property ID, name of the TUBE
+                            uint32_t propID = ds->getPropertyByName("MissileSize");
+                            //Logger::getLogger()->debug("Checking fleettubes list for propID %s", ds->getProperty(propID)->getName().c_str());
+                            if (fleettubes[i].find(weapDesign->getPropertyValue(propID)) != fleettubes[i].end()) {
+                                Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
+                                fleetusable[i][weapit->first] = weapDesign->getDesignId();
+                                if (fleets[i]->removeResource(weapit->first, 1)) {
+                                    uint32_t explPropID = ds->getPropertyByName("AmmoExplosiveness");
+                                    //damage to be delivered to second fleet
+                                    damage2 += static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID));
+                                    Logger::getLogger()->debug("Adding Damage (%d) Total (%d)", static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID)), damage2);
+                                } else {
+                                    Logger::getLogger()->debug("No available Weapon for this tube!");
+                                }
                             }
                         }
                     }
