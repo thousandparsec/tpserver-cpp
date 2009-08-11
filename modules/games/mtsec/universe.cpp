@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/integerobjectparam.h>
@@ -46,7 +45,7 @@ Universe::~Universe(){
 }
 
 
-void Universe::packExtraData(Frame * frame){
+void Universe::packExtraData(OutputFrame * frame){
   frame->packInt(dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->getValue());
 }
 

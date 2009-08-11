@@ -28,7 +28,6 @@
 #include <math.h>
 #include <iostream>
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/game.h>
@@ -72,7 +71,7 @@ BuildFleet::BuildFleet() : Order()
 BuildFleet::~BuildFleet(){
 }
 
-void BuildFleet::createFrame(Frame *f, int pos)
+void BuildFleet::createFrame(OutputFrame *f, int pos)
 {
   Logger::getLogger()->debug("Enter: BuildFleet::createFrame()");
   // set it to the high end of the production cost... this is a best case scenario where it gets all the factories

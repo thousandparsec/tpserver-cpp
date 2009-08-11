@@ -39,7 +39,7 @@ class Universe:public SpaceObject {
         virtual ~Universe();
         
 
-	void packExtraData(Frame * frame);
+	void packExtraData(OutputFrame * frame);
 
 	void doOnceATurn();
 
