@@ -24,9 +24,7 @@
 
 #include <tpserver/order.h>
 
-class Frame;
 class ObjectOrderParameter;
-
 
 class FleetOrder : public Order
 {
@@ -36,7 +34,7 @@ class FleetOrder : public Order
 
    virtual Order* clone() const = 0;
 
-   virtual void createFrame(Frame * f, int pos);
+   virtual void createFrame(OutputFrame * f, int pos);
    virtual void inputFrame(InputFrame * f, uint32_t playerid);
    
    virtual bool doOrder(IGObject::Ptr obj) = 0;

@@ -29,7 +29,6 @@
 #include <cassert>
 #include <sstream>
 
-#include <tpserver/frame.h>
 #include <tpserver/orderparameters.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -81,7 +80,7 @@ Order* Colonize::clone() const {
     return o;
 }
 
-void Colonize::createFrame(Frame *f, int pos) {
+void Colonize::createFrame(OutputFrame *f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 

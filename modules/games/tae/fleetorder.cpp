@@ -58,7 +58,7 @@ FleetOrder::~FleetOrder() {
 
 }
 
-void FleetOrder::createFrame(Frame *f, int pos) {
+void FleetOrder::createFrame(OutputFrame *f, int pos) {
     Order::createFrame(f, pos);
 }
 

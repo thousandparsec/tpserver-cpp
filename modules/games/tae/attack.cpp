@@ -24,7 +24,6 @@
 
 #include <cassert>
 
-#include <tpserver/frame.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -67,7 +66,7 @@ Order* Attack::clone() const {
     return o;
 }
 
-void Attack::createFrame(Frame *f, int pos) {
+void Attack::createFrame(OutputFrame *f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 

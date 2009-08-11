@@ -59,7 +59,7 @@ class Fleet : public OwnedObject {
         uint32_t getDamage() const;
         void setDamage(uint32_t nd);
 
-        void packExtraData(Frame * frame);
+        void packExtraData(OutputFrame * frame);
 
         void doOnceATurn();
         void setupObject();

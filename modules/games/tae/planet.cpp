@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/order.h>
 #include <tpserver/ordermanager.h>
@@ -57,7 +56,7 @@ void Planet::setDefaultOrderTypes(){
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
 }
 
-void Planet::packExtraData(Frame * frame){
+void Planet::packExtraData(OutputFrame * frame){
   OwnedObject::packExtraData(frame);
   
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();

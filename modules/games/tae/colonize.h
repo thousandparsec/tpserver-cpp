@@ -30,9 +30,7 @@
 
 #include "fleetorder.h"
 
-class Frame;
 class ObjectOrderParameter;
-
 
 class Colonize : public FleetOrder
 {
@@ -42,7 +40,7 @@ class Colonize : public FleetOrder
 
    virtual Order* clone() const;
 
-   virtual void createFrame(Frame * f, int pos);
+   virtual void createFrame(OutputFrame * f, int pos);
    virtual void inputFrame(InputFrame * f, uint32_t playerid);
    
    virtual bool doOrder(IGObject::Ptr obj);

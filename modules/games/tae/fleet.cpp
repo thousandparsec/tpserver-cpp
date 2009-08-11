@@ -22,7 +22,6 @@
 #include <math.h>
 
 #include <tpserver/logging.h>
-#include <tpserver/frame.h>
 #include <tpserver/order.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -209,7 +208,7 @@ void Fleet::setDamage(uint32_t nd){
     obj->touchModTime();
 }
 
-void Fleet::packExtraData(Frame * frame){
+void Fleet::packExtraData(OutputFrame * frame){
     Logger::getLogger()->debug("Enter: Fleet::packExtraData");
     OwnedObject::packExtraData(frame);
 

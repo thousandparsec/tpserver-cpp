@@ -21,7 +21,6 @@
 
 #include <cassert>
 
-#include <tpserver/frame.h>
 #include <tpserver/orderparameters.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -54,7 +53,7 @@ Order* Reinforce::clone() const {
     return o;
 }
 
-void Reinforce::createFrame(Frame *f, int pos) {
+void Reinforce::createFrame(OutputFrame *f, int pos) {
     Order::createFrame(f, pos);
 }
 

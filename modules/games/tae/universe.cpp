@@ -20,7 +20,6 @@
 
 #include "universe.h"
 
-#include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/position3dobjectparam.h>
@@ -55,7 +54,7 @@ Universe::Universe(){
 Universe::~Universe(){
 }
 
-void Universe::packExtraData(Frame *frame) {
+void Universe::packExtraData(OutputFrame *frame) {
     frame->packInt(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue());
 }
 
