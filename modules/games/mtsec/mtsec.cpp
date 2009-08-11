@@ -718,7 +718,6 @@ Design* MTSec::createScoutDesign( Player* owner)
     scout->setDescription("Scout ship");
     scout->setOwner( owner->getID());
     componentList[ds->getComponentByName("Scout Hull")] = 1;
-    componentList[ds->getComponentByName("Battle Scout Hull")] = 1;
     componentList[ds->getComponentByName("Alpha Missile Tube")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
@@ -827,9 +826,9 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     Design* scout = createScoutDesign( player);
     Design* tempMissile = createAlphaMissileDesign(player);
 
-PlayerView* playerview = player->getPlayerView();;
+    PlayerView* playerview = player->getPlayerView();;
 
-playerview->addUsableDesign(tempMissile->getDesignId());
+    playerview->addUsableDesign(tempMissile->getDesignId());
 
     // Start this fleet off with two battle scout ships
     ((Fleet*)(fleet->getObjectBehaviour()))->addShips( scout->getDesignId(), 2);

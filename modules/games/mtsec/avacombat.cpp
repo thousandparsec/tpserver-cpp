@@ -20,6 +20,7 @@
  */
 
 #include "tpserver/object.h"
+#include "dummyfleet.h"
 #include "fleet.h"
 #include "planet.h"
 #include "tpserver/objecttypemanager.h"
@@ -38,7 +39,6 @@
 
 #include "avacombat.h"
 
-#include <iostream>
 #include <cmath>
 
 AVACombat::AVACombat(){
@@ -159,7 +159,6 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                         Logger::getLogger()->debug("Adding %d into Tube List", weapSizePropValue);
                     } else {
                         fleettubes[i][weapSizePropValue] = std::pair<std::string, uint32_t> (tubeit->second, weapNumPropValue);
-                        std::cout << "Inserting " <<weapSizePropValue<< " into Tube List\n\n";
                     }
                 }
             }
@@ -272,28 +271,47 @@ void AVACombat::resolveCombat(Fleet* fleet){
 // battleships.
 void AVACombat::doCombat()
 {
-    Fleet * f1, *f2;
+    Logger::getLogger()->debug("AVACombat::doCombat : Entering");
 
-    uint32_t obT_Fleet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Fleet");
-    uint32_t obT_Planet = Game::getGame()->getObjectTypeManager()->getObjectTypeByName("Planet");
+    Fleet *f1, *f2;
 
-    
+    Game* game = Game::getGame();
+    DesignStore* ds = game->getDesignStore();
+    uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
+    uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
+
     // If one combatant or the other is actually a planet,
     // simulate this with two battleships.
     if ( c1->getType() == obT_Fleet) {
         f1 = ( Fleet*) ( c1->getObjectBehaviour());
     }
     else if ( c1->getType() == obT_Planet) {
-        f1 = new Fleet();
-        f1->addShips( 3, 2);
+        f1 = new DummyFleet();
+
+        std::set<uint32_t> dIDs = ds->getDesignIds();
+        uint32_t scoutID=0;
+        for (std::set<uint32_t>::iterator it = dIDs.begin(); it != dIDs.end(); ++it) {
+            if (ds->getDesign(*it)->getName() == "Scout") {
+                scoutID = *it;
+            }
+        }
+        f1 = new DummyFleet();
+        f1->addShips(scoutID , 2);
         f1->setOwner( ( ( Planet*) c1->getObjectBehaviour())->getOwner());
     }
     if ( c2->getType() == obT_Fleet) {
         f2 = ( Fleet*) ( c2->getObjectBehaviour());
     }
     else if ( c2->getType() == obT_Planet) {
-        f2 = new Fleet();
-        f2->addShips( 3, 2);
+        std::set<uint32_t> dIDs = ds->getDesignIds();
+        uint32_t scoutID=0;
+        for (std::set<uint32_t>::iterator it = dIDs.begin(); it != dIDs.end(); ++it) {
+            if (ds->getDesign(*it)->getName() == "Scout") {
+                scoutID = *it;
+            }
+        }
+        f2 = new DummyFleet();
+        f2->addShips(scoutID, 2);
         f2->setOwner( ( ( Planet*) c2->getObjectBehaviour())->getOwner());
     }
     if ( f1 == NULL || f2 == NULL) {

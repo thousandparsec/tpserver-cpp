@@ -36,6 +36,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/logging.h>
 
 #include "avacombat.h"
 
@@ -138,6 +139,7 @@ void MTSecTurn::doTurn(){
       Vector3d pos2;
       uint32_t size2;
       if(itbobj->getType() == planettype){
+
         Planet* planet = (Planet*)(itbobj->getObjectBehaviour());
         playerid2 = planet->getOwner();
         pos2 = planet->getPosition();
@@ -155,11 +157,14 @@ void MTSecTurn::doTurn(){
       }
 
       uint64_t diff = pos1.getDistance(pos2);
-      if(diff <= size1 / 2 + size2 / 2){
+      if(diff <= 10000){
+        Logger::getLogger()->debug("Combat happening");
         combatstrategy->setCombatants(ob, itbobj);
         combatstrategy->doCombat();
+
         if(!combatstrategy->isAliveCombatant1()){
           if(ob->getType() == planettype){
+            Logger::getLogger()->debug("Planet has perished, removing owner");
             uint32_t oldowner = ((Planet*)(ob->getObjectBehaviour()))->getOwner();
             ((Planet*)(ob->getObjectBehaviour()))->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue))->getQueueId();
@@ -172,6 +177,7 @@ void MTSecTurn::doTurn(){
         }
         if(!combatstrategy->isAliveCombatant2()){
           if(itbobj->getType() == planettype){
+            Logger::getLogger()->debug("Planet has perished, removing owner");
             uint32_t oldowner = ((Planet*)(itbobj->getObjectBehaviour()))->getOwner();
             ((Planet*)(itbobj->getObjectBehaviour()))->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getParameterByType(obpT_Order_Queue))->getQueueId();
