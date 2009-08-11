@@ -20,10 +20,6 @@
  *
  */
 
-#include <stdint.h>
-
-#include <tpserver/frame.h>
-
 #include <tpserver/tcpconnection.h>
 
 class AdminLogger;
