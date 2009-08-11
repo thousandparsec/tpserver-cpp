@@ -33,6 +33,8 @@ class AVACombat{
   bool isAliveCombatant1();
   bool isAliveCombatant2();
   void doCombat();
+  void resolveCombat(Fleet* fleet);
+
 
  protected:
   bool doCombatRound( Fleet*, Message*, Fleet*, Message*);

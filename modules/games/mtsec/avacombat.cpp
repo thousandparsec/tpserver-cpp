@@ -39,6 +39,7 @@
 #include "avacombat.h"
 
 #include <iostream>
+#include <cmath>
 
 AVACombat::AVACombat(){
   c1 = NULL;
@@ -139,7 +140,7 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     fleetships[0] = fleet1->getShips();
     fleetships[1] = fleet2->getShips();
 
-    uint32_t damage1 = 0, damage2 = 0;
+    uint32_t damage[2] = {0};
 
     for (int i=0; i < 2; i++) {
         for (shipList::iterator itcurr = fleetships[i].begin(); itcurr != fleetships[i].end(); ++itcurr) {
@@ -181,9 +182,9 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                                 fleetusable[i][weapit->first] = weapDesign->getDesignId();
                                 if (fleets[i]->removeResource(weapit->first, 1)) {
                                     uint32_t explPropID = ds->getPropertyByName("AmmoExplosiveness");
-                                    //damage to be delivered to second fleet
-                                    damage2 += static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID));
-                                    Logger::getLogger()->debug("Adding Damage (%d) Total (%d)", static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID)), damage2);
+                                    //damage to be deliveredt
+                                    damage[!i] += static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID));
+                                    Logger::getLogger()->debug("Adding Damage (%d) Total (%d)", static_cast<uint32_t>(weapDesign->getPropertyValue(explPropID)), damage[!i]);
                                 } else {
                                     Logger::getLogger()->debug("No available Weapon for this tube!");
                                 }
@@ -195,6 +196,12 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
         }
     }
 
+    fleets[0]->setDamage(damage[0]);
+    fleets[1]->setDamage(damage[1]);
+
+    resolveCombat(fleets[0]);
+    resolveCombat(fleets[1]);
+
     //Tube format: std::map<double, std::pair<std::string, uint32_t> >
     //                   tube size            name         number
 
@@ -202,13 +209,13 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     std::string body1, body2;
 
-    if ( ! false) {
+    if (fleets[0]->totalShips() == 0) {
         body1 += "Your fleet was destroyed. ";
         body2 += "You destroyed their fleet. ";
         c1 = NULL;
         tte = true;
     };
-    if ( ! false) {
+    if (fleets[1]->totalShips() == 0) {
         body2 += "Your fleet was destroyed.";
         body1 += "You destroyed their fleet.";
         c2 = NULL;
@@ -221,6 +228,42 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     Logger::getLogger()->debug("doCombatRound Exiting");
     return false;
+}
+
+void AVACombat::resolveCombat(Fleet* fleet){
+    Logger::getLogger()->debug("AVACombat::resolveCombat : Entering");
+
+    Game* game = Game::getGame();
+    DesignStore* ds = game->getDesignStore();
+    typedef std::map<uint32_t, uint32_t> shipList;
+    shipList ships = fleet->getShips();
+    uint32_t damage = fleet->getDamage();
+    uint32_t hpPropID = ds->getPropertyByName("HitPoints");
+
+    for (shipList::reverse_iterator itcurr = ships.rbegin(); itcurr != ships.rend(); ++itcurr){
+        uint32_t shipNumber = itcurr->first;
+        uint32_t shipQuantity = itcurr->second;
+        Logger::getLogger()->debug("Working on ship %s", ds->getDesign(shipNumber)->getName().c_str());
+
+        uint32_t damageNeeded = static_cast<uint32_t>(ds->getDesign(shipNumber)->getPropertyValue(hpPropID));
+        Logger::getLogger()->debug("Damage needed to destroy this ship: %d Damage available: %d", damageNeeded, damage);
+
+
+        if (damage >= damageNeeded) {
+            uint32_t factor = floor(damage % damageNeeded);
+            if (factor > shipQuantity) {
+                factor = shipQuantity;
+            }
+            fleet->removeShips(shipNumber, factor);
+            fleet->setDamage(damage - (damageNeeded*factor));
+            Logger::getLogger()->debug("Damage is greater than a ship can take, Total(%d), Delivering(%d), factor (%d), new setDamage(%d)",
+                damage, damageNeeded*factor, factor, fleet->getDamage());
+        }
+    }
+
+    Logger::getLogger()->debug("AVACombat::resolveCombat : Exiting");
+
+
 }
 
 

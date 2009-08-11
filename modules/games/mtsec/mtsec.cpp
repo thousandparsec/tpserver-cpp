@@ -720,7 +720,6 @@ Design* MTSec::createScoutDesign( Player* owner)
     componentList[ds->getComponentByName("Scout Hull")] = 1;
     componentList[ds->getComponentByName("Battle Scout Hull")] = 1;
     componentList[ds->getComponentByName("Alpha Missile Tube")] = 1;
-    componentList[ds->getComponentByName("Cerium Explosives")] = 1;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
     Logger::getLogger()->debug( "Exit MTSec::createScoutDesign");
@@ -763,10 +762,10 @@ Design* MTSec::createAlphaMissileDesign( Player* owner)
 
     scout->setCategoryId(2);
     scout->setName( "Alpha Missile");
-    scout->setDescription("The Alpha Missile");
+    scout->setDescription("The Alpha Missile, Bitches");
     scout->setOwner( owner->getID());
     componentList[ds->getComponentByName("Alpha Missile Hull")] = 1;
-    componentList[ds->getComponentByName("Cerium Explosives")] = 1;
+    componentList[ds->getComponentByName("Cerium Explosives")] = 100;
     scout->setComponents(componentList);
     game->getDesignStore()->addDesign(scout);
 
