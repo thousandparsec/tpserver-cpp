@@ -79,7 +79,7 @@ void StaticObject::setSize(uint64_t ns){
   obj->touchModTime();
 }
 
-void StaticObject::packExtraData(Frame * frame) {
+void StaticObject::packExtraData(OutputFrame * frame) {
 
 }
 

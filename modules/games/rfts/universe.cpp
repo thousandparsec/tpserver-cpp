@@ -19,7 +19,6 @@
  *
  */
 
-#include <tpserver/frame.h>
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/sizeobjectparam.h>
@@ -56,7 +55,7 @@ int Universe::getContainerType() {
    return ContainerTypes_::Universe;
 }
 
-void Universe::packExtraData(Frame *frame) {
+void Universe::packExtraData(OutputFrame *frame) {
    frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
 }
 

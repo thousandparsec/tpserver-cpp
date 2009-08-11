@@ -44,7 +44,7 @@ class Planet : public StaticObject, public OwnedObject {
    Planet();
    virtual ~Planet();
 
-   virtual void packExtraData(Frame * frame);
+   virtual void packExtraData(OutputFrame * frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 

@@ -21,7 +21,6 @@
 
 #include <cassert>
 
-#include <tpserver/frame.h>
 #include <tpserver/orderparameters.h>
 #include <tpserver/game.h>
 #include <tpserver/object.h>
@@ -64,7 +63,7 @@ Order* Move::clone() const {
    return o;
 }
 
-void Move::createFrame(Frame *f, int pos) {
+void Move::createFrame(OutputFrame *f, int pos) {
    Order::createFrame(f, pos);
 }
 

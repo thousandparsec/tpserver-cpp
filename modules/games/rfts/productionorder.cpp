@@ -109,7 +109,7 @@ void ProductionOrder::setOption(map<uint32_t, pair<string, uint32_t> >& options,
             planet->getCurrentRP() / Rfts::getProductionInfo().getResourceCost(resTypeName));
 }
 
-void ProductionOrder::createFrame(Frame *f, int pos) {
+void ProductionOrder::createFrame(OutputFrame *f, int pos) {
 	unsigned turn = Game::getGame()->getTurnNumber() % 3;
 
 	// produce on(at the end of) turn 0

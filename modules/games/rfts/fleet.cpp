@@ -30,9 +30,7 @@
 #include <tpserver/player.h>
 #include <tpserver/playermanager.h>
 #include <tpserver/playerview.h>
-#include <tpserver/frame.h>
 #include <tpserver/designstore.h>
-#include <tpserver/design.h>
 
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/refquantitylistobjectparam.h>
@@ -230,7 +228,7 @@ void Fleet::recalcStats() {
    setOrderTypes();
 }
 
-void Fleet::packExtraData(Frame *frame) {
+void Fleet::packExtraData(OutputFrame *frame) {
    ReferenceObjectParam* player = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
    frame->packInt((player->getReferencedId() == 0) ? 0xffffffff : player->getReferencedId());
    

@@ -118,7 +118,7 @@ map<uint32_t, pair< string, uint32_t> > BuildFleet::generateListOptions() {
    return options;
 }
 
-void BuildFleet::createFrame(Frame *f, int pos) {
+void BuildFleet::createFrame(OutputFrame *f, int pos) {
 	unsigned turn = Game::getGame()->getTurnNumber() % 3;
 
 	if(turn == 2) // account for move only turn
