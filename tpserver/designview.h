@@ -20,14 +20,8 @@
  *
  */
 
-#include <string>
-#include <map>
-#include <stdint.h>
-
 #include <tpserver/propertyvalue.h>
 #include <tpserver/protocolview.h>
-
-class Frame;
 
 class DesignView : public ProtocolView {
   public:

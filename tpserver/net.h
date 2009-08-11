@@ -29,7 +29,6 @@
 #include <tpserver/timercallback.h>
 
 
-class Frame;
 class AsyncFrame;
 
 class Network {

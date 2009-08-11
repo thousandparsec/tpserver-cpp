@@ -39,8 +39,6 @@ typedef enum {
 	opT_Max
 } OrderParamType;
 
-class Frame;
-
 class OrderParameter : public Describable, public Packable {
   public:
     OrderParameter(const std::string& aname, const std::string& adesc );

@@ -22,10 +22,10 @@
 
 #include <tpserver/common.h>
 #include <tpserver/orderqueue.h>
+#include <tpserver/inputframe.h>
+#include <tpserver/outputframe.h>
 
 class Order;
-class Frame;
-class InputFrame;
 
 class OrderManager{
   public:

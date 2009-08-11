@@ -22,8 +22,6 @@
 
 #include <tpserver/protocolobject.h>
 
-class Frame;
-
 class ResourceDescription : public ProtocolObject
 {
 public:

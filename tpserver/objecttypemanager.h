@@ -24,7 +24,6 @@
 #include <tpserver/object.h>
 
 class ObjectType;
-class Frame;
 
 class ObjectTypeManager{
  public:

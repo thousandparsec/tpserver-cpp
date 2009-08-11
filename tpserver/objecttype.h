@@ -25,7 +25,6 @@
 #include <tpserver/protocolobject.h>
 #include <tpserver/objectparametergroupdesc.h>
 
-class Frame;
 class ObjectBehaviour;
 
 class ObjectType : public ProtocolObject {

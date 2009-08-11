@@ -20,11 +20,8 @@
  *
  */
 
-#include <stdint.h>
 #include <tpserver/protocolview.h>
 #include <tpserver/common.h>
-
-class Frame;
 
 class ComponentView : public ProtocolView {
  public:

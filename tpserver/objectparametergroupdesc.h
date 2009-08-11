@@ -25,7 +25,6 @@
 #include <tpserver/packable.h>
 #include <boost/tuple/tuple.hpp>
 
-class Frame;
 class ObjectParameterGroup;
 
 class ObjectParameterGroupDesc : public Describable, public Packable {

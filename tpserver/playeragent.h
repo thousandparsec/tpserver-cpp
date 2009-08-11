@@ -24,7 +24,6 @@
 #include <tpserver/player.h>
 
 class PlayerConnection;
-class Frame;
 
 class PlayerAgent {
 public:

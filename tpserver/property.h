@@ -20,12 +20,8 @@
  *
  */
 
-#include <string>
-#include <set>
 #include <tpserver/protocolobject.h>
 #include <tpserver/common.h>
-
-class Frame;
 
 class Property : public ProtocolObject {
   public:

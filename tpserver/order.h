@@ -22,9 +22,7 @@
 
 #include <tpserver/common.h>
 #include <tpserver/object.h>
-#include <tpserver/frameexception.h>
 
-class Frame;
 class OrderParameter;
 
 class Order {

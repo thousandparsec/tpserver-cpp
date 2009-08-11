@@ -23,8 +23,6 @@
 #include <tpserver/refsys.h>
 #include <tpserver/protocolobject.h>
 
-class Frame;
-
 /**
  * Class representing a readable message posted on message boards in TP
  *

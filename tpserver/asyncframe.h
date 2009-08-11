@@ -20,7 +20,7 @@
  *
  */
 
-class Frame;
+#include <tpserver/outputframe.h>
 
 class AsyncFrame{
   public:
