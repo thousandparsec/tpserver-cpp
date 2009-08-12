@@ -79,7 +79,7 @@ class TcpConnection: public Connection {
     TcpConnection() {}
 
     // TODO: change to std::string
-    char* rheaderbuff;
+    std::string header_buffer;
     char* rdatabuff;
     uint32_t rbuffused;
   

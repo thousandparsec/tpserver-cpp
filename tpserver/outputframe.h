@@ -21,9 +21,11 @@
  */
 
 #include <tpserver/frame.h>
+#include <boost/shared_ptr.hpp>
 
 class OutputFrame : public Frame {
   public:
+    typedef boost::shared_ptr<OutputFrame> Ptr;
     /**
      * Constructor setting a given version
      */

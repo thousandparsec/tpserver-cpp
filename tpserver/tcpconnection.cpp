@@ -41,7 +41,6 @@
 
 TcpConnection::TcpConnection(int fd, Type aType) 
   : Connection(fd,aType), 
-    rheaderbuff( NULL ),
     rdatabuff( NULL ),
     rbuffused( 0 ),
     sendandclose( false ),
@@ -55,8 +54,6 @@ TcpConnection::~TcpConnection() {
   if (status != DISCONNECTED) {
     close();
   }
-  if(rheaderbuff != NULL)
-    delete[] rheaderbuff;
   if(rdatabuff != NULL)
     delete[] rdatabuff;
   clearQueue();
@@ -206,14 +203,15 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
 
   uint32_t hlen = recvframe->getHeaderLength();
 
-  if (rheaderbuff == NULL) {
+  if (header_buffer.empty()) {
     rbuffused = 0;
-    rheaderbuff = new char[hlen];
+    header_buffer.resize( hlen );
   }
 
   if (rdatabuff == NULL && rbuffused != hlen) {
     try {
-      int32_t len = underlyingRead(rheaderbuff+rbuffused, hlen - rbuffused);
+      // Yes, yes, I know, it's bad, it's non-standard conforming. But damn it works.
+      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+rbuffused, hlen - rbuffused);
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
@@ -239,7 +237,7 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
   uint32_t datalen;
 
   if  ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL) {
-    int32_t signeddatalen = recvframe->setHeader(std::string(rheaderbuff,16));
+    int32_t signeddatalen = recvframe->setHeader(header_buffer);
     //check that the length field is probably valid
     // length could be negative from wire or from having no synchronisation symbol
     if (signeddatalen >= 0 && signeddatalen < 1048576) {
@@ -292,9 +290,8 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
 
     if(rbuffused == datalen){
       recvframe->setData(std::string(rdatabuff, datalen));
-      delete[] rheaderbuff;
+      header_buffer.clear();
       delete[] rdatabuff;
-      rheaderbuff = NULL;
       rdatabuff = NULL;
 
       //sanity checks
@@ -310,9 +307,8 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
         return false;
       }
     }
-  }else {
-    delete[] rheaderbuff;
-    rheaderbuff = NULL;
+  }else{
+    header_buffer.clear();
   }
   return true;
 }
@@ -336,15 +332,16 @@ void TcpConnection::processVersionCheck() {
   InputFrame *recvframe = new InputFrame();
   uint32_t hlen = recvframe->getHeaderLength();
 
-  if (rheaderbuff == NULL) {
+  if (header_buffer.empty()) {
     rbuffused = 0;
-    rheaderbuff = new char[hlen];
+    header_buffer.resize(hlen);
   }
 
 
   if (rdatabuff == NULL && rbuffused < 4) {
     try {
-      int32_t len = underlyingRead(rheaderbuff+rbuffused, 4 - rbuffused);
+      // Yes, yes, I know, it's bad, it's non-standard conforming. But damn it works.
+      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+rbuffused, 4 - rbuffused);
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
@@ -366,51 +363,49 @@ void TcpConnection::processVersionCheck() {
   }
 
   if ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL) {
-    if (rheaderbuff[0] == 'T' && rheaderbuff[1] == 'P') {
+    if ( header_buffer.compare(0,2,"TP") == 0 ) {
       //assume we have TP procotol
-      if (rheaderbuff[2] == '0') {
-        if (rheaderbuff[3] <= '2') {
+      if ( header_buffer[2] == '0') {
+        if ( header_buffer[3] <= '2') {
           WARNING("TcpConnection : Client did not show correct version of protocol (version 2 or less)");
           sendString("You are not running the right version of TP, please upgrade\n");
           close();
           return;
-        } else if (rheaderbuff[3] > '3') {
+        } else if ( header_buffer[3] > '3') {
           //might be future version of protocol, just disconnect now
           sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
-          char* buff = new char[1024];
+          char buff[1024];
           try {
-            int32_t len = underlyingRead(buff, 1024);
+            int32_t len = underlyingRead(&buff[0], 1024);
             DEBUG("TcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
           } catch( SystemException& ) {
             // now what?
           }
-          delete[] buff;
           return;
         } else {
           char ver[] = {'\0','\0','\0'};
-          memcpy(ver, rheaderbuff+2 , 2);
+          memcpy(ver, header_buffer.c_str()+2 , 2);
           int nversion = atoi(ver);
           version = (ProtocolVersion)nversion;
         }
-      } else if (rheaderbuff[2] >= 4 && rheaderbuff[2] < '0') {
+      } else if (header_buffer[2] >= 4 && header_buffer[2] < '0') {
         //tp04 and later
-        version = (ProtocolVersion)rheaderbuff[2];
+        version = (ProtocolVersion)header_buffer[2];
         if (version > fv0_4) {
           sendFail( NULL,fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
-          char* buff = new char[1024];
+          char buff[1024];
           try {
-            int32_t len = underlyingRead(buff, 1024);
+            int32_t len = underlyingRead(&buff[0], 1024);
             DEBUG("TcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
           } catch( SystemException& ) {
             // now what?
           }
-          delete[] buff;
           return;
         }
       }else{
@@ -419,19 +414,17 @@ void TcpConnection::processVersionCheck() {
 
         //stay connected just in case they try again with a lower version
         // have to empty the receive queue though.
-        char* buff = new char[1024];
+        char buff[1024];
         try {
-          int32_t len = underlyingRead(buff, 1024);
+          int32_t len = underlyingRead(&buff[0], 1024);
           DEBUG("TcpConnection : Read an extra %d bytes from the socket, into buffer of 1024", len);
         } catch( SystemException& ) {
           // now what?
         }
-        delete[] buff;
 
         sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
-        delete[] rheaderbuff;
-        rheaderbuff = NULL;
+        header_buffer.clear();
         rbuffused = 0;
         return;
       }
@@ -469,8 +462,7 @@ void TcpConnection::processVersionCheck() {
       int32_t lastchance = verCheckLastChance();
       if (lastchance == 1) {
         // last chance passed, try checking for frames again
-        delete[] rheaderbuff;
-        rheaderbuff = NULL;
+        header_buffer.clear();
       } else if (lastchance == -2) {
         //waiting for more data
       } else {
@@ -596,5 +588,5 @@ bool TcpConnection::getAuth( InputFrame* frame, std::string& username, std::stri
 }
 
 std::string TcpConnection::getHeader() const {
-  return std::string( rheaderbuff, 16 );
+  return header_buffer;
 }
