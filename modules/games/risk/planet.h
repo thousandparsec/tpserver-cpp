@@ -46,7 +46,7 @@ public:
    Planet();
    virtual ~Planet();
 
-   virtual void packExtraData(OutputFrame * frame);
+   virtual void packExtraData(OutputFrame::Ptr frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 

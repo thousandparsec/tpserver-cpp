@@ -55,7 +55,7 @@ int Wormhole::getContainerType() {
    return ContainerTypes_::StaticObject;
 }
 
-void Wormhole::packExtraData(OutputFrame *frame) {
+void Wormhole::packExtraData(OutputFrame::Ptr frame) {
    Vector3d end = getExit();
    frame->packInt64(end.getX());
    frame->packInt64(end.getY());

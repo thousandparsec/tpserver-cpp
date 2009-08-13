@@ -129,7 +129,7 @@ int Planet::getContainerType() {
    return ContainerTypes_::Planet;
 }
 
-void Planet::packExtraData(OutputFrame * frame){
+void Planet::packExtraData(OutputFrame::Ptr frame){
    ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
    frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
 
