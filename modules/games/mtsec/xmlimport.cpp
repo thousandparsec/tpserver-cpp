@@ -105,8 +105,7 @@ bool xmlImport::importComps() {
             pCur = pChild->FirstChildElement("propertylist");
             if (pCur) {
             TiXmlElement* pElem;
-            pElem=pCur->FirstChildElement();
-            for(pElem; pElem; pElem=pElem->NextSiblingElement())
+            for(pElem=pCur->FirstChildElement(); pElem != NULL; pElem=pElem->NextSiblingElement())
             {
                 std::string pKey=pElem->Value();
                 std::string pText=pElem->GetText();
