@@ -48,28 +48,27 @@ public:
   void removeOwnedObject(uint32_t objid);
   uint32_t getNumberOwnedObjects() const;
   IdSet getOwnedObjects() const;
-  void processGetObject(uint32_t objid, OutputFrame::Ptr frame);
   void processGetObjectIds(InputFrame::Ptr in, OutputFrame::Ptr out);
 
   void addVisibleDesign( DesignView::Ptr design);
   void addVisibleDesign( uint32_t id, bool completely_visible );
   void addVisibleDesigns( const IdSet& obids );
+  DesignView::Ptr getDesignView(uint32_t designid);
   void addUsableDesign(uint32_t designid);
   void removeUsableDesign(uint32_t designid);
   bool isUsableDesign(uint32_t designid) const;
   IdSet getUsableDesigns() const;
   IdSet getVisibleDesigns() const;
-  void processGetDesign(uint32_t designid, OutputFrame::Ptr frame);
   void processGetDesignIds(InputFrame::Ptr in, OutputFrame::Ptr out);
 
   void addVisibleComponent(ComponentView::Ptr comp);
   void addVisibleComponents( const IdSet& obids );
   void addUsableComponent(uint32_t compid);
+  ComponentView::Ptr getComponentView(uint32_t compid);
   void removeUsableComponent(uint32_t compid);
   bool isUsableComponent(uint32_t compid) const;
   IdSet getVisibleComponents() const;
   IdSet getUsableComponents() const;
-  void processGetComponent(uint32_t compid, OutputFrame::Ptr frame);
   void processGetComponentIds(InputFrame::Ptr in, OutputFrame::Ptr out);
   
   //for persistence only!

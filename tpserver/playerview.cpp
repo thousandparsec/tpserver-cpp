@@ -108,14 +108,6 @@ IdSet PlayerView::getOwnedObjects() const{
   return objects.actable;
 }
 
-void PlayerView::processGetObject(uint32_t objid, OutputFrame::Ptr frame){
-  if(!objects.isVisible(objid)){
-    throw FrameException(fec_NonExistant, "No Such Object");
-  }else{
-    getObjectView(objid)->packFrame(frame, pid);
-  }
-}
-
 void PlayerView::processGetObjectIds(InputFrame::Ptr in, OutputFrame::Ptr out){
   objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
@@ -152,11 +144,11 @@ IdSet PlayerView::getVisibleDesigns() const{
   return designs.visible;
 }
 
-void PlayerView::processGetDesign(uint32_t designid, OutputFrame::Ptr frame){
+DesignView::Ptr PlayerView::getDesignView(uint32_t designid){
   if(!designs.isVisible(designid)){
-    throw FrameException(fec_NonExistant, "No Such Design");
+    return DesignView::Ptr();
   }else{
-    designs.retrieve(designid)->pack(frame);
+    return designs.retrieve(designid);
   }
 }
 
@@ -192,11 +184,11 @@ IdSet PlayerView::getUsableComponents() const{
   return components.actable;
 }
 
-void PlayerView::processGetComponent(uint32_t compid, OutputFrame::Ptr frame){
+ComponentView::Ptr PlayerView::getComponentView(uint32_t compid ){
   if(components.visible.find(compid) == components.visible.end()){
-    throw FrameException(fec_NonExistant, "No Such Component");
+    return ComponentView::Ptr();
   }else{
-    components.retrieve(compid)->pack(frame);
+    return components.retrieve(compid);
   }
 }
 

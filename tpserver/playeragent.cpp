@@ -205,8 +205,10 @@ void PlayerAgent::processGetObjectById ( InputFrame::Ptr frame ){
   // Object frames
   for ( int i=0 ; i < len; ++i ){
     uint32_t objectID = frame->unpackInt();
+    ObjectView::Ptr object = player->getPlayerView()->getObjectView(objectID);
+    if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
     OutputFrame::Ptr of = curConnection->createFrame ( frame );
-    player->getPlayerView()->processGetObject(objectID, of);
+    object->packFrame( of, player->getId() );
     curConnection->sendFrame ( of );
   }
 }
@@ -235,9 +237,11 @@ void PlayerAgent::processGetObjectByPos( InputFrame::Ptr frame )
 
   IdSet::iterator obCurr = intersection.begin();
   for( ; obCurr != intersection.end(); ++obCurr) {
-    of = curConnection->createFrame(frame);
-    player->getPlayerView()->processGetObject(*obCurr, of);
-    curConnection->sendFrame(of);
+    ObjectView::Ptr object = player->getPlayerView()->getObjectView(*obCurr);
+    if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
+    OutputFrame::Ptr of = curConnection->createFrame ( frame );
+    object->packFrame( of, player->getId() );
+    curConnection->sendFrame ( of );
   }
 }
 
@@ -919,10 +923,10 @@ void PlayerAgent::processGetDesign( InputFrame::Ptr frame ){
   int numdesigns = queryCheck( frame );
 
   for(int i = 0; i < numdesigns; i++){
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
     int designnum = frame->unpackInt();
-    player->getPlayerView()->processGetDesign(designnum, of);
-    curConnection->sendFrame(of);
+    DesignView::Ptr design = player->getPlayerView()->getDesignView( designnum );
+    if (!design) throw FrameException(fec_NonExistant, "No Such Design");
+    curConnection->send( frame, design );
   }
 }
 
@@ -1015,9 +1019,9 @@ void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
 
   for(int i = 0; i < numcomps; i++){
     int compnum = frame->unpackInt();
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
-    player->getPlayerView()->processGetComponent(compnum, of);
-    curConnection->sendFrame(of);
+    ComponentView::Ptr comp = player->getPlayerView()->getComponentView(compnum);
+    if (!comp) throw FrameException(fec_NonExistant, "No Such Component");
+    curConnection->send(frame, comp);
   }
 }
 
