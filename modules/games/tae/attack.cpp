@@ -66,7 +66,7 @@ Order* Attack::clone() const {
     return o;
 }
 
-void Attack::createFrame(OutputFrame *f, int pos) {
+void Attack::createFrame(OutputFrame::Ptr f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 

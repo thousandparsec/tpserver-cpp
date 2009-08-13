@@ -53,7 +53,7 @@ Order* Reinforce::clone() const {
     return o;
 }
 
-void Reinforce::createFrame(OutputFrame *f, int pos) {
+void Reinforce::createFrame(OutputFrame::Ptr f, int pos) {
     Order::createFrame(f, pos);
 }
 

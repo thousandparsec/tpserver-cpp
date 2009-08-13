@@ -43,7 +43,7 @@ class OwnedObject : public SpaceObject {
 
         virtual void setDefaultOrderTypes() = 0;
 	
-	void packExtraData(OutputFrame * frame);
+	void packExtraData(OutputFrame::Ptr frame);
 
 
         virtual void setupObject();

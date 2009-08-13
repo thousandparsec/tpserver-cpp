@@ -56,7 +56,7 @@ void Planet::setDefaultOrderTypes(){
   ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
 }
 
-void Planet::packExtraData(OutputFrame * frame){
+void Planet::packExtraData(OutputFrame::Ptr frame){
   OwnedObject::packExtraData(frame);
   
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();

@@ -36,7 +36,7 @@ class Attack : public FleetOrder
 
    virtual Order* clone() const;
 
-   virtual void createFrame(OutputFrame * f, int pos);
+   virtual void createFrame(OutputFrame::Ptr f, int pos);
    
    virtual bool doOrder(IGObject::Ptr obj);
 };

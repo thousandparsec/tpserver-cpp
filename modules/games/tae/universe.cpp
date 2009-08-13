@@ -54,7 +54,7 @@ Universe::Universe(){
 Universe::~Universe(){
 }
 
-void Universe::packExtraData(OutputFrame *frame) {
+void Universe::packExtraData(OutputFrame::Ptr frame) {
     frame->packInt(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue());
 }
 

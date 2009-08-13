@@ -80,7 +80,7 @@ Order* Colonize::clone() const {
     return o;
 }
 
-void Colonize::createFrame(OutputFrame *f, int pos) {
+void Colonize::createFrame(OutputFrame::Ptr f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 

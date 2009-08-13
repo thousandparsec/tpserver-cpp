@@ -40,7 +40,7 @@ class Universe : public ObjectBehaviour {
         Universe();
         virtual ~Universe();
 
-        void packExtraData(OutputFrame * frame);
+        void packExtraData(OutputFrame::Ptr frame);
         void doOnceATurn();
         int getContainerType();
         Vector3d getPosition() const;

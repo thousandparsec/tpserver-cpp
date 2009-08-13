@@ -66,7 +66,7 @@ Order* Move::clone() const {
     return o;
 }
 
-void Move::createFrame(OutputFrame *f, int pos) {
+void Move::createFrame(OutputFrame::Ptr f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 

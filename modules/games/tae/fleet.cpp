@@ -208,7 +208,7 @@ void Fleet::setDamage(uint32_t nd){
     obj->touchModTime();
 }
 
-void Fleet::packExtraData(OutputFrame * frame){
+void Fleet::packExtraData(OutputFrame::Ptr frame){
     Logger::getLogger()->debug("Enter: Fleet::packExtraData");
     OwnedObject::packExtraData(frame);
 
