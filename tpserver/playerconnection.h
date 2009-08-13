@@ -49,7 +49,7 @@ class PlayerConnection: public TcpConnection {
     void processAccountFrame(InputFrame::Ptr frame);
     void processPingFrame(InputFrame::Ptr frame);
     
-    PlayerAgent *playeragent;
+    boost::shared_ptr<PlayerAgent> playeragent;
     uint64_t lastpingtime;
 };
 

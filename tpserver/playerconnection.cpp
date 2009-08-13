@@ -38,15 +38,12 @@
 #include "playerconnection.h"
 
 PlayerConnection::PlayerConnection(int fd) 
-  : TcpConnection(fd, PLAYER), playeragent(NULL)
+  : TcpConnection(fd, PLAYER)
 {
   lastpingtime = time(NULL);
 }
 
 PlayerConnection::~PlayerConnection(){
-  if(playeragent != NULL){
-    delete playeragent;
-  }
 }
 
 
@@ -93,7 +90,7 @@ void PlayerConnection::processAccountFrame(InputFrame::Ptr frame)
         player->setComment(frame->unpackString());
         sendOK(frame,"Account created.");
         INFO("PlayerConnection : Account created ok for %s", username.c_str());
-        playeragent = new PlayerAgent(boost::dynamic_pointer_cast<PlayerConnection>(shared_from_this()),player);
+        playeragent.reset( new PlayerAgent(boost::dynamic_pointer_cast<PlayerConnection>(shared_from_this()),player) );
       }else{
         INFO("PlayerConnection : Bad username or password in account creation");
         throw FrameException( fec_FrameError, "Account creation Error - bad username or password");	// TODO - should be a const or enum, Login error
@@ -136,7 +133,7 @@ void PlayerConnection::processLoginFrame(InputFrame::Ptr frame)
     if (player) {
       sendOK(frame, "Welcome");
       Logger::getLogger()->info("Login ok by %s", username.c_str());
-      playeragent = new PlayerAgent(boost::dynamic_pointer_cast<PlayerConnection>(shared_from_this()),player);
+      playeragent.reset( new PlayerAgent(boost::dynamic_pointer_cast<PlayerConnection>(shared_from_this()),player) );
       status = READY;
     } else {
       INFO("PlayerConnection : Bad username or password");

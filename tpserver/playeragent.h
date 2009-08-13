@@ -26,6 +26,8 @@
 
 class PlayerAgent {
 public:
+  typedef boost::shared_ptr<PlayerAgent> Ptr;
+
   PlayerAgent( PlayerConnection::Ptr connection, Player::Ptr nplayer );
   ~PlayerAgent();
 
