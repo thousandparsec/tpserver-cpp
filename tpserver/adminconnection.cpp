@@ -60,8 +60,7 @@ void AdminConnection::processLogin(){
           if(authenticated){
             sendOK( recvframe, "Welcome" );
             INFO("Admin login ok by %s", username.c_str());
-            logsink = new AdminLogger( boost::dynamic_pointer_cast<AdminConnection>(shared_from_this()) );
-            logextid = Logger::getLogger()->addLog(logsink);
+            logextid = Logger::getLogger()->addLog( LogSink::Ptr( new AdminLogger( boost::dynamic_pointer_cast<AdminConnection>(shared_from_this()) ) ) );
             status = READY;
           } else {
             throw FrameException( fec_FrameError, "Admin Login Error - bad username or password"); // TODO - should be a const or enum, Login error
