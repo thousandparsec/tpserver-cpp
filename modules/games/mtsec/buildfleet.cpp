@@ -71,7 +71,7 @@ BuildFleet::BuildFleet() : Order()
 BuildFleet::~BuildFleet(){
 }
 
-void BuildFleet::createFrame(OutputFrame *f, int pos)
+void BuildFleet::createFrame(OutputFrame::Ptr f, int pos)
 {
   Logger::getLogger()->debug("Enter: BuildFleet::createFrame()");
   // set it to the high end of the production cost... this is a best case scenario where it gets all the factories

@@ -73,7 +73,7 @@ int Move::getETA(IGObject::Ptr ob) const{
   return (int)((distance - 1) / max_speed) + 1;
 }
 
-void Move::createFrame(OutputFrame * f, int pos)
+void Move::createFrame(OutputFrame::Ptr f, int pos)
 {
   Logger::getLogger()->debug("Enter Move::createFrame");
   Game* game = Game::getGame();

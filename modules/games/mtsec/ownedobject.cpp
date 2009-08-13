@@ -66,7 +66,7 @@ void OwnedObject::setOwner(uint32_t no){
 
 
 
-void OwnedObject::packExtraData(OutputFrame * frame){
+void OwnedObject::packExtraData(OutputFrame::Ptr frame){
   SpaceObject::packExtraData(frame);
   
   ReferenceObjectParam* playerref = dynamic_cast<ReferenceObjectParam*>(obj->getParameter(2,1));

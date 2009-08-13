@@ -45,7 +45,7 @@ Universe::~Universe(){
 }
 
 
-void Universe::packExtraData(OutputFrame * frame){
+void Universe::packExtraData(OutputFrame::Ptr frame){
   frame->packInt(dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->getValue());
 }
 
