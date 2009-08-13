@@ -67,7 +67,7 @@ void Move::createFrame(OutputFrame::Ptr f, int pos) {
    Order::createFrame(f, pos);
 }
 
-void Move::inputFrame(InputFrame *f, uint32_t playerid) {
+void Move::inputFrame(InputFrame::Ptr f, uint32_t playerid) {
    Order::inputFrame(f, playerid);
 
    turns = 0;
