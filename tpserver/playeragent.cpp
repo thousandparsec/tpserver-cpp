@@ -593,7 +593,7 @@ void PlayerAgent::processGetBoards( InputFrame::Ptr frame ){
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
-      curConnection->send( frame, board.get() );
+      curConnection->send( frame, board );
     }else{
       throw FrameException( fec_PermUnavailable, "No non-player boards yet");
     }
@@ -665,8 +665,8 @@ void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
 
   if(currboard.get() != NULL){
     for(int i = 0; i < nummsg; i++){
-      OutputFrame::Ptr of = curConnection->createFrame(frame);
       int msgnum = frame->unpackInt();
+      OutputFrame::Ptr of = curConnection->createFrame(frame);
 
       currboard->packMessage(of, msgnum);
 
@@ -1014,8 +1014,8 @@ void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
   int numcomps = queryCheck( frame );
 
   for(int i = 0; i < numcomps; i++){
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
     int compnum = frame->unpackInt();
+    OutputFrame::Ptr of = curConnection->createFrame(frame);
     player->getPlayerView()->processGetComponent(compnum, of);
     curConnection->sendFrame(of);
   }
