@@ -250,7 +250,7 @@ void AVACombat::resolveCombat(Fleet* fleet){
 
 
         if (damage >= damageNeeded) {
-            uint32_t factor = floor(damage % damageNeeded);
+            uint32_t factor = damage % damageNeeded;
             if (factor > shipQuantity) {
                 factor = shipQuantity;
             }
