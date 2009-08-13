@@ -41,8 +41,7 @@
 
 TcpConnection::TcpConnection(int fd, Type aType) 
   : Connection(fd,aType), 
-    rdatabuff( NULL ),
-    rbuffused( 0 ),
+    read_buffer_pos( 0 ),
     sendandclose( false ),
     version(fv0_3),
     paddingfilter( false )
@@ -54,8 +53,6 @@ TcpConnection::~TcpConnection() {
   if (status != DISCONNECTED) {
     close();
   }
-  if(rdatabuff != NULL)
-    delete[] rdatabuff;
   clearQueue();
 }
 
@@ -204,21 +201,21 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
   uint32_t hlen = recvframe->getHeaderLength();
 
   if (header_buffer.empty()) {
-    rbuffused = 0;
+    read_buffer_pos = 0;
     header_buffer.resize( hlen );
   }
 
-  if (rdatabuff == NULL && rbuffused != hlen) {
+  if (data_buffer.empty() && read_buffer_pos != hlen) {
     try {
       // Yes, yes, I know, it's bad, it's non-standard conforming. But damn it works.
-      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+rbuffused, hlen - rbuffused);
+      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+read_buffer_pos, hlen - read_buffer_pos);
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
         return false;
       } else if (len > 0) {
-        rbuffused += len;
-        if (rbuffused != hlen) {
+        read_buffer_pos += len;
+        if (read_buffer_pos != hlen) {
           DEBUG("TcpConnection : Read header not the length needed, delaying read");
           return false;
         }
@@ -236,7 +233,7 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
 
   uint32_t datalen;
 
-  if  ((rdatabuff == NULL && rbuffused == hlen) || rdatabuff != NULL) {
+  if  ((data_buffer.empty() && read_buffer_pos == hlen) || !data_buffer.empty() ) {
     int32_t signeddatalen = recvframe->setHeader(header_buffer);
     //check that the length field is probably valid
     // length could be negative from wire or from having no synchronisation symbol
@@ -259,21 +256,22 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
 
   if (datalen != 0) {
 
-    if (rdatabuff == NULL && rbuffused == hlen) {
-      rbuffused = 0;
-      rdatabuff = new char[datalen];
+    if (data_buffer.empty() && read_buffer_pos == hlen) {
+      read_buffer_pos = 0;
+      data_buffer.resize(datalen);
     }
 
-    if (rbuffused != datalen) {
+    if (read_buffer_pos != datalen) {
       try {
-        int32_t len = underlyingRead(rdatabuff+rbuffused, datalen - rbuffused);
+        // Yes, yes, I know, it's bad, it's non-standard conforming. But damn it works.
+        int32_t len = underlyingRead(const_cast<char*>(data_buffer.data())+read_buffer_pos, datalen - read_buffer_pos);
         if (len == 0) {
           INFO("TcpConnection : Client disconnected");
           close();
           return false;
         } else if (len > 0) {
-          rbuffused += len;
-          if (rbuffused != datalen) {
+          read_buffer_pos += len;
+          if (read_buffer_pos != datalen) {
             DEBUG("TcpConnection : Read data not the length needed, delaying read");
             return false;
           }
@@ -288,11 +286,10 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
       }
     }
 
-    if(rbuffused == datalen){
-      recvframe->setData(std::string(rdatabuff, datalen));
+    if(read_buffer_pos == datalen){
+      recvframe->setData(data_buffer);
       header_buffer.clear();
-      delete[] rdatabuff;
-      rdatabuff = NULL;
+      data_buffer.clear();
 
       //sanity checks
       if(version != recvframe->getVersion()){
@@ -333,22 +330,22 @@ void TcpConnection::processVersionCheck() {
   uint32_t hlen = recvframe->getHeaderLength();
 
   if (header_buffer.empty()) {
-    rbuffused = 0;
+    read_buffer_pos = 0;
     header_buffer.resize(hlen);
   }
 
 
-  if (rdatabuff == NULL && rbuffused < 4) {
+  if (data_buffer.empty() && read_buffer_pos < 4) {
     try {
       // Yes, yes, I know, it's bad, it's non-standard conforming. But damn it works.
-      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+rbuffused, 4 - rbuffused);
+      int32_t len = underlyingRead(const_cast<char*>(header_buffer.data())+read_buffer_pos, 4 - read_buffer_pos);
       if (len == 0) {
         INFO("TcpConnection : Client disconnected");
         close();
         return;
       } else if (len > 0) {
-        rbuffused += len;
-        if (rbuffused < 4) {
+        read_buffer_pos += len;
+        if (read_buffer_pos < 4) {
           DEBUG("TcpConnection : ver check header not the length needed, delaying read");
           return;
         }
@@ -362,7 +359,7 @@ void TcpConnection::processVersionCheck() {
     }
   }
 
-  if ((rdatabuff == NULL && rbuffused >= 4) || rdatabuff != NULL) {
+  if ((data_buffer.empty() && read_buffer_pos >= 4) || !data_buffer.empty()) {
     if ( header_buffer.compare(0,2,"TP") == 0 ) {
       //assume we have TP procotol
       if ( header_buffer[2] == '0') {
@@ -425,7 +422,7 @@ void TcpConnection::processVersionCheck() {
         sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
         header_buffer.clear();
-        rbuffused = 0;
+        read_buffer_pos = 0;
         return;
       }
 

@@ -78,10 +78,9 @@ class TcpConnection: public Connection {
     /// Blocked to disallow non-fd creation
     TcpConnection() {}
 
-    // TODO: change to std::string
     std::string header_buffer;
-    char* rdatabuff;
-    uint32_t rbuffused;
+    std::string data_buffer;
+    uint32_t read_buffer_pos;
   
     std::string send_buffer;
     size_t send_buffer_pos;
