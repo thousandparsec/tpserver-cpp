@@ -28,6 +28,7 @@
 #include "game.h"
 #include "object.h"
 #include "objectview.h"
+#include "objecttype.h"
 #include "orderqueue.h"
 #include "order.h"
 #include "vector3d.h"
@@ -317,9 +318,9 @@ void PlayerAgent::processGetObjectDesc( InputFrame::Ptr frame ){
   // Object frames
   for ( int i=0 ; i < len; ++i ){
     uint32_t objecttype = frame->unpackInt();
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
-    Game::getGame()->getObjectTypeManager()->doGetObjectDesc(objecttype, of);
-    curConnection->sendFrame ( of );
+    ObjectType* otype = Game::getGame()->getObjectTypeManager()->getObjectType(objecttype);
+    if ( otype == NULL ) throw FrameException( fec_NonExistant, "Object type does not exist");
+    curConnection->send( frame, otype );
   }
 }
 

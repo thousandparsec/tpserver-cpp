@@ -24,7 +24,7 @@
 
 #include "objecttypemanager.h"
 
-ObjectTypeManager::ObjectTypeManager() : typeStore(), stringmap(), nextType(0), seqkey(0){
+ObjectTypeManager::ObjectTypeManager() : typeStore(), stringmap(), nextType(0) {
 }
 
 ObjectTypeManager::~ObjectTypeManager(){
@@ -58,7 +58,6 @@ uint32_t ObjectTypeManager::addNewObjectType(ObjectType* od){
   typeStore[nextType] = od;
   stringmap[od->getName()] = nextType;
   nextType++;
-  seqkey++;
   return nextType - 1;
 }
 
@@ -74,10 +73,8 @@ IdModList ObjectTypeManager::getTypeModList(uint64_t fromtime) const {
   return modlist;
 }
 
-void ObjectTypeManager::doGetObjectDesc(uint32_t type, OutputFrame::Ptr of){
-  if(typeStore.find(type) != typeStore.end()){
-    typeStore[type]->pack(of);
-  }else{
-    throw FrameException( fec_NonExistant, "Object type does not exist");
-  }
+ObjectType * ObjectTypeManager::getObjectType( uint32_t type )
+{
+  return find_default( typeStore, type, NULL );
 }
+
