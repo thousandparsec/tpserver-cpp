@@ -65,7 +65,7 @@ class Command {
 
     void describeCommand(OutputFrame::Ptr of) const;
 
-    virtual void action(InputFrame * frame, OutputFrame::Ptr of) = 0;
+    virtual void action(InputFrame::Ptr frame, OutputFrame::Ptr of) = 0;
 
   protected:
     void addCommandParameter(CommandParameter* cp);

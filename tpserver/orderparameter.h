@@ -47,7 +47,7 @@ class OrderParameter : public Describable, public Packable {
     // used only by persistence
     uint32_t getType() const;
     void packOrderDescFrame(OutputFrame::Ptr f) const;
-    virtual bool unpack(InputFrame * f) = 0;
+    virtual bool unpack(InputFrame::Ptr f) = 0;
 
 };
 

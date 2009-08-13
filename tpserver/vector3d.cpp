@@ -127,7 +127,7 @@ void Vector3d::pack(OutputFrame::Ptr frame) const{
   frame->packInt64(z);
 }
 
-void Vector3d::unpack(InputFrame * frame){
+void Vector3d::unpack(InputFrame::Ptr frame){
   x = frame->unpackInt64();
   y = frame->unpackInt64();
   z = frame->unpackInt64();

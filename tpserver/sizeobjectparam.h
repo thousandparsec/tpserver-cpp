@@ -31,7 +31,7 @@ public:
   virtual ~SizeObjectParam();
 
   virtual void packObjectFrame(OutputFrame::Ptr f, uint32_t objID);
-  virtual bool unpackModifyObjectFrame(InputFrame * f, uint32_t playerid);
+  virtual bool unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid);
 
   virtual ObjectParameter *clone() const;
   

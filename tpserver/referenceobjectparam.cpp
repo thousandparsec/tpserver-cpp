@@ -35,7 +35,7 @@ void ReferenceObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID){
 }
 
 
-bool ReferenceObjectParam::unpackModifyObjectFrame(InputFrame *f, uint32_t playerid){
+bool ReferenceObjectParam::unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(8))
     return false;

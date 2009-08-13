@@ -116,7 +116,7 @@ void PlayerView::processGetObject(uint32_t objid, OutputFrame::Ptr frame){
   }
 }
 
-void PlayerView::processGetObjectIds(InputFrame* in, OutputFrame::Ptr out){
+void PlayerView::processGetObjectIds(InputFrame::Ptr in, OutputFrame::Ptr out){
   objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
 
@@ -160,7 +160,7 @@ void PlayerView::processGetDesign(uint32_t designid, OutputFrame::Ptr frame){
   }
 }
 
-void PlayerView::processGetDesignIds(InputFrame* in, OutputFrame::Ptr out){
+void PlayerView::processGetDesignIds(InputFrame::Ptr in, OutputFrame::Ptr out){
   designs.processGetIds( in, out, ft03_DesignIds_List );
 }
 
@@ -200,7 +200,7 @@ void PlayerView::processGetComponent(uint32_t compid, OutputFrame::Ptr frame){
   }
 }
 
-void PlayerView::processGetComponentIds(InputFrame* in, OutputFrame::Ptr out){
+void PlayerView::processGetComponentIds(InputFrame::Ptr in, OutputFrame::Ptr out){
   components.processGetIds( in, out, ft03_ComponentIds_List );
 }
 
@@ -229,7 +229,7 @@ void PlayerView::setUsableComponents(const IdSet& cids){
 }
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame* in, OutputFrame::Ptr out, FrameType type )
+void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame::Ptr in, OutputFrame::Ptr out, FrameType type )
 {
   DEBUG("doing Get Ids frame");
   

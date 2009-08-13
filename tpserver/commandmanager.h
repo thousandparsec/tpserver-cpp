@@ -32,8 +32,8 @@ class CommandManager{
     bool checkCommandType(uint32_t type);
     void describeCommand(uint32_t cmdtype, OutputFrame::Ptr of);
     void addCommandType(Command* cmd);
-    void doGetCommandTypes(InputFrame * frame, OutputFrame::Ptr of);
-    void executeCommand(InputFrame * frame, OutputFrame::Ptr of);
+    void doGetCommandTypes(InputFrame::Ptr frame, OutputFrame::Ptr of);
+    void executeCommand(InputFrame::Ptr frame, OutputFrame::Ptr of);
 
   private:
     CommandManager();

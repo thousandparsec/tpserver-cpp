@@ -34,7 +34,7 @@ void MediaObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID){
 }
 
 
-bool MediaObjectParam::unpackModifyObjectFrame(InputFrame *f, uint32_t playerid){
+bool MediaObjectParam::unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(4))
     return false;

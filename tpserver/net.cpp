@@ -225,7 +225,7 @@ void Network::sendToAll(AsyncFrame* aframe){
   for (itcurr = connections.begin(); itcurr != connections.end(); itcurr++) {
     PlayerConnection::Ptr currConn = boost::dynamic_pointer_cast<PlayerConnection>(itcurr->second);
     if(currConn != NULL && currConn->getStatus() == Connection::READY){
-      OutputFrame::Ptr currFrame = currConn->createFrame(NULL);
+      OutputFrame::Ptr currFrame = currConn->createFrame( InputFrame::Ptr() );
       if(aframe->createFrame(currFrame)){
         currConn->sendFrame(currFrame);
       }

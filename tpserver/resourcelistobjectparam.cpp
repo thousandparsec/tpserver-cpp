@@ -41,7 +41,7 @@ void ResourceListObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID
 }
 
 
-bool ResourceListObjectParam::unpackModifyObjectFrame(InputFrame *f, uint32_t playerid){
+bool ResourceListObjectParam::unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid){
   // all fields are read only
   if(!f->isEnoughRemaining(4))
     return false;

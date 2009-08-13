@@ -34,7 +34,7 @@ class TcpConnection: public Connection {
     virtual void close();
     
     // DEPRECATED
-    OutputFrame::Ptr createFrame(InputFrame* oldframe = NULL);
+    OutputFrame::Ptr createFrame(InputFrame::Ptr oldframe);
 
     // DEPRECATED
     void sendFrame( OutputFrame::Ptr frame );
@@ -44,12 +44,12 @@ class TcpConnection: public Connection {
 
     ProtocolVersion getProtocolVersion();
 
-    void sendFail(InputFrame* oldframe, FrameErrorCode code, const std::string& error );
-    void sendSequence(InputFrame* oldframe, size_t sequence_size );
-    void send(InputFrame* oldframe, const Packable* packable );
-    void send(InputFrame* oldframe, const Packable::Ptr packable );
-    void sendOK(InputFrame* oldframe, const std::string& message );
-    void sendModList(InputFrame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
+    void sendFail(InputFrame::Ptr oldframe, FrameErrorCode code, const std::string& error );
+    void sendSequence(InputFrame::Ptr oldframe, size_t sequence_size );
+    void send(InputFrame::Ptr oldframe, const Packable* packable );
+    void send(InputFrame::Ptr oldframe, const Packable::Ptr packable );
+    void sendOK(InputFrame::Ptr oldframe, const std::string& message );
+    void sendModList(InputFrame::Ptr oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist,
         uint32_t count, uint32_t start, uint64_t fromtime );
   protected:
     TcpConnection(int fd, Type aType);
@@ -65,12 +65,12 @@ class TcpConnection: public Connection {
     virtual int32_t verCheckPreChecks();
     virtual int32_t verCheckLastChance();
     
-    virtual bool readFrame( InputFrame* recvframe );
+    virtual bool readFrame( InputFrame::Ptr recvframe );
 
     bool queueEmpty() const;
     void clearQueue();
 
-    bool getAuth( InputFrame* frame, std::string& username, std::string& password );
+    bool getAuth( InputFrame::Ptr frame, std::string& username, std::string& password );
     // used by playerhttpconnection
     std::string getHeader() const;
 

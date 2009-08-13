@@ -43,7 +43,7 @@ AdminConnection::~AdminConnection(){
 
 
 void AdminConnection::processLogin(){
-  InputFrame *recvframe = new InputFrame(version, paddingfilter);
+  InputFrame::Ptr recvframe( new InputFrame(version, paddingfilter) );
   if (readFrame(recvframe)) {
     try {
       if(recvframe->getType() == ft02_Login){
@@ -78,13 +78,11 @@ void AdminConnection::processLogin(){
       sendFail( recvframe, exception.getErrorCode(), exception.getErrorMessage() );
     }
   }
-  delete recvframe;
-
 }
 
 void AdminConnection::processNormalFrame()
 {
-  InputFrame *frame = new InputFrame(version,paddingfilter);
+  InputFrame::Ptr frame( new InputFrame(version,paddingfilter) );
   if (readFrame(frame)) {
     try {
       switch (frame->getType()) {
@@ -111,10 +109,9 @@ void AdminConnection::processNormalFrame()
     DEBUG("noFrame :(");
     // client closed
   }
-  delete frame;
 }
 
-void AdminConnection::processDescribeCommand(InputFrame * frame)
+void AdminConnection::processDescribeCommand(InputFrame::Ptr frame)
 {
   Logger::getLogger()->debug("doing describe command frame");
 
@@ -145,7 +142,7 @@ void AdminConnection::processDescribeCommand(InputFrame * frame)
   }
 }
 
-void AdminConnection::processGetCommandTypes(InputFrame * frame){
+void AdminConnection::processGetCommandTypes(InputFrame::Ptr frame){
   DEBUG("doing get command types frame");
 
   OutputFrame::Ptr of = createFrame(frame);
@@ -153,7 +150,7 @@ void AdminConnection::processGetCommandTypes(InputFrame * frame){
   sendFrame(of);
 }
 
-void AdminConnection::processCommand(InputFrame * frame){
+void AdminConnection::processCommand(InputFrame::Ptr frame){
   DEBUG("doing command frame");
 
   OutputFrame::Ptr of = createFrame(frame);

@@ -49,7 +49,7 @@ class ObjectParameterGroup {
     void addParameter(ObjectParameter* op);
     
     void packObjectFrame(OutputFrame::Ptr f, uint32_t playerid);
-    bool unpackModifyObjectFrame(InputFrame * f, uint32_t playerid);
+    bool unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid);
     
     void signalRemoval();
 

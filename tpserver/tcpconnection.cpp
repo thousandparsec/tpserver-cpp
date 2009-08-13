@@ -191,7 +191,7 @@ int32_t TcpConnection::verCheckLastChance(){
   return -1;
 }
 
-bool TcpConnection::readFrame(InputFrame * recvframe)
+bool TcpConnection::readFrame(InputFrame::Ptr recvframe)
 {
   if (sendandclose) return false;
 
@@ -242,7 +242,7 @@ bool TcpConnection::readFrame(InputFrame * recvframe)
       if (signeddatalen < 1048576) {
         DEBUG("TcpConnection : Incorrect header");
         // protocol error
-        sendFail( NULL, fec_ProtocolError, "Protocol Error, could not decode header");
+        sendFail( InputFrame::Ptr(), fec_ProtocolError, "Protocol Error, could not decode header");
       } else {
         DEBUG("TcpConnection : Frame too large");
         sendFail(recvframe, fec_ProtocolError, "Protocol Error, frame length too large");
@@ -324,7 +324,7 @@ void TcpConnection::processVersionCheck() {
     return;
   }
 
-  InputFrame *recvframe = new InputFrame();
+  InputFrame::Ptr recvframe( new InputFrame() );
   uint32_t hlen = recvframe->getHeaderLength();
 
   if (header_buffer.empty()) {
@@ -368,7 +368,7 @@ void TcpConnection::processVersionCheck() {
           return;
         } else if ( header_buffer[3] > '3') {
           //might be future version of protocol, just disconnect now
-          sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
+          sendFail(InputFrame::Ptr(),fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
@@ -390,7 +390,7 @@ void TcpConnection::processVersionCheck() {
         //tp04 and later
         version = (ProtocolVersion)header_buffer[2];
         if (version > fv0_4) {
-          sendFail( NULL,fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
+          sendFail( InputFrame::Ptr() ,fec_ProtocolError, "TP Protocol, but I only support versions 4, sorry.");
 
           //stay connected just in case they try again with a lower version
           // have to empty the receive queue though.
@@ -417,7 +417,7 @@ void TcpConnection::processVersionCheck() {
           // now what?
         }
 
-        sendFail(NULL,fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
+        sendFail(InputFrame::Ptr(),fec_ProtocolError, "TP Protocol, but I only support versions 2 and 3, sorry.");
 
         header_buffer.clear();
         read_buffer_pos = 0;
@@ -426,8 +426,7 @@ void TcpConnection::processVersionCheck() {
 
       INFO("TcpConnection : Client has version %d of protocol", version);
       if(version != recvframe->getVersion()){
-        delete recvframe;
-        recvframe = new InputFrame(version);
+        recvframe.reset( new InputFrame(version) );
       }
       if (readFrame(recvframe)) {
         try {
@@ -473,7 +472,7 @@ void TcpConnection::processVersionCheck() {
 }
 
 
-void TcpConnection::sendFail(InputFrame* oldframe, FrameErrorCode code, const std::string& error ) {
+void TcpConnection::sendFail(InputFrame::Ptr oldframe, FrameErrorCode code, const std::string& error ) {
   OutputFrame::Ptr frame = createFrame( oldframe );
   frame->setType( ft02_Fail );
   frame->packInt( code );
@@ -484,7 +483,7 @@ void TcpConnection::sendFail(InputFrame* oldframe, FrameErrorCode code, const st
 }
 
 
-void TcpConnection::sendSequence(InputFrame* oldframe, size_t sequence_size )
+void TcpConnection::sendSequence(InputFrame::Ptr oldframe, size_t sequence_size )
 {
   OutputFrame::Ptr frame = createFrame(oldframe);
   frame->setType( ft02_Sequence );
@@ -492,21 +491,21 @@ void TcpConnection::sendSequence(InputFrame* oldframe, size_t sequence_size )
   sendFrame(frame);
 }
 
-void TcpConnection::send(InputFrame* oldframe, const Packable* packable )
+void TcpConnection::send(InputFrame::Ptr oldframe, const Packable* packable )
 {
   OutputFrame::Ptr frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
-void TcpConnection::send(InputFrame* oldframe, const Packable::Ptr packable )
+void TcpConnection::send(InputFrame::Ptr oldframe, const Packable::Ptr packable )
 {
   OutputFrame::Ptr frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
-void TcpConnection::sendOK(InputFrame* oldframe, const std::string& message )
+void TcpConnection::sendOK(InputFrame::Ptr oldframe, const std::string& message )
 {
   OutputFrame::Ptr frame = createFrame(oldframe);
   frame->setType( ft02_OK );
@@ -514,7 +513,7 @@ void TcpConnection::sendOK(InputFrame* oldframe, const std::string& message )
   sendFrame(frame);
 }
 
-void TcpConnection::sendModList(InputFrame* oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist, uint32_t count, uint32_t start, uint64_t fromtime ) 
+void TcpConnection::sendModList(InputFrame::Ptr oldframe, FrameType ft, uint32_t sequence, const IdModList& modlist, uint32_t count, uint32_t start, uint64_t fromtime ) 
 {
   if(start > modlist.size()){
     DEBUG("Starting number too high, snum = %d, size = %d", start, modlist.size());
@@ -540,7 +539,7 @@ void TcpConnection::sendModList(InputFrame* oldframe, FrameType ft, uint32_t seq
   sendFrame(frame);
 }
 
-OutputFrame::Ptr TcpConnection::createFrame(InputFrame* oldframe)
+OutputFrame::Ptr TcpConnection::createFrame(InputFrame::Ptr oldframe)
 {
   OutputFrame::Ptr newframe;
   if(oldframe != NULL) {
@@ -560,7 +559,7 @@ void TcpConnection::clearQueue() {
   while ( !sendqueue.empty() ) sendqueue.pop();
 }
 
-bool TcpConnection::getAuth( InputFrame* frame, std::string& username, std::string& password ) {
+bool TcpConnection::getAuth( InputFrame::Ptr frame, std::string& username, std::string& password ) {
   try{
     if(!frame->isEnoughRemaining(15)) throw FrameException( fec_FrameError );
     username = frame->unpackString();

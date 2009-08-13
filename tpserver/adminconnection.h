@@ -35,9 +35,9 @@ class AdminConnection: public TcpConnection {
   virtual void processLogin();
   virtual void processNormalFrame();
 
-  void processDescribeCommand(InputFrame * frame);
-  void processGetCommandTypes(InputFrame * frame);
-  void processCommand(InputFrame * frame);
+  void processDescribeCommand(InputFrame::Ptr frame);
+  void processGetCommandTypes(InputFrame::Ptr frame);
+  void processCommand(InputFrame::Ptr frame);
 
   AdminLogger* logsink;
   int logextid;

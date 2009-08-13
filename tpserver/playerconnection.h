@@ -33,18 +33,18 @@ class PlayerConnection: public TcpConnection {
     PlayerConnection(int fd);
 
   protected:
-    void processGetFeaturesFrame(InputFrame* frame);
+    void processGetFeaturesFrame(InputFrame::Ptr frame);
 
   private:
     virtual void processNormalFrame();
     virtual void processLogin();
 
-    void processGetGameInfoFrame(InputFrame* frame);
-    void processSetFilters(InputFrame* frame);
-    void processTimeRemainingFrame(InputFrame* frame);
-    void processLoginFrame(InputFrame* frame);
-    void processAccountFrame(InputFrame* frame);
-    void processPingFrame(InputFrame* frame);
+    void processGetGameInfoFrame(InputFrame::Ptr frame);
+    void processSetFilters(InputFrame::Ptr frame);
+    void processTimeRemainingFrame(InputFrame::Ptr frame);
+    void processLoginFrame(InputFrame::Ptr frame);
+    void processAccountFrame(InputFrame::Ptr frame);
+    void processPingFrame(InputFrame::Ptr frame);
     
     PlayerAgent *playeragent;
     uint64_t lastpingtime;

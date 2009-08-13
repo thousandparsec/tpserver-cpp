@@ -68,7 +68,7 @@ uint32_t OrderManager::getOrderTypeByName(const std::string& name){
     return typename_map[name];
 }
 
-void OrderManager::doGetOrderTypes(InputFrame* frame, OutputFrame::Ptr of){
+void OrderManager::doGetOrderTypes(InputFrame::Ptr frame, OutputFrame::Ptr of){
   uint32_t lseqkey = frame->unpackInt();
   if(lseqkey == UINT32_NEG_ONE){
     //start new seqkey

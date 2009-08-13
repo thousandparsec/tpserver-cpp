@@ -34,66 +34,66 @@ public:
   
   Player::Ptr getPlayer() const;
   
-  void processIGFrame( InputFrame* frame );
+  void processIGFrame( InputFrame::Ptr frame );
 
 private:
 
-  void processPermDisabled( InputFrame* frame );
+  void processPermDisabled( InputFrame::Ptr frame );
 
-  void processGetObjectById( InputFrame* frame );
-  void processGetObjectByPos( InputFrame* frame );
-  void processGetObjectIds( InputFrame* frame );
-  void processGetObjectIdsByPos( InputFrame* frame );
-  void processGetObjectIdsByContainer( InputFrame* frame );
+  void processGetObjectById( InputFrame::Ptr frame );
+  void processGetObjectByPos( InputFrame::Ptr frame );
+  void processGetObjectIds( InputFrame::Ptr frame );
+  void processGetObjectIdsByPos( InputFrame::Ptr frame );
+  void processGetObjectIdsByContainer( InputFrame::Ptr frame );
   
-  void processGetObjectDesc( InputFrame* frame );
-  void processGetObjectTypes( InputFrame* frame );
+  void processGetObjectDesc( InputFrame::Ptr frame );
+  void processGetObjectTypes( InputFrame::Ptr frame );
   
-  void processGetOrder( InputFrame* frame );
-  void processAddOrder( InputFrame* frame );
-  void processRemoveOrder( InputFrame* frame );
-  void processDescribeOrder( InputFrame* frame );
-  void processGetOrderTypes( InputFrame* frame );
-  void processProbeOrder( InputFrame* frame );
-  void processGetBoards( InputFrame* frame );
-  void processGetBoardIds( InputFrame* frame );
-  void processGetMessages( InputFrame* frame );
-  void processPostMessage( InputFrame* frame );
-  void processRemoveMessages( InputFrame* frame );
+  void processGetOrder( InputFrame::Ptr frame );
+  void processAddOrder( InputFrame::Ptr frame );
+  void processRemoveOrder( InputFrame::Ptr frame );
+  void processDescribeOrder( InputFrame::Ptr frame );
+  void processGetOrderTypes( InputFrame::Ptr frame );
+  void processProbeOrder( InputFrame::Ptr frame );
+  void processGetBoards( InputFrame::Ptr frame );
+  void processGetBoardIds( InputFrame::Ptr frame );
+  void processGetMessages( InputFrame::Ptr frame );
+  void processPostMessage( InputFrame::Ptr frame );
+  void processRemoveMessages( InputFrame::Ptr frame );
 
-  void processGetResourceDescription( InputFrame* frame );
-  void processGetResourceTypes( InputFrame* frame );
+  void processGetResourceDescription( InputFrame::Ptr frame );
+  void processGetResourceTypes( InputFrame::Ptr frame );
 
-  void processGetPlayer( InputFrame* frame );
-  void processGetPlayerIds( InputFrame* frame );
+  void processGetPlayer( InputFrame::Ptr frame );
+  void processGetPlayerIds( InputFrame::Ptr frame );
 
-  void processGetCategory( InputFrame* frame );
-  void processGetCategoryIds( InputFrame* frame );
-  void processGetDesign( InputFrame* frame );
-  void processAddDesign( InputFrame* frame );
-  void processModifyDesign( InputFrame* frame );
-  void processGetDesignIds( InputFrame* frame );
-  void processGetComponent( InputFrame* frame );
-  void processGetComponentIds( InputFrame* frame );
-  void processGetProperty( InputFrame* frame );
-  void processGetPropertyIds( InputFrame* frame );
+  void processGetCategory( InputFrame::Ptr frame );
+  void processGetCategoryIds( InputFrame::Ptr frame );
+  void processGetDesign( InputFrame::Ptr frame );
+  void processAddDesign( InputFrame::Ptr frame );
+  void processModifyDesign( InputFrame::Ptr frame );
+  void processGetDesignIds( InputFrame::Ptr frame );
+  void processGetComponent( InputFrame::Ptr frame );
+  void processGetComponentIds( InputFrame::Ptr frame );
+  void processGetProperty( InputFrame::Ptr frame );
+  void processGetPropertyIds( InputFrame::Ptr frame );
   
-  void processTurnFinished( InputFrame* frame );
+  void processTurnFinished( InputFrame::Ptr frame );
 
   /**
    * Checks if version is at least the one passed, if not then throws FrameException
    */
-  void versionCheck( InputFrame* frame, ProtocolVersion min_version );
+  void versionCheck( InputFrame::Ptr frame, ProtocolVersion min_version );
   /**
    * Checks if the length of the frame is equal to the given value, if not then 
    * throws FrameException.
    */
-  void lengthCheck( InputFrame* frame, uint32_t length );
+  void lengthCheck( InputFrame::Ptr frame, uint32_t length );
   /**
    * Checks if the length of the frame is at least the size of the given value, if 
    * not, throws FrameException.
    */
-  void lengthCheckMin( InputFrame* frame, uint32_t length );
+  void lengthCheckMin( InputFrame::Ptr frame, uint32_t length );
 
   /**
    * Checks for initial length 4 of frame data, then unpacks the number of components.
@@ -102,7 +102,7 @@ private:
    *
    * At the end if successful, sends the sequence via connection.
    */
-  int queryCheck( InputFrame* frame );
+  int queryCheck( InputFrame::Ptr frame );
 
   PlayerAgent(PlayerAgent & rhs);
   PlayerAgent operator=(PlayerAgent & rhs);

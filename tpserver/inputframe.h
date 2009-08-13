@@ -21,9 +21,11 @@
  */
 
 #include <tpserver/frame.h>
+#include <boost/shared_ptr.hpp>
 
 class InputFrame : public Frame {
   public:
+    typedef boost::shared_ptr< InputFrame > Ptr;
     /**
      * Standard constructor
      *

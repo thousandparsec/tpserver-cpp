@@ -67,7 +67,7 @@ void ObjectParameterGroup::packObjectFrame(OutputFrame::Ptr f, uint32_t playerid
   std::for_each( parameters.begin(), parameters.end(), boost::bind( &ObjectParameter::packObjectFrame, _1, f, playerid ) );
 }
 
-bool ObjectParameterGroup::unpackModifyObjectFrame(InputFrame * f, uint32_t playerid){
+bool ObjectParameterGroup::unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid){
   bool rtn = true;
   // TODO: exceptions then for_each
   for(ParameterList::iterator itcurr = parameters.begin();

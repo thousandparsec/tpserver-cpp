@@ -49,7 +49,7 @@ public:
   uint32_t getNumberOwnedObjects() const;
   IdSet getOwnedObjects() const;
   void processGetObject(uint32_t objid, OutputFrame::Ptr frame);
-  void processGetObjectIds(InputFrame* in, OutputFrame::Ptr out);
+  void processGetObjectIds(InputFrame::Ptr in, OutputFrame::Ptr out);
 
   void addVisibleDesign( DesignView::Ptr design);
   void addVisibleDesign( uint32_t id, bool completely_visible );
@@ -60,7 +60,7 @@ public:
   IdSet getUsableDesigns() const;
   IdSet getVisibleDesigns() const;
   void processGetDesign(uint32_t designid, OutputFrame::Ptr frame);
-  void processGetDesignIds(InputFrame* in, OutputFrame::Ptr out);
+  void processGetDesignIds(InputFrame::Ptr in, OutputFrame::Ptr out);
 
   void addVisibleComponent(ComponentView::Ptr comp);
   void addVisibleComponents( const IdSet& obids );
@@ -70,7 +70,7 @@ public:
   IdSet getVisibleComponents() const;
   IdSet getUsableComponents() const;
   void processGetComponent(uint32_t compid, OutputFrame::Ptr frame);
-  void processGetComponentIds(InputFrame* in, OutputFrame::Ptr out);
+  void processGetComponentIds(InputFrame::Ptr in, OutputFrame::Ptr out);
   
   //for persistence only!
   void setVisibleObjects(const IdSet& obids);
@@ -94,7 +94,7 @@ private:
     uint32_t sequence;
     uint32_t pid;
     EntityInfo() : sequence( 0 ) {}
-    void processGetIds( InputFrame* in, OutputFrame::Ptr out, FrameType type );
+    void processGetIds( InputFrame::Ptr in, OutputFrame::Ptr out, FrameType type );
     void generateModList( uint64_t fromtime );
     void addVisible( EntityPtr entity );
     void addVisible( const IdSet& obids );

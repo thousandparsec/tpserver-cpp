@@ -68,7 +68,7 @@ Player::Ptr PlayerAgent::getPlayer() const{
   return player;
 }
 
-void PlayerAgent::processIGFrame( InputFrame* frame ){
+void PlayerAgent::processIGFrame( InputFrame::Ptr frame ){
   if(player == NULL){
     Logger::getLogger()->warning("No Player for PlayerAgent to work on behalf of");
     return;
@@ -196,12 +196,12 @@ void PlayerAgent::processIGFrame( InputFrame* frame ){
 
 
 
-void PlayerAgent::processPermDisabled( InputFrame* frame ){
+void PlayerAgent::processPermDisabled( InputFrame::Ptr frame ){
   DEBUG("doing a frame that is disabled");
   throw FrameException( fec_PermUnavailable, "Server does not support this frame type");
 }
 
-void PlayerAgent::processGetObjectById ( InputFrame* frame ){
+void PlayerAgent::processGetObjectById ( InputFrame::Ptr frame ){
   DEBUG ( "doing get object by id frame" );
 
   int len = queryCheck( frame );
@@ -215,7 +215,7 @@ void PlayerAgent::processGetObjectById ( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetObjectByPos( InputFrame* frame )
+void PlayerAgent::processGetObjectByPos( InputFrame::Ptr frame )
 {
   DEBUG("doing get object by pos frame");
 
@@ -245,7 +245,7 @@ void PlayerAgent::processGetObjectByPos( InputFrame* frame )
   }
 }
 
-void PlayerAgent::processGetObjectIds( InputFrame* frame ){
+void PlayerAgent::processGetObjectIds( InputFrame::Ptr frame ){
   DEBUG("Doing get object ids frame");
   OutputFrame::Ptr of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetObjectIds(frame, of);
@@ -253,7 +253,7 @@ void PlayerAgent::processGetObjectIds( InputFrame* frame ){
 }
 
 
-void PlayerAgent::processGetObjectIdsByPos( InputFrame* frame ){
+void PlayerAgent::processGetObjectIdsByPos( InputFrame::Ptr frame ){
   DEBUG("doing get object ids by pos frame");
   OutputFrame::Ptr of = curConnection->createFrame(frame);
   lengthCheckMin( frame, 36 );
@@ -281,7 +281,7 @@ void PlayerAgent::processGetObjectIdsByPos( InputFrame* frame ){
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processGetObjectIdsByContainer( InputFrame* frame ){
+void PlayerAgent::processGetObjectIdsByContainer( InputFrame::Ptr frame ){
   DEBUG("doing get object ids by container frame");
   lengthCheck( frame, 4 );
   uint32_t objectID = frame->unpackInt();
@@ -309,7 +309,7 @@ void PlayerAgent::processGetObjectIdsByContainer( InputFrame* frame ){
   Game::getGame()->getObjectManager()->doneWithObject(objectID);
 }
 
-void PlayerAgent::processGetObjectDesc( InputFrame* frame ){
+void PlayerAgent::processGetObjectDesc( InputFrame::Ptr frame ){
   DEBUG("Doing get OrderDesc");
   versionCheck( frame, fv0_4 );
   int len = queryCheck( frame );
@@ -323,7 +323,7 @@ void PlayerAgent::processGetObjectDesc( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetObjectTypes( InputFrame* frame ){
+void PlayerAgent::processGetObjectTypes( InputFrame::Ptr frame ){
   DEBUG("Doing get OrderTypes list");
   versionCheck( frame, fv0_4 );
   lengthCheck( frame, 20 );
@@ -348,7 +348,7 @@ void PlayerAgent::processGetObjectTypes( InputFrame* frame ){
   curConnection->sendModList( frame, ft04_ObjectTypes_List, lseqkey, modlist, num, start, fromtime);
 }
 
-void PlayerAgent::processGetOrder( InputFrame* frame ){
+void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
   DEBUG("Doing get order frame");
   lengthCheckMin( frame, 12 );
   uint32_t orderqueueid = frame->unpackInt();
@@ -401,7 +401,7 @@ void PlayerAgent::processGetOrder( InputFrame* frame ){
 }
 
 
-void PlayerAgent::processAddOrder( InputFrame* frame ){
+void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
   DEBUG("doing add order frame");
   if (frame->getDataLength() >= 8) {
 
@@ -462,7 +462,7 @@ void PlayerAgent::processAddOrder( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processRemoveOrder( InputFrame* frame ){
+void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
   DEBUG("doing remove order frame");
 
   lengthCheckMin( frame, 12 );
@@ -511,7 +511,7 @@ void PlayerAgent::processRemoveOrder( InputFrame* frame ){
 }
 
 
-void PlayerAgent::processDescribeOrder( InputFrame* frame )
+void PlayerAgent::processDescribeOrder( InputFrame::Ptr frame )
 {
   DEBUG("doing describe order frame");
 
@@ -525,7 +525,7 @@ void PlayerAgent::processDescribeOrder( InputFrame* frame )
   }
 }
 
-void PlayerAgent::processGetOrderTypes( InputFrame* frame ){
+void PlayerAgent::processGetOrderTypes( InputFrame::Ptr frame ){
   DEBUG("doing get order types frame");
 
   versionCheck(frame,fv0_3);
@@ -536,7 +536,7 @@ void PlayerAgent::processGetOrderTypes( InputFrame* frame ){
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processProbeOrder( InputFrame* frame ){
+void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){
   DEBUG("doing probe order frame");
 
   versionCheck(frame,fv0_3);
@@ -588,7 +588,7 @@ void PlayerAgent::processProbeOrder( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetBoards( InputFrame* frame ){
+void PlayerAgent::processGetBoards( InputFrame::Ptr frame ){
   DEBUG("doing Get Boards frame");
 
   int numboards = queryCheck( frame );
@@ -604,7 +604,7 @@ void PlayerAgent::processGetBoards( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetBoardIds( InputFrame* frame ){
+void PlayerAgent::processGetBoardIds( InputFrame::Ptr frame ){
   DEBUG("Doing get board ids frame");
 
   versionCheck(frame,fv0_3);
@@ -642,7 +642,7 @@ void PlayerAgent::processGetBoardIds( InputFrame* frame ){
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processGetMessages( InputFrame* frame ){
+void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
   DEBUG("doing Get Messages frame");
 
   lengthCheckMin( frame, 8 );
@@ -684,7 +684,7 @@ void PlayerAgent::processGetMessages( InputFrame* frame ){
 
 }
 
-void PlayerAgent::processPostMessage( InputFrame* frame ){
+void PlayerAgent::processPostMessage( InputFrame::Ptr frame ){
   DEBUG("doing Post Messages frame");
 
 
@@ -726,7 +726,7 @@ void PlayerAgent::processPostMessage( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processRemoveMessages( InputFrame* frame ){
+void PlayerAgent::processRemoveMessages( InputFrame::Ptr frame ){
   DEBUG("doing Remove Messages frame");
 
   lengthCheckMin( frame, 8 );
@@ -763,7 +763,7 @@ void PlayerAgent::processRemoveMessages( InputFrame* frame ){
 
 }
 
-void PlayerAgent::processGetResourceDescription( InputFrame* frame ){
+void PlayerAgent::processGetResourceDescription( InputFrame::Ptr frame ){
   DEBUG("doing Get Resource Description frame");
 
   int numress = queryCheck( frame );
@@ -780,7 +780,7 @@ void PlayerAgent::processGetResourceDescription( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetResourceTypes( InputFrame* frame ){
+void PlayerAgent::processGetResourceTypes( InputFrame::Ptr frame ){
   DEBUG("doing Get Resource Types frame");
 
   versionCheck(frame,fv0_3);
@@ -814,7 +814,7 @@ void PlayerAgent::processGetResourceTypes( InputFrame* frame ){
   curConnection->sendModList( frame, ft03_ResType_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
-void PlayerAgent::processGetPlayer( InputFrame* frame ){
+void PlayerAgent::processGetPlayer( InputFrame::Ptr frame ){
   DEBUG("doing Get Player frame");
 
   int numplayers = queryCheck( frame );
@@ -838,7 +838,7 @@ void PlayerAgent::processGetPlayer( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetPlayerIds( InputFrame* frame ){
+void PlayerAgent::processGetPlayerIds( InputFrame::Ptr frame ){
   DEBUG("doing Get Resource Types frame");
 
   versionCheck(frame,fv0_4);
@@ -871,7 +871,7 @@ void PlayerAgent::processGetPlayerIds( InputFrame* frame ){
   curConnection->sendModList( frame, ft04_PlayerIds_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
-void PlayerAgent::processGetCategory( InputFrame* frame ){
+void PlayerAgent::processGetCategory( InputFrame::Ptr frame ){
   DEBUG("doing Get Category frame");
 
   int numcats = queryCheck( frame );
@@ -887,7 +887,7 @@ void PlayerAgent::processGetCategory( InputFrame* frame ){
 
 }
 
-void PlayerAgent::processGetCategoryIds( InputFrame* frame ){
+void PlayerAgent::processGetCategoryIds( InputFrame::Ptr frame ){
   DEBUG("doing Get Category Ids frame");
 
   versionCheck(frame,fv0_3);
@@ -917,7 +917,7 @@ void PlayerAgent::processGetCategoryIds( InputFrame* frame ){
   curConnection->sendModList( frame, ft03_CategoryIds_List, 0, modlist, numtoget, snum, fromtime);
 }
 
-void PlayerAgent::processGetDesign( InputFrame* frame ){
+void PlayerAgent::processGetDesign( InputFrame::Ptr frame ){
   DEBUG("doing Get Design frame");
 
   int numdesigns = queryCheck( frame );
@@ -930,7 +930,7 @@ void PlayerAgent::processGetDesign( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processAddDesign( InputFrame* frame ){
+void PlayerAgent::processAddDesign( InputFrame::Ptr frame ){
   DEBUG("doing Add Design frame");
 
   lengthCheckMin( frame, 40 );
@@ -968,7 +968,7 @@ void PlayerAgent::processAddDesign( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processModifyDesign( InputFrame* frame ){
+void PlayerAgent::processModifyDesign( InputFrame::Ptr frame ){
   DEBUG("doing Modify Design frame");
 
   lengthCheckMin( frame, 40 );
@@ -1006,13 +1006,13 @@ void PlayerAgent::processModifyDesign( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetDesignIds( InputFrame* frame ){
+void PlayerAgent::processGetDesignIds( InputFrame::Ptr frame ){
   OutputFrame::Ptr of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetDesignIds(frame, of);
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processGetComponent( InputFrame* frame ){
+void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
   DEBUG("doing Get Component frame");
 
   int numcomps = queryCheck( frame );
@@ -1025,14 +1025,14 @@ void PlayerAgent::processGetComponent( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetComponentIds( InputFrame* frame ){
+void PlayerAgent::processGetComponentIds( InputFrame::Ptr frame ){
   OutputFrame::Ptr of = curConnection->createFrame(frame);
   player->getPlayerView()->processGetComponentIds(frame, of);
 
   curConnection->sendFrame(of);
 }
 
-void PlayerAgent::processGetProperty( InputFrame* frame ){
+void PlayerAgent::processGetProperty( InputFrame::Ptr frame ){
   DEBUG("doing Get Property frame");
 
   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
@@ -1050,7 +1050,7 @@ void PlayerAgent::processGetProperty( InputFrame* frame ){
   }
 }
 
-void PlayerAgent::processGetPropertyIds( InputFrame* frame ){
+void PlayerAgent::processGetPropertyIds( InputFrame::Ptr frame ){
   DEBUG("doing Get Property Ids frame");
 
   versionCheck( frame, fv0_3 );
@@ -1079,7 +1079,7 @@ void PlayerAgent::processGetPropertyIds( InputFrame* frame ){
   curConnection->sendModList(frame,ft03_PropertyIds_List,0,modlist,numtoget,snum,fromtime);
 }
 
-void PlayerAgent::processTurnFinished( InputFrame* frame ){
+void PlayerAgent::processTurnFinished( InputFrame::Ptr frame ){
   DEBUG("doing Done Turn frame");
 
   if(frame->getVersion() < fv0_4){
@@ -1093,7 +1093,7 @@ void PlayerAgent::processTurnFinished( InputFrame* frame ){
 
 }
 
-void PlayerAgent::versionCheck( InputFrame* frame, ProtocolVersion min_version )
+void PlayerAgent::versionCheck( InputFrame::Ptr frame, ProtocolVersion min_version )
 {
   if(frame->getVersion() < min_version ){
     DEBUG("Frame protocol version not high enough");
@@ -1101,7 +1101,7 @@ void PlayerAgent::versionCheck( InputFrame* frame, ProtocolVersion min_version )
   }
 }
 
-void PlayerAgent::lengthCheck( InputFrame* frame, uint32_t length )
+void PlayerAgent::lengthCheck( InputFrame::Ptr frame, uint32_t length )
 {
   if ( frame->getDataLength() != (int)length ) {
     DEBUG("Frame of invalid size");
@@ -1109,7 +1109,7 @@ void PlayerAgent::lengthCheck( InputFrame* frame, uint32_t length )
   }
 }
 
-void PlayerAgent::lengthCheckMin( InputFrame* frame, uint32_t length )
+void PlayerAgent::lengthCheckMin( InputFrame::Ptr frame, uint32_t length )
 {
   if ( frame->getDataLength() < (int)length ) {
     DEBUG("Frame is too short");
@@ -1117,7 +1117,7 @@ void PlayerAgent::lengthCheckMin( InputFrame* frame, uint32_t length )
   }
 }
 
-int PlayerAgent::queryCheck( InputFrame* frame )
+int PlayerAgent::queryCheck( InputFrame::Ptr frame )
 {
   lengthCheckMin( frame, 4 );
 

@@ -36,7 +36,7 @@ class ListParameter : public OrderParameter{
     ListParameter(const std::string& aname, const std::string& adesc, Callback acallback);
 
     virtual void pack(OutputFrame::Ptr f) const;
-    virtual bool unpack( InputFrame * f);
+    virtual bool unpack( InputFrame::Ptr f);
 
     IdMap getList() const { return list; };
     void setList(IdMap nlist) { list = nlist; }; 
@@ -52,7 +52,7 @@ class TimeParameter : public OrderParameter{
     TimeParameter( const std::string& aname, const std::string& adesc, uint32_t time = 0 );
 
     virtual void pack(OutputFrame::Ptr f) const;
-    virtual bool unpack( InputFrame * f);
+    virtual bool unpack( InputFrame::Ptr f);
 
     uint32_t getTime() const { return turns; }
     void setTime(uint32_t time) { turns = time; }
@@ -68,7 +68,7 @@ class StringParameter : public OrderParameter{
     StringParameter( const std::string& aname, const std::string& adesc );
 
     virtual void pack(OutputFrame::Ptr f) const;
-    virtual bool unpack( InputFrame * f);
+    virtual bool unpack( InputFrame::Ptr f);
 
     std::string getString() const { return string; };
     void setString(const std::string& rhs) { string = rhs; };
@@ -84,7 +84,7 @@ class SpaceCoordParam : public OrderParameter{
     SpaceCoordParam( const std::string& aname, const std::string adesc );
 
     virtual void pack(OutputFrame::Ptr f) const;
-    virtual bool unpack( InputFrame * f);
+    virtual bool unpack( InputFrame::Ptr f);
 
     Vector3d getPosition() const { return position; }
     void setPosition(const Vector3d& pos) { position = pos; } 
@@ -100,7 +100,7 @@ class ObjectOrderParameter : public OrderParameter{
     ObjectOrderParameter( const std::string& aname, const std::string& adesc );
 
     virtual void pack(OutputFrame::Ptr f) const;
-    virtual bool unpack( InputFrame * f);
+    virtual bool unpack( InputFrame::Ptr f);
 
     uint32_t getObjectId() const;
     void setObjectId(uint32_t id);
