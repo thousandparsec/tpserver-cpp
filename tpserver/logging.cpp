@@ -132,7 +132,7 @@ void Logger::error(const char *msg, ...)
 }
 
 
-int Logger::addLog(LogSink* newlog)
+int Logger::addLog(LogSink::Ptr newlog)
 {
   std::ostringstream extname;
 
@@ -147,7 +147,6 @@ void Logger::removeLog(int extid)
 
   extname << "ext" << extid;
   if (sink_map.find(extname.str()) != sink_map.end()) {
-    delete sink_map[extname.str()];
     sink_map.erase(extname.str());
   }
 }
@@ -163,40 +162,40 @@ void Logger::reconfigure(const std::string & item, const std::string & value)
 
   // Default log level to 0 (in case log_level is not present in config file)
   log_level = atoi(Settings::getSettings()->get("log_level").c_str());
-
+  SinkMap::iterator it;
+  
+  it = sink_map.find("console");
   if (Settings::getSettings()->get("log_console") == "yes") {
-    if (sink_map.find("console") == sink_map.end())
-      sink_map["console"] = new ConsoleLogger();
+    if (it == sink_map.end()) sink_map["console"] = LogSink::Ptr( new ConsoleLogger() );
   } else {
-    if (sink_map.find("console") != sink_map.end()) {
-      delete sink_map["console"];
-      sink_map.erase("console");
+    if (it != sink_map.end()) {
+      sink_map.erase(it);
     }
   }
 
+  it = sink_map.find("file");
   if (Settings::getSettings()->get("log_file") == "yes" && Settings::getSettings()->get("logfile_name") != ""){
-    if ( sink_map.find( "file") == sink_map.end()) {
+    if ( it == sink_map.end()) {
       try {
-        sink_map["file"] = new FileLogger(
-            Settings::getSettings()->get("logfile_name"));
+        sink_map["file"] = LogSink::Ptr( new FileLogger(
+            Settings::getSettings()->get("logfile_name")) );
       } catch (std::exception e){
         error("Could not start file log sink, could not open file");
       }
     }
   } else {
-    if ( sink_map.find( "file") != sink_map.end()) {
-      delete sink_map["file"];
-      sink_map.erase("file");
+    if ( it != sink_map.end()) {
+      sink_map.erase(it);
     }
   }
 
+  it = sink_map.find("sys");
   if ( Settings::getSettings()->get("log_syslog") == "yes") {
-    if ( sink_map.find( "sys") == sink_map.end())
-      sink_map["sys"] = new SysLogger();
+    if ( it == sink_map.end())
+      sink_map["sys"] = LogSink::Ptr( new SysLogger() );
   } else {
-    if ( sink_map.find( "sys") != sink_map.end()) {
-      delete sink_map["sys"];
-      sink_map.erase("sys");
+    if ( it != sink_map.end()) {
+      sink_map.erase(it);
     }
   }
 }

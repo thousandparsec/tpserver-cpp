@@ -20,11 +20,14 @@
  *
  */
 
+#include <boost/shared_ptr.hpp>
+
 /**
  * Log sink abstract interface class
  */
 class LogSink {
   public:
+    typedef boost::shared_ptr< LogSink > Ptr;
     /**
      * Empty virtual destructor to prevent compiler warnings
      */

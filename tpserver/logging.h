@@ -22,8 +22,7 @@
 
 #include <string>
 #include <map>
-
-class LogSink;
+#include <tpserver/logsink.h>
 
 /**
  * Logger singleton for internal logging
@@ -59,7 +58,7 @@ class Logger {
     /**
      * Add a log sink
      */
-    int addLog(LogSink* newlog);
+    int addLog(LogSink::Ptr newlog);
 
     /**
      * Remove log sink
@@ -94,7 +93,7 @@ class Logger {
 
   private:
     /// Sink map typedef
-    typedef std::map<std::string, LogSink*> SinkMap; 
+    typedef std::map<std::string, LogSink::Ptr> SinkMap; 
 
     /// Sink map
     SinkMap sink_map;
