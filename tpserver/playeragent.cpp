@@ -519,8 +519,8 @@ void PlayerAgent::processDescribeOrder( InputFrame::Ptr frame )
   int numdesc = queryCheck( frame );
 
   for(int i = 0; i < numdesc; i++){
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
     int ordertype = frame->unpackInt();
+    OutputFrame::Ptr of = curConnection->createFrame(frame);
     Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
     curConnection->sendFrame(of);
   }
@@ -533,8 +533,27 @@ void PlayerAgent::processGetOrderTypes( InputFrame::Ptr frame ){
   lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
   OutputFrame::Ptr of = curConnection->createFrame(frame);
-  Game::getGame()->getOrderManager()->doGetOrderTypes(frame, of);
-  curConnection->sendFrame(of);
+  uint32_t lseqkey = frame->unpackInt();
+  uint32_t start = frame->unpackInt();
+  uint32_t num = frame->unpackInt();
+  uint64_t fromtime = UINT64_NEG_ONE;
+  
+  if(frame->getVersion() >= fv0_4){
+    fromtime = frame->unpackInt64();
+  }
+
+  if(lseqkey == UINT32_NEG_ONE){
+    //start new seqkey
+    lseqkey = Game::getGame()->getOrderManager()->getSeqKey();
+  }
+
+  if(lseqkey != Game::getGame()->getOrderManager()->getSeqKey()){
+    throw FrameException(fec_TempUnavailable, "Invalid Sequence Key");
+  }
+
+  IdModList modlist = Game::getGame()->getOrderManager()->getModList(fromtime);
+
+  curConnection->sendModList( frame, ft03_OrderTypes_List, lseqkey, modlist, num, start, fromtime);
 }
 
 void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){

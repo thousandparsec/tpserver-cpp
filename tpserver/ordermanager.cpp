@@ -68,54 +68,6 @@ uint32_t OrderManager::getOrderTypeByName(const std::string& name){
     return typename_map[name];
 }
 
-void OrderManager::doGetOrderTypes(InputFrame::Ptr frame, OutputFrame::Ptr of){
-  uint32_t lseqkey = frame->unpackInt();
-  if(lseqkey == UINT32_NEG_ONE){
-    //start new seqkey
-    lseqkey = seqkey;
-  }
-
-  uint32_t start = frame->unpackInt();
-  uint32_t num = frame->unpackInt();
-  uint64_t fromtime = UINT64_NEG_ONE;
-  if(frame->getVersion() >= fv0_4){
-    fromtime = frame->unpackInt64();
-  }
-
-  if(lseqkey != seqkey){
-    throw FrameException(fec_TempUnavailable, "Invalid Sequence Key");
-  }
-
-  IdModList modlist;
-  for(PrototypeStore::iterator itcurr = prototype_store.begin();
-      itcurr != prototype_store.end(); ++itcurr){
-    Order* type = itcurr->second;
-    if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() > fromtime){
-      modlist[itcurr->first] = type->getDescriptionModTime();
-    }
-  }
-
-  if(start > modlist.size()){
-    throw FrameException(fec_NonExistant, "Starting number too high");
-  }
-
-  if(num > modlist.size() - start){
-    num = modlist.size() - start;
-  }
-
-  if(num > MAX_ID_LIST_SIZE + ((of->getVersion() < fv0_4) ? 1 : 0)){
-    throw FrameException(fec_FrameError, "Too many items to get, frame too big");
-  }
-
-  of->setType(ft03_OrderTypes_List);
-  of->packInt(lseqkey);
-  of->packIdModList(modlist,num,start);
-  if(of->getVersion() >= fv0_4){
-    of->packInt64(fromtime);
-  }
-
-}
-
 uint32_t OrderManager::addOrderQueue( uint32_t objectid, uint32_t ownerid )
 {
   uint32_t order_queue_id = orderqueue_next++;
@@ -151,6 +103,18 @@ OrderQueue::Ptr OrderManager::getOrderQueue(uint32_t oqid){
     orderqueue_store[oqid] = oq;
   }
   return oq;
+}
+
+IdModList OrderManager::getModList( uint64_t fromtime ) const {
+  IdModList modlist;
+  for(PrototypeStore::const_iterator itcurr = prototype_store.begin();
+      itcurr != prototype_store.end(); ++itcurr){
+    const Order* type = itcurr->second;
+    if(fromtime == UINT64_NEG_ONE || type->getDescriptionModTime() > fromtime){
+      modlist[itcurr->first] = type->getDescriptionModTime();
+    }
+  }
+  return modlist;
 }
 
 void OrderManager::init(){

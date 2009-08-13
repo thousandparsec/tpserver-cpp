@@ -38,7 +38,6 @@ class OrderManager{
     void describeOrder(uint32_t ordertype, OutputFrame::Ptr f);
     void addOrderType(Order* prototype);
     uint32_t getOrderTypeByName(const std::string &name);
-    void doGetOrderTypes(InputFrame::Ptr frame, OutputFrame::Ptr result);
 
     Order* createOrder(uint32_t ot);
 
@@ -47,6 +46,9 @@ class OrderManager{
     void updateOrderQueue(uint32_t oqid);
     bool removeOrderQueue(uint32_t oqid);
 
+    // TODO: refactor
+    uint32_t getSeqKey() const { return seqkey; }
+    IdModList getModList( uint64_t fromtime ) const;
     void init();
 
   private:
