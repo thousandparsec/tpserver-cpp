@@ -22,12 +22,11 @@
 
 #include <tpserver/common.h>
 #include <tpserver/player.h>
-
-class PlayerConnection;
+#include <tpserver/playerconnection.h>
 
 class PlayerAgent {
 public:
-  PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer );
+  PlayerAgent( PlayerConnection::Ptr connection, Player::Ptr nplayer );
   ~PlayerAgent();
 
   Player::Ptr getPlayer() const;
@@ -105,7 +104,10 @@ private:
   PlayerAgent(PlayerAgent & rhs);
   PlayerAgent operator=(PlayerAgent & rhs);
 
-  PlayerConnection *curConnection;
+  /// Reference to PlayerConnection
+  PlayerConnection::Ref ref_connection;
+  /// Temp connection is created when entering processIGFrame, and freed afterwards
+  PlayerConnection::Ptr temp_connection;
   Player::Ptr player;
 
   // blocked default constructor

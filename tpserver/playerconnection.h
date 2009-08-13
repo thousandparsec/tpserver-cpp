@@ -27,6 +27,9 @@ class PlayerConnection: public TcpConnection {
   public:
     /// Shared pointer typedef
     typedef boost::shared_ptr< PlayerConnection > Ptr;
+    
+    /// Weak pointer typedef
+    typedef boost::weak_ptr< PlayerConnection > Ref;
 
     virtual ~PlayerConnection();
 

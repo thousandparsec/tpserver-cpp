@@ -54,8 +54,8 @@
 
 #include "playeragent.h"
 
-PlayerAgent::PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer )
-  : curConnection ( connection ) {
+PlayerAgent::PlayerAgent( PlayerConnection::Ptr connection, Player::Ptr nplayer )
+  : ref_connection ( connection ), temp_connection() {
 }
 
 PlayerAgent::~PlayerAgent(){
@@ -67,11 +67,19 @@ Player::Ptr PlayerAgent::getPlayer() const{
 
 void PlayerAgent::processIGFrame( InputFrame::Ptr frame ){
   if(player == NULL){
-    Logger::getLogger()->warning("No Player for PlayerAgent to work on behalf of");
+    WARNING("No Player for PlayerAgent to work on behalf of");
     return;
   }
   DEBUG("IG Frame processor");
 
+  // Lock our temporary connection
+  temp_connection = ref_connection.lock();
+  if ( !temp_connection ) {
+    ERROR("No PlayerConnection for PlayerAgent to work on behalf of!");
+    return;
+  }
+
+  try {
   switch (frame->getType()) {
     case ft02_Object_GetById:
       processGetObjectById(frame);
@@ -189,6 +197,13 @@ void PlayerAgent::processIGFrame( InputFrame::Ptr frame ){
       throw FrameException( fec_ProtocolError, "Did not understand that frame type.");
       break;
   }
+  } catch(...) {
+    // release connection ownership
+    temp_connection.reset();
+    throw;
+  }
+  // release connection ownership
+  temp_connection.reset();
 }
 
 
@@ -208,9 +223,9 @@ void PlayerAgent::processGetObjectById ( InputFrame::Ptr frame ){
     uint32_t objectID = frame->unpackInt();
     ObjectView::Ptr object = player->getPlayerView()->getObjectView(objectID);
     if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
-    OutputFrame::Ptr of = curConnection->createFrame ( frame );
+    OutputFrame::Ptr of = temp_connection->createFrame ( frame );
     object->packFrame( of, player->getId() );
-    curConnection->sendFrame ( of );
+    temp_connection->sendFrame ( of );
   }
 }
 
@@ -234,29 +249,29 @@ void PlayerAgent::processGetObjectByPos( InputFrame::Ptr frame )
   std::set_intersection( oblist.begin(), oblist.end(), visibleObjects.begin(), visibleObjects.end(),
       std::insert_iterator< IdSet >( intersection, intersection.begin() ) );
   
-  curConnection->sendSequence( frame, intersection.size() );
+  temp_connection->sendSequence( frame, intersection.size() );
 
   IdSet::iterator obCurr = intersection.begin();
   for( ; obCurr != intersection.end(); ++obCurr) {
     ObjectView::Ptr object = player->getPlayerView()->getObjectView(*obCurr);
     if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
-    OutputFrame::Ptr of = curConnection->createFrame ( frame );
+    OutputFrame::Ptr of = temp_connection->createFrame ( frame );
     object->packFrame( of, player->getId() );
-    curConnection->sendFrame ( of );
+    temp_connection->sendFrame ( of );
   }
 }
 
 void PlayerAgent::processGetObjectIds( InputFrame::Ptr frame ){
   DEBUG("Doing get object ids frame");
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   player->getPlayerView()->processGetObjectIds(frame, of);
-  curConnection->sendFrame(of);
+  temp_connection->sendFrame(of);
 }
 
 
 void PlayerAgent::processGetObjectIdsByPos( InputFrame::Ptr frame ){
   DEBUG("doing get object ids by pos frame");
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   lengthCheckMin( frame, 36 );
   Vector3d pos;
   uint64_t r;
@@ -279,7 +294,7 @@ void PlayerAgent::processGetObjectIdsByPos( InputFrame::Ptr frame ){
     of->packInt64(Game::getGame()->getObjectManager()->getObject(*itcurr)->getModTime());
     Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
   }
-  curConnection->sendFrame(of);
+  temp_connection->sendFrame(of);
 }
 
 void PlayerAgent::processGetObjectIdsByContainer( InputFrame::Ptr frame ){
@@ -306,7 +321,7 @@ void PlayerAgent::processGetObjectIdsByContainer( InputFrame::Ptr frame ){
     Game::getGame()->getObjectManager()->doneWithObject(*itcurr);
   }
 
-  curConnection->sendModList( frame, ft03_ObjectIds_List, 0, modlist, 0, 0, 0);
+  temp_connection->sendModList( frame, ft03_ObjectIds_List, 0, modlist, 0, 0, 0);
   Game::getGame()->getObjectManager()->doneWithObject(objectID);
 }
 
@@ -320,7 +335,7 @@ void PlayerAgent::processGetObjectDesc( InputFrame::Ptr frame ){
     uint32_t objecttype = frame->unpackInt();
     ObjectType* otype = Game::getGame()->getObjectTypeManager()->getObjectType(objecttype);
     if ( otype == NULL ) throw FrameException( fec_NonExistant, "Object type does not exist");
-    curConnection->send( frame, otype );
+    temp_connection->send( frame, otype );
   }
 }
 
@@ -346,7 +361,7 @@ void PlayerAgent::processGetObjectTypes( InputFrame::Ptr frame ){
 
   IdModList modlist = Game::getGame()->getObjectTypeManager()->getTypeModList(fromtime);
   
-  curConnection->sendModList( frame, ft04_ObjectTypes_List, lseqkey, modlist, num, start, fromtime);
+  temp_connection->sendModList( frame, ft04_ObjectTypes_List, lseqkey, modlist, num, start, fromtime);
 }
 
 void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
@@ -377,7 +392,7 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
 
   if(num_orders > 1) {
     DEBUG("Got multiple orders, returning a sequence");
-    curConnection->sendSequence(frame,num_orders);
+    temp_connection->sendSequence(frame,num_orders);
   } else {
     DEBUG("Got single orders, returning one object");
   }
@@ -394,9 +409,9 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
       throw FrameException( fec_TempUnavailable, "Could not get Order");
     }
 
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
+    OutputFrame::Ptr of = temp_connection->createFrame(frame);
     ord->createFrame(of, ordpos);
-    curConnection->sendFrame(of);
+    temp_connection->sendFrame(of);
   }
 
 }
@@ -440,7 +455,7 @@ void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
       ord->inputFrame(frame, player->getID());
 
       if(orderqueue->addOrder(ord, pos, player->getID())) {
-        OutputFrame::Ptr of = curConnection->createFrame(frame);
+        OutputFrame::Ptr of = temp_connection->createFrame(frame);
         if(of->getVersion() >= fv0_4){
           ord->createFrame(of, pos);
         }else{
@@ -453,7 +468,7 @@ void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
           player->getPlayerView()->getObjectView(objid)->touchModTime();
           player->getPlayerView()->updateObjectView(objid);
         }
-        curConnection->sendFrame(of);
+        temp_connection->sendFrame(of);
       } else {
         throw FrameException( fec_TempUnavailable, "Not allowed to add that order type." );
       }
@@ -492,7 +507,7 @@ void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
   lengthCheckMin( frame, 8 + 4 * num_orders  );
 
   if(num_orders > 1){
-    curConnection->sendSequence(frame,num_orders);
+    temp_connection->sendSequence(frame,num_orders);
   }
 
   for(int i = 0; i < num_orders; i++){
@@ -504,7 +519,7 @@ void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
         player->getPlayerView()->getObjectView(objid)->touchModTime();
         player->getPlayerView()->updateObjectView(objid);
       }
-      curConnection->sendOK(frame, "Order removed");
+      temp_connection->sendOK(frame, "Order removed");
     } else {
       throw FrameException( fec_TempUnavailable, "Could not remove Order");
     }
@@ -520,9 +535,9 @@ void PlayerAgent::processDescribeOrder( InputFrame::Ptr frame )
 
   for(int i = 0; i < numdesc; i++){
     int ordertype = frame->unpackInt();
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
+    OutputFrame::Ptr of = temp_connection->createFrame(frame);
     Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
-    curConnection->sendFrame(of);
+    temp_connection->sendFrame(of);
   }
 }
 
@@ -532,7 +547,7 @@ void PlayerAgent::processGetOrderTypes( InputFrame::Ptr frame ){
   versionCheck(frame,fv0_3);
   lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
 
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   uint32_t lseqkey = frame->unpackInt();
   uint32_t start = frame->unpackInt();
   uint32_t num = frame->unpackInt();
@@ -553,7 +568,7 @@ void PlayerAgent::processGetOrderTypes( InputFrame::Ptr frame ){
 
   IdModList modlist = Game::getGame()->getOrderManager()->getModList(fromtime);
 
-  curConnection->sendModList( frame, ft03_OrderTypes_List, lseqkey, modlist, num, start, fromtime);
+  temp_connection->sendModList( frame, ft03_OrderTypes_List, lseqkey, modlist, num, start, fromtime);
 }
 
 void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){
@@ -591,11 +606,11 @@ void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){
   
   if(orderqueue->checkOrderType(ord->getType(), player->getID())){
     ord->setOrderQueueId(orderqueueid);
-    OutputFrame::Ptr of = curConnection->createFrame(frame);
+    OutputFrame::Ptr of = temp_connection->createFrame(frame);
     try {
       ord->inputFrame(frame, player->getID());
       ord->createFrame(of, pos);
-      curConnection->sendFrame(of);
+      temp_connection->sendFrame(of);
     } catch ( FrameException& fe ) {
       DEBUG("Probe Order, could not unpack order");
       delete ord;
@@ -617,7 +632,7 @@ void PlayerAgent::processGetBoards( InputFrame::Ptr frame ){
     uint32_t boardnum = frame->unpackInt();
     if(boardnum == 0 || boardnum == player->getBoardId()){
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
-      curConnection->send( frame, board );
+      temp_connection->send( frame, board );
     }else{
       throw FrameException( fec_PermUnavailable, "No non-player boards yet");
     }
@@ -642,7 +657,7 @@ void PlayerAgent::processGetBoardIds( InputFrame::Ptr frame ){
     fromtime = frame->unpackInt64();
   }
 
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   of->setType(ft03_BoardIds_List);
   of->packInt(seqkey);
 
@@ -659,7 +674,7 @@ void PlayerAgent::processGetBoardIds( InputFrame::Ptr frame ){
   if(frame->getVersion() >= fv0_4){
     of->packInt64(fromtime);
   }
-  curConnection->sendFrame(of);
+  temp_connection->sendFrame(of);
 }
 
 void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
@@ -673,7 +688,7 @@ void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
   lengthCheckMin( frame, 8 + 4 * nummsg );
 
   if(nummsg > 1){
-    curConnection->sendSequence(frame,nummsg);
+    temp_connection->sendSequence(frame,nummsg);
   }
 
   if(nummsg == 0){
@@ -690,11 +705,11 @@ void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
   if(currboard.get() != NULL){
     for(int i = 0; i < nummsg; i++){
       int msgnum = frame->unpackInt();
-      OutputFrame::Ptr of = curConnection->createFrame(frame);
+      OutputFrame::Ptr of = temp_connection->createFrame(frame);
 
       currboard->packMessage(of, msgnum);
 
-      curConnection->sendFrame(of);
+      temp_connection->sendFrame(of);
 
     }
 
@@ -740,7 +755,7 @@ void PlayerAgent::processPostMessage( InputFrame::Ptr frame ){
       }
     }
     currboard->addMessage(msg, pos);
-    curConnection->sendOK( frame, "Message posted" );
+    temp_connection->sendOK( frame, "Message posted" );
   }else{
     throw FrameException( fec_NonExistant, "Board does not exist");
   }
@@ -757,7 +772,7 @@ void PlayerAgent::processRemoveMessages( InputFrame::Ptr frame ){
   lengthCheckMin( frame, 8 + 4 * nummsg );
 
   if(nummsg > 1){
-    curConnection->sendSequence(frame, nummsg);
+    temp_connection->sendSequence(frame, nummsg);
   }
 
   Board::Ptr currboard;
@@ -772,7 +787,7 @@ void PlayerAgent::processRemoveMessages( InputFrame::Ptr frame ){
       int msgnum = frame->unpackInt();
 
       if(currboard->removeMessage(msgnum)){
-        curConnection->sendOK(frame, "Message removed");
+        temp_connection->sendOK(frame, "Message removed");
       }else{
         throw FrameException( fec_NonExistant, "Message not removed, does exist");
       }
@@ -793,7 +808,7 @@ void PlayerAgent::processGetResourceDescription( InputFrame::Ptr frame ){
 
     const ResourceDescription::Ptr res = Game::getGame()->getResourceManager()->getResourceDescription(rnum);
     if(res != NULL){
-      curConnection->send(frame, res);
+      temp_connection->send(frame, res);
     }else{
       throw FrameException( fec_NonExistant, "No Resource Descriptions available");
     }
@@ -831,7 +846,7 @@ void PlayerAgent::processGetResourceTypes( InputFrame::Ptr frame ){
     }
   }
 
-  curConnection->sendModList( frame, ft03_ResType_List, seqkey, modlist, numtoget, snum, fromtime);
+  temp_connection->sendModList( frame, ft03_ResType_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetPlayer( InputFrame::Ptr frame ){
@@ -842,12 +857,12 @@ void PlayerAgent::processGetPlayer( InputFrame::Ptr frame ){
   for(int i = 0; i < numplayers; i++){
     int pnum = frame->unpackInt();
     if(pnum == 0){
-      curConnection->send(frame,player);
+      temp_connection->send(frame,player);
     }else{
       if(pnum != -1){
         Player::Ptr p = Game::getGame()->getPlayerManager()->getPlayer(pnum);
         if(p != NULL){
-          curConnection->send(frame,p);
+          temp_connection->send(frame,p);
         }else{
           throw FrameException( fec_NonExistant, "Player doesn't exist");
         }
@@ -888,7 +903,7 @@ void PlayerAgent::processGetPlayerIds( InputFrame::Ptr frame ){
     }
   }
 
-  curConnection->sendModList( frame, ft04_PlayerIds_List, seqkey, modlist, numtoget, snum, fromtime);
+  temp_connection->sendModList( frame, ft04_PlayerIds_List, seqkey, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetCategory( InputFrame::Ptr frame ){
@@ -902,7 +917,7 @@ void PlayerAgent::processGetCategory( InputFrame::Ptr frame ){
     if(cat == NULL){
       throw FrameException( fec_NonExistant, "No Such Category");
     }
-    curConnection->send(frame,cat);
+    temp_connection->send(frame,cat);
   }
 
 }
@@ -934,7 +949,7 @@ void PlayerAgent::processGetCategoryIds( InputFrame::Ptr frame ){
     }
   }
 
-  curConnection->sendModList( frame, ft03_CategoryIds_List, 0, modlist, numtoget, snum, fromtime);
+  temp_connection->sendModList( frame, ft03_CategoryIds_List, 0, modlist, numtoget, snum, fromtime);
 }
 
 void PlayerAgent::processGetDesign( InputFrame::Ptr frame ){
@@ -946,7 +961,7 @@ void PlayerAgent::processGetDesign( InputFrame::Ptr frame ){
     int designnum = frame->unpackInt();
     DesignView::Ptr design = player->getPlayerView()->getDesignView( designnum );
     if (!design) throw FrameException(fec_NonExistant, "No Such Design");
-    curConnection->send( frame, design );
+    temp_connection->send( frame, design );
   }
 }
 
@@ -1027,9 +1042,9 @@ void PlayerAgent::processModifyDesign( InputFrame::Ptr frame ){
 }
 
 void PlayerAgent::processGetDesignIds( InputFrame::Ptr frame ){
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   player->getPlayerView()->processGetDesignIds(frame, of);
-  curConnection->sendFrame(of);
+  temp_connection->sendFrame(of);
 }
 
 void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
@@ -1041,15 +1056,15 @@ void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
     int compnum = frame->unpackInt();
     ComponentView::Ptr comp = player->getPlayerView()->getComponentView(compnum);
     if (!comp) throw FrameException(fec_NonExistant, "No Such Component");
-    curConnection->send(frame, comp);
+    temp_connection->send(frame, comp);
   }
 }
 
 void PlayerAgent::processGetComponentIds( InputFrame::Ptr frame ){
-  OutputFrame::Ptr of = curConnection->createFrame(frame);
+  OutputFrame::Ptr of = temp_connection->createFrame(frame);
   player->getPlayerView()->processGetComponentIds(frame, of);
 
-  curConnection->sendFrame(of);
+  temp_connection->sendFrame(of);
 }
 
 void PlayerAgent::processGetProperty( InputFrame::Ptr frame ){
@@ -1065,7 +1080,7 @@ void PlayerAgent::processGetProperty( InputFrame::Ptr frame ){
     if(!property){
       throw FrameException( fec_NonExistant, "No Such Property");
     }else{
-      curConnection->send(frame,property);
+      temp_connection->send(frame,property);
     }
   }
 }
@@ -1096,7 +1111,7 @@ void PlayerAgent::processGetPropertyIds( InputFrame::Ptr frame ){
     }
   }
 
-  curConnection->sendModList(frame,ft03_PropertyIds_List,0,modlist,numtoget,snum,fromtime);
+  temp_connection->sendModList(frame,ft03_PropertyIds_List,0,modlist,numtoget,snum,fromtime);
 }
 
 void PlayerAgent::processTurnFinished( InputFrame::Ptr frame ){
@@ -1109,7 +1124,7 @@ void PlayerAgent::processTurnFinished( InputFrame::Ptr frame ){
 
   Game::getGame()->getTurnTimer()->playerFinishedTurn(player->getID());
 
-  curConnection->sendOK(frame, "Thanks for letting me know you have finished your turn.");
+  temp_connection->sendOK(frame, "Thanks for letting me know you have finished your turn.");
 
 }
 
@@ -1149,7 +1164,7 @@ int PlayerAgent::queryCheck( InputFrame::Ptr frame )
 
   lengthCheckMin( frame, 4 + 4 * result );
 
-  curConnection->sendSequence( frame, result );
+  temp_connection->sendSequence( frame, result );
 
   return result;
 }
