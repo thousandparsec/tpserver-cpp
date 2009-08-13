@@ -87,7 +87,7 @@ bool Enhance::doOrder(IGObject *ob)
   ResourceManager* resman = game->getResourceManager();
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
   const uint32_t resValue = planet->getResourceSurfaceValue(resType);
-  const uint32_t enhanceValue = floor(points->getTime()/10);
+  const uint32_t enhanceValue = static_cast<uint32_t>(floor(points->getTime()/10));
   if (resValue >= points->getTime()) {
     if (planet->removeResource(resType, points->getTime())) {
       planet->addFactories(enhanceValue);

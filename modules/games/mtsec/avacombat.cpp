@@ -176,7 +176,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
                             //property ID, name of the TUBE
                             uint32_t propID = ds->getPropertyByName("MissileSize");
                             //Logger::getLogger()->debug("Checking fleettubes list for propID %s", ds->getProperty(propID)->getName().c_str());
-                            if (fleettubes[i].find(weapDesign->getPropertyValue(propID)) != fleettubes[i].end()) {
+                            uint32_t weapPropVal = static_cast<uint32_t>(weapDesign->getPropertyValue(propID));
+                            if (fleettubes[i].find(weapPropVal) != fleettubes[i].end()) {
                                 Logger::getLogger()->debug("Found it, trying to remove resource %d from fleet", weapit->first);
                                 fleetusable[i][weapit->first] = weapDesign->getDesignId();
                                 if (fleets[i]->removeResource(weapit->first, 1)) {

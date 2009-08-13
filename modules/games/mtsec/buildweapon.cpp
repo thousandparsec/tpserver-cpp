@@ -180,7 +180,7 @@ bool BuildWeapon::doOrder(IGObject *ob)
       removeResource(1, resValue);
       runningTotal = resources[1];
       uint32_t planetFactories = planet->getFactoriesPerTurn();
-      turns = ceil(runningTotal / planetFactories);
+      turns = static_cast<uint32_t>(ceil(runningTotal / planetFactories));
       Message * msg = new Message();
       msg->setSubject("Build Fleet order slowed");
       msg->setBody(std::string("The construction of your new weapon has been delayed."));
@@ -195,11 +195,11 @@ bool BuildWeapon::doOrder(IGObject *ob)
     Game* game = Game::getGame();
 
     //create the resource on the planet
-    ResourceManager* resman = Game::getGame()->getResourceManager();
+    ResourceManager* resman = game->getResourceManager();
 
     std::map<uint32_t,uint32_t> weapontype = weaponlist->getList();
     for(std::map<uint32_t,uint32_t>::iterator itcurr = weapontype.begin(); itcurr != weapontype.end(); ++itcurr) {
-      Design* design = Game::getGame()->getDesignStore()->getDesign(itcurr->first);
+      Design* design = game->getDesignStore()->getDesign(itcurr->first);
       if (resman->getResourceDescription(design->getName()) == NULL) {
         ResourceDescription* res = new ResourceDescription();
         res->setNameSingular(design->getName().c_str());
@@ -223,7 +223,7 @@ bool BuildWeapon::doOrder(IGObject *ob)
     msg->addReference(rst_Action_Order, rsorav_Completion);
     msg->addReference(rst_Object, ob->getID());
  
-    Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
+    game->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
     Logger::getLogger()->debug("Exiting BuildWeapon::doOrder on Success");
     ob->touchModTime();
     return true;

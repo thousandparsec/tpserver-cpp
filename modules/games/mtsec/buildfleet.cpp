@@ -196,7 +196,7 @@ bool BuildFleet::doOrder(IGObject *ob)
       removeResource(1, resValue);
       runningTotal = resources[1];
       uint32_t planetFactories = planet->getFactoriesPerTurn();
-      turns = ceil(runningTotal / planetFactories);
+      turns = static_cast<uint32_t>(ceil(runningTotal / planetFactories));
       Message * msg = new Message();
       msg->setSubject("Build Fleet order slowed");
       msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" has been delayed.");
