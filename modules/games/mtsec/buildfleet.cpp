@@ -128,7 +128,7 @@ ListParameter::Options BuildFleet::generateListOptions(){
   return options;
 }
 
-void BuildFleet::inputFrame(InputFrame *f, uint32_t playerid)
+void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
   
