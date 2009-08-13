@@ -41,7 +41,7 @@ class Colonize : public FleetOrder
    virtual Order* clone() const;
 
    virtual void createFrame(OutputFrame::Ptr f, int pos);
-   virtual void inputFrame(InputFrame * f, uint32_t playerid);
+   virtual void inputFrame(InputFrame::Ptr f, uint32_t playerid);
    
    virtual bool doOrder(IGObject::Ptr obj);
 

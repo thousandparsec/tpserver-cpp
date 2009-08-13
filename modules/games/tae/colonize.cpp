@@ -84,7 +84,7 @@ void Colonize::createFrame(OutputFrame::Ptr f, int pos) {
     FleetOrder::createFrame(f, pos);
 }
 
-void Colonize::inputFrame(InputFrame *f, uint32_t playerid) {
+void Colonize::inputFrame(InputFrame::Ptr f, uint32_t playerid) {
     FleetOrder::inputFrame(f, playerid);
 
     Game *game = Game::getGame();

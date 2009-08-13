@@ -57,7 +57,7 @@ void Reinforce::createFrame(OutputFrame::Ptr f, int pos) {
     Order::createFrame(f, pos);
 }
 
-void Reinforce::inputFrame(InputFrame *f, uint32_t playerid) {
+void Reinforce::inputFrame(InputFrame::Ptr f, uint32_t playerid) {
     return;
 }
 
