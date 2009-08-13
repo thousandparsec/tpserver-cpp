@@ -37,7 +37,7 @@ class ProductionOrder : public ::Order {
    ProductionOrder();
    virtual ~ProductionOrder();
 
-   virtual void createFrame(OutputFrame * f, int pos);
+   virtual void createFrame(OutputFrame::Ptr f, int pos);
    virtual void inputFrame(InputFrame * f, uint32_t playerid);
 
    virtual bool doOrder(IGObject::Ptr obj);

@@ -228,7 +228,7 @@ void Fleet::recalcStats() {
    setOrderTypes();
 }
 
-void Fleet::packExtraData(OutputFrame *frame) {
+void Fleet::packExtraData(OutputFrame::Ptr frame) {
    ReferenceObjectParam* player = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
    frame->packInt((player->getReferencedId() == 0) ? 0xffffffff : player->getReferencedId());
    

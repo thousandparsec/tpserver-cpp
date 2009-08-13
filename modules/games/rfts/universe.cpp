@@ -55,7 +55,7 @@ int Universe::getContainerType() {
    return ContainerTypes_::Universe;
 }
 
-void Universe::packExtraData(OutputFrame *frame) {
+void Universe::packExtraData(OutputFrame::Ptr frame) {
    frame->packInt(((IntegerObjectParam*)(obj->getParameter(2, 1)))->getValue());
 }
 

@@ -72,7 +72,7 @@ class Fleet : public StaticObject, public OwnedObject
 
    const bool isDead() const;
          
-   virtual void packExtraData(OutputFrame * frame);   
+   virtual void packExtraData(OutputFrame::Ptr frame);   
    virtual void doOnceATurn();   
    virtual int getContainerType();
    

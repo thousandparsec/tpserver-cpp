@@ -43,7 +43,7 @@ class Universe : public StaticObject
    Universe();
    virtual ~Universe() {}
 
-   virtual void packExtraData(OutputFrame* frame);
+   virtual void packExtraData(OutputFrame::Ptr frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
 
