@@ -60,10 +60,6 @@ PlayerAgent::PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer )
 PlayerAgent::~PlayerAgent(){
 }
 
-PlayerConnection *PlayerAgent::getConnection() const{
-  return curConnection;
-}
-
 Player::Ptr PlayerAgent::getPlayer() const{
   return player;
 }

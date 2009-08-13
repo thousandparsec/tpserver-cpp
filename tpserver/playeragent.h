@@ -30,8 +30,6 @@ public:
   PlayerAgent( PlayerConnection* connection, Player::Ptr nplayer );
   ~PlayerAgent();
 
-  PlayerConnection *getConnection() const;
-  
   Player::Ptr getPlayer() const;
   
   void processIGFrame( InputFrame::Ptr frame );
