@@ -52,7 +52,7 @@ bool PropertyValue::operator<(const PropertyValue& rhs) const{
   return (propid < rhs.propid);
 }
 
-void PropertyValue::packFrame(OutputFrame* frame) const{
+void PropertyValue::packFrame(OutputFrame::Ptr frame) const{
   frame->packInt(propid);
   frame->packString(display);
 }

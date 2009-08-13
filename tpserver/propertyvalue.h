@@ -37,7 +37,7 @@ class PropertyValue{
     bool operator==(const PropertyValue& rhs) const;
     bool operator<(const PropertyValue& rhs) const;
 
-    void packFrame(OutputFrame* frame) const;
+    void packFrame(OutputFrame::Ptr frame) const;
 
     uint32_t getPropertyId() const;
     double getValue() const;

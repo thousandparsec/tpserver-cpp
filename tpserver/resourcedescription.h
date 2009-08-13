@@ -47,7 +47,7 @@ public:
     uint32_t getMass() const;
     uint32_t getVolume() const;
     
-    void pack(OutputFrame* frame) const;
+    void pack(OutputFrame::Ptr frame) const;
 
 private:
     std::string name_plur;

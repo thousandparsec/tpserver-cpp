@@ -51,7 +51,7 @@ class Player : public ProtocolObject {
 
     PlayerView::Ptr getPlayerView() const;
 
-    void pack(OutputFrame* frame) const;
+    void pack(OutputFrame::Ptr frame) const;
 
   private:
 

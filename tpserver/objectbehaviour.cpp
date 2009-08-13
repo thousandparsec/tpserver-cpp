@@ -33,7 +33,7 @@ void ObjectBehaviour::setObject(IGObject* nobj){
   obj = nobj;
 }
 
-void ObjectBehaviour::packExtraData(OutputFrame * frame){
+void ObjectBehaviour::packExtraData(OutputFrame::Ptr frame){
 }
 
 void ObjectBehaviour::setupObject(){

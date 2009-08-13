@@ -27,7 +27,7 @@ class AsyncFrame{
     AsyncFrame(){};
     virtual ~AsyncFrame(){};
     
-    virtual bool createFrame(OutputFrame* f) = 0;
+    virtual bool createFrame(OutputFrame::Ptr f) = 0;
 };
 
 #endif

@@ -34,10 +34,10 @@ class TcpConnection: public Connection {
     virtual void close();
     
     // DEPRECATED
-    OutputFrame* createFrame(InputFrame* oldframe = NULL);
+    OutputFrame::Ptr createFrame(InputFrame* oldframe = NULL);
 
     // DEPRECATED
-    virtual void sendFrame( OutputFrame* frame );
+    void sendFrame( OutputFrame::Ptr frame );
 
     void process();
     void processWrite();
@@ -85,7 +85,7 @@ class TcpConnection: public Connection {
     std::string send_buffer;
     size_t send_buffer_pos;
 
-    std::queue<OutputFrame*> sendqueue;
+    std::queue<OutputFrame::Ptr> sendqueue;
   
     bool sendandclose;
 

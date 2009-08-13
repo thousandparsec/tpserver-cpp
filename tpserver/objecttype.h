@@ -36,7 +36,7 @@ class ObjectType : public ProtocolObject {
     uint32_t getType() const;
 
     void setType(uint32_t nt);
-    void pack(OutputFrame* frame) const;
+    void pack(OutputFrame::Ptr frame) const;
     void setupObject(IGObject::Ptr obj) const;
 
   protected:

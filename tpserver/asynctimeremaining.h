@@ -28,7 +28,7 @@ class AsyncTimeRemaining: public AsyncFrame{
     AsyncTimeRemaining(uint32_t rt, uint32_t r);
     virtual ~AsyncTimeRemaining();
     
-    virtual bool createFrame(OutputFrame* f);
+    virtual bool createFrame(OutputFrame::Ptr f);
     
   private:
     uint32_t rtime;

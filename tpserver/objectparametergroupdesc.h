@@ -35,7 +35,7 @@ class ObjectParameterGroupDesc : public Describable, public Packable {
 
     void addParameter(uint32_t ptype, const std::string& pname, const std::string& pdesc);
 
-    void pack(OutputFrame* f) const;
+    void pack(OutputFrame::Ptr f) const;
     boost::shared_ptr<ObjectParameterGroup> createObjectParameterGroup() const;
 
   protected:

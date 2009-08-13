@@ -110,7 +110,6 @@ void TcpConnection::processWrite() {
         send_buffer_pos += len;
         if (send_buffer_pos == send_buffer.length()) {
           send_buffer.clear();
-          delete sendqueue.front();
           sendqueue.pop();
         }
       } catch ( SystemException& e ) {
@@ -121,7 +120,6 @@ void TcpConnection::processWrite() {
       }
     } else {
       ERROR("TcpConnection : Could not get packet from frame to send");
-      delete sendqueue.front();
       sendqueue.pop();
       break;
     }
@@ -133,7 +131,7 @@ void TcpConnection::processWrite() {
   }
 }
 
-void TcpConnection::sendFrame( OutputFrame* frame )
+void TcpConnection::sendFrame( OutputFrame::Ptr frame )
 {
   if (version != frame->getVersion()) {
     WARNING("TcpConnection : Version mis-match, packet %d, connection %d", frame->getVersion(), version);
@@ -181,7 +179,7 @@ void TcpConnection::sendString(const std::string& str){
   send_buffer = str;
   send_buffer_pos = 0;
 
-  sendFrame(new OutputFrame(fv0_3));
+  sendFrame(OutputFrame::Ptr(new OutputFrame(fv0_3)));
 }
 
 
@@ -476,7 +474,7 @@ void TcpConnection::processVersionCheck() {
 
 
 void TcpConnection::sendFail(InputFrame* oldframe, FrameErrorCode code, const std::string& error ) {
-  OutputFrame* frame = createFrame( oldframe );
+  OutputFrame::Ptr frame = createFrame( oldframe );
   frame->setType( ft02_Fail );
   frame->packInt( code );
   frame->packString( error );
@@ -488,7 +486,7 @@ void TcpConnection::sendFail(InputFrame* oldframe, FrameErrorCode code, const st
 
 void TcpConnection::sendSequence(InputFrame* oldframe, size_t sequence_size )
 {
-  OutputFrame* frame = createFrame(oldframe);
+  OutputFrame::Ptr frame = createFrame(oldframe);
   frame->setType( ft02_Sequence );
   frame->packInt( sequence_size );
   sendFrame(frame);
@@ -496,21 +494,21 @@ void TcpConnection::sendSequence(InputFrame* oldframe, size_t sequence_size )
 
 void TcpConnection::send(InputFrame* oldframe, const Packable* packable )
 {
-  OutputFrame* frame = createFrame(oldframe);
+  OutputFrame::Ptr frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
 void TcpConnection::send(InputFrame* oldframe, const Packable::Ptr packable )
 {
-  OutputFrame* frame = createFrame(oldframe);
+  OutputFrame::Ptr frame = createFrame(oldframe);
   packable->pack( frame );
   sendFrame(frame);
 }
 
 void TcpConnection::sendOK(InputFrame* oldframe, const std::string& message )
 {
-  OutputFrame* frame = createFrame(oldframe);
+  OutputFrame::Ptr frame = createFrame(oldframe);
   frame->setType( ft02_OK );
   frame->packString( message );
   sendFrame(frame);
@@ -532,7 +530,7 @@ void TcpConnection::sendModList(InputFrame* oldframe, FrameType ft, uint32_t seq
     sendFail(oldframe,fec_FrameError, "Too many items to get, frame too big");
     return;
   }
-  OutputFrame *frame = createFrame(oldframe);
+  OutputFrame::Ptr frame = createFrame(oldframe);
   frame->setType(ft);
   frame->packInt(sequence);
   frame->packIdModList(modlist,count,start);
@@ -542,14 +540,14 @@ void TcpConnection::sendModList(InputFrame* oldframe, FrameType ft, uint32_t seq
   sendFrame(frame);
 }
 
-OutputFrame* TcpConnection::createFrame(InputFrame* oldframe)
+OutputFrame::Ptr TcpConnection::createFrame(InputFrame* oldframe)
 {
-  OutputFrame* newframe;
+  OutputFrame::Ptr newframe;
   if(oldframe != NULL) {
-    newframe = new OutputFrame(oldframe->getVersion(),paddingfilter);
+    newframe.reset( new OutputFrame(oldframe->getVersion(),paddingfilter) );
     newframe->setSequence(oldframe->getSequence());
   } else {
-    newframe = new OutputFrame(version,paddingfilter);
+    newframe.reset( new OutputFrame(version,paddingfilter) );
   }
   return newframe;
 }
@@ -559,10 +557,7 @@ bool TcpConnection::queueEmpty() const {
 }
 
 void TcpConnection::clearQueue() {
-  while (!sendqueue.empty()) {
-    delete sendqueue.front();
-    sendqueue.pop();
-  }
+  while ( !sendqueue.empty() ) sendqueue.pop();
 }
 
 bool TcpConnection::getAuth( InputFrame* frame, std::string& username, std::string& password ) {

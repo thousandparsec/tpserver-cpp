@@ -33,7 +33,7 @@ public:
   {
     frame_type = new_frame_type;
   }
-  virtual void pack( OutputFrame* frame ) const;
+  virtual void pack( OutputFrame::Ptr frame ) const;
   static FrameType getFrameType() { return frame_type; } 
 private:
   static FrameType frame_type;

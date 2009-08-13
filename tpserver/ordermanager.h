@@ -35,10 +35,10 @@ class OrderManager{
     ~OrderManager();
 
     bool checkOrderType(uint32_t type);
-    void describeOrder(uint32_t ordertype, OutputFrame * f);
+    void describeOrder(uint32_t ordertype, OutputFrame::Ptr f);
     void addOrderType(Order* prototype);
     uint32_t getOrderTypeByName(const std::string &name);
-    void doGetOrderTypes(InputFrame * frame, OutputFrame * result);
+    void doGetOrderTypes(InputFrame * frame, OutputFrame::Ptr result);
 
     Order* createOrder(uint32_t ot);
 

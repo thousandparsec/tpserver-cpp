@@ -39,7 +39,7 @@ bool OrderManager::checkOrderType(uint32_t type){
   return (type >= 0 && type <= prototype_next - 1);
 }
 
-void OrderManager::describeOrder(uint32_t ordertype, OutputFrame * f){
+void OrderManager::describeOrder(uint32_t ordertype, OutputFrame::Ptr f){
   if(prototype_store.find(ordertype) != prototype_store.end()){
     prototype_store[ordertype]->describeOrder(f);
   }else{
@@ -68,7 +68,7 @@ uint32_t OrderManager::getOrderTypeByName(const std::string& name){
     return typename_map[name];
 }
 
-void OrderManager::doGetOrderTypes(InputFrame* frame, OutputFrame * of){
+void OrderManager::doGetOrderTypes(InputFrame* frame, OutputFrame::Ptr of){
   uint32_t lseqkey = frame->unpackInt();
   if(lseqkey == UINT32_NEG_ONE){
     //start new seqkey

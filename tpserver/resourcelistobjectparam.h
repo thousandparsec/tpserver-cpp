@@ -31,7 +31,7 @@ public:
   ResourceListObjectParam();
   virtual ~ResourceListObjectParam();
 
-  virtual void packObjectFrame(OutputFrame * f, uint32_t objID);
+  virtual void packObjectFrame(OutputFrame::Ptr f, uint32_t objID);
   virtual bool unpackModifyObjectFrame(InputFrame * f, uint32_t playerid);
 
   virtual ObjectParameter *clone() const;

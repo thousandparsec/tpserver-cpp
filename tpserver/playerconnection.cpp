@@ -199,7 +199,7 @@ void PlayerConnection::processPingFrame(InputFrame* frame)
 
 void PlayerConnection::processGetFeaturesFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing Get Features frame");
-  OutputFrame *features = createFrame(frame);
+  OutputFrame::Ptr features = createFrame(frame);
   features->setType(ft03_Features);
   IdSet fids;
   fids.insert(fid_keep_alive);
@@ -217,7 +217,7 @@ void PlayerConnection::processGetFeaturesFrame(InputFrame* frame){
 
 void PlayerConnection::processGetGameInfoFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing get GameInfo frame");
-  OutputFrame *game = createFrame(frame);
+  OutputFrame::Ptr game = createFrame(frame);
   Game::getGame()->packGameInfoFrame(game);
   sendFrame(game);
 }
@@ -243,7 +243,7 @@ void PlayerConnection::processSetFilters(InputFrame* frame){
 
 void PlayerConnection::processTimeRemainingFrame(InputFrame* frame){
   DEBUG("PlayerConnection : Processing Get Time frame");
-  OutputFrame *time = createFrame(frame);
+  OutputFrame::Ptr time = createFrame(frame);
   time->setType(ft02_Time_Remaining);
   time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
   if(time->getVersion() >= fv0_4){

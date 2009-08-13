@@ -108,7 +108,7 @@ IdSet PlayerView::getOwnedObjects() const{
   return objects.actable;
 }
 
-void PlayerView::processGetObject(uint32_t objid, OutputFrame* frame){
+void PlayerView::processGetObject(uint32_t objid, OutputFrame::Ptr frame){
   if(!objects.isVisible(objid)){
     throw FrameException(fec_NonExistant, "No Such Object");
   }else{
@@ -116,7 +116,7 @@ void PlayerView::processGetObject(uint32_t objid, OutputFrame* frame){
   }
 }
 
-void PlayerView::processGetObjectIds(InputFrame* in, OutputFrame* out){
+void PlayerView::processGetObjectIds(InputFrame* in, OutputFrame::Ptr out){
   objects.processGetIds( in, out, ft03_ObjectIds_List );
 }
 
@@ -152,7 +152,7 @@ IdSet PlayerView::getVisibleDesigns() const{
   return designs.visible;
 }
 
-void PlayerView::processGetDesign(uint32_t designid, OutputFrame* frame){
+void PlayerView::processGetDesign(uint32_t designid, OutputFrame::Ptr frame){
   if(!designs.isVisible(designid)){
     throw FrameException(fec_NonExistant, "No Such Design");
   }else{
@@ -160,7 +160,7 @@ void PlayerView::processGetDesign(uint32_t designid, OutputFrame* frame){
   }
 }
 
-void PlayerView::processGetDesignIds(InputFrame* in, OutputFrame* out){
+void PlayerView::processGetDesignIds(InputFrame* in, OutputFrame::Ptr out){
   designs.processGetIds( in, out, ft03_DesignIds_List );
 }
 
@@ -192,7 +192,7 @@ IdSet PlayerView::getUsableComponents() const{
   return components.actable;
 }
 
-void PlayerView::processGetComponent(uint32_t compid, OutputFrame* frame){
+void PlayerView::processGetComponent(uint32_t compid, OutputFrame::Ptr frame){
   if(components.visible.find(compid) == components.visible.end()){
     throw FrameException(fec_NonExistant, "No Such Component");
   }else{
@@ -200,7 +200,7 @@ void PlayerView::processGetComponent(uint32_t compid, OutputFrame* frame){
   }
 }
 
-void PlayerView::processGetComponentIds(InputFrame* in, OutputFrame* out){
+void PlayerView::processGetComponentIds(InputFrame* in, OutputFrame::Ptr out){
   components.processGetIds( in, out, ft03_ComponentIds_List );
 }
 
@@ -229,7 +229,7 @@ void PlayerView::setUsableComponents(const IdSet& cids){
 }
 
 template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame* in, OutputFrame* out, FrameType type )
+void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame* in, OutputFrame::Ptr out, FrameType type )
 {
   DEBUG("doing Get Ids frame");
   

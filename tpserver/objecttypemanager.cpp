@@ -74,7 +74,7 @@ IdModList ObjectTypeManager::getTypeModList(uint64_t fromtime) const {
   return modlist;
 }
 
-void ObjectTypeManager::doGetObjectDesc(uint32_t type, OutputFrame* of){
+void ObjectTypeManager::doGetObjectDesc(uint32_t type, OutputFrame::Ptr of){
   if(typeStore.find(type) != typeStore.end()){
     typeStore[type]->pack(of);
   }else{

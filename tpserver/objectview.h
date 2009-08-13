@@ -32,8 +32,8 @@ class ObjectView : public ProtocolView {
     explicit ObjectView( uint32_t new_id, bool visibility = false );
     virtual ~ObjectView();
 
-    void packFrame(OutputFrame* frame, uint32_t playerid) const;
-    void pack(OutputFrame* frame) const { throw 0; }
+    void packFrame(OutputFrame::Ptr frame, uint32_t playerid) const;
+    void pack(OutputFrame::Ptr frame) const { throw 0; }
 
     uint32_t getObjectId() const;
     bool isGone() const;

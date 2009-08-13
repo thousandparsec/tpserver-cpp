@@ -81,7 +81,7 @@ class Message : public ProtocolObject {
     /**
      * Packs the Message into a frame
      */
-    void pack(OutputFrame * frame) const;
+    void pack(OutputFrame::Ptr frame) const;
 
     void setId( uint32_t new_id ) { id = new_id; }
   private:

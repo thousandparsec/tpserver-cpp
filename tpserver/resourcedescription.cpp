@@ -92,7 +92,7 @@ uint32_t ResourceDescription::getVolume() const{
     return volume;
 }
 
-void ResourceDescription::pack(OutputFrame* frame) const{
+void ResourceDescription::pack(OutputFrame::Ptr frame) const{
     frame->setType(ft02_ResDesc);
     frame->packInt(id);
     frame->packString(name);

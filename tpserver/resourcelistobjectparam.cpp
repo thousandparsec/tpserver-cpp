@@ -29,7 +29,7 @@ ResourceListObjectParam::~ResourceListObjectParam(){
 }
 
 
-void ResourceListObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
+void ResourceListObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID){
   f->packInt(resources.size());
   for(ResourceMap::const_iterator itcurr = resources.begin();
       itcurr != resources.end(); ++itcurr){

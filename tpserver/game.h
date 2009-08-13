@@ -21,6 +21,7 @@
  */
 
 #include <tpserver/common.h>
+#include <tpserver/outputframe.h>
 #include <boost/shared_ptr.hpp>
 
 class Player;
@@ -39,7 +40,6 @@ class Persistence;
 class TpScheme;
 class TimerCallback;
 class Random;
-class OutputFrame;
 class TurnTimer;
 
 class Game {
@@ -92,7 +92,7 @@ class Game {
 
     void saveAndClose();
 
-    void packGameInfoFrame(OutputFrame* frame);
+    void packGameInfoFrame(OutputFrame::Ptr frame);
     
     //For persistence only
     void setTurnNumber(uint32_t t);

@@ -47,7 +47,7 @@ class EndTurnCommand : public Command{
         name = "turn-end";
         help = "End the current turn now and start processing.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         Logger::getLogger()->info("End of turn initiated by administrator.");
         Game::getGame()->getTurnTimer()->manuallyRunEndOfTurn();
         of->packInt(0);
@@ -61,7 +61,7 @@ class TurnTimeCommand : public Command{
         name = "turn-time";
         help = "The amount of time until the next turn.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         msg << Game::getGame()->getTurnTimer()->secondsToEOT() << " of "
             << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds remain until EOT.";
@@ -76,7 +76,7 @@ class TurnResetCommand : public Command{
         name = "turn-reset";
         help = "Reset the timer for the next turn.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         Logger::getLogger()->info("EOT timer reset by administrator.");
         Game::getGame()->getTurnTimer()->resetTimer();
@@ -92,7 +92,7 @@ class TurnNumberCommand : public Command{
         name = "turn-number";
         help = "Gets the current turn number.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         msg << "The current turn number is " << Game::getGame()->getTurnNumber() << ".";
         of->packInt(0);
@@ -106,7 +106,7 @@ class NetworkStartCommand : public Command{
         name = "network-start";
         help = "Starts the network listeners and accepts connections.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         Network::getNetwork()->start();
         if(Network::getNetwork()->isStarted()){
             of->packInt(0);
@@ -124,7 +124,7 @@ class NetworkStopCommand : public Command{
         name = "network-stop";
         help = "Stops the network listeners and drops all connections.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         Network::getNetwork()->stop();
         of->packInt(0);
         of->packString("Network stopped.");
@@ -137,7 +137,7 @@ class NetworkIsStartedCommand : public Command{
         name = "network-isstarted";
         help = "Queries whether the network is started.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         if(Network::getNetwork()->isStarted()){
             of->packInt(0);
             of->packString("The network is started.");
@@ -156,7 +156,7 @@ class SettingsSetCommand : public Command{
         addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to set."));
         addCommandParameter(new CommandParameter(cpT_String, "value", "Value to set setting to."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string setting = frame->unpackString();
         std::string value = frame->unpackString();
@@ -175,7 +175,7 @@ class SettingsGetCommand : public Command{
         help = "Gets a setting.";
         addCommandParameter(new CommandParameter(cpT_String, "setting", "Setting to get."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string setting = frame->unpackString();
         msg << "Setting \"" << setting << "\" is set to \"" << Settings::getSettings()->get(setting) << "\".";
@@ -190,7 +190,7 @@ class ReconfigureCommand : public Command{
       name = "reconfigure";
       help = "Re-reads the configuration file.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
 
       if(Network::getNetwork()->isStarted()) {
         Network::getNetwork()->stop();
@@ -231,7 +231,7 @@ class PluginLoadCommand : public Command{
         help = "Loads a plugin.";
         addCommandParameter(new CommandParameter(cpT_String, "plugin", "Plugin to load."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string plugin = frame->unpackString();
         if(PluginManager::getPluginManager()->load(plugin)){
@@ -251,7 +251,7 @@ class PluginListCommand : public Command{
         name = "plugin-list";
         help = "Lists the plugins that are loaded.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         msg << "These plugins are loaded: " << PluginManager::getPluginManager()->getLoadedLibraryNames();
         of->packInt(0);
@@ -266,7 +266,7 @@ class RulesetSetCommand : public Command{
         help = "Sets the ruleset to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "ruleset", "Ruleset to load."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string ruleset = frame->unpackString();
         if(PluginManager::getPluginManager()->loadRuleset(ruleset)){
@@ -286,7 +286,7 @@ class RulesetGetCommand : public Command{
         name = "get-ruleset";
         help = "Gets the ruleset being used by the server.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         msg << "The server is using ruleset \"" << Game::getGame()->getRuleset()->getName()
             << "\" (version " << Game::getGame()->getRuleset()->getVersion() << ").";
@@ -302,7 +302,7 @@ class TpschemeSetCommand : public Command{
         help = "Sets the TpScheme implementation to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "tpscheme", "TpScheme implementation to load."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string tpscheme = frame->unpackString();
         if(PluginManager::getPluginManager()->loadTpScheme(tpscheme)){
@@ -323,7 +323,7 @@ class PersistenceSetCommand : public Command{
         help = "Sets the persistence method to be used by the server.";
         addCommandParameter(new CommandParameter(cpT_String, "persist", "Persistence method to load."));
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         std::ostringstream msg;
         std::string persist = frame->unpackString();
         if(PluginManager::getPluginManager()->loadPersistence(persist)){
@@ -343,7 +343,7 @@ class GameLoadCommand : public Command{
         name = "game-load";
         help = "Loads the initial data for the game.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         if(Game::getGame()->load()){
             of->packInt(0);
             of->packString("Game loaded.");
@@ -360,7 +360,7 @@ class GameStartCommand : public Command{
         name = "game-start";
         help = "Starts the game and the EOT timer.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         if(Game::getGame()->start()){
             of->packInt(0);
             of->packString("Game started.");
@@ -377,7 +377,7 @@ class GameIsStartedCommand : public Command{
         name = "game-isstarted";
         help = "Queries whether the game is started.";
     }
-    void action( InputFrame * frame, OutputFrame * of) {
+    void action( InputFrame * frame, OutputFrame::Ptr of) {
         if(Game::getGame()->isStarted()){
             of->packInt(0);
             of->packString("The game is started.");
@@ -394,7 +394,7 @@ class StatusCommand : public Command{
             name = "status";
             help = "Prints out the key info about the server and game.";
         }
-        void action( InputFrame* frame, OutputFrame* of){
+        void action( InputFrame* frame, OutputFrame::Ptr of){
             std::ostringstream formater;
             formater << "Server: tpserver-cpp" << std::endl;
             formater << "Version: " VERSION << std::endl;
@@ -426,7 +426,7 @@ class ServerQuitCommand : public Command{
             name = "server-quit";
             help = "Make the server exit, use with caution.";
         }
-        void action( InputFrame *f, OutputFrame *of){
+        void action( InputFrame *f, OutputFrame::Ptr of){
             Network::getNetwork()->stopMainLoop();
             of->packInt(0);
             of->packString("Server shutting down");
@@ -460,7 +460,7 @@ bool CommandManager::checkCommandType(uint32_t type)
  * cmdtype - The command type to describe.
  * of - The output frame.
  */
-void CommandManager::describeCommand(uint32_t cmdtype, OutputFrame * of) 
+void CommandManager::describeCommand(uint32_t cmdtype, OutputFrame::Ptr of) 
 {
     if(commandStore.find(cmdtype) != commandStore.end()){
         //call the command's describe function
@@ -486,7 +486,7 @@ void CommandManager::addCommandType(Command* cmd){
  * frame - The input frame.
  * of - The output frame.
  */
-void CommandManager::doGetCommandTypes(InputFrame* frame, OutputFrame * of) {
+void CommandManager::doGetCommandTypes(InputFrame* frame, OutputFrame::Ptr of) {
     uint32_t lseqkey = frame->unpackInt();
     if(lseqkey == UINT32_NEG_ONE){
         lseqkey = seqkey;
@@ -536,7 +536,7 @@ void CommandManager::doGetCommandTypes(InputFrame* frame, OutputFrame * of) {
  * frame - The input frame.
  * of - The output frame.
  */
-void CommandManager::executeCommand(InputFrame * frame, OutputFrame * of) 
+void CommandManager::executeCommand(InputFrame * frame, OutputFrame::Ptr of) 
 {
     uint32_t cmdtype = frame->unpackInt();
     if(commandStore.find(cmdtype) != commandStore.end()){

@@ -29,7 +29,7 @@ Velocity3dObjectParam::~Velocity3dObjectParam(){
 }
 
 
-void Velocity3dObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
+void Velocity3dObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID){
   velocity.pack(f);
   f->packInt(relative);
 }

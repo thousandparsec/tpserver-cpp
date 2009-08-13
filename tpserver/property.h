@@ -36,7 +36,7 @@ class Property : public ProtocolObject {
     /**
      * Pack property data into a frame
      */
-    void pack(OutputFrame* frame) const;
+    void pack(OutputFrame::Ptr frame) const;
 
     /// TODO: remove
     uint32_t getPropertyId() const;

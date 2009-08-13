@@ -29,7 +29,7 @@ MediaObjectParam::~MediaObjectParam(){
 }
 
 
-void MediaObjectParam::packObjectFrame(OutputFrame * f, uint32_t objID){
+void MediaObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t objID){
   f->packString(murl);
 }
 

@@ -40,7 +40,7 @@ class CommandParameter {
     std::string getName() const;
     std::string getDescription() const;
 
-    void packCommandDescFrame(OutputFrame * of) const;
+    void packCommandDescFrame(OutputFrame::Ptr of) const;
 
   protected:
     uint32_t type;
@@ -63,9 +63,9 @@ class Command {
     std::list<CommandParameter*> getParameters() const;
     uint64_t getDescriptionModTime() const;
 
-    void describeCommand(OutputFrame * of) const;
+    void describeCommand(OutputFrame::Ptr of) const;
 
-    virtual void action(InputFrame * frame, OutputFrame * of) = 0;
+    virtual void action(InputFrame * frame, OutputFrame::Ptr of) = 0;
 
   protected:
     void addCommandParameter(CommandParameter* cp);
