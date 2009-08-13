@@ -42,7 +42,7 @@ Nop::Nop() : Order()
 Nop::~Nop(){
 }
 
-void Nop::createFrame(OutputFrame * f, int pos)
+void Nop::createFrame(OutputFrame::Ptr f, int pos)
 {
   turns = timeparam->getTime();
   Order::createFrame(f, pos);

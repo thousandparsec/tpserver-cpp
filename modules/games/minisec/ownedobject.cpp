@@ -67,7 +67,7 @@ void OwnedObject::setOwner(uint32_t no){
 
 
 
-void OwnedObject::packExtraData(OutputFrame * frame){
+void OwnedObject::packExtraData(OutputFrame::Ptr frame){
   SpaceObject::packExtraData(frame);
   
   ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(OWNERGRPID,OWNERPARAMID)));

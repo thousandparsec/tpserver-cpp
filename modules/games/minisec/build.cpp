@@ -57,7 +57,7 @@ Build::Build() : Order()
 Build::~Build(){
 }
 
-void Build::createFrame(OutputFrame *f, int pos)
+void Build::createFrame(OutputFrame::Ptr f, int pos)
 {
   IGObject::Ptr planet = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   

@@ -45,7 +45,7 @@ Universe::~Universe(){
 }
 
 
-void Universe::packExtraData(OutputFrame * frame){
+void Universe::packExtraData(OutputFrame::Ptr frame){
   frame->packInt(((IntegerObjectParam*)(obj->getParameter(AGEGRPID,AGEPARAMID)))->getValue());
 }
 

@@ -68,7 +68,7 @@ int Move::getETA(IGObject::Ptr ob) const{
   return (int)((distance - 1) / max_speed) + 1;
 }
 
-void Move::createFrame(OutputFrame * f, int pos)
+void Move::createFrame(OutputFrame::Ptr f, int pos)
 {
   Game* game = Game::getGame();
   IGObject::Ptr obj = game->getObjectManager()->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());

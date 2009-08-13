@@ -41,7 +41,7 @@ class Planet:public OwnedObject {
 
         void setDefaultOrderTypes();
         
-	void packExtraData(OutputFrame * frame);
+	void packExtraData(OutputFrame::Ptr frame);
 
 	void doOnceATurn();
 
