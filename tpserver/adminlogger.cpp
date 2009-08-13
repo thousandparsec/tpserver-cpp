@@ -24,35 +24,30 @@
 #include "config.h"
 #endif
 
-#include "adminconnection.h"
-
 #include "adminlogger.h"
 
-AdminLogger::AdminLogger() : connection(NULL) {
+
+AdminLogger::AdminLogger( AdminConnection::Ptr admin_connection ) 
+  : connection( admin_connection )
+{
+  // nothing
 }
 
-AdminLogger::~AdminLogger() {
-}
-
-void AdminLogger::setConnection(AdminConnection* newcon) {
-    connection = newcon;
-}
-
-AdminConnection *AdminLogger::getConnection() const {
-    return connection;
+AdminLogger::~AdminLogger() 
+{
+  // nothing
 }
 
 void AdminLogger::doLogging(int level, const char* msg) const {
     uint64_t timestamp = time(NULL);
 
-    //TODO: assert(connection);
-
-    if (connection->getStatus() == Connection::READY) {
+    if ( connection->getStatus() == Connection::READY ) 
+    {
       OutputFrame::Ptr logmessage = connection->createFrame(InputFrame::Ptr());
-        logmessage->setType(ftad_LogMessage);
-        logmessage->packInt64(timestamp);
-        logmessage->packInt(level);
-        logmessage->packString(msg);
-        connection->sendFrame(logmessage);
+      logmessage->setType(ftad_LogMessage);
+      logmessage->packInt64(timestamp);
+      logmessage->packInt(level);
+      logmessage->packString(msg);
+      connection->sendFrame(logmessage);
     }
 }

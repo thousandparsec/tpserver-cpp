@@ -21,8 +21,7 @@
  */
 
 #include <tpserver/logsink.h>
-
-class AdminConnection;
+#include <tpserver/adminconnection.h>
 
 /**
  * Log sink that logs via admin connection
@@ -35,22 +34,12 @@ class AdminLogger : public LogSink {
     /**
      * Default constructor
      */
-    AdminLogger();
+    AdminLogger( AdminConnection::Ptr admin_connection );
 
     /**
      * Destructor
      */
     virtual ~AdminLogger();
-
-    /**
-     * Sets the connection
-     */
-    void setConnection(AdminConnection * newcon);
-
-    /**
-     * Retrieves the connection
-     */
-    AdminConnection *getConnection() const;
 
     /**
      * Logging override
@@ -61,7 +50,7 @@ class AdminLogger : public LogSink {
 
   private:
     /// Stored admin connection
-    AdminConnection* connection;
+    AdminConnection::Ptr connection;
 
 };
 

@@ -59,9 +59,8 @@ void AdminConnection::processLogin(){
           }
           if(authenticated){
             sendOK( recvframe, "Welcome" );
-            Logger::getLogger()->info("Admin login ok by %s", username.c_str());
-            logsink = new AdminLogger();
-            logsink->setConnection(this);
+            INFO("Admin login ok by %s", username.c_str());
+            logsink = new AdminLogger( boost::dynamic_pointer_cast<AdminConnection>(shared_from_this()) );
             logextid = Logger::getLogger()->addLog(logsink);
             status = READY;
           } else {
