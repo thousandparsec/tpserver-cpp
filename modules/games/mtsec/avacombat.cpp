@@ -65,9 +65,9 @@ bool AVACombat::isAliveCombatant2(){
 }
 
 // This routine handles one combat round.
-// fleet1 and fleet2 are the combatants.
-// msg1 is sent to the owner of fleet1,
-// msg2 is sent to the owner of fleet2.
+// fleets[2] are the combatants.
+// msgs[0] is sent to the owner of fleet1,
+// msgs[1] is sent to the owner of fleet2.
 //
 // Assume that 'number of missiles/torpedoes a ship can carry'
 // really means 'number of missiles/torpedoes a ship can fire in one round'.
@@ -96,14 +96,9 @@ bool AVACombat::isAliveCombatant2(){
 // All that being said, I decreased the damage the two sides
 // do to each other by a random 0-39% because I wanted some
 // randomness involved.
-bool AVACombat::doCombatRound( Fleet*   fleet1,
-                               Message* msg1,
-                               Fleet*   fleet2,
-                               Message* msg2)
+bool AVACombat::doCombatRound( Fleet*   fleets[],
+                               Message* msgs[])
 {
-    Fleet* fleets[2];
-    fleets[0] = fleet1;
-    fleets[1] = fleet2;
     Logger::getLogger()->debug("doCombatRound Entering");
     Game* game = Game::getGame();
     DesignStore* ds = game->getDesignStore();
@@ -136,11 +131,11 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     std::map<uint32_t, uint32_t> fleetusable[2];
     //     resourceid, designid
 
-    fleetweaponry[0] = fleet1->getResources();
-    fleetweaponry[1] = fleet2->getResources();
+    fleetweaponry[0] = fleets[0]->getResources();
+    fleetweaponry[1] = fleets[1]->getResources();
 
-    fleetships[0] = fleet1->getShips();
-    fleetships[1] = fleet2->getShips();
+    fleetships[0] = fleets[0]->getShips();
+    fleetships[1] = fleets[1]->getShips();
 
     uint32_t damage[2] = {0};
 
@@ -224,8 +219,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
         tte = true;
     }
     if ( tte) {
-        msg1->setBody( body[0]);
-        msg2->setBody( body[1]);
+        msgs[0]->setBody( body[0]);
+        msgs[1]->setBody( body[1]);
     }
 
     Logger::getLogger()->debug("doCombatRound Exiting");
@@ -276,7 +271,7 @@ void AVACombat::doCombat()
 {
     Logger::getLogger()->debug("AVACombat::doCombat : Entering");
 
-    Fleet *f1, *f2;
+    Fleet *fleets[2];
 
     Game* game = Game::getGame();
     DesignStore* ds = game->getDesignStore();
@@ -286,10 +281,10 @@ void AVACombat::doCombat()
     // If one combatant or the other is actually a planet,
     // simulate this with two battleships.
     if ( c1->getType() == obT_Fleet) {
-        f1 = dynamic_cast<Fleet*>( c1->getObjectBehaviour());
+        fleets[0] = dynamic_cast<Fleet*>( c1->getObjectBehaviour());
     }
     else if ( c1->getType() == obT_Planet) {
-        f1 = new DummyFleet();
+        fleets[0] = new DummyFleet();
 
         std::set<uint32_t> dIDs = ds->getDesignIds();
         uint32_t scoutID=0;
@@ -298,12 +293,12 @@ void AVACombat::doCombat()
                 scoutID = *it;
             }
         }
-        f1 = new DummyFleet();
-        f1->addShips(scoutID , 2);
-        f1->setOwner( dynamic_cast<Planet*>(c1->getObjectBehaviour())->getOwner());
+        fleets[0] = new DummyFleet();
+        fleets[0]->addShips(scoutID , 2);
+        fleets[0]->setOwner( dynamic_cast<Planet*>(c1->getObjectBehaviour())->getOwner());
     }
     if ( c2->getType() == obT_Fleet) {
-        f2 = dynamic_cast<Fleet*>( c2->getObjectBehaviour());
+        fleets[1] = dynamic_cast<Fleet*>( c2->getObjectBehaviour());
     }
     else if ( c2->getType() == obT_Planet) {
         std::set<uint32_t> dIDs = ds->getDesignIds();
@@ -313,32 +308,32 @@ void AVACombat::doCombat()
                 scoutID = *it;
             }
         }
-        f2 = new DummyFleet();
-        f2->addShips(scoutID, 2);
-        f2->setOwner( dynamic_cast<Planet*>(c2->getObjectBehaviour())->getOwner());
+        fleets[1] = new DummyFleet();
+        fleets[1]->addShips(scoutID, 2);
+        fleets[1]->setOwner( dynamic_cast<Planet*>(c2->getObjectBehaviour())->getOwner());
     }
-    if ( f1 == NULL || f2 == NULL) {
+    if ( fleets[0] == NULL || fleets[1] == NULL) {
         return;
     }
 
-    Message *msg1, *msg2;
-    msg1 = new Message();
-    msg2 = new Message();
-    msg1->setSubject( "Combat");
-    msg2->setSubject( "Combat");
-    msg1->addReference( rst_Object, c1->getID());
-    msg1->addReference( rst_Object, c2->getID());
-    msg1->addReference( rst_Player, f2->getOwner());
-    msg2->addReference( rst_Object, c2->getID());
-    msg2->addReference( rst_Object, c1->getID());
-    msg2->addReference( rst_Player, f1->getOwner());
+    Message *msgs[2];
+    msgs[0] = new Message();
+    msgs[1] = new Message();
+    msgs[0]->setSubject( "Combat");
+    msgs[1]->setSubject( "Combat");
+    msgs[0]->addReference( rst_Object, c1->getID());
+    msgs[0]->addReference( rst_Object, c2->getID());
+    msgs[0]->addReference( rst_Player, fleets[1]->getOwner());
+    msgs[1]->addReference( rst_Object, c2->getID());
+    msgs[1]->addReference( rst_Object, c1->getID());
+    msgs[1]->addReference( rst_Player, fleets[0]->getOwner());
 
-    while ( doCombatRound( f1, msg1, f2, msg2)) {
+    while ( doCombatRound( fleets, msgs )) {
         ;
     }
 
-    Game::getGame()->getPlayerManager()->getPlayer( f1->getOwner())->postToBoard( msg1);
-    Game::getGame()->getPlayerManager()->getPlayer( f2->getOwner())->postToBoard( msg2);
+    Game::getGame()->getPlayerManager()->getPlayer( fleets[0]->getOwner())->postToBoard( msgs[0]);
+    Game::getGame()->getPlayerManager()->getPlayer( fleets[1]->getOwner())->postToBoard( msgs[1]);
 
     return;
 }

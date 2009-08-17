@@ -40,7 +40,7 @@ class AVACombat{
 
 
  protected:
-  bool doCombatRound( Fleet*, Message*, Fleet*, Message*);
+  bool doCombatRound( Fleet*[], Message*[]);
   IGObject *c1, *c2;
 
 };
