@@ -113,7 +113,7 @@ std::string MTSec::getName(){
 }
 
 std::string MTSec::getVersion(){
-  return "0.0";
+  return "0.3";
 }
 
 void MTSec::initGame() {
