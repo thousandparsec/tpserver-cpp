@@ -18,10 +18,6 @@
  *
  */
 
-#include <my_global.h>
-#include <my_sys.h>
-#include <mysql.h>
-
 #include <sstream>
 
 #include <tpserver/logging.h>
@@ -64,6 +60,9 @@
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
 
+#include <my_global.h>
+#include <my_sys.h>
+#include <mysql.h>
 
 #include "mysqlpersistence.h"
 

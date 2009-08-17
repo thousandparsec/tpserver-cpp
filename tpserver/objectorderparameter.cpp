@@ -35,15 +35,26 @@ ObjectOrderParameter::~ObjectOrderParameter(){
 
 void ObjectOrderParameter::packOrderFrame(Frame * f){
   f->packInt(object);
+  f->packInt(objecttypes.size());
+  for(std::set<objecttypeid_t>::iterator itcurr = objecttypes.begin(); itcurr != objecttypes.end();
+        ++itcurr){
+    f->packInt(*itcurr);
+  }
 }
 
 bool ObjectOrderParameter::unpackFrame(Frame *f, uint32_t playerid){
-  if(f->isEnoughRemaining(4)){
+  if(f->isEnoughRemaining(8)){
     object = f->unpackInt();
-    return true;
-  }else{
-    return false;
+    uint32_t numtoskip = f->unpackInt();
+    if(f->isEnoughRemaining(4 * numtoskip)){
+        for(uint32_t i = 0; i < numtoskip; i++){
+            f->unpackInt();
+        }
+        return true;
+    }
   }
+  return false;
+  
 }
 
 OrderParameter *ObjectOrderParameter::clone() const{
@@ -58,3 +69,14 @@ void ObjectOrderParameter::setObjectId(uint32_t id){
   object = id;
 }
 
+std::set<objecttypeid_t> ObjectOrderParameter::getAllowedObjectTypes() const{
+    return objecttypes;
+}
+
+void ObjectOrderParameter::setAllowedObjectTypes(const std::set<objecttypeid_t>& nots){
+    objecttypes = nots;
+}
+
+void ObjectOrderParameter::addAllowedObjectTypes(objecttypeid_t type){
+    objecttypes.insert(type);
+}

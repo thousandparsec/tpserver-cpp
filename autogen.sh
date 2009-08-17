@@ -23,7 +23,7 @@ echo libtoolize...
 }
 
 #try with recursive first, then without
-libtoolize --automake --copy --force --ltdl --recursive || libtoolize --automake --copy --force --ltdl || glibtoolize --automake --copy --force --ltdl --recursive || glibtoolize --automake --copy --force --ltdl
+libtoolize --automake --copy --force --ltdl --recursive --subproject || libtoolize --automake --copy --force --ltdl || glibtoolize --automake --copy --force --ltdl --recursive || glibtoolize --automake --copy --force --ltdl
 
 echo automake...
 (automake --version) < /dev/null > /dev/null 2>&1 || {
@@ -44,6 +44,11 @@ autoconf
 echo removing config.cache...
 
 rm -f config.cache
+
+echo autoreconf in libltdl
+cd libltdl
+autoreconf
+cd ..
 
 echo
 
