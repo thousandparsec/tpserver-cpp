@@ -85,7 +85,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > BuildWeapon::generateListO
   Logger::getLogger()->debug("Entering BuildWeapon::generateListOptions");
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
   
-  std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer(((Planet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
+  std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer((dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
 
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   DesignStore* ds = Game::getGame()->getDesignStore();

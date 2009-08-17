@@ -240,7 +240,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
 
     
     otypeman->setupObject(ac, obT_Star_System);
-    EmptyObject* theac = (EmptyObject*)(ac->getObjectBehaviour());
+    EmptyObject* theac = dynamic_cast<EmptyObject*>(ac->getObjectBehaviour());
     theac->setSize(800000ll);
     ac->setName("Alpha Centauri System");
     theac->setPosition(Vector3d(-1500000000ll, 1500000000ll, 0ll));
@@ -248,7 +248,7 @@ IGObject* MTSec::createAlphaCentauriSystem( IGObject* mw_galaxy)
     obman->addObject(ac);
 
     otypeman->setupObject(acprime, obT_Planet);
-    Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
+    Planet* theacprime = dynamic_cast<Planet*>(acprime->getObjectBehaviour());
     theacprime->setSize(2);
     acprime->setName("Alpha Centauri Prime");
     theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
@@ -292,7 +292,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
     otypeman->setupObject(sirius, obT_Star_System);
-    EmptyObject* thesirius = (EmptyObject*)(sirius->getObjectBehaviour());
+    EmptyObject* thesirius = dynamic_cast<EmptyObject*>(sirius->getObjectBehaviour());
     thesirius->setSize(2000000ll);
     sirius->setName("Sirius System");
     thesirius->setPosition(Vector3d(-250000000ll, -3800000000ll, 0ll));
@@ -300,7 +300,7 @@ IGObject* MTSec::createSiriusSystem( IGObject* mw_galaxy)
     obman->addObject(sirius);
 
     otypeman->setupObject(s1, obT_Planet);
-    Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
+    Planet* thes1 = dynamic_cast<Planet*>(s1->getObjectBehaviour());
     thes1->setSize(2);
     s1->setName("Sirius 1");
     thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
@@ -352,7 +352,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
     uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
     otypeman->setupObject(star, obT_Star_System);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
+    EmptyObject* thestar = dynamic_cast<EmptyObject*>(star->getObjectBehaviour());
     thestar->setSize(1400000ll);
     uint32_t   thx = myRandom(45);
     star->setName(systemNames[thx-1]);
@@ -369,7 +369,7 @@ IGObject* MTSec::createStarSystem( IGObject* mw_galaxy)
         formatter << star->getName() << " " << nplanets;
 
         otypeman->setupObject(planet, obT_Planet);
-        Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
+        Planet* theplanet = dynamic_cast<Planet*>(planet->getObjectBehaviour());
         theplanet->setSize( 2);
         planet->setName( formatter.str().c_str());
         theplanet->setPosition( thestar->getPosition() + Vector3d( nplanets * 40000ll,
@@ -424,7 +424,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
     
     otypeman->setupObject(sol, obT_Star_System);
-    EmptyObject* thesol = (EmptyObject*)(sol->getObjectBehaviour());
+    EmptyObject* thesol = dynamic_cast<EmptyObject*>(sol->getObjectBehaviour());
     thesol->setSize(1400000ll);
     sol->setName("Sol/Terra System");
     thesol->setPosition(Vector3d(3000000000ll, 2000000000ll, 0ll));
@@ -432,7 +432,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     obman->addObject(sol);
 
     otypeman->setupObject(earth, obT_Planet);
-    Planet* theearth = (Planet*)(earth->getObjectBehaviour());
+    Planet* theearth = dynamic_cast<Planet*>(earth->getObjectBehaviour());
     theearth->setSize(2);
     earth->setName("Earth/Terra");
     theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
@@ -444,7 +444,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress[resman->getResourceDescription("Antiparticle")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 30));
     ress[resman->getResourceDescription("Antimatter")->getResourceType()] = std::pair<uint32_t, uint32_t>(0, game->getRandom()->getInRange(1, 15));
     ress[resman->getResourceDescription("Factories")->getResourceType()] = std::pair<uint32_t, uint32_t>(game->getRandom()->getInRange(1, 15), 0);
-    ((Planet*)(earth->getObjectBehaviour()))->setResources(ress);
+    dynamic_cast<Planet*>(earth->getObjectBehaviour())->setResources(ress);
     
     OrderQueue *planetoq = new OrderQueue();
     planetoq->setObjectId(earth->getID());
@@ -460,7 +460,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress.clear();
 
     otypeman->setupObject(venus, obT_Planet);
-    Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
+    Planet* thevenus = dynamic_cast<Planet*>(venus->getObjectBehaviour());
     thevenus->setSize(2);
     venus->setName("Venus");
     thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
@@ -488,7 +488,7 @@ IGObject* MTSec::createSolSystem( IGObject *mw_galaxy)
     ress.clear();
 
     otypeman->setupObject(mars, obT_Planet);
-    Planet* themars = (Planet*)(mars->getObjectBehaviour());
+    Planet* themars = dynamic_cast<Planet*>(mars->getObjectBehaviour());
     themars->setSize(1);
     mars->setName("Mars");
     themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
@@ -656,7 +656,7 @@ void MTSec::createGame()
     
     IGObject* universe = obman->createNewObject();
     otypeman->setupObject(universe, obT_Universe);
-    Universe* theuniverse = (Universe*)(universe->getObjectBehaviour());
+    Universe* theuniverse = dynamic_cast<Universe*>(universe->getObjectBehaviour());
     theuniverse->setSize(1000000000ll);
     universe->setName("The Universe");
     theuniverse->setPosition(Vector3d(0ll, 0ll, 0ll));
@@ -665,7 +665,7 @@ void MTSec::createGame()
     //add contained objects
     IGObject *mw_galaxy = obman->createNewObject();
     otypeman->setupObject(mw_galaxy, obT_Galaxy);
-    EmptyObject* themw = (EmptyObject*)(mw_galaxy->getObjectBehaviour());
+    EmptyObject* themw = dynamic_cast<EmptyObject*>(mw_galaxy->getObjectBehaviour());
     themw->setSize(100000000ll);
     mw_galaxy->setName("Milky Way Galaxy");
     themw->setPosition(Vector3d(0ll, -6000ll, 0ll));
@@ -785,13 +785,13 @@ IGObject* MTSec::createEmptyFleet( Player*     owner,
                                  ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(int64_t)((rand() % 10000) - 5000)*/ 0);
     
-    Fleet* thefleet = (Fleet*)(fleet->getObjectBehaviour());
+    Fleet* thefleet = dynamic_cast<Fleet*>(fleet->getObjectBehaviour());
     thefleet->setSize( 2);
     fleet->setName( fleetName.c_str());
     thefleet->setOwner(owner->getID());
 
     // Place the fleet in orbit around the given star
-    thefleet->setPosition( ((EmptyObject*)(star->getObjectBehaviour()))->getPosition() + offset);
+    thefleet->setPosition( dynamic_cast<EmptyObject*>(star->getObjectBehaviour())->getPosition() + offset);
     thefleet->setVelocity( Vector3d(0LL, 0ll, 0ll));
     
     OrderQueue *fleetoq = new OrderQueue();
@@ -830,7 +830,7 @@ void MTSec::makeNewPlayerFleet( Player* player, IGObject* star)
     playerview->addUsableDesign(tempMissile->getDesignId());
 
     // Start this fleet off with two battle scout ships
-    ((Fleet*)(fleet->getObjectBehaviour()))->addShips( scout->getDesignId(), 2);
+    dynamic_cast<Fleet*>(fleet->getObjectBehaviour())->addShips( scout->getDesignId(), 2);
     scout->addUnderConstruction(2);
     scout->addComplete(2);
     game->getDesignStore()->designCountsUpdated( scout);
@@ -856,14 +856,14 @@ IGObject* MTSec::makePlayerHomePlanet( Player* player, IGObject* star)
     uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
     
     otypeman->setupObject(planet, obT_Planet);
-    Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
+    Planet* theplanet = dynamic_cast<Planet*>(planet->getObjectBehaviour());
     Vector3d  offset = Vector3d( ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  ( int64_t) ( game->getRandom()->getInRange(0, 10000) - 5000),
                                  /*(int64_t)((rand() % 10000) - 5000)*/ 0);
     theplanet->setSize( 2);
     planet->setName( planetName.c_str());
     theplanet->setOwner(player->getID());
-    theplanet->setPosition( ((EmptyObject*)(star->getObjectBehaviour()))->getPosition() + offset);
+    theplanet->setPosition( dynamic_cast<EmptyObject*>(star->getObjectBehaviour())->getPosition() + offset);
 
     ResourceManager* resman = game->getResourceManager();
     std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress;
@@ -913,7 +913,7 @@ IGObject* MTSec::makeNewPlayerStarSystem( Player* player)
     Vector3d  location = Vector3d( ( int64_t) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    ( int64_t) ( ( game->getRandom()->getInRange(0, 1000) - 500) * 10000000),
                                    /*(int64_t)(((rand()%1000)-500)*10000000)*/ 0);
-    EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
+    EmptyObject* thestar = dynamic_cast<EmptyObject*>(star->getObjectBehaviour());
     thestar->setSize( 2000000ll);
     star->setName( starName.c_str());
     thestar->setPosition( location);

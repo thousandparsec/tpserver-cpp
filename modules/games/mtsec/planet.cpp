@@ -78,7 +78,7 @@ void Planet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Send Points"));
   allowedlist.insert(om->getOrderTypeByName("Build Weapon"));
-  ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+  dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->setAllowedOrders(allowedlist);
   Game* game = Game::getGame();
   ResourceManager* resman = game->getResourceManager();
   const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
@@ -89,7 +89,7 @@ void Planet::setDefaultOrderTypes(){
 void Planet::packExtraData(Frame * frame){
   OwnedObject::packExtraData(frame);
   
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
     frame->packInt(reslist.size());
     for(std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = reslist.begin();
             itcurr != reslist.end(); ++itcurr){
@@ -133,11 +133,11 @@ int Planet::getContainerType(){
 
 
 std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
-    return ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+    return dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
 }
 
 uint32_t Planet::getResource(uint32_t restype) const{
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
   if(reslist.find(restype) != reslist.end()){
     return reslist.find(restype)->first;
   }
@@ -145,7 +145,7 @@ uint32_t Planet::getResource(uint32_t restype) const{
 }
 
 uint32_t Planet::getResourceSurfaceValue(uint32_t restype) const {
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
   if(reslist.find(restype) != reslist.end()){
     return reslist.find(restype)->second.first;
   }
@@ -153,7 +153,7 @@ uint32_t Planet::getResourceSurfaceValue(uint32_t restype) const {
 }
 
 void Planet::setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress){
-    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(ress);
+    dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->setResources(ress);
     obj->touchModTime();
 }
 
@@ -162,20 +162,20 @@ uint32_t Planet::getFactoriesPerTurn(){
 }
 
 void Planet::addResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
     std::pair<uint32_t, uint32_t> respair = reslist[restype];
     respair.first += amount;
     reslist[restype] = respair;
-    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+    dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->setResources(reslist);
     obj->touchModTime();
 }
 
 void Planet::setResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
     std::pair<uint32_t, uint32_t> respair = reslist[restype];
     respair.first = amount;
     reslist[restype] = respair;
-    ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+    dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->setResources(reslist);
     obj->touchModTime();
 }
 
@@ -189,13 +189,13 @@ void Planet::addFactories(uint32_t amount){
 }
 
 bool Planet::removeResource(uint32_t restype, uint32_t amount){
-  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(4,1)))->getResources();
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->getResources();
     if(reslist.find(restype) != reslist.end()){
         if(reslist[restype].first >= amount){
             std::pair<uint32_t, uint32_t> respair = reslist[restype];
             respair.first -= amount;
             reslist[restype] = respair;
-            ((ResourceListObjectParam*)(obj->getParameter(4,1)))->setResources(reslist);
+            dynamic_cast<ResourceListObjectParam*>(obj->getParameter(4,1))->setResources(reslist);
             obj->touchModTime();
             return true;
         }

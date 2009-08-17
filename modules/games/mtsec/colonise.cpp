@@ -64,13 +64,13 @@ bool Colonise::doOrder(IGObject * ob){
     msg->setBody("Not at a planet, colonisation canceled");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer((dynamic_cast<Fleet*>(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
 
     return true;
   }
   
-  Fleet* fleet = (Fleet*)(ob->getObjectBehaviour());
-  Planet* planet = (Planet*)(target->getObjectBehaviour());
+  Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
+  Planet* planet = dynamic_cast<Planet*>(target->getObjectBehaviour());
   
   Message * msg = new Message();
   msg->addReference(rst_Object, ob->getID());

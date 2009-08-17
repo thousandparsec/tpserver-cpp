@@ -60,7 +60,7 @@ SplitFleet::~SplitFleet(){
 std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOptions(){
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
-  Fleet* of = (Fleet*)(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour());
+  Fleet* of = dynamic_cast<Fleet*>(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour());
 
   std::map<uint32_t, uint32_t> sotf = of->getShips();
   Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
@@ -77,7 +77,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SplitFleet::generateListOp
 
 bool SplitFleet::doOrder(IGObject * ob){
 
-  Fleet* of = (Fleet*)(ob->getObjectBehaviour());
+  Fleet* of = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
 
   Message * msg = new Message();
   msg->setSubject("Split Fleet order complete");
@@ -87,7 +87,7 @@ bool SplitFleet::doOrder(IGObject * ob){
   ObjectTypeManager* obtypeman = Game::getGame()->getObjectTypeManager();
   uint32_t fleettype = obtypeman->getObjectTypeByName("Fleet");
   obtypeman->setupObject(nfleet, fleettype);
-  Fleet* nf = (Fleet*)(nfleet->getObjectBehaviour());
+  Fleet* nf = dynamic_cast<Fleet*>(nfleet->getObjectBehaviour());
   nf->setSize(2);
   nfleet->setName("A fleet");
   

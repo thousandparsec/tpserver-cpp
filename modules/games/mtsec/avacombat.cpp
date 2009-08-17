@@ -209,23 +209,23 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     bool tte = false;
 
-    std::string body1, body2;
+    std::string body[2];
 
     if (fleets[0]->totalShips() == 0) {
-        body1 += "Your fleet was destroyed. ";
-        body2 += "You destroyed their fleet. ";
+        body[0] += "Your fleet was destroyed. ";
+        body[1] += "You destroyed their fleet. ";
         c1 = NULL;
         tte = true;
     };
     if (fleets[1]->totalShips() == 0) {
-        body2 += "Your fleet was destroyed.";
-        body1 += "You destroyed their fleet.";
+        body[0] += "Your fleet was destroyed.";
+        body[1] += "You destroyed their fleet.";
         c2 = NULL;
         tte = true;
     }
     if ( tte) {
-        msg1->setBody( body1);
-        msg2->setBody( body2);
+        msg1->setBody( body[0]);
+        msg2->setBody( body[1]);
     }
 
     Logger::getLogger()->debug("doCombatRound Exiting");
@@ -286,7 +286,7 @@ void AVACombat::doCombat()
     // If one combatant or the other is actually a planet,
     // simulate this with two battleships.
     if ( c1->getType() == obT_Fleet) {
-        f1 = ( Fleet*) ( c1->getObjectBehaviour());
+        f1 = dynamic_cast<Fleet*>( c1->getObjectBehaviour());
     }
     else if ( c1->getType() == obT_Planet) {
         f1 = new DummyFleet();
@@ -300,10 +300,10 @@ void AVACombat::doCombat()
         }
         f1 = new DummyFleet();
         f1->addShips(scoutID , 2);
-        f1->setOwner( ( ( Planet*) c1->getObjectBehaviour())->getOwner());
+        f1->setOwner( dynamic_cast<Planet*>(c1->getObjectBehaviour())->getOwner());
     }
     if ( c2->getType() == obT_Fleet) {
-        f2 = ( Fleet*) ( c2->getObjectBehaviour());
+        f2 = dynamic_cast<Fleet*>( c2->getObjectBehaviour());
     }
     else if ( c2->getType() == obT_Planet) {
         std::set<uint32_t> dIDs = ds->getDesignIds();
@@ -315,7 +315,7 @@ void AVACombat::doCombat()
         }
         f2 = new DummyFleet();
         f2->addShips(scoutID, 2);
-        f2->setOwner( ( ( Planet*) c2->getObjectBehaviour())->getOwner());
+        f2->setOwner( dynamic_cast<Planet*>(c2->getObjectBehaviour())->getOwner());
     }
     if ( f1 == NULL || f2 == NULL) {
         return;

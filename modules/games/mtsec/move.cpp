@@ -67,7 +67,7 @@ void Move::setDest(const Vector3d & ndest)
 
 int Move::getETA(IGObject *ob) const{
   Logger::getLogger()->debug("Enter Move::getETA");
-  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
+  Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = coords->getPosition().getDistance(fleet->getPosition());
   uint32_t max_speed = fleet->maxSpeed();
   
@@ -100,7 +100,7 @@ Result Move::inputFrame(Frame * f, uint32_t playerid)
 
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
-  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
+  Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = dest.getDistance(fleet->getPosition());
   uint64_t max_speed = fleet->maxSpeed();
 
@@ -121,7 +121,7 @@ bool Move::doOrder(IGObject * ob){
   
     if(fleet->getPosition() != dest && containertype >= 1){
       //removeFromParent();
-      std::set<uint32_t> oblist = ((MTSecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
@@ -187,7 +187,7 @@ bool Move::doOrder(IGObject * ob){
   
     if(fleet->getPosition() != arriveat && containertype >= 1){
       //removeFromParent();
-      std::set<uint32_t> oblist = ((MTSecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         

@@ -52,11 +52,11 @@ Universe::~Universe(){
 
 
 void Universe::packExtraData(Frame * frame){
-  frame->packInt(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue());
+  frame->packInt(dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->getValue());
 }
 
 void Universe::doOnceATurn(){
-  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue() + 1);
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->setValue(dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->getValue() + 1);
   obj->touchModTime();
 }
 
@@ -66,11 +66,11 @@ int Universe::getContainerType(){
 
 
 void Universe::setYear(int nyear){
-  ((IntegerObjectParam*)(obj->getParameter(2,1)))->setValue(nyear);
+  dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->setValue(nyear);
 }
 
 int Universe::getYear(){
-  return ((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue();
+  return dynamic_cast<IntegerObjectParam*>(obj->getParameter(2,1))->getValue();
 }
 
 }

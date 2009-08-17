@@ -46,7 +46,7 @@ MergeFleet::~MergeFleet(){
 bool MergeFleet::doOrder(IGObject * ob){
   IGObject* parent = Game::getGame()->getObjectManager()->getObject(ob->getParent());
   
-  Fleet *myfleet = (Fleet*)(ob->getObjectBehaviour());
+  Fleet *myfleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   //find fleet to merge with
   
   uint32_t targetid = 0;
@@ -57,7 +57,7 @@ bool MergeFleet::doOrder(IGObject * ob){
       continue;
     IGObject* ptarget = Game::getGame()->getObjectManager()->getObject(*itcurr);
     if(ptarget->getType() == ob->getType()){
-      Fleet* pfleet = (Fleet*)(ptarget->getObjectBehaviour());
+      Fleet* pfleet = dynamic_cast<Fleet*>(ptarget->getObjectBehaviour());
       if(pfleet->getOwner() == myfleet->getOwner()){
         if(pfleet->getSize() + myfleet->getSize() > pfleet->getPosition().getDistance(myfleet->getPosition())){
           targetid = *itcurr;
@@ -75,7 +75,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     msg->setBody("No targe fleet at this location");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
-    Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
+    Game::getGame()->getPlayerManager()->getPlayer(dynamic_cast<Fleet*>(ob->getObjectBehaviour())->getOwner())->postToBoard(msg);
   }else{
   
     IGObject* target = Game::getGame()->getObjectManager()->getObject(targetid);
@@ -88,7 +88,7 @@ bool MergeFleet::doOrder(IGObject * ob){
     msg->addReference(rst_Object, target->getID());
 
     
-    Fleet *tfleet = (Fleet*)(target->getObjectBehaviour());
+    Fleet *tfleet = dynamic_cast<Fleet*>(target->getObjectBehaviour());
       
 
     std::map<uint32_t, uint32_t> ships = myfleet->getShips();
