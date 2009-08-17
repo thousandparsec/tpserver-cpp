@@ -30,6 +30,8 @@
 class ListParameter;
 class StringParameter;
 
+namespace MTSecRuleset {
+
 class BuildWeapon : public Order{
  public:
   BuildWeapon();
@@ -50,4 +52,5 @@ class BuildWeapon : public Order{
   StringParameter * weaponname;
 };
 
+}
 #endif

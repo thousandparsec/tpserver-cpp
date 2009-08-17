@@ -28,6 +28,9 @@
 #include <tpserver/order.h>
 class ListParameter;
 class TimeParameter;
+
+namespace MTSecRuleset {
+
 class SendPoints : public Order{
  public:
   SendPoints();
@@ -43,4 +46,5 @@ class SendPoints : public Order{
   double getPercentage(IGObject *ob) const;
 };
 
+}
 #endif

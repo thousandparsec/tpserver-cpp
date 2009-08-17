@@ -41,6 +41,9 @@
 
 #include "loadarm.h"
 
+
+namespace MTSecRuleset {
+
 LoadArmament::LoadArmament() : Order()
 {
   name = "Load Armament";
@@ -145,4 +148,6 @@ Order* LoadArmament::clone() const{
   LoadArmament *nm = new LoadArmament();
   nm->type = type;
   return nm;
+}
+
 }

@@ -60,6 +60,8 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
+namespace MTSecRuleset {
+
 BuildFleet::BuildFleet() : Order()
 {
   name = "Build Fleet";
@@ -278,3 +280,4 @@ Order* BuildFleet::clone() const{
   return nb;
 }
 
+}

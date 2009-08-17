@@ -42,6 +42,9 @@
 
 #include "mtsecturn.h"
 
+namespace MTSecRuleset {
+
+
 MTSecTurn::MTSecTurn() : TurnProcess(){
   
 }
@@ -265,4 +268,6 @@ void MTSecTurn::setFleetType(uint32_t ft){
 
 std::set<uint32_t> MTSecTurn::getContainerIds() const{
   return containerids;
+}
+
 }

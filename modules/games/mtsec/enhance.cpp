@@ -52,6 +52,8 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
+namespace MTSecRuleset {
+
 Enhance::Enhance() : Order()
 {
   name = "Enhance";
@@ -108,4 +110,6 @@ Order* Enhance::clone() const{
   Enhance* nb = new Enhance();
   nb->type = type;
   return nb;
+}
+
 }

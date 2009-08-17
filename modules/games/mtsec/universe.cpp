@@ -25,6 +25,8 @@
 
 #include "universe.h"
 
+namespace MTSecRuleset {
+
 UniverseType::UniverseType() : SpaceObjectType(){
   ObjectParameterGroupDesc *group = new ObjectParameterGroupDesc();
   group->setName("Informational");
@@ -69,4 +71,6 @@ void Universe::setYear(int nyear){
 
 int Universe::getYear(){
   return ((IntegerObjectParam*)(obj->getParameter(2,1)))->getValue();
+}
+
 }

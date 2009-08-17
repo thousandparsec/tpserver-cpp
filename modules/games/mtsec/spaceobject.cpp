@@ -28,6 +28,8 @@
 
 #include "spaceobject.h"
 
+namespace MTSecRuleset {
+
 SpaceObjectType::SpaceObjectType():ObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Positional");
@@ -76,3 +78,4 @@ void SpaceObject::setSize(uint64_t ns){
 }
 
 
+}

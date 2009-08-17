@@ -28,6 +28,7 @@
 #include "tpserver/component.h"
 #include "tpserver/property.h"
 
+namespace MTSecRuleset {
 
 xmlImport::xmlImport() {
 
@@ -242,3 +243,4 @@ bool xmlImport::importProps() {
     return true;
 }
 
+}

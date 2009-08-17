@@ -54,6 +54,8 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
+namespace MTSecRuleset {
+
 BuildWeapon::BuildWeapon() : Order()
 {
   name = "Build Weapon";
@@ -249,3 +251,4 @@ Order* BuildWeapon::clone() const{
   return nb;
 }
 
+}

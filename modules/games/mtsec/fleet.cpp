@@ -42,6 +42,8 @@
 
 #include "fleet.h"
 
+namespace MTSecRuleset {
+
 FleetType::FleetType():OwnedObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ships");
@@ -266,3 +268,4 @@ void Fleet::setupObject(){
   //something about the orderqueue?
 }
 
+}

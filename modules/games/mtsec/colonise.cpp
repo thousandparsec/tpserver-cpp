@@ -40,6 +40,8 @@
 
 #include "colonise.h"
 
+namespace MTSecRuleset {
+
 Colonise::Colonise() : Order(){
   
   name = "Colonise";
@@ -148,4 +150,6 @@ Order* Colonise::clone() const{
   Colonise* nc = new Colonise();
   nc->type = type;
   return nc;
+}
+
 }

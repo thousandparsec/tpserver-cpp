@@ -27,6 +27,8 @@
 #include <tpserver/result.h>
 #include <tpserver/order.h>
 
+namespace MTSecRuleset {
+
 class Enhance : public Order{
  public:
   Enhance();
@@ -39,4 +41,5 @@ class Enhance : public Order{
 
 };
 
+}
 #endif

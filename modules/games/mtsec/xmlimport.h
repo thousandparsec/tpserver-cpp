@@ -22,6 +22,8 @@
 
 #include <tpserver/tinyxml/tinyxml.h>
 
+namespace MTSecRuleset {
+
 class xmlImport {
 
 public:
@@ -36,4 +38,5 @@ private:
 
 };
 
+}
 #endif

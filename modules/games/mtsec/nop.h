@@ -26,6 +26,8 @@
 
 class TimeParameter;
 
+namespace MTSecRuleset {
+
 class Nop:public Order {
       public:
 	Nop();
@@ -43,4 +45,5 @@ class Nop:public Order {
 
 };
 
+}
 #endif

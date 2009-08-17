@@ -26,6 +26,8 @@
 class Move;
 class ObjectOrderParameter;
 
+namespace MTSecRuleset {
+
 class MergeFleet : public Order{
  public:
   MergeFleet();
@@ -37,4 +39,5 @@ class MergeFleet : public Order{
 
 };
 
+}
 #endif

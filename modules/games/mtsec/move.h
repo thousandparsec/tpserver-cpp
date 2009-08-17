@@ -26,6 +26,8 @@
 #include <tpserver/vector3d.h>
 class SpaceCoordParam;
 
+namespace MTSecRuleset {
+
 class Move : public Order{
       public:
 	Move();
@@ -49,4 +51,5 @@ class Move : public Order{
 
 };
 
+}
 #endif

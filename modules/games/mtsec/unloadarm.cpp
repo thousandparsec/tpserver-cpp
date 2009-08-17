@@ -41,6 +41,8 @@
 
 #include "unloadarm.h"
 
+namespace MTSecRuleset {
+
 UnloadArmament::UnloadArmament() : Order()
 {
   name = "Unload Armament";
@@ -132,4 +134,6 @@ Order* UnloadArmament::clone() const{
   UnloadArmament *nm = new UnloadArmament();
   nm->type = type;
   return nm;
+}
+
 }

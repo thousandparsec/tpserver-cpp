@@ -25,6 +25,8 @@
 
 #include "ownedobject.h"
 
+namespace MTSecRuleset {
+
 class PlanetType : public OwnedObjectType{
   public:
     PlanetType();
@@ -62,4 +64,5 @@ class Planet:public OwnedObject {
         uint32_t getFactoriesPerTurn();
 };
 
+}
 #endif

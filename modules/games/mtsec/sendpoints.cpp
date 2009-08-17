@@ -51,6 +51,8 @@
 #define MAX(x,y) (x<y) ? (y) : (x)
 #define MIN(x,y) (x<y) ? (x) : (y)
 
+namespace MTSecRuleset {
+
 SendPoints::SendPoints() : Order()
 {
   name = "Send Points";
@@ -146,3 +148,4 @@ Order* SendPoints::clone() const{
   return nb;
 }
 
+}

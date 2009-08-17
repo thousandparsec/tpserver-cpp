@@ -21,6 +21,9 @@
 
 #include "emptyobject.h"
 
+namespace MTSecRuleset {
+
+
 EmptyObjectType::EmptyObjectType() : SpaceObjectType(){
 }
 
@@ -48,4 +51,6 @@ void EmptyObject::doOnceATurn(){
 
 int EmptyObject::getContainerType(){
   return 1;
+}
+
 }

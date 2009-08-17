@@ -24,6 +24,8 @@
 
 #include "spaceobject.h"
 
+namespace MTSecRuleset {
+
 class EmptyObjectType : public SpaceObjectType{
   public:
     EmptyObjectType();
@@ -45,4 +47,5 @@ class EmptyObject:public SpaceObject {
 
 };
 
+}
 #endif

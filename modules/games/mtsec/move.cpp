@@ -38,6 +38,8 @@
 
 #include "move.h"
 
+namespace MTSecRuleset {
+
 Move::Move() : Order()
 {
   name = "Move";
@@ -236,3 +238,4 @@ Order* Move::clone() const{
   return nm;
 }
 
+}

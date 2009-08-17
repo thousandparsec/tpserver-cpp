@@ -25,6 +25,8 @@
 
 #include <tpserver/turnprocess.h>
 
+namespace MTSecRuleset {
+
 class MTSecTurn : public TurnProcess{
   public:
     MTSecTurn();
@@ -43,4 +45,5 @@ class MTSecTurn : public TurnProcess{
     std::set<uint32_t> containerids;
 };
 
+}
 #endif

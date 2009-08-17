@@ -39,6 +39,8 @@
 
 #include "splitfleet.h"
 
+namespace MTSecRuleset {
+
 SplitFleet::SplitFleet() : Order(){
   name = "Split Fleet";
   description = "Split the fleet into two";
@@ -144,4 +146,6 @@ Order* SplitFleet::clone() const{
   SplitFleet * nsf = new SplitFleet();
   nsf->type = type;
   return nsf;
+}
+
 }

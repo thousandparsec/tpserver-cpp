@@ -28,6 +28,8 @@
 
 class IGObject;
 
+namespace MTSecRuleset {
+
 class FleetType : public OwnedObjectType{
   public:
     FleetType();
@@ -70,4 +72,5 @@ class Fleet : public OwnedObject {
       protected:
 };
 
+}
 #endif

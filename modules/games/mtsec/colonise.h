@@ -26,6 +26,8 @@
 class Move;
 class ObjectOrderParameter;
 
+namespace MTSecRuleset {
+
 class Colonise : public Order {
  public:
   Colonise();
@@ -38,4 +40,5 @@ class Colonise : public Order {
 
 };
 
+}
 #endif

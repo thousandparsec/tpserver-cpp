@@ -27,6 +27,8 @@
 
 class ListParameter;
 
+namespace MTSecRuleset {
+
 class LoadArmament : public Order{
       public:
 	LoadArmament();
@@ -46,4 +48,5 @@ class LoadArmament : public Order{
 
 };
 
+}
 #endif

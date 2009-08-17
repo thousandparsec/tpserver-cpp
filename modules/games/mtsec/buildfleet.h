@@ -29,6 +29,9 @@
 class ListParameter;
 class StringParameter;
 
+namespace MTSecRuleset {
+
+
 class BuildFleet : public Order{
  public:
   BuildFleet();
@@ -49,4 +52,5 @@ class BuildFleet : public Order{
   StringParameter * fleetname;
 };
 
+}
 #endif

@@ -34,6 +34,8 @@
 
 #include "ownedobject.h"
 
+namespace MTSecRuleset {
+
 OwnedObjectType::OwnedObjectType():SpaceObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ownership");
@@ -85,3 +87,4 @@ void OwnedObject::setupObject(){
   //something about the orderqueue?
 }
 
+}

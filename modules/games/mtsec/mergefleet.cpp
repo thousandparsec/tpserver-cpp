@@ -33,6 +33,8 @@
 
 #include "mergefleet.h"
 
+namespace MTSecRuleset {
+
 MergeFleet::MergeFleet() : Order(){
   name = "Merge Fleet";
   description = "Merge this fleet into another one";
@@ -112,4 +114,6 @@ Order* MergeFleet::clone() const{
   MergeFleet * nmf = new MergeFleet();
   nmf->type = type;
   return nmf;
+}
+
 }

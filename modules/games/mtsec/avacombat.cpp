@@ -41,6 +41,8 @@
 
 #include <cmath>
 
+namespace MTSecRuleset {
+
 AVACombat::AVACombat(){
   c1 = NULL;
   c2 = NULL;
@@ -341,3 +343,4 @@ void AVACombat::doCombat()
     return;
 }
 
+}

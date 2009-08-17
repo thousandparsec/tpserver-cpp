@@ -24,6 +24,9 @@ class IGObject;
 class Fleet;
 class Message;
 
+namespace MTSecRuleset {
+
+
 class AVACombat{
  public:
   AVACombat();
@@ -42,4 +45,5 @@ class AVACombat{
 
 };
 
+}
 #endif

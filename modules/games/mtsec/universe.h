@@ -22,6 +22,8 @@
 
 #include "spaceobject.h"
 
+namespace MTSecRuleset {
+
 class UniverseType : public SpaceObjectType{
   public:
     UniverseType();
@@ -49,4 +51,5 @@ class Universe:public SpaceObject {
 
 };
 
+}
 #endif

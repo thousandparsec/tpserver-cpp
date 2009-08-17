@@ -34,6 +34,8 @@
 #include "fleet.h"
 #include "dummyfleet.h"
 
+namespace MTSecRuleset {
+
 DummyFleet::DummyFleet(): playerref(0), shiplist(), damage(0){
     Logger::getLogger()->debug("New dummyfleet");
 }
@@ -93,4 +95,6 @@ std::map<uint32_t, std::pair<uint32_t, uint32_t> > DummyFleet::getResources() {
 
 bool DummyFleet::removeResource(uint32_t restype, uint32_t amount) {
     return false;
+}
+
 }

@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include "fleet.h"
 
+namespace MTSecRuleset {
 
 class DummyFleet : public Fleet{
   public:
@@ -56,4 +57,5 @@ class DummyFleet : public Fleet{
 
 };
 
+}
 #endif

@@ -69,6 +69,8 @@
 
 #include "mtsec.h"
 
+namespace MTSecRuleset {
+
 static char const * const systemNames[] = {
     "Barnard's Star",  "Gielgud",             "Ventana",
     "Aleph Prime",     "Ventil",              "Sagitaria",
@@ -93,9 +95,6 @@ extern "C" {
     return Game::getGame()->setRuleset(new MTSecRuleset::MTSec());
   }
 }
-
-namespace MTSecRuleset {
-
 
 MTSec::MTSec() {
   Settings* settings = Settings::getSettings();

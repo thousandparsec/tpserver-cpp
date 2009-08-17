@@ -34,6 +34,8 @@
 
 #include "planet.h"
 
+namespace MTSecRuleset {
+
 PlanetType::PlanetType():OwnedObjectType()
 {
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
@@ -199,4 +201,6 @@ bool Planet::removeResource(uint32_t restype, uint32_t amount){
         }
     }
     return false;
+}
+
 }
