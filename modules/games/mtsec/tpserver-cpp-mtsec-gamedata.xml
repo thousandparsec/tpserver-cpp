@@ -196,34 +196,10 @@
 
 
 <comp>
-    <name>Cerium Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
-    <description>A huge but extremely explosive sub-nuclear particle</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
-    <propertylist>
-        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
-        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-        <AmmoSize><![CDATA[(lambda (design) 3)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 8)]]></AmmoExplosiveness>
-        <!--  Ammo cost is (cost/size) * size. 
-              This is for one 'unit' of explosive - if a missile can fit two units, 
-              the cost for the missile bay is twice the AmmoCost property -->
-        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
-        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
-        <Size><![CDATA[(lambda (design) (+ 3))]]></Size>
-    </propertylist>
-</comp>
-
-
-
-<comp>
     <name>Uranium Explosives</name>
     <ComponentIDName>Weapons</ComponentIDName>
     <description>Most basic nuclear explosive</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
         <Speed><![CDATA[(lambda (design) 0)]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
@@ -242,19 +218,109 @@
 </comp>
 
 
+<comp>
+    <name>Thorium Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A significantly cheaper but less explosive nuclear explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 0.5)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 1)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) (+ 4))]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Cerium Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A huge but extremely explosive sub-nuclear particle</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 3)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 4)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Enriched Uranium</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An enhanced version of uranium which is more explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 2)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 4)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Massivium</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An huge but extremely explosive sub-nuclear particle</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 12)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 2)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
 
 <comp>
     <name>Antiparticle Explosives</name>
     <ComponentIDName>Weapons</ComponentIDName>
     <description>An extremely expensive but hugely explosive particle and anit-particle explosive</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
         <Speed><![CDATA[(lambda (design) 0)]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
         <Armor><![CDATA[(lambda (design) 0)]]></Armor>
         <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 60)]]></AmmoExplosiveness>
         <!--  Ammo cost is (cost/size) * size. 
               This is for one 'unit' of explosive - if a missile can fit two units, 
               the cost for the missile bay is twice the AmmoCost property -->
@@ -271,14 +337,14 @@
     <name>Antimatter Explosives</name>
     <ComponentIDName>Weapons</ComponentIDName>
     <description>An even more extremely expensive but insanely explosive antimatter-matter explosive</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
         <Speed><![CDATA[(lambda (design) 0)]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
         <Armor><![CDATA[(lambda (design) 0)]]></Armor>
         <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 16)]]></AmmoExplosiveness>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 100)]]></AmmoExplosiveness>
         <!--  Ammo cost is (cost/size) * size. 
               This is for one 'unit' of explosive - if a missile can fit two units, 
               the cost for the missile bay is twice the AmmoCost property -->
@@ -286,30 +352,6 @@
         <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
         <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
         <Size><![CDATA[(lambda (design) (+ 1))]]></Size>
-    </propertylist>
-</comp>
-
-
-
-<comp>
-    <name>Thorium Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
-    <description>A significantly cheaper but less explosive nuclear explosive</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-ammo design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
-    <propertylist>
-        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
-        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
-        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
-        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
-        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
-        <AmmoExplosiveness><![CDATA[(lambda (design) 0.5)]]></AmmoExplosiveness>
-        <!--  Ammo cost is (cost/size) * size. 
-              This is for one 'unit' of explosive - if a missile can fit two units, 
-              the cost for the missile bay is twice the AmmoCost property -->
-        <AmmoCost><![CDATA[(lambda (design) 1)]]></AmmoCost>
-        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
-        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
-        <Size><![CDATA[(lambda (design) (+ 4))]]></Size>
     </propertylist>
 </comp>
 
@@ -360,8 +402,10 @@
         <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 3)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 3)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -412,8 +456,10 @@
          <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
          <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
          <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
-         <Size><![CDATA[(lambda (design) 6)]]></Size>
+         <Size><![CDATA[(lambda (design) 0)]]></Size>
          <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+         <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+         <MaxSize><![CDATA[(lambda (design) 6)]]></MaxSize>
      </propertylist>
 </comp>
 
@@ -465,8 +511,10 @@
         <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 8)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 8)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -520,8 +568,10 @@
         <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 12)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 12)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -574,8 +624,10 @@
         <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 24)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 24)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 24)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -628,8 +680,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 40)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 40)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 40)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -680,8 +734,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 60)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 60)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 60)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -734,8 +790,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 80)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 80)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 80)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -788,8 +846,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 110)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 110)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 110)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -842,8 +902,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 150)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 150)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 150)]]></MaxSize>
     </propertylist>
 </comp>
 
@@ -896,8 +958,10 @@
         <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
         <MissileSize><![CDATA[(lambda (design) 200)]]></MissileSize>
-        <Size><![CDATA[(lambda (design) 200)]]></Size>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 200)]]></MaxSize>
     </propertylist>
 </comp>
 
