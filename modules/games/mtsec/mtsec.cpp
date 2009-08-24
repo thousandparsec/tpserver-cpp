@@ -181,12 +181,9 @@ void MTSec::createProperties()
 {
     Logger::getLogger()->debug( "Enter MTSec::createProperties");
 
-    if (xmlImporter->importProps()) {
-        Logger::getLogger()->debug("Done reading XML file.");
-    }
-    else {
-        Logger::getLogger()->debug("XML File unsuccessful");
-    }
+    assert(xmlImporter->importProps());
+    Logger::getLogger()->debug("Done reading XML file.");
+
 
     Logger::getLogger()->debug( "Exit MTSec::createProperties");
 
@@ -198,13 +195,8 @@ void MTSec::createComponents()
 {
     Logger::getLogger()->debug( "Enter MTSec::createComponents");
 
-    if (xmlImporter->importComps()) {
-        Logger::getLogger()->debug("Done reading XML file.");
-    }
-    else {
-        Logger::getLogger()->debug("XML File unsuccessful");
-    }
-
+    assert(xmlImporter->importComps()); 
+    Logger::getLogger()->debug("Done reading XML file.");
 
     Logger::getLogger()->debug( "Exit MTSec::createComponents");
 
