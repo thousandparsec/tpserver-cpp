@@ -49,3 +49,4 @@ class EmptyObject:public SpaceObject {
 
 }
 #endif
+

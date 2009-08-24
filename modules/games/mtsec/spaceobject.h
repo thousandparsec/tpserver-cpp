@@ -55,3 +55,4 @@ class SpaceObject : public ObjectBehaviour{
 
 }
 #endif
+

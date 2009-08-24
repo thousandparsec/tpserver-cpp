@@ -54,3 +54,4 @@ class OwnedObject : public SpaceObject {
 
 }
 #endif
+

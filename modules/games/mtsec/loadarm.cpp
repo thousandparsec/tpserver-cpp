@@ -151,3 +151,4 @@ Order* LoadArmament::clone() const{
 }
 
 }
+

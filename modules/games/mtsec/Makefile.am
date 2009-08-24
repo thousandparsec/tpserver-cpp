@@ -23,3 +23,4 @@ EXTRA_DIST = tpserver-cpp-mtsec.xml tpserver-cpp-mtsec-gamedata.xml
 
 tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-mtsec.xml tpserver-cpp-mtsec-gamedata.xml
+
