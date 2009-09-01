@@ -362,6 +362,8 @@ shave-libtool \
 Makefile
 tpserver-cpp.xml
 quickstart-mtsec.conf
+quickstart-risk-bid.conf
+quickstart-risk-random.conf
 tpserver/Makefile
 modules/Makefile
 modules/games/Makefile
