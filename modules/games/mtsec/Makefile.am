@@ -19,8 +19,6 @@ noinst_HEADERS = planet.h fleet.h nop.h move.h buildfleet.h sendpoints.h colonis
 		unloadarm.h enhance.h universe.h avacombat.h  mtsec.h mtsecturn.h emptyobject.h \
 		spaceobject.h ownedobject.h dummyfleet.h 
 
-EXTRA_DIST = tpserver-cpp-mtsec.xml tpserver-cpp-mtsec-gamedata.xml
-
 tpconfigdir = $(datadir)/tp
 tpconfig_DATA = tpserver-cpp-mtsec.xml tpserver-cpp-mtsec-gamedata.xml
 
