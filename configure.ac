@@ -361,6 +361,7 @@ shave \
 shave-libtool \
 Makefile
 tpserver-cpp.xml
+quickstart-mtsec.conf
 tpserver/Makefile
 modules/Makefile
 modules/games/Makefile
