@@ -18,6 +18,8 @@
  *
  */
 
+#include <stdint.h>
+
 #include "resourcedescription.h"
 #include "game.h"
 #include "persistence.h"
