@@ -203,6 +203,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
                         delete *itcombatant;
                     }
                     fleetcache.erase(itpa);
+                    battlelogger->endRound();
                     continue;
                 }
                 doDamage(d1, f2);
@@ -225,6 +226,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
                         delete *itcombatant;
                     }
                     fleetcache.erase(itpb);
+                    battlelogger->endRound();
                     continue;
                 }
                 doDamage(d2, f1);
@@ -314,7 +316,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
 
 std::map<Combatant*, uint32_t> RSPCombat::buildShotList(std::vector<Combatant*> combatants, bool isDraw){
     std::map<Combatant*, uint32_t> shotlist;
-    uint32_t scoutcount;
+    uint32_t scoutcount = 0;
     designid_t biggestaliveshiptype = UINT32_NEG_ONE;
     for(std::vector<Combatant*>::iterator itc = combatants.begin(); itc != combatants.end();
             ++itc){
