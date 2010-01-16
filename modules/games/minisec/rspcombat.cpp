@@ -73,7 +73,7 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
     
     std::map<uint32_t, std::vector<Combatant*> > fleetcache;
     
-    battlelogger = new BattleXML::BattleLogger();
+    battlelogger.reset(new BattleXML::BattleLogger());
     
     for(std::map<uint32_t, std::set<uint32_t> >::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
         std::vector<Combatant*> pcombatant;
@@ -270,6 +270,8 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
         battlelogger->endRound();
     
     }
+    
+    std::string file = battlelogger->save();
     
     std::vector<Combatant*> flast = fleetcache.begin()->second;
     resolveCombatantsToObjects(flast);

@@ -25,12 +25,12 @@
 #include <vector>
 #include <stdint.h>
 
+#include <tpserver/battlexml/battlelogger.h>
+
 class IGObject;
 class Combatant;
 
-namespace BattleXML {
-    class BattleLogger;
-}
+
 
 class RSPCombat{
  public:
@@ -50,7 +50,7 @@ class RSPCombat{
   uint32_t obT_Planet;
   std::map<uint32_t, IGObject*> objectcache;
   std::map<uint32_t, std::string> msgstrings;
-  BattleXML::BattleLogger* battlelogger;
+  BattleXML::BattleLogger::Ptr battlelogger;
 };
 
 #endif
