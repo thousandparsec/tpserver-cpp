@@ -29,9 +29,11 @@
 
 class TiXmlDocument;
 class TiXmlElement;
-class Combatant;
+
 
 namespace BattleXML{
+    
+    class Combatant;
     
     class BattleLogger{
         public:

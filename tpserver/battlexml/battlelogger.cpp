@@ -183,7 +183,7 @@ namespace BattleXML{
         if(identifierset.count(target->getBattleXmlId()) != 1){
             throw UnknownIdentifierException(target->getBattleXmlId());
         }
-        TiXmlElement* efire = new TiXmlElement("damage");
+        TiXmlElement* efire = new TiXmlElement("fire");
         TiXmlElement* ref = new TiXmlElement("source");
         ref->SetAttribute("ref", shooter->getBattleXmlId());
         efire->LinkEndChild(ref);
