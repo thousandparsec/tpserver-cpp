@@ -19,10 +19,13 @@
  */
 
 #include <boost/format.hpp>
+#include <fstream>
 
 #include "tinyxml/tinyxml.h"
 #include "combatant.h"
 #include "battleexceptions.h"
+#include "settings.h"
+#include "game.h"
 
 #include "battlelogger.h"
 
@@ -50,6 +53,40 @@ namespace BattleXML{
             delete currround;
         }
     }
+    
+    std::string BattleLogger::save(){
+        std::string path = Settings::getSettings()->get("battlexml_path");
+        if(path.empty()){
+            path = "/tmp/";
+        }
+        int turn = Game::getGame()->getTurnNumber();
+        
+        
+        std::string file;
+        int index = 1;
+        std::string filename;
+        bool valid = false;
+        
+        while(!valid){
+            
+            file = str(boost::format("%1%-%2%.xml") % turn % index);
+            filename = path + file;
+            
+            std::ifstream tester(filename.c_str());
+            valid = !tester.is_open();
+            if(tester)
+                tester.close();
+            
+            index++;
+        }
+        
+        if(!(bxmldoc->SaveFile(filename))){
+            throw FailedToSaveException();
+        }
+        
+        return file;
+    }
+    
     
     void BattleLogger::startSide(const std::string& sidename){
         if(currside != NULL){

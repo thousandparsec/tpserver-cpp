@@ -76,6 +76,12 @@ namespace BattleXML{
             RoundInProgressException();
             virtual const char* what() const throw();
     };
+    
+    class FailedToSaveException : public BattleException{
+        public:
+            FailedToSaveException();
+            virtual const char* what() const throw();
+    };
 
 }
 #endif

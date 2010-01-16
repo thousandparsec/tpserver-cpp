@@ -82,4 +82,11 @@ namespace BattleXML{
     const char* RoundInProgressException::what() const throw(){
         return "A round had already been started, not yet finished";
     }
+    
+    FailedToSaveException::FailedToSaveException(){
+    }
+    
+    const char* FailedToSaveException::what() const throw(){
+        return "Failed to save the battle XML file";
+    }
 }

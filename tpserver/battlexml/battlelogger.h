@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <string>
 #include <set>
+#include <boost/shared_ptr.hpp>
 
 #include <tpserver/vector3d.h>
 
@@ -34,8 +35,11 @@ namespace BattleXML{
     
     class BattleLogger{
         public:
+            typedef boost::shared_ptr<BattleLogger> Ptr;
             BattleLogger();
             ~BattleLogger();
+            
+            std::string save();
             
             void startSide(const std::string& sidename);
             void endSide();
