@@ -31,6 +31,8 @@
 
 #include "nop.h"
 
+namespace MTSecRuleset {
+
 Nop::Nop() : Order()
 {
   name = "No Operation";
@@ -90,3 +92,6 @@ Order* Nop::clone() const{
   nn->type = type;
   return nn;
 }
+
+}
+

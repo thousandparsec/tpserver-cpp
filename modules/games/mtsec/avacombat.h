@@ -24,6 +24,9 @@ class IGObject;
 class Fleet;
 class Message;
 
+namespace MTSecRuleset {
+
+
 class AVACombat{
  public:
   AVACombat();
@@ -33,11 +36,15 @@ class AVACombat{
   bool isAliveCombatant1();
   bool isAliveCombatant2();
   void doCombat();
+  void resolveCombat(Fleet* fleet);
+
 
  protected:
-  bool doCombatRound( Fleet*, Message*, Fleet*, Message*);
+  bool doCombatRound( Fleet*[], Message*[]);
   IGObject *c1, *c2;
 
 };
 
+}
 #endif
+

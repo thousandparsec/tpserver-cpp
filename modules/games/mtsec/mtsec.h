@@ -22,6 +22,8 @@
 
 #include "tpserver/ruleset.h"
 
+namespace MTSecRuleset {
+
 class MTSec : public Ruleset{
  public:
   MTSec();
@@ -36,42 +38,6 @@ class MTSec : public Ruleset{
   void onPlayerAdded(Player* player);
 
  protected:
-  // Property definition methods
-  void createSpeedProp();
-  void createAmmoCostProp();
-  void createAmmoExplosivenessProp();
-  void createAmmoSizeProp();
-  void createFirepowerProp();
-  void createMissileCostProp();
-  void createMissileFirepowerProp();
-  void createMissileSizeProp();
-  void createHitPointsProp();
-  void createHPProp();
-  void createBuildTimeProp();
-  void createArmorProp();
-  void createColoniseProp();
-  void createNumAmmoProp();
-  void createNumBayTypesProp();
-  void createNumHullsProp();
-
-
-  // Component definition methods
-  void createScoutHullComp();
-  void createBattleScoutHullComp();
-  void createCeriumAmmoComp();
-  void createCerium3AmmoComp();
-  void createCerium6AmmoComp();
-  void createCerium12AmmoComp();
-  void createUraniumAmmoComp();
-  void createAntiparticleAmmoComp();
-  void createAntimatterAmmoComp();
-  void createThoriumAmmoComp();
-  void createAlphaMissileBayComp();
-  void createBetaMissileBayComp();
-  void createGammaMissileBayComp();
-  void createDeltaMissileBayComp();
-
-
   // Design definition methods
   Design* createScoutDesign( Player* owner);
   Design* createBattleScoutDesign( Player* owner);
@@ -96,11 +62,15 @@ class MTSec : public Ruleset{
   IGObject* makePlayerHomePlanet( Player* player, IGObject* star);
   IGObject* makeNewPlayerStarSystem( Player* player);
   void setNewPlayerTech( Player* player);
+Design* createAlphaMissileDesign( Player* owner);
+
 
  private:
-  std::map<std::string,uint32_t>  propertyIndex;
-  uint32_t compMax;
+  xmlImport *xmlImporter;
 
 };
 
+}//end namespace
+
 #endif
+

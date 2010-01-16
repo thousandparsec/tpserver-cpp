@@ -5,20 +5,20 @@ rulesetlib_LTLIBRARIES = libmtsec.la
 rulesetlibdir = $(libdir)/tpserver/ruleset
 
 libmtsec_la_SOURCES = universe.cpp planet.cpp fleet.cpp \
-		nop.cpp move.cpp build.cpp \
-		colonise.cpp \
+		nop.cpp move.cpp buildfleet.cpp sendpoints.cpp buildweapon.cpp loadarm.cpp \
+		unloadarm.cpp colonise.cpp enhance.cpp \
 		splitfleet.cpp mergefleet.cpp \
 		avacombat.cpp mtsec.cpp \
 		mtsecturn.cpp emptyobject.cpp \
-		spaceobject.cpp ownedobject.cpp
+		spaceobject.cpp ownedobject.cpp \
+		xmlimport.cpp dummyfleet.cpp
 
 libmtsec_la_LDFLAGS = -module
 
-noinst_HEADERS = planet.h fleet.h nop.h move.h build.h colonise.h splitfleet.h mergefleet.h \
-		universe.h avacombat.h mtsec.h mtsecturn.h emptyobject.h \
-		spaceobject.h ownedobject.h
-
-EXTRA_DIST = tpserver-cpp-mtsec.xml
+noinst_HEADERS = planet.h fleet.h nop.h move.h buildfleet.h sendpoints.h colonise.h splitfleet.h mergefleet.h  buildweapon.h loadarm.h\
+		unloadarm.h enhance.h universe.h avacombat.h  mtsec.h mtsecturn.h emptyobject.h \
+		spaceobject.h ownedobject.h dummyfleet.h 
 
 tpconfigdir = $(datadir)/tp
-tpconfig_DATA = tpserver-cpp-mtsec.xml
+tpconfig_DATA = tpserver-cpp-mtsec.xml tpserver-cpp-mtsec-gamedata.xml
+

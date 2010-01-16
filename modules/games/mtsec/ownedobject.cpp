@@ -34,6 +34,8 @@
 
 #include "ownedobject.h"
 
+namespace MTSecRuleset {
+
 OwnedObjectType::OwnedObjectType():SpaceObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Ownership");
@@ -60,11 +62,11 @@ OwnedObject::~OwnedObject(){
 }
 
 uint32_t OwnedObject::getOwner() const{
-  return ((ReferenceObjectParam*)(obj->getParameter(2,1)))->getReferencedId();
+  return dynamic_cast<ReferenceObjectParam*>(obj->getParameter(2,1))->getReferencedId();
 }
 
 void OwnedObject::setOwner(uint32_t no){
-  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferencedId(no);
+  dynamic_cast<ReferenceObjectParam*>(obj->getParameter(2,1))->setReferencedId(no);
   obj->touchModTime();
 }
 
@@ -73,7 +75,7 @@ void OwnedObject::setOwner(uint32_t no){
 void OwnedObject::packExtraData(Frame * frame){
   SpaceObject::packExtraData(frame);
   
-  ReferenceObjectParam* playerref = ((ReferenceObjectParam*)(obj->getParameter(2,1)));
+  ReferenceObjectParam* playerref = dynamic_cast<ReferenceObjectParam*>(obj->getParameter(2,1));
   frame->packInt((playerref->getReferencedId() == 0) ? 0xffffffff : playerref->getReferencedId());
 
 }
@@ -81,7 +83,8 @@ void OwnedObject::packExtraData(Frame * frame){
 
 void OwnedObject::setupObject(){
   ObjectBehaviour::setupObject();
-  ((ReferenceObjectParam*)(obj->getParameter(2,1)))->setReferenceType(rst_Player);
+  dynamic_cast<ReferenceObjectParam*>(obj->getParameter(2,1))->setReferenceType(rst_Player);
   //something about the orderqueue?
 }
 
+}

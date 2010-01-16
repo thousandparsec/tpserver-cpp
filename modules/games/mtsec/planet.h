@@ -2,6 +2,7 @@
 #define PLANET_H
 /*  Planet ObjectData class
  *
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
  *  Copyright (C) 2004, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -23,6 +24,8 @@
 #include <map>
 
 #include "ownedobject.h"
+
+namespace MTSecRuleset {
 
 class PlanetType : public OwnedObjectType{
   public:
@@ -46,15 +49,21 @@ class Planet:public OwnedObject {
 	void doOnceATurn();
 
 	int getContainerType();
-	
+	void addFactoriesNextTurn(uint32_t);
+        void addFactories(uint32_t amount);
 
-    std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
-    uint32_t getResource(uint32_t restype) const;
-    
-    void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
-    void addResource(uint32_t restype, uint32_t amount);
-    bool removeResource(uint32_t restype, uint32_t amount);
 
+        std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+        uint32_t getResource(uint32_t restype) const;
+        uint32_t getResourceSurfaceValue(uint32_t restype) const;
+        
+        void setResources(std::map<uint32_t, std::pair<uint32_t, uint32_t> > ress);
+        void addResource(uint32_t restype, uint32_t amount);
+        bool removeResource(uint32_t restype, uint32_t amount);
+        void setResource(uint32_t restype, uint32_t amount);
+        uint32_t getFactoriesPerTurn();
 };
 
+}
 #endif
+

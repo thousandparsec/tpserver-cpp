@@ -1,0 +1,1674 @@
+<?xml version="1.0" ?>
+<components>
+
+<comp>
+    <name>Scout Hull</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The scout hull, fitted out with everything a scout needs</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 100 10000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 6)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 2)]]></Armor>
+        <HitPoints><![CDATA[(lambda (design) 75)]]></HitPoints>
+        <_num-components><![CDATA[(lambda (design) 1)]]></_num-components>
+        <MaxSize><![CDATA[(lambda (design) 60)]]></MaxSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battle Scout Hull</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The battle scout hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 75 10000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 9)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 5)]]></Armor>
+        <HitPoints><![CDATA[(lambda (design) 100)]]></HitPoints>
+        <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 88)]]></MaxSize>
+        <_num-components><![CDATA[(lambda (design) 1)]]></_num-components>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 1)]]></AmmoSize>
+    </propertylist>
+</comp>
+
+
+
+
+<comp>
+    <name>Advanced Battle Scout Hull</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The advanced battle scout hull, packing a bigger punch into a smaller and faster package</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 86 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 13)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 8)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 125)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 133)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Frigate</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Frigate, a cheap ship that can easily destroy larger ships</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 56 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 20)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 12)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 150)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 200)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battle Frigate</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battle Frigate, a slightly more powerful version of the frigate.  High speed to firepower ratio.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 45 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 20)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 18)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 150)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 200)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Destroyer</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Destroyer, a main offensive threat of any fleet.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 35 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 30)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 45)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 200)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 300)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battle Destroyer</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battle Destroyer, a poor man's Battleship</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 26 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 30)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 68)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 250)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 300)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Battleship</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The Battleship, a ship that is hugely armored and armed.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 36 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 38)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 170)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 300)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 375)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Dreadnought</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The dreadnought is the largest moveable ship available.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 24 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 50)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 220)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 400)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 500)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Argonaut</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>The argonaut is a huge ship that can't break orbit.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) (* 8 10000000))]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 100)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 300)]]></Armor>
+            <HitPoints><![CDATA[(lambda (design) 500)]]></HitPoints>
+            <num-ammo><![CDATA[(lambda (design) 0)]]></num-ammo>
+            <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+            <MaxSize><![CDATA[(lambda (design) 1000)]]></MaxSize>
+            <Size><![CDATA[(lambda (design) 0)]]></Size>
+        </propertylist>
+    </comp>
+
+
+<comp>
+    <name>Uranium Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>Most basic nuclear explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 1)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 4)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) (+ 4))]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Thorium Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A significantly cheaper but less explosive nuclear explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 4)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 0.5)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 1)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) (+ 4))]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Cerium Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A huge but extremely explosive sub-nuclear particle</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 3)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 4)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Enriched Uranium</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An enhanced version of uranium which is more explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 2)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 4)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Massivium</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An huge but extremely explosive sub-nuclear particle</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 12)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 2)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 14)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) 3)]]></Size>
+    </propertylist>
+</comp>
+
+<comp>
+    <name>Antiparticle Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An extremely expensive but hugely explosive particle and anit-particle explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 60)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) (+ 1))]]></Size>
+    </propertylist>
+</comp>
+
+
+
+<comp>
+    <name>Antimatter Explosives</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An even more extremely expensive but insanely explosive antimatter-matter explosive</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <AmmoSize><![CDATA[(lambda (design) 0.8)]]></AmmoSize>
+        <AmmoExplosiveness><![CDATA[(lambda (design) 100)]]></AmmoExplosiveness>
+        <!--  Ammo cost is (cost/size) * size. 
+              This is for one 'unit' of explosive - if a missile can fit two units, 
+              the cost for the missile bay is twice the AmmoCost property -->
+        <AmmoCost><![CDATA[(lambda (design) 64)]]></AmmoCost>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-ammo><![CDATA[(lambda (design) 1)]]></num-ammo>
+        <Size><![CDATA[(lambda (design) (+ 1))]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Alpha Missile Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An alpha missile tube, capable of firing one alpha missile per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (designType.num-hulls design) (if (> (designType.MaxSize design) (designType.Size design)) (cons #t "") (cons #f "This many components can't fit into this Hull")) (cons #f "This component requires a Ship Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 3))]]></Size>
+        <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
+        <AmmoCost><![CDATA[(lambda (design) 6)]]></AmmoCost>
+        <AlphaMissileTube><![CDATA[(lambda (design) 3)]]></AlphaMissileTube>
+        <num-AlphaMissileTube><![CDATA[(lambda (design) 1)]]></num-AlphaMissileTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Alpha Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An alpha missile rack, capable of holding 2 alpha missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
+            <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
+            <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        </propertylist>
+</comp>
+
+<comp>
+    <name>Alpha Missile Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An alpha missile hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 3)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 3)]]></MaxSize>
+    </propertylist>
+</comp>
+
+<comp>
+    <name>Beta Missile Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A beta missile tube, capable of firing one beta missile per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <BetaMissileTube><![CDATA[(lambda (design) 6)]]></BetaMissileTube>
+        <num-BetaMissileTube><![CDATA[(lambda (design) 1)]]></num-BetaMissileTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Beta Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A beta missile rack, capable of holding 2 beta missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+            <Size><![CDATA[(lambda (design) (+ 24))]]></Size>
+            <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        </propertylist>
+ </comp>
+
+
+ <comp>
+     <name>Beta Missile Hull</name>
+     <ComponentIDName>Weapons</ComponentIDName>
+     <description>A beta missile hull</description>
+     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+     <propertylist>
+         <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
+         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+         <MissileSize><![CDATA[(lambda (design) 6)]]></MissileSize>
+         <Size><![CDATA[(lambda (design) 0)]]></Size>
+         <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+         <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+         <MaxSize><![CDATA[(lambda (design) 6)]]></MaxSize>
+     </propertylist>
+</comp>
+
+
+<comp>
+    <name>Gamma Missile Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A gamma missile tube, capable of firing one gamma missile per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 8))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 12)]]></AmmoCost>
+        <GammaMissileTube><![CDATA[(lambda (design) 8)]]></GammaMissileTube>
+        <num-GammaMissileTube><![CDATA[(lambda (design) 1)]]></num-GammaMissileTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Gamma Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A gamma missile rack, capable of holding 2 gamma missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) (+ 16))]]></Size>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Gamma Missile Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A gamma missile hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 8)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 8)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Delta Missile Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A delta missile tube, capable of firing one delta missile per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 12))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 12)]]></AmmoCost>
+        <DeltaMissileTube><![CDATA[(lambda (design) 12)]]></DeltaMissileTube>
+        <num-DeltaMissileTube><![CDATA[(lambda (design) 1)]]></num-DeltaMissileTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Delta Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A delta missile rack, capable of holding 2 delta missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) (+ 24))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 24)]]></AmmoCost>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Delta Missile Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A delta missile hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 12)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 12)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Epsilon Missile Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An epsilon missile tube, capable of firing one epsilon missile per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <MissileSize><![CDATA[(lambda (design) 24)]]></MissileSize>
+            <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+            <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+            <Size><![CDATA[(lambda (design) (+ 24))]]></Size>
+            <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+            <AmmoCost><![CDATA[(lambda (design) 24)]]></AmmoCost>
+            <EpsilonMissileTube><![CDATA[(lambda (design) 24)]]></EpsilonMissileTube>
+            <num-EpsilonMissileTube><![CDATA[(lambda (design) 1)]]></num-EpsilonMissileTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Epsilon Missile Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An epsilon missile rack, capable of holding 2 epsilon missiles</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <MissileSize><![CDATA[(lambda (design) 24)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) (+ 48))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Epsilon Missile Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An epsilon missile hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 1000000 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 24)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 24)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Omega Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An omega torpedoe tube, capable of firing one omega torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 40)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 40))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 40)]]></AmmoCost>
+        <OmegaTorpedoeTube><![CDATA[(lambda (design) 40)]]></OmegaTorpedoeTube>
+        <num-OmegaTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-OmegaTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Omega Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An omega torpedoe rack, capable of holding 2 omega torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 40)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 80))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 12)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Omega Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An omega torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 40)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 40)]]></MaxSize>
+    </propertylist>
+</comp>
+
+<comp>
+    <name>Upsilon Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An upsilon torpedoe tube, capable of firing one upsilon torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 60)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 60))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 60)]]></AmmoCost>
+        <UpsilonTorpedoeTube><![CDATA[(lambda (design) 60)]]></UpsilonTorpedoeTube>
+        <num-UpsilonTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-UpsilonTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Upsilon Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>An upsilon torpedoe rack, capable of holding 2 upsilon torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 60)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 120))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 120)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+<comp>
+    <name>Upsilon Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>An upsilon torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 60)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 60)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Tau Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A tau torpedoe tube, capable of firing one tau torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 80)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 80))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 80)]]></AmmoCost>
+        <TauTorpedoeTube><![CDATA[(lambda (design) 80)]]></TauTorpedoeTube>
+        <num-TauTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-TauTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Tau Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A tau torpedoe rack, capable of holding 2 tau torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 80)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 160))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 160)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Tau Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A tau torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 80)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 80)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Sigma Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A sigma torpedoe tube, capable of firing one sigma torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 110)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 110))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 110)]]></AmmoCost>
+        <SigmaTorpedoeTube><![CDATA[(lambda (design) 110)]]></SigmaTorpedoeTube>
+        <num-SigmaTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-SigmaTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Sigma Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A sigma torpedoe rack, capable of holding 2 sigma torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 110)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 220))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 220)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Sigma Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A sigma torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 110)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 110)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Rho Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A rho torpedoe tube, capable of firing one rho torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 150)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 150))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 150)]]></AmmoCost>
+        <RhoTorpedoeTube><![CDATA[(lambda (design) 150)]]></RhoTorpedoeTube>
+        <num-RhoTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-RhoTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Rho Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A rho torpedoe rack, capable of holding 2 rho torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 150)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 300))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 150)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Rho Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A rho torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 150)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 150)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Xi Torpedoe Tube</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A xi torpedoe tube, capable of firing one xi torpedoe per combat round</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <TorpedoeSize><![CDATA[(lambda (design) 200)]]></TorpedoeSize>
+        <StartingHitPoints><![CDATA[(lambda (design) 0)]]></StartingHitPoints>
+        <num-baytypes><![CDATA[(lambda (design) 1)]]></num-baytypes>
+        <Size><![CDATA[(lambda (design) (+ 200))]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <AmmoCost><![CDATA[(lambda (design) 200)]]></AmmoCost>
+        <XiTorpedoeTube><![CDATA[(lambda (design) 200)]]></XiTorpedoeTube>
+        <num-XiTorpedoeTube><![CDATA[(lambda (design) 1)]]></num-XiTorpedoeTube>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Xi Torpedoe Rack</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>A xi torpedoe rack, capable of holding 2 xi torpedoes</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+            <TorpedoeSize><![CDATA[(lambda (design) 200)]]></TorpedoeSize>
+            <Size><![CDATA[(lambda (design) (+ 400))]]></Size>
+            <AmmoCost><![CDATA[(lambda (design) 400)]]></AmmoCost>
+        </propertylist>
+</comp>
+
+
+<comp>
+    <name>Xi Torpedoe Hull</name>
+    <ComponentIDName>Weapons</ComponentIDName>
+    <description>A xi torpedoe hull</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) (* 50 1000000))]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <MissileSize><![CDATA[(lambda (design) 200)]]></MissileSize>
+        <Size><![CDATA[(lambda (design) 0)]]></Size>
+        <AmmoSize><![CDATA[(lambda (design) 0)]]></AmmoSize>
+        <num-hulls><![CDATA[(lambda (design) 1)]]></num-hulls>
+        <MaxSize><![CDATA[(lambda (design) 200)]]></MaxSize>
+    </propertylist>
+</comp>
+
+
+<comp>
+    <name>Armor</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>Armor reduces the damage taken by 0.1%</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+        <propertylist>
+            <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+            <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+            <Colonise><![CDATA[(lambda (design) 0)]]></Colonise>
+            <Armor><![CDATA[(lambda (design) 10)]]></Armor>
+            <Size><![CDATA[(lambda (design) (+ 10))]]></Size>
+        </propertylist>
+</comp>
+
+<comp>
+    <name>Colonisation Module</name>
+    <ComponentIDName>Ships</ComponentIDName>
+    <description>Allows the ship to colonise a planet.</description>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <propertylist>
+        <Speed><![CDATA[(lambda (design) 0)]]></Speed>
+        <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
+        <Colonise><![CDATA[(lambda (design) 1)]]></Colonise>
+        <Armor><![CDATA[(lambda (design) 0)]]></Armor>
+        <Size><![CDATA[(lambda (design) (+ 100))]]></Size>
+    </propertylist>
+</comp>
+
+</components>
+<properties>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>_num-components</name>
+        <displayName>Number of Components</displayName>
+        <description>The total number of components in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " components"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction>(lambda (design) (cons #t ""))</tpclRequirementsFunction>
+    </prop>
+
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>Speed</name>
+        <displayName>Speed</displayName>
+        <description>The number of units the ship can move each turn</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) " mega-units")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoCost</name>
+        <displayName>Explosive Unit Cost</displayName>
+        <description>The relative expensiveness of the explosive</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " credits")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoExplosiveness</name>
+        <displayName>Unit Explosive Punch</displayName>
+        <description>The explosiveness of a unit of the explosive used in the weapons of the ship</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoSize</name>
+        <displayName>Explosive Density</displayName>
+        <description>The relative size of a unit of the explosive used in the weapons of the ship</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="2"/>
+        <name>Firepower</name>
+        <displayName>Firepower</displayName>
+        <description>How much damage the weapons of the ship can do in a single round</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileCost</name>
+        <displayName>MissileCost</displayName>
+        <description>The relative cost of a missile</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileFirepower</name>
+        <displayName>Missile Firepower</displayName>
+        <description>How much damage a missile can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeCost</name>
+        <displayName>Torpedoe Cost</displayName>
+        <description>The relative cost of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeFirepower</name>
+        <displayName>Torpedoe Firepower</displayName>
+        <description>How much damage a torpedoe can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeSize</name>
+        <displayName>Torpedoe Size</displayName>
+        <description>The relative size of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>StartingHitPoints</name>
+        <displayName>Initial Hit Points</displayName>
+        <description>How much damage the ship can take before being destroyed</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>ProductCost</name>
+        <displayName>Product Cost</displayName>
+        <description>The number of turns to build this</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " turns")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>Armor</name>
+        <displayName>Armor</displayName>
+        <description>The amount of armor on the ship</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " HP")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>HitPoints</name>
+        <displayName>Hit Points</displayName>
+        <description>The number of HP this ship has</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " HP")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>Colonise</name>
+        <displayName>Can Colonise Planets</displayName>
+        <description>Can the ship colonise planets</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (if (= n 1) "Yes" "No")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>num-ammo</name>
+        <displayName>Number of missile and torpedoe warhead types</displayName>
+        <description>The number of missile and torpedoe warhead types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " explosive types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>num-baytypes</name>
+        <displayName>Number of missile or torpedoe types</displayName>
+        <description>The number of missile or torpedoe types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>num-hulls</name>
+        <displayName>Number of hulls</displayName>
+        <description>The number of hulls in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " hull"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>Size</name>
+        <displayName>Size of Ship</displayName>
+        <description>The size of the ship in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Ships</PropertyIDName>
+        <rank value="0"/>
+        <name>MaxSize</name>
+        <displayName>Maximum Size of Ship</displayName>
+        <description>The maximum size of the ship in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>_num-components</name>
+        <displayName>Number of Components</displayName>
+        <description>The total number of components in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " components"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction>(lambda (design) (cons #t ""))</tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>Speed</name>
+        <displayName>Speed</displayName>
+        <description>The number of units the weapon can move each turn</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string (/ n 1000000)) " mega-units")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoCost</name>
+        <displayName>Explosive Unit Cost</displayName>
+        <description>The relative expensiveness of the explosive</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " credits")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoExplosiveness</name>
+        <displayName>Unit Explosive Punch</displayName>
+        <description>The explosiveness of a unit of the explosive used in the weapons</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AmmoSize</name>
+        <displayName>Explosive Density</displayName>
+        <description>The relative size of a unit of the explosive used in the weapons</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="2"/>
+        <name>Firepower</name>
+        <displayName>Firepower</displayName>
+        <description>How much damage the weapons of the ship can do in a single round</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileCost</name>
+        <displayName>MissileCost</displayName>
+        <description>The relative cost of a missile</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileFirepower</name>
+        <displayName>Missile Firepower</displayName>
+        <description>How much damage a missile can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>MissileSize</name>
+        <displayName>MissileSize</displayName>
+        <description>The relative size of a missile</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeCost</name>
+        <displayName>Torpedoe Cost</displayName>
+        <description>The relative cost of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeFirepower</name>
+        <displayName>Torpedoe Firepower</displayName>
+        <description>How much damage a torpedoe can do</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="1"/>
+        <name>TorpedoeSize</name>
+        <displayName>Torpedoe Size</displayName>
+        <description>The relative size of a torpedoe</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>ProductCost</name>
+        <displayName>Product Cost</displayName>
+        <description>The number of turns to build this</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " turns")) ) )]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-ammo</name>
+        <displayName>Number of missile and torpedoe warhead types</displayName>
+        <description>The number of missile and torpedoe warhead types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " explosive types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-baytypes</name>
+        <displayName>Number of missile or torpedoe types</displayName>
+        <description>The number of missile or torpedoe types in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " types"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-hulls</name>
+        <displayName>Number of hulls</displayName>
+        <description>The number of hulls in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " hull"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>Size</name>
+        <displayName>Size of Weapon</displayName>
+        <description>The size of the weapon in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>MaxSize</name>
+        <displayName>Maximum Size of Weapon</displayName>
+        <description>The maximum size of the weapon in the design</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>AlphaMissileTube</name>
+        <displayName>The Alpha Missile Tube</displayName>
+        <description>The Alpha Missile Tube holds Alpha Missiles</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>BetaMissileTube</name>
+        <displayName>The Beta Missile Tube</displayName>
+        <description>The Beta Missile Tube holds Beta Missiles</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>GammaMissileTube</name>
+        <displayName>The Gamma Missile Tube</displayName>
+        <description>The Gamma Missile Tube holds Gamma Missiles</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>DeltaMissileTube</name>
+        <displayName>The Delta Missile Tube</displayName>
+        <description>The Delta Missile Tube holds Delta Missiles</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>EpsilonMissileTube</name>
+        <displayName>The Epsilon Missile Tube</displayName>
+        <description>The Epsilon Missile Tube holds Epsilon Missiles</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>OmegaTorpedoeTube</name>
+        <displayName>The Omega Torpedoe Tube</displayName>
+        <description>The Omega Torpedoe Tube holds Omega Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>UpsilonTorpedoeTube</name>
+        <displayName>The Upsilon Torpedoe Tube</displayName>
+        <description>The Upsilon Torpedoe Tube holds Upsilon Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>TauTorpedoeTube</name>
+        <displayName>The Tau Torpedoe Tube</displayName>
+        <description>The Tau Torpedoe Tube holds Tau Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>SigmaTorpedoeTube</name>
+        <displayName>The Sigma Torpedoe Tube</displayName>
+        <description>The Sigma Torpedoe Tube holds Sigma Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>RhoTorpedoeTube</name>
+        <displayName>The Rho Torpedoe Tube</displayName>
+        <description>The Rho Torpedoe Tube holds Rho Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>XiTorpedoeTube</name>
+        <displayName>The Xi Torpedoe Tube</displayName>
+        <description>The Xi Torpedoe Tube holds Xi Torpedoes</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-AlphaMissileTube</name>
+        <displayName>The Number of Alpha Missile Tubes</displayName>
+        <description>The number of Alpha Missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-BetaMissileTube</name>
+        <displayName>The Number of Beta Missile Tubes</displayName>
+        <description>The number of beta missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-GammaMissileTube</name>
+        <displayName>The Number of Gamma Missile Tubes</displayName>
+        <description>The number of gamma missiles we can hold</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-DeltaMissileTube</name>
+        <displayName>The Number of Delta Missile Tubes</displayName>
+        <description>The number of delta missiles we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-EpsilonMissileTube</name>
+        <displayName>The Number of Epsilon Missile Tube</displayName>
+        <description>The number of epsilon missiles we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-OmegaTorpedoeTube</name>
+        <displayName>The Number of Omega Torpedoe Tube</displayName>
+        <description>The number of omega torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-UpsilonTorpedoeTube</name>
+        <displayName>The Number of Upsilon Torpedoe Tube</displayName>
+        <description>The number of upsilon torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-TauTorpedoeTube</name>
+        <displayName>The Number of Tau Torpedoe Tube</displayName>
+        <description>The number of tau torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-SigmaTorpedoeTube</name>
+        <displayName>The Number of Sigma Torpedoe Tube</displayName>
+        <description>The number of sigma torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-RhoTorpedoeTube</name>
+        <displayName>The Number of Rho Torpedoe Tube</displayName>
+        <description>The number of rho torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+    
+    <prop>
+        <PropertyIDName>Weapons</PropertyIDName>
+        <rank value="0"/>
+        <name>num-XiTorpedoeTube</name>
+        <displayName>The Number of Xi Torpedoe Tube</displayName>
+        <description>The number of xi torpedoes we can fire</description>
+        <tpclDisplayFunction><![CDATA[(lambda (design bits)(let ((n (apply + bits)))(cons n (string-append (number->string n) " size"))))]]></tpclDisplayFunction>
+        <tpclRequirementsFunction><![CDATA[(lambda (design) (cons #t ""))]]></tpclRequirementsFunction>
+    </prop>
+
+</properties>
+

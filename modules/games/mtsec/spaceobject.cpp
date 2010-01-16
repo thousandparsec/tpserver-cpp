@@ -28,6 +28,8 @@
 
 #include "spaceobject.h"
 
+namespace MTSecRuleset {
+
 SpaceObjectType::SpaceObjectType():ObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
   group->setName("Positional");
@@ -49,30 +51,31 @@ SpaceObject::~SpaceObject(){
 }
 
 Vector3d SpaceObject::getPosition() const{
-  return ((Position3dObjectParam*)(obj->getParameter(1,1)))->getPosition();
+  return dynamic_cast<Position3dObjectParam*>(obj->getParameter(1,1))->getPosition();
 }
 
 Vector3d SpaceObject::getVelocity() const{
-  return ((Velocity3dObjectParam*)(obj->getParameter(1,2)))->getVelocity();
+  return dynamic_cast<Velocity3dObjectParam*>(obj->getParameter(1,2))->getVelocity();
 }
 
 uint64_t SpaceObject::getSize() const{
-  return ((SizeObjectParam*)(obj->getParameter(1,3)))->getSize();
+  return dynamic_cast<SizeObjectParam*>(obj->getParameter(1,3))->getSize();
 }
 
 void SpaceObject::setPosition(const Vector3d & np){
-  ((Position3dObjectParam*)(obj->getParameter(1,1)))->setPosition(np);
+  dynamic_cast<Position3dObjectParam*>(obj->getParameter(1,1))->setPosition(np);
   obj->touchModTime();
 }
 
 void SpaceObject::setVelocity(const Vector3d & nv){
-  ((Velocity3dObjectParam*)(obj->getParameter(1,2)))->setVelocity(nv);
+  dynamic_cast<Velocity3dObjectParam*>(obj->getParameter(1,2))->setVelocity(nv);
   obj->touchModTime();
 }
 
 void SpaceObject::setSize(uint64_t ns){
-  ((SizeObjectParam*)(obj->getParameter(1,3)))->setSize(ns);
+  dynamic_cast<SizeObjectParam*>(obj->getParameter(1,3))->setSize(ns);
   obj->touchModTime();
 }
 
 
+}

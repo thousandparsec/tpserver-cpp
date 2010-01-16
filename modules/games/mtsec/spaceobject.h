@@ -29,6 +29,8 @@
 
 class IGObject;
 
+namespace MTSecRuleset {
+
 class SpaceObjectType : public ObjectType{
   public:
     SpaceObjectType();
@@ -51,4 +53,6 @@ class SpaceObject : public ObjectBehaviour{
 
 };
 
+}
 #endif
+

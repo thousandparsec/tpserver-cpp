@@ -24,6 +24,8 @@
 #include <map>
 class ListParameter;
 
+namespace MTSecRuleset {
+
 class SplitFleet : public Order{
  public:
   SplitFleet();
@@ -39,4 +41,6 @@ class SplitFleet : public Order{
 
 };
 
+}
 #endif
+

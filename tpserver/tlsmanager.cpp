@@ -19,6 +19,7 @@
  */
 
 #include <gnutls/gnutls.h>
+#include <stdint.h>
 
 #include "settings.h"
 #include "logging.h"

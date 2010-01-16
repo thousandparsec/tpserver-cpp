@@ -36,10 +36,14 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/ordermanager.h>
+#include <tpserver/logging.h>
 
 #include "avacombat.h"
 
 #include "mtsecturn.h"
+
+namespace MTSecRuleset {
+
 
 MTSecTurn::MTSecTurn() : TurnProcess(){
   
@@ -115,12 +119,12 @@ void MTSecTurn::doTurn(){
     Vector3d pos1;
     uint32_t size1;
     if(ob->getType() == planettype){
-      Planet* planet = (Planet*)(ob->getObjectBehaviour());
+      Planet* planet = dynamic_cast<Planet*>(ob->getObjectBehaviour());
       playerid1 = planet->getOwner();
       pos1 = planet->getPosition();
       size1 = planet->getSize();
     }else{
-      Fleet* fleet = (Fleet*)(ob->getObjectBehaviour());
+      Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
       playerid1 = fleet->getOwner();
       pos1 = fleet->getPosition();
       size1 = fleet->getSize();
@@ -138,12 +142,13 @@ void MTSecTurn::doTurn(){
       Vector3d pos2;
       uint32_t size2;
       if(itbobj->getType() == planettype){
-        Planet* planet = (Planet*)(itbobj->getObjectBehaviour());
+
+        Planet* planet = dynamic_cast<Planet*>(itbobj->getObjectBehaviour());
         playerid2 = planet->getOwner();
         pos2 = planet->getPosition();
         size2 = planet->getSize();
       }else{
-        Fleet* fleet = (Fleet*)(itbobj->getObjectBehaviour());
+        Fleet* fleet = dynamic_cast<Fleet*>(itbobj->getObjectBehaviour());
         playerid2 = fleet->getOwner();
         pos2 = fleet->getPosition();
         size2 = fleet->getSize();
@@ -155,13 +160,16 @@ void MTSecTurn::doTurn(){
       }
 
       uint64_t diff = pos1.getDistance(pos2);
-      if(diff <= size1 / 2 + size2 / 2){
+      if(diff <= 10000){
+        Logger::getLogger()->debug("Combat happening");
         combatstrategy->setCombatants(ob, itbobj);
         combatstrategy->doCombat();
+
         if(!combatstrategy->isAliveCombatant1()){
           if(ob->getType() == planettype){
-            uint32_t oldowner = ((Planet*)(ob->getObjectBehaviour()))->getOwner();
-            ((Planet*)(ob->getObjectBehaviour()))->setOwner(0);
+            Logger::getLogger()->debug("Planet has perished, removing owner");
+            uint32_t oldowner = dynamic_cast<Planet*>(ob->getObjectBehaviour())->getOwner();
+            dynamic_cast<Planet*>(ob->getObjectBehaviour())->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue))->getQueueId();
             OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
             queue->removeOwner(oldowner);
@@ -172,8 +180,9 @@ void MTSecTurn::doTurn(){
         }
         if(!combatstrategy->isAliveCombatant2()){
           if(itbobj->getType() == planettype){
-            uint32_t oldowner = ((Planet*)(itbobj->getObjectBehaviour()))->getOwner();
-            ((Planet*)(itbobj->getObjectBehaviour()))->setOwner(0);
+            Logger::getLogger()->debug("Planet has perished, removing owner");
+            uint32_t oldowner = dynamic_cast<Planet*>(itbobj->getObjectBehaviour())->getOwner();
+            dynamic_cast<Planet*>(itbobj->getObjectBehaviour())->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(itbobj->getParameterByType(obpT_Order_Queue))->getQueueId();
             OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
             queue->removeOwner(oldowner);
@@ -259,4 +268,6 @@ void MTSecTurn::setFleetType(uint32_t ft){
 
 std::set<uint32_t> MTSecTurn::getContainerIds() const{
   return containerids;
+}
+
 }

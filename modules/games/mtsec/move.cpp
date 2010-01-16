@@ -38,6 +38,8 @@
 
 #include "move.h"
 
+namespace MTSecRuleset {
+
 Move::Move() : Order()
 {
   name = "Move";
@@ -64,43 +66,46 @@ void Move::setDest(const Vector3d & ndest)
 }
 
 int Move::getETA(IGObject *ob) const{
-  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
+  Logger::getLogger()->debug("Enter Move::getETA");
+  Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = coords->getPosition().getDistance(fleet->getPosition());
-  uint32_t max_speed = 3000000;
+  uint32_t max_speed = fleet->maxSpeed();
   
   if(distance == 0) 
     return 1;
+  Logger::getLogger()->debug("Exit Move::getETA");
   return (int)((distance - 1) / max_speed) + 1;
 }
 
 void Move::createFrame(Frame * f, int pos)
 {
-  Game* game = Game::getGame();
-  IGObject* obj = game->getObjectManager()->getObject(game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Logger::getLogger()->debug("Enter Move::createFrame");
+  IGObject* obj = Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   if(obj != NULL){
     turns = getETA(obj);
-    game->getObjectManager()->doneWithObject(obj->getID());
+    Game::getGame()->getObjectManager()->doneWithObject(obj->getID());
   }else{
     turns = 0;
     Logger::getLogger()->error("Move create frame: object not found, id = %d", obj->getID());
   }
-  
+  Logger::getLogger()->debug("Exit Move::createFrame");
   Order::createFrame(f, pos);	
 }
 
 Result Move::inputFrame(Frame * f, uint32_t playerid)
 {
+  Logger::getLogger()->debug("Enter Move::inputFrame");
   return Order::inputFrame(f, playerid);
 }
 
 bool Move::doOrder(IGObject * ob){
   Vector3d dest = coords->getPosition();
-  Fleet* fleet = ((Fleet*)(ob->getObjectBehaviour()));
+  Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   uint64_t distance = dest.getDistance(fleet->getPosition());
-  uint64_t max_speed = 3000000;
+  uint64_t max_speed = fleet->maxSpeed();
 
-  Logger::getLogger()->debug("Moving %lld at %lld speed", distance, max_speed);
-
+  Logger::getLogger()->debug("Object(%d)->Move->doOrder(): Moving %lld at %lld speed (will take about %lld turns)", 
+	ob->getID(), distance, max_speed, distance/max_speed);
   if(distance <= max_speed){
     uint32_t parentid;
 
@@ -116,7 +121,7 @@ bool Move::doOrder(IGObject * ob){
   
     if(fleet->getPosition() != dest && containertype >= 1){
       //removeFromParent();
-      std::set<uint32_t> oblist = ((MTSecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
@@ -182,7 +187,7 @@ bool Move::doOrder(IGObject * ob){
   
     if(fleet->getPosition() != arriveat && containertype >= 1){
       //removeFromParent();
-      std::set<uint32_t> oblist = ((MTSecTurn*)(Game::getGame()->getTurnProcess()))->getContainerIds();
+      std::set<uint32_t> oblist = dynamic_cast<MTSecTurn*>(Game::getGame()->getTurnProcess())->getContainerIds();
       for(std::set<uint32_t>::reverse_iterator itcurr = oblist.rbegin(); itcurr != oblist.rend(); ++itcurr){
         IGObject* testedobject = Game::getGame()->getObjectManager()->getObject(*itcurr);
         
@@ -231,4 +236,6 @@ Order* Move::clone() const{
   Move *nm = new Move();
   nm->type = type;
   return nm;
+}
+
 }

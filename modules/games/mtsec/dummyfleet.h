@@ -1,7 +1,8 @@
-#ifndef OWNEDOBJECT_H
-#define OWNEDOBJECT_H
-/*  Owned Object class
+#ifndef DUMMYFLEET_H
+#define DUMMYFLEET_H
+/*  Dummy Fleet
  *
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
  *  Copyright (C) 2004-2005, 2007, 2008  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,33 +23,37 @@
 
 #include <map>
 #include <list>
-
-#include "spaceobject.h"
-
-class IGObject;
+#include <stdint.h>
+#include "fleet.h"
 
 namespace MTSecRuleset {
 
-class OwnedObjectType : public SpaceObjectType{
+class DummyFleet : public Fleet{
   public:
-    OwnedObjectType();
-    virtual ~OwnedObjectType();
-};
+    DummyFleet();
+    ~DummyFleet();
 
-class OwnedObject : public SpaceObject {
-      public:
-	OwnedObject();
-	virtual ~OwnedObject();
-        
-        virtual uint32_t getOwner() const;
-        virtual void setOwner(uint32_t no);
+    uint32_t getOwner() const;
+    void setOwner(uint32_t no);
 
-        virtual void setDefaultOrderTypes() = 0;
-	
-	void packExtraData(Frame * frame);
+    void addShips(uint32_t type, uint32_t number);
+    bool removeShips(uint32_t type, uint32_t number);
+    uint32_t numShips(uint32_t type);
+    std::map<uint32_t, uint32_t> getShips() const;
+    uint32_t totalShips() const;
 
 
-        virtual void setupObject();
+    uint32_t getDamage() const;
+    void setDamage(uint32_t nd);
+
+    virtual bool removeResource(uint32_t restype, uint32_t amount);
+    virtual std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+
+
+  private:
+    uint32_t playerref;
+    std::map<uint32_t, uint32_t> shiplist;
+    uint32_t damage;
 
 };
 

@@ -27,6 +27,6 @@ risk_default_planet_armies	= 3
 risk_rfc_start = 30
 risk_randomly_assign = true
 
-#Risk map specific configurations - risk_map is the RELATIVE PATH based on where tpserver-cpp is launched
+#Risk map specific configurations
 risk_mapimport = true
-risk_map = ./risk-defaultmap.svg
+risk_map = @prefix@/share/tp/risk-defaultmap.svg

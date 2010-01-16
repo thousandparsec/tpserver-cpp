@@ -37,8 +37,12 @@
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
+#include <tpserver/logging.h>
+#include <tpserver/resourcelistobjectparam.h>
 
 #include "fleet.h"
+
+namespace MTSecRuleset {
 
 FleetType::FleetType():OwnedObjectType(){
   ObjectParameterGroupDesc* group = new ObjectParameterGroupDesc();
@@ -47,7 +51,13 @@ FleetType::FleetType():OwnedObjectType(){
   group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
   group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
   addParameterGroupDesc(group);
-  
+
+  group = new ObjectParameterGroupDesc();
+  group->setName("Resources");
+  group->setDescription("The fleet's weapon resources");
+  group->addParameter(obpT_Resource_List, "Weapon Resource List", "The weapon list the fleet has available");
+  addParameterGroupDesc(group);
+
   nametype = "Fleet";
   typedesc = "Fleet of ships";
 }
@@ -72,31 +82,33 @@ void Fleet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("Move"));
   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
-  ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowedlist);
+  allowedlist.insert(om->getOrderTypeByName("Load Armament"));
+  allowedlist.insert(om->getOrderTypeByName("Unload Armament"));
+  dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->setAllowedOrders(allowedlist);
 }
 
 void Fleet::addShips(uint32_t type, uint32_t number){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   ships[std::pair<int32_t, uint32_t>(rst_Design, type)] += number;
-  ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
+  dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->setRefQuantityList(ships);
   DesignStore* ds = Game::getGame()->getDesignStore();
   OrderManager* om = Game::getGame()->getOrderManager();
   if(ds->getDesign(type)->getPropertyValue(ds->getPropertyByName("Colonise")) == 1.0){
-    std::set<uint32_t> allowed = ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->getAllowedOrders();
+    std::set<uint32_t> allowed = dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->getAllowedOrders();
     allowed.insert(om->getOrderTypeByName("Colonise"));
-    ((OrderQueueObjectParam*)(obj->getParameter(3,1)))->setAllowedOrders(allowed);
+    dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->setAllowedOrders(allowed);
   }
   obj->touchModTime();
 }
 
 bool Fleet::removeShips(uint32_t type, uint32_t number){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] >= number){
     ships[std::pair<int32_t, uint32_t>(rst_Design, type)] -= number;
     if(ships[std::pair<int32_t, uint32_t>(rst_Design, type)] == 0){
       ships.erase(std::pair<int32_t, uint32_t>(rst_Design, type));
     }
-    ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->setRefQuantityList(ships);
+    dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->setRefQuantityList(ships);
     DesignStore* ds = Game::getGame()->getDesignStore();
     bool colonise = false;
     for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
@@ -107,7 +119,7 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
       }
     }
     OrderManager* om = Game::getGame()->getOrderManager();
-    OrderQueueObjectParam* orderqueue = ((OrderQueueObjectParam*)(obj->getParameter(3,1)));
+    OrderQueueObjectParam* orderqueue = dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1));
     if(colonise){
       std::set<uint32_t> allowed = orderqueue->getAllowedOrders();
       allowed.insert(om->getOrderTypeByName("Colonise"));
@@ -124,13 +136,13 @@ bool Fleet::removeShips(uint32_t type, uint32_t number){
 }
 
 uint32_t Fleet::numShips(uint32_t type){
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   return ships[std::pair<int32_t, uint32_t>(rst_Design, type)];
 }
 
 std::map<uint32_t, uint32_t> Fleet::getShips() const{
   std::map<uint32_t, uint32_t> ships;
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = (( RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> shipsref = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = shipsref.begin();
       itcurr != shipsref.end(); ++itcurr){
     ships[itcurr->first.second] = itcurr->second;
@@ -138,9 +150,22 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
   return ships;
 }
 
+int64_t Fleet::maxSpeed(){
+  Logger::getLogger()->debug("Enter Fleet::maxSpeed");
+  double speed = 1e100;
+  DesignStore* ds = Game::getGame()->getDesignStore();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
+  for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
+      itcurr != ships.end(); ++itcurr){
+        speed = fmin(speed, ds->getDesign(itcurr->first.second)->getPropertyValue(ds->getPropertyByName("Speed")));
+  }
+  Logger::getLogger()->debug("Exit Fleet::maxSpeed");
+  return (int64_t)(floor(speed));
+}
+
 uint32_t Fleet::totalShips() const{
   uint32_t num = 0;
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){
     num += itcurr->second;
@@ -150,18 +175,18 @@ uint32_t Fleet::totalShips() const{
 
 
 uint32_t Fleet::getDamage() const{
-    return ((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue();
+    return dynamic_cast<IntegerObjectParam*>(obj->getParameter(4,2))->getValue();
 }
 
 void Fleet::setDamage(uint32_t nd){
-    ((IntegerObjectParam*)(obj->getParameter(4,2)))->setValue(nd);
+    dynamic_cast<IntegerObjectParam*>(obj->getParameter(4,2))->setValue(nd);
     obj->touchModTime();
 }
 
 void Fleet::packExtraData(Frame * frame){
   OwnedObject::packExtraData(frame);
 
-  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = ((RefQuantityListObjectParam*)(obj->getParameter(4,1)))->getRefQuantityList();
+  std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   frame->packInt(ships.size());
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin(); itcurr != ships.end(); ++itcurr){
     //if(itcurr->second > 0){
@@ -170,7 +195,7 @@ void Fleet::packExtraData(Frame * frame){
       //}
   }
   
-  frame->packInt(((IntegerObjectParam*)(obj->getParameter(4,2)))->getValue());
+  frame->packInt(dynamic_cast<IntegerObjectParam*>(obj->getParameter(4,2))->getValue());
 
 }
 
@@ -178,8 +203,8 @@ void Fleet::doOnceATurn(){
   Game* game = Game::getGame();
   IGObject * pob = game->getObjectManager()->getObject(obj->getParent());
   uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
-  if(pob->getType() == obT_Planet && ((Planet*)(pob->getObjectBehaviour()))->getOwner() == getOwner()){
-    IntegerObjectParam* damage = ((IntegerObjectParam*)(obj->getParameter(4,2)));
+  if(pob->getType() == obT_Planet && dynamic_cast<Planet*>(pob->getObjectBehaviour())->getOwner() == getOwner()){
+    IntegerObjectParam* damage = dynamic_cast<IntegerObjectParam*>(obj->getParameter(4,2));
     if(damage->getValue() != 0){
         damage->setValue(0);
         obj->touchModTime();
@@ -187,10 +212,50 @@ void Fleet::doOnceATurn(){
   }
   game->getObjectManager()->doneWithObject(obj->getParent());
   
-  Order* order = game->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(3,1)))->getQueueId())->getFirstOrder();
+  Order* order = game->getOrderManager()->getOrderQueue(dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->getQueueId())->getFirstOrder();
   if(order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")){
     setVelocity(Vector3d(0,0,0));
   }
+}
+
+std::map<uint32_t, std::pair<uint32_t, uint32_t> > Fleet::getResources() {
+    return dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->getResources();
+}
+
+void Fleet::addResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->getResources();
+    if(reslist.find(restype) != reslist.end()){
+      std::pair<uint32_t, uint32_t> respair = reslist[restype];
+      respair.first += amount;
+      reslist[restype] = respair;
+      dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->setResources(reslist);
+    } else {
+      setResource(restype,amount);
+    }
+}
+
+void Fleet::setResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->getResources();
+    std::pair<uint32_t, uint32_t> respair = reslist[restype];
+    respair.first = amount;
+    reslist[restype] = respair;
+    dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->setResources(reslist);
+    obj->touchModTime();
+}
+
+bool Fleet::removeResource(uint32_t restype, uint32_t amount){
+  std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->getResources();
+    if(reslist.find(restype) != reslist.end()){
+        if(reslist[restype].first >= amount){
+            std::pair<uint32_t, uint32_t> respair = reslist[restype];
+            respair.first -= amount;
+            reslist[restype] = respair;
+            dynamic_cast<ResourceListObjectParam*>(obj->getParameter(5,1))->setResources(reslist);
+            obj->touchModTime();
+            return true;
+        }
+    }
+    return false;
 }
 
 int Fleet::getContainerType(){
@@ -199,8 +264,8 @@ int Fleet::getContainerType(){
 
 void Fleet::setupObject(){
   OwnedObject::setupObject();
-    
   setSize(2);
   //something about the orderqueue?
 }
 
+}

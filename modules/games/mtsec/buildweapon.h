@@ -1,9 +1,9 @@
-#ifndef MOVE_H
-#define MOVE_H
-/*  Move Order
+#ifndef BUILDWEAPON_H
+#define BUILDWEAPON_H
+/*  BuildWeapon order
  *
  *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
- *  Copyright (C) 2004, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,34 +21,35 @@
  *
  */
 
+#include <map>
+#include <string>
+
 #include <tpserver/result.h>
 #include <tpserver/order.h>
-#include <tpserver/vector3d.h>
-class SpaceCoordParam;
+
+class ListParameter;
+class StringParameter;
 
 namespace MTSecRuleset {
 
-class Move : public Order{
-      public:
-	Move();
-	virtual ~Move();
+class BuildWeapon : public Order{
+ public:
+  BuildWeapon();
+  virtual ~BuildWeapon();
 
-	Vector3d getDest() const;
-	void setDest(const Vector3d & ndest);
+  void createFrame(Frame *f, int pos);
+  Result inputFrame(Frame *f, uint32_t playerid);
 
-	int getETA(IGObject* ob) const;
+  bool doOrder(IGObject *ob);
 
-	void createFrame(Frame * f, int pos);
-	Result inputFrame(Frame * f, uint32_t playerid);
+  Order* clone() const;
 
-	bool doOrder(IGObject * ob);
+ private:
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+  bool removeResource(uint32_t restype, uint32_t amount);
 
-	Order* clone() const;
-
-      private:
-	SpaceCoordParam* coords;
-
-
+  ListParameter * weaponlist;
+  StringParameter * weaponname;
 };
 
 }

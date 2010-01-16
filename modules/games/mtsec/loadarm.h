@@ -1,8 +1,8 @@
-#ifndef BUILD_H
-#define BUILD_H
-/*  BuildFleet order
+#ifndef LOADARM_H
+#define LOADARM_H
+/*  Load Armament Order
  *
- *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,32 +20,34 @@
  *
  */
 
+#include <tpserver/result.h>
+#include <tpserver/order.h>
 #include <map>
 #include <string>
 
-#include <tpserver/result.h>
-#include <tpserver/order.h>
-
 class ListParameter;
-class StringParameter;
 
-class Build : public Order{
- public:
-  Build();
-  virtual ~Build();
+namespace MTSecRuleset {
 
-  void createFrame(Frame *f, int pos);
-  Result inputFrame(Frame *f, uint32_t playerid);
+class LoadArmament : public Order{
+      public:
+	LoadArmament();
+	virtual ~LoadArmament();
 
-  bool doOrder(IGObject *ob);
+	void createFrame(Frame * f, int pos);
+	Result inputFrame(Frame * f, uint32_t playerid);
+        std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 
-  Order* clone() const;
+	bool doOrder(IGObject * ob);
 
- private:
-  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+	Order* clone() const;
 
-  ListParameter * fleetlist;
-  StringParameter * fleetname;
+      private:
+        ListParameter * weaponlist;
+
+
 };
 
+}
 #endif
+

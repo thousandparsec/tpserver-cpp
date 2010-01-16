@@ -1,8 +1,9 @@
-#ifndef MTSECTURN_H
-#define MTSECTURN_H
-/*  MTSecTurn class, the end of turn process for MTSec
+#ifndef SENDPOINTS_H
+#define SENDPOINTS_H
+/*  SendPoints order
  *
- *  Copyright (C) 2007  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2009 Alan P. Laudicina and the Thousand Parsec Project
+ *  Copyright (C) 2004-2005, 2007  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,29 +21,29 @@
  *
  */
 
-#include <stdint.h>
-#include <set>
+#include <map>
+#include <string>
 
-#include <tpserver/turnprocess.h>
+#include <tpserver/result.h>
+#include <tpserver/order.h>
+class ListParameter;
+class TimeParameter;
 
 namespace MTSecRuleset {
 
-class MTSecTurn : public TurnProcess{
-  public:
-    MTSecTurn();
-    virtual ~MTSecTurn();
-    
-    virtual void doTurn();
-  
-    void setFleetType(uint32_t ft);
-    void setPlanetType(uint32_t pt);
-    
-    std::set<uint32_t> getContainerIds() const;
-    
-  private:
-    uint32_t planettype;
-    uint32_t fleettype;
-    std::set<uint32_t> containerids;
+class SendPoints : public Order{
+ public:
+  SendPoints();
+  virtual ~SendPoints();
+  bool doOrder(IGObject *ob);
+  Order* clone() const;
+  std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
+
+
+ private:
+  ListParameter* targetPlanet;
+  uint32_t maxPoints;
+  double getPercentage(IGObject *ob) const;
 };
 
 }

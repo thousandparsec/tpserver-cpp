@@ -1,6 +1,7 @@
 ##Quick start a MTSec Game
 
 #Game
+autoadd_players = yes
 add_players = yes
 ruleset = mtsec
 game_load = yes
@@ -8,10 +9,11 @@ game_start = yes
 network_start = yes
 
 #logging
-log_level = 1
+log_level = 0
 log_console = yes
 
 # turns every 10 minutes (or when all players finished)
 turntimer = playersfinished
 turn_length = 600
 
+gamedata_file = @prefix@/share/tp/tpserver-cpp-mtsec-gamedata.xml

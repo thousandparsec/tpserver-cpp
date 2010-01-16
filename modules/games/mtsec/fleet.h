@@ -28,6 +28,8 @@
 
 class IGObject;
 
+namespace MTSecRuleset {
+
 class FleetType : public OwnedObjectType{
   public:
     FleetType();
@@ -44,15 +46,16 @@ class Fleet : public OwnedObject {
         
 
         void setDefaultOrderTypes();
-	void addShips(uint32_t type, uint32_t number);
-	bool removeShips(uint32_t type, uint32_t number);
-	uint32_t numShips(uint32_t type);
-	std::map<uint32_t, uint32_t> getShips() const;
-	uint32_t totalShips() const;
+	virtual void addShips(uint32_t type, uint32_t number);
+	virtual bool removeShips(uint32_t type, uint32_t number);
+	virtual uint32_t numShips(uint32_t type);
+	virtual std::map<uint32_t, uint32_t> getShips() const;
+	virtual uint32_t totalShips() const;
+	int64_t maxSpeed();
 
 
-        uint32_t getDamage() const;
-        void setDamage(uint32_t nd);
+        virtual uint32_t getDamage() const;
+        virtual void setDamage(uint32_t nd);
 
 	void packExtraData(Frame * frame);
 
@@ -60,6 +63,15 @@ class Fleet : public OwnedObject {
         void setupObject();
 
 	int getContainerType();
+
+        void addResource(uint32_t restype, uint32_t amount);
+        void setResource(uint32_t restype, uint32_t amount);
+        virtual bool removeResource(uint32_t restype, uint32_t amount);
+        virtual std::map<uint32_t, std::pair<uint32_t, uint32_t> > getResources();
+
+      protected:
 };
 
+}
 #endif
+
