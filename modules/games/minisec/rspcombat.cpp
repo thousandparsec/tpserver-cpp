@@ -181,6 +181,11 @@ void RSPCombat::doCombat(std::map<uint32_t, std::set<uint32_t> > sides){
             battlelogger->log("It's a draw");
             d1 = buildShotList(f1, true);
             d2 = buildShotList(f2, true);
+            
+            if(d1.size() != 0)
+                doDamage(d1, f2);
+            if(d2.size() != 0)
+                doDamage(d2, f1);
         }else{
             
             if(r1 == 1){
