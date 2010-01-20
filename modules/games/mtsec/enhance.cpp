@@ -22,7 +22,6 @@
 #include <math.h>
 #include <iostream>
 
-#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -36,7 +35,7 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/timeparameter.h>
+#include <tpserver/orderparameters.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
@@ -59,11 +58,7 @@ Enhance::Enhance() : Order()
   name = "Enhance";
   description = "Enhance your Production";
 
-  points = new TimeParameter();
-  points->setName("Points");
-  points->setMax(100);
-  points->setDescription("The number of points you want to enhance with.");
-  addOrderParameter(points);
+  points = (TimeParameter*) addOrderParameter( new TimeParameter("Points", "The number of points you want to enhance with.",100));
 
   turns = 1;
 
@@ -72,7 +67,7 @@ Enhance::Enhance() : Order()
 Enhance::~Enhance(){
 }
 
-bool Enhance::doOrder(IGObject *ob)
+bool Enhance::doOrder(IGObject::Ptr ob)
 {
   Logger::getLogger()->debug("Entering Enhance::doOrder");
 
@@ -86,7 +81,7 @@ bool Enhance::doOrder(IGObject *ob)
   }
 
   Game* game = Game::getGame();
-  ResourceManager* resman = game->getResourceManager();
+  ResourceManager::Ptr resman = game->getResourceManager();
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
   const uint32_t resValue = planet->getResourceSurfaceValue(resType);
   const uint32_t enhanceValue = static_cast<uint32_t>(floor(points->getTime()/10));
@@ -98,7 +93,7 @@ bool Enhance::doOrder(IGObject *ob)
       return true;
     }
   } else {
-    Message* message = new Message();
+    Message::Ptr message(new Message());
     message->setSubject("Not enough points for Enhance Order");
     message->setBody("There were not enough points on " + ob->getName() + " to fulfill your Enhance order.  Please check this order.");
     game->getPlayerManager()->getPlayer(planet->getOwner())->postToBoard(message);

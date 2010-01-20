@@ -49,7 +49,7 @@ bool xmlImport::importComps() {
     TiXmlElement* pChild;
     TiXmlHandle hDoc(&doc);
     TiXmlHandle hRoot(0);
-    DesignStore *ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     int count=0;    // item count
 
@@ -120,7 +120,7 @@ bool xmlImport::importComps() {
                 return false;
             }
         //do the component
-        Component* comp = new Component();
+        Component::Ptr comp( new Component() );
         comp->addCategoryId(ds->getCategoryByName(compIDName));
         comp->setName(compName);
         comp->setDescription(compDescription);
@@ -146,7 +146,7 @@ bool xmlImport::importProps() {
     TiXmlElement* pChild;
     TiXmlHandle hDoc(&doc);
     TiXmlHandle hRoot(0);
-    DesignStore *ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     int count=0;    // item count
 
@@ -226,7 +226,7 @@ bool xmlImport::importProps() {
             }
 
         //do the property
-            Property* prop = new Property();
+            Property::Ptr prop( new Property() );
             prop->addCategoryId(ds->getCategoryByName(propIDName));
             prop->setRank((uint32_t)propRank);
             prop->setName(propName);

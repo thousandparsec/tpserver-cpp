@@ -101,8 +101,8 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 {
     Logger::getLogger()->debug("doCombatRound Entering");
     Game* game = Game::getGame();
-    DesignStore* ds = game->getDesignStore();
-    ResourceManager* resman = game->getResourceManager();
+    DesignStore::Ptr ds = game->getDesignStore();
+    ResourceManager::Ptr resman = game->getResourceManager();
 
     typedef std::map<uint32_t, std::pair<uint32_t, uint32_t> > weaponList;
 //                   ID/TYPE             AMOUNT
@@ -123,10 +123,11 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
 
     std::map<uint32_t, uint32_t> tubeList;
-    std::set<Design*> designList;
+    std::set<Design::Ptr> designList;
 
     weaponList fleetweaponry[2];
     shipList fleetships[2];
+    Fleet* fleets[2]; 
     std::map<uint32_t, std::pair<std::string, uint32_t> > fleettubes[2];
     std::map<uint32_t, uint32_t> fleetusable[2];
     //     resourceid, designid
@@ -136,6 +137,9 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
 
     fleetships[0] = fleet1->getShips();
     fleetships[1] = fleet2->getShips();
+    
+    fleets[0] = fleet1;
+    fleets[1] = fleet2;
 
     uint32_t damage[2] = {0};
 
@@ -161,7 +165,7 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
             }
     
             for (weaponList::iterator weapit = fleetweaponry[i].begin(); weapit != fleetweaponry[i].end(); ++weapit) {
-                Design* weapDesign;
+                Design::Ptr weapDesign;
                 std::string weapName = resman->getResourceDescription(weapit->first)->getNameSingular();
                 std::set<uint32_t>dIDs = ds->getDesignIds();
                 for (std::set<uint32_t>::iterator dit = dIDs.begin(); dit != dIDs.end(); ++dit) {
@@ -209,13 +213,13 @@ bool AVACombat::doCombatRound( Fleet*   fleet1,
     if (fleet1->totalShips() == 0) {
         body[0] += "Your fleet was destroyed. ";
         body[1] += "You destroyed their fleet. ";
-        c1 = NULL;
+        c1.reset();
         tte = true;
     };
     if (fleet2->totalShips() == 0) {
         body[0] += "Your fleet was destroyed.";
         body[1] += "You destroyed their fleet.";
-        c2 = NULL;
+        c2.reset();
         tte = true;
     }
     if ( tte) {
@@ -231,7 +235,7 @@ void AVACombat::resolveCombat(Fleet* fleet){
     Logger::getLogger()->debug("AVACombat::resolveCombat : Entering");
 
     Game* game = Game::getGame();
-    DesignStore* ds = game->getDesignStore();
+    DesignStore::Ptr ds = game->getDesignStore();
     typedef std::map<uint32_t, uint32_t> shipList;
     shipList ships = fleet->getShips();
     uint32_t damage = fleet->getDamage();
@@ -274,7 +278,7 @@ void AVACombat::doCombat()
     Fleet *fleets[2];
 
     Game* game = Game::getGame();
-    DesignStore* ds = game->getDesignStore();
+    DesignStore::Ptr ds = game->getDesignStore();
     uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
     uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
 
@@ -322,17 +326,17 @@ void AVACombat::doCombat()
     msg2->setSubject( "Combat");
     msg1->addReference( rst_Object, c1->getID());
     msg1->addReference( rst_Object, c2->getID());
-    msg1->addReference( rst_Player, f2->getOwner());
+    msg1->addReference( rst_Player, fleets[1]->getOwner());
     msg2->addReference( rst_Object, c2->getID());
     msg2->addReference( rst_Object, c1->getID());
-    msg2->addReference( rst_Player, f1->getOwner());
+    msg2->addReference( rst_Player, fleets[0]->getOwner());
 
-    while ( doCombatRound( f1, msg1, f2, msg2)) {
+    while ( doCombatRound( fleets[0], msg1, fleets[1], msg2)) {
         ;
     }
 
-    Game::getGame()->getPlayerManager()->getPlayer( fleets[0]->getOwner())->postToBoard( msgs[0]);
-    Game::getGame()->getPlayerManager()->getPlayer( fleets[1]->getOwner())->postToBoard( msgs[1]);
+    Game::getGame()->getPlayerManager()->getPlayer( fleets[0]->getOwner())->postToBoard( msg1);
+    Game::getGame()->getPlayerManager()->getPlayer( fleets[1]->getOwner())->postToBoard( msg2);
 
     return;
 }

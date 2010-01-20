@@ -18,7 +18,6 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
@@ -34,7 +33,7 @@
 #include "mtsecturn.h"
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/listparameter.h>
+#include <tpserver/orderparameters.h>
 #include <set>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
@@ -48,11 +47,8 @@ UnloadArmament::UnloadArmament() : Order()
   name = "Unload Armament";
   description = "Unload a weapon onto your ships";
 
-  weaponlist = new ListParameter();
-  weaponlist->setName("Weapons");
-  weaponlist->setDescription("The weapon to unload");
-  weaponlist->setListOptionsCallback(ListOptionCallback(this, &UnloadArmament::generateListOptions));
-  addOrderParameter(weaponlist);
+  weaponlist = (ListParameter*) addOrderParameter( new ListParameter("Weapons", "The weapons to unload", boost::bind( &UnloadArmament::generateListOptions, this ) ) );
+  
 
 }
 
@@ -64,12 +60,12 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > UnloadArmament::generateLi
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
   Game* game = Game::getGame();
-  IGObject *selectedObj = game->getObjectManager()->getObject(
+  IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
             game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
   Fleet* fleet = dynamic_cast<Fleet*>(selectedObj->getObjectBehaviour());
 
-  ResourceManager* resman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > objs = fleet->getResources();
 
   for (std::map<uint32_t, std::pair<uint32_t, uint32_t> >::iterator itcurr = objs.begin();
@@ -83,24 +79,24 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > UnloadArmament::generateLi
 }
 
 
-void UnloadArmament::createFrame(Frame * f, int pos)
+void UnloadArmament::createFrame(OutputFrame::Ptr f, int pos)
 {
   turns = 1;
   Order::createFrame(f, pos);	
 }
 
-Result UnloadArmament::inputFrame(Frame * f, uint32_t playerid)
+void  UnloadArmament::inputFrame(InputFrame::Ptr f, uint32_t playerid)
 {
-  return Order::inputFrame(f, playerid);
+  Order::inputFrame(f, playerid);
 }
 
-bool UnloadArmament::doOrder(IGObject * ob){
+bool UnloadArmament::doOrder(IGObject::Ptr ob){
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   ObjectManager* obman = Game::getGame()->getObjectManager();
   ObjectTypeManager* otman = Game::getGame()->getObjectTypeManager();
-  ResourceManager* resman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
   std::set<uint32_t>objs = obman->getObjectsByPos(fleet->getPosition(), 10000);
-  IGObject* planetObj;
+  IGObject::Ptr planetObj;
   Planet* planet;
 
   for (std::set<uint32_t>::const_iterator itcurr = objs.begin(); itcurr != objs.end(); ++itcurr) {
@@ -111,8 +107,8 @@ bool UnloadArmament::doOrder(IGObject * ob){
       Logger::getLogger()->debug("UnloadArmaments::doOrder Found Planet %s for Unload Armaments Order", planetObj->getName().c_str());
       const uint32_t factoryType = resman->getResourceDescription("Factories")->getResourceType();
 
-    std::map<uint32_t,uint32_t> weapontype = weaponlist->getList();
-    for(std::map<uint32_t,uint32_t>::iterator weaponit = weapontype.begin(); weaponit != weapontype.end(); ++weaponit) {
+    IdMap weapontype = weaponlist->getList();
+    for(IdMap::iterator weaponit = weapontype.begin(); weaponit != weapontype.end(); ++weaponit) {
       if (planet->removeResource(factoryType, 1)) {
         if (fleet->removeResource(weaponit->first, weaponit->second)) {
           Logger::getLogger()->debug("UnloadArmaments::doOrder success, adding to resource %d: #:%d", weaponit->first, weaponit->second);

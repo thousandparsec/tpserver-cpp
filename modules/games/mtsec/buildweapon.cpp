@@ -23,7 +23,6 @@
 #include <math.h>
 #include <iostream>
 
-#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -36,8 +35,6 @@
 #include <tpserver/design.h>
 #include <tpserver/designstore.h>
 #include <tpserver/playermanager.h>
-#include <tpserver/listparameter.h>
-#include <tpserver/stringparameter.h>
 #include <tpserver/orderqueue.h>
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
@@ -46,6 +43,7 @@
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/integerobjectparam.h>
+#include <tpserver/orderparameters.h>
 
 #include "planet.h"
 
@@ -61,11 +59,7 @@ BuildWeapon::BuildWeapon() : Order()
   name = "Build Weapon";
   description = "Build a Weapon";
 
-  weaponlist = new ListParameter();
-  weaponlist->setName("Weapons");
-  weaponlist->setDescription("The type of weapon to build");
-  weaponlist->setListOptionsCallback(ListOptionCallback(this, &BuildWeapon::generateListOptions));
-  addOrderParameter(weaponlist);
+  weaponlist = (ListParameter*) addOrderParameter( new ListParameter("Weapons", "The type of weapon to build", boost::bind( &BuildWeapon::generateListOptions, this ) ) );
 
   turns = 1;
 }
@@ -73,7 +67,7 @@ BuildWeapon::BuildWeapon() : Order()
 BuildWeapon::~BuildWeapon(){
 }
 
-void BuildWeapon::createFrame(Frame *f, int pos)
+void BuildWeapon::createFrame(OutputFrame::Ptr f, int pos)
 {
   Logger::getLogger()->debug("Enter: BuildWeapon::createFrame()");
   Order::createFrame(f, pos);
@@ -88,19 +82,19 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > BuildWeapon::generateListO
   std::set<uint32_t> designs = Game::getGame()->getPlayerManager()->getPlayer((dynamic_cast<Planet*>(Game::getGame()->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId())->getObjectBehaviour()))->getOwner())->getPlayerView()->getUsableDesigns();
 
     Game::getGame()->getObjectManager()->doneWithObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
-  std::set<Design*> usable;
+  std::set<Design::Ptr> usable;
   for(std::set<uint32_t>::iterator itcurr = designs.begin(); itcurr != designs.end(); ++itcurr){
-      Design* design = ds->getDesign(*itcurr);
+      Design::Ptr design = ds->getDesign(*itcurr);
       if(design->getCategoryId() == 2){
           usable.insert(design);
       }
   }
 
-  for(std::set<Design*>::iterator itcurr = usable.begin();
+  for(std::set<Design::Ptr>::iterator itcurr = usable.begin();
       itcurr != usable.end(); ++itcurr){
-    Design * design = (*itcurr);
+    Design::Ptr design = (*itcurr);
     options[design->getDesignId()] = std::pair<std::string, uint32_t>(design->getName(), 100);
   }
 
@@ -108,18 +102,17 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > BuildWeapon::generateListO
   return options;
 }
 
-Result BuildWeapon::inputFrame(Frame *f, uint32_t playerid)
+void BuildWeapon::inputFrame(InputFrame::Ptr f, uint32_t playerid)
 {
   Logger::getLogger()->debug("Enter: BuildWeapon::inputFrame()");
-  Result r = Order::inputFrame(f, playerid);
-  if(!r) return r;
+  Order::inputFrame(f, playerid);
 
   Game* game = Game::getGame();
 
-  Player* player = game->getPlayerManager()->getPlayer(playerid);
-  DesignStore* ds = game->getDesignStore();
-  ResourceManager* resman = game->getResourceManager();
-  IGObject * igobj = game->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Player::Ptr player = game->getPlayerManager()->getPlayer(playerid);
+  DesignStore::Ptr ds = game->getDesignStore();
+  ResourceManager::Ptr resman = game->getResourceManager();
+  IGObject::Ptr igobj = game->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
   Planet * planet = dynamic_cast<Planet*>(igobj->getObjectBehaviour());
 
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
@@ -128,37 +121,34 @@ Result BuildWeapon::inputFrame(Frame *f, uint32_t playerid)
 
   uint32_t total = 0;
 
-  std::map<uint32_t, uint32_t> weapontype = weaponlist->getList();
+  IdMap weapontype = weaponlist->getList();
 
-  for(std::map<uint32_t, uint32_t>::iterator itcurr = weapontype.begin();
-     itcurr != weapontype.end(); ++itcurr){
+  for(IdMap::iterator itcurr = weapontype.begin(); itcurr != weapontype.end(); ++itcurr){
     uint32_t type = itcurr->first;
     uint32_t number = itcurr->second; // number to build
 
     if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
-      Design* design = ds->getDesign(type);
+      Design::Ptr design = ds->getDesign(type);
       design->addUnderConstruction(number);
       ds->designCountsUpdated(design);
       total += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
     }else{
-      return Failure("The requested design was not valid.");
+        throw FrameException( fec_FrameError, "The requested design was not valid.");
     }
   }
   turns = (int)(ceil(total/resValue));
   resources[1] = total;
 
-
-  return Success();
 }
 
-bool BuildWeapon::doOrder(IGObject *ob)
+bool BuildWeapon::doOrder(IGObject::Ptr ob)
 {
   Logger::getLogger()->debug("Entering BuildWeapon::doOrder");
 
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
   Game* game = Game::getGame();
-  ResourceManager* resman = game->getResourceManager();
+  ResourceManager::Ptr resman = game->getResourceManager();
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
   const uint32_t resValue = planet->getResourceSurfaceValue(resType);
 
@@ -172,7 +162,7 @@ bool BuildWeapon::doOrder(IGObject *ob)
   uint32_t runningTotal = resources[1];
 
   if (resValue == 0) {
-    Message * msg = new Message();
+    Message::Ptr msg(new Message());
     msg->setSubject("Build Fleet order error");
     msg->setBody(std::string("The construction of your new weapon has been delayed, you do not have any production points this turn."));
     Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
@@ -183,7 +173,7 @@ bool BuildWeapon::doOrder(IGObject *ob)
       runningTotal = resources[1];
       uint32_t planetFactories = planet->getFactoriesPerTurn();
       turns = static_cast<uint32_t>(ceil(runningTotal / planetFactories));
-      Message * msg = new Message();
+      Message::Ptr msg(new Message());
       msg->setSubject("Build Fleet order slowed");
       msg->setBody(std::string("The construction of your new weapon has been delayed."));
       Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
@@ -197,13 +187,13 @@ bool BuildWeapon::doOrder(IGObject *ob)
     Game* game = Game::getGame();
 
     //create the resource on the planet
-    ResourceManager* resman = game->getResourceManager();
+    ResourceManager::Ptr resman = game->getResourceManager();
 
-    std::map<uint32_t,uint32_t> weapontype = weaponlist->getList();
-    for(std::map<uint32_t,uint32_t>::iterator itcurr = weapontype.begin(); itcurr != weapontype.end(); ++itcurr) {
-      Design* design = game->getDesignStore()->getDesign(itcurr->first);
+    IdMap weapontype = weaponlist->getList();
+    for(IdMap::iterator itcurr = weapontype.begin(); itcurr != weapontype.end(); ++itcurr) {
+      Design::Ptr design = game->getDesignStore()->getDesign(itcurr->first);
       if (resman->getResourceDescription(design->getName()) == NULL) {
-        ResourceDescription* res = new ResourceDescription();
+        ResourceDescription::Ptr res(new ResourceDescription());
         res->setNameSingular(design->getName().c_str());
         res->setNamePlural(design->getName().c_str());
         res->setUnitSingular("weapon");
@@ -219,7 +209,7 @@ bool BuildWeapon::doOrder(IGObject *ob)
       planet->addResource(resNum, itcurr->second);
     }
 
-    Message * msg = new Message();
+    Message::Ptr msg(new Message());
     msg->setSubject("Build Weapon order complete");
     msg->setBody(std::string("The construction of your new weapon is complete."));
     msg->addReference(rst_Action_Order, rsorav_Completion);

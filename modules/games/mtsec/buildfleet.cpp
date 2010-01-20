@@ -27,6 +27,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <boost/bind.hpp>
 
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -48,6 +49,7 @@
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
 #include <tpserver/integerobjectparam.h>
+#include <tpserver/orderparameters.h>
 
 #include "planet.h"
 
@@ -63,7 +65,7 @@ BuildFleet::BuildFleet() : Order()
   name = "Build Fleet";
   description = "Build a fleet";
   
-  fleetlist = (ListParameter*) addOrderParameter( new ListParameter("ships", "The type of ship to build", boost::bind( &Build::generateListOptions, this ) ) );
+  fleetlist = (ListParameter*) addOrderParameter( new ListParameter("ships", "The type of ship to build", boost::bind( &BuildFleet::generateListOptions, this ) ) );
   fleetname = (StringParameter*)addOrderParameter( new StringParameter("name", "The name of the new fleet being built") );
   turns = 1;
 }
@@ -138,6 +140,8 @@ void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
   uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
   IdMap fleettype = fleetlist->getList();
 
+  uint32_t usedshipres = 0;
+  
   for(IdMap::iterator itcurr = fleettype.begin();
      itcurr != fleettype.end(); ++itcurr){
     uint32_t type = itcurr->first;
@@ -172,7 +176,7 @@ bool BuildFleet::doOrder(IGObject::Ptr ob)
   Planet* planet = static_cast<Planet*>(ob->getObjectBehaviour());
 
   Game* game = Game::getGame();
-  ResourceManager* resman = game->getResourceManager();
+  ResourceManager::Ptr resman = game->getResourceManager();
   const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
   const uint32_t resValue = planet->getResourceSurfaceValue(resType);
 
@@ -185,7 +189,7 @@ bool BuildFleet::doOrder(IGObject::Ptr ob)
 
   uint32_t runningTotal = resources[1];
   if (resValue == 0) {
-    Message * msg = new Message();
+    Message::Ptr msg(new Message());
     msg->setSubject("Build Fleet order error");
     msg->setBody(std::string("The construction of your  new fleet \"") + fleetname->getString() + "\" has been delayed, you do not have any production points this turn.");
     Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);
@@ -196,7 +200,7 @@ bool BuildFleet::doOrder(IGObject::Ptr ob)
       runningTotal = resources[1];
       uint32_t planetFactories = planet->getFactoriesPerTurn();
       turns = static_cast<uint32_t>(ceil(runningTotal / planetFactories));
-      Message * msg = new Message();
+      Message::Ptr msg(new Message());
       msg->setSubject("Build Fleet order slowed");
       msg->setBody(std::string("The construction of your new fleet \"") + fleetname->getString() + "\" has been delayed.");
       Game::getGame()->getPlayerManager()->getPlayer(ownerid)->postToBoard(msg);

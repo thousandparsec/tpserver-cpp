@@ -558,7 +558,7 @@ void MTSec::createResources(){
   res->setVolume(1);
   resman->addResourceDescription(res);
 
-  res = new ResourceDescription();
+  res.reset( new ResourceDescription() );
   res->setNameSingular("Factories");
   res->setNamePlural("Factories");
   res->setUnitSingular("unit");
@@ -586,7 +586,7 @@ void MTSec::createGame()
 //  Don't think we need to asset that this category is 1 since we don't use the actual number 1 anywhere.
 //    assert(cat->getCategoryId() == 1);
 
-    cat = new Category();
+    cat.reset( new Category() );
     cat->setName("Weapons");
     cat->setDescription("The missile and torpedoe design and component category");
     ds->addCategory(cat);
@@ -654,6 +654,7 @@ Design::Ptr MTSec::createScoutDesign( Player::Ptr owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createScoutDesign");
     Game *game = Game::getGame();
+    DesignStore::Ptr ds = game->getDesignStore();
     Design::Ptr scout( new Design() );
     IdMap componentList;
 
@@ -674,7 +675,7 @@ Design::Ptr MTSec::createScoutDesign( Player::Ptr owner)
 Design::Ptr MTSec::createBattleScoutDesign( Player::Ptr owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createBattleScoutDesign");
-    DesignStore *ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     Game *game = Game::getGame();
     Design::Ptr scout( new Design() );
@@ -694,14 +695,14 @@ Design::Ptr MTSec::createBattleScoutDesign( Player::Ptr owner)
     return scout;
 }
 
-Design* MTSec::createAlphaMissileDesign( Player* owner)
+Design::Ptr MTSec::createAlphaMissileDesign( Player::Ptr owner)
 {
     Logger::getLogger()->debug( "Enter MTSec::createAlphaMissileDesign");
-    DesignStore *ds = Game::getGame()->getDesignStore();
+    DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
     Game *game = Game::getGame();
-    Design* scout = new Design();
-    std::map<uint32_t, uint32_t> componentList;
+    Design::Ptr scout( new Design() );
+    IdMap componentList;
 
     scout->setCategoryId(2);
     scout->setName( "Alpha Missile");
@@ -764,9 +765,9 @@ void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject::Ptr star)
     IGObject::Ptr   fleet = createEmptyFleet( player, star, fleetName);
 
     Design::Ptr scout = createScoutDesign( player);
-    Design::ptr tempMissile = createAlphaMissileDesign(player);
+    Design::Ptr tempMissile = createAlphaMissileDesign(player);
 
-    PlayerView* playerview = player->getPlayerView();;
+    PlayerView::Ptr playerview = player->getPlayerView();
 
     playerview->addUsableDesign(tempMissile->getDesignId());
 

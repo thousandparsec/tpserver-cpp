@@ -47,13 +47,9 @@ FleetType::FleetType():OwnedObjectType( "Fleet", "Fleet of ships"){
   ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Ships", "The information about ships in this fleet");
   group->addParameter(obpT_Reference_Quantity_List, "Ship List", "The list of ships");
   group->addParameter(obpT_Integer, "Damage", "The damage done to the ships");
-  addParameterGroupDesc(group);
 
-  group = new ObjectParameterGroupDesc();
-  group->setName("Resources");
-  group->setDescription("The fleet's weapon resources");
+  group = createParameterGroupDesc("Resources", "The fleet's weapon resources");
   group->addParameter(obpT_Resource_List, "Weapon Resource List", "The weapon list the fleet has available");
-  addParameterGroupDesc(group);
 
 }
 
@@ -148,7 +144,7 @@ std::map<uint32_t, uint32_t> Fleet::getShips() const{
 int64_t Fleet::maxSpeed(){
   Logger::getLogger()->debug("Enter Fleet::maxSpeed");
   double speed = 1e100;
-  DesignStore* ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
   for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::iterator itcurr = ships.begin();
       itcurr != ships.end(); ++itcurr){

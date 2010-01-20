@@ -38,14 +38,10 @@ namespace MTSecRuleset {
 PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object"){
   ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Resources", "The planet's resources");
   group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
-  addParameterGroupDesc(group);
 
-  group = new ObjectParameterGroupDesc();
-  group->setName("Factories");
-  group->setDescription("The planet's factories");
+  group = createParameterGroupDesc("Factories", "The planet's factories");
   group->addParameter(obpT_Integer, "Factories", "The factories that the planet has available");
   group->addParameter(obpT_Integer, "One Time", "The factories to be enhanced one time only");
-  addParameterGroupDesc(group);
 
 }
 
@@ -74,7 +70,7 @@ void Planet::setDefaultOrderTypes(){
   allowedlist.insert(om->getOrderTypeByName("Build Weapon"));
   dynamic_cast<OrderQueueObjectParam*>(obj->getParameter(3,1))->setAllowedOrders(allowedlist);
   Game* game = Game::getGame();
-  ResourceManager* resman = game->getResourceManager();
+  ResourceManager::Ptr resman = game->getResourceManager();
   const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
   dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->setValue(getResourceSurfaceValue(restype));
   dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,2))->setValue(0);
@@ -101,7 +97,7 @@ void Planet::doOnceATurn()
 {
   if (getOwner() != 0) {
     uint32_t factories = dynamic_cast<IntegerObjectParam*>(obj->getParameter(5,1))->getValue();
-    ResourceManager* resman = Game::getGame()->getResourceManager();
+    ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
     const uint32_t restype = resman->getResourceDescription("Factories")->getResourceType();
 
     if (factories < 100)

@@ -20,7 +20,6 @@
  *
  */
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 #include <map>
 #include <string>
@@ -34,11 +33,11 @@ class LoadArmament : public Order{
 	LoadArmament();
 	virtual ~LoadArmament();
 
-	void createFrame(Frame * f, int pos);
-	Result inputFrame(Frame * f, uint32_t playerid);
+	void createFrame(OutputFrame::Ptr f, int pos);
+	void inputFrame(InputFrame::Ptr f, uint32_t playerid);
         std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 
-	bool doOrder(IGObject * ob);
+	bool doOrder(IGObject::Ptr ob);
 
 	Order* clone() const;
 

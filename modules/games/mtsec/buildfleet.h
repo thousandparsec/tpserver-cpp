@@ -23,7 +23,6 @@
 #include <map>
 #include <string>
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 
 class ListParameter;
@@ -37,10 +36,10 @@ class BuildFleet : public Order{
   BuildFleet();
   virtual ~BuildFleet();
 
-  void createFrame(Frame *f, int pos);
-  Result inputFrame(Frame *f, uint32_t playerid);
+  void createFrame(OutputFrame::Ptr f, int pos);
+  void inputFrame(InputFrame::Ptr f, uint32_t playerid);
 
-  bool doOrder(IGObject *ob);
+  bool doOrder(IGObject::Ptr ob);
 
   Order* clone() const;
 

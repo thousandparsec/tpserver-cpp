@@ -24,7 +24,6 @@
 #include <map>
 #include <string>
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 class ListParameter;
 class TimeParameter;
@@ -35,7 +34,7 @@ class SendPoints : public Order{
  public:
   SendPoints();
   virtual ~SendPoints();
-  bool doOrder(IGObject *ob);
+  bool doOrder(IGObject::Ptr ob);
   Order* clone() const;
   std::map<uint32_t, std::pair<std::string, uint32_t> > generateListOptions();
 

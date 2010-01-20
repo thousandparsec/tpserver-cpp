@@ -24,7 +24,6 @@
 #include <map>
 #include <string>
 
-#include <tpserver/result.h>
 #include <tpserver/order.h>
 
 namespace MTSecRuleset {
@@ -33,7 +32,7 @@ class Enhance : public Order{
  public:
   Enhance();
   virtual ~Enhance();
-  bool doOrder(IGObject *ob);
+  bool doOrder(IGObject::Ptr ob);
   Order* clone() const;
 
  private:

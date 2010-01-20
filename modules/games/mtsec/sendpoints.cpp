@@ -22,7 +22,6 @@
 #include <math.h>
 #include <iostream>
 
-#include <tpserver/result.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
 #include <tpserver/objectmanager.h>
@@ -39,11 +38,10 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objecttypemanager.h>
-#include <tpserver/listparameter.h>
-#include <tpserver/timeparameter.h>
 #include <tpserver/objectmanager.h>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
+#include <tpserver/orderparameters.h>
 #include "planet.h"
 
 #include "sendpoints.h"
@@ -58,11 +56,7 @@ SendPoints::SendPoints() : Order()
   name = "Send Points";
   description = "Send Production Points";
 
-  targetPlanet = new ListParameter();
-  targetPlanet->setName("Planet");
-  targetPlanet->setDescription("The Planet to send points to.");
-  targetPlanet->setListOptionsCallback(ListOptionCallback(this, &SendPoints::generateListOptions));
-  addOrderParameter(targetPlanet);
+  targetPlanet = (ListParameter*) addOrderParameter( new ListParameter("Planet", "The Planet to send points to.", boost::bind( &SendPoints::generateListOptions, this ) ) );
 
   maxPoints = 100;
 
@@ -82,24 +76,24 @@ double SendPoints::getPercentage(IGObject *ob) const{
 }
 
 
-bool SendPoints::doOrder(IGObject *ob)
+bool SendPoints::doOrder(IGObject::Ptr ob)
 {
   Logger::getLogger()->debug("Entering SendPoints::doOrder");
   Game* game = Game::getGame();
   ObjectManager* obman = game->getObjectManager();
   Planet* source = dynamic_cast<Planet*>(ob->getObjectBehaviour());
 
-  std::map<uint32_t,uint32_t> list = targetPlanet->getList();
+  IdMap list = targetPlanet->getList();
   Logger::getLogger()->debug("SendPoints::doOrder List Size: %d", list.size());
-  for(std::map<uint32_t,uint32_t>::iterator i = list.begin(); i != list.end(); ++i) {
+  for(IdMap::iterator i = list.begin(); i != list.end(); ++i) {
     uint32_t destID = i->first;
     uint32_t numRes = i->second;
 
-    IGObject* destObj = obman->getObject(destID);
+    IGObject::Ptr destObj = obman->getObject(destID);
     Planet* destPlanet = dynamic_cast<Planet*>(destObj->getObjectBehaviour());
     if (destPlanet->getOwner() != 0) {
       Logger::getLogger()->debug("Found Planet(%s), Sending %d Points", destObj->getName().c_str(), i->second);
-      ResourceManager* resman = game->getResourceManager();
+      ResourceManager::Ptr resman = game->getResourceManager();
       const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
       if (source->removeResource(resType, numRes)) {
         destPlanet->addFactoriesNextTurn(numRes);
@@ -116,9 +110,9 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SendPoints::generateListOp
    Game* game = Game::getGame();
    ObjectManager* obman = game->getObjectManager();
    ObjectTypeManager* obtm = game->getObjectTypeManager();
-   ResourceManager* resman = game->getResourceManager();
+   ResourceManager::Ptr resman = game->getResourceManager();
 
-   IGObject* selectedObj = game->getObjectManager()->getObject(
+   IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
       game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
    Planet* planet = dynamic_cast<Planet*>(selectedObj->getObjectBehaviour());
    assert(planet);
@@ -127,7 +121,7 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > SendPoints::generateListOp
    std::set<uint32_t> ids = obman->getAllIds();
 
    for(std::set<uint32_t>::iterator i = ids.begin(); i != ids.end(); i++) {
-      IGObject* curObject = obman->getObject(*i);
+      IGObject::Ptr curObject = obman->getObject(*i);
       if (curObject->getType() == obtm->getObjectTypeByName("Planet")) {
          Planet* curPlanet = dynamic_cast<Planet*>(curObject->getObjectBehaviour());
          if (curPlanet->getOwner() != 0) {

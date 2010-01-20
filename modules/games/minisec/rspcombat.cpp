@@ -62,9 +62,9 @@ RSPCombat::~RSPCombat(){
 
 void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     Game* game = Game::getGame();
-    PlayerManager* playermanager = game->getPlayerManager();
+    PlayerManager::Ptr playermanager = game->getPlayerManager();
     ObjectManager* objectmanager = game->getObjectManager();
-    DesignStore* ds = game->getDesignStore();
+    DesignStore::Ptr ds = game->getDesignStore();
     
     const char * const rsp[] = {"rock", "scissors", "paper"};
     
@@ -77,12 +77,12 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     
     for(std::map<uint32_t, IdSet>::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
         std::vector<Combatant*> pcombatant;
-        Player* player = playermanager->getPlayer(itmap->first);
+        Player::Ptr player = playermanager->getPlayer(itmap->first);
         battlelogger->startSide(player->getName());
         IdSet theset = itmap->second;
         for(IdSet::iterator itset = theset.begin(); itset != theset.end(); ++itset){
             listallobids.insert(*itset);
-            IGObject* obj = objectmanager->getObject (*itset);
+            IGObject::Ptr obj = objectmanager->getObject (*itset);
             objectcache[*itset] = obj;
             if(obj->getType() == obT_Fleet){
                 Fleet* f2 = (Fleet*)(obj->getObjectBehaviour());
@@ -294,8 +294,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     
     for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
         msgit != msgstrings.end(); ++msgit){
-        Message *msg;
-        msg = new Message();
+        Message::Ptr msg( new Message() );
         msg->setSubject("Combat");
         for(std::set<uint32_t>::iterator itob = listallobids.begin(); itob != listallobids.end();
               ++itob){
@@ -414,7 +413,7 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
                 itplanet->second &= combatant->isDead();
             }
         }else if(combatant->isDead()){
-            IGObject* obj = objectcache[combatant->getObject()];
+            IGObject::Ptr obj = objectcache[combatant->getObject()];
             Fleet* fleet = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
             if(fleet != NULL){
                 fleet->removeShips(combatant->getShipType(), 1);
@@ -447,7 +446,7 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
             uint32_t oldowner = planet->getOwner();
             planet->setOwner(0);
             uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
-            OrderQueue* queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+            OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
             queue->removeOwner(oldowner);
             queue->removeAllOrders();
             Game::getGame()->getPlayerManager()->getPlayer(oldowner)->getPlayerView()->removeOwnedObject(obj->getID());

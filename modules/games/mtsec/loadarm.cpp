@@ -18,7 +18,7 @@
  *
  */
 
-#include <tpserver/result.h>
+#include <boost/bind.hpp>
 #include <tpserver/order.h>
 #include <tpserver/frame.h>
 #include <tpserver/object.h>
@@ -34,7 +34,7 @@
 #include "mtsecturn.h"
 #include <tpserver/ordermanager.h>
 #include <tpserver/orderqueue.h>
-#include <tpserver/listparameter.h>
+#include <tpserver/orderparameters.h>
 #include <set>
 #include <tpserver/resourcemanager.h>
 #include <tpserver/resourcedescription.h>
@@ -49,11 +49,7 @@ LoadArmament::LoadArmament() : Order()
   name = "Load Armament";
   description = "Load a weapon onto your ships";
 
-  weaponlist = new ListParameter();
-  weaponlist->setName("Weapons");
-  weaponlist->setDescription("The weapon to load");
-  weaponlist->setListOptionsCallback(ListOptionCallback(this, &LoadArmament::generateListOptions));
-  addOrderParameter(weaponlist);
+  weaponlist = (ListParameter*) addOrderParameter( new ListParameter("Weapons", "The weapons to load", boost::bind( &LoadArmament::generateListOptions, this ) ) );
 
 }
 
@@ -65,19 +61,19 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > LoadArmament::generateList
   std::map<uint32_t, std::pair<std::string, uint32_t> > options;
 
   Game* game = Game::getGame();
-  IGObject *selectedObj = game->getObjectManager()->getObject(
+  IGObject::Ptr selectedObj = game->getObjectManager()->getObject(
             game->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
 
   Fleet* fleet = dynamic_cast<Fleet*>(selectedObj->getObjectBehaviour());
 
   ObjectManager* obman = Game::getGame()->getObjectManager();
   ObjectTypeManager* otman = Game::getGame()->getObjectTypeManager();
-  ResourceManager* resman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
   std::set<uint32_t>objs = obman->getObjectsByPos(fleet->getPosition(), 10000);
 
   for (std::set<uint32_t>::iterator itcurr = objs.begin(); itcurr != objs.end(); ++itcurr) {
     if (obman->getObject(*itcurr)->getType() == otman->getObjectTypeByName("Planet")) {
-      IGObject* planetObj = obman->getObject(*itcurr);
+      IGObject::Ptr planetObj = obman->getObject(*itcurr);
       Planet* planet = dynamic_cast<Planet*>(planetObj->getObjectBehaviour());
       Logger::getLogger()->debug("Found Planet %s for Load Armaments Order", planetObj->getName().c_str());
       std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = planet->getResources();
@@ -96,24 +92,24 @@ std::map<uint32_t, std::pair<std::string, uint32_t> > LoadArmament::generateList
 }
 
 
-void LoadArmament::createFrame(Frame * f, int pos)
+void LoadArmament::createFrame(OutputFrame::Ptr f, int pos)
 {
   turns = 1;
   Order::createFrame(f, pos);	
 }
 
-Result LoadArmament::inputFrame(Frame * f, uint32_t playerid)
+void LoadArmament::inputFrame(InputFrame::Ptr f, uint32_t playerid)
 {
-  return Order::inputFrame(f, playerid);
+  Order::inputFrame(f, playerid);
 }
 
-bool LoadArmament::doOrder(IGObject * ob){
+bool LoadArmament::doOrder(IGObject::Ptr ob){
   Fleet* fleet = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
   ObjectManager* obman = Game::getGame()->getObjectManager();
   ObjectTypeManager* otman = Game::getGame()->getObjectTypeManager();
-  ResourceManager* resman = Game::getGame()->getResourceManager();
+  ResourceManager::Ptr resman = Game::getGame()->getResourceManager();
   std::set<uint32_t>objs = obman->getObjectsByPos(fleet->getPosition(), 10000);
-  IGObject* planetObj;
+  IGObject::Ptr planetObj;
   Planet* planet;
 
   for (std::set<uint32_t>::const_iterator itcurr = objs.begin(); itcurr != objs.end(); ++itcurr) {
@@ -124,8 +120,8 @@ bool LoadArmament::doOrder(IGObject * ob){
       Logger::getLogger()->debug("LoadArmaments::doOrder Found Planet %s for Load Armaments Order", planetObj->getName().c_str());
       const uint32_t factoryType = resman->getResourceDescription("Factories")->getResourceType();
 
-    std::map<uint32_t,uint32_t> weapontype = weaponlist->getList();
-    for(std::map<uint32_t,uint32_t>::iterator weaponit = weapontype.begin(); weaponit != weapontype.end(); ++weaponit) {
+    IdMap weapontype = weaponlist->getList();
+    for(IdMap::iterator weaponit = weapontype.begin(); weaponit != weapontype.end(); ++weaponit) {
       if (planet->removeResource(factoryType, 1)) {
         if (planet->removeResource(weaponit->first, weaponit->second)) {
           Logger::getLogger()->debug("LoadArmaments::doOrder success, adding to resource %d: #:%d", weaponit->first, weaponit->second);
