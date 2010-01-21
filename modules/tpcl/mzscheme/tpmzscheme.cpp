@@ -59,9 +59,9 @@ extern "C" {
 TpMzScheme::~TpMzScheme(){
 }
 
-void TpMzScheme::evalDesign(Design* d){
+void TpMzScheme::evalDesign(Design::Ptr d){
 
-  DesignStore *ds = Game::getGame()->getDesignStore();
+  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
   
   if (scheme_setjmp(scheme_error_buf)) {
     Logger::getLogger()->warning("MzScheme Error");
@@ -81,8 +81,8 @@ void TpMzScheme::evalDesign(Design* d){
     for(std::set<uint32_t>::iterator propit = propids.begin();
 	propit != propids.end(); ++propit){
       // for each property type
-      Property* p = ds->getProperty(*propit);
-      if(p != NULL){
+      Property::Ptr p = ds->getProperty(*propit);
+      if(p){
 	formater.str("");
 	formater << "(define designType." << p->getName() 
 		 << " (make-property-accessor designType-ref "
@@ -94,7 +94,7 @@ void TpMzScheme::evalDesign(Design* d){
     }
     propids.clear();
 
-        std::map<uint32_t, uint32_t> complist = d->getComponents();
+        IdMap complist = d->getComponents();
 
     temp = scheme_eval_string("(define design (make-designType))", env);
     
@@ -107,13 +107,13 @@ void TpMzScheme::evalDesign(Design* d){
     }
 
         std::map<uint32_t, std::map<uint32_t, std::list<std::string> > > propranking;
-        for(std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
+        for(IdMap::iterator compit = complist.begin();
                 compit != complist.end(); ++compit){
-            Component *c = ds->getComponent(compit->first);
+            Component::Ptr c = ds->getComponent(compit->first);
             std::map<uint32_t, std::string> pilist = c->getPropertyList();
             for(std::map<uint32_t, std::string>::iterator piit = pilist.begin();
                     piit != pilist.end(); ++piit){
-                Property* p = ds->getProperty(piit->first);
+                Property::Ptr p = ds->getProperty(piit->first);
                 for(uint32_t i = 0; i < compit->second; i++){
                     propranking[p->getRank()][p->getPropertyId()].push_back(piit->second);
                 }
@@ -141,7 +141,7 @@ void TpMzScheme::evalDesign(Design* d){
 	    listvals.push_back(scheme_real_to_double(temp));
 	  }
 	}
-	Property *p = ds->getProperty(piit->first);
+	Property::Ptr p = ds->getProperty(piit->first);
 	formater.str("");
 	formater << "(" <<  p->getTpclDisplayFunction() << " design '(";
 	for(std::list<double>::iterator itvals = listvals.begin();
@@ -186,7 +186,7 @@ void TpMzScheme::evalDesign(Design* d){
     std::string feedback = "";
         Logger::getLogger()->debug("About to process requirement functions");
 
-        for(std::map<uint32_t, uint32_t>::iterator compit = complist.begin();
+        for(IdMap::iterator compit = complist.begin();
                 compit != complist.end();
                 ++compit){
             uint32_t curval = compit->first;

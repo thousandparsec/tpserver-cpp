@@ -22,7 +22,6 @@
 
 #include <tpserver/tpscheme.h>
 
-class Design;
 typedef struct Scheme_Env Scheme_Env;
 
 class TpMzScheme : public TpScheme{
@@ -30,7 +29,7 @@ class TpMzScheme : public TpScheme{
   TpMzScheme();
 
         virtual ~TpMzScheme();
-  virtual void evalDesign(Design* d);
+  virtual void evalDesign(Design::Ptr d);
 
  private:
   Scheme_Env * env;
