@@ -997,7 +997,9 @@ void PlayerAgent::processAddDesign( InputFrame::Ptr frame ){
   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   if(ds->addDesign(design)){
-        player->getPlayerView()->processGetDesign(design->getDesignId(), of);
+        DesignView::Ptr designv = player->getPlayerView()->getDesignView( design->getDesignId() );
+        if (!designv) throw FrameException(fec_NonExistant, "No Such Design");
+        temp_connection->send( frame, designv );
   }else{
     throw FrameException( fec_FrameError, "Could not add design");
   }
@@ -1035,7 +1037,9 @@ void PlayerAgent::processModifyDesign( InputFrame::Ptr frame ){
   DesignStore::Ptr ds = Game::getGame()->getDesignStore();
 
   if(ds->modifyDesign(design)){
-        player->getPlayerView()->processGetDesign(design->getDesignId(), of);
+        DesignView::Ptr designv = player->getPlayerView()->getDesignView( design->getDesignId() );
+        if (!designv) throw FrameException(fec_NonExistant, "No Such Design");
+        temp_connection->send( frame, designv );
   }else{
     throw FrameException( fec_FrameError, "Could not modify design");
   }

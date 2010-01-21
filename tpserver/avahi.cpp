@@ -41,7 +41,6 @@
 #endif
 
 #include "logging.h"
-#include "settingscallback.h"
 #include "game.h"
 #include "ruleset.h"
 #include "objectmanager.h"
@@ -51,6 +50,7 @@
 #include "net.h"
 #include "connection.h"
 #include "turntimer.h"
+#include "settings.h"
 
 #include "avahi.h"
 
@@ -184,7 +184,7 @@ class AvahiWatch : public Connection{
 
 class AvahiTimeout{
   public:
-    AvahiTimeout(AvahiTimeoutCallback cb, void* ud):  timer(NULL), callback(cb), userdata(ud){
+    AvahiTimeout(AvahiTimeoutCallback cb, void* ud):  timer(), callback(cb), userdata(ud){
     }
     
     ~AvahiTimeout(){
@@ -253,7 +253,7 @@ void timeout_free(AvahiTimeout *t){
   delete t;
 }
 
-Avahi::Avahi() : Publisher(), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(NULL){
+Avahi::Avahi() : Publisher(), pollapi(NULL), group(NULL), client(NULL), name(NULL), resetTimer(){
   
   std::string tname = Settings::getSettings()->get("game_name");
   if(tname.empty())
@@ -285,9 +285,9 @@ Avahi::~Avahi(){
   if (pollapi)
       delete pollapi;
   
-  if(resetTimer != NULL){
-      resetTimer->setValid(false);
-      delete resetTimer;
+  if(resetTimer){
+      resetTimer->invalidate();
+      resetTimer.reset();
   }
   
 }
@@ -405,7 +405,7 @@ void Avahi::reset(){
     /* Check wether creating the client object succeeded */
     if (!client) {
         Logger::getLogger()->warning("Failed to create avahi client: %s", avahi_strerror(error));
-        resetTimer = new TimerCallback(this, &Avahi::reset, 60);
-        Network::getNetwork()->addTimer(*resetTimer);
+        resetTimer.reset( new TimerCallback(boost::bind(&Avahi::reset, this), 60));
+        Network::getNetwork()->addTimer(resetTimer);
     }
 }

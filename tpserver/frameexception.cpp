@@ -1,8 +1,6 @@
-#ifndef THRESHOLDTURNTIMER_H
-#define THRESHOLDTURNTIMER_H
-/*  ThreshouldTurnTimer class
+/*  Frame Exception class
  *
- *  Copyright (C) 2009  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2010 Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,27 +18,24 @@
  *
  */
 
-#include "turntimer.h"
 
-class TimerCallback;
+#include "frameexception.h"
 
-class ThresholdTurnTimer : public TurnTimer{
-  public:
-    ThresholdTurnTimer();
-    virtual ~ThresholdTurnTimer();
-    uint32_t getTurnLength() const;
-    void resetTimer();
-    
-    protected:
-        void onPlayerFinishedTurn();
-    
-  private:
-    void updateTimer();
-    void updateTimerNowOverThreshold();
-    void thresholdDoneAndStartEOT();
-    bool isOverThreshold();
-    void thresholdChanged(const std::string& key, const std::string& val);
-    bool overthreshold;
-};
+FrameException::FrameException( FrameErrorCode code, const std::string& arg ) : error_code(code), error_message(arg){
+}
 
-#endif
+const char* FrameException::what() const throw(){
+    return error_message.c_str();
+}
+
+FrameErrorCode FrameException::getErrorCode() const{
+    return error_code;
+}
+
+const std::string& FrameException::getErrorMessage() const{
+    return error_message;
+}
+
+FrameException::~FrameException() throw(){
+}
+

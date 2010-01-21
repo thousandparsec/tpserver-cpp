@@ -56,7 +56,7 @@ private:
   AvahiClient *client;
   char* name;
   
-  TimerCallback* resetTimer;
+  TimerCallback::Ptr resetTimer;
 
 };
 
