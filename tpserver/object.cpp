@@ -77,12 +77,12 @@ void IGObject::setType(uint32_t newtype){
 }
 
 void IGObject::setName(const std::string &newname){
-  setName(newname);
+  ProtocolObject::setName(newname);
   touchModTime();
 }
 
 void IGObject::setDescription(const std::string &newdesc){
-  setDescription(newdesc);
+  ProtocolObject::setDescription(newdesc);
   touchModTime();
 }
 
