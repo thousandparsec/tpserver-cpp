@@ -183,8 +183,14 @@ void Network::stop()
   if (active) {
     INFO("Stopping Network");
 
-    for_each_key( connections.begin(), connections.end(), boost::bind( &Network::removeConnection, this, _1 ) );
+    //Remove the advertisers first (might be managing connections)
     advertiser->unpublish();
+    
+    //for_each_key doesn't work here because the map gets modified by the function
+    // replaced by while(!connections.empty()) loop
+    while(!connections.empty()){
+        removeConnection(connections.begin()->first);
+    }
 
     active = false;
   } else {
