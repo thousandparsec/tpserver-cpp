@@ -234,13 +234,13 @@ int main(int argc, char **argv)
 	    myNetwork->adminStop();
             
             }catch(std::exception e){
-                myLogger->debug("Caught exception");
+                myLogger->error("Caught exception: %s", e.what());
             }
 
           myPlugins->stop();
 
         }catch(std::exception e){
-            myLogger->debug("Caught exception, exiting");
+            myLogger->error("Caught exception, exiting. Exception: %s", e.what());
         }
 
 	myLogger->info("TP-server exiting");
