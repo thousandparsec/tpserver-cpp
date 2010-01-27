@@ -55,7 +55,7 @@
 #include "playeragent.h"
 
 PlayerAgent::PlayerAgent( PlayerConnection::Ptr connection, Player::Ptr nplayer )
-  : ref_connection ( connection ), temp_connection() {
+  : ref_connection ( connection ), temp_connection(), player(nplayer) {
 }
 
 PlayerAgent::~PlayerAgent(){
@@ -545,7 +545,7 @@ void PlayerAgent::processGetOrderTypes( InputFrame::Ptr frame ){
   DEBUG("doing get order types frame");
 
   versionCheck(frame,fv0_3);
-  lengthCheck( frame, frame->getVersion() == fv0_3 ? 12 : 20 );
+  lengthCheck( frame, frame->getVersion() < fv0_3 ? 12 : 20 );
 
   OutputFrame::Ptr of = temp_connection->createFrame(frame);
   uint32_t lseqkey = frame->unpackInt();

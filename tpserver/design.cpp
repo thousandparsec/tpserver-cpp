@@ -23,7 +23,7 @@
 
 #include "design.h"
 
-Design::Design() : ProtocolObject(ft03_Design, 0, 0) {
+Design::Design() : ProtocolObject(ft03_Design, 0) {
   valid = false;
   inuse = 0;
   exist = 0;
