@@ -22,7 +22,6 @@
 #include "protocol.h"
 #include "protocolobject.h"
 
-FrameType ProtocolObject::frame_type = ft02_Invalid;
 
 void ProtocolObject::pack( OutputFrame::Ptr frame ) const
 {

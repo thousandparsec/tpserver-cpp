@@ -83,7 +83,7 @@ private:
   uint32_t pid;
 
   // TODO: modify to be based on interfaces not templates
-  template< class EntityType >
+  template< class EntityType, FrameType ftype >
   struct EntityInfo {
     typedef boost::shared_ptr< EntityType > EntityPtr;
     IdSet visible;
@@ -92,7 +92,8 @@ private:
     IdModList modified;
     uint32_t sequence;
     uint32_t pid;
-    EntityInfo() : sequence( 0 ) {}
+    FrameType frame_type;
+    EntityInfo() : sequence( 0 ), frame_type(ftype) {}
     void processGetIds( InputFrame::Ptr in, OutputFrame::Ptr out, FrameType type );
     void generateModList( uint64_t fromtime );
     void addVisible( EntityPtr entity );
@@ -104,9 +105,9 @@ private:
     EntityPtr retrieve( uint32_t id );
   };
 
-  EntityInfo< ObjectView > objects;
-  EntityInfo< DesignView > designs;
-  EntityInfo< ComponentView > components;
+  EntityInfo< ObjectView, ft02_Object > objects;
+  EntityInfo< DesignView, ft03_Design > designs;
+  EntityInfo< ComponentView, ft03_Component > components;
 
 };
 

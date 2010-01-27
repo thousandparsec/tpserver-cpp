@@ -220,8 +220,8 @@ void PlayerView::setUsableComponents(const IdSet& cids){
   components.actable = cids;
 }
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame::Ptr in, OutputFrame::Ptr out, FrameType type )
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::processGetIds( InputFrame::Ptr in, OutputFrame::Ptr out, FrameType type )
 {
   DEBUG("doing Get Ids frame");
   
@@ -273,8 +273,8 @@ void PlayerView::EntityInfo< EntityType >::processGetIds( InputFrame::Ptr in, Ou
   }
 }
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::generateModList( uint64_t fromtime )
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::generateModList( uint64_t fromtime )
 {
   modified.clear();
   for(IdSet::iterator itcurr = visible.begin();
@@ -287,8 +287,8 @@ void PlayerView::EntityInfo< EntityType >::generateModList( uint64_t fromtime )
 }
 
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::addVisible( EntityPtr entity )
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::addVisible( EntityPtr entity )
 {
   uint32_t id = entity->getId();
   entity->touchModTime();
@@ -298,15 +298,15 @@ void PlayerView::EntityInfo< EntityType >::addVisible( EntityPtr entity )
   sequence++;
 }
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::addVisible( const IdSet& obids ){
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::addVisible( const IdSet& obids ){
   for (IdSet::const_iterator it = obids.begin(); it != obids.end(); ++it ) {
     addVisible( EntityPtr( new EntityType( *it, true ) ) );
   }
 }
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::addActable( uint32_t id )
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::addActable( uint32_t id )
 {
   actable.insert(id);
   if(visible.find(id) == visible.end()){
@@ -320,33 +320,33 @@ void PlayerView::EntityInfo< EntityType >::addActable( uint32_t id )
 }
 
 
-template< class EntityType >
-void PlayerView::EntityInfo< EntityType >::removeActable( uint32_t id )
+template< class EntityType, FrameType ft >
+void PlayerView::EntityInfo< EntityType, ft >::removeActable( uint32_t id )
 {
   IdSet::iterator f = actable.find(id);
   if(f != actable.end())
     actable.erase(f);
 }
 
-template< class EntityType >
-bool PlayerView::EntityInfo< EntityType >::isActable( uint32_t id ) const
+template< class EntityType, FrameType ft >
+bool PlayerView::EntityInfo< EntityType, ft >::isActable( uint32_t id ) const
 {
   return actable.find( id ) != actable.end();
 }
 
-template< class EntityType >
-bool PlayerView::EntityInfo< EntityType >::isVisible( uint32_t id ) const
+template< class EntityType, FrameType ft >
+bool PlayerView::EntityInfo< EntityType, ft >::isVisible( uint32_t id ) const
 {
   return visible.find( id ) != visible.end();
 }
 
-template< class EntityType >
+template< class EntityType, FrameType ft >
 boost::shared_ptr< EntityType > 
-PlayerView::EntityInfo< EntityType >::retrieve( uint32_t id ) 
+PlayerView::EntityInfo< EntityType, ft >::retrieve( uint32_t id ) 
 {
   EntityPtr entity = cache[id];
   if(entity == NULL){
-    entity = boost::dynamic_pointer_cast< EntityType >(Game::getGame()->getPersistence()->retrieveProtocolView(EntityType::getFrameType(), pid, id));
+    entity = boost::dynamic_pointer_cast< EntityType >(Game::getGame()->getPersistence()->retrieveProtocolView(frame_type, pid, id));
     if(entity != NULL){
       cache[id] = entity;
     }
