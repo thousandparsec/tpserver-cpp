@@ -66,6 +66,11 @@ class Vector3d {
      * Scalar multiplication operator
      */
     Vector3d operator*(int64_t val) const;
+    
+    /**
+     * Scalar multiplication operator
+     */
+    Vector3d operator*(double val) const;
 
     /**
      * Equality operator

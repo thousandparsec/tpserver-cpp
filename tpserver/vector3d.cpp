@@ -71,6 +71,13 @@ Vector3d Vector3d::operator*(int64_t val) const{
   return rtn;
 }
 
+Vector3d Vector3d::operator*(double val) const{
+    Vector3d rtn;
+    rtn.x = (int64_t)(x * val);
+    rtn.y = (int64_t)(y * val);
+    rtn.z = (int64_t)(z *val);
+    return rtn;
+}
 bool Vector3d::operator==(const Vector3d &rhs) const{
   return (x == rhs.x && y == rhs.y && z == rhs.z);
 }
@@ -91,7 +98,7 @@ Vector3d Vector3d::makeLength(int64_t length) const{
   double thisLength = sqrt(getLengthSq());
   assert(thisLength > 0);
   double scale = length / thisLength;
-  return *this * scale;
+  return (*this) * scale;
 }
 
 int64_t Vector3d::getX() const{
