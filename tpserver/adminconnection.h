@@ -30,6 +30,8 @@ class AdminConnection: public TcpConnection {
   AdminConnection(int fd);
   virtual ~AdminConnection();
   
+  virtual void close();
+  
  protected:
 
   virtual void processLogin();

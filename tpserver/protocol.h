@@ -116,6 +116,7 @@ enum FrameType{
   ft04_PlayerIds_List = 73,
   ft04_Max,
   // Administration frame types follow
+  ftad_Min = 1000,
   ftad_LogMessage = 1000,
   ftad_CommandUpdate = 1001,
   ftad_CommandDesc_Get = 1002,

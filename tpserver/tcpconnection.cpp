@@ -113,9 +113,9 @@ void TcpConnection::processWrite() {
           sendqueue.pop();
         }
       } catch ( SystemException& e ) {
-         ERROR("TcpConnection : Socket error writing : %s", e.what());
          clearQueue();
          close();
+         ERROR("TcpConnection : Socket error writing : %s", e.what());
          return;
       }
     } else {
@@ -221,9 +221,9 @@ bool TcpConnection::readFrame(InputFrame::Ptr recvframe)
         return false;
       }
     } catch ( SystemException& e ) {
-      WARNING("TcpConnection : Socket error -- %s", e.what());
       clearQueue();
       close();
+      WARNING("TcpConnection : Socket error -- %s", e.what());
       return false;
     }
   }
@@ -295,12 +295,7 @@ bool TcpConnection::readFrame(InputFrame::Ptr recvframe)
         sendFail(recvframe,fec_ProtocolError, "Protocol Error, wrong version number");
         return false;
       }
-      FrameType type = recvframe->getType();
-      if (type <= ft_Invalid || (version == fv0_2 && type >= ft02_Max) || (version == fv0_3 && type >= ft03_Max && type != ft04_TurnFinished) || (version == fv0_4 && type >= ft04_Max)) {
-        WARNING("TcpConnection : Client has sent wrong frame type (%d)", type);
-        sendFail(recvframe,fec_ProtocolError, "Protocol Error, frame type not known");
-        return false;
-      }
+      
     }
   }else{
     header_buffer.clear();

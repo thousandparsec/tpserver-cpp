@@ -37,10 +37,13 @@ AdminConnection::AdminConnection(int fd) : TcpConnection(fd,ADMIN){
 }
 
 AdminConnection::~AdminConnection(){
-  Logger::getLogger()->removeLog(logextid);
-  Logger::getLogger()->info("Admin client disconnected");
 }
 
+void AdminConnection::close(){
+    Logger::getLogger()->removeLog(logextid);
+    Logger::getLogger()->info("Admin client disconnected");
+    TcpConnection::close();
+}
 
 void AdminConnection::processLogin(){
   InputFrame::Ptr recvframe( new InputFrame(version, paddingfilter) );

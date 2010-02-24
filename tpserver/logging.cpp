@@ -147,7 +147,7 @@ void Logger::removeLog(int extid)
 
   extname << "ext" << extid;
   if (sink_map.find(extname.str()) != sink_map.end()) {
-    sink_map.erase(extname.str());
+    sink_map[extname.str()].reset();
   }
 }
 
@@ -219,6 +219,17 @@ Logger::~Logger()
 void Logger::doLogging(int level, const char *msg)
 {
   for (SinkMap::iterator pos = sink_map.begin(); pos != sink_map.end(); ++pos) {
-    pos->second->doLogging(level, msg);
+        if(pos->second){
+            pos->second->doLogging(level, msg);
+        }else{
+            SinkMap::iterator ittemp = pos;
+            ++pos;
+            sink_map.erase(ittemp);
+            if(sink_map.size() == 0){
+                break;
+            }else{
+                --pos;
+            }
+        }
   }
 }
