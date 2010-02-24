@@ -136,7 +136,6 @@ void OutputFrame::packInt8(char val){
 
 
 void OutputFrame::packIdModList(const IdModList& modlist, uint32_t count, uint32_t from_position ){
-  if (count == 0) count = modlist.size();
   packInt(modlist.size() - count - from_position);
   packInt(count);
   IdModList::const_iterator itcurr = modlist.begin();

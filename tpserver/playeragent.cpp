@@ -1167,8 +1167,9 @@ int PlayerAgent::queryCheck( InputFrame::Ptr frame )
   }
 
   lengthCheckMin( frame, 4 + 4 * result );
-
-  temp_connection->sendSequence( frame, result );
+  if(result > 1){
+    temp_connection->sendSequence( frame, result );
+  }
 
   return result;
 }
