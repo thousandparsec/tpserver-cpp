@@ -35,11 +35,6 @@ Board::Board(uint32_t nid, const std::string& nname, const std::string& ndesc)
 void Board::addMessage(Message::Ptr msg, int pos) {
   retrieveMessageList();
   uint32_t msgid = Game::getGame()->getBoardManager()->addMessage(msg);
-  if (msgid == UINT32_NEG_ONE)
-  {
-    // error report?
-    return;
-  }
   if (pos == -1) {
     message_ids.push_back(msgid);
   } else {
