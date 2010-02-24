@@ -40,6 +40,7 @@ class ReferenceObjectParam;
 class RefQuantityListObjectParam;
 class IntegerObjectParam;
 class SizeObjectParam;
+class MediaObjectParam;
 
 class MysqlPersistence : public Persistence{
 public:
@@ -161,6 +162,8 @@ private:
   bool retrieveIntegerObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, IntegerObjectParam* iob);
   bool updateSizeObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, SizeObjectParam* sob);
   bool retrieveSizeObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, SizeObjectParam* sob);
+  bool updateMediaObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, MediaObjectParam* mob);
+  bool retrieveMediaObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, MediaObjectParam* mob);
   
     void lock();
     void unlock();
@@ -181,9 +184,9 @@ private:
   void singleQuery( const std::string& query );
   uint32_t valueQuery( const std::string& query );
 
-  const IdSet& idSetQuery( const std::string& query );
-  const IdList& idListQuery( const std::string& query );
-  const IdMap& idMapQuery( const std::string& query );
+  const IdSet idSetQuery( const std::string& query );
+  const IdList idListQuery( const std::string& query );
+  const IdMap idMapQuery( const std::string& query );
 };
 
 class MysqlQuery {
@@ -194,7 +197,7 @@ class MysqlQuery {
     static void lock() {}
     static void unlock() {}
 
-    const std::string& get( uint32_t index );
+    const std::string get( uint32_t index );
     int getInt( uint32_t index );
     uint64_t getU64( uint32_t index );
     bool validRow();

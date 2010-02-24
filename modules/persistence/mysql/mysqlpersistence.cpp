@@ -55,6 +55,7 @@
 #include <tpserver/refquantitylistobjectparam.h>
 #include <tpserver/integerobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/mediaobjectparam.h>
 
 #include <my_global.h>
 #include <my_sys.h>
@@ -160,7 +161,7 @@ bool MysqlPersistence::init(){
             "(NULL, 'object', 0), (NULL, 'objectparamposition', 0), (NULL, 'objectparamvelocity', 0), "
             "(NULL, 'objectparamorderqueue', 0), (NULL, 'objectparamresourcelist', 0), "
             "(NULL, 'objectparamreference', 0), (NULL, 'objectparamrefquantitylist', 0), "
-            "(NULL, 'objectparaminteger', 0), (NULL, 'objectparamsize', 0), "
+            "(NULL, 'objectparaminteger', 0), (NULL, 'objectparamsize', 0), (NULL, 'objectparammedia', 0), "
             "(NULL, 'orderqueue', 0), (NULL, 'orderqueueowner', 0), (NULL, 'orderqueueallowedtype', 0), "
             "(NULL, 'ordertype', 0), (NULL, 'orderresource', 0), (NULL, 'orderslot', 0), "
             "(NULL, 'orderparamspace', 0), (NULL, 'orderparamobject', 0), "
@@ -206,6 +207,9 @@ bool MysqlPersistence::init(){
       }
       if(mysql_query(conn, "CREATE TABLE objectparamsize (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, size BIGINT UNSIGNED NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
         throw std::exception();
+      }
+      if(mysql_query(conn, "CREATE TABLE objectparammedia (objectid INT UNSIGNED NOT NULL, turn INT UNSIGNED NOT NULL, playerid INT UNSIGNED NOT NULL, paramgroupid INT UNSIGNED NOT NULL, paramgrouppos INT UNSIGNED NOT NULL, url VARCHAR(200) NOT NULL, PRIMARY KEY(objectid, turn, playerid, paramgroupid, paramgrouppos));") != 0){
+          throw std::exception();
       }
       if(mysql_query(conn, "CREATE TABLE orderqueue (queueid INT UNSIGNED NOT NULL PRIMARY KEY, objectid INT UNSIGNED NOT NULL, active TINYINT NOT NULL, repeating TINYINT NOT NULL, modtime BIGINT UNSIGNED NOT NULL);") != 0){
         throw std::exception();
@@ -459,6 +463,7 @@ bool MysqlPersistence::saveGameInfo(){
 bool MysqlPersistence::retrieveGameInfo(){
   try {
     MysqlQuery query(conn, "SELECT * FROM gameinfo;" );
+    query.nextRow();
     Game* game = Game::getGame();
     game->setKey(query.get(0));
     game->setGameStartTime(query.getU64(1));
@@ -521,6 +526,9 @@ bool MysqlPersistence::saveObject(IGObject::Ptr ob){
               case obpT_Size:
                 updateSizeObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<SizeObjectParam*>(parameter));
                 break;
+              case obpT_Media:
+                  updateMediaObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<MediaObjectParam*>(parameter));
+                  break;
               default:
                 Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
                 throw std::exception();
@@ -556,11 +564,6 @@ IGObject::Ptr MysqlPersistence::retrieveObject(uint32_t obid){
     MysqlQuery query( conn, querybuilder.str() );
     query.nextRow();
 
-    //children object ids
-    querybuilder.str("");
-    querybuilder << "SELECT object.objectid FROM object JOIN (SELECT objectid, MAX(turnnum) AS maxturnnum FROM object WHERE turnnum <= " << turn << " GROUP BY objectid) AS maxx ON (object.objectid=maxx.objectid AND object.turnnum = maxx.maxturnnum) WHERE parentid = " << obid << " ;";
-    MysqlQuery cquery(conn, querybuilder.str() );
-
     IGObject::Ptr object( new IGObject(obid) );
 
     Game::getGame()->getObjectTypeManager()->setupObject(object, query.getInt(3));
@@ -569,6 +572,11 @@ IGObject::Ptr MysqlPersistence::retrieveObject(uint32_t obid){
     object->setDescription(query.get(5));
     object->setParent(query.getInt(6));
 
+    //children object ids
+    querybuilder.str("");
+    querybuilder << "SELECT object.objectid FROM object JOIN (SELECT objectid, MAX(turnnum) AS maxturnnum FROM object WHERE turnnum <= " << turn << " GROUP BY objectid) AS maxx ON (object.objectid=maxx.objectid AND object.turnnum = maxx.maxturnnum) WHERE parentid = " << obid << " ;";
+    MysqlQuery cquery(conn, querybuilder.str() );
+    
     while(cquery.nextRow()){
       uint32_t childid = cquery.getInt(0);
       DEBUG("childid: %d", childid);
@@ -613,6 +621,9 @@ IGObject::Ptr MysqlPersistence::retrieveObject(uint32_t obid){
               case obpT_Size:
                 retrieveSizeObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<SizeObjectParam*>(parameter));
                 break;
+              case obpT_Media:
+                  retrieveMediaObjectParam(obid, turn, 0, itcurr->first, ppos, static_cast<MediaObjectParam*>(parameter));
+                  break;
               default:
                 Logger::getLogger()->error("Unknown ObjectParameter type %d", parameter->getType());
                 throw std::exception();
@@ -667,7 +678,7 @@ bool MysqlPersistence::saveOrderQueue(const OrderQueue::Ptr oq){
 
     insertList( "orderslot", oq->getQueueId(), oq->getOrderSlots() );
     insertSet ( "orderqueueowner", oq->getQueueId(), oq->getOwner() );
-    insertSet ( "orderqueueallowedordertype", oq->getQueueId(), oq->getAllowedOrderTypes() );
+    insertSet ( "orderqueueallowedtype", oq->getQueueId(), oq->getAllowedOrderTypes() );
     return true;
   } catch ( MysqlException& ){
       return false;
@@ -695,7 +706,7 @@ bool MysqlPersistence::updateOrderQueue(const OrderQueue::Ptr oq){
 
     insertList( "orderslot", oq->getQueueId(), oq->getOrderSlots() );
     insertSet ( "orderqueueowner", oq->getQueueId(), oq->getOwner() );
-    insertSet ( "orderqueueallowedordertype", oq->getQueueId(), oq->getAllowedOrderTypes() );
+    insertSet ( "orderqueueallowedtype", oq->getQueueId(), oq->getAllowedOrderTypes() );
 
     return true;
   } catch ( MysqlException& ){
@@ -1852,12 +1863,12 @@ DesignView::Ptr MysqlPersistence::retrieveDesignView(uint32_t playerid, uint32_t
 
     querybuilder.str("");
     querybuilder << "SELECT propertyid,value FROM playerdesignviewprop WHERE playerid = " << playerid << " AND designid = " << designid << ";";
-    singleQuery( querybuilder.str() );
+    MysqlQuery propquery(conn, querybuilder.str() );
 
     PropertyValue::Map pvlist;
-    while(query.nextRow()){
-      PropertyValue pv( query.getInt(0), 0.0);
-      pv.setDisplayString(query.get(1));
+    while(propquery.nextRow()){
+      PropertyValue pv( propquery.getInt(0), 0.0);
+      pv.setDisplayString(propquery.get(1));
       pvlist[pv.getPropertyId()] = pv;
     }
     design->setVisiblePropertyValues(pvlist);
@@ -1911,7 +1922,7 @@ ComponentView::Ptr MysqlPersistence::retrieveComponentView(uint32_t playerid, ui
       comp->setCanSeeDescription(query.getInt(5) == 1);
       comp->setVisibleDescription(query.get(6));
       comp->setCanSeeRequirementsFunc(query.getInt(7) == 1);
-      comp->setModTime(query.getU64(11));
+      comp->setModTime(query.getU64(8));
     }
 
     querybuilder.str("");
@@ -2136,8 +2147,26 @@ bool MysqlPersistence::retrieveSizeObjectParam(uint32_t objid, uint32_t turn, ui
   std::ostringstream querybuilder;
   querybuilder << "SELECT size FROM objectparamsize WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
   MysqlQuery query( conn, querybuilder.str() );
-  sob->setSize(strtoll(query.get(0).c_str(), NULL, 10));
+  sob->setSize(query.getU64(0));
   return true;
+}
+
+bool MysqlPersistence::updateMediaObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, MediaObjectParam* mob){
+    std::ostringstream querybuilder;
+    querybuilder << "DELETE FROM objectparammedia WHERE objectid = " << objid << " AND turn = " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << ";";
+    singleQuery( querybuilder.str() );
+    querybuilder.str("");
+    querybuilder << "INSERT INTO objectparammedia VALUES(" << objid << ", " << turn << ", " << plid << ", " << pgroup << ", " << pgpos << ", '" << mob->getMediaUrl() << "');";
+    singleQuery( querybuilder.str() );
+    return true;
+}
+
+bool MysqlPersistence::retrieveMediaObjectParam(uint32_t objid, uint32_t turn, uint32_t plid, uint32_t pgroup, uint32_t pgpos, MediaObjectParam* mob){
+    std::ostringstream querybuilder;
+    querybuilder << "SELECT url FROM objectparammedia WHERE objectid = " << objid << " AND turn <= " << turn << " AND playerid = " << plid << " AND paramgroupid = " << pgroup << " AND paramgrouppos = " << pgpos << " ORDER BY turn DESC LIMIT 1;";
+    MysqlQuery query( conn, querybuilder.str() );
+    mob->setMediaUrl(query.get(0));
+    return true;
 }
 
 void MysqlPersistence::lock(){
@@ -2236,10 +2265,13 @@ void MysqlPersistence::singleQuery( const std::string& query ) {
 
 uint32_t MysqlPersistence::valueQuery( const std::string& query ) {
   MysqlQuery q( conn, query );
-  return q.getInt(0);
+  if(q.validRow()){
+    return q.getInt(0);
+  }
+  return 0;
 }
 
-const IdSet& MysqlPersistence::idSetQuery( const std::string& query ) {
+const IdSet MysqlPersistence::idSetQuery( const std::string& query ) {
   MysqlQuery q( conn, query );
   IdSet set; 
   while(q.nextRow()){
@@ -2248,7 +2280,7 @@ const IdSet& MysqlPersistence::idSetQuery( const std::string& query ) {
   return set;
 }
 
-const IdList& MysqlPersistence::idListQuery( const std::string& query ) {
+const IdList MysqlPersistence::idListQuery( const std::string& query ) {
   MysqlQuery q( conn, query );
   IdList list;
   while(q.nextRow()){
@@ -2257,7 +2289,7 @@ const IdList& MysqlPersistence::idListQuery( const std::string& query ) {
   return list;
 }
 
-const IdMap& MysqlPersistence::idMapQuery( const std::string& query ) {
+const IdMap MysqlPersistence::idMapQuery( const std::string& query ) {
   MysqlQuery q( conn, query );
   IdMap map;
   while(q.nextRow()){
@@ -2275,9 +2307,10 @@ const IdMap& MysqlPersistence::idMapQuery( const std::string& query ) {
     unlock(); // Destructor WON'T get called if throw is in constructor 
     throw MysqlException(conn,  "Query '"+query+"' failed!");
   }
+  
 }
 
-  const std::string& MysqlQuery::get( uint32_t index ) {
+  const std::string MysqlQuery::get( uint32_t index ) {
     if ( result == NULL ) 
     {
       fetchResult();
@@ -2297,6 +2330,9 @@ int MysqlQuery::getInt( uint32_t index ) {
   if ( row == NULL ) {
     throw MysqlException( connection, "Query '"+query+"' row empty!");
   }
+  if ( row[index] == NULL ){
+    throw MysqlException( connection, "Int value is NULL");
+  }
   return atoi(row[index]);
 }
 
@@ -2307,6 +2343,9 @@ uint64_t MysqlQuery::getU64( uint32_t index ) {
   }
   if ( row == NULL ) {
     throw MysqlException( connection, "Query '"+query+"' row empty!");
+  }
+  if ( row[index] == NULL ){
+    throw MysqlException( connection, "UInt64 value is NULL");
   }
   return strtoull(row[index],NULL,10);
 }
