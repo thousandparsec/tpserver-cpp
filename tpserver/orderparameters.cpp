@@ -122,4 +122,10 @@ bool ObjectOrderParameter::unpack( InputFrame::Ptr f){
   }
 }
 
+uint32_t ObjectOrderParameter::getObjectId() const {
+  return object;
+}
 
+void ObjectOrderParameter::setObjectId(uint32_t id) {
+  object = id;
+}
