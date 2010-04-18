@@ -1,3 +1,12 @@
+18 Apr 2010 - Lee
+    * Version 0.7.0
+    * Merged 2009 GSoC projects: MTSec, Refactor
+    * Added media parameters to Minisec
+    * Shifted TinyXML to core
+    * Added BattleXML support and use to Minisec
+    * Many bugfixes
+    * Total commits: 
+
 31 Mar 09 - Lee
     * Version 0.6.2
     * Updated Single Player xml files (spec changed)

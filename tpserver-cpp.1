@@ -1,4 +1,4 @@
-.TH TPSERVER-CPP 1 "2006-01-02" "Lee Begg" "Thousand Parsec Server"
+.TH TPSERVER-CPP 1 "2010-04-18" "Lee Begg" "Thousand Parsec Server"
 .SH NAME 
 tpserver-cpp \- Thousand Parsec Server in C++
 .SH SYNOPSIS
@@ -18,23 +18,24 @@ Prints the version information then exits.
 Sets the configuration file to read.
 .IP "\-\-logging or \-l"
 Sets how verbose the logging is, from 0 (debug and up) up to 5 (errors only).
+.IP "\-\-debug or \-\-verbose or \-v"
+Run in verbose/debug mode (does not daemonize).
 .IP "\-\-<key> <value>"
 Sets the setting <key> to the value <value>.
 
 .SH "CONSOLE COMMANDS"
-The server's console supports several admin functions. It has command completion.  See the output of the help
-command for more commands.
-.IP help
-Prints the help for the console.
-.IP "quit or exit"
-Closes and quits the server.
-.IP "turn end"
+If configured, an administration client can connect and use various commands. Some key commands are below.
+.IP "server-quit"
+Tells the server to tidy up and quit the server.
+.IP "turn-end"
 Start the end of turn sequence.
-.IP "turn time"
+.IP "turn-time"
 Prints the number of seconds to the end of turn.
-.IP "network stop"
+.IP "network-stop"
 Stops the network and closes all connections.
-.IP "network start"
+.IP "network-start"
 Starts the network and allows connections.
+.IP "status"
+Print out version numbers and statuses. 
 .SH AUTHOR
 Lee Begg <lee at thousandparsec dot net>
