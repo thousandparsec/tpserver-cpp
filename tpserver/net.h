@@ -72,7 +72,7 @@ class Network {
     {
       bool operator()(TimerCallback::Ptr x, TimerCallback::Ptr y) const
       {
-        return x->getExpireTime() < y->getExpireTime();
+        return x->getExpireTime() > y->getExpireTime();
       }
     };
 
