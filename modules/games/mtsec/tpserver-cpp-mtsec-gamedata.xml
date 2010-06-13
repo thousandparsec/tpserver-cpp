@@ -984,7 +984,7 @@
     <name>Colonisation Module</name>
     <ComponentIDName>Ships</ComponentIDName>
     <description>Allows the ship to colonise a planet.</description>
-    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
+    <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.Colonise design) 1) (cons #t "") (cons #f "Can have only one colonisation module.")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
         <Speed><![CDATA[(lambda (design) 0)]]></Speed>
         <ProductCost><![CDATA[(lambda (design) 1)]]></ProductCost>
