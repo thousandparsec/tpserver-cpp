@@ -23,6 +23,7 @@
 #include <exception>
 #include <string>
 #include <tpserver/protocol.h>
+#include <tpserver/common.h>
 
 /**
  * Frame exception class
@@ -38,7 +39,8 @@ class FrameException : public std::exception {
      * @param code Frame error code as per protocol.h
      * @param arg Optional error string
      */
-    explicit FrameException( FrameErrorCode code, const std::string& arg = "" );
+
+    explicit FrameException( FrameErrorCode code, const std::string& arg = "", const RefList& reflist = RefList() );
 
     /**
      * Standard what() method, returns formated error message with
@@ -53,6 +55,12 @@ class FrameException : public std::exception {
      * Returns error message only
      */
     const std::string& getErrorMessage() const;
+    
+    /**
+     * Returns RefList
+     */
+    const RefList& getRefList() const;
+    
     /**
      * Standard destructor, does nothing.
      */
@@ -64,6 +72,9 @@ class FrameException : public std::exception {
 
     /// Stored error message
     std::string     error_message;
+    
+    /// Stored RefList
+    RefList error_reflist;
 };
 
 #endif

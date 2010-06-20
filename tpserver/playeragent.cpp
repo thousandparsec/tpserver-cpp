@@ -53,6 +53,7 @@
 #include "orderqueueobjectparam.h"
 
 #include "playeragent.h"
+#include <sys/socket.h>
 
 PlayerAgent::PlayerAgent( PlayerConnection::Ptr connection, Player::Ptr nplayer )
   : ref_connection ( connection ), temp_connection(), player(nplayer) {
@@ -222,10 +223,20 @@ void PlayerAgent::processGetObjectById ( InputFrame::Ptr frame ){
   for ( int i=0 ; i < len; ++i ){
     uint32_t objectID = frame->unpackInt();
     ObjectView::Ptr object = player->getPlayerView()->getObjectView(objectID);
-    if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
-    OutputFrame::Ptr of = temp_connection->createFrame ( frame );
-    object->packFrame( of, player->getId() );
-    temp_connection->sendFrame ( of );
+    OutputFrame::Ptr of;
+    if ( !object ){
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Object, objectID));
+      temp_connection->sendFail(frame, fec_NonExistant, "No Such Object", reflist);
+    }else{
+        of = temp_connection->createFrame ( frame );
+        try{
+            object->packFrame( of, player->getId() );
+            temp_connection->sendFrame ( of );
+        }catch(FrameException e){
+            temp_connection->sendFail(frame, e);
+        }
+    }
   }
 }
 
@@ -254,10 +265,19 @@ void PlayerAgent::processGetObjectByPos( InputFrame::Ptr frame )
   IdSet::iterator obCurr = intersection.begin();
   for( ; obCurr != intersection.end(); ++obCurr) {
     ObjectView::Ptr object = player->getPlayerView()->getObjectView(*obCurr);
-    if ( !object ) throw FrameException(fec_NonExistant, "No Such Object");
-    OutputFrame::Ptr of = temp_connection->createFrame ( frame );
-    object->packFrame( of, player->getId() );
-    temp_connection->sendFrame ( of );
+    if ( !object ){
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_Object, *obCurr));
+        temp_connection->sendFail(frame, fec_NonExistant, "No Such Object", reflist);
+    }else{
+        OutputFrame::Ptr of = temp_connection->createFrame ( frame );
+        try{
+            object->packFrame( of, player->getId() );
+            temp_connection->sendFrame ( of );
+        }catch(FrameException e){
+            temp_connection->sendFail(frame, e);
+        }
+    }
   }
 }
 
@@ -302,13 +322,15 @@ void PlayerAgent::processGetObjectIdsByContainer( InputFrame::Ptr frame ){
   lengthCheck( frame, 4 );
   uint32_t objectID = frame->unpackInt();
   IdSet visibleObjects = player->getPlayerView()->getVisibleObjects();
+  RefList reflist;
+  reflist.push_back(RefTypeAndId(rst_Object, objectID));
   if (visibleObjects.find(objectID) == visibleObjects.end()) {
-    throw FrameException( fec_NonExistant, "No such Object" );
+    throw FrameException( fec_NonExistant, "No such Object", reflist );
   }
   IGObject::Ptr o = Game::getGame()->getObjectManager()->getObject(objectID);
 
   if (!o) {
-    throw FrameException( fec_NonExistant, "No such Object" );
+    throw FrameException( fec_NonExistant, "No such Object", reflist );
   }
   IdSet contain = o->getContainedObjects();
   IdSet intersection;
@@ -334,8 +356,17 @@ void PlayerAgent::processGetObjectDesc( InputFrame::Ptr frame ){
   for ( int i=0 ; i < len; ++i ){
     uint32_t objecttype = frame->unpackInt();
     ObjectType* otype = Game::getGame()->getObjectTypeManager()->getObjectType(objecttype);
-    if ( otype == NULL ) throw FrameException( fec_NonExistant, "Object type does not exist");
-    temp_connection->send( frame, otype );
+    if ( otype == NULL ){
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_ObjectType, objecttype));
+        temp_connection->sendFail( frame, fec_NonExistant, "Object type does not exist", reflist);
+    }else{
+        try{
+            temp_connection->send( frame, otype );
+        }catch(FrameException e){
+            temp_connection->sendFail(frame, e);
+        }
+    }
   }
 }
 
@@ -372,18 +403,24 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
   if(frame->getVersion() <= fv0_3){
     IGObject::Ptr ob = Game::getGame()->getObjectManager()->getObject(orderqueueid);
     if(ob == NULL){
-      throw FrameException( fec_NonExistant, "No such Object");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Object, orderqueueid));
+      throw FrameException( fec_NonExistant, "No such Object", reflist);
     }
     OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
     if(oqop == NULL){
-      throw FrameException( fec_NonExistant, "No such Object OrderQueue");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Object, orderqueueid));
+      throw FrameException( fec_NonExistant, "No such Object OrderQueue", reflist);
     }
     orderqueueid = oqop->getQueueId();
   }
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    throw FrameException( fec_NonExistant, "No such OrderQueue");
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+    throw FrameException( fec_NonExistant, "No such OrderQueue", reflist);
   }
 
   int num_orders = frame->unpackInt();
@@ -398,6 +435,8 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
   }
 
   if(num_orders == 0){
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
     throw FrameException( fec_FrameError,"No orders to get");
   }
 
@@ -406,12 +445,15 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
     int ordpos = frame->unpackInt();
     Order *ord = orderqueue->getOrder(ordpos, player->getID());
     if (ord == NULL) {
-      throw FrameException( fec_TempUnavailable, "Could not get Order");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+      reflist.push_back(RefTypeAndId(rst_Order, ordpos));
+      temp_connection->sendFail( frame, fec_TempUnavailable, "Could not get Order", reflist);
+    }else{
+        OutputFrame::Ptr of = temp_connection->createFrame(frame);
+        ord->createFrame(of, ordpos);
+        temp_connection->sendFrame(of);
     }
-
-    OutputFrame::Ptr of = temp_connection->createFrame(frame);
-    ord->createFrame(of, ordpos);
-    temp_connection->sendFrame(of);
   }
 
 }
@@ -439,16 +481,22 @@ void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
 
     OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
     if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-      throw FrameException( fec_NonExistant, "No such Object Order Queue" );
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+      throw FrameException( fec_NonExistant, "No such Object Order Queue", reflist );
     }
 
     // Order Slot
     int pos = frame->unpackInt();
 
     // See if we have a valid order
-    Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
+    ordertypeid_t ordertype = frame->unpackInt();
+    Order *ord = Game::getGame()->getOrderManager()->createOrder(ordertype);
     if (ord == NULL) {
-      throw FrameException( fec_NonExistant, "No such Object Order Queue" );
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+      reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
+      throw FrameException( fec_NonExistant, "No such order type", reflist );
     }
     
       ord->setOrderQueueId(orderqueueid);
@@ -470,7 +518,10 @@ void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
         }
         temp_connection->sendFrame(of);
       } else {
-        throw FrameException( fec_TempUnavailable, "Not allowed to add that order type." );
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+        reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
+        throw FrameException( fec_TempUnavailable, "Not allowed to add that order type.", reflist );
       }
     
   } else {
@@ -499,7 +550,9 @@ void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    throw FrameException( fec_NonExistant, "No such OrderQueue" );
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+    throw FrameException( fec_NonExistant, "No such OrderQueue", reflist );
   }
 
   int num_orders = frame->unpackInt();
@@ -521,7 +574,10 @@ void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
       }
       temp_connection->sendOK(frame, "Order removed");
     } else {
-      throw FrameException( fec_TempUnavailable, "Could not remove Order");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+      reflist.push_back(RefTypeAndId(rst_Order, ordpos));
+      temp_connection->sendFail( frame, fec_TempUnavailable, "Could not remove Order", reflist);
     }
   }
 }
@@ -536,8 +592,12 @@ void PlayerAgent::processDescribeOrder( InputFrame::Ptr frame )
   for(int i = 0; i < numdesc; i++){
     int ordertype = frame->unpackInt();
     OutputFrame::Ptr of = temp_connection->createFrame(frame);
-    Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
-    temp_connection->sendFrame(of);
+    try{
+        Game::getGame()->getOrderManager()->describeOrder(ordertype, of);
+        temp_connection->sendFrame(of);
+    }catch(FrameException e){
+        temp_connection->sendFail(frame, e);
+    }
   }
 }
 
@@ -593,15 +653,21 @@ void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){
 
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid);
   if(orderqueue == NULL || !orderqueue->isOwner(player->getID())){
-    throw FrameException( fec_NonExistant, "No such OrderQueue" );
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+    throw FrameException( fec_NonExistant, "No such OrderQueue", reflist );
   }
 
   int pos = frame->unpackInt();
 
   // See if we have a valid order
-  Order *ord = Game::getGame()->getOrderManager()->createOrder(frame->unpackInt());
+  ordertypeid_t ordertype = frame->unpackInt();
+  Order *ord = Game::getGame()->getOrderManager()->createOrder(ordertype);
   if (ord == NULL) {
-    throw FrameException( fec_NonExistant, "No such Order type" );
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+    reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
+    throw FrameException( fec_NonExistant, "No such Order type", reflist );
   }
   
   if(orderqueue->checkOrderType(ord->getType(), player->getID())){
@@ -614,12 +680,18 @@ void PlayerAgent::processProbeOrder( InputFrame::Ptr frame ){
     } catch ( FrameException& fe ) {
       DEBUG("Probe Order, could not unpack order");
       delete ord;
-      throw;
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+      reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
+      throw FrameException( fec_Invalid, "Could not unpack order", reflist );
     }
   }else{
     delete ord;
     DEBUG("The order to be probed is not allowed on this object");
-    throw FrameException( fec_PermUnavailable, "The order to be probed is not allowed on this object, try again");
+    RefList reflist;
+    reflist.push_back(RefTypeAndId(rst_OrderQueue, orderqueueid));
+    reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
+    throw FrameException( fec_PermUnavailable, "The order to be probed is not allowed on this object, try again", reflist);
   }
 }
 
@@ -634,7 +706,7 @@ void PlayerAgent::processGetBoards( InputFrame::Ptr frame ){
       Board::Ptr board = Game::getGame()->getBoardManager()->getBoard(player->getBoardId());
       temp_connection->send( frame, board );
     }else{
-      throw FrameException( fec_PermUnavailable, "No non-player boards yet");
+      temp_connection->sendFail( frame, fec_PermUnavailable, "No non-player boards yet");
     }
   }
 }
@@ -789,7 +861,10 @@ void PlayerAgent::processRemoveMessages( InputFrame::Ptr frame ){
       if(currboard->removeMessage(msgnum)){
         temp_connection->sendOK(frame, "Message removed");
       }else{
-        throw FrameException( fec_NonExistant, "Message not removed, does exist");
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_Board, lboardid));
+        reflist.push_back(RefTypeAndId(rst_Message, msgnum));
+        temp_connection->sendFail( frame, fec_NonExistant, "Message not removed, does exist", reflist);
       }
     }
   }else{
@@ -810,7 +885,9 @@ void PlayerAgent::processGetResourceDescription( InputFrame::Ptr frame ){
     if(res != NULL){
       temp_connection->send(frame, res);
     }else{
-      throw FrameException( fec_NonExistant, "No Resource Descriptions available");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_ResouceType, rnum));
+      temp_connection->sendFail( frame, fec_NonExistant, "No Resource Description available", reflist);
     }
   }
 }
@@ -864,10 +941,12 @@ void PlayerAgent::processGetPlayer( InputFrame::Ptr frame ){
         if(p != NULL){
           temp_connection->send(frame,p);
         }else{
-          throw FrameException( fec_NonExistant, "Player doesn't exist");
+          RefList reflist;
+          reflist.push_back(RefTypeAndId(rst_Player, pnum));
+          temp_connection->sendFail( frame, fec_NonExistant, "Player doesn't exist", reflist);
         }
       }else{
-        throw FrameException( fec_NonExistant, "Player -1 doesn't exist, invalid player id");
+        temp_connection->sendFail( frame, fec_NonExistant, "Player -1 doesn't exist, invalid player id");
       }
     }
   }
@@ -915,9 +994,12 @@ void PlayerAgent::processGetCategory( InputFrame::Ptr frame ){
     int catnum = frame->unpackInt();
     Category::Ptr cat = Game::getGame()->getDesignStore()->getCategory(catnum);
     if(cat == NULL){
-      throw FrameException( fec_NonExistant, "No Such Category");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Category, catnum));
+      temp_connection->sendFail( frame, fec_NonExistant, "No Such Category", reflist);
+    }else{
+      temp_connection->send(frame,cat);
     }
-    temp_connection->send(frame,cat);
   }
 
 }
@@ -960,8 +1042,13 @@ void PlayerAgent::processGetDesign( InputFrame::Ptr frame ){
   for(int i = 0; i < numdesigns; i++){
     int designnum = frame->unpackInt();
     DesignView::Ptr design = player->getPlayerView()->getDesignView( designnum );
-    if (!design) throw FrameException(fec_NonExistant, "No Such Design");
-    temp_connection->send( frame, design );
+    if (!design){
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_Design, designnum));
+        temp_connection->sendFail(frame, fec_NonExistant, "No Such Design", reflist);
+    }else{
+        temp_connection->send( frame, design );
+    }
   }
 }
 
@@ -1038,10 +1125,16 @@ void PlayerAgent::processModifyDesign( InputFrame::Ptr frame ){
 
   if(ds->modifyDesign(design)){
         DesignView::Ptr designv = player->getPlayerView()->getDesignView( design->getDesignId() );
-        if (!designv) throw FrameException(fec_NonExistant, "No Such Design");
+        if (!designv){
+            RefList reflist;
+            reflist.push_back(RefTypeAndId(rst_Design, design->getDesignId()));
+            throw FrameException(fec_NonExistant, "No Such Design", reflist);
+        }
         temp_connection->send( frame, designv );
   }else{
-    throw FrameException( fec_FrameError, "Could not modify design");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Design, design->getDesignId()));
+    throw FrameException( fec_FrameError, "Could not modify design", reflist);
   }
 }
 
@@ -1059,8 +1152,13 @@ void PlayerAgent::processGetComponent( InputFrame::Ptr frame ){
   for(int i = 0; i < numcomps; i++){
     int compnum = frame->unpackInt();
     ComponentView::Ptr comp = player->getPlayerView()->getComponentView(compnum);
-    if (!comp) throw FrameException(fec_NonExistant, "No Such Component");
-    temp_connection->send(frame, comp);
+    if (!comp){
+        RefList reflist;
+        reflist.push_back(RefTypeAndId(rst_Component, compnum));
+        temp_connection->sendFail(frame, fec_NonExistant, "No Such Component", reflist);
+    }else{
+        temp_connection->send(frame, comp);
+    }
   }
 }
 
@@ -1082,7 +1180,9 @@ void PlayerAgent::processGetProperty( InputFrame::Ptr frame ){
     int propnum = frame->unpackInt();
     Property::Ptr property = ds->getProperty(propnum);
     if(!property){
-      throw FrameException( fec_NonExistant, "No Such Property");
+      RefList reflist;
+      reflist.push_back(RefTypeAndId(rst_Property, propnum));
+      temp_connection->sendFail(frame, fec_NonExistant, "No Such Property", reflist);
     }else{
       temp_connection->send(frame,property);
     }

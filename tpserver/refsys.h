@@ -37,6 +37,10 @@ enum RefSysType{
   rst_Player = 7,
   rst_Category = 8,
   rst_Design = 9,
+  rst_Component = 10,
+  rst_Property = 11,
+  rst_ObjectType = 12,
+  rst_OrderQueue = 13,
 };
 
 enum RefSysSpecialValue{
