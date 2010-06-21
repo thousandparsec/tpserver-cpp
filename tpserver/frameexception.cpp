@@ -21,7 +21,7 @@
 
 #include "frameexception.h"
 
-FrameException::FrameException( FrameErrorCode code, const std::string& arg ) : error_code(code), error_message(arg){
+FrameException::FrameException( FrameErrorCode code, const std::string& arg, const RefList& reflist ) : error_code(code), error_message(arg), error_reflist(reflist){
 }
 
 const char* FrameException::what() const throw(){
@@ -34,6 +34,10 @@ FrameErrorCode FrameException::getErrorCode() const{
 
 const std::string& FrameException::getErrorMessage() const{
     return error_message;
+}
+
+const RefList& FrameException::getRefList() const{
+    return error_reflist;
 }
 
 FrameException::~FrameException() throw(){

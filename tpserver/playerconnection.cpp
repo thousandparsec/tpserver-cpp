@@ -169,7 +169,7 @@ void PlayerConnection::processNormalFrame()
     } catch ( FrameException& exception ) {
       // This might be overkill later, but now let's log it
       DEBUG( "PlayerConnection caught FrameException : %s", exception.what() );
-      sendFail( frame, exception.getErrorCode(), exception.getErrorMessage() );
+      sendFail( frame, exception );
     }
   } else {
     DEBUG("PlayerConnection : noFrame :(");

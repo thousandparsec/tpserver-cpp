@@ -47,4 +47,10 @@ typedef std::map< uint32_t, std::string > IdStringMap;
 /// Typedef for map between strings and Id's
 typedef std::map< std::string, uint32_t > NameMap;
 
+/// Typedef for Reference type and id
+typedef std::pair<int32_t, uint32_t> RefTypeAndId;
+
+/// Typedef for Reference list
+typedef std::list<RefTypeAndId> RefList;
+
 #endif // COMMON_H

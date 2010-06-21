@@ -181,5 +181,4 @@ typedef uint32_t commandtypeid_t;
 typedef int32_t reftype_t;
 typedef uint32_t refvalue_t;
 
-
 #endif
