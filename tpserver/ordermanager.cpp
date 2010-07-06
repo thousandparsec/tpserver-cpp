@@ -24,8 +24,6 @@
 #include "persistence.h"
 #include "orderqueue.h"
 #include "algorithms.h"
-#include "common.h"
-#include "refsys.h"
 
 #include "ordermanager.h"
 
@@ -45,9 +43,7 @@ void OrderManager::describeOrder(uint32_t ordertype, OutputFrame::Ptr f){
   if(prototype_store.find(ordertype) != prototype_store.end()){
     prototype_store[ordertype]->describeOrder(f);
   }else{
-    RefList reflist;
-    reflist.push_back(RefTypeAndId(rst_OrderType, ordertype));
-    throw FrameException(fec_NonExistant, "Order type does not exist", reflist);
+    throw FrameException(fec_NonExistant, "Order type does not exist");
   }
 }
 

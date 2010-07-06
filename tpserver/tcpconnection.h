@@ -44,8 +44,7 @@ class TcpConnection: public Connection {
 
     ProtocolVersion getProtocolVersion();
 
-    void sendFail(InputFrame::Ptr oldframe, FrameErrorCode code, const std::string& error, const RefList& reflist = RefList());
-    void sendFail(InputFrame::Ptr oldframe, const FrameException& fe);
+    void sendFail(InputFrame::Ptr oldframe, FrameErrorCode code, const std::string& error );
     void sendSequence(InputFrame::Ptr oldframe, size_t sequence_size );
     void send(InputFrame::Ptr oldframe, const Packable* packable );
     void send(InputFrame::Ptr oldframe, const Packable::Ptr packable );
