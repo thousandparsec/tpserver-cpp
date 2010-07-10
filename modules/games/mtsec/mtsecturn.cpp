@@ -18,6 +18,8 @@
  *
  */
 
+#include <algorithm>
+
 #include <tpserver/game.h>
 #include <tpserver/ordermanager.h>
 #include <tpserver/objectmanager.h>
@@ -236,11 +238,14 @@ void MTSecTurn::doTurn(){
   std::set<uint32_t> vis = objectmanager->getAllIds();
   std::set<uint32_t> players = playermanager->getAllIds();
   for(std::set<uint32_t>::iterator itplayer = players.begin(); itplayer != players.end(); ++itplayer){
+    PlayerView::Ptr pv = playermanager->getPlayer(*itplayer)->getPlayerView();
     for(std::set<uint32_t>::iterator itob = vis.begin(); itob != vis.end(); ++itob){
-      PlayerView::Ptr pv = playermanager->getPlayer(*itplayer)->getPlayerView();
       ObjectView::Ptr obv = pv->getObjectView(*itob);
       if(!obv){
-        pv->addVisibleObject( *itob, false  );
+        if(objectmanager->getObject(*itob)->isAlive()){
+          pv->addVisibleObject( *itob, true );
+        }
+        objectmanager->doneWithObject(*itob);
       }else{
         uint64_t obmt = objectmanager->getObject(*itob)->getModTime();
         objectmanager->doneWithObject(*itob);
@@ -249,6 +254,19 @@ void MTSecTurn::doTurn(){
           pv->updateObjectView(*itob);
         }
       }
+    }
+    
+     // remove dead objects
+    std::set<uint32_t> goneobjects;
+    std::set<uint32_t> knownobjects = pv->getVisibleObjects();
+    set_difference(knownobjects.begin(), knownobjects.end(), vis.begin(), vis.end(), inserter(goneobjects, goneobjects.begin()));
+    
+    for(std::set<uint32_t>::iterator itob = goneobjects.begin(); itob != goneobjects.end(); ++itob){
+      ObjectView::Ptr obv = pv->getObjectView(*itob);
+        if(!obv->isGone()){
+            obv->setGone(true);
+            pv->updateObjectView(*itob);
+        }
     }
   }
   playermanager->updateAll();

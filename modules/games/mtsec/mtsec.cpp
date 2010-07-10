@@ -821,7 +821,7 @@ IGObject::Ptr MTSec::makePlayerHomePlanet( Player::Ptr player, IGObject::Ptr sta
     theplanet->setResources(ress);
     
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId( game->getOrderManager()->addOrderQueue(planet->getID(),0) );
+    oqop->setQueueId( game->getOrderManager()->addOrderQueue(planet->getID(), player->getID()) );
     theplanet->setDefaultOrderTypes();
 
     planet->addToParent( star->getID());
