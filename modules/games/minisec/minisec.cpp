@@ -971,7 +971,7 @@ IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_
         oqop->setQueueId(queueid);
         theplanet->setDefaultOrderTypes();
         theplanet->setIcon("common/object-icons/planet");
-        theplanet->setMedia("common-2d/planet-small/animation/" + planetmedia->getName());
+        theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
         planet->addToParent( star->getID());
         obman->addObject( planet);
         max_planets--;
