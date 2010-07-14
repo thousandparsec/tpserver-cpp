@@ -134,13 +134,21 @@ void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
 {
   Order::inputFrame(f, playerid);
   
-  Player::Ptr player = Game::getGame()->getPlayerManager()->getPlayer(playerid);
-  DesignStore::Ptr ds = Game::getGame()->getDesignStore();
-  
-  uint32_t bldTmPropID = ds->getPropertyByName( "BuildTime");
-  IdMap fleettype = fleetlist->getList();
+  Game* game = Game::getGame();
 
-  uint32_t usedshipres = 0;
+  Player::Ptr player = game->getPlayerManager()->getPlayer(playerid);
+  DesignStore::Ptr ds = game->getDesignStore();
+  ResourceManager::Ptr resman = game->getResourceManager();
+  IGObject::Ptr igobj = game->getObjectManager()->getObject(Game::getGame()->getOrderManager()->getOrderQueue(orderqueueid)->getObjectId());
+  Planet * planet = dynamic_cast<Planet*>(igobj->getObjectBehaviour());
+
+  const uint32_t resType = resman->getResourceDescription("Factories")->getResourceType();
+  const uint32_t resValue = planet->getResourceSurfaceValue(resType);
+  uint32_t bldTmPropID = ds->getPropertyByName("ProductCost");
+
+  uint32_t total =0;
+
+  IdMap fleettype = fleetlist->getList();
   
   for(IdMap::iterator itcurr = fleettype.begin();
      itcurr != fleettype.end(); ++itcurr){
@@ -150,7 +158,7 @@ void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
     if(player->getPlayerView()->isUsableDesign(type) && number >= 0){
       
       Design::Ptr design = ds->getDesign(type);
-      usedshipres += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
+      total += (int)(ceil(number * design->getPropertyValue(bldTmPropID)));
         design->addUnderConstruction(number);
         ds->designCountsUpdated(design);
 
@@ -158,12 +166,14 @@ void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
       throw FrameException( fec_FrameError, "The requested design was not valid.");
     }
   }
-  if(usedshipres == 0 && !fleettype.empty()){
+  if(total == 0 && !fleettype.empty()){
     throw FrameException( fec_FrameError, "To build was empty...");
   }
   
-  resources[1] = usedshipres;
-  
+  turns = (int)(ceil(total/resValue));
+  resources[1] = total;
+
+
   if(fleetname->getString().length() == 0){
       fleetname->setString("A Fleet");
   }
