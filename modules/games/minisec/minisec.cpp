@@ -854,7 +854,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     otypeman->setupObject(fleet, obT_Fleet);
     thefleet = (Fleet*)(fleet->getObjectBehaviour());
     thefleet->setSize(2);
-    fleet->setName(name + " Thrid Fleet");
+    fleet->setName(name + " Third Fleet");
     thefleet->setOwner(player->getID());
     thefleet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
           (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
