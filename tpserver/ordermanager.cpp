@@ -109,6 +109,10 @@ OrderQueue::Ptr OrderManager::getOrderQueue(uint32_t oqid){
   return oq;
 }
 
+std::map<uint32_t, OrderQueue::Ptr> OrderManager::getOrderQueues(){
+  return orderqueue_store;
+}
+
 IdModList OrderManager::getModList( uint64_t fromtime ) const {
   IdModList modlist;
   for(PrototypeStore::const_iterator itcurr = prototype_store.begin();

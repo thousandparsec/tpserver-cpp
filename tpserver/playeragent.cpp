@@ -193,6 +193,12 @@ void PlayerAgent::processIGFrame( InputFrame::Ptr frame ){
     case ft04_PlayerIds_Get:
       processGetPlayerIds(frame);
       break;
+    case ft04_OrderQueue_Get:
+      processGetOrderQueue(frame);
+      break;
+    case ft04_OrderQueueIds_Get:
+      processGetOrderQueueIds(frame);
+      break;
     default:
       WARNING("PlayerAgent: Discarded frame, not processed, was type %d", frame->getType());
       throw FrameException( fec_ProtocolError, "Did not understand that frame type.");
@@ -458,6 +464,71 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
 
 }
 
+void PlayerAgent::processGetOrderQueue( InputFrame::Ptr frame ){
+  DEBUG("doing get orderqueue frame");
+  if(frame->getDataLength() < 4){
+    throw FrameException(fec_FrameError, "Invalid frame, too short");
+  }
+  int len = queryCheck(frame);
+  
+  for(int i = 0; i < len; i++){
+    uint32_t oqid = frame->unpackInt();
+    OrderQueue::Ptr oq = Game::getGame()->getOrderManager()->getOrderQueue(oqid);
+    if(oq && oq->isOwner(player->getID())){
+      OutputFrame::Ptr of = temp_connection->createFrame(frame);
+      try{
+        oq->pack(of);
+        temp_connection->sendFrame(of);
+      }catch(FrameException e){
+        temp_connection->sendFail(frame, e);
+      }
+    }else{
+      temp_connection->sendFail(frame, fec_NonExistant, "No such orderqueue");
+    }
+  }
+}
+
+void PlayerAgent::processGetOrderQueueIds( InputFrame::Ptr frame ){
+  DEBUG("doing get orderqueue ids frame");
+  if((frame->getDataLength() != 12 && frame->getVersion() == fv0_3) ||
+     (frame->getDataLength() != 20 && frame->getVersion() >= fv0_4)){
+    throw FrameException(fec_FrameError, "Invalid frame");
+  }
+  uint32_t seqnum = frame->unpackInt();
+  uint32_t snum = frame->unpackInt();
+  uint32_t numtoget = frame->unpackInt();
+  uint64_t fromserial = UINT64_NEG_ONE;
+  if(frame->getVersion() >= fv0_4){
+    fromserial = frame->unpackInt64();
+  }
+  
+  if(seqnum == UINT32_NEG_ONE){
+    seqnum = 1;
+  }
+  
+  //gen list
+  IdModList oqids;
+  
+  std::map<uint32_t, OrderQueue::Ptr> orderqueues = Game::getGame()->getOrderManager()->getOrderQueues();
+
+  for(std::map<uint32_t, OrderQueue::Ptr>::iterator itoq = orderqueues.begin(); itoq != orderqueues.end(); ++itoq){
+    if(itoq->second->isOwner(player->getID())){
+      if(fromserial == UINT64_NEG_ONE || itoq->second->getModTime() > fromserial){
+        oqids[itoq->first] = itoq->second->getModTime();
+      }
+    }
+  }
+
+  if(snum > oqids.size()){
+    throw FrameException(fec_NonExistant, "Start number too high");
+  }
+
+  if(numtoget > oqids.size() - snum){
+    numtoget = oqids.size() - snum;
+  }
+ 
+  temp_connection->sendModList(frame, ft04_OrderQueueIds_List, seqnum, oqids, numtoget, snum, fromserial); 
+}  
 
 void PlayerAgent::processAddOrder( InputFrame::Ptr frame ){
   DEBUG("doing add order frame");

@@ -114,6 +114,10 @@ enum FrameType{
   ft04_Object_Modify = 71,
   ft04_PlayerIds_Get = 72,
   ft04_PlayerIds_List = 73,
+  ft04_OrderQueue_Get = 74,
+  ft04_OrderQueue = 75,
+  ft04_OrderQueueIds_Get = 76,
+  ft04_OrderQueueIds_List = 77,
   ft04_Max,
   // Administration frame types follow
   ftad_Min = 1000,

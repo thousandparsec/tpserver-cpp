@@ -47,6 +47,9 @@ private:
   
   void processGetObjectDesc( InputFrame::Ptr frame );
   void processGetObjectTypes( InputFrame::Ptr frame );
+
+  void processGetOrderQueue( InputFrame::Ptr frame );
+  void processGetOrderQueueIds( InputFrame::Ptr frame );
   
   void processGetOrder( InputFrame::Ptr frame );
   void processAddOrder( InputFrame::Ptr frame );

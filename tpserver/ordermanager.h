@@ -43,6 +43,7 @@ class OrderManager{
 
     uint32_t addOrderQueue( uint32_t objectid, uint32_t ownerid );
     OrderQueue::Ptr getOrderQueue(uint32_t oqid);
+    std::map<uint32_t, OrderQueue::Ptr> getOrderQueues();
     void updateOrderQueue(uint32_t oqid);
     bool removeOrderQueue(uint32_t oqid);
 

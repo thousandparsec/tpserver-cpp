@@ -22,12 +22,13 @@
 
 #include <tpserver/common.h>
 #include <tpserver/modifiable.h>
+#include <tpserver/packable.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
 class Order;
 
-class OrderQueue : public Modifiable, public boost::enable_shared_from_this<OrderQueue> {
+class OrderQueue : public Modifiable, public Packable, public boost::enable_shared_from_this<OrderQueue> {
   public:
     typedef boost::shared_ptr<OrderQueue> Ptr;
 
@@ -67,6 +68,8 @@ class OrderQueue : public Modifiable, public boost::enable_shared_from_this<Orde
     void touchModTime();
 
     void removeAllOrders();
+
+    void pack(OutputFrame::Ptr frame) const;
 
     //persistence only
     void setNextOrderId(uint32_t next);

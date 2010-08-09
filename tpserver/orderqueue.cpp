@@ -248,6 +248,18 @@ void OrderQueue::removeAllOrders(){
   Game::getGame()->getPersistence()->updateOrderQueue(shared_from_this());
 }
 
+void OrderQueue::pack(OutputFrame::Ptr frame) const {
+  frame->setType(ft04_OrderQueue);
+  frame->packInt(queueid);
+  frame->packInt64(getModTime());
+  frame->packInt(-1);
+  frame->packInt(orderlist.size());
+  frame->packInt(allowedtypes.size());
+  for(IdSet::iterator itat = allowedtypes.begin(); itat != allowedtypes.end(); ++itat){
+    frame->packInt(*itat);
+  }
+}
+
 void OrderQueue::setNextOrderId(uint32_t next){
   nextOrderId = next;
 }
