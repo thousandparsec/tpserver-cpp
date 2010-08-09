@@ -107,7 +107,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 
 #check for boost
 # Random and smartpointer are in base
-AX_BOOST_BASE([1.32.1])
+AX_BOOST_BASE([1.32.1],[],[
+    AC_MSG_ERROR([Could not find boost libraries, please install them and try again])
+    ])
 
 # Signal tested separately
  AX_BOOST_SIGNALS
