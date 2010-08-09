@@ -54,11 +54,6 @@ void ObjectParameterGroupDesc::pack(OutputFrame::Ptr f) const{
     f->packString(it->get<1>());
     f->packInt(pid);
     f->packString(it->get<2>());
-    //HACK: probably should be made configurable
-    // Maybe have subclasses of ObjectParamDesc, or add field of ObjectParamDesc.
-    if(pid == obpT_Order_Queue){
-      f->packInt(100);
-    }
   }
 }
 

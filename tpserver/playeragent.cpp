@@ -474,7 +474,7 @@ void PlayerAgent::processGetOrderQueue( InputFrame::Ptr frame ){
   for(int i = 0; i < len; i++){
     uint32_t oqid = frame->unpackInt();
     OrderQueue::Ptr oq = Game::getGame()->getOrderManager()->getOrderQueue(oqid);
-    if(oq && oq->isOwner(player->getID())){
+    if(oq && (oq->isOwner(player->getID()) || oqid == 0)){
       OutputFrame::Ptr of = temp_connection->createFrame(frame);
       try{
         oq->pack(of);
@@ -512,7 +512,7 @@ void PlayerAgent::processGetOrderQueueIds( InputFrame::Ptr frame ){
   std::map<uint32_t, OrderQueue::Ptr> orderqueues = Game::getGame()->getOrderManager()->getOrderQueues();
 
   for(std::map<uint32_t, OrderQueue::Ptr>::iterator itoq = orderqueues.begin(); itoq != orderqueues.end(); ++itoq){
-    if(itoq->second->isOwner(player->getID())){
+    if(itoq->second->isOwner(player->getID()) || itoq->first == 0){
       if(fromserial == UINT64_NEG_ONE || itoq->second->getModTime() > fromserial){
         oqids[itoq->first] = itoq->second->getModTime();
       }

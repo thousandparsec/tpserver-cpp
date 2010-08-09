@@ -37,28 +37,16 @@ void OrderQueueObjectParam::packObjectFrame(OutputFrame::Ptr f, uint32_t playeri
   OrderQueue::Ptr orderqueue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
   if(orderqueue->isOwner(playerid)){
     f->packInt(queueid);
-    f->packInt(orderqueue->getNumberOrders());
-    // order types
-    IdSet allowedtypes = orderqueue->getAllowedOrderTypes();
-    f->packIdSet(allowedtypes);
   }else{
-    f->packInt(0);
-    f->packInt(0);
     f->packInt(0);
   }
 }
 
 bool OrderQueueObjectParam::unpackModifyObjectFrame(InputFrame::Ptr f, uint32_t playerid){
   // all fields are read only
-  if(!f->isEnoughRemaining(12))
+  if(!f->isEnoughRemaining(4))
     return false;
-  //queueid = f->unpackInt();
-  //numorders = f->unpackInt();
-  f->advance(8);
-  uint32_t listsize = f->unpackInt();
-  if(!f->isEnoughRemaining(4 * listsize))
-    return false;
-  f->advance(4 * listsize);
+  f->advance(4);
   return true;
 }
 

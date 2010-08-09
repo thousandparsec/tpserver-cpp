@@ -30,6 +30,9 @@
 #include "ordermanager.h"
 
 OrderManager::OrderManager() : prototype_next(0), orderqueue_next(1), seqkey(1) {
+  OrderQueue::Ptr emptyqueue(new OrderQueue(0, 0, 0));
+  emptyqueue->setActive(false);
+  orderqueue_store[0] = emptyqueue;
 }
 
 OrderManager::~OrderManager(){
@@ -83,7 +86,9 @@ uint32_t OrderManager::addOrderQueue( uint32_t objectid, uint32_t ownerid )
 
 void OrderManager::updateOrderQueue(uint32_t oqid){
   OrderQueue::Ptr oq = orderqueue_store[oqid];
-  Game::getGame()->getPersistence()->updateOrderQueue(oq);
+  if(oqid != 0){
+    Game::getGame()->getPersistence()->updateOrderQueue(oq);
+  }
 }
 
 bool OrderManager::removeOrderQueue(uint32_t oqid){
