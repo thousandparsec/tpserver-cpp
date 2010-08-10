@@ -164,6 +164,17 @@ uint32_t Fleet::totalShips() const{
   return num;
 }
 
+int32_t Fleet::getDesignId(uint32_t id) const {
+    std::map<std::pair<int32_t, uint32_t>, uint32_t> ships = dynamic_cast<RefQuantityListObjectParam*>(obj->getParameter(4,1))->getRefQuantityList();
+    for(std::map<std::pair<int32_t, uint32_t>, uint32_t>::const_iterator itcurr = ships.begin();
+        itcurr != ships.end(); ++itcurr)
+    {
+        if (itcurr->first.second == id)
+            return itcurr->first.first;
+    }
+    return -1;
+}
+
 
 uint32_t Fleet::getDamage() const{
     return dynamic_cast<IntegerObjectParam*>(obj->getParameter(4,2))->getValue();
