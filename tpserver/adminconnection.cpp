@@ -126,9 +126,7 @@ void AdminConnection::processDescribeCommand(InputFrame::Ptr frame)
     throw FrameException(fec_FrameError);
   }
 
-  if(numdesc > 1){
-    sendSequence(frame,numdesc);
-  }
+  sendSequence(frame,numdesc);
 
   if(numdesc == 0){
     DEBUG("asked for no commands to describe");
