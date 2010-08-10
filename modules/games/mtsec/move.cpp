@@ -88,7 +88,7 @@ void Move::createFrame(OutputFrame::Ptr f, int pos)
     Game::getGame()->getObjectManager()->doneWithObject(obj->getID());
   }else{
     turns = 0;
-    Logger::getLogger()->error("Move create frame: object not found, id = %d", obj->getID());
+    Logger::getLogger()->error("Move create frame: object not found, orderqueue id = %d", orderqueueid);
   }
   Logger::getLogger()->debug("Exit Move::createFrame");
   Order::createFrame(f, pos);	
