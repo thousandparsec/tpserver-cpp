@@ -761,7 +761,7 @@ void MTSec::makeNewPlayerFleet( Player::Ptr player, IGObject::Ptr star)
 {
     Logger::getLogger()->debug( "Enter MTSec::makeNewPlayerFleet");
     Game *game = Game::getGame();
-    std::string fleetName = player->getName().substr( 0,11) + "'s Fleet #1";
+    std::string fleetName = player->getName() + "'s Fleet #1";
     IGObject::Ptr   fleet = createEmptyFleet( player, star, fleetName);
 
     Design::Ptr scout = createScoutDesign( player);
