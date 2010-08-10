@@ -885,6 +885,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
 
       Player::Ptr oplayer = game->getPlayerManager()->getPlayer(*playerit);
       oplayer->getPlayerView()->addVisibleDesigns( mydesignids );
+      oplayer->getPlayerView()->addVisibleObjects(game->getObjectManager()->getAllIds());
       game->getPlayerManager()->updatePlayer(oplayer->getID());
     }
   }
