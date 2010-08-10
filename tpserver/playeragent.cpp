@@ -433,12 +433,7 @@ void PlayerAgent::processGetOrder( InputFrame::Ptr frame ){
 
   lengthCheck( frame, 8 + 4 * num_orders );
 
-  if(num_orders > 1) {
-    DEBUG("Got multiple orders, returning a sequence");
-    temp_connection->sendSequence(frame,num_orders);
-  } else {
-    DEBUG("Got single orders, returning one object");
-  }
+  temp_connection->sendSequence(frame,num_orders);
 
   if(num_orders == 0){
     RefList reflist;
@@ -630,9 +625,7 @@ void PlayerAgent::processRemoveOrder( InputFrame::Ptr frame ){
 
   lengthCheckMin( frame, 8 + 4 * num_orders  );
 
-  if(num_orders > 1){
-    temp_connection->sendSequence(frame,num_orders);
-  }
+  temp_connection->sendSequence(frame,num_orders);
 
   for(int i = 0; i < num_orders; i++){
     int ordpos = frame->unpackInt();
@@ -830,9 +823,7 @@ void PlayerAgent::processGetMessages( InputFrame::Ptr frame ){
 
   lengthCheckMin( frame, 8 + 4 * nummsg );
 
-  if(nummsg > 1){
-    temp_connection->sendSequence(frame,nummsg);
-  }
+  temp_connection->sendSequence(frame,nummsg);
 
   if(nummsg == 0){
     throw FrameException( fec_FrameError, "No messages to get");
@@ -914,9 +905,7 @@ void PlayerAgent::processRemoveMessages( InputFrame::Ptr frame ){
 
   lengthCheckMin( frame, 8 + 4 * nummsg );
 
-  if(nummsg > 1){
-    temp_connection->sendSequence(frame, nummsg);
-  }
+  temp_connection->sendSequence(frame, nummsg);
 
   Board::Ptr currboard;
   //HACK
@@ -1338,9 +1327,7 @@ int PlayerAgent::queryCheck( InputFrame::Ptr frame )
   }
 
   lengthCheckMin( frame, 4 + 4 * result );
-  if(result > 1){
-    temp_connection->sendSequence( frame, result );
-  }
+  temp_connection->sendSequence( frame, result );
 
   return result;
 }
