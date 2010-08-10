@@ -69,7 +69,7 @@ bool StringParameter::unpack( InputFrame::Ptr f){
   if(!f->isEnoughRemaining(8))
     return false;
   f->unpackInt();
-  string = f->unpackString();
+  string = f->unpackString().substr(0,1024);
   return true;
 }
 
