@@ -52,6 +52,7 @@ class Fleet : public OwnedObject {
 	virtual std::map<uint32_t, uint32_t> getShips() const;
 	virtual uint32_t totalShips() const;
 	int64_t maxSpeed();
+    int32_t getDesignId(uint32_t id) const;
 
 
         virtual uint32_t getDamage() const;
