@@ -281,18 +281,19 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     
     std::string file = battlelogger->save();
     
-    std::vector<Combatant*> flast = fleetcache.begin()->second;
-    resolveCombatantsToObjects(flast);
-    msgstrings[flast[0]->getOwner()] += "Your Fleet survived combat.";
-    for(std::vector<Combatant*>::iterator itcombatant = flast.begin(); itcombatant != flast.end();
-            ++itcombatant){
-        delete *itcombatant;
-    }
-    fleetcache.erase(fleetcache.begin());
     if(!fleetcache.empty()){
-        Logger::getLogger()->warning("fleetcache not empty at end of combat");
+      std::vector<Combatant*> flast = fleetcache.begin()->second;
+      resolveCombatantsToObjects(flast);
+      msgstrings[flast[0]->getOwner()] += "Your Fleet survived combat.";
+      for(std::vector<Combatant*>::iterator itcombatant = flast.begin(); itcombatant != flast.end();
+              ++itcombatant){
+          delete *itcombatant;
+      }
+      fleetcache.erase(fleetcache.begin());
+      if(!fleetcache.empty()){
+          Logger::getLogger()->warning("fleetcache not empty at end of combat");
+      }
     }
-    
     for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
         msgit != msgstrings.end(); ++msgit){
         Message::Ptr msg( new Message() );
