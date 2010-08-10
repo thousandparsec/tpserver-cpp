@@ -26,23 +26,26 @@ class ProtocolView : public ProtocolObject {
   public:
     typedef boost::shared_ptr< ProtocolView > Ptr;
     ProtocolView( FrameType frame_type ) 
-      : ProtocolObject( frame_type, 0, "", "" ), completely_visible( false ), name_visible( false ), desc_visible( false ) {}
+      : ProtocolObject( frame_type, 0, "", "" ), completely_visible( false ), name_visible( false ), desc_visible( false ), gone(false) {}
     virtual ~ProtocolView() {}
     bool isCompletelyVisible() const { return completely_visible; }
     bool canSeeName() const { return name_visible; }
     std::string getVisibleName() const { return name; }
     bool canSeeDescription() const { return desc_visible; }
     std::string getVisibleDescription() const { return desc; }
+    bool isGone() const { return gone; }
 
     void setCompletelyVisible(bool visibility) { completely_visible = visibility; touchModTime(); }
     void setCanSeeName(bool visibility) { name_visible = visibility; touchModTime(); }
     void setVisibleName(const std::string& new_name) { setName( new_name ); touchModTime(); }
     void setCanSeeDescription(bool visibility) { desc_visible = visibility; touchModTime(); }
     void setVisibleDescription(const std::string& new_desc) { setDescription( new_desc ); touchModTime(); }
+    void setGone(bool isgone) { gone = isgone; touchModTime(); }
   protected:
     bool completely_visible;
     bool name_visible;
     bool desc_visible;
+    bool gone;
 };
 
 #endif // PROTOCOLOBJECT_H
