@@ -437,7 +437,7 @@ void Game::packGameInfoFrame(OutputFrame::Ptr frame){
   }else{
     frame->packString("http://svn.thousandparsec.net/svn/media/client/");
   }
-  
+  frame->packInt64(ctime);
 }
 
 void Game::setTurnNumber(uint32_t t){
