@@ -564,7 +564,7 @@ void TcpConnection::clearQueue() {
 
 bool TcpConnection::getAuth( InputFrame::Ptr frame, std::string& username, std::string& password ) {
   try{
-    if(!frame->isEnoughRemaining(15)) throw FrameException( fec_FrameError );
+    if(!frame->isEnoughRemaining(10)) throw FrameException( fec_FrameError );
     username = frame->unpackString();
     password = frame->unpackString();
   }catch( FrameException& e ){
