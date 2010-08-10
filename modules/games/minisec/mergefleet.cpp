@@ -69,7 +69,7 @@ bool MergeFleet::doOrder(IGObject::Ptr ob){
   if(targetid == 0){
     Message::Ptr msg( new Message() );
     msg->setSubject("Merge Fleet order canceled");
-    msg->setBody("No targe fleet at this location");
+    msg->setBody("No target fleet at this location");
     msg->addReference(rst_Action_Order, rsorav_Canceled);
     msg->addReference(rst_Object, ob->getID());
     Game::getGame()->getPlayerManager()->getPlayer(((Fleet*)(ob->getObjectBehaviour()))->getOwner())->postToBoard(msg);
