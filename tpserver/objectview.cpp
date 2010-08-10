@@ -41,9 +41,9 @@
 #include "algorithms.h"
 #include <boost/bind.hpp>
 
-ObjectView::ObjectView(): ProtocolView(ft02_Object), gone(false) { 
+ObjectView::ObjectView(): ProtocolView(ft02_Object) { 
 }
-ObjectView::ObjectView( uint32_t new_id, bool visibility ) : ProtocolView(ft02_Object), gone(false) { 
+ObjectView::ObjectView( uint32_t new_id, bool visibility ) : ProtocolView(ft02_Object) { 
   setId( new_id );
   setCompletelyVisible( visibility );
 }
@@ -156,19 +156,9 @@ uint32_t ObjectView::getObjectId() const{
   return id;
 }
 
-bool ObjectView::isGone() const{
-  return gone;
-}
-
 void ObjectView::setObjectId(uint32_t id){
   setId( id );
   touchModTime();
 }
 
-void ObjectView::setGone(bool nid){
-  if(nid != gone){
-    touchModTime();
-    gone = nid;
-  }
-}
 
