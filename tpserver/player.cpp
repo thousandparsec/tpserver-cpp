@@ -112,5 +112,6 @@ void Player::pack(OutputFrame::Ptr frame) const {
   frame->packInt(id);
   frame->packString(name);
   frame->packString("Human");
+  frame->packInt64(getModTime());
 }
 
