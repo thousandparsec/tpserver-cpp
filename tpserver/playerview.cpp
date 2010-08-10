@@ -279,8 +279,9 @@ void PlayerView::EntityInfo< EntityType, ft >::generateModList( uint64_t fromtim
   modified.clear();
   for(IdSet::iterator itcurr = visible.begin();
       itcurr != visible.end(); ++itcurr){
-    uint64_t modtime = retrieve(*itcurr)->getModTime();
-    if(fromtime == UINT64_NEG_ONE || modtime > fromtime){
+    boost::shared_ptr< EntityType > viewobj = retrieve(*itcurr);
+    uint64_t modtime = viewobj->getModTime();
+    if((fromtime == UINT64_NEG_ONE && !viewobj->isGone()) || modtime > fromtime){
       modified[*itcurr] = modtime;
     }
   }

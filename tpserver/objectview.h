@@ -36,13 +36,9 @@ class ObjectView : public ProtocolView {
     void pack(OutputFrame::Ptr frame) const { throw 0; }
 
     uint32_t getObjectId() const;
-    bool isGone() const;
 
     void setObjectId(uint32_t id);
-    void setGone(bool nid);
 
-  protected:
-    bool gone;
 };
 
 
