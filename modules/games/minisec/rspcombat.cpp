@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <boost/format.hpp>
 
 #include <tpserver/object.h>
@@ -94,7 +95,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
                         f1->setOwner(itmap->first);
                         f1->setObject(obj->getID());
                         f1->setShipType(itship->first);
-                        uint32_t mydamage = damage / (shiplist.size() - i);
+                        uint32_t mydamage = damage / std::max(1U, (shiplist.size() - i));
                         f1->setDamage(mydamage);
                         damage -= mydamage;
                         std::string type = ds->getDesign(itship->first)->getName();
@@ -257,8 +258,8 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
             fleetcache.erase(itpa);
         }
         if(isAllDead(f2)){
-            msgstrings[ownerid1] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p1name);
-            msgstrings[ownerid2] += str(boost::format("You destroyed %1%'s fleet. ") % p2name);
+            msgstrings[ownerid2] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p1name);
+            msgstrings[ownerid1] += str(boost::format("You destroyed %1%'s fleet. ") % p2name);
             std::string deathmsg = str(boost::format("%1%'s fleet destoryed %2%'s fleet. ") % p2name % p1name);
             for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
                     msgit != msgstrings.end(); ++msgit){
@@ -332,7 +333,7 @@ std::map<Combatant*, uint32_t> RSPCombat::buildShotList(std::vector<Combatant*> 
             if(!isDraw && shot == 0){
                 scoutcount++;
             }
-            if((*itc)->getShipType() == biggestaliveshiptype){
+            if(!(isDraw && shot == 0) && (*itc)->getShipType() == biggestaliveshiptype){
                 shotlist[*itc] = shot;
             }
         }
