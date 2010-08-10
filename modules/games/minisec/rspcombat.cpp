@@ -95,7 +95,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
                         f1->setOwner(itmap->first);
                         f1->setObject(obj->getID());
                         f1->setShipType(itship->first);
-                        uint32_t mydamage = damage / std::max(1U, (shiplist.size() - i));
+                        uint32_t mydamage = damage / std::max(1U, (unsigned int)(shiplist.size() - i));
                         f1->setDamage(mydamage);
                         damage -= mydamage;
                         std::string type = ds->getDesign(itship->first)->getName();
