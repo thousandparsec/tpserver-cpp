@@ -40,6 +40,7 @@
 #include <tpserver/orderqueueobjectparam.h>
 #include <tpserver/designstore.h>
 #include <tpserver/design.h>
+#include <tpserver/resourcemanager.h>
 #include <tpserver/battlexml/battlelogger.h>
 #include "combatant.h"
 
@@ -108,9 +109,10 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
                 }
             }else{
                 int shipcount = 2;
-                if(((Planet*)(obj->getObjectBehaviour()))->getResource(2) == 1){
+                int homeplanetid = game->getResourceManager()->getResourceDescription("Home Planet")->getResourceType();
+                if(((Planet*)(obj->getObjectBehaviour()))->getResource(homeplanetid) == 1){
                     //three more for home planets
-                    shipcount += 3;
+                    shipcount += 100;
                 }
                 for(int i = 0; i < shipcount; i++){
                     Combatant* f1 = new Combatant();
