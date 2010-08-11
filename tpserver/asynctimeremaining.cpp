@@ -19,10 +19,10 @@
  */
 
 #include "game.h"
-
+#include "logging.h"
 #include "asynctimeremaining.h"
 
-AsyncTimeRemaining::AsyncTimeRemaining(uint32_t rt, uint32_t r): AsyncFrame(), rtime(rt), why(r){
+AsyncTimeRemaining::AsyncTimeRemaining(uint32_t rt, uint32_t r, std::set<playerid_t> w): AsyncFrame(), rtime(rt), why(r), waiting(w){
 }
 
 AsyncTimeRemaining::~AsyncTimeRemaining(){
@@ -35,6 +35,11 @@ bool AsyncTimeRemaining::createFrame(OutputFrame::Ptr f) {
     f->packInt(why); //reason
     f->packInt(Game::getGame()->getTurnNumber());
     f->packString(Game::getGame()->getTurnName());
+
+    f->packInt(waiting.size());
+    for (std::set<playerid_t>::iterator it = waiting.begin(); it != waiting.end(); it++) {
+      f->packInt(*it);
+    }
   }
   return true;
 }

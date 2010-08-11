@@ -245,7 +245,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
         if(isAllDead(f1)){
             msgstrings[ownerid1] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p2name);
             msgstrings[ownerid2] += str(boost::format("You destroyed %1%'s fleet. ") % p1name);
-            std::string deathmsg = str(boost::format("%1%'s fleet destoryed %2%'s fleet. ") % p1name % p2name);
+            std::string deathmsg = str(boost::format("%1%'s fleet destroyed %2%'s fleet. ") % p1name % p2name);
             for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
                     msgit != msgstrings.end(); ++msgit){
                 if(msgit->first == ownerid1 || msgit->first == ownerid2)
@@ -262,7 +262,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
         if(isAllDead(f2)){
             msgstrings[ownerid2] += str(boost::format("Your fleet was destroyed by %1%'s fleet. ") % p1name);
             msgstrings[ownerid1] += str(boost::format("You destroyed %1%'s fleet. ") % p2name);
-            std::string deathmsg = str(boost::format("%1%'s fleet destoryed %2%'s fleet. ") % p2name % p1name);
+            std::string deathmsg = str(boost::format("%1%'s fleet destroyed %2%'s fleet. ") % p2name % p1name);
             for(std::map<uint32_t, std::string>::iterator msgit = msgstrings.begin(); 
                     msgit != msgstrings.end(); ++msgit){
                 if(msgit->first == ownerid1 || msgit->first == ownerid2)
