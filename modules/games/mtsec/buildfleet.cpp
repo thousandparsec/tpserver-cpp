@@ -169,8 +169,11 @@ void BuildFleet::inputFrame(InputFrame::Ptr f, uint32_t playerid)
   if(total == 0 && !fleettype.empty()){
     throw FrameException( fec_FrameError, "To build was empty...");
   }
-  
-  turns = (int)(ceil(total/resValue));
+  if(resValue != 0){
+    turns = (int)(ceil(total/resValue));
+  }else{
+    turns = 10000;
+  }
   resources[1] = total;
 
 
