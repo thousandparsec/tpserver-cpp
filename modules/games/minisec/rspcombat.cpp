@@ -76,6 +76,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
     std::map<uint32_t, std::vector<Combatant*> > fleetcache;
     
     battlelogger.reset(new BattleXML::BattleLogger());
+    msgstrings.clear();
     
     for(std::map<uint32_t, IdSet>::iterator itmap = sides.begin(); itmap != sides.end(); ++itmap){
         std::vector<Combatant*> pcombatant;
@@ -406,6 +407,8 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
     
     std::map<objectid_t, bool> colonydead;
     
+    std::map<objectid_t, uint32_t> damagemap;
+    
     for(std::vector<Combatant*>::iterator itcombat = combatants.begin(); itcombat != combatants.end(); ++itcombat){
         Combatant* combatant = *itcombat;
         if(combatant->getShipType() == 0){
@@ -430,7 +433,23 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
                     Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
                 }
             }
+        }else{
+            if(damagemap.find(combatant->getObject()) == damagemap.end()){
+                damagemap[combatant->getObject()] = combatant->getDamage();
+            }else{
+                damagemap[combatant->getObject()] += combatant->getDamage();
+            }
         }
+    }
+    
+    for(std::map<objectid_t, uint32_t>::iterator itobj = damagemap.begin(); itobj != damagemap.end(); ++itobj){
+        IGObject::Ptr obj = objectcache[itobj->first];
+        Fleet* fleet = dynamic_cast<Fleet*>(obj->getObjectBehaviour());
+        if(fleet == NULL){
+            warningLog("Fleet was not a fleet");
+            continue;
+        }
+        fleet->setDamage(itobj->second);
     }
 
     for(std::map<objectid_t, bool>::iterator itplanet = colonydead.begin(); itplanet != colonydead.end(); ++itplanet){
@@ -441,11 +460,12 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
                 warningLog("Planet was not a planet");
                 continue;
             }
-            bool ishomeplanet = (planet->getResource(2) == 1);
+            resourcetypeid_t homeplanetres = Game::getGame()->getResourceManager()->getResourceDescription("Home Planet")->getResourceType();
+            bool ishomeplanet = (planet->getResource(homeplanetres) == 1);
             
             //planet has fallen
             if(ishomeplanet){
-                planet->removeResource(2, 1);
+                planet->removeResource(homeplanetres, 1);
             }
             uint32_t oldowner = planet->getOwner();
             planet->setOwner(0);

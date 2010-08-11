@@ -78,7 +78,7 @@ bool Combatant::hit(uint32_t firepower){
 
 bool Combatant::isDead() const{
     if(shiptype == 0){
-        return (damage > 6);
+        return (damage >= 6);
     }
     DesignStore::Ptr ds = Game::getGame()->getDesignStore();
     
@@ -88,7 +88,7 @@ bool Combatant::isDead() const{
     }
     
     Design::Ptr design = ds->getDesign(shiptype);
-    return (damage > (uint32_t)design->getPropertyValue(armourprop));
+    return (damage >= (uint32_t)design->getPropertyValue(armourprop));
 
 }
 
