@@ -123,7 +123,19 @@ void TurnTimer::advancedWarningOfTimer(){
 }
 
 std::set<playerid_t> TurnTimer::getPlayers(){
-    return finishedPlayers;
+    PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
+  
+    std::set<playerid_t> waiting;
+    std::set<playerid_t> all = pm->getAllIds();
+    for(std::set<playerid_t>::iterator itplayer = all.begin(); itplayer != all.end(); ++itplayer){
+        if(finishedPlayers.find(*itplayer) == finishedPlayers.end()){
+            Player::Ptr player = pm->getPlayer(*itplayer);
+            if(player->isAlive()){
+                waiting.insert(*itplayer);
+            }
+        }
+    }
+    return waiting;
 } 
 
 void TurnTimer::sendTimeRemaining(uint32_t remaining, uint32_t reason){
