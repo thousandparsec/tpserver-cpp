@@ -237,6 +237,7 @@ void PlayerConnection::processSetFilters(InputFrame::Ptr frame){
 
 void PlayerConnection::processTimeRemainingFrame(InputFrame::Ptr frame){
   DEBUG("PlayerConnection : Processing Get Time frame");
+
   OutputFrame::Ptr time = createFrame(frame);
   time->setType(ft02_Time_Remaining);
   time->packInt(Game::getGame()->getTurnTimer()->secondsToEOT());
@@ -244,6 +245,13 @@ void PlayerConnection::processTimeRemainingFrame(InputFrame::Ptr frame){
     time->packInt(0); //player requested
     time->packInt(Game::getGame()->getTurnNumber());
     time->packString(Game::getGame()->getTurnName());
+
+    std::set<playerid_t> waiting = Game::getGame()->getTurnTimer()->getPlayers();
+
+    time->packInt(waiting.size());
+    for (std::set<playerid_t>::iterator it = waiting.begin(); it != waiting.end(); it++) {
+      time->packInt(*it);
+    }
   }
   sendFrame(time);
 }

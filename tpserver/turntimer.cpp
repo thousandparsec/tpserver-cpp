@@ -60,8 +60,13 @@ void TurnTimer::playerFinishedTurn(uint32_t playerid){
   Logger::getLogger()->info("Player %d finished turn (%d other players finished).", playerid, finishedPlayers.size());
 
   if(Game::getGame()->getPlayerManager()->getPlayer(playerid)->isAlive()){
-    finishedPlayers.insert(playerid);
+    bool added = finishedPlayers.insert(playerid).second;
     onPlayerFinishedTurn();
+
+    if (added) {
+      uint32_t len = secondsToEOT();
+      sendTimeRemaining(len, 2);
+    }
   }
 }
 
@@ -117,8 +122,12 @@ void TurnTimer::advancedWarningOfTimer(){
     sendTimeRemaining(len, 2);
 }
 
+std::set<playerid_t> TurnTimer::getPlayers(){
+    return finishedPlayers;
+} 
+
 void TurnTimer::sendTimeRemaining(uint32_t remaining, uint32_t reason){
-    AsyncFrame * aframe = new AsyncTimeRemaining(remaining, reason);
+    AsyncFrame * aframe = new AsyncTimeRemaining(remaining, reason, getPlayers());
     Network::getNetwork()->sendToAll(aframe);
 }
 

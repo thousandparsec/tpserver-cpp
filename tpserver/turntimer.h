@@ -31,6 +31,7 @@ class TurnTimer{
 
     virtual uint32_t secondsToEOT() const;
     virtual uint32_t getTurnLength() const;
+    virtual std::set<playerid_t> getPlayers();
 
     virtual void resetTimer() = 0;
 

@@ -25,7 +25,7 @@
 
 class AsyncTimeRemaining: public AsyncFrame{
   public:
-    AsyncTimeRemaining(uint32_t rt, uint32_t r);
+    AsyncTimeRemaining(uint32_t rt, uint32_t r, std::set<playerid_t> waiting);
     virtual ~AsyncTimeRemaining();
     
     virtual bool createFrame(OutputFrame::Ptr f);
@@ -33,6 +33,7 @@ class AsyncTimeRemaining: public AsyncFrame{
   private:
     uint32_t rtime;
     uint32_t why;
+    std::set<playerid_t> waiting;
 };
 
 #endif
