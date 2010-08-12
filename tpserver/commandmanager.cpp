@@ -38,6 +38,8 @@
 #include "net.h"
 #include "pluginmanager.h"
 #include "algorithms.h"
+#include "objectmanager.h"
+#include "playermanager.h"
 
 #include "commandmanager.h"
 
@@ -433,6 +435,31 @@ class ServerQuitCommand : public Command{
         }
 };
 
+class NukeObjectCommand : public Command{
+    public:
+        NukeObjectCommand() : Command(){
+            name = "nuke-object";
+            help = "Delete an object from the universe.";
+            addCommandParameter(new CommandParameter(cpT_Integer, "objectid", "The object to remote."));
+        }
+        void action( InputFrame::Ptr f, OutputFrame::Ptr of){
+            objectid_t objid = f->unpackInt();
+            ObjectManager::Ptr objman = Game::getGame()->getObjectManager();
+            IGObject::Ptr obj = objman->getObject(objid);
+            obj->removeFromParent();
+            objman->scheduleRemoveObject(objid);
+            objman->clearRemovedObjects();
+            PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
+            IdSet playerids = pm->getAllIds();
+            for(IdSet::iterator itpl = playerids.begin(); itpl != playerids.end(); ++itpl){
+                PlayerView::Ptr pv = pm->getPlayer(*itpl)->getPlayerView();
+                pv->removeVisibleObject(objid);
+            }
+            of->packInt(0);
+            of->packString("Object nuked.");
+        }
+};
+
 CommandManager *CommandManager::myInstance = NULL;
 
 /* getCommandManager
@@ -576,6 +603,7 @@ CommandManager::CommandManager()
     addCommandType(new GameIsStartedCommand());
     addCommandType(new StatusCommand());
     addCommandType(new ServerQuitCommand());
+    addCommandType(new NukeObjectCommand());
 }
 
 /* Destructor
