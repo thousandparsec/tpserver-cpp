@@ -26,18 +26,14 @@
 #include <tpserver/game.h>
 #include <tpserver/resourcelistobjectparam.h>
 #include <tpserver/orderqueueobjectparam.h>
-#include <tpserver/influenceobjectparam.h>
 #include <tpserver/refsys.h>
 #include <tpserver/objectparametergroupdesc.h>
 
 #include "planet.h"
 
 PlanetType::PlanetType():OwnedObjectType("Planet", "A planet object") {
-  ObjectParameterGroupDesc::Ptr group1 = createParameterGroupDesc("Resources","The planets resources");
-  group1->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
-  ObjectParameterGroupDesc::Ptr group2 = createParameterGroupDesc("Scanner", "The scanner range");
-  group2->addParameter(obpT_Influence, "Light", "How far normal scanners see.");
-  group2->addParameter(obpT_Influence, "Penetrating", "How far advanced scanners see.");
+  ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc("Resources","The planets resources");
+  group->addParameter(obpT_Resource_List, "Resource List", "The resource list of the resources the planet has available");
 }
 
 PlanetType::~PlanetType(){
@@ -145,8 +141,6 @@ IGObject::Ptr Planet::createObject(IGObject::Ptr parent, std::string name, Vecto
 
   planet->setName(name);
   planet->addToParent(parent->getID());
-  ((InfluenceObjectParam*)(planet->getParameter(6,1)))->setValue(500e6);
-  ((InfluenceObjectParam*)(planet->getParameter(6,2)))->setValue(250e6);
 
   Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
   theplanet->setSize(2);
