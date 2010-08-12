@@ -41,8 +41,7 @@ uint32_t Category::getCategoryId() const{
 void Category::pack(OutputFrame::Ptr frame) const{
   frame->setType(ft03_Category);
   frame->packInt(id);
-  // TODO: is this really correct???
-  frame->packInt64(0LL); //timestamp
+  frame->packInt64(getModTime()); //timestamp
   frame->packString(name);
   frame->packString(desc);
 }

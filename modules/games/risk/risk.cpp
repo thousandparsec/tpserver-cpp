@@ -195,7 +195,7 @@ void Risk::createUniverse() {
    if( risk_mapimport == "true") {
       std::string mapfile = Settings::getSettings()->get("risk_map");
       bool map_loaded = importMapFromFile(mapfile,*universe);
-      if(map_loaded){
+      if(!map_loaded){
           Logger::getLogger()->error("Could not load mapfile: %s", mapfile.c_str());
           Logger::getLogger()->info("Loading test system instead");
           createTestSystems(*universe);

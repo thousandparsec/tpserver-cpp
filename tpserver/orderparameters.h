@@ -97,7 +97,7 @@ class SpaceCoordParam : public OrderParameter{
 class ObjectOrderParameter : public OrderParameter{
 
   public:
-    ObjectOrderParameter( const std::string& aname, const std::string& adesc );
+    ObjectOrderParameter( const std::string& aname, const std::string& adesc, IdSet objecttypes = IdSet());
 
     virtual void pack(OutputFrame::Ptr f) const;
     virtual bool unpack( InputFrame::Ptr f);
@@ -107,6 +107,7 @@ class ObjectOrderParameter : public OrderParameter{
 
   protected:
     uint32_t object;
+    IdSet allowedtypes;
 
 };
 

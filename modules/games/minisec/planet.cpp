@@ -97,7 +97,7 @@ std::map<uint32_t, std::pair<uint32_t, uint32_t> > Planet::getResources(){
 uint32_t Planet::getResource(uint32_t restype) const{
   std::map<uint32_t, std::pair<uint32_t, uint32_t> > reslist = ((ResourceListObjectParam*)(obj->getParameter(RESGRPID,RESPARAMID)))->getResources();
   if(reslist.find(restype) != reslist.end()){
-    return reslist.find(restype)->first;
+    return reslist.find(restype)->second.first;
   }
   return 0;
 }

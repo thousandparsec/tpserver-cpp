@@ -133,9 +133,12 @@ int main(int argc, char **argv)
   if(mySettings->get("NEVER_START") != "!"){
     if(!mySettings->readConfFile()){
       std::string savedloglevel = mySettings->get("log_level");
-      mySettings->set("log_level", "3");
-      Logger::getLogger()->error("Could not read config file");
+      std::string savedlogconsole = mySettings->get("log_console");
+      mySettings->set("log_level", "1");
+      mySettings->set("log_console", "yes");
+      Logger::getLogger()->error("Could not read config file '%s'", mySettings->get("config_file").c_str());
       mySettings->set("log_level", savedloglevel);
+      mySettings->set("log_console", savedloglevel);
     }
 
     if(mySettings->get("DEBUG") != "!"){
