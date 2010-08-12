@@ -105,17 +105,19 @@ bool SpaceCoordParam::unpack( InputFrame::Ptr f){
   return true;
 }
 
-ObjectOrderParameter::ObjectOrderParameter( const std::string& aname, const std::string& adesc ) : OrderParameter(aname,adesc), object(0){
+ObjectOrderParameter::ObjectOrderParameter( const std::string& aname, const std::string& adesc, std::set<objecttypeid_t> objecttypes) : OrderParameter(aname,adesc), object(0), allowedtypes(objecttypes){
   id = opT_Object_ID;
 }
 
 void ObjectOrderParameter::pack(OutputFrame::Ptr f) const {
   f->packInt(object);
+  f->packIdSet(allowedtypes);
 }
 
 bool ObjectOrderParameter::unpack( InputFrame::Ptr f){
-  if(f->isEnoughRemaining(4)){
+  if(f->isEnoughRemaining(8)){
     object = f->unpackInt();
+    f->unpackIdSet();
     return true;
   }else{
     return false;
