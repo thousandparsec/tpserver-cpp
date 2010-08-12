@@ -429,6 +429,10 @@ void RSPCombat::resolveCombatantsToObjects(std::vector<Combatant*> combatants){
                     //message player
                     msgstrings[combatant->getOwner()] += str(boost::format("Your fleet %1% was destroyed. ") % obj->getName());
                     //remove object
+                    uint32_t queueid = static_cast<OrderQueueObjectParam*>(obj->getParameterByType(obpT_Order_Queue))->getQueueId();
+                    OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+                    queue->removeOwner(combatant->getOwner());
+                    queue->removeAllOrders();
                     Game::getGame()->getObjectManager()->scheduleRemoveObject(obj->getID());
                     Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(obj->getID());
                 }
