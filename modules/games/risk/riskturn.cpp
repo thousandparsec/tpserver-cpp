@@ -334,7 +334,7 @@ Player::Ptr RiskTurn::getWinner() {
    set_difference(allplayers.begin(), allplayers.end(), owners.begin(), owners.end(), inserter(deadplayers, deadplayers.begin()));
    for(IdSet::iterator itpl = deadplayers.begin(); itpl != deadplayers.end(); ++itpl){
        Player::Ptr player = pm->getPlayer(*itpl);
-       if(!player->isAlive()){
+       if(player->isAlive()){
            player->setIsAlive(false);
        }
    }
