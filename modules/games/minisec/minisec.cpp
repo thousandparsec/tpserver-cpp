@@ -47,6 +47,7 @@
 #include "colonise.h"
 #include "splitfleet.h"
 #include "mergefleet.h"
+#include "intercept.h"
 #include <tpserver/property.h>
 #include <tpserver/component.h>
 #include <tpserver/design.h>
@@ -319,6 +320,7 @@ void MiniSec::initGame(){
   ordm->addOrderType(new Colonise());
   ordm->addOrderType(new SplitFleet());
   ordm->addOrderType(new MergeFleet());
+  ordm->addOrderType(new Intercept());
 
 }
 
@@ -852,7 +854,6 @@ IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_
       nplanets = max_planets;
 
     uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
-    uint32_t obT_Planet      = otypeman->getObjectTypeByName("Planet");
     
     otypeman->setupObject(star, obT_Star_System );
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());

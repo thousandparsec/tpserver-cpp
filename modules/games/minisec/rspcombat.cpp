@@ -113,7 +113,7 @@ void RSPCombat::doCombat(std::map<uint32_t, IdSet> sides){
                 int homeplanetid = game->getResourceManager()->getResourceDescription("Home Planet")->getResourceType();
                 if(((Planet*)(obj->getObjectBehaviour()))->getResource(homeplanetid) == 1){
                     //three more for home planets
-                    shipcount += 100;
+                    shipcount += 3;
                 }
                 for(int i = 0; i < shipcount; i++){
                     Combatant* f1 = new Combatant();
