@@ -53,7 +53,7 @@ void PlayersFinishedTurnTimer::onPlayerFinishedTurn(){
     if(settings->get("turn_players_min").length() > 0){
         minPlayers = atoi(settings->get("turn_players_min").c_str());
     }
-    bool requireActivePlayer = (settings->get("turn_require_active_players") != "no");
+    bool requireActivePlayer = (settings->get("turn_require_active_players") == "yes");
     if(Game::getGame()->getPlayerManager()->getNumPlayers() >= minPlayers){
         if((getNumActivePlayers() > 1 || !requireActivePlayer) && getNumActivePlayers() == getNumDonePlayers()){
             allDoneStartEOT();
