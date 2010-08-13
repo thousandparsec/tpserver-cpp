@@ -123,6 +123,7 @@ bool Colonise::doOrder(IGObject::Ptr ob){
       }
 
       if(fleet->totalShips() == 0){
+        ob->removeFromParent();
         Game::getGame()->getObjectManager()->scheduleRemoveObject(ob->getID());
         Game::getGame()->getPlayerManager()->getPlayer(fleet->getOwner())->getPlayerView()->removeOwnedObject(ob->getID());
       }

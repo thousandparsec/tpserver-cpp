@@ -118,11 +118,16 @@ void Planet::doOnceATurn() {
       if ( current == 0 )
       {
          this->setOwner(0);
+         obj->touchModTime();
+      }
+      
+      if(reinforcements != 0){
+          obj->touchModTime();
       }
    }
    setOrderTypes();
 
-   obj->touchModTime();
+   
 }
 
 int Planet::getContainerType() {

@@ -66,6 +66,8 @@
 
 #include "minisec.h"
 
+#define ASIZEOF(x) (sizeof(x)/sizeof(x[0]))
+
 static char const * const defaultSystemNames[] = {
   "Barnard's Star",  "Gielgud",             "Ventana",
   "Aleph Prime",     "Ventil",              "Sagitaria",
@@ -141,9 +143,9 @@ class NamesSet : public Names {
   bool replace;
 
   public:
-  NamesSet(Random* r, char const * const defaultNames[], bool withreplacement, const std::string& defaultprefix) :
+  NamesSet(Random* r, char const * const defaultNames[], size_t size, bool withreplacement, const std::string& defaultprefix) :
     Names(defaultprefix),
-    names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))),
+    names(defaultNames, defaultNames + size),
     replace(withreplacement)
   {
     rand  = r;
@@ -274,9 +276,9 @@ extern "C" {
 }
 
 MiniSec::MiniSec() : random(NULL){
-  systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, true, "");
-  planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, true, "");
-  fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, true, "");
+  systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, ASIZEOF(defaultSystemMedia), true, "");
+  planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, ASIZEOF(defaultPlanetMedia), true, "");
+  fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, ASIZEOF(defaultFleetMedia), true, "");
 }
 
 MiniSec::~MiniSec(){
@@ -553,14 +555,14 @@ void MiniSec::createGame(){
 
   Names* names;
   if(namesfile == ""){
-    names = new NamesSet(currandom, defaultSystemNames, false, "System");
+    names = new NamesSet(currandom, defaultSystemNames, ASIZEOF(defaultSystemNames), false, "System");
   } else {
     std::ifstream* f = new std::ifstream(namesfile.c_str());
     if (f->fail()) {
       Logger::getLogger()->error("Could not open system names file %s", namesfile.c_str());
       delete f;
       // Fall back to the names set
-      names = new NamesSet(currandom, defaultSystemNames, false, "System");
+      names = new NamesSet(currandom, defaultSystemNames, ASIZEOF(defaultSystemNames), false, "System");
     } else {
       names = new NamesFile(new std::ifstream(namesfile.c_str()), "System");
     }
@@ -680,6 +682,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     // the components are still visible
 
 
+    uint32_t queueid;
     uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
     uint32_t obT_Star_System = game->getObjectTypeManager()->getObjectTypeByName("Star System");
 
@@ -713,7 +716,10 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
                  0),
         2,
         planetmedia->getName());
-
+    ((Planet*)(yourplanet->getObjectBehaviour()))->setOwner(player->getID());
+    queueid = static_cast<OrderQueueObjectParam*>(yourplanet->getParameterByType(obpT_Order_Queue))->getQueueId();
+        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+        queue->addOwner(player->getID());
     playerview->addOwnedObject(yourplanet->getID());
 
     IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
@@ -726,8 +732,6 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-
-    uint32_t queueid;
 
     queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
@@ -846,7 +850,6 @@ IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_
       nplanets = max_planets;
 
     uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
-    uint32_t obT_Planet      = otypeman->getObjectTypeByName("Planet");
     
     otypeman->setupObject(star, obT_Star_System );
     EmptyObject* thestar = (EmptyObject*)(star->getObjectBehaviour());
