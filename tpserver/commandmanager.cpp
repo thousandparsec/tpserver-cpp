@@ -413,6 +413,8 @@ class StatusCommand : public Command{
                 formater << "Turn length: " << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds" << std::endl;
                 formater << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
                 formater << "Turn name: " << Game::getGame()->getTurnName() << std::endl;
+                formater << "Players not finished turn: " << Game::getGame()->getTurnTimer()->getPlayers().size();
+                formater << " of " << Game::getGame()->getPlayerManager()->getNumPlayers() << std::endl;
             }
             formater << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
             
