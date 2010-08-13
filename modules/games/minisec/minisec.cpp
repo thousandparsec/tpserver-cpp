@@ -65,6 +65,8 @@
 
 #include "minisec.h"
 
+#define ASIZEOF(x) (sizeof(x)/sizeof(x[0]))
+
 static char const * const defaultSystemNames[] = {
   "Barnard's Star",  "Gielgud",             "Ventana",
   "Aleph Prime",     "Ventil",              "Sagitaria",
@@ -140,9 +142,9 @@ class NamesSet : public Names {
   bool replace;
 
   public:
-  NamesSet(Random* r, char const * const defaultNames[], bool withreplacement, const std::string& defaultprefix) :
+  NamesSet(Random* r, char const * const defaultNames[], size_t size, bool withreplacement, const std::string& defaultprefix) :
     Names(defaultprefix),
-    names(defaultNames, defaultNames + (sizeof(defaultNames) / sizeof(defaultNames[0]))),
+    names(defaultNames, defaultNames + size),
     replace(withreplacement)
   {
     rand  = r;
@@ -273,9 +275,9 @@ extern "C" {
 }
 
 MiniSec::MiniSec() : random(NULL){
-  systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, true, "");
-  planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, true, "");
-  fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, true, "");
+  systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, ASIZEOF(defaultSystemMedia), true, "");
+  planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, ASIZEOF(defaultPlanetMedia), true, "");
+  fleetmedia = new NamesSet(Game::getGame()->getRandom(), defaultFleetMedia, ASIZEOF(defaultFleetMedia), true, "");
 }
 
 MiniSec::~MiniSec(){
@@ -551,14 +553,14 @@ void MiniSec::createGame(){
 
   Names* names;
   if(namesfile == ""){
-    names = new NamesSet(currandom, defaultSystemNames, false, "System");
+    names = new NamesSet(currandom, defaultSystemNames, ASIZEOF(defaultSystemNames), false, "System");
   } else {
     std::ifstream* f = new std::ifstream(namesfile.c_str());
     if (f->fail()) {
       Logger::getLogger()->error("Could not open system names file %s", namesfile.c_str());
       delete f;
       // Fall back to the names set
-      names = new NamesSet(currandom, defaultSystemNames, false, "System");
+      names = new NamesSet(currandom, defaultSystemNames, ASIZEOF(defaultSystemNames), false, "System");
     } else {
       names = new NamesFile(new std::ifstream(namesfile.c_str()), "System");
     }
