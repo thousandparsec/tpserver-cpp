@@ -48,13 +48,14 @@ void PlayersFinishedTurnTimer::resetTimer(){
 }
 
 void PlayersFinishedTurnTimer::onPlayerFinishedTurn(){
-    uint32_t minPlayers = 3;
+    uint32_t minPlayers = 2;
     Settings* settings = Settings::getSettings();
     if(settings->get("turn_players_min").length() > 0){
         minPlayers = atoi(settings->get("turn_players_min").c_str());
     }
+    bool requireActivePlayer = (settings->get("turn_require_active_players") != "no");
     if(Game::getGame()->getPlayerManager()->getNumPlayers() >= minPlayers){
-        if(getNumActivePlayers() > 1 && getNumActivePlayers() == getNumDonePlayers()){
+        if((getNumActivePlayers() > 1 || !requireActivePlayer) && getNumActivePlayers() == getNumDonePlayers()){
             allDoneStartEOT();
         }
     }
