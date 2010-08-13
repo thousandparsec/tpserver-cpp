@@ -678,6 +678,7 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     // the components are still visible
 
 
+    uint32_t queueid;
     uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
     uint32_t obT_Star_System = game->getObjectTypeManager()->getObjectTypeByName("Star System");
 
@@ -711,7 +712,10 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
                  0),
         2,
         planetmedia->getName());
-
+    ((Planet*)(yourplanet->getObjectBehaviour()))->setOwner(player->getID());
+    queueid = static_cast<OrderQueueObjectParam*>(yourplanet->getParameterByType(obpT_Order_Queue))->getQueueId();
+        OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
+        queue->addOwner(player->getID());
     playerview->addOwnedObject(yourplanet->getID());
 
     IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
@@ -724,8 +728,6 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
-
-    uint32_t queueid;
 
     queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
     OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
