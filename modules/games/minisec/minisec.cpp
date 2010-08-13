@@ -586,7 +586,9 @@ void MiniSec::createGame(){
   game->getResourceManager()->addResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships" );
   game->getResourceManager()->addResourceDescription( "Home Planet", "unit", "The home planet for a race." );
 
-  game->getPlayerManager()->createNewPlayer("guest", "guest");
+  if(Settings::getSettings()->get("noguest") != "yes"){
+      game->getPlayerManager()->createNewPlayer("guest", "guest");
+  }
 
   delete names;    
 }
