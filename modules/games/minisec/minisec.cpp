@@ -714,7 +714,11 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
                  0),
         2,
         planetmedia->getName());
-    ((Planet*)(yourplanet->getObjectBehaviour()))->setOwner(player->getID());
+
+    Planet* planet = (Planet*)yourplanet->getObjectBehaviour();
+    planet->setOwner(player->getID());
+    planet->addResource(2, 1);
+
     queueid = static_cast<OrderQueueObjectParam*>(yourplanet->getParameterByType(obpT_Order_Queue))->getQueueId();
         OrderQueue::Ptr queue = Game::getGame()->getOrderManager()->getOrderQueue(queueid);
         queue->addOwner(player->getID());
