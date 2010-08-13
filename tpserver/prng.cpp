@@ -165,14 +165,14 @@ int32_t Random::getInRange(int32_t min, int32_t max){
 /* generates a random number on [0,1]-real-interval */
 double Random::getReal1(void)
 {
-    return getInt32()*(1.0/4294967295.0); 
+    return (double)(getInt32())/4294967295.0; 
     /* divided by 2^32-1 */ 
 }
 
 /* generates a random number on [0,1)-real-interval */
 double Random::getReal2(void)
 {
-    return getInt32()*(1.0/4294967296.0); 
+    return (double)(getInt32())/4294967296.0; 
     /* divided by 2^32 */
 }
 
