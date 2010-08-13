@@ -21,13 +21,14 @@
  *
  */
 
-#include "staticobject.h"
+#include <tpserver/objectbehaviour.h>
+#include <tpserver/objecttype.h>
 
 class Vector3d;
 
 namespace RiskRuleset {
 
-class WormholeType : public StaticObjectType
+class WormholeType : public ObjectType
 {
 public:
    WormholeType();
@@ -37,7 +38,7 @@ protected:
    ObjectBehaviour* createObjectBehaviour() const;
 };
 
-class Wormhole : public StaticObject 
+class Wormhole : public ObjectBehaviour 
 {
 public:
    Wormhole();
@@ -47,8 +48,11 @@ public:
    virtual void doOnceATurn();
    virtual int getContainerType();
 
-   void setExit(const Vector3d &npos);
-   Vector3d getExit();
+   void setEndA(const Vector3d &npos);
+   Vector3d getEndA();
+   
+   void setEndB(const Vector3d &npos);
+   Vector3d getEndB();
 
    void setupObject();
 

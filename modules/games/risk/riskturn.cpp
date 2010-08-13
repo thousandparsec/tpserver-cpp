@@ -328,6 +328,17 @@ Player::Ptr RiskTurn::getWinner() {
       }
    }
    
+   //all players that don't have objects are dead
+   IdSet deadplayers;
+   IdSet allplayers = pm->getAllIds();
+   set_difference(allplayers.begin(), allplayers.end(), owners.begin(), owners.end(), inserter(deadplayers, deadplayers.begin()));
+   for(IdSet::iterator itpl = deadplayers.begin(); itpl != deadplayers.end(); ++itpl){
+       Player::Ptr player = pm->getPlayer(*itpl);
+       if(player->isAlive()){
+           player->setIsAlive(false);
+       }
+   }
+   
    if ( owners.size() == 1 )  {      //If there is only one owner in the list
       winner = pm->getPlayer(*(owners.begin()));//Get the player and assign them as the winner
       format message ("The winner is %1%");

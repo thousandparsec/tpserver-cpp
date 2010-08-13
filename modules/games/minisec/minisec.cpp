@@ -469,7 +469,6 @@ void MiniSec::createGame(){
   uint32_t obT_Universe = otypeman->getObjectTypeByName("Universe");
   uint32_t obT_Galaxy = otypeman->getObjectTypeByName("Galaxy");
   uint32_t obT_Star_System = otypeman->getObjectTypeByName("Star System");
-  uint32_t obT_Planet = otypeman->getObjectTypeByName("Planet");
 
   IGObject::Ptr universe = game->getObjectManager()->createNewObject();
   otypeman->setupObject(universe, obT_Universe);
@@ -529,83 +528,12 @@ void MiniSec::createGame(){
   sirius->addToParent(mw_galaxy->getID());
   obman->addObject(sirius);
 
-  uint32_t queueid;
-
   // now for some planets
-  IGObject::Ptr earth = game->getObjectManager()->createNewObject();
-  otypeman->setupObject(earth, obT_Planet);
-  Planet * theearth = (Planet*)(earth->getObjectBehaviour());
-  theearth->setSize(2);
-  earth->setName("Earth/Terra");
-  theearth->setPosition(thesol->getPosition() + Vector3d(14960ll, 0ll, 0ll));
-  queueid = game->getOrderManager()->addOrderQueue(earth->getID(), 0);
-  OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(earth->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(queueid);
-  theearth->setDefaultOrderTypes();
-  theearth->setIcon("common/object-icons/planet");
-  theearth->setMedia("common-2d/foreign/freeorion/planet-small/animation/terran1");
-  earth->addToParent(sol->getID());
-  obman->addObject(earth);
-
-  IGObject::Ptr venus = game->getObjectManager()->createNewObject();
-  otypeman->setupObject(venus, obT_Planet);
-  Planet* thevenus = (Planet*)(venus->getObjectBehaviour());
-  thevenus->setSize(2);
-  venus->setName("Venus");
-  thevenus->setPosition(thesol->getPosition() + Vector3d(0ll, 10800ll, 0ll));
-  queueid = game->getOrderManager()->addOrderQueue(venus->getID(), 0);
-  oqop = static_cast<OrderQueueObjectParam*>(venus->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(queueid);
-  thevenus->setDefaultOrderTypes();
-  thevenus->setIcon("common/object-icons/planet");
-  thevenus->setMedia("common-2d/foreign/freeorion/planet-small/animation/desert1");
-  venus->addToParent(sol->getID());
-  obman->addObject(venus);
-
-  IGObject::Ptr mars = game->getObjectManager()->createNewObject();
-  otypeman->setupObject(mars, obT_Planet);
-  Planet* themars = (Planet*)(mars->getObjectBehaviour());
-  themars->setSize(2);
-  mars->setName("Mars");
-  themars->setPosition(thesol->getPosition() + Vector3d(-22790ll, 0ll, 0ll));
-  queueid = game->getOrderManager()->addOrderQueue(mars->getID(), 0);
-  oqop = static_cast<OrderQueueObjectParam*>(mars->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(queueid);
-  themars->setDefaultOrderTypes();
-  themars->setIcon("common/object-icons/planet");
-  themars->setMedia("common-2d/foreign/freeorion/planet-small/animation/inferno1");
-  mars->addToParent(sol->getID());
-  obman->addObject(mars);
-
-  IGObject::Ptr acprime = game->getObjectManager()->createNewObject();
-  otypeman->setupObject(acprime, obT_Planet);
-  Planet* theacprime = (Planet*)(acprime->getObjectBehaviour());
-  theacprime->setSize(2);
-  acprime->setName("Alpha Centauri Prime");
-  theacprime->setPosition(theac->getPosition() + Vector3d(-6300ll, 78245ll, 0ll));
-  queueid = game->getOrderManager()->addOrderQueue(acprime->getID(), 0);
-  oqop = static_cast<OrderQueueObjectParam*>(acprime->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(queueid);
-  theacprime->setDefaultOrderTypes();
-  theacprime->setIcon("common/object-icons/planet");
-  theacprime->setMedia("common-2d/foreign/freeorion/planet-small/animation/toxic1");
-  acprime->addToParent(ac->getID());
-  obman->addObject(acprime);
-
-  IGObject::Ptr s1 = game->getObjectManager()->createNewObject();
-  otypeman->setupObject(s1, obT_Planet);
-  Planet* thes1 = (Planet*)(s1->getObjectBehaviour());
-  thes1->setSize(2);
-  s1->setName("Sirius 1");
-  thes1->setPosition(thesirius->getPosition() + Vector3d(45925ll, -34262ll, 0ll));
-  queueid = game->getOrderManager()->addOrderQueue(s1->getID(), 0);
-  oqop = static_cast<OrderQueueObjectParam*>(s1->getParameterByType(obpT_Order_Queue));
-  oqop->setQueueId(queueid);
-  thes1->setDefaultOrderTypes();
-  thes1->setIcon("common/object-icons/planet");
-  thes1->setMedia("common-2d/foreign/freeorion/planet-small/animation/barren1");
-  s1->addToParent(sirius->getID());
-  obman->addObject(s1);
+  Planet::createObject(sol, "Earth", Vector3d(14960ll, 0ll, 0ll), 2, "terran1");
+  Planet::createObject(sol, "Venus", Vector3d(0ll, 10800ll, 0ll), 2, "inferno1");
+  Planet::createObject(sol, "Mars", Vector3d(-22790ll, 0ll, 0ll), 1, "desert1");
+  Planet::createObject(ac, "Alpha Centauri Prime", Vector3d(-6300ll, 78245ll, 0ll), 2, "toxic1");
+  Planet::createObject(sirius, "Sirius 1", Vector3d(45925ll, -34262ll, 0ll), 2, "barren1");
 
   //create random systems
   Random * currandom;
@@ -658,7 +586,9 @@ void MiniSec::createGame(){
   game->getResourceManager()->addResourceDescription( "Ship part", "part", "Ships parts that can be used to create ships" );
   game->getResourceManager()->addResourceDescription( "Home Planet", "unit", "The home planet for a race." );
 
-  game->getPlayerManager()->createNewPlayer("guest", "guest");
+  if(Settings::getSettings()->get("noguest") != "yes"){
+      game->getPlayerManager()->createNewPlayer("guest", "guest");
+  }
 
   delete names;    
 }
@@ -749,7 +679,6 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
 
 
     uint32_t obT_Fleet = game->getObjectTypeManager()->getObjectTypeByName("Fleet");
-    uint32_t obT_Planet = game->getObjectTypeManager()->getObjectTypeByName("Planet");
     uint32_t obT_Star_System = game->getObjectTypeManager()->getObjectTypeByName("Star System");
 
     Random * currandom;
@@ -775,32 +704,15 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
     star->addToParent(1);
     game->getObjectManager()->addObject(star);
 
-    IGObject::Ptr planet = game->getObjectManager()->createNewObject();
-    otypeman->setupObject(planet, obT_Planet);
+    IGObject::Ptr yourplanet = Planet::createObject(
+        star, name + " Planet", 
+        Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000)* 10),
+                 (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
+                 0),
+        2,
+        planetmedia->getName());
 
-    planet->setName(name + " Planet");
-
-    Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
-
-    uint32_t queueid;
-
-    theplanet->setSize(2);
-
-    theplanet->setOwner(player->getID());
-    theplanet->addResource(2, 1);
-    theplanet->setPosition(thestar->getPosition() + Vector3d((int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000)* 10),
-          (int64_t)(currandom->getInRange((int32_t)-5000, (int32_t)5000) * 10),
-          /*(int64_t)((rand() % 10000) - 5000)*/ 0));
-    theplanet->setIcon("common/object-icons/planet");
-    theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
-    queueid = game->getOrderManager()->addOrderQueue(planet->getID(), player->getID());
-    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-    oqop->setQueueId(queueid);
-    theplanet->setDefaultOrderTypes();
-
-    planet->addToParent(star->getID());
-    game->getObjectManager()->addObject(planet);
-    playerview->addOwnedObject(planet->getID());
+    playerview->addOwnedObject(yourplanet->getID());
 
     IGObject::Ptr fleet = game->getObjectManager()->createNewObject();
     otypeman->setupObject(fleet, obT_Fleet);
@@ -813,8 +725,10 @@ void MiniSec::onPlayerAdded(Player::Ptr player){
           /*(int64_t)((rand() % 10000) - 5000)*/ 0));
     thefleet->setVelocity(Vector3d(0LL, 0ll, 0ll));
 
+    uint32_t queueid;
+
     queueid = game->getOrderManager()->addOrderQueue(fleet->getID(), player->getID());
-    oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
+    OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(fleet->getParameterByType(obpT_Order_Queue));
     oqop->setQueueId(queueid);
     thefleet->setDefaultOrderTypes();
     thefleet->setIcon("common/object-icons/ship");
@@ -949,32 +863,15 @@ IGObject::Ptr MiniSec::createStarSystem( IGObject::Ptr mw_galaxy, uint32_t& max_
     obman->addObject( star);
 
     for(uint32_t i = 1; i <= nplanets; i++){
-        IGObject::Ptr  planet = game->getObjectManager()->createNewObject();
-        formatter.str("");
+       formatter.str("");
 
-				if (startswith(star->getName(), std::string("System"))) {
-						formatter << star->getName() << ", Planet " << i;
-				} else {
-						formatter << star->getName() << " " << i;
-				}
-
-        otypeman->setupObject(planet, obT_Planet);
-        
-        Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
-        
-        theplanet->setSize( 2);
-        planet->setName( formatter.str());
-        theplanet->setPosition( thestar->getPosition() + Vector3d( i * 40000ll,
-                                                             i * -35000ll,
-                                                             0ll));
-        uint32_t queueid = game->getOrderManager()->addOrderQueue(planet->getID(), 0);
-        OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
-        oqop->setQueueId(queueid);
-        theplanet->setDefaultOrderTypes();
-        theplanet->setIcon("common/object-icons/planet");
-        theplanet->setMedia("common-2d/foreign/freeorion/planet-small/animation/" + planetmedia->getName());
-        planet->addToParent( star->getID());
-        obman->addObject( planet);
+       if (startswith(star->getName(), std::string("System"))) {
+           formatter << star->getName() << ", Planet " << i;
+       } else {
+           formatter << star->getName() << " " << i;
+       }
+	
+        Planet::createObject(star, formatter.str(), Vector3d(i*40000ll, i*-35000ll, 0ll), 2, planetmedia->getName());
         max_planets--;
     }
 

@@ -35,3 +35,4 @@ docs/
 quickstart-mtsec.conf
 quickstart-risk-bid.conf
 quickstart-risk-random.conf
+*.db

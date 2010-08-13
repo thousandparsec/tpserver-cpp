@@ -367,6 +367,7 @@ quickstart-mtsec.conf
 quickstart-risk-bid.conf
 quickstart-risk-random.conf
 tpserver/Makefile
+tests/Makefile
 modules/Makefile
 modules/games/Makefile
 modules/games/minisec/Makefile

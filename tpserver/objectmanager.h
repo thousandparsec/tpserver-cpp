@@ -26,6 +26,8 @@
 
 class ObjectManager{
  public:
+    typedef ObjectManager* Ptr;
+    
     ObjectManager();
     ~ObjectManager();
 

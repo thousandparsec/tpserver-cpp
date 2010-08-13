@@ -38,6 +38,8 @@
 #include "net.h"
 #include "pluginmanager.h"
 #include "algorithms.h"
+#include "objectmanager.h"
+#include "playermanager.h"
 
 #include "commandmanager.h"
 
@@ -411,6 +413,8 @@ class StatusCommand : public Command{
                 formater << "Turn length: " << Game::getGame()->getTurnTimer()->getTurnLength() << " seconds" << std::endl;
                 formater << "Turn number: " << Game::getGame()->getTurnNumber() << std::endl;
                 formater << "Turn name: " << Game::getGame()->getTurnName() << std::endl;
+                formater << "Players not finished turn: " << Game::getGame()->getTurnTimer()->getPlayers().size();
+                formater << " of " << Game::getGame()->getPlayerManager()->getNumPlayers() << std::endl;
             }
             formater << "Network Started: " << ((Network::getNetwork()->isStarted()) ? "yes" : "no") << std::endl;
             
@@ -430,6 +434,31 @@ class ServerQuitCommand : public Command{
             Network::getNetwork()->stopMainLoop();
             of->packInt(0);
             of->packString("Server shutting down");
+        }
+};
+
+class NukeObjectCommand : public Command{
+    public:
+        NukeObjectCommand() : Command(){
+            name = "nuke-object";
+            help = "Delete an object from the universe.";
+            addCommandParameter(new CommandParameter(cpT_Integer, "objectid", "The object to remote."));
+        }
+        void action( InputFrame::Ptr f, OutputFrame::Ptr of){
+            objectid_t objid = f->unpackInt();
+            ObjectManager::Ptr objman = Game::getGame()->getObjectManager();
+            IGObject::Ptr obj = objman->getObject(objid);
+            obj->removeFromParent();
+            objman->scheduleRemoveObject(objid);
+            objman->clearRemovedObjects();
+            PlayerManager::Ptr pm = Game::getGame()->getPlayerManager();
+            IdSet playerids = pm->getAllIds();
+            for(IdSet::iterator itpl = playerids.begin(); itpl != playerids.end(); ++itpl){
+                PlayerView::Ptr pv = pm->getPlayer(*itpl)->getPlayerView();
+                pv->removeVisibleObject(objid);
+            }
+            of->packInt(0);
+            of->packString("Object nuked.");
         }
 };
 
@@ -576,6 +605,7 @@ CommandManager::CommandManager()
     addCommandType(new GameIsStartedCommand());
     addCommandType(new StatusCommand());
     addCommandType(new ServerQuitCommand());
+    addCommandType(new NukeObjectCommand());
 }
 
 /* Destructor

@@ -352,8 +352,8 @@ void createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
    wormhole->setName(startSystem->getName() + " to " + endSystem->getName());
 
    Wormhole* wormholeData = dynamic_cast<Wormhole*>(wormhole->getObjectBehaviour());
-   wormholeData->setPosition(startSystemData->getPosition());
-   wormholeData->setExit(endSystemData->getPosition());
+   wormholeData->setEndA(startSystemData->getPosition());
+   wormholeData->setEndB(endSystemData->getPosition());
 
    wormhole->addToParent(parent.getID());
    game->getObjectManager()->addObject(wormhole);

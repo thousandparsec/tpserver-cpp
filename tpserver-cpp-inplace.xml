@@ -20,6 +20,8 @@
         <forced>--turntimer playersfinished</forced>
         <forced>--tpscheme ../modules/tpcl/guile/.libs/libtpguile</forced>
         <forced>--logging 1</forced>
+        <forced>--noguest yes</forced>
+        <forced>--turn_players_min %(numplayers)d</forced>
         <parameter name="turnlength" type="I">
             <longname>Turn Length</longname>
             <description>Maximum length of a turn (0 for unlimited).</description>
