@@ -195,7 +195,7 @@ void Fleet::doOnceATurn(){
   game->getObjectManager()->doneWithObject(obj->getParent());
   
   Order* order = game->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(ORDERGRPID,ORDERQPARAMID)))->getQueueId())->getFirstOrder();
-  if(order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")){
+  if((order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")) && getVelocity() != Vector3d(0,0,0)){
     setVelocity(Vector3d(0,0,0));
   }
 }
