@@ -60,10 +60,11 @@ void MinisecTurn::doTurn(){
   ObjectManager* objectmanager = game->getObjectManager();
   RSPCombat* combatstrategy = new RSPCombat();
   PlayerManager::Ptr playermanager = game->getPlayerManager();
-
+ 
   //sort by order type
   std::set<uint32_t> movers;
   std::set<uint32_t> otherorders;
+  std::set<uint32_t> interceptors; 
   
   containerids.clear();
   std::set<uint32_t> possiblecombatants;
@@ -81,6 +82,8 @@ void MinisecTurn::doTurn(){
           if(currOrder != NULL){
             if(currOrder->getType() == ordermanager->getOrderTypeByName("Move")){
               movers.insert(ob->getID());
+            } else if (currOrder->getType() == ordermanager->getOrderTypeByName("Intercept")){
+              interceptors.insert(ob->getID());
             }else{
               otherorders.insert(ob->getID());
             }
@@ -109,7 +112,24 @@ void MinisecTurn::doTurn(){
     
     objectmanager->doneWithObject(ob->getID());
   }
-  
+
+  // do interceptions
+
+  for(itcurr = interceptors.begin(); itcurr != interceptors.end(); ++itcurr) {
+    IGObject::Ptr ob = objectmanager->getObject(*itcurr);
+    
+    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*>(ob->getParameterByType(obpT_Order_Queue));
+    OrderQueue::Ptr orderqueue = ordermanager->getOrderQueue(oqop->getQueueId());
+    Order * currOrder = orderqueue->getFirstOrder();
+    if(currOrder->doOrder(ob)){
+      orderqueue->removeFirstOrder();
+    }else{
+      orderqueue->updateFirstOrder();
+    }
+    
+    objectmanager->doneWithObject(ob->getID());
+  }
+ 
   // do combat
   
   std::list<std::map<uint32_t, std::set<uint32_t> > > combats;

@@ -85,6 +85,8 @@ bool Intercept::doOrder(IGObject::Ptr ob){
     return true;
 
   Fleet* me = dynamic_cast<Fleet*>(ob->getObjectBehaviour());
+  if (me == NULL)
+    return false;
 
   ObjectManager* om = Game::getGame()->getObjectManager();
   ObjectTypeManager* otm = Game::getGame()->getObjectTypeManager();

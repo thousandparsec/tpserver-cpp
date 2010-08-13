@@ -67,6 +67,7 @@ void Fleet::setDefaultOrderTypes(){
   std::set<uint32_t> allowedlist;
   allowedlist.insert(om->getOrderTypeByName("No Operation"));
   allowedlist.insert(om->getOrderTypeByName("Move"));
+  allowedlist.insert(om->getOrderTypeByName("Intercept"));
   allowedlist.insert(om->getOrderTypeByName("Split Fleet"));
   allowedlist.insert(om->getOrderTypeByName("Merge Fleet"));
   ((OrderQueueObjectParam*)(obj->getParameter(ORDERGRPID,ORDERQPARAMID)))->setAllowedOrders(allowedlist);
@@ -195,7 +196,8 @@ void Fleet::doOnceATurn(){
   game->getObjectManager()->doneWithObject(obj->getParent());
   
   Order* order = game->getOrderManager()->getOrderQueue(((OrderQueueObjectParam*)(obj->getParameter(ORDERGRPID,ORDERQPARAMID)))->getQueueId())->getFirstOrder();
-  if(order == NULL || order->getType() != game->getOrderManager()->getOrderTypeByName("Move")){
+  if(order == NULL || ( order->getType() != game->getOrderManager()->getOrderTypeByName("Move") &&
+     order->getType() != game->getOrderManager()->getOrderTypeByName("Intercept") )){
     setVelocity(Vector3d(0,0,0));
   }
 }
