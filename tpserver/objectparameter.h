@@ -37,6 +37,7 @@ typedef enum {
         obpT_Integer = 8,
         obpT_Size = 9,
         obpT_Media = 10,
+        obpT_Influence = 11,
 
 	obpT_Max
 } ObjectParamType;

@@ -27,6 +27,7 @@
 #include "refquantitylistobjectparam.h"
 #include "integerobjectparam.h"
 #include "mediaobjectparam.h"
+#include "influenceobjectparam.h"
 #include "logging.h"
 #include "objectparametergroup.h"
 
@@ -90,6 +91,9 @@ ObjectParameterGroup::Ptr ObjectParameterGroupDesc::createObjectParameterGroup()
         break;
     case obpT_Media:
         param = new MediaObjectParam();
+        break;
+    case obpT_Influence:
+        param = new InfluenceObjectParam();
         break;
         
       default:

@@ -39,6 +39,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.c
 		orderqueueobjectparam.cpp orderqueue.cpp turntimer.cpp asynctimeremaining.cpp \
 		playerview.cpp componentview.cpp designview.cpp objectview.cpp objecttype.cpp \
 		objectparametergroupdesc.cpp objectbehaviour.cpp \
+                influenceobjectparam.cpp \
 		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp \
 		mediaobjectparam.cpp tinyxml/tinyxml.cpp tinyxml/tinyxmlerror.cpp \
 		tinyxml/tinyxmlparser.cpp battlexml/combatant.cpp battlexml/battleexceptions.cpp \
@@ -62,7 +63,7 @@ headers_HEADERS = modifiable.h common.h algorithms.h connection.h tcpconnection.
 	orderparameter.h orderparameters.h  \
 	timercallback.h prng.h playeragent.h turnprocess.h \
 	objectparameter.h objectparametergroup.h position3dobjectparam.h \
-	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h \
+	velocity3dobjectparam.h sizeobjectparam.h integerobjectparam.h influenceobjectparam.h \
 	referenceobjectparam.h refquantitylistobjectparam.h resourcelistobjectparam.h \
 	orderqueueobjectparam.h orderqueue.h turntimer.h playerview.h componentview.h \
 	designview.h objectview.h objecttype.h objectparametergroupdesc.h \
