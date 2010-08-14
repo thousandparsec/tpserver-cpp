@@ -60,6 +60,9 @@ public:
    virtual void packExtraData(OutputFrame::Ptr frame);
    virtual void doOnceATurn();
    virtual int getContainerType();
+   
+   void setIcon(const std::string& media);
+   void setMedia(const std::string& media);
 
 
 private:

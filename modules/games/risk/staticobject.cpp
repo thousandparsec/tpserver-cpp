@@ -22,6 +22,7 @@
 #include <tpserver/objectparametergroupdesc.h>
 #include <tpserver/position3dobjectparam.h>
 #include <tpserver/sizeobjectparam.h>
+#include <tpserver/mediaobjectparam.h>
 #include <tpserver/object.h>
 
 #include "map.h"
@@ -37,6 +38,8 @@ StaticObjectType::StaticObjectType( const std::string& nname, const std::string&
   ObjectParameterGroupDesc::Ptr group = createParameterGroupDesc( "Positional", "Describes the position");
    group->addParameter(obpT_Position_3D, "Position", "The position of the object");
    group->addParameter(obpT_Size, "Size", "The diameter of the object");
+   group->addParameter(obpT_Media, "Icon", "Icon for this object");
+   group->addParameter(obpT_Media, "Media", "The media for this object"); 
 
 }
 
@@ -90,6 +93,14 @@ void StaticObject::doOnceATurn() {
 
 int StaticObject::getContainerType(){
    return ContainerTypes_::StaticObject;
+}
+
+void StaticObject::setIcon(const std::string& media){
+    ((MediaObjectParam*)(obj->getParameter(1,3)))->setMediaUrl(media);
+}
+
+void StaticObject::setMedia(const std::string& media){
+    ((MediaObjectParam*)(obj->getParameter(1,4)))->setMediaUrl(media);
 }
 
 }

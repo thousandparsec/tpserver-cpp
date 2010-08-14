@@ -184,17 +184,21 @@ void Risk::createUniverse() {
 
    otypeman->setupObject(universe, uniType);
    universe->setName("The Universe");
+   
    StaticObject* uniData = dynamic_cast<StaticObject*>(universe->getObjectBehaviour());
    uniData->setSize(123456789123ll);
    //The field of view for the universe is approximately -1 to 1 X and 0 to 1 Y.
    uniData->setUnitPos(-0.1,0.1);
+   uniData->setIcon("common/object-icons/system");
+   uniData->setMedia("common-2d/foreign/freeorion/nebula-small/nebula3");
    objman->addObject(universe);
    
    //set up universe (universe->constellations->star sys->planet)
    std::string risk_mapimport = Settings::getSettings()->get("risk_mapimport");
    if( risk_mapimport == "true") {
       std::string mapfile = Settings::getSettings()->get("risk_map");
-      bool map_loaded = importMapFromFile(mapfile,*universe);
+      MapImport mp;
+      bool map_loaded = mp.importMapFromFile(mapfile,*universe);
       if(!map_loaded){
           Logger::getLogger()->error("Could not load mapfile: %s", mapfile.c_str());
           Logger::getLogger()->info("Loading test system instead");
@@ -208,42 +212,44 @@ void Risk::createUniverse() {
 
 void Risk::createTestSystems(IGObject& universe) {
 
-   IGObject::Ptr con_cygnus     = createConstellation(universe, "Cygnus",         2); //South America
-   IGObject::Ptr con_orion      = createConstellation(universe, "Orion",          3); //Africa
-   IGObject::Ptr wormholes      = createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
+   MapImport mp;
+    
+   IGObject::Ptr con_cygnus     = mp.createConstellation(universe, "Cygnus",         2); //South America
+   IGObject::Ptr con_orion      = mp.createConstellation(universe, "Orion",          3); //Africa
+   IGObject::Ptr wormholes      = mp.createConstellation(universe, "Wormholes",      0); //Place to put the wormholes
 
    // Cygnus Systems (South America, Bonus 2)
-   createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
-   createStarSystem(*con_cygnus, "Albireo",            -0.249, -0.051); //6
-   createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);  //8
-   createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);  //10
+   mp.createStarSystem(*con_cygnus, "Deneb",              -0.321, 0.273);  //4
+   mp.createStarSystem(*con_cygnus, "Albireo",            -0.249, -0.051); //6
+   mp.createStarSystem(*con_cygnus, "Sadr",               -0.294, 0.156);  //8
+   mp.createStarSystem(*con_cygnus, "Gienah Cygni",       -0.402, 0.138);  //10
 
    // Orion Systens (Africa, Bonus 3)
-   createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);   //12
-   createStarSystem(*con_orion, "Rigel",               0.226, -0.006);  //14
-   createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);   //16
-   createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);   //18
-   createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);   //20
-   createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
+   mp.createStarSystem(*con_orion, "Betelgeuse",          0.031, 0.228);   //12
+   mp.createStarSystem(*con_orion, "Rigel",               0.226, -0.006);  //14
+   mp.createStarSystem(*con_orion, "Bellatrix",           0.184, 0.237);   //16
+   mp.createStarSystem(*con_orion, "Mintaka",             0.148, 0.120);   //18
+   mp.createStarSystem(*con_orion, "Alnitak",             0.085, 0.102);   //20
+   mp.createStarSystem(*con_orion, "Saiph",               0.085, -0.042);  //22
    
    //Cygnus Internal Adjacencies
-   createWormhole(*wormholes, 5, 9);
-   createWormhole(*wormholes, 5, 11);
-   createWormhole(*wormholes, 9, 11);
-   createWormhole(*wormholes, 9, 7);
-   createWormhole(*wormholes, 7, 11);
+   mp.createWormhole(*wormholes, 5, 9);
+   mp.createWormhole(*wormholes, 5, 11);
+   mp.createWormhole(*wormholes, 9, 11);
+   mp.createWormhole(*wormholes, 9, 7);
+   mp.createWormhole(*wormholes, 7, 11);
    
    //Orion Internal Adjacencies
-   createWormhole(*wormholes, 13, 17);
-   createWormhole(*wormholes, 13, 21);
-   createWormhole(*wormholes, 17, 19);
-   createWormhole(*wormholes, 19, 21);
-   createWormhole(*wormholes, 19, 15);
-   createWormhole(*wormholes, 21, 23);
-   createWormhole(*wormholes, 23, 15);
+   mp.createWormhole(*wormholes, 13, 17);
+   mp.createWormhole(*wormholes, 13, 21);
+   mp.createWormhole(*wormholes, 17, 19);
+   mp.createWormhole(*wormholes, 19, 21);
+   mp.createWormhole(*wormholes, 19, 15);
+   mp.createWormhole(*wormholes, 21, 23);
+   mp.createWormhole(*wormholes, 23, 15);
    
    //Cygnus - Orion Adjacencies
-   createWormhole(*wormholes, 13, 9);
+   mp.createWormhole(*wormholes, 13, 9);
 }
 
 void Risk::startGame(){

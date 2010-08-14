@@ -42,6 +42,7 @@
 #include <graph.h>
 #include <risk.h>
 #include <map.h>
+#include <tpserver/rulesetsupport/nameselector.h>
 
 #include <sstream>
 #include <map>
@@ -57,7 +58,34 @@ using std::map;
 
 typedef std::map<string,IGObject::Ptr > StrToObjMap;
 
-bool importMapFromFile(string filename, IGObject& universe){
+#define ASIZEOF(x) (sizeof(x)/sizeof(x[0]))
+
+static char const * const defaultConstellationMedia[] = {
+    "nebula1", "nebula2", "nebula3", "nebula4", "nebula5"
+};
+
+static char const * const defaultSystemMedia[] = {
+  "blue", "red", "yellow", "purple-large", 
+  "purple-small", "rainbow"
+};
+
+static char const * const defaultPlanetMedia[] = {
+  "barren1", "barren2", "barren3", "desert1", "desert2",
+  "desert3", "gasgiant1", "gasgiant2", "gasgiant3",
+  "inferno1", "inferno2", "inferno3", "ocean1", "ocean2",
+  "ocean3", "radiated1", "radiated2", "radiaged3",
+  "swamp1", "swamp2", "swamp3", "terran1", "terran2",
+  "terran3", "toxic1", "toxic2", "toxic3", "tundra1",
+  "tundra2", "tundra3"
+};
+
+MapImport::MapImport(){
+    constellationmedia = new NamesSet(Game::getGame()->getRandom(), defaultConstellationMedia, ASIZEOF(defaultConstellationMedia), true, "");
+    systemmedia = new NamesSet(Game::getGame()->getRandom(), defaultSystemMedia, ASIZEOF(defaultSystemMedia), true, "");
+    planetmedia = new NamesSet(Game::getGame()->getRandom(), defaultPlanetMedia, ASIZEOF(defaultPlanetMedia), true, "");
+}
+
+bool MapImport::importMapFromFile(string filename, IGObject& universe){
    bool loadedMapOkay = false;
    Logger::getLogger()->debug("Trying to load:  %s", filename.c_str());
    TiXmlDocument map(filename.c_str());  //Create a new xml doc object from filename
@@ -87,7 +115,7 @@ bool importMapFromFile(string filename, IGObject& universe){
    return loadedMapOkay;             //return true if map was created successfully, otherwise false
 }
 
-bool processGTag(TiXmlElement* pG, IGObject& universe) {
+bool MapImport::processGTag(TiXmlElement* pG, IGObject& universe) {
    bool result = true;
    
    IGObject::Ptr wormholes      = createConstellation(universe, "Wormholes", 0); //Place to put wormholes
@@ -125,7 +153,7 @@ bool processGTag(TiXmlElement* pG, IGObject& universe) {
 }
 
 //Process each individual Rectangle and translate to Star
-bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObject::Ptr >& labelToPlanet) {
+bool MapImport::processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObject::Ptr >& labelToPlanet) {
    bool result = true;
    
    TiXmlElement* pRect;
@@ -174,7 +202,7 @@ bool processRectTag(TiXmlElement* pG, IGObject& universe, std::map<string,IGObje
    return result;
 }
 
-std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string fill) {
+std::pair<string,uint32_t> MapImport::getNameAndBonus(TiXmlElement* pG, string fill) {
    TiXmlElement *pText, *pTSpan;
    std::pair<string,uint32_t> result;
    result.first = ""; result.second = 0;
@@ -209,7 +237,7 @@ std::pair<string,uint32_t> getNameAndBonus(TiXmlElement* pG, string fill) {
 }
 
 //Return the hexcode color from a style by looking for fill:# and taking the next 6 chars after that
-string getFillFromStyle(string longStyle) {
+string MapImport::getFillFromStyle(string longStyle) {
    size_t fillPosn;
    string result = "";
    int styleTrimLen = 6;   //The length of text to trim from the style to get the hexcode color
@@ -228,7 +256,7 @@ string getFillFromStyle(string longStyle) {
 
 // Herschell_s_Garnet_Star will become: 
 // Herschell's Garnet Star
-string removeUnderscores(string str) {
+string MapImport::removeUnderscores(string str) {
    int size = str.size();
    
    for (int i = 0; i < size; i++) {
@@ -250,7 +278,7 @@ string removeUnderscores(string str) {
    return str;
 }
 
-IGObject::Ptr createConstellation(IGObject& parent, const string& name, int bonus) {
+IGObject::Ptr MapImport::createConstellation(IGObject& parent, const string& name, int bonus) {
    DEBUG_FN_PRINT();
    
    Game *game = Game::getGame();
@@ -263,7 +291,8 @@ IGObject::Ptr createConstellation(IGObject& parent, const string& name, int bonu
 
    Constellation* constellationData = dynamic_cast<Constellation*>(constellation->getObjectBehaviour());
    constellationData->setBonus(bonus);
-
+   constellationData->setIcon("common/object-icons/system");
+   constellationData->setMedia("common-2d/foreign/freeorion/nebula-small/" + constellationmedia->getName());
    constellation->addToParent(parent.getID());
    game->getObjectManager()->addObject(constellation);
 
@@ -271,7 +300,7 @@ IGObject::Ptr createConstellation(IGObject& parent, const string& name, int bonu
 }
 
 //Its VERY important to note that the star system creation function returns a pointer to the PLANET
-IGObject::Ptr createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
+IGObject::Ptr MapImport::createStarSystem(IGObject& parent, const string& name, double unitX, double unitY) {
    DEBUG_FN_PRINT();
    
    Game *game = Game::getGame();
@@ -283,9 +312,11 @@ IGObject::Ptr createStarSystem(IGObject& parent, const string& name, double unit
 
    otypeman->setupObject(starSys, otypeman->getObjectTypeByName("Star System"));
    starSys->setName(name+" System");
+   
    StaticObject* starSysData = dynamic_cast<StaticObject*>(starSys->getObjectBehaviour());
    starSysData->setUnitPos(unitX, unitY);
-
+   starSysData->setIcon("common/object-icons/system");
+   starSysData->setMedia("common-2d/star-small/" + systemmedia->getName());
    starSys->addToParent(parent.getID());
    game->getObjectManager()->addObject(starSys);
 
@@ -296,11 +327,11 @@ IGObject::Ptr createStarSystem(IGObject& parent, const string& name, double unit
    return planet;
 }
 
-IGObject::Ptr createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
+IGObject::Ptr MapImport::createPlanet(IGObject& parent, const string& name,double unitX, double unitY) {
    return createPlanet(parent, name, Vector3d(unitX,unitY,0));
 }
 
-IGObject::Ptr createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
+IGObject::Ptr MapImport::createPlanet(IGObject& parent, const string& name,const Vector3d& location) {
    DEBUG_FN_PRINT();
    Game *game = Game::getGame();
    ObjectTypeManager *otypeman = game->getObjectTypeManager();
@@ -310,9 +341,12 @@ IGObject::Ptr createPlanet(IGObject& parent, const string& name,const Vector3d& 
    
    otypeman->setupObject(planet, otypeman->getObjectTypeByName("Planet"));
    planet->setName(name);
+   
    Planet* planetData = dynamic_cast<Planet*>(planet->getObjectBehaviour());
    planetData->setPosition(location); // OK because unit pos isn't useful for planets
    planetData->setDefaultResources();
+   planetData->setIcon("common/object-icons/planet");
+   planetData->setMedia(std::string("common-2d/foreign/freeorion/planet-small/animation/") + planetmedia->getName());
    
    OrderQueueObjectParam* oqop = dynamic_cast<OrderQueueObjectParam*> 
          (planet->getParameterByType(obpT_Order_Queue));
@@ -326,7 +360,7 @@ IGObject::Ptr createPlanet(IGObject& parent, const string& name,const Vector3d& 
    return planet;
 }   
 
-void createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
+void MapImport::createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
    DEBUG_FN_PRINT();
    
    Game *game = Game::getGame();
@@ -362,7 +396,7 @@ void createWormhole(IGObject& parent, int64_t startat, int64_t endat) {
    game->getObjectManager()->doneWithObject(endat);
 }
 
-void createWormhole(IGObject& parent, IGObject::Ptr startat, IGObject::Ptr endat) {
+void MapImport::createWormhole(IGObject& parent, IGObject::Ptr startat, IGObject::Ptr endat) {
    createWormhole(parent,startat->getID(),endat->getID());
 }
 }//end namespace RiskRuleset

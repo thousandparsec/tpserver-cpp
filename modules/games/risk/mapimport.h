@@ -31,25 +31,38 @@
 #include <string>
 #include <map>
 class IGObject;
+class NameSelector;
 
 namespace RiskRuleset {
 
-bool importMapFromFile(std::string filename, IGObject& universe);
-bool processGTag(TiXmlElement* pG, IGObject& universe);
-bool processRectTag(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject::Ptr >& labelToPlanet);
-std::pair<std::string,uint32_t> getNameAndBonus(TiXmlElement* pG, std::string fill);
-std::string removeUnderscores(std::string str);
+    class MapImport{
+        public:
+            MapImport();
+            
+            bool importMapFromFile(std::string filename, IGObject& universe);
+            bool processGTag(TiXmlElement* pG, IGObject& universe);
+            bool processRectTag(TiXmlElement* pRect, IGObject& universe, std::map<std::string,IGObject::Ptr >& labelToPlanet);
+            std::pair<std::string,uint32_t> getNameAndBonus(TiXmlElement* pG, std::string fill);
+            std::string removeUnderscores(std::string str);
 
-std::string getFillFromStyle(std::string longStyle);
-IGObject::Ptr createConstellation(IGObject& parent, const std::string& name, int bonus);
-IGObject::Ptr createStarSystem(IGObject& parent, const std::string& name,
-   double unitX, double unitY);
-IGObject::Ptr createPlanet(IGObject& parent, const std::string& name,
-   double unitX, double unitY);                        
-IGObject::Ptr createPlanet(IGObject& parentStarSys, const std::string& name,
-   const Vector3d& location);
-void createWormhole(IGObject& parent, int64_t startat, int64_t endat);
-void createWormhole(IGObject& parent, IGObject::Ptr startat, IGObject::Ptr endat);
+            std::string getFillFromStyle(std::string longStyle);
+            IGObject::Ptr createConstellation(IGObject& parent, const std::string& name, int bonus);
+            IGObject::Ptr createStarSystem(IGObject& parent, const std::string& name,
+               double unitX, double unitY);
+            IGObject::Ptr createPlanet(IGObject& parent, const std::string& name,
+               double unitX, double unitY);                        
+            IGObject::Ptr createPlanet(IGObject& parentStarSys, const std::string& name,
+               const Vector3d& location);
+            void createWormhole(IGObject& parent, int64_t startat, int64_t endat);
+            void createWormhole(IGObject& parent, IGObject::Ptr startat, IGObject::Ptr endat);
+            
+        private:
+            NameSelector* constellationmedia;
+            NameSelector* systemmedia;
+            NameSelector* planetmedia;
+
+    };
+    
 }
 
 #endif
