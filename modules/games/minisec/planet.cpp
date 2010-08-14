@@ -144,7 +144,7 @@ IGObject::Ptr Planet::createObject(IGObject::Ptr parent, std::string name, Vecto
 
   Planet* theplanet = (Planet*)(planet->getObjectBehaviour());
   theplanet->setSize(2);
-  theplanet->setPosition(theparent->getPosition() + Vector3d(14960ll, 0ll, 0ll));
+  theplanet->setPosition(theparent->getPosition() + v);
   uint32_t queueid = game->getOrderManager()->addOrderQueue(planet->getID(), 0);
 
   OrderQueueObjectParam* oqop = static_cast<OrderQueueObjectParam*>(planet->getParameterByType(obpT_Order_Queue));
