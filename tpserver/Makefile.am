@@ -42,7 +42,7 @@ tpserver_cpp_SOURCES = $(GNUTLSSOURCES) main.cpp protocolobject.cpp connection.c
 		basicturntimer.cpp thresholdturntimer.cpp playersfinishedturntimer.cpp \
 		mediaobjectparam.cpp tinyxml/tinyxml.cpp tinyxml/tinyxmlerror.cpp \
 		tinyxml/tinyxmlparser.cpp battlexml/combatant.cpp battlexml/battleexceptions.cpp \
-		battlexml/battlelogger.cpp
+		battlexml/battlelogger.cpp rulesetsupport/nameselector.cpp
 		
 headersdir = $(includedir)/tpserver
 headers_HEADERS = modifiable.h common.h algorithms.h connection.h tcpconnection.h packable.h protocolobject.h protocolview.h \
@@ -74,6 +74,9 @@ headerstinyxml_HEADERS = tinyxml/tinyxml.h
 
 headersbattlexmldir = $(headersdir)/battlexml
 headersbattlexml_HEADERS = battlexml/combatant.h battlexml/battleexceptions.h battlexml/battlelogger.h
+
+headersrulesetsupportdir = $(headersdir)/rulesetsupport
+headersrulesetsupport_HEADERS = rulesetsupport/nameselector.h
 
 noinst_HEADERS = tcpsocket.h filelogger.h syslogger.h \
 	consolelogger.h logsink.h $(GNUTLSHEADERS) pluginmanager.h httpsocket.h \
