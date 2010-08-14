@@ -118,7 +118,7 @@ bool Intercept::doOrder(IGObject::Ptr ob){
     Logger::getLogger()->debug("Object(%d)->Intercept->doOrder(): Is arriving at [%lld, %lld, %lld] ", 
       ob->getID(), dest.getX(), dest.getY(), dest.getZ());
   
-    me->setVelocity(Vector3d(666,0,0));
+    me->setVelocity(Vector3d(0,0,0));
     parentid = ob->getParent();
 
     // recontainerise if necessary
