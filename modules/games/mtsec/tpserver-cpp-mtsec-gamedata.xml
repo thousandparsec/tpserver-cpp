@@ -3,7 +3,7 @@
 
 <comp>
     <name>Scout Hull</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The scout hull, fitted out with everything a scout needs</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -22,7 +22,7 @@
 
 <comp>
     <name>Battle Scout Hull</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The battle scout hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -45,7 +45,7 @@
 
 <comp>
     <name>Advanced Battle Scout Hull</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The advanced battle scout hull, packing a bigger punch into a smaller and faster package</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -64,7 +64,7 @@
 
 <comp>
     <name>Frigate</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The Frigate, a cheap ship that can easily destroy larger ships</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -83,7 +83,7 @@
 
 <comp>
     <name>Battle Frigate</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The Battle Frigate, a slightly more powerful version of the frigate.  High speed to firepower ratio.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -102,7 +102,7 @@
 
 <comp>
     <name>Destroyer</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The Destroyer, a main offensive threat of any fleet.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -121,7 +121,7 @@
 
 <comp>
     <name>Battle Destroyer</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The Battle Destroyer, a poor man's Battleship</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -140,7 +140,7 @@
 
 <comp>
     <name>Battleship</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The Battleship, a ship that is hugely armored and armed.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -159,7 +159,7 @@
 
 <comp>
     <name>Dreadnought</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The dreadnought is the largest moveable ship available.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -178,7 +178,7 @@
 
 <comp>
     <name>Argonaut</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>The argonaut is a huge ship that can't break orbit.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Ship can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -197,7 +197,7 @@
 
 <comp>
     <name>Uranium Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>Most basic nuclear explosive</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -220,7 +220,7 @@
 
 <comp>
     <name>Thorium Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A significantly cheaper but less explosive nuclear explosive</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -243,7 +243,7 @@
 
 <comp>
     <name>Cerium Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -266,7 +266,7 @@
 
 <comp>
     <name>Enriched Uranium</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An enhanced version of uranium which is more explosive</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -289,7 +289,7 @@
 
 <comp>
     <name>Massivium</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An huge but extremely explosive sub-nuclear particle</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -311,7 +311,7 @@
 
 <comp>
     <name>Antiparticle Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An extremely expensive but hugely explosive particle and anit-particle explosive</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -335,7 +335,7 @@
 
 <comp>
     <name>Antimatter Explosives</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An even more extremely expensive but insanely explosive antimatter-matter explosive</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Missile or Torpedoe Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -358,7 +358,7 @@
 
 <comp>
     <name>Alpha Missile Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An alpha missile tube, capable of firing one alpha missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (designType.num-hulls design) (if (> (designType.MaxSize design) (designType.Size design)) (cons #t "") (cons #f "This many components can't fit into this Hull")) (cons #f "This component requires a Ship Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -379,7 +379,7 @@
 
 <comp>
     <name>Alpha Missile Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An alpha missile rack, capable of holding 2 alpha missiles</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -395,7 +395,7 @@
 
 <comp>
     <name>Alpha Missile Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An alpha missile hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -411,7 +411,7 @@
 
 <comp>
     <name>Beta Missile Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A beta missile tube, capable of firing one beta missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -432,7 +432,7 @@
 
 <comp>
     <name>Beta Missile Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A beta missile rack, capable of holding 2 beta missiles</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -449,7 +449,7 @@
 
  <comp>
      <name>Beta Missile Hull</name>
-     <ComponentIDName>Weapons</ComponentIDName>
+     <CategoryIDName>Weapons</CategoryIDName>
      <description>A beta missile hull</description>
      <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
      <propertylist>
@@ -466,7 +466,7 @@
 
 <comp>
     <name>Gamma Missile Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A gamma missile tube, capable of firing one gamma missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -488,7 +488,7 @@
 
 <comp>
     <name>Gamma Missile Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A gamma missile rack, capable of holding 2 gamma missiles</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -504,7 +504,7 @@
 
 <comp>
     <name>Gamma Missile Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A gamma missile hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -521,7 +521,7 @@
 
 <comp>
     <name>Delta Missile Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A delta missile tube, capable of firing one delta missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -543,7 +543,7 @@
 
 <comp>
     <name>Delta Missile Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A delta missile rack, capable of holding 2 delta missiles</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -561,7 +561,7 @@
 
 <comp>
     <name>Delta Missile Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A delta missile hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -578,7 +578,7 @@
 
 <comp>
     <name>Epsilon Missile Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An epsilon missile tube, capable of firing one epsilon missile per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -600,7 +600,7 @@
 
 <comp>
     <name>Epsilon Missile Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An epsilon missile rack, capable of holding 2 epsilon missiles</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -617,7 +617,7 @@
 
 <comp>
     <name>Epsilon Missile Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An epsilon missile hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Missile can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -634,7 +634,7 @@
 
 <comp>
     <name>Omega Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An omega torpedoe tube, capable of firing one omega torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -656,7 +656,7 @@
 
 <comp>
     <name>Omega Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An omega torpedoe rack, capable of holding 2 omega torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -673,7 +673,7 @@
 
 <comp>
     <name>Omega Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An omega torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -689,7 +689,7 @@
 
 <comp>
     <name>Upsilon Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An upsilon torpedoe tube, capable of firing one upsilon torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -711,7 +711,7 @@
 
 <comp>
     <name>Upsilon Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>An upsilon torpedoe rack, capable of holding 2 upsilon torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -727,7 +727,7 @@
 
 <comp>
     <name>Upsilon Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>An upsilon torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -744,7 +744,7 @@
 
 <comp>
     <name>Tau Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A tau torpedoe tube, capable of firing one tau torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -766,7 +766,7 @@
 
 <comp>
     <name>Tau Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A tau torpedoe rack, capable of holding 2 tau torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -783,7 +783,7 @@
 
 <comp>
     <name>Tau Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A tau torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -800,7 +800,7 @@
 
 <comp>
     <name>Sigma Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A sigma torpedoe tube, capable of firing one sigma torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -822,7 +822,7 @@
 
 <comp>
     <name>Sigma Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A sigma torpedoe rack, capable of holding 2 sigma torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -839,7 +839,7 @@
 
 <comp>
     <name>Sigma Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A sigma torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -856,7 +856,7 @@
 
 <comp>
     <name>Rho Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A rho torpedoe tube, capable of firing one rho torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -878,7 +878,7 @@
 
 <comp>
     <name>Rho Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A rho torpedoe rack, capable of holding 2 rho torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -895,7 +895,7 @@
 
 <comp>
     <name>Rho Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A rho torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -912,7 +912,7 @@
 
 <comp>
     <name>Xi Torpedoe Tube</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A xi torpedoe tube, capable of firing one xi torpedoe per combat round</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -934,7 +934,7 @@
 
 <comp>
     <name>Xi Torpedoe Rack</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>A xi torpedoe rack, capable of holding 2 xi torpedoes</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "This component requires a Ship Hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -951,7 +951,7 @@
 
 <comp>
     <name>Xi Torpedoe Hull</name>
-    <ComponentIDName>Weapons</ComponentIDName>
+    <CategoryIDName>Weapons</CategoryIDName>
     <description>A xi torpedoe hull</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.num-hulls design) 1) (cons #t "") (cons #f "Torpedoe can only have one hull")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -968,7 +968,7 @@
 
 <comp>
     <name>Armor</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>Armor reduces the damage taken by 0.1%</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (= (designType._num-components design) 1) (cons #t "") (cons #f "This is a complete component, nothing else can be included")))]]></tpclRequirementsFunction>
         <propertylist>
@@ -982,7 +982,7 @@
 
 <comp>
     <name>Colonisation Module</name>
-    <ComponentIDName>Ships</ComponentIDName>
+    <CategoryIDName>Ships</CategoryIDName>
     <description>Allows the ship to colonise a planet.</description>
     <tpclRequirementsFunction><![CDATA[(lambda (design) (if (> (designType.MaxSize design) (designType.Size design)) (if (= (designType.Colonise design) 1) (cons #t "") (cons #f "Can have only one colonisation module.")) (cons #f "This many components can't fit into this Hull")))]]></tpclRequirementsFunction>
     <propertylist>
@@ -998,7 +998,7 @@
 <properties>
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>_num-components</name>
         <displayName>Number of Components</displayName>
@@ -1008,7 +1008,7 @@
     </prop>
 
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>Speed</name>
         <displayName>Speed</displayName>
@@ -1020,7 +1020,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>AmmoCost</name>
         <displayName>Explosive Unit Cost</displayName>
@@ -1032,7 +1032,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>AmmoExplosiveness</name>
         <displayName>Unit Explosive Punch</displayName>
@@ -1044,7 +1044,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>AmmoSize</name>
         <displayName>Explosive Density</displayName>
@@ -1056,7 +1056,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="2"/>
         <name>Firepower</name>
         <displayName>Firepower</displayName>
@@ -1068,7 +1068,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="1"/>
         <name>MissileCost</name>
         <displayName>MissileCost</displayName>
@@ -1080,7 +1080,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="1"/>
         <name>MissileFirepower</name>
         <displayName>Missile Firepower</displayName>
@@ -1090,7 +1090,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeCost</name>
         <displayName>Torpedoe Cost</displayName>
@@ -1102,7 +1102,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeFirepower</name>
         <displayName>Torpedoe Firepower</displayName>
@@ -1114,7 +1114,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeSize</name>
         <displayName>Torpedoe Size</displayName>
@@ -1126,7 +1126,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>StartingHitPoints</name>
         <displayName>Initial Hit Points</displayName>
@@ -1138,7 +1138,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>ProductCost</name>
         <displayName>Product Cost</displayName>
@@ -1150,7 +1150,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>Armor</name>
         <displayName>Armor</displayName>
@@ -1163,7 +1163,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>HitPoints</name>
         <displayName>Hit Points</displayName>
@@ -1174,7 +1174,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>Colonise</name>
         <displayName>Can Colonise Planets</displayName>
@@ -1184,7 +1184,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>num-ammo</name>
         <displayName>Number of missile and torpedoe warhead types</displayName>
@@ -1196,7 +1196,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>num-baytypes</name>
         <displayName>Number of missile or torpedoe types</displayName>
@@ -1207,7 +1207,7 @@
     
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>num-hulls</name>
         <displayName>Number of hulls</displayName>
@@ -1217,7 +1217,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>Size</name>
         <displayName>Size of Ship</displayName>
@@ -1227,7 +1227,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Ships</PropertyIDName>
+        <CategoryIDName>Ships</CategoryIDName>
         <rank value="0"/>
         <name>MaxSize</name>
         <displayName>Maximum Size of Ship</displayName>
@@ -1239,7 +1239,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>_num-components</name>
         <displayName>Number of Components</displayName>
@@ -1251,7 +1251,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>Speed</name>
         <displayName>Speed</displayName>
@@ -1263,7 +1263,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>AmmoCost</name>
         <displayName>Explosive Unit Cost</displayName>
@@ -1275,7 +1275,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>AmmoExplosiveness</name>
         <displayName>Unit Explosive Punch</displayName>
@@ -1287,7 +1287,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>AmmoSize</name>
         <displayName>Explosive Density</displayName>
@@ -1299,7 +1299,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="2"/>
         <name>Firepower</name>
         <displayName>Firepower</displayName>
@@ -1311,7 +1311,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>MissileCost</name>
         <displayName>MissileCost</displayName>
@@ -1323,7 +1323,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>MissileFirepower</name>
         <displayName>Missile Firepower</displayName>
@@ -1335,7 +1335,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>MissileSize</name>
         <displayName>MissileSize</displayName>
@@ -1346,7 +1346,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeCost</name>
         <displayName>Torpedoe Cost</displayName>
@@ -1358,7 +1358,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeFirepower</name>
         <displayName>Torpedoe Firepower</displayName>
@@ -1370,7 +1370,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="1"/>
         <name>TorpedoeSize</name>
         <displayName>Torpedoe Size</displayName>
@@ -1382,7 +1382,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>ProductCost</name>
         <displayName>Product Cost</displayName>
@@ -1394,7 +1394,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-ammo</name>
         <displayName>Number of missile and torpedoe warhead types</displayName>
@@ -1406,7 +1406,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-baytypes</name>
         <displayName>Number of missile or torpedoe types</displayName>
@@ -1417,7 +1417,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-hulls</name>
         <displayName>Number of hulls</displayName>
@@ -1429,7 +1429,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>Size</name>
         <displayName>Size of Weapon</displayName>
@@ -1439,7 +1439,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>MaxSize</name>
         <displayName>Maximum Size of Weapon</displayName>
@@ -1449,7 +1449,7 @@
     </prop>
 
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>AlphaMissileTube</name>
         <displayName>The Alpha Missile Tube</displayName>
@@ -1459,7 +1459,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>BetaMissileTube</name>
         <displayName>The Beta Missile Tube</displayName>
@@ -1469,7 +1469,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>GammaMissileTube</name>
         <displayName>The Gamma Missile Tube</displayName>
@@ -1479,7 +1479,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>DeltaMissileTube</name>
         <displayName>The Delta Missile Tube</displayName>
@@ -1489,7 +1489,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>EpsilonMissileTube</name>
         <displayName>The Epsilon Missile Tube</displayName>
@@ -1499,7 +1499,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>OmegaTorpedoeTube</name>
         <displayName>The Omega Torpedoe Tube</displayName>
@@ -1509,7 +1509,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>UpsilonTorpedoeTube</name>
         <displayName>The Upsilon Torpedoe Tube</displayName>
@@ -1520,7 +1520,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>TauTorpedoeTube</name>
         <displayName>The Tau Torpedoe Tube</displayName>
@@ -1530,7 +1530,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>SigmaTorpedoeTube</name>
         <displayName>The Sigma Torpedoe Tube</displayName>
@@ -1540,7 +1540,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>RhoTorpedoeTube</name>
         <displayName>The Rho Torpedoe Tube</displayName>
@@ -1550,7 +1550,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>XiTorpedoeTube</name>
         <displayName>The Xi Torpedoe Tube</displayName>
@@ -1560,7 +1560,7 @@
     </prop>
 
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-AlphaMissileTube</name>
         <displayName>The Number of Alpha Missile Tubes</displayName>
@@ -1570,7 +1570,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-BetaMissileTube</name>
         <displayName>The Number of Beta Missile Tubes</displayName>
@@ -1580,7 +1580,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-GammaMissileTube</name>
         <displayName>The Number of Gamma Missile Tubes</displayName>
@@ -1590,7 +1590,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-DeltaMissileTube</name>
         <displayName>The Number of Delta Missile Tubes</displayName>
@@ -1600,7 +1600,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-EpsilonMissileTube</name>
         <displayName>The Number of Epsilon Missile Tube</displayName>
@@ -1610,7 +1610,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-OmegaTorpedoeTube</name>
         <displayName>The Number of Omega Torpedoe Tube</displayName>
@@ -1620,7 +1620,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-UpsilonTorpedoeTube</name>
         <displayName>The Number of Upsilon Torpedoe Tube</displayName>
@@ -1631,7 +1631,7 @@
     
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-TauTorpedoeTube</name>
         <displayName>The Number of Tau Torpedoe Tube</displayName>
@@ -1641,7 +1641,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-SigmaTorpedoeTube</name>
         <displayName>The Number of Sigma Torpedoe Tube</displayName>
@@ -1651,7 +1651,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-RhoTorpedoeTube</name>
         <displayName>The Number of Rho Torpedoe Tube</displayName>
@@ -1661,7 +1661,7 @@
     </prop>
     
     <prop>
-        <PropertyIDName>Weapons</PropertyIDName>
+        <CategoryIDName>Weapons</CategoryIDName>
         <rank value="0"/>
         <name>num-XiTorpedoeTube</name>
         <displayName>The Number of Xi Torpedoe Tube</displayName>

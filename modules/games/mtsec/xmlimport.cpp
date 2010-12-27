@@ -78,7 +78,7 @@ bool xmlImport::importComps() {
                 return false;
             }
             //read and set the ID of the component
-            pCur = pChild->FirstChildElement("ComponentIDName");
+            pCur = pChild->FirstChildElement("CategoryIDName");
             if (pCur) { 
                 compIDName = pCur->GetText();
                 if (compIDName.empty()) return false;
@@ -186,7 +186,7 @@ bool xmlImport::importProps() {
                 return false;
             }
             //read and set the ID of the property
-            pCur = pChild->FirstChildElement("PropertyIDName");
+            pCur = pChild->FirstChildElement("CategoryIDName");
             if (pCur) { 
                 propIDName = pCur->GetText();
                 if (propIDName.empty()) return false;
