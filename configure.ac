@@ -166,7 +166,9 @@ if test "$mzscheme_option" != "no"; then
 
    AC_CHECK_HEADER(scheme.h, AC_DEFINE(HAVE_SCHEME_H, 1, [Define to 1 if scheme.h is present]))
    AC_CHECK_HEADER(plt/scheme.h, AC_DEFINE(HAVE_PLT_SCHEME_H, 1, [Define to 1 if plt/scheme.h is present]))
-   if test -n "ac_cv_header_scheme_h" && test -n "ac_cv_header_plt_scheme_h" ; then
+   AC_CHECK_HEADER(racket/scheme.h, AC_DEFINE(HAVE_RACKET_SCHEME_H, 1, [Define to 1 if racket/scheme.h is present]))
+   
+   if test -n "ac_cv_header_scheme_h" && test -n "ac_cv_header_plt_scheme_h" && test -n "ac_cv_header_racket_scheme_h" ; then
 
       AC_CHECK_LIB(mzgc, GC_init,
         [
@@ -206,8 +208,16 @@ if test "$mzscheme_option" != "no"; then
                 AM_CONDITIONAL(MZSCHEME, true)
                 mzscheme_use="yes"
             ],[
-                AC_MSG_WARN(Not going to build MzScheme module)
-                AM_CONDITIONAL(MZSCHEME, false)
+                AC_CHECK_LIB(racket3m, scheme_basic_env, [
+                    MZSCHEME_LIBS="$MZSCHEME_LIBS -lracket3m"
+                    MZSCHEME_CFLAGS="$MZSCHEME_CFLAGS -DMZ_PRECISE_GC"
+                    AC_DEFINE(HAVE_MZSCHEME, 1, [Defined to 1 if MzScheme libraries are available])
+                    AM_CONDITIONAL(MZSCHEME, true)
+                    mzscheme_use="yes"
+                ],[
+                    AC_MSG_WARN(Not going to build MzScheme module)
+                    AM_CONDITIONAL(MZSCHEME, false)
+                ])
             ])
       ])
     else

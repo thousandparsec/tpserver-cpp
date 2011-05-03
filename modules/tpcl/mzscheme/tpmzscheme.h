@@ -2,7 +2,7 @@
 #define TPMZSCHEME_H
 /*  TP MzScheme interpreter class
  *
- *  Copyright (C) 2005,2006  Lee Begg and the Thousand Parsec Project
+ *  Copyright (C) 2005,2006,2011  Lee Begg and the Thousand Parsec Project
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,9 +20,8 @@
  *
  */
 
+#include <tpserver/design.h>
 #include <tpserver/tpscheme.h>
-
-typedef struct Scheme_Env Scheme_Env;
 
 class TpMzScheme : public TpScheme{
  public:
@@ -30,9 +29,6 @@ class TpMzScheme : public TpScheme{
 
         virtual ~TpMzScheme();
   virtual void evalDesign(Design::Ptr d);
-
- private:
-  Scheme_Env * env;
 
 };
 
